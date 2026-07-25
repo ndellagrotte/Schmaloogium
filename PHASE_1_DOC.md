@@ -7,14 +7,14 @@
 **Phase:** 1 — Foundation & project architecture
 **Milestone:** v0.1 · **Depends on:** — (Wave 0; this doc feeds every other phase)
 **Assigned OQs:** OQ-2, OQ-12, OQ-20 (seam hardness), OQ-21
-**Authored:** 2026-07-24 · **Last revised:** 2026-07-25 (§0.9)
+**Authored:** 2026-07-24 · **Last revised:** 2026-07-25 (§0.10)
 **Deliverable:** this document, per DESIGN.md §G9.
 
 *Both dates are stated, and deliberately. The authoring date is what the rest of the document reads
 against — §4.1's template facts are read from the checkout on 2026-07-24, §4.2.6's thirteen pin rows
 are re-verified 2026-07-24, and `[V:repo]` below is defined as inspection on 2026-07-24 — so a single
 later stamp would silently re-date claims to a day on which they were not performed. The revision
-date is what the fix-up addenda in §0.4–§0.9 were written on.*
+date is what the fix-up addenda in §0.4–§0.10 were written on.*
 
 ### 0.1 Inputs actually read
 
@@ -627,6 +627,16 @@ written down:
   `[U]` that says so is more honest than a `[V:web]` bought at the cost of an undisclosed read. The
   §4.2.3 text is corrected **to** §12 item 4b's flat form, not the reverse — item 4b was the more
   accurate of the two all along, which is itself worth recording.
+  **Round ten (V10-4) withdrew that last sentence, and §4.2.3's corresponding claim with it.** Item 4b
+  was not left "flat": the same edit rewrote it too, adding the compilation-order qualifier and the
+  `ext` clause — `PHASE_1_REVIEW_9.md`'s `Resolutions` records §12 item 4b among V9-3's edited sites —
+  so both texts were moved toward the same new content and neither was corrected *to* the other's prior
+  form. §4.2.3 had also quoted item 4b with five words dropped from the middle and no ellipsis, which
+  is V9-9's defect at a second site. §4.2.3 now states the substance without a quotation — *"§12 item
+  4b states the same conclusion and now carries the same reason; the two texts agree"* — which is true
+  and cannot go stale again. **What survives is everything that mattered:** the conclusion, the
+  compilation-order reason, the deleted `ext` escape hatch, the default-package requirement, the `[U]`
+  tag and §11.3 item 10. Only the account of which text was corrected toward which is withdrawn.
 - **V9-6 — the marker convention is treated as binding on this document even though §G1.3 is not.**
   §G1.3 requires no markers; round nine said so. But sixteen decisions carry them, and §0.6's V6-1 used
   a *missing* marker as evidence that a fix-up never ran — so an incomplete marker record is a defect
@@ -681,25 +691,179 @@ and said so. It is a workflow matter, not a document defect; §11.5 is for reque
 and `DESIGN.md` and correctly gains nothing; it was **raised with the project owner, who directed that
 it be noted here and left unchanged**. The tenth session inherits the same cost and this note.
 
-**§G1.3 status:** this fix-up altered **§5**, at the same two rows as the last two rounds. §5.2's
-**GL-error row** carries V9-1's correction of the remedy claim (it is one of two remedies, it bounds
-only the gap spanning the frame boundary, and it is subject to the same elision), the recurring-foreign
-cost consequence, and V9-10's rescoped property (i); §5.2's **non-verbs row** carries V9-7's widened
-header with Phase 5 readmitted and V9-8's `[v0.5]` tag and Phase 4 citation. **No service signature was
-added, removed or changed by any of it:** the facade's verb list, every service interface, every handle
-type and every value type are byte-for-byte what rounds seven, eight and nine all reviewed — V9-2's
-correction is a **javadoc sentence inside** the signature block, not a declaration, and the block was
-swept end to end for exactly that reason. A **tenth verify session** is therefore required before
-Phase 2, Phase 3 or any other dependent consumes this document, and until that verdict exists this doc
-is **not** a valid dependency input (§G5.3); Phase 2, Phase 3 and everything downstream stay blocked.
-Three things narrow what the tenth session inherits. **No finding was left unapplied and none was
-refused**, so there is no re-derivation debt; where a fix was narrowed (V9-4) or reshaped (V9-3) the
-argument is above and in `PHASE_1_REVIEW_9.md`'s `Resolutions`. **No correction changes what a
-dependent phase builds** — Phase 6's rung-2 protocol is unchanged in every particular, Phase 7's
-composite loop and `instanceId` split are unchanged, and what moved is what Phase 7 is *told* about a
-remedy it has not yet placed and what Phase 6 is told about why a clean replay happens. And **one
-question is left open on purpose**: whether the replay cost the elision creates inverts the decision to
-keep it. It is written down, it is not defended here, and it is a design call rather than a correction.
+**§G1.3 status at the time:** that fix-up altered **§5**, at the same two rows as the last two rounds.
+§5.2's **GL-error row** carried V9-1's correction of the remedy claim (it is one of two remedies, it
+bounds only the gap spanning the frame boundary, and it is subject to the same elision), the
+recurring-foreign cost consequence, and V9-10's rescoped property (i); §5.2's **non-verbs row** carried
+V9-7's widened header with Phase 5 readmitted and V9-8's `[v0.5]` tag and Phase 4 citation. **No service
+signature was added, removed or changed by any of it:** the facade's verb list, every service interface,
+every handle type and every value type were byte-for-byte what rounds seven, eight and nine all
+reviewed — V9-2's correction is a **javadoc sentence inside** the signature block, not a declaration,
+and the block was swept end to end for exactly that reason. A **tenth verify session** was therefore
+required before Phase 2, Phase 3 or any other dependent could consume this document, and until that
+verdict existed the doc was **not** a valid dependency input (§G5.3); Phase 2, Phase 3 and everything
+downstream stayed blocked. Three things narrowed what the tenth session inherited. **No finding was
+left unapplied and none was refused**, so there was no re-derivation debt; where a fix was narrowed
+(V9-4) or reshaped (V9-3) the argument is above and in `PHASE_1_REVIEW_9.md`'s `Resolutions`. **No
+correction changed what a dependent phase builds** — Phase 6's rung-2 protocol was unchanged in every
+particular, Phase 7's composite loop and `instanceId` split were unchanged, and what moved is what
+Phase 7 is *told* about a remedy it has not yet placed and what Phase 6 is told about why a clean
+replay happens. And **one question was left open on purpose**: whether the replay cost the elision
+creates inverts the decision to keep it. It is written down, it is not defended here, and it is a
+design call rather than a correction.
+
+That tenth session has since run (`PHASE_1_REVIEW_10.md`), returning PASS-WITH-CORRECTIONS with **no
+§5 change** — the first round in four at which no correction touches the Cross-phase interfaces
+section. **This subsection records round nine only and is no longer the document's current state —
+see §0.10.**
+
+### 0.10 Fix-up session addendum (round ten — 2026-07-25)
+
+A tenth verify session ran after §0.9's fix-up — `PHASE_1_REVIEW_10.md` (V10-1 … V10-4), returning
+PASS-WITH-CORRECTIONS: **two corrections, two notes, zero blocking**, and — for the first time in four
+rounds — **no finding whose fix touches §5 on the shape chosen**. Both corrections are applied, both
+notes are applied, **none is refused and none is narrowed**. One note (V10-3) offered two fix branches
+with different cadence consequences; the cheaper one was taken, on its merits, and what it leaves is
+recorded below rather than left to be discovered.
+
+**Round ten's own account of where its findings came from, and what this session did about it.** Both
+corrections came from the instruction round nine gave round ten — *audit the **unnamed** neighbours* —
+and both sit one row away from a site an earlier round edited correctly. V10-2 is the sharper: round
+nine's `Resolutions` declared §6's two GL-error rows *"checked and correctly left alone"*, and the
+claim was true of the rung-2 row and false of the 3→4 row three rows below it, with a wrong line number
+in its own justification as the fingerprint. That is round nine's rule — *a true claim about a document
+can suppress the sweep of the region it is true about* — turned on round nine's own fix-up. It was
+treated as aimed at this session too: every load-bearing claim below was re-derived at its source
+before it was written here, and the sweep was run by grep over the formulations changed rather than
+over the four sites round ten named.
+
+**The design calls this session made**, recorded as arguments rather than outcomes, because a fix-up
+session gets no adversarial review of its own and the next session can only attack reasoning that is
+written down:
+
+- **V10-3 — branch (a) is taken, and the reason is not that it closes the phase.** The finding is a
+  taxonomy defect: §4.7.4's absent-verbs header enumerated two kinds of last-column entry — the
+  requester, and the adjacent owner of the served work — while the column has carried a **third** kind
+  since before V9-7 widened it. The face-culling row names **Phase 3**, which is neither: `:mod`
+  applies `backFace.*` through `GlStateManager` so Phase 3 requests nothing (§1.2), and `DESIGN.md`
+  ll. 1053–1055 gives the *served work* to Phase 7. What Phase 3 owns is the **engine-flag ownership
+  map**, a *required output* of its spec (`DESIGN.md` ll. 777–782) whose worked example routes
+  `backFace.*` to Phase 7 — the deliverable that decides who would ever request the verb. Both halves
+  re-derived at source. Two fixes were available: **(a)** widen §4.7.4's header a second time, or
+  **(b)** widen it and §5.2 l. 2846's restatement as well. (b) alters §5 and owes an eleventh verify
+  session; (a) does not. **The branch was decided on whether §5 is still true and still sufficient
+  under (a), and it is.** §5.2's clause — *"where a row names an adjacent owner of the served work
+  instead, that phase too … the instanced-draw row is the only one today"* — is scoped to the
+  **second** kind, and the face-culling row is not one of those, so the sentence stays true by its own
+  terms and by reference to a header that now says which rows are which. Nothing a dependent builds
+  changes; no reader is misled about who does what, because the face-culling row's prose has said
+  plainly all along that Phase 3 produces the map and Phase 7 is where `DESIGN.md` routes the flags.
+  **What branch (a) does not reach, stated because it is the cost and not an oversight:** §5.2's own
+  consumer column carries two entries of the third kind — *"**3** (the App F.1 flag-ownership map that
+  settles face culling; and the `const`-scan that detects `countInstances` at all)"* — under a row
+  header that still enumerates two kinds. That is a residue, it is knowingly left, and it is left
+  because it is an imprecision in how a column describes itself rather than a defect in what the column
+  says. §G5.3's integration review is the instrument that reads every doc's §5 against its siblings; if
+  an eleventh session or that review wants the taxonomy complete at §5.2, this paragraph is where the
+  decision to leave it is recorded, with its reason, rather than absent.
+- **V10-1 — the multiplier is restored rather than the aggregation dropped, and the choice serves a
+  reader this document has already promised something to.** The defect was arithmetic: §4.7.4's
+  sentence supplied both multiplicands — *"one replay per program set per frame"* and ~90 uniforms per
+  program switch — and then labelled the product of one of them *"per frame"*, which holds only if the
+  frame sweeps one program set. The same paragraph asserts the opposite four lines earlier. Two fixes
+  were available and the smaller one was **not** taken: dropping the per-frame framing would have
+  matched the four sibling sites that already say *"per program set"* and would have been correct, but
+  it leaves whoever re-weighs the elision comparing a per-**set** cost against a per-**switch** cost.
+  §0.9 refused to re-weigh the elision and justified the refusal by writing the omitted cost down; that
+  refusal is only sound if the record is usable, so the record was made per-frame on both sides. **No
+  new quantity was introduced and the "43" was deliberately not re-imported** — §7 already bounds the
+  switch count carefully as *"43 **slots**"*, and reusing a registry cardinality as a per-frame event
+  count is the exact defect round nine removed from live prose. The sentence points at §7 instead.
+- **V10-4 — the quotation is dropped rather than repaired.** §4.2.3 quoted §12 item 4b with five words
+  removed from the middle and no ellipsis, and characterised item 4b as the text that was *not* changed
+  — in the same fix-up that changed it. Repairing the quotation was available; removing it is better,
+  because the substantive claim never needed a quotation. What §4.2.3 has to say is that the two texts
+  agree, and they do. The characterisation of the document's own history is withdrawn at §4.2.3 and
+  **pointed at, not rewritten, in §0.9**, which is this document's convention for a superseded record.
+- **§5 is left byte-identical, and that includes its per-revision changelog row — a ruling, not an
+  omission.** §5.2's opening row (the `GLDevice` + seven services row) currently reads *"Changed in
+  this revision (§0.9)"*. Every prior fix-up that added a §5 entry also relabelled its predecessor's
+  from *"this revision"*, and copying that habit here would have been a mistake: **relabelling it
+  alters §5, and §G1.3's trigger is textual.** Round ten's §2 item 1 upholds that reading on §G1.3's
+  own words and on its third bullet's *"no §5 change outstanding"*, and §0.9 argued the same thing
+  from the other direction — *a deletion alters the section exactly as a rewording does*. A row whose
+  job is to record per-revision changes to §5 is owed **no entry for a revision that changes nothing in
+  §5**, and the parenthetical *"(§0.9)"* already names which revision the phrase means, so nothing is
+  ambiguous and nothing is stale in substance. Leaving it untouched is the reading of §G1.3 this
+  document has applied three times running; editing it to look tidy would have cost an eleventh verify
+  session for a cosmetic gain, which is the inverse of gate-gaming and just as wrong.
+- **No `[fix-up: …]` marker changed, and that is checked rather than skipped.** §0.6's V6-1 established
+  the convention and V9-6 completed it: a marker records the review findings that **amended a decision**
+  in §11.1's log. Round ten's corrections edit *applications* of `[D-P1-32]` — §4.7.4's exception
+  paragraph and §6's 3→4 row — but no decision-log text is amended, at `[D-P1-30]`, `[D-P1-32]`,
+  `[D-P1-33]`, `[D-P1-35]` or anywhere else. Adding a round-ten marker to a decision this session did
+  not touch would make the device report something false, which is the failure V6-1 used it to detect.
+
+**Inputs this session read beyond the build session's list**, each because a finding turned on it:
+`PHASE_1_REVIEW_10.md` in full (the assignment); `DESIGN.md` §G1.3 ll. 151–162 and §G5.3 ll. 400–425
+(the contract, and the gating invariant this round's outcome turns on); `DESIGN.md` Phase 3's
+*Scope — in* ll. 777–782 and Phase 7's ll. 1050–1055 (V10-3's ownership derivation, re-derived at the
+line rather than adopted from the review); `PHASE_1_REVIEW_9.md` **read-only, including its
+`## Resolutions` section**, which V10-2 and V10-4 are findings *about*; and `PHASE_1_FIXUP_6_BRIEF.md`
+for the deliverable shape §0.4–§0.9 follow. **No network use of any kind** — the pin row held at a
+fourth observation in round ten's §0.3 and no finding here turns on a platform fact. **No adversarial
+sub-agents were used, and the choice is disclosed because §G1.3 is silent and the call is therefore
+this session's**: both corrections are arithmetic and cross-reference work over sites that have to be
+held in view together, which is the shape delegation serves worst, and every quotation and line number
+below was derived at the line.
+
+**The lesson worth recording.** Round nine's rule was that a true claim about a document can suppress
+the sweep of the region it is true about. Round ten found the same mechanism one level in, and it is
+worth stating in the sharper form: **a fix-up's own "checked and correctly left alone" list is a sweep
+suppressor.** §0.9's list said §6's two GL-error rows were verified rather than assumed — and the
+sentence was true of one row and false of its neighbour, which is exactly the shape that stops the next
+reader looking. The list is still worth keeping; round ten's §2 item 14 verified every other entry in it
+and found them all correct, and a considered omission really is distinguishable from an oversight only
+if it is written down. What the entry needed was the discipline the `Where` column already has:
+**name the site to the line, and re-resolve the line.** §0.9's entry cited *"ll. 2907, 2906"* for two
+rows that are at 2907 and 2910, and the wrong number is the tell that the second row was reasoned about
+rather than read. This session's own citations were re-resolved against the finished file for that
+reason, not against the file it started from.
+
+**The workflow cost every verify session has paid is gone, and this is the round that records it.**
+§0.9 raised — at the project owner's direction, and without deciding it — that no verify session since
+round seven could check signature invariance byte-for-byte, because `git HEAD` was the 2159-line
+build-session draft and every fix-up sat uncommitted; round ten's §2 item 10 restated the limit and
+named its remedy exactly: *"A commit per fix-up would replace all of the above with one `git diff`."*
+**The project owner committed the working tree during this session** (`1d55717`, capturing the
+3709-line state round ten reviewed; this session ran no git command that writes). So this fix-up is the
+first whose §5 invariance and signature invariance are **proved rather than reconstructed** — one
+`git diff` against that baseline, ten hunks, none of them inside §5 and none inside the signature
+block. The four internal cross-references §2 item 10 had to lean on still agree; they are no longer
+what the claim rests on. An eleventh session, if one is ever commissioned, inherits a baseline instead
+of a reconstruction.
+
+**§G1.3 status:** this fix-up **did not alter §5**. Every one of §5's four subsections is byte-for-byte
+what round ten reviewed, and the three §5.2 rows a reader might expect to have moved are each named
+here with why they did not: the **GL-error row** needed nothing because it already carries property
+(ii)'s general two-cause form and states the recurring-foreign consequence with **no figure** to
+correct; the **non-verbs row** needed nothing under V10-3's branch (a), whose clause stays true by its
+own scope and by reference to §4.7.4's rewritten header; and the **per-revision changelog row** is owed
+no entry for a revision that changes nothing in §5, as argued above. **No service signature was added,
+removed or changed:** no correction this round reaches the §4.7.4 signature block at all — ll. 1905–2079
+as round ten read them, and the `git diff` above has no hunk inside that range — not a declaration and
+not a javadoc, so the facade's verb list, every service interface, every handle type and every value type
+are what rounds seven through ten all reviewed. Because §5 is unchanged, §G1.3's *"re-verify only if §5
+changed"* trigger **does not fire**, and by its own words **this fix-up closes the phase**. Under
+§G1.3's third bullet the phase is now **verified** — its latest verdict is PASS-WITH-CORRECTIONS, all
+resolutions are recorded (`PHASE_1_REVIEW_10.md`, `## Resolutions`), and no §5 change is outstanding —
+so `PHASE_1_DOC.md` is a **valid dependency input** (§G5.3 invariant) and **Phase 2, Phase 3 and
+everything downstream unblock.** Two things are left standing on purpose and belong to whoever comes
+next rather than to this session: **§5.2's two third-kind consumer entries**, the recorded cost of
+V10-3's branch (a), which §G5.3's final integration review is the named instrument for; and **the
+elision question** round nine opened and round ten sharpened — whether the replay cost the elision
+creates inverts the decision to keep it. That cost is now written down correctly at all five sites, it
+is defended by nobody, and it is a design call rather than a correction.
 
 ---
 
@@ -1079,10 +1243,8 @@ weaker form implies: **no indirection rescues the literal `new SeamClasspathArgu
 three code blocks print. Exporting a `Class` through `ext` requires `ext.X.newInstance(...)` at the
 call site; exporting a factory closure requires a call with no `new` at all. Every route changes all
 three call sites, so the honest statement is that the printed form cannot be made to work through
-`apply from:` — not that it needs unstated wiring. §12 item 4b already says exactly this, flat
-(*"does not export the class to the applying build script, so `new SeamClasspathArguments(...)` will
-not resolve"*), and it is the more accurate of the two texts; this paragraph is corrected to it rather
-than the reverse.
+`apply from:` — not that it needs unstated wiring. **§12 item 4b states the same conclusion and now
+carries the same reason; the two texts agree.**
 
 The template's three scripts under `gradle/` are exactly that kind — `apply from:
 'gradle/scripts/dependencies.gradle'` and its two siblings at `build.gradle` ll. 100, 238, 239
@@ -2218,9 +2380,14 @@ Design rules embedded above, each with a reason:
   disables nothing. A one-off costs one replay, exactly as the sentence above says. A **recurring**
   foreign error costs one replay per program set per frame, and a program switch refreshes ~90 built-in
   uniforms (RESEARCH.md §4.2), so the ceiling is on the order of ninety extra synchronous queries and
-  ninety redundant uploads per frame for as long as it recurs. That cost is created by the elision and
-  is not in the ledger the paragraph above weighs the elision against; this document records it rather
-  than re-opening that decision, which would be a design call needing its own argument.
+  ninety redundant uploads **per program set** — and therefore that figure multiplied by the number of
+  program sets the frame sweeps, for as long as it recurs. **The multiplier is the point and is stated
+  rather than folded away:** the same paragraph above prices the alternative *"at every program switch
+  in the frame"*, and §7 states the identical quantity from the other side, so a future session
+  re-weighing the elision has a per-frame comparison on both sides rather than a per-frame number
+  against a per-switch one. That cost is created by the elision and is not in the ledger the paragraph
+  above weighs the elision against; this document records it rather than re-opening that decision,
+  which would be a design call needing its own argument.
 
   Making rung 2 debug-mode-only
   was the alternative and was rejected: `DESIGN.md` puts per-uniform GL-error isolation in Phase 6's
@@ -2297,13 +2464,19 @@ Two kinds, and the distinction matters:
 when to clear (Phase 5), uniform cadences and smoothing (Phase 6), the program registry and backup
 chains (Phase 4). The facade offers verbs; every one of those is policy about when to use them.
 
-*Verbs deliberately absent — data-transfer and state alike, each with the phase that would request
-it* — so a dependent knows whether it is looking at a gap or at a decision. **Where a row's *Why
-absent* cell names an adjacent owner rather than a requester, that phase appears in the last column
-too, and the column is headed accordingly.** The instanced-draw row is the case: nobody requests an
-instanced verb, and the phases named there own the served work that replaces it:
+*Verbs deliberately absent — data-transfer and state alike* — so a dependent knows whether it is
+looking at a gap or at a decision. **The last column carries three kinds of entry, and each row's
+*Why absent* cell says which kind it is.** Most rows name the phase that would **request** the verb.
+Where nobody requests it, the column names the phase that **owns the served work in its place** —
+the instanced-draw row is that case: nobody requests an instanced verb, and the phases named there
+own the work that replaces it. Where `DESIGN.md` routes the question through a **deliverable** rather
+than through a requester, the column names the phase that **owns the deliverable which decides the
+assignment** — the face-culling row is that case: Phase 3's engine-flag ownership map is what routes
+`backFace.*`, and `DESIGN.md`'s own worked example routes it to Phase 7, who does the wiring. The
+third kind is neither a requester nor an owner of the served work, and saying so is the whole reason
+the column is headed as it is:
 
-| Absent verb | Why absent | Who requests it — or owns the served work in its place |
+| Absent verb | Why absent | Who requests it — or owns the served work, or owns the deliverable that decides |
 |---|---|---|
 | PBO + fence-sync **asynchronous** readback | RESEARCH.md §6.2 lists it as a modernization *opportunity* over the reference's synchronous `glReadPixels`, with latency to verify. v0.1 ships the faithful synchronous `readDepthPixel` | **14** (RESEARCH.md §6.2 is Phase 14's ledger) |
 | General **color-attachment** readback (regions, formats, screenshots) | No consumer at any milestone in the current phase set; the one contract readback is center-depth | 14, or any phase that acquires a real need |
@@ -2907,7 +3080,7 @@ is the invariant every row below serves.
 | **A built-in uniform's upload fails at the driver level** | **2** | The backend records a `GLError`. Phase 6 drains, uploads the set, and drains again; if that drain is empty the sweep cost **one** `glGetError` — the leading drain elides its query (nothing mutating **through the facade** since the last drain) and the trailing drain's loop stops at its first `GL_NO_ERROR` (`[D-P1-30]`). If it is **not** empty, the record names the *sweep* rather than a uniform — GL holds only the first error in a flag until that flag is cleared — so Phase 6 re-uploads the set **draining between uploads**, which puts one mutating call in each window and names each failing uniform exactly (`[D-P1-32]`). The re-upload uses the values **already computed for this sweep** — `glUniform*` is idempotent on the bound program, so the replay changes only which drain window each upload lands in, and re-running the sweep would re-enter world-state providers whose cadence and smoothing math are Phase 6's own scope to design. It then **disables those uniforms only**, leaving the program running. `EngineDiagnostic(WARN, LOG_ONLY)` on `schmaloogium.uniforms` per §4.9.4's severity map. The facade supplies the signal (`GLDevice.drainErrors()`, §4.7.4); the disable policy is Phase 6's. **If the replay reproduces nothing** — `OUT_OF_MEMORY` need not recur, and the error may not have been ours at all, since the elision bit tracks *facade* calls while the GL flag is per-context (§4.7.4) — the drain is real but unattributable and falls to the 3→4 row below. |
 | **A custom uniform's expression errors at runtime** | **1** | **Not a foundation failure mode, and recorded here so §6 maps the whole ladder.** `DESIGN.md`:217 scopes rung 1 to *custom* uniforms, and its Phase 11 spec puts the behaviour in `engine.expr`'s evaluator at **v0.4** — above the facade, with no GL call involved. Nothing in this phase observes it; Phase 1 supplies only `Log` and `EngineDiagnostic` for it to report through. |
 | **A single feature's GL call fails** (a capability the pack asked for is unsupported in practice) | **— (unnumbered)** | The drain names the failing operation, the owning phase turns *that feature* off and continues. `DESIGN.md`'s ladder has **no rung for this**: rungs 1 and 2 are both about uniforms, so labelling it rung 1 would be inventing a step. It is a real failure mode and is recorded unnumbered rather than mislabelled. A *custom* uniform whose **upload** fails — as opposed to its evaluation — lands here too, served by the same drain and the same disable-one-uniform behaviour rung 2 describes. **The gap is also carried upstream, where it was found:** §11.5 item 4 asks `DESIGN.md` to add the rung, so Phases 5, 6 and 13 do not each re-derive this row independently. |
-| **A facade call fails at the driver level, and the failure is not attributable to one uniform or feature** | 3→4 | The LWJGL3 backend records it in the drain and logs a diagnostic on `schmaloogium.gl`; it never throws through a mixin into vanilla's call stack. Mutating verbs return `void` — the drain, not a return value, is where the caller learns of it. Persistent failures escalate to a pack-level bail. **This row is also where rung 2 lands when its replay finds nothing** (an `OUT_OF_MEMORY` that does not recur, `[D-P1-32]`): a detected failure that no window can attribute is unattributable by definition, and the honest response is to log it and keep the program running rather than disable an arbitrary uniform or pretend nothing happened. |
+| **A facade call fails at the driver level, and the failure is not attributable to one uniform or feature** | 3→4 | The LWJGL3 backend records it in the drain and logs a diagnostic on `schmaloogium.gl`; it never throws through a mixin into vanilla's call stack. Mutating verbs return `void` — the drain, not a return value, is where the caller learns of it. Persistent failures escalate to a pack-level bail. **This row is also where rung 2 lands when its replay finds nothing** (`[D-P1-32]`), and that happens **for either of two reasons — this row is the destination of five delegations and is written to receive both** (§4.7.4's precondition (ii) names the set): (a) `GLErrorKind.OUT_OF_MEMORY` is the kind that need not recur; (b) **the error may never have been ours**, since the elision bit tracks *facade* calls while the GL error flag is per-context (§4.7.4), so a window can hold an error this facade did not cause and a replay of our own uploads will of course reproduce nothing. A replay that comes back clean **repeatedly** is evidence for (b) rather than (a), and is the case §11.4's frame-level hand-off exists to reduce. Either way a detected failure that no window can attribute is unattributable by definition, and the honest response is to log it and keep the program running rather than disable an arbitrary uniform or pretend nothing happened. |
 | **A `CompatCheck` returns `Bail`** | 4 | Shaders forced off for the session, chat error with the check's reason, `schmaloogium.compat` line, reason retained for the GUI. A supported terminal state, not a crash. |
 | **A `CompatCheck` itself throws** | 4 | Caught by `BailRegistry.evaluate`, logged with the check's `id()`, and treated as `Bail` — a check that cannot decide is not evidence of compatibility. Fails safe. |
 | **No `LogSink` installed yet** (something logs during class loading) | — | A no-op sink is active until `mod.core` installs the real one. Logging can never be the thing that breaks startup. |
@@ -3684,9 +3857,9 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 
 ---
 
-*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Nine** verify sessions have
-since run — `PHASE_1_REVIEW.md` through `PHASE_1_REVIEW_9.md`, each returning PASS-WITH-CORRECTIONS —
-and **six** fix-up sessions: the first applied round one's F-1 … F-12 (§0.4); the second applied
+*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Ten** verify sessions have
+since run — `PHASE_1_REVIEW.md` through `PHASE_1_REVIEW_10.md`, each returning PASS-WITH-CORRECTIONS —
+and **seven** fix-up sessions: the first applied round one's F-1 … F-12 (§0.4); the second applied
 rounds two, three and four together, as round four dispositioned them (§0.5); the third applied
 rounds **five and six** together (§0.6), round five's fix-up having never run — which is round six's
 own headline finding (V6-1) and the reason two rounds are closed in one session; the fourth applied
@@ -3697,13 +3870,18 @@ correct hand-off rather than a defect; and the sixth applied round **nine**'s si
 **all five** of its notes (§0.9), none refused, with V9-4 applied narrower than its fix shape
 suggested — the `scale.<prog>` seam is reported as `DESIGN.md`'s silence rather than given an owner —
 and V9-3 reshaped so its Gradle mechanism carries a `[U]` tag and an open-question row (§11.3 item 10)
-instead of an unsourced assertion. Every finding's disposition is recorded in the review files
+instead of an unsourced assertion; and the seventh applied round **ten**'s two corrections and **both**
+of its notes (§0.10), none refused and none narrowed, taking V10-3's cheaper fix branch on its merits
+and recording what that branch leaves. Every finding's disposition is recorded in the review files
 under `## Resolutions`, including the four of round three's proposed fixes and the items of rounds
-five and six that were deliberately narrowed rather than applied as written, and why. Because this
-fix-up again altered **§5** — §5.2's GL-error row (the frame-level remedy corrected from "the only
-sound remedy" to one of two, with its two limits stated; the recurring-foreign replay cost recorded;
-property (i)'s disclaimer rescoped) and its non-verbs row (the header widened to cover adjacent owners,
-readmitting **Phase 5**, and the composite `countInstances` loop tagged **`[v0.5]`** on `DESIGN.md`
-Phase 4's *"execution is Phase 7, tag v0.5"*), and **no service signature at all** — the next step
-in the cadence is a **tenth verify session**, and this document is not a valid dependency input
-until it returns a verdict (§G1.3, §G5.3).*
+five and six that were deliberately narrowed rather than applied as written, and why. **This fix-up
+left §5 unchanged** — the first of the seven to do so. Round ten's two corrections are confined to
+§4.7.4 (a per-frame cost ceiling that had dropped its own multiplier) and §6 (the 3→4 unattributable
+row, which five sites delegate to and which named only one of the two causes they rely on); its two
+notes are confined to §4.7.4's absent-verbs table header and §4.2.3. Each of §5.2's three candidate
+rows is named in §0.10 with the reason it needed no edit, and **no service signature was added,
+removed or changed** — no correction reaches the signature block at all. So §G1.3's *"re-verify only
+if §5 changed"* trigger does not fire, **this fix-up closes the phase**, and under §G1.3's definition
+`PHASE_1_DOC.md` is now **verified** — PASS-WITH-CORRECTIONS, all resolutions recorded, no §5 change
+outstanding. It is a valid dependency input, and Phase 2, Phase 3 and everything downstream are
+unblocked (§G1.3, §G5.3).*

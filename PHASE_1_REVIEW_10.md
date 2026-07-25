@@ -727,3 +727,189 @@ agent, applied no fix, and created exactly one file: this one. Two network reque
 for §4.2.6's pin procedure, both disclosed in §0.3. `PHASE_1_DOC.md`, `RESEARCH.md`, `DESIGN.md` and
 all nine prior review files — including `PHASE_1_REVIEW_9.md`'s `## Resolutions` section, which is
 this round's primary evidence — are unmodified.*
+
+---
+
+## Resolutions
+
+*Written by the seventh fix-up session (§G1.3), 2026-07-25, after this review's verdict. **Nothing
+above this heading is modified** — the findings, §2's clean list and the verdict are evidence. Line
+numbers below are `PHASE_1_DOC.md`'s **after** this fix-up (3887 lines, against the 3709 this review
+read); §0.10 is the addendum recording the session.*
+
+**Method note, because this round's meta-finding is about a fix-up's own record.** §3's closing
+assessment is that the sites which get missed are the ones a true claim elsewhere makes nobody look
+at — and both of this round's corrections came from exactly there. V10-2's row was missed because the
+sentence covering it was true of its neighbour; V10-3's row was missed because the header was widened
+to fit the row the finding named. Three disciplines follow and all three were applied. *(1) Nothing
+was adopted.* V10-3's ownership derivation was re-read at source — `DESIGN.md` ll. 777–782 for the
+engine-flag ownership map as a **required output** of Phase 3, and ll. 1050–1055 for Phase 7's
+engine-flag wiring — rather than taken from §1's summary of them; §G1.3 ll. 151–162 and §G5.3
+ll. 400–425 were read whole, because this round's outcome turns on the trigger's exact words;
+`PHASE_1_REVIEW_9.md` was read **read-only**, including its `## Resolutions` section, which V10-2 and
+V10-4 are findings *about*. *(2) The sweep ran over formulations, not over sites.* Before this table
+was written the document was grepped for `ninety`/`~90` (V10-1's aggregation — no survivor: every
+other site says *per program set*), `OUT_OF_MEMORY` and `need not recur`/`does not recur` (V10-2's
+destination), `adjacent owner`/`served work`/`Who requests it` (V10-3's compatibility with §5.2), and
+`more accurate of the two`/`says exactly this, flat` (V10-4's withdrawn characterisation — gone from
+live prose). *(3) §5 was verified byte-identical rather than asserted to be, and — for the first
+time in four rounds — **provably rather than by reconstruction.*** The pre-edit file was copied aside
+and §5 extracted from both copies **by content anchors rather than by line number**, so the comparison
+survives the 164 lines this fix-up inserted above it; the two extracts hash identically (`b4dc7149…`),
+and the whole-file diff was then read hunk by hunk with every hunk one of the sites below.
+
+**The reconstruction limit §2 item 10 records is gone, and it is worth saying how.** That item states
+that no verify session since round seven could check signature invariance byte-for-byte, because
+`git HEAD` was the 2159-line build-session draft and every fix-up sat uncommitted — and that *"a commit
+per fix-up would replace all of the above with one `git diff`."* **The project owner committed the
+working tree during this session** (`1d55717`, the 3709-line state this review read; this session ran
+no git command that writes). So the check exists now and was run: `git diff` against that baseline
+returns **ten hunks in `PHASE_1_DOC.md` and nothing else**, with **no hunk between old ll. 1085 and
+2221** — the signature block at old ll. 1905–2079 is untouched — and **no hunk between old ll. 2306 and
+2910**, which is §5 at old ll. 2806–2895. Two files changed, exactly as the deliverable requires. The
+four internal cross-references §2 item 10 had to lean on are no longer the evidence; they now merely
+agree with it. **No network use of any kind. No adversarial sub-agents** — §G1.3 is silent, so the call
+was this session's and is disclosed either way: both corrections are arithmetic and cross-reference
+work over sites that must be held in view together, which is the shape delegation serves worst.
+
+**Counts.** This review named **four editable sites** across its four findings, one per finding — plus
+§5.2's non-verbs row (**l. 3019** today, l. 2846 as this review cites it) as the second half of V10-3's **branch (b)**, which was not taken. **All four are
+edited**, and no site named for a fix is left unedited. Two sites this review names inside findings
+are deliberately **not** edited and are not counted as owed: §12 item 4b (V10-4's *accurate* text —
+the defect is at §4.2.3, which quoted it wrongly) and §4.7.4's face-culling row l. 2486 (V10-3 point 4
+establishes the row's facts are right; the defect is in the header that classifies it). **Six further
+sites** were reached by the sweep and are listed under *Neighbours swept*. **Two corrections applied,
+two notes applied, none refused and none narrowed**; one note (V10-3) applied under the **cheaper of
+its two fix branches**, argued below and in §0.10, with what that branch leaves recorded rather than
+left to be found.
+
+| Finding | Disposition | Where (every site **edited**, not every site named) |
+|---|---|---|
+| **V10-1** — §4.7.4's recurring-foreign ceiling states a per-*program-set* cost as a per-frame total | **Applied**, and by **restoring the multiplier** rather than by dropping the aggregation. Both fix shapes were available and the smaller was rejected with cause: matching the four sibling sites' *"per program set"* would have been correct but would leave whoever re-weighs the elision comparing a per-**set** cost against the per-**switch** cost §7 states, which is the same category error one level out. §2 item 12 makes the correctness of this record the **condition** on which §0.9's refusal to re-weigh the elision is clean, and a record is only usable if the comparison it feeds is like-for-like — so the ceiling is now stated per program set **and** as that figure multiplied by the sets the frame sweeps, with a sentence saying why the multiplier is kept visible. **The "43" was deliberately not re-imported**: §7 l. 3132 already bounds the switch count carefully as *"there are 43 **slots**"*, and reusing a registry cardinality as a per-frame event count is precisely the defect round nine removed from live prose (§2 item 3). The sentence points at §7 instead, which needs no new quantity. **The four sibling sites are untouched and were verified correct at the line**, not assumed: §0.9 l. 572, §7 l. 3139, `[D-P1-32]` l. 3515, §11.4 l. 3659 | §4.7.4's `[D-P1-32]` exception paragraph **ll. 2381–2390** (the per-frame aggregation replaced by *"**per program set** — and therefore that figure multiplied by the number of program sets the frame sweeps"*, with the reason the multiplier is stated rather than folded away, and the closing two sentences rewrapped around it) |
+| **V10-2** — §6's 3→4 row prices the unattributable case as `OUT_OF_MEMORY` alone, while five sites delegate to it | **Applied**, and given the **same two enumerated causes** §4.7.4's precondition (ii) carries, in the same (a)/(b) form — so a future session cannot narrow the destination back without visibly deleting a numbered cause, which is the device V9-5's fix chose for exactly this reason and which had not reached the row all five pointers land on. The row now also **names itself as the destination of five delegations** and points at precondition (ii) for the set, so the load-bearing-ness is legible *from the row* and not only from the sites pointing at it — the asymmetry that let the gap survive V9-5. The repeatedly-clean-replay evidence rule for (b) travels with it, and §11.4's frame-level hand-off is named as what that case exists to reduce. **The rung-2 row at l. 3080 is untouched**: it already carried both halves and round nine's "left alone" ruling was correct about it — the ruling was wrong only about its neighbour three rows below | §6's *"not attributable to one uniform or feature"* row **l. 3083** (the single parenthetical *"(an `OUT_OF_MEMORY` that does not recur, `[D-P1-32]`)"* replaced by two enumerated causes (a)/(b), the five-delegation fact stated in the row, and the repeatedly-clean-replay rule with its §11.4 pointer) |
+| **V10-3** — the absent-verbs column carries a third kind of entry the widened header does not describe | **Note — applied under branch (a)**, §4.7.4's header alone, **and the branch was chosen on whether §5 survives it, not on what it costs the cadence.** The header now enumerates **three** kinds and says each row's *Why absent* cell tells the reader which: the requester; the adjacent owner of the served work (the instanced-draw row, kept attached to that kind); and the owner of the **deliverable that decides the assignment** (the face-culling row — Phase 3's engine-flag ownership map, `DESIGN.md`'s *required output* at ll. 777–782, whose worked example routes `backFace.*` to Phase 7, who wires it at ll. 1050–1055). Both halves re-derived at source. The column heading is widened to match; **it is quoted nowhere else in the document — verified by grep before the edit, not after.** §5.2's non-verbs row (**l. 3019** today, l. 2846 as this review cites it)'s clause survives untouched **and true by its own terms**: *"where a row names an adjacent owner of the served work … the instanced-draw row is the only one today"* is scoped to the **second** kind, and the face-culling row is not one of those. **The face-culling row itself is not edited** — V10-3 point 4 establishes its facts are right and the defect is in the header that classifies it. **What branch (a) does not reach is recorded, not glossed:** §5.2's own consumer column carries two third-kind entries (*"**3** (the App F.1 flag-ownership map that settles face culling; and the `const`-scan that detects `countInstances` at all)"*) under a row header that still enumerates two kinds. That residue is knowingly left; it is an imprecision in how a column describes itself rather than a defect in what it says, nothing a dependent builds changes, and §G5.3 item 4's integration review is the named instrument that reads every §5 against its siblings | §4.7.4's absent-verbs table preamble **ll. 2467–2477** (rewritten to enumerate three kinds, each with the row that exemplifies it) · §4.7.4's column heading **l. 2479** (*"Who requests it — or owns the served work in its place"* → *"…or owns the served work, or owns the deliverable that decides"*) |
+| **V10-4** — §4.2.3 quotes §12 item 4b in a form item 4b no longer has, and calls it the unchanged one | **Note — applied, and the quotation dropped rather than repaired.** Repairing it was available — restore *"at the time that script is compiled"* and the `ext` clause, or mark the elision — and was rejected because the substantive claim never needed a quotation, and a requoted passage can go stale again the next time either text moves. §4.2.3 now says the true and durable thing: the two texts state the same conclusion, item 4b now carries the same reason, and they agree. The **characterisation of the document's own history** — that §4.2.3 was corrected *to* item 4b's "flat" form, item 4b being the more accurate all along — is withdrawn, because review 9's `Resolutions` records item 4b as an **edited site** in the same fix-up, so both texts moved toward the same new content. **§12 item 4b l. 3782 is not edited**: it is the accurate text, and editing it would be correcting the wrong end. §0.9 ll. 627–629 makes the same withdrawn claim and is **pointed at rather than rewritten**, per this document's superseded-record convention — the one §0.9's own lesson names at **ll. 678–685** of the current file (this review cited it at ll. 668–675, before this fix-up's ten-line insertion at l. 630 moved it) — with the round-nine sentence left intact above the pointer and what survives named explicitly | §4.2.3 **ll. 1246–1247** (the non-verbatim quotation and the "corrected to it rather than the reverse" characterisation replaced by *"**§12 item 4b states the same conclusion and now carries the same reason; the two texts agree.**"*) · §0.9's V9-3 bullet **ll. 630–639** (**bold** supersession pointer withdrawing the last sentence, naming why, and naming what survives — the conclusion, the compilation-order reason, the deleted `ext` route, the default-package requirement, the `[U]` tag and §11.3 item 10) |
+
+### Neighbours swept, beyond every `Where` column
+
+Recorded separately because this review audited round nine's `Where` column site by site and
+arithmetically (§2 item 8), and an eleventh session — if the project ever wants one — will audit this
+one. **Every entry is downstream of an edit that was made, not adjacent work that looked worth doing.**
+
+- **§0 header l. 10 and its dated-claims note l. 17** — *"Last revised … (§0.9)"* → **(§0.10)**, and
+  *"the fix-up addenda in §0.4–§0.9"* → **§0.4–§0.10**. Stale the moment §0.10 exists; round nine
+  recorded the same pair as a neighbour for the same reason.
+- **§0.9's `§G1.3 status` paragraph, ll. 694–713** — restamped `**§G1.3 status:**` →
+  `**§G1.3 status at the time:**` and converted to past tense throughout, so a reader no longer meets a
+  present-tense *"a tenth verify session is therefore required"* in a document whose tenth session has
+  run. This is V9-11's own convention (§0.4 l. 113, §0.5 l. 151, §0.6 l. 214), and **repeating V9-11
+  while superseding the very section that fixed it was the one avoidable failure available here.**
+- **§0.9's closing supersession sentence, ll. 715–718 (new)** — matching the sentence §0.4–§0.8 all
+  carry, and recording that the tenth session returned PASS-WITH-CORRECTIONS with **no §5 change**.
+- **New §0.10, ll. 720–866**, following §0.4–§0.9's established shape: what ran; the design calls as
+  arguments rather than outcomes (V10-3's branch in full, V10-1's fix shape, V10-4's shape, the §5.2
+  changelog ruling, the marker ruling); inputs read beyond the list; the lesson; a `§G1.3 status`
+  paragraph.
+- **The end-of-document closing paragraph, ll. 3860–3887** — counted *"**Nine** verify sessions …
+  **six** fix-up sessions"* and named a tenth as the next step. Now **ten/seven**, with round ten's
+  dispositions named, and — the part that changes character this round rather than incrementing —
+  **the trailing sentence rewritten from "the next step is a further verify session" to "this fix-up
+  closes the phase."** It was not copied forward from §0.9's.
+
+### Checked and correctly left alone
+
+So the next audit can tell a considered omission from an oversight.
+
+- **§5 in its entirety, ll. 2979–3067, byte-identical — and this is the round's whole outcome, so it is
+  a ruling with three parts rather than a silence.** *(i)* **§5.2's GL-error row** needed nothing:
+  V10-1 and V10-2 each state why, and both hold on derivation — property (ii) already carries the
+  general two-cause form (*"`OUT_OF_MEMORY` need not recur, and per the cadence note below the error
+  may not have been ours at all"*), and the recurring-foreign consequence is stated with **no figure**
+  (*"costing a re-upload of the whole set"*), so there is no arithmetic there to correct. *(ii)*
+  **§5.2's non-verbs row** needed nothing under branch (a) — see the V10-3 row above. *(iii)* **§5.2's
+  per-revision changelog row** is left untouched **deliberately**, and it is the subtle one. It reads
+  *"Changed in this revision (§0.9)"*, and every prior fix-up that added a §5 entry also relabelled its
+  predecessor's from *"this revision"*. Copying that habit would have been an error: **relabelling it
+  alters §5, and §G1.3's trigger is textual** — the reading §2 item 1 upholds on §G1.3's own words and
+  on its third bullet's *"no §5 change outstanding"*, and which §0.9 argued from the other side (*a
+  deletion alters the section exactly as a rewording does*). A row whose job is to record per-revision
+  changes to §5 is owed **no entry for a revision that changes nothing in §5**, and the parenthetical
+  *"(§0.9)"* already names which revision the phrase means, so nothing is ambiguous. Editing it to look
+  tidy would have cost an eleventh verify session for a cosmetic gain.
+- **`PHASE_1_REVIEW.md` … `PHASE_1_REVIEW_9.md`, including their `## Resolutions` sections** — read for
+  V10-2 and V10-4, **not modified**, and verified unmodified by checksum against a pre-session baseline.
+  In particular: **round nine's wrong line number is NOT corrected at source.** `PHASE_1_REVIEW_9.md`'s
+  *"Checked and correctly left alone"* cites `(ll. 2907, 2906)` where l. 2906 was the rung-3
+  compile/link/validate row and the 3→4 row was at l. 2910 — V10-2's fingerprint, and evidence. The
+  correction lives here and in §0.10, with the right rows named; it does not live in a file this
+  session is forbidden to touch. **For the record, at today's line numbers those two rows are l. 3080
+  (rung 2, correctly left alone) and l. 3083 (3→4, corrected by V10-2).**
+- **§12 item 4b, l. 3782** — untouched, and that is V10-4's point rather than an omission from it. Item
+  4b is the **accurate** text; the defect was §4.7.4's neighbour quoting it wrongly. Its hook —
+  *"`./gradlew :engine:test --dry-run` configures without an unresolved-class error"* — remains the
+  experiment that settles §4.2.3's `[U]`, and §11.3 item 10 remains its open-question row.
+- **§4.7.4's face-culling row, l. 2486** — untouched. V10-3 point 4 derives that the row's own facts are
+  right at source (Phase 3 produces the map; `DESIGN.md` routes `backFace.*` to Phase 7) and that what
+  was wrong is the header enumerating two kinds for a column carrying three. Editing the row would have
+  been correcting the accurate half.
+- **Every `[fix-up: …]` marker — `[D-P1-30]` l. 3513, `[D-P1-32]` l. 3515, `[D-P1-33]` l. 3516,
+  `[D-P1-35]` l. 3518 — unchanged, and this was checked rather than skipped.** §0.6's V6-1 established
+  the convention and V9-6 completed it: a marker records the findings that **amended a decision** in
+  §11.1's log. Round ten's corrections edit *applications* of `[D-P1-32]` — §4.7.4's exception paragraph
+  and §6's 3→4 row — but no decision-log text is amended anywhere. Adding a round-ten marker to a
+  decision this session did not touch would make the device report something false, which is the
+  failure V6-1 used it to detect.
+- **The signature block (ll. 1905–2079 as this review read them) — not reached at all.** No correction
+  this round touches a declaration *or* a javadoc; the whole-file diff has no hunk between §4.2.3 and
+  §4.7.4's exception paragraph. Round nine had to sweep that block because V9-2 lived inside it; this
+  round has nothing there, and says so rather than repeating a claim it did not have to earn.
+- **§11.5, §10's four spike specs, §2's whole clean list** — not re-derived. §2 item 15 verified §11.5's
+  four routings and both declines this round; re-fighting settled ground is how a session spends its
+  budget on nothing. **V8-7 stays closed** — a fifth round declines to re-open it.
+- **The `43` sweep, re-run rather than inherited** — no live site reuses the cardinality as a per-frame
+  event count, and V10-1's fix deliberately did not reintroduce one. §7's *"there are 43 **slots**"* is
+  the careful form and is untouched.
+- **`RESEARCH.md` and `DESIGN.md`** — §G1.1 forbids modification; proposals go in §11.5, which gains
+  nothing this round because no finding raises one. **`PHASE_1_REVIEW_10.md` above this heading** —
+  unmodified.
+- *Disclosed because it was seen and not taken:* §4.7.4's instanced-draw row (l. 2489) has a missing
+  sentence boundary — ``…and is deleted `[D-P1-33]` Nobody **requests** this verb…``. No round has named
+  it. It sits in the table whose header this session edited, so it was in view; it is punctuation in a
+  row no finding touches, and **changing it was declined** on the ground that a fix-up's licence is the
+  review's findings plus what its own edits reach, and this is neither.
+
+### §G1.3 status
+
+This fix-up **did not alter §5**. That is verified rather than asserted: §5 was extracted from the
+pre-edit and post-edit files by content anchor and the two extracts are byte-identical
+(`sha256 b4dc7149…` both sides), and the whole-file diff contains no hunk inside §5's range. Each of
+the three §5.2 rows a reader might expect to have moved is named above with the reason it did not —
+the GL-error row states the recurring-foreign consequence with no figure and already carries the
+general two-cause form; the non-verbs row's clause is true by its own scope under branch (a); the
+changelog row is owed no entry for a revision that changes nothing in §5. **No service signature was
+added, removed or changed:** unlike round nine, this round does not reach the signature block at all —
+not a declaration and not a javadoc — so every service interface, handle type and value type is what
+rounds seven through ten all reviewed.
+
+§G1.3's *"re-verify only if §5 changed"* rule therefore **does not fire**, and by the rule's own words
+**this fix-up closes the phase**. Under §G1.3's third bullet `PHASE_1_DOC.md` is now **verified** — its
+latest verdict is PASS-WITH-CORRECTIONS, all resolutions are recorded here, and no §5 change is
+outstanding — so it is a **valid dependency input** under the §G5.3 gating invariant, and **Phase 2,
+Phase 3 and everything downstream are unblocked.** Every finding was applied; none was refused and none
+was narrowed, so an eleventh session would inherit no re-derivation debt if one were ever commissioned.
+
+**Two things are left standing on purpose, and naming them is the point of this paragraph.** *(1)*
+**§5.2's two third-kind consumer entries** — the recorded cost of V10-3's branch (a). It is a taxonomy
+imprecision inside the contract section, it changes nothing a dependent builds, and §G5.3 item 4's
+final integration review is the named instrument that reads every doc's §5 against its siblings.
+*(2)* **The elision question**, opened by round nine and sharpened by round ten: whether the replay
+cost the elision creates inverts the decision to keep it. That cost is now stated correctly at all five
+sites — this round fixed the one that was not — it is defended by nobody, and it is a **design call
+rather than a correction**, which is why three consecutive fix-ups have declined to make it. Whoever
+re-opens it will find the ledger complete and the comparison per-frame on both sides.
+
+*Per §G1.3 this session stops here. It wrote no code, ran no build and no test, launched no review
+agent, made no network request, and modified exactly two files: `PHASE_1_DOC.md` and this
+`## Resolutions` section. `DESIGN.md`, `RESEARCH.md`, and `PHASE_1_REVIEW.md` through
+`PHASE_1_REVIEW_9.md` — including their own `## Resolutions` sections — are unmodified and were
+checksummed to prove it, as is everything above this heading.*
