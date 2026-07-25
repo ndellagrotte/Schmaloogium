@@ -272,3 +272,85 @@ and the omission is not disclosed where a dependent would see it.
 **§G1.3 note for the fix-up session:** F-1 and F-4 alter §5 (cross-phase interfaces). Under §G1.3's
 "re-verify only if §5 changed" rule, this doc must go through a fresh verify session after the
 fix-up, before Phase 2 or Phase 3 reads it. F-2, F-3, F-5 and the notes do not touch §5.
+
+---
+
+## Resolutions
+
+Fix-up session (§G1.3), 2026-07-24 — a fresh session that neither authored nor reviewed the doc.
+`PHASE_1_DOC.md` was edited; the findings and the verdict above are unchanged. All twelve findings
+are **applied**; none declined. `RESEARCH.md` and `DESIGN.md` were not touched — the requested
+upstream changes remain in PHASE_1_DOC §11.5.
+
+- **F-1 — applied (the design work).** §4.7.4 gains three pixel-transfer verbs, all policy-free:
+  `FramebufferService.readDepthPixel(f,x,y)` (synchronous, stalling, per RESEARCH.md §4.4/§6.2),
+  `TextureService.upload(TextureHandle, TextureData)` (value object: region, mip level, `PixelLayout`
+  from the same vocabulary as `TextureSpec`, and a JDK `ByteBuffer` — never an LWJGL buffer type), and
+  `UniformService.upload(loc,int,int)` for App D.3's `ivec2`. The ARB geometry path is resolved the
+  second way the finding allows: a new design rule states that §6.2's adopted internal translation
+  makes `GL_ARB_geometry_shader4` + `maxVerticesOut` a source-level rewrite upstream of the facade
+  (Phase 3 front-end / Phase 4 compile path), so no pre-link program-parameter verb exists — with the
+  additive escape route named for Phase 4. The closing "deliberately does NOT contain" paragraph is
+  split into *policy* omissions and a table of *deliberately deferred data-transfer verbs*, each with
+  the phase expected to request it (async/PBO readback → 14, general color readback → 14, texture
+  readback → 13, `ivec3`/`ivec4`/`mat3` → additive, pre-link parameters → 4). Supporting edits:
+  §4.7.5 (`ScriptedResponses.depthPixel`, plus "bulk data logged by summary, never content" so
+  `render()` stays golden-file-stable), §3 (four provenance rows), §5.2 (two rows + a note to Phase 6
+  naming the verb and its scripted response), §9 (a `v0.1` row), §11.1 (`D-P1-25`), §11.4 (Phase 3 and
+  Phase 14 hand-offs), §12 items 19 and 20. Facade shape preserved: grouped role services, opaque
+  handles, no GL constant in any signature, no policy.
+- **F-2 — applied.** Fixtures move to `:engine`'s `testFixtures` source set
+  (`engine/src/testFixtures/resources/profiles/`), consumed by `:conformance` and `:mod` via
+  `testImplementation testFixtures(project(':engine'))` — a dependency edge in C-4's legal direction
+  rather than a path across modules, and `:engine`'s own tests get it automatically. Edited: §8.3
+  item 1 (with the reachability argument spelled out), §4.7.2, §4.2.3 (`java-test-fixtures`), §2.1's
+  tree, §5.2's note to Phases 4/5/6, §12 items 5/6/7/17, and `D-P1-26`. Phase 2 still owns the fixture
+  *set* and refresh workflow.
+- **F-3 — applied.** §12 item 1 is now a verification step ("verify `LICENSE` is the verbatim GPL-3.0
+  text … and the SPDX 'or-later' grant is stated in `README.md`"); §11.2's D-7 row states the repo
+  fact (present, tracked, verbatim GPL-3.0, `[V:repo]`) and drops the restore/un-stage framing;
+  §11.3's redacted item 2 is removed and items 3–10 renumbered 2–9, with every reference updated
+  (§11.4 Phase 12, §11.4 Phase 7 twice, §12 item 33). No repo action was taken or is implied.
+- **F-4 — applied.** New §5.3 row: mod-dependency declaration mechanics — `modCompileOnly`/
+  `modRuntimeOnly`, the missing `modImplementation` configuration and its fix (§12 item 43), and
+  `contain` jar-in-jar with its LGPL-3.0 notice obligations — pointing at §4.2.6/§4.8.4/§11.3 item 2,
+  consumed by 12. §11.4's Phase 12 hand-off now points at that row.
+- **F-5 — applied.** §4.5.3: `// renderWorld(FF)V` → `// renderWorld(FJ)V`, matching the snippet's own
+  `(float, long)` parameter list.
+- **F-6 — applied.** §0.1 gains App E (header only). §0.3 item 3 is rewritten as the complete list of
+  extra RESEARCH.md reads with a one-clause reason each (§4.1, §4.2, §7.1, §7.4, §8.3, §9,
+  §10.1–§10.3, §11, §12.4, App E, App H), so it agrees with §0.1. §0.3 item 4 no longer points at a
+  removed §11.3 entry: the git inspection is recorded as confirming §4.8.1. A new §0.4 records the
+  fix-up session, the inputs it read for F-1, and the §G1.3 re-verify obligation.
+- **F-7 — applied.** §4.1 last row `§4.9` → **§4.11**; §4.5.2 bail registry `§4.8` → **§4.10**; §4.6
+  `CapabilityProbe (§4.4 of the facade)` → **§4.7.5**. Disclosed beyond the finding's letter: two more
+  instances of the same class were found while fixing these and corrected — §3's `saveSources` row
+  cited "§4.7's flag namespace" (flags are §4.9.3), and §11.3's refmap item cited "§12 item 22" (the
+  refmap check is item 33). Both are one-token fixes of the same kind; nothing else was hunted for.
+- **F-8 — applied, both halves.** §4.4.1 gains the `enable_mixin_debug` row (absent → `true`, CI sets
+  `false`, §4.5.5, §12 item 32). ASM is pinned to **`9.10.1`** in §4.2.6 and §4.2.3; the pin table
+  states its provenance honestly — a Maven Central GAV query on 2026-07-24, **single-source**
+  (`repo1.maven.org` metadata returned 403), test-scope only, and inside the re-pin procedure's scope
+  like every other row. "Nothing floats" is now literally true.
+- **F-9 — applied.** §4.5.2's MOD-config row and a following paragraph state that the `plugin` key is
+  written at `v0.3` **with** the class, never at v0.1 (a `plugin` naming a missing class fails config
+  load); §9's slot row carries the same clause; §12 item 30 says "no `plugin` key", item 37 ships key
+  and class in one change.
+- **F-10 — applied.** C-4 becomes mechanical in the C-1 pattern: §8.2 specifies
+  `SeamConformanceDependencyTest` (classpath assertion + `com.schmaloogium.mod.` bytecode scan, fed by
+  system properties from `conformance/build.gradle`); §8.1 gains its row, §4.3's C-4 statement names
+  it, §9 merges the two seam rows into "C-1, C-2, C-3, C-4", and §12 adds it as item **14b** —
+  lettered rather than renumbered because items 15+ are referenced by number, including the Impl gate.
+- **F-11 — applied.** §3 gains the KHR_debug row: §G4.5's second day-one affordance → `DebugService`
+  (§4.7.4) + `schmaloogium.debug.glLabels` (§4.9.3), interface at v0.1, implementation `v0.5`/Phase 14.
+- **F-12 — applied.** The merge decision is untouched; §4.2.5 gains a caveat on the *expression* and
+  §12 item 7 now instructs the implementation session to use a dependency-derived form (a consumable
+  configuration, or `project(':engine').tasks.named('jar')`) instead of
+  `project(':engine').sourceSets.main.output`, with the configuration-cache / project-isolation reason
+  stated and a test hook that mentions the warning.
+
+**§G1.3 status.** §5 changed (F-1's two rows and the Phase 6 note, F-4's row, and F-2's
+fixture-source sentence inside §5.2). Per §G1.3's "re-verify only if §5 changed" rule,
+`PHASE_1_DOC.md` must pass a **fresh verify session** before Phase 2, Phase 3, or any other dependent
+consumes it; until then it is not a valid dependency input (§G5.3). The same note is recorded in the
+doc itself at §0.4 and in its closing line.
