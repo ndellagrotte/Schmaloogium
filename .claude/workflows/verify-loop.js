@@ -1,20 +1,20 @@
 export const meta = {
-  name: 'phase1-verify-loop',
-  description: 'Loop §G1.2 adversarial verify → §G1.3 fix-up on PHASE_1_DOC.md until a review returns a literal PASS',
-  whenToUse: 'When Phase 1 should be driven to a PASS verdict without hand-writing a brief per round. Exits only on PASS (zero blocking, zero corrections), on FAIL, or on the round cap.',
+  name: 'phase-verify-loop',
+  description: 'Loop §G1.2 adversarial verify → §G1.3 fix-up on a PHASE_<N>_DOC.md until a review returns a literal PASS',
+  whenToUse: 'When a phase doc should be driven to a PASS verdict without hand-writing a brief per round. Pass `phase: N` to choose the phase. Exits only on PASS (zero blocking, zero corrections), on FAIL, or on the round cap.',
   phases: [
     { title: 'Attack', detail: 'read-only finders, one per §G1.2 lens' },
     { title: 'Refute', detail: 'skeptics per candidate, prompted to kill it' },
     { title: 'Steelman', detail: 'opposed lens on surviving corrections' },
     { title: 'Gate', detail: 're-resolve every citation at the line' },
-    { title: 'Adjudicate', detail: 'write PHASE_1_REVIEW_<R>.md, exactly one verdict' },
+    { title: 'Adjudicate', detail: 'write the round review file, exactly one verdict' },
     { title: 'Fix up', detail: 'apply corrections, record Resolutions, prove §5 invariance' },
   ],
 }
 
 // ----------------------------------------------------------------- configuration
 
-const DIR = '/home/nick/IdeaProjects/schmaloogium-project/Schmaloogium'
+const REPO = '/home/nick/IdeaProjects/schmaloogium-project/Schmaloogium'
 
 const PRESETS = {
   lean: { finders: 3, refuters: 2, steelman: false },
@@ -34,7 +34,8 @@ function readArgs(a) {
 
 const A = readArgs(args)
 const cfg = PRESETS[A.preset] || PRESETS.lean
-const START = A.startRound || 11
+const PHASE = A.phase === undefined ? 2 : A.phase
+const START = A.startRound || 1
 const MAX_ROUNDS = A.maxRounds === undefined ? 6 : A.maxRounds
 const REVIEW_ONLY = A.reviewOnly === true
 const ADDENDUM_LINES = A.addendumLines || 40
@@ -42,38 +43,131 @@ const ADDENDUM_LINES = A.addendumLines || 40
 const RANK = { none: 0, note: 1, correction: 2, blocking: 3 }
 const NAME = ['none', 'note', 'correction', 'blocking']
 
+// ----------------------------------------------------------------- per-phase facts, derived paths
+// Everything phase-specific lives in this table. No prompt below names a phase number directly —
+// they read from `F` and the derived paths, which is what makes this harness reusable for phases
+// 3-14 without another round of surgery.
+//
+// `spec` and `docGate` are line ranges into DESIGN.md Part II. They are the one kind of fact here
+// that rots silently: DESIGN.md is edited by fix-up sessions on the governance document, not by
+// this loop, so re-check them if a doc-gate finding ever looks like it is reading the wrong text.
+
+const PHASE_FACTS = {
+  1: {
+    name: 'Foundation & project architecture',
+    spec: '585-658', docGate: '649-652',
+    oqs: 'OQ-2, OQ-12, OQ-20, OQ-21',
+    deps: [],
+  },
+  2: {
+    name: 'Conformance harness',
+    spec: '662-723', docGate: '713-715',
+    oqs: 'OQ-10',
+    deps: [1],
+  },
+}
+
+const F = PHASE_FACTS[PHASE]
+if (!F) {
+  throw new Error(
+    'No PHASE_FACTS entry for phase ' + PHASE + '. Add one — its name, the DESIGN.md Part II line ' +
+    'ranges for its spec and Doc gate, its assigned OQs, and its dependency phases (all in the ' +
+    '§G5.1 table) — rather than letting the prompts assert another phase\'s facts.')
+}
+
+// The documents moved out of the repo root in commit 9df5f05 ("docs: fix non-existent document
+// organization"). Every reference below is repo-relative from REPO; a bare filename no longer
+// resolves, which is exactly how the Phase 1 wiring broke.
+const ARTIFACTS = 'docs/phase' + PHASE + '/artifacts'
+const DOC = ARTIFACTS + '/PHASE_' + PHASE + '_DOC.md'
+const DESIGN = 'docs/project/DESIGN.md'
+const RESEARCH = 'docs/project/RESEARCH.md'
+const DEP_DOCS = F.deps.map(function (n) {
+  return 'docs/phase' + n + '/artifacts/PHASE_' + n + '_DOC.md'
+})
+
+function reviewPath(r) {
+  return ARTIFACTS + '/PHASE_' + PHASE + '_REVIEW_' + r + '.md'
+}
+
+// Phase 1 reached this harness after ten hand-run verify rounds, and several prompts below were
+// written to counter *that* document's failure mode — a reviewer manufacturing findings to keep a
+// mature loop alive. On a document that has never been reviewed those same words are a lie, and a
+// damaging one: they bias the finders toward silence and the adjudicator toward a false PASS.
+// Starting at round 1 means no review exists yet, so the maturity claims are suppressed.
+const FIRST_EVER_REVIEW = START === 1
+
 // ----------------------------------------------------------------- shared prompt blocks
 // COMMON and POSTURE are lifted from the round-4 adversarial workflow, which ran 15 agents
 // with 0 errors. Do not "improve" them without a reason you can name.
 
+const DEP_MANY = DEP_DOCS.length > 1
+const DEP_BULLET = DEP_DOCS.length
+  ? '- ' + DEP_DOCS.map(function (d) { return '`' + d + '`' }).join(', ') + ' — **the dependency ' +
+    'phase doc' + (DEP_MANY ? 's' : '') + '**, ' + (DEP_MANY ? '' : 'a ') + 'declared §G1.2 input' +
+    (DEP_MANY ? 's' : '') + ' (step 1 of\n  the reading list). ' + (DEP_MANY ? 'Their' : 'Its') +
+    ' **§5** is the binding contract this document consumes\n  (§G1.1), and it is what an ' +
+    '*Interface honesty* finding is measured against. Reading ' + (DEP_MANY ? 'them' : 'it') + '\n' +
+    '  is required, not optional.'
+  : '- This phase has no dependency phase docs (§G5.1), so *Interface honesty* runs in one direction\n' +
+    '  only: whether what this document promises its dependents is specified rather than gestured at.'
+
+// The maturity paragraph is the one place the harness makes a claim about the document's history.
+// Getting it wrong in either direction is costly, so it is stated from the actual round number.
+const EMPTY_IS_HONEST = FIRST_EVER_REVIEW
+  ? `## Empty is honest — and so is a long list
+An empty findings array is a perfectly good outcome, and **you must not manufacture findings.** But
+be clear where this document stands: **it has never been reviewed.** No adversarial reader has opened
+it before you, one session wrote it, and no one else has read that prose closely. The whole document
+is unreviewed surface, and on a first reading of a document this size a substantial findings list is
+expected rather than suspicious.
+
+The anti-inflation discipline therefore applies to **severity**, not to volume: do not call a note a
+correction to make it land. Name what you checked and found sound in \`clean_areas\` either way — the
+clean-to-dirty ratio is part of the verdict.`
+  : `## Empty is honest
+An empty findings array is a perfectly good outcome. **Do not manufacture findings.** ${START - 1}
+verify round${START - 1 === 1 ? ' has' : 's have'} already run on this document; the failure mode at
+this maturity is no longer "the reviewer missed something" but "the reviewer kept the loop alive".
+Name what you checked and found sound in \`clean_areas\` — the clean-to-dirty ratio is part of the
+verdict.`
+
 const COMMON = `
 You are one agent in an automated **§G1.2 verify round** on the Schmaloogium project.
-All files are under \`${DIR}/\`.
+
+Your working directory is \`${REPO}/\`, and **every path below is relative to it.** The project's
+documents live under \`docs/\`, not at the repo root: a reference without its \`docs/…\` prefix will
+not resolve, and silently finding nothing is the failure mode to avoid here.
 
 ## HARD RULES — non-negotiable
 - **READ-ONLY.** Do not create, edit, or delete any file. Do not run builds, tests, or gradle.
   Do not run git commands that mutate state (\`git log\`/\`git status\`/\`git show\`/\`git diff\` are fine).
   Do not write via shell redirection, \`tee\`, \`sed -i\`, or any other route. You may use Read, Grep,
   Glob, and read-only Bash. That is all.
-- **FORBIDDEN SOURCE.** Do **not** read \`${DIR}/*.txt\`. Those are prior sessions' terminal
-  transcripts. §G1.2 bars a reviewer from the author's conversation context because it transmits the
-  author's blind spots. A sub-agent broke exactly this rule in round nine; its conclusion was
-  discarded and re-derived from permitted sources (\`PHASE_1_REVIEW_9.md\` §0.2). Do not repeat it.
+- **FORBIDDEN SOURCES.** Do **not** read any prior session's terminal transcript, at any path.
+  Concretely: anything under \`docs/phase*/chatlogs/\` (**any** extension — the directory holds both
+  \`.txt\` and \`.md\` transcripts), and \`phase2chat.txt\` at the repo root. §G1.2 bars a reviewer from
+  the author's conversation context because it transmits the author's blind spots, and for this
+  document that context is the most tempting file in the repository. A sub-agent broke exactly this
+  rule in round nine of Phase 1; its conclusion was discarded and re-derived from permitted sources
+  (\`docs/phase1/artifacts/PHASE_1_REVIEW_9.md\` §0.2). Do not repeat it. Note the rule is about
+  provenance, not file type — if you find a transcript somewhere not listed here, it is still barred.
 - **No scope creep.** Answer only what you are asked below.
 - Your final text is a return value consumed by a program, not a message to a human.
 
 ## Ground truth (read what you need, not everything)
-- \`DESIGN.md\` — the governance document. §G0.3 ll. 48-56; §G1.1 68-116; §G1.2 118-149;
+- \`${DESIGN}\` — the governance document. §G0.3 ll. 48-56; §G1.1 68-116; §G1.2 118-149;
   §G1.3 151-162; §G4.2 310-316; §G4.3 318-322; §G4.4 324-331; §G4.6 341-348; §G5.1 phase table
-  356-377; §G5.3 400-425; §G9 doc template 508-542; §G10 OQ table 544-572. The Part II **Phase 1
-  spec** is at ll. ~585-658, and its **Doc gate** at ll. ~649-652.
-- \`RESEARCH.md\` — the contract ground truth. §0 reading guide and confidence tags; §1 mission,
+  356-377; §G5.3 400-425; §G9 doc template 508-542; §G10 OQ table 544-572. The Part II **Phase
+  ${PHASE} spec** is at ll. ~${F.spec}, and its **Doc gate** at ll. ~${F.docGate}.
+- \`${RESEARCH}\` — the contract ground truth. §0 reading guide and confidence tags; §1 mission,
   non-goals and the D-1..D-10 decision log; §4.2 the ~90 built-in uniforms and the 43 program slots;
   §4.4 the frame model; §11 the open-question register; App D and App F.
-- \`PHASE_1_DOC.md\` — **the document under review.**
-- Template ground truth, same directory: \`build.gradle\`, \`settings.gradle\`, \`gradle.properties\`,
-  \`gradle/scripts/{dependencies,extra,publishing}.gradle\`, \`src/**\`, \`.github/workflows/*\`,
-  \`README.md\`.
+- \`${DOC}\` — **the document under review.**
+${DEP_BULLET}
+- Template ground truth, at the repo root (these did **not** move): \`build.gradle\`,
+  \`settings.gradle\`, \`gradle.properties\`, \`gradle/scripts/{dependencies,extra,publishing}.gradle\`,
+  \`src/**\`, \`.github/workflows/*\`, \`README.md\`.
 
 ## CRITICAL — what does NOT count as work
 **You get no credit for confirming that a quote matches a line.** Verifying the anchor is the
@@ -81,11 +175,7 @@ starting point, not the finding. Your job is the *interpretive* question underne
 Gate agent re-resolves every citation you produce, so a finding that is only an anchor check will be
 dropped and will have cost the round nothing but tokens.
 
-## Empty is honest
-An empty findings array is a perfectly good outcome. **Do not manufacture findings.** Ten verify
-rounds have already run on this document; the failure mode at this maturity is no longer "the
-reviewer missed something" but "the reviewer kept the loop alive". Name what you checked and found
-sound in \`clean_areas\` — the clean-to-dirty ratio is part of the verdict.
+${EMPTY_IS_HONEST}
 `
 
 const POSTURE = `
@@ -93,9 +183,9 @@ const POSTURE = `
 Your job is to **kill** the finding you are given. Assume it is wrong until the source files force
 you to concede. Specifically, hunt for these ways a finding can be bad:
 
-1. **Out of scope for this phase.** Phase 1 is "Foundation & project architecture" (§G5.1). Does the
-   alleged defect actually belong to a later phase, making the doc's silence correct rather than
-   defective? Check §G5.1's owner and §G0.3's architected-now/implemented-later principle.
+1. **Out of scope for this phase.** Phase ${PHASE} is "${F.name}" (§G5.1). Does the alleged defect
+   actually belong to a different phase, making the doc's silence correct rather than defective?
+   Check §G5.1's owner column and §G0.3's architected-now/implemented-later principle.
 2. **Already covered elsewhere in the doc.** The finder read one region but may have missed a
    mechanism in §6, §7, §8, §9, §11 or §12 that closes the gap. **Grep the whole document** before
    conceding that something is absent.
@@ -125,7 +215,7 @@ const EVIDENCE_ITEM = {
   required: ['file', 'line', 'quote', 'shows'],
   additionalProperties: false,
   properties: {
-    file: { type: 'string', description: 'filename only, e.g. PHASE_1_DOC.md' },
+    file: { type: 'string', description: 'repo-relative path from ' + REPO + ', e.g. ' + DOC + ' — NOT a bare filename; the Gate resolves this literally and drops what it cannot open' },
     line: { type: 'integer' },
     quote: { type: 'string', description: 'verbatim text at that line' },
     shows: { type: 'string', description: 'what this establishes, one sentence' },
@@ -238,7 +328,7 @@ const FIXUP_SCHEMA = {
     section5_hash_before: { type: 'string' },
     section5_hash_after: { type: 'string' },
     addendum_lines: { type: 'integer', description: 'how many lines the new §0.N addendum occupies' },
-    new_prose_lines: { type: 'integer', description: 'total lines added to PHASE_1_DOC.md this round' },
+    new_prose_lines: { type: 'integer', description: 'total lines added to the phase doc this round' },
     weakest_points: { type: 'array', items: { type: 'string' }, description: 'YOUR self-assessment: the judgement calls next round should test. Claims to test, never verdicts to reach.' },
     do_not_refight: { type: 'array', items: { type: 'string' }, description: 'what this round verified as settled, so the next round does not re-derive it' },
     files_modified: { type: 'array', items: { type: 'string' } },
@@ -247,13 +337,27 @@ const FIXUP_SCHEMA = {
 }
 
 // ----------------------------------------------------------------- the five attack lenses
-// Ordered by historical yield. `lean` takes the first three.
+// Ordered by historical yield below; LENS_ORDER re-ranks them for a first-ever review, where
+// `new-surface` is degenerate. `lean` takes the first three of whichever order applies.
 
-const LENSES = [
+const ALL_LENSES = [
   {
     key: 'new-surface',
-    title: 'The new surface',
-    body: `The previous fix-up's new prose is the largest unreviewed surface in the document, and
+    title: FIRST_EVER_REVIEW ? 'The whole document is the new surface' : 'The new surface',
+    body: FIRST_EVER_REVIEW
+      ? `This document has never been reviewed, so there is no "recently touched" region to
+prioritise and no prior round has cleared anything for you: **the entire document is the unreviewed
+surface.** The standing lesson still applies in its general form — *unreviewed material yields
+findings in proportion to its size, not to the document's maturity* — and here that size is the
+whole file.
+
+Because the other lenses take the structured checks (§3's conformance map, §5's interfaces, the doc
+gate, scope), take the parts they will skip: §4's detailed design at the level of internal
+consistency, §6 failure modes, §7 threading and performance, §8 testability, §9 milestone staging,
+§12's checklist. Attack, specifically: claims the document makes *about itself* ("X is specified in
+§Y" — go read §Y); numbers, identifiers and file paths that appear more than once and must agree;
+and any place §4 decides something §2's overview describes differently.`
+      : `The previous fix-up's new prose is the largest unreviewed surface in the document, and
 exactly one session has read it — the one that wrote it. **That is where your findings are.** Four
 consecutive rounds have confirmed the standing lesson: *unreviewed material yields findings in
 proportion to its size, not to the document's maturity.*
@@ -269,7 +373,14 @@ looking at.`,
     title: 'Interface honesty and §5',
     body: `§G1.2's *Interface honesty* check: everything the doc consumes from a dependency actually
 exists in that dependency's §5; everything promised to a dependent is specified, not gestured at.
-
+${DEP_DOCS.length ? `
+**This phase has a dependency, so the inward half of that check is live and it is the highest-yield
+work available to you.** Read ${DEP_DOCS.map(function (d) { return '`' + d + '` **§5**' }).join(' and ')}
+— the binding contract under §G1.1 — and take every item this document says it consumes back to the
+dependency's own text. A consumption row citing a section that does not say what the row claims is
+precisely the class of error this lens exists to catch, and it cannot be found by reading this
+document alone. Open the cited section; do not trust the citation.
+` : ''}
 You own the **\`touches §5\`** call, and it is the most consequential judgement in the round — it
 decides under §G1.3 whether another verify session is owed. Read §5 (\`## 5. Cross-phase interfaces\`
 through \`## 6. Failure modes\`) against §4's detailed design and ask whether §5 is still *sufficient
@@ -290,13 +401,13 @@ claims. Open the cited text; do not trust the citation.`,
   {
     key: 'doc-gate',
     title: 'Doc gate and template completeness',
-    body: `Two §G1.2 checks. **Doc gate:** every criterion in the Phase 1 spec's *Doc gate*
-(\`DESIGN.md\` ll. ~649-652) met **literally** — module/package layout finalized with dependency
-rules as testable constraints; every D-1..D-10 either satisfied by this phase or explicitly deferred
-with its owner phase named; pin table complete with re-verification procedure.
+    body: `Two §G1.2 checks. **Doc gate:** every criterion in the Phase ${PHASE} spec's *Doc gate*
+(\`${DESIGN}\` ll. ~${F.docGate}) met **literally.** Read those lines yourself and take each criterion
+as written — the gate is the one check where the spec's exact wording, not its evident intent, is
+what the document is measured against.
 
 **Template completeness:** all thirteen §G9 sections (ll. 508-542) present *and substantive*, and
-every assigned OQ (OQ-2, OQ-12, OQ-20, OQ-21) carrying a full §G4.4 spike spec —
+every assigned OQ (${F.oqs}) carrying a full §G4.4 spike spec —
 question / procedure / success-failure criteria / fallback design. A section that exists but says
 nothing is a finding; a section that is short but complete is not.`,
   },
@@ -311,6 +422,20 @@ RESEARCH.md D-1..D-10 contradicted, and no contract-visible component "improved"
 silently smoothed over — a place where the doc smoothed one over is a finding.`,
   },
 ]
+
+// `lean` takes the first three lenses, so the order decides what a cheap round actually checks.
+// On a mature document the last fix-up's prose is the best-yielding target and leads. On a document
+// that has never been reviewed there is no such region, so the structured checks lead instead and
+// the (rewritten) whole-document lens sweeps up whatever they do not cover.
+const LENS_ORDER = FIRST_EVER_REVIEW
+  ? ['interfaces', 'conformance', 'doc-gate', 'scope-decisions', 'new-surface']
+  : ['new-surface', 'interfaces', 'conformance', 'doc-gate', 'scope-decisions']
+
+const LENSES = LENS_ORDER.map(function (k) {
+  const lens = ALL_LENSES.find(function (l) { return l.key === k })
+  if (!lens) throw new Error('LENS_ORDER names an unknown lens key: ' + k)
+  return lens
+})
 
 // ----------------------------------------------------------------- helpers
 
@@ -361,9 +486,19 @@ let outcome = 'CAP'
 let lastVerdict = null
 let priorFix = null
 
-log('Phase 1 verify loop — preset `' + (A.preset || 'lean') + '` (' + cfg.finders + ' finders, ' +
-    cfg.refuters + ' refuters, steelman ' + (cfg.steelman ? 'on' : 'off') + '), starting at round ' +
-    START + ', cap ' + MAX_ROUNDS + '. Exit on PASS = zero blocking AND zero corrections.')
+log('Phase ' + PHASE + ' ("' + F.name + '") verify loop on `' + DOC + '` — preset `' +
+    (A.preset || 'lean') + '` (' + cfg.finders + ' finders, ' + cfg.refuters + ' refuters, steelman ' +
+    (cfg.steelman ? 'on' : 'off') + '), starting at round ' + START + ', cap ' + MAX_ROUNDS +
+    '. Exit on PASS = zero blocking AND zero corrections.')
+
+if (FIRST_EVER_REVIEW) {
+  log('Round 1: this document has no prior review. Maturity-based anti-inflation language is ' +
+      'suppressed and the lens order leads with the structured checks — see FIRST_EVER_REVIEW.')
+}
+if (DEP_DOCS.length) {
+  log('Dependency phase doc' + (DEP_DOCS.length > 1 ? 's' : '') + ' in the reading list: ' +
+      DEP_DOCS.join(', ') + ' (§5 is the binding contract for Interface honesty).')
+}
 
 for (let i = 0; i < MAX_ROUNDS; i++) {
   round = START + i
@@ -375,8 +510,10 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     break
   }
 
-  const REVIEW_FILE = 'PHASE_1_REVIEW_' + round + '.md'
-  const PRIOR_REVIEW = 'PHASE_1_REVIEW_' + (round - 1) + '.md'
+  const REVIEW_FILE = reviewPath(round)
+  const PRIOR_REVIEW = reviewPath(round - 1)
+  // False only on round 1 of a document that has never been reviewed — there is no round 0 file.
+  const HAS_PRIOR_REVIEW = !(FIRST_EVER_REVIEW && round === START)
 
   // ---- context carried forward from the previous fix-up: this is the hand-written brief,
   // ---- produced as data instead.
@@ -394,15 +531,30 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
         priorFix.do_not_refight.map(function (s) { return '- ' + s }).join('\n'),
         priorFix.refused_with_cause ? '\nRefused with cause: ' + priorFix.refused_with_cause : '',
       ].join('\n')
+    : !HAS_PRIOR_REVIEW
+    ? [
+        '## The new surface',
+        '',
+        '**There is none, and that is the point.** This is the first adversarial review this',
+        'document has ever had: no prior verify round, no fix-up, no §0.N addendum, no resolutions',
+        'to inherit. One session wrote the whole file and no independent reader has opened it.',
+        '',
+        'So there is no recently-touched region to prioritise and nothing has been cleared for you.',
+        'Work your lens across the whole document, and treat the document\'s own §0.3 (deviations,',
+        'assumptions and open items the build session flagged about itself) as claims to test —',
+        'never as a settled list.',
+      ].join('\n')
     : [
         '## The new surface',
         '',
-        'This is the first round of the automated loop. The document has had ten verify rounds and',
-        'seven fix-ups. The most recently written material is the seventh fix-up\'s: §0.10, and the',
-        'corrections it applied at §4.2.3, §4.7.4 and §6. **One session has read that prose — the one',
-        'that wrote it.** Start there. Its own record of what it changed and where it thinks it is',
-        'weakest is in §0.10 and in ' + PRIOR_REVIEW + '\'s `## Resolutions` section — but read the',
-        'latter only if this lens is the new-surface lens, and read the document itself first.',
+        'This is the first round of the automated loop, but not of this document: ' + (START - 1) +
+          ' verify',
+        'round' + (START - 1 === 1 ? '' : 's') + ' already ran on it by hand. The most recently',
+        'written material is the last fix-up\'s — its §0.N addendum and the corrections it applied.',
+        '**One session has read that prose — the one that wrote it.** Start there. Its own record of',
+        'what it changed and where it thinks it is weakest is in that addendum and in ' + PRIOR_REVIEW,
+        '\'s `## Resolutions` section — but read the latter only if this lens is the new-surface lens,',
+        'and read the document itself first.',
       ].join('\n')
 
   // ---------------------------------------------------------------- Attack
@@ -416,12 +568,25 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
         '\n## Your lens: ' + L.title + '\n\n' + L.body +
         '\n\n' + surface +
         '\n\n## Reading order — this is a discipline, not a suggestion\n' +
-        'Read `DESIGN.md` Part I and the Phase 1 spec, then `PHASE_1_DOC.md`, then only the sources\n' +
-        'your lens needs. **Do not read any `PHASE_1_REVIEW_*.md` file.** You are an independent\n' +
-        'reader, and reading a prior round\'s findings converts you into an auditor of someone else\'s\n' +
-        'reasoning. A later Adjudicate agent reads them, last, and dispositions your candidates\n' +
-        'against them. If your lens is the new-surface lens you may read ' + PRIOR_REVIEW + '\'s\n' +
-        '`## Resolutions` section **only**, and only after your own findings are written down.\n\n' +
+        'Read `' + DESIGN + '` Part I and the Phase ' + PHASE + ' spec (ll. ~' + F.spec + '), then\n' +
+        '`' + DOC + '`' +
+        (DEP_DOCS.length ? ', then the dependency doc' + (DEP_DOCS.length > 1 ? 's' : '') + ' `' +
+          DEP_DOCS.join('`, `') + '`' : '') +
+        ', then only the sources your lens needs.\n\n' +
+        '**Do not read any `PHASE_' + PHASE + '_REVIEW_*.md` file.** You are an independent reader,\n' +
+        'and reading a prior round\'s findings on *this* document converts you into an auditor of\n' +
+        'someone else\'s reasoning. A later Adjudicate agent reads them, last, and dispositions your\n' +
+        'candidates against them.\n\n' +
+        (DEP_DOCS.length
+          ? 'The ban is scoped to this phase deliberately. A **dependency** phase\'s review files are\n' +
+            'not your independence problem — they are evidence about the contract you are checking\n' +
+            'against, and the document under review cites them. You may read them.\n\n'
+          : '') +
+        (HAS_PRIOR_REVIEW
+          ? 'If your lens is the new-surface lens you may read ' + PRIOR_REVIEW + '\'s\n' +
+            '`## Resolutions` section **only**, and only after your own findings are written down.\n\n'
+          : 'There is no prior review of this document to be tempted by — round ' + round + ' is the\n' +
+            'first.\n\n') +
         '## Return\n' +
         'Candidate findings under your lens, each with location, the claim under test, evidence you\n' +
         'read yourself at file:line, a severity, and your own `touches_section_5` judgement. Plus\n' +
@@ -493,7 +658,7 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
             '\n## Your posture: DEFENCE\n' +
             'You are the opposed lens on the finding below. Other agents have just tried to refute it\n' +
             'and reached the conclusions shown. **Your job is the opposite of theirs.** Assume the\n' +
-            'author of `PHASE_1_DOC.md` was a careful architect who had a reason. Construct the\n' +
+            'author of `' + DOC + '` was a careful architect who had a reason. Construct the\n' +
             '**strongest possible defence** of the document as written.\n\n' +
             'Then — honestly — say whether that defence actually holds when you check it against the\n' +
             'files. **A defence you cannot support with a quote is not a defence.** Set\n' +
@@ -573,31 +738,48 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     (cfg.steelman ? ', a steelman defence,' : '') + ' and a re-derivation gate:\n\n' +
     (finalList || '**None. Every candidate was refuted or failed its anchor check.**') +
     '\n\n### What the finders reported as clean\n' + cleanAreas.join('\n\n') +
-    '\n\n## Read the prior rounds LAST\n' +
-    'Now — and only now, with the above in hand — read `' + PRIOR_REVIEW + '` including its\n' +
-    '`## Resolutions` section, and grep earlier rounds for anything a candidate above restates.\n' +
-    '§G1.2 exists to stop a reviewer inheriting the author\'s frame; reading the resolutions early\n' +
-    'would make you an auditor of the last fix-up\'s reasoning instead of an independent reader of\n' +
-    'the document it produced. **Disposition each candidate against the settled list: a finding a\n' +
-    'prior round already cleared is not a finding, and an argument that holds on derivation is\n' +
-    'itself worth recording in §2.**\n\n' +
+    (HAS_PRIOR_REVIEW
+      ? '\n\n## Read the prior rounds LAST\n' +
+        'Now — and only now, with the above in hand — read `' + PRIOR_REVIEW + '` including its\n' +
+        '`## Resolutions` section, and grep earlier rounds for anything a candidate above restates.\n' +
+        '§G1.2 exists to stop a reviewer inheriting the author\'s frame; reading the resolutions early\n' +
+        'would make you an auditor of the last fix-up\'s reasoning instead of an independent reader of\n' +
+        'the document it produced. **Disposition each candidate against the settled list: a finding a\n' +
+        'prior round already cleared is not a finding, and an argument that holds on derivation is\n' +
+        'itself worth recording in §2.**\n\n'
+      : '\n\n## There are no prior rounds\n' +
+        'This is the first review this document has ever received, so there is no settled list to\n' +
+        'disposition against and nothing has been previously cleared. Every candidate above stands or\n' +
+        'falls on your own derivation from the source files.\n\n') +
     '## Re-derive before you admit\n' +
     'The Gate confirmed the anchors. **You** must confirm the interpretation: for every finding you\n' +
     'admit to §1, open the cited text and satisfy yourself the claim is what the source supports.\n' +
     'Sub-agents generate candidates and citations; they do not generate findings. Findings,\n' +
     'severities and the verdict are yours.\n\n' +
     '## The verdict standard — read this twice\n' +
-    'Ten verify rounds have run on this document, every one returning PASS-WITH-CORRECTIONS, and the\n' +
-    'seventh fix-up already closed the phase under §G1.3\'s "no §5 change outstanding" clause. **The\n' +
-    'failure mode at this maturity is no longer "the reviewer misses things" — it is "the reviewer\n' +
-    'keeps the loop alive."**\n\n' +
-    '**PASS is available and it is the outcome that ends the cadence.** Return PASS when there are\n' +
-    'no blocking findings and no corrections. Notes do not block PASS: record them in §1 with their\n' +
-    'severity and leave them unapplied. A round that invents a correction to look productive is\n' +
-    'worse than useless. **The converse holds just as hard: do not soften a real correction to reach\n' +
-    'PASS.** Judge the document in front of you.\n\n' +
+    (FIRST_EVER_REVIEW
+      ? '**This is the first review this document has ever had.** Do not import the posture of a\n' +
+        'late-stage round: nothing here has been argued over, softened, or cleared before, and a\n' +
+        'first reading of a document this size returning a substantial findings list is the expected\n' +
+        'outcome, not a sign the reviewer is inflating.\n\n' +
+        '**PASS is available on the evidence and nothing else.** Return PASS only when there are no\n' +
+        'blocking findings and no corrections — and be honest that on a never-reviewed document that\n' +
+        'is a strong claim. Notes do not block PASS: record them in §1 with their severity and leave\n' +
+        'them unapplied. Inventing a correction to look productive is worse than useless; softening a\n' +
+        'real one to reach PASS is worse still, and at round one there is no loop-fatigue argument\n' +
+        'for doing it. Judge the document in front of you.\n\n'
+      : (START - 1) + ' verify rounds have already run on this document. **The failure mode at this\n' +
+        'maturity is no longer "the reviewer misses things" — it is "the reviewer keeps the loop\n' +
+        'alive."**\n\n' +
+        '**PASS is available and it is the outcome that ends the cadence.** Return PASS when there\n' +
+        'are no blocking findings and no corrections. Notes do not block PASS: record them in §1 with\n' +
+        'their severity and leave them unapplied. A round that invents a correction to look\n' +
+        'productive is worse than useless. **The converse holds just as hard: do not soften a real\n' +
+        'correction to reach PASS.** Judge the document in front of you.\n\n') +
     '## Deliverable: `' + REVIEW_FILE + '`\n' +
-    'Follow rounds seven through ten\'s established shape:\n' +
+    'Follow the four-section shape the Phase 1 review series settled on — see\n' +
+    '`docs/phase1/artifacts/PHASE_1_REVIEW_11.md` for the format if you need an exemplar (read it\n' +
+    'for shape, not for findings; it is about a different document):\n' +
     '1. **§0** — what you read and in what order; reads beyond the list with the finding each turned\n' +
     '   on; deviations; network use; and a **sub-agent disclosure** stating that this round ran as an\n' +
     '   automated fan-out of ' + (cfg.finders + candidates.length * cfg.refuters + 1) + '-odd read-only\n' +
@@ -607,9 +789,18 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     '3. **§2 — What was checked and came back clean.** Include the candidates that were refuted or\n' +
     '   cleared on your own derivation — a round reporting only findings misrepresents its coverage.\n' +
     '4. **§3 — Verdict**: exactly one of PASS / PASS-WITH-CORRECTIONS / FAIL, with the per-finding §5\n' +
-    '   disposition table and the §G1.3 line. Reserve FAIL for structural misses requiring a rebuild.\n\n' +
-    'Do not modify `PHASE_1_DOC.md`, `DESIGN.md`, `RESEARCH.md`, or any prior review file — including\n' +
-    'their `## Resolutions` sections, which are evidence. Create exactly one file. Then stop.',
+    '   disposition table and the §G1.3 line. Reserve FAIL for structural misses requiring a rebuild.\n' +
+    '   Put the verdict on a line of its own as a heading — `# PASS-WITH-CORRECTIONS` — as the Phase 1\n' +
+    '   reviews do.\n\n' +
+    '**A word on the tokens `PASS` and `FAIL` in this document.** `' + DOC + '` is a design for a\n' +
+    'conformance harness, and it uses the bare words PASS, FAILED and SKIPPED as *run-outcome values*\n' +
+    'in its own schemas and tables. Those are its subject matter, not verdicts, and they are not\n' +
+    'evidence about your verdict. Do not let a grep for "PASS" over the document under review inform\n' +
+    'the review of it.\n\n' +
+    'Do not modify `' + DOC + '`, `' + DESIGN + '`, `' + RESEARCH + '`' +
+    (DEP_DOCS.length ? ', `' + DEP_DOCS.join('`, `') + '`' : '') + ', or any prior review file —\n' +
+    'including their `## Resolutions` sections, which are evidence. Create exactly one file: \n' +
+    '`' + REVIEW_FILE + '`. Then stop.',
     { label: 'adjudicate:R' + round, phase: 'R' + round + ' Adjudicate', schema: ADJUDICATE_SCHEMA, agentType: 'general-purpose' }
   )
 
@@ -654,11 +845,13 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
   // ---------------------------------------------------------------- Fix up
   phase('R' + round + ' Fix up')
   const fix = await agent(
-    'You are a fresh **§G1.3 fix-up session** on the Schmaloogium project. Working directory: `' + DIR + '`.\n\n' +
-    'Your contract is §G1.3\'s: read the phase spec, the phase doc and the review file; apply the\n' +
-    'corrections to `PHASE_1_DOC.md`; and record each resolution in the review file under a\n' +
-    '`## Resolutions` heading. Then stop. **Fix nothing the review ruled clean, and verify nothing\n' +
-    'beyond ordinary care** — that is the next round\'s job.\n\n' +
+    'You are a fresh **§G1.3 fix-up session** on the Schmaloogium project. Working directory:\n' +
+    '`' + REPO + '`. **Every path below is relative to it** — the documents live under `docs/`, not\n' +
+    'at the repo root, and a bare filename will not resolve.\n\n' +
+    'Your contract is §G1.3\'s: read the Phase ' + PHASE + ' spec (`' + DESIGN + '` ll. ~' + F.spec +
+    '), the phase doc and the review file; apply the corrections to `' + DOC + '`; and record each\n' +
+    'resolution in the review file under a `## Resolutions` heading. Then stop. **Fix nothing the\n' +
+    'review ruled clean, and verify nothing beyond ordinary care** — that is the next round\'s job.\n\n' +
     '## Apply `' + REVIEW_FILE + '`\n' +
     'Apply every correction. Notes are **not** applied this round: record them in the Resolutions\n' +
     'under a `### Notes deferred` heading with the reason, so the next round can tell a considered\n' +
@@ -688,14 +881,18 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     'Before you edit, snapshot §5 by **content anchor, never by line number** (your insertions will\n' +
     'shift every line below them):\n' +
     '```bash\n' +
-    'cd ' + DIR + '\n' +
-    'awk \'/^## 5\\. Cross-phase interfaces/,/^## 6\\. Failure modes/\' PHASE_1_DOC.md | sha256sum\n' +
+    'cd ' + REPO + '\n' +
+    'awk \'/^## 5\\. Cross-phase interfaces/,/^## 6\\. Failure modes/\' ' + DOC + ' | sha256sum\n' +
     '```\n' +
     'Run it again after every edit and return **both hashes** plus `section5_unchanged`. If §5 did\n' +
     'change, that is a legitimate outcome — say so truthfully; it means §G1.3\'s re-verify trigger\n' +
     'fires. Never report it unchanged without having run the comparison.\n\n' +
-    'Also verify with `git status --short` that you modified **exactly two files**: `PHASE_1_DOC.md`\n' +
-    'and `' + REVIEW_FILE + '`. Do not modify `DESIGN.md`, `RESEARCH.md`, or any earlier review file —\n' +
+    'Also verify with `git status --short` that you touched **exactly two paths**: `' + DOC + '` and\n' +
+    '`' + REVIEW_FILE + '`. Note that `' + ARTIFACTS + '` may be **untracked**, in which case git\n' +
+    'reports the directory as a single `??` entry rather than listing files — if so, say in\n' +
+    '`files_modified` that the check was degraded and confirm by listing the directory instead.\n' +
+    'Do not modify `' + DESIGN + '`, `' + RESEARCH + '`' +
+    (DEP_DOCS.length ? ', `' + DEP_DOCS.join('`, `') + '`' : '') + ', or any earlier review file —\n' +
     'including their `## Resolutions` sections, which are evidence. If an earlier review contains an\n' +
     'error, record the correction in your Resolutions; never edit the evidence.\n\n' +
     '## Then report, as data for the next round\n' +
@@ -705,7 +902,9 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     'A fix-up gets no adversarial review of its own; the next round can only attack reasoning you\n' +
     'wrote down.\n\n' +
     'Re-resolve every line number you cite against the finished file before you write it. Do not read\n' +
-    '`' + DIR + '/*.txt` — they are prior sessions\' terminal transcripts.',
+    'any prior session\'s terminal transcript — anything under `docs/phase*/chatlogs/` (any\n' +
+    'extension) or `phase2chat.txt` at the repo root. They carry the author\'s blind spots, which is\n' +
+    'why §G1.2 bars them.',
     { label: 'fixup:R' + round, phase: 'R' + round + ' Fix up', schema: FIXUP_SCHEMA, agentType: 'general-purpose' }
   )
 
@@ -751,7 +950,7 @@ const summary = trend.map(function (t) {
           (t.s5unchanged ? 'unchanged' : 'CHANGED'))
 }).join('\n')
 
-log('\n=== Phase 1 verify loop finished: ' + outcome + ' ===\n' + summary)
+log('\n=== Phase ' + PHASE + ' verify loop finished: ' + outcome + ' ===\n' + summary)
 
 if (outcome !== 'PASS') {
   log('\n**No PASS was reached.** This is reported as a fact, not softened. The last verdict was ' +
@@ -761,6 +960,8 @@ if (outcome !== 'PASS') {
 
 return {
   outcome: outcome,
+  phase: PHASE,
+  doc: DOC,
   lastVerdict: lastVerdict,
   roundsRun: trend.length,
   lastRound: round,
