@@ -1,6 +1,6 @@
 # PHASE_1_DOC.md — Verify session, round ten
 
-**Reviewed:** `Schmaloogium/PHASE_1_DOC.md`, 3709 lines, as of the sixth fix-up (2026-07-25)
+**Reviewed:** `docs/phase1/v10/PHASE_1_DOC.md`, 3709 lines, as of the sixth fix-up (2026-07-25)
 **Session type:** verify (`DESIGN.md` §G1.2) · **Round:** ten · **Date:** 2026-07-25
 **Commissioned by:** `PHASE_1_REVIEW_10_BRIEF.md`
 **Verdict:** **PASS-WITH-CORRECTIONS** — two corrections, two notes, zero blocking.
@@ -39,7 +39,7 @@ produced.
 | **`RESEARCH.md` §4.2 (ll. 491–507)** | **V10-1.** The whole finding is an arithmetic reconciliation against *"refreshes ~90 built-in uniforms"* and *"43 program slots"*, which live only here. Also the source the document itself cites at every one of the five `~90` sites. |
 | **`RESEARCH.md` §11 (the OQ register, ll. 999–1027)** | The pin-table observation in §0.3. OQ-2's row is what states the volatility assumption my network sample is evidence about, and §G4.4 requires the verbatim question, which is only here. |
 | **`RESEARCH.md` §6.2, §6.3, §7.1, §7.3, §7.4** | Read in the same pass as the assigned §6.1 and §7.2 — they are the surrounding paragraphs of two assigned sections, and separating them would have been an artificial saving. No finding turns on any of them. Disclosed because they are beyond the list, not because they earned their place. |
-| **`git log --oneline` and `git status --short`, read-only** | The signature-invariance reconstruction limit (§2, item 10). Confirms `HEAD` is `79543cf docs: add review doc for phase 1 doc draft` with `PHASE_1_DOC.md` and `PHASE_1_REVIEW.md` modified in the working tree and every review file after the first untracked — i.e. all six fix-ups uncommitted, exactly as §0.9 l. 677 states. No git operation that writes anything was run. |
+| **`git log --oneline` and `git status --short`, read-only** | The signature-invariance reconstruction limit (§2, item 10). Confirms `HEAD` is `79543cf docs: add review doc for phase 1 doc draft` with `PHASE_1_DOC.md` and `PHASE_1_REVIEW_1.md` modified in the working tree and every review file after the first untracked — i.e. all six fix-ups uncommitted, exactly as §0.9 l. 677 states. No git operation that writes anything was run. |
 
 ### 0.2 Deviations, and omissions recorded as omissions
 
@@ -836,7 +836,7 @@ So the next audit can tell a considered omission from an oversight.
   changes to §5 is owed **no entry for a revision that changes nothing in §5**, and the parenthetical
   *"(§0.9)"* already names which revision the phrase means, so nothing is ambiguous. Editing it to look
   tidy would have cost an eleventh verify session for a cosmetic gain.
-- **`PHASE_1_REVIEW.md` … `PHASE_1_REVIEW_9.md`, including their `## Resolutions` sections** — read for
+- **`PHASE_1_REVIEW_1.md` … `PHASE_1_REVIEW_9.md`, including their `## Resolutions` sections** — read for
   V10-2 and V10-4, **not modified**, and verified unmodified by checksum against a pre-session baseline.
   In particular: **round nine's wrong line number is NOT corrected at source.** `PHASE_1_REVIEW_9.md`'s
   *"Checked and correctly left alone"* cites `(ll. 2907, 2906)` where l. 2906 was the rung-3
@@ -910,6 +910,6 @@ re-opens it will find the ledger complete and the comparison per-frame on both s
 
 *Per §G1.3 this session stops here. It wrote no code, ran no build and no test, launched no review
 agent, made no network request, and modified exactly two files: `PHASE_1_DOC.md` and this
-`## Resolutions` section. `DESIGN.md`, `RESEARCH.md`, and `PHASE_1_REVIEW.md` through
+`## Resolutions` section. `DESIGN.md`, `RESEARCH.md`, and `PHASE_1_REVIEW_1.md` through
 `PHASE_1_REVIEW_9.md` — including their own `## Resolutions` sections — are unmodified and were
 checksummed to prove it, as is everything above this heading.*

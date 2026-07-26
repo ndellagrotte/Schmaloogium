@@ -1,6 +1,6 @@
 # Schmaloogium — Phase 1 re-verify session review (DESIGN.md §G1.2, third round)
 
-**Document under review:** `Schmaloogium/PHASE_1_DOC.md` as it now stands, 2026-07-24.
+**Document under review:** `docs/phase1/v10/PHASE_1_DOC.md` as it now stands, 2026-07-24.
 **Why this session exists:** round two (`PHASE_1_REVIEW_2.md`, V2-1 … V2-10) returned
 PASS-WITH-CORRECTIONS with §5-touching corrections, so §G1.3's "re-verify only if §5 changed" rule
 requires a fresh pass before Phase 2, Phase 3 or any other dependent consumes the doc. My verdict is
@@ -33,7 +33,7 @@ without overwriting the previous round's findings and `## Resolutions`.
   `gradle/wrapper/gradle-wrapper.properties`, all eight files under `src/**`, all three
   `.github/workflows/*`, `README.md`.
 - `PHASE_1_DOC.md` in full.
-- **Last, and only after my own findings were fixed:** `PHASE_1_REVIEW.md` (structure and its
+- **Last, and only after my own findings were fixed:** `PHASE_1_REVIEW_1.md` (structure and its
   `## Resolutions`), then `PHASE_1_REVIEW_2.md` in full.
 
 **Read beyond the assigned list, each with its reason** (§G1.1/§G1.2 recording requirement):
@@ -56,7 +56,7 @@ omission.
 
 **Hard rules observed:** no code, no builds, no tests, no review or adversarial sub-agents, no scope
 creep, no fixes. `PHASE_1_DOC.md`, `RESEARCH.md`, `DESIGN.md` and the existing content of
-`PHASE_1_REVIEW.md` / `PHASE_1_REVIEW_2.md` are unmodified.
+`PHASE_1_REVIEW_1.md` / `PHASE_1_REVIEW_2.md` are unmodified.
 
 ---
 
@@ -83,7 +83,7 @@ query half of it — and I have no criticism of it.
 `LICENSE` at the repo root is the verbatim GPL-3.0 text (674 lines, opening
 "GNU GENERAL PUBLIC LICENSE / Version 3, 29 June 2007", FSF copyright line intact). `git log` shows
 `aa917a6 Update LICENSE from MIT to GPL-V3` preceding both doc commits. `git status` shows modified
-`PHASE_1_DOC.md` and `PHASE_1_REVIEW.md`, untracked `PHASE_1_REVIEW_2.md`, `RESEARCH.md`,
+`PHASE_1_DOC.md` and `PHASE_1_REVIEW_1.md`, untracked `PHASE_1_REVIEW_2.md`, `RESEARCH.md`,
 `phase_1_chatlog.md`. `.gitignore` does contain `**/build/`. §11.2's D-7 row (`[V:repo]`), §12 item 1
 ("verify, it already is") and §4.1's `.gitignore` row therefore describe the repository accurately.
 §0.3 item 4's claim that one read-only git inspection was made is consistent with the doc's content.
@@ -238,8 +238,8 @@ and the closing paragraph at line 2319.
 re-verification of corrected text.
 
 **Evidence.** `PHASE_1_REVIEW_2.md`'s headings run `## 0` … `## 4. Verdict` and stop; there is no
-`## Resolutions` section, whereas `PHASE_1_REVIEW.md` has one at line 278. `PHASE_1_DOC.md` §0.4 is
-titled "Fix-up session addendum" and names only "`PHASE_1_REVIEW.md`'s findings F-1 … F-12"; there is
+`## Resolutions` section, whereas `PHASE_1_REVIEW_1.md` has one at line 278. `PHASE_1_DOC.md` §0.4 is
+titled "Fix-up session addendum" and names only "`PHASE_1_REVIEW_1.md`'s findings F-1 … F-12"; there is
 no §0.5 or equivalent for round two. The document's closing paragraph still reads "A fix-up session
 (§G1.3) has since applied findings F-1 … F-12 … Because the fix-up altered **§5**, the next step in
 the cadence is a **fresh verify session**" — i.e. it still describes the post-round-one state.

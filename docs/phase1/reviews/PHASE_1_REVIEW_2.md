@@ -1,13 +1,13 @@
 # Schmaloogium — Phase 1 re-verify session review (DESIGN.md §G1.2, second round)
 
-**Document under review:** `Schmaloogium/PHASE_1_DOC.md` as it now stands (build 2026-07-24, fix-up
-2026-07-24 applying `PHASE_1_REVIEW.md` F-1 … F-12).
+**Document under review:** `docs/phase1/v10/PHASE_1_DOC.md` as it now stands (build 2026-07-24, fix-up
+2026-07-24 applying `PHASE_1_REVIEW_1.md` F-1 … F-12).
 **Why this session exists:** the fix-up altered §5 (cross-phase interfaces), so §G1.3's "re-verify
 only if §5 changed" rule requires a fresh verify pass before Phase 2, Phase 3 or any other dependent
 consumes the doc. The verdict below is on the **whole document as it now stands**, not on the diff.
 **Reviewer:** fresh session, 2026-07-24. Did not author the doc, did not review it in round one, did
 not apply the fix-up, and inherited no context from any of those sessions.
-**Deliverable filename:** `PHASE_1_REVIEW_2.md` rather than an append to `PHASE_1_REVIEW.md`, so
+**Deliverable filename:** `PHASE_1_REVIEW_2.md` rather than an append to `PHASE_1_REVIEW_1.md`, so
 round one's findings, verdict and `## Resolutions` stay intact as the record of that round
 (§G1.3 speaks of the *latest* review verdict; §G1.2 names only the first file).
 
@@ -30,7 +30,7 @@ round one's findings, verdict and `## Resolutions` stay intact as the record of 
   `get_project_template("mixins.json")`, `explain_concept("mcmod.info", loader="cleanroom")`,
   `resolve_symbol("func_78471_a")`.
 - `PHASE_1_DOC.md` in full.
-- **Last, after my own findings were fixed:** `PHASE_1_REVIEW.md` — round one's findings, verdict and
+- **Last, after my own findings were fixed:** `PHASE_1_REVIEW_1.md` — round one's findings, verdict and
   the fix-up session's `## Resolutions`, read only to audit whether each claimed resolution is real
   and whether any of them introduced a new defect.
 
@@ -53,7 +53,7 @@ to check §5.2's "explicit note to Phase 2" against Phase 2's own declared scope
 statement below about another phase is sourced to §G5.1's table or §G10's OQ-owner table.
 
 **Hard rules observed:** no code, no builds, no tests, no review/adversarial sub-agents, no fixes.
-`PHASE_1_DOC.md`, `RESEARCH.md`, `DESIGN.md` and the existing content of `PHASE_1_REVIEW.md` are
+`PHASE_1_DOC.md`, `RESEARCH.md`, `DESIGN.md` and the existing content of `PHASE_1_REVIEW_1.md` are
 unmodified.
 
 ---
@@ -74,7 +74,7 @@ unmodified.
 `<one line to give the program's name…>` / `<year>` / `<name of author>` still unfilled — i.e. the
 license document, not a filled-in notice, which is exactly what `[D-P1-17]` describes). `git log`
 shows `aa917a6 Update LICENSE from MIT to GPL-V3`. `git status` shows no staged deletion: modified
-`PHASE_1_DOC.md` / `PHASE_1_REVIEW.md`, untracked `RESEARCH.md` / `phase_1_chatlog.md`. `.gitignore`
+`PHASE_1_DOC.md` / `PHASE_1_REVIEW_1.md`, untracked `RESEARCH.md` / `phase_1_chatlog.md`. `.gitignore`
 does contain `**/build/`. §11.2's D-7 row and §12 item 1 therefore describe the repo accurately, and
 no dangling "restore the LICENSE" reference survives anywhere in the doc (the only remaining "MIT"
 occurrences are the OQ-12 discussion, Angelica's MIT portions, and the D-7 row's quotation of the

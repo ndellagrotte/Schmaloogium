@@ -1,10 +1,10 @@
 You are a fresh Claude Code session running the ninth verify session (DESIGN.md §G1.2) on
-Schmaloogium/PHASE_1_DOC.md. Working directory:
+docs/phase1/v10/PHASE_1_DOC.md. Working directory:
 /home/nick/IdeaProjects/schmaloogium-project/Schmaloogium/.
 
 ## Why this session exists
 
-The cadence: build session → eight verify sessions (PHASE_1_REVIEW.md … _8.md, every one
+The cadence: build session → eight verify sessions (PHASE_1_REVIEW_1.md … _8.md, every one
 PASS-WITH-CORRECTIONS) → five fix-ups. The fifth fix-up applied round eight's V8-1 … V8-6 and
 recorded its resolutions in PHASE_1_REVIEW_8.md under `## Resolutions`. It altered **§5.2 at two
 rows** — the GL-error row and the non-verbs row — so §G1.3's "re-verify only if §5 changed" rule
@@ -162,7 +162,7 @@ fix anything you find.
 
 ## Deliverable
 
-`Schmaloogium/PHASE_1_REVIEW_9.md`, following rounds seven and eight's established shape:
+`docs/phase1/reviews/PHASE_1_REVIEW_9.md`, following rounds seven and eight's established shape:
 
 1. **§0** — what you read and in what order; reads beyond the assigned list with the finding each
    turned on; deviations recorded as deviations; network use.

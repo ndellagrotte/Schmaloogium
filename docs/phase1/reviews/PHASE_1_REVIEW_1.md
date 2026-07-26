@@ -1,6 +1,6 @@
 # Schmaloogium — Phase 1 verify session review (DESIGN.md §G1.2)
 
-**Document under review:** `Schmaloogium/PHASE_1_DOC.md` (2026-07-24)
+**Document under review:** `docs/phase1/v10/PHASE_1_DOC.md` (2026-07-24)
 **Reviewer:** fresh verify session, 2026-07-24. Did not author the document; no author context inherited.
 **Read:** DESIGN.md Part I (§G0–§G10) + the Phase 1 spec (Part II); RESEARCH.md §0, §1, §5.1–§5.3,
 §6.1, §7.2, §12.2 (plus §4.1, §4.2, §10.1–§10.3, §11, App D.3, App E header — read to check the

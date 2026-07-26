@@ -502,5 +502,5 @@ third bullet (*"no §5 change outstanding"*). Accordingly:
 
 *Per §G1.2 this session stops here. It wrote no code, ran no build and no test, made no network
 request, and created exactly one file: this one. `PHASE_1_DOC.md`, `DESIGN.md`, `RESEARCH.md`, and
-`PHASE_1_REVIEW.md` through `PHASE_1_REVIEW_10.md` — including their `## Resolutions` sections — are
+`PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_10.md` — including their `## Resolutions` sections — are
 unmodified.*

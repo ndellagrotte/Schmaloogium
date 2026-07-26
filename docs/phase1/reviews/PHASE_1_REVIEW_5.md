@@ -1,6 +1,6 @@
 # PHASE_1_DOC.md — Verify session, round five
 
-**Session type:** verify (`DESIGN.md` §G1.2) · **Document under review:** `Schmaloogium/PHASE_1_DOC.md`
+**Session type:** verify (`DESIGN.md` §G1.2) · **Document under review:** `docs/phase1/v10/PHASE_1_DOC.md`
 **Date:** 2026-07-25 (pin re-verification performed 2026-07-25 ~01:15 UTC; the document is stamped
 2026-07-24) · **Verdict:** **PASS-WITH-CORRECTIONS**
 
@@ -38,7 +38,7 @@ Assigned reading, in the order §G1.2 prescribes:
    `gradle/wrapper/gradle-wrapper.properties`, all eight files under `src/**`, all three
    `.github/workflows/*.yml`, `README.md`, `.gitignore`.
 4. `PHASE_1_DOC.md`, in full.
-5. **Last, only after my own findings were formed:** `PHASE_1_REVIEW.md`, `PHASE_1_REVIEW_2.md`,
+5. **Last, only after my own findings were formed:** `PHASE_1_REVIEW_1.md`, `PHASE_1_REVIEW_2.md`,
    `PHASE_1_REVIEW_3.md`, `PHASE_1_REVIEW_4.md`, including their `## Resolutions` sections.
 
 **Read beyond the assigned list, each because a finding turns on it** (§G1.1/§G1.2 recording
@@ -172,7 +172,7 @@ None is re-raised.
 A new artifact nobody has reviewed. I checked every row that claims "applied" against the current
 document, and every row that claims "not applied" against its stated reason.
 
-**Round one (`PHASE_1_REVIEW.md`).** All twelve applied, none declined. Round two already audited
+**Round one (`PHASE_1_REVIEW_1.md`).** All twelve applied, none declined. Round two already audited
 these and I did not repeat its work wholesale; I re-confirmed the two with downstream consequences —
 F-2's fixtures really are in `:engine`'s `testFixtures` with `java-test-fixtures` applied in §4.2.3,
 and F-12's caveat really is on the *expression* rather than the decision.

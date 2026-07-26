@@ -1,6 +1,6 @@
 # PHASE_1_DOC.md — Verify session, round six
 
-**Session type:** verify (`DESIGN.md` §G1.2) · **Document under review:** `Schmaloogium/PHASE_1_DOC.md`
+**Session type:** verify (`DESIGN.md` §G1.2) · **Document under review:** `docs/phase1/v10/PHASE_1_DOC.md`
 **Date:** 2026-07-25 (pin re-verification performed 2026-07-25 ~01:35–01:40 UTC; the document is
 stamped 2026-07-24) · **Verdict:** **PASS-WITH-CORRECTIONS**
 
@@ -14,7 +14,7 @@ written by a fix-up applying `PHASE_1_REVIEW_5.md`'s V5-1 … V5-8. That materia
 Three independent pieces of evidence, each checked directly:
 
 1. `PHASE_1_REVIEW_5.md` has **no `## Resolutions` section**. Rounds one through four each have one
-   (`PHASE_1_REVIEW.md`:278, `_2`:479, `_3`:720, `_4`:847). Round five's file ends at line 491 with
+   (`PHASE_1_REVIEW_1.md`:278, `_2`:479, `_3`:720, `_4`:847). Round five's file ends at line 491 with
    *"Per §G1.2 this session stops here and fixes nothing."*
 2. `PHASE_1_DOC.md` carries **no §0.6 addendum** (§0.4 is round one, §0.5 is rounds two–four, and
    there is nothing after it) and **no `[fix-up: PHASE_1_REVIEW_5.md …]` provenance marker anywhere**
@@ -50,7 +50,7 @@ Assigned reading, in the order §G1.2 prescribes:
    all eight files under `src/**`, all three `.github/workflows/*.yml`, `README.md`, `.gitignore`,
    and `LICENSE` + `git log` (read-only) for the D-7 claim.
 4. `PHASE_1_DOC.md`, in full.
-5. **Last, only after my own findings were formed:** `PHASE_1_REVIEW.md`, `_2`, `_3`, `_4`, `_5`,
+5. **Last, only after my own findings were formed:** `PHASE_1_REVIEW_1.md`, `_2`, `_3`, `_4`, `_5`,
    including their `## Resolutions` sections (and the absence of one in `_5`).
 
 **Read beyond the assigned list, each because a finding turns on it** (§G1.1/§G1.2 recording rule):

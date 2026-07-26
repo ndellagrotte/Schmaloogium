@@ -1,6 +1,6 @@
 # PHASE_1_DOC.md — Verify session, round seven
 
-**Session type:** verify (`DESIGN.md` §G1.2) · **Document under review:** `Schmaloogium/PHASE_1_DOC.md`
+**Session type:** verify (`DESIGN.md` §G1.2) · **Document under review:** `docs/phase1/v10/PHASE_1_DOC.md`
 **Date:** 2026-07-25 (pin re-verification performed 2026-07-25 ~03:05–03:07 UTC; the document header is
 stamped 2026-07-24) · **Verdict:** **PASS-WITH-CORRECTIONS**
 
@@ -18,7 +18,7 @@ Assigned reading, in the order §G1.2 prescribes:
    `gradle/scripts/{dependencies,extra,publishing}.gradle`, `gradle/wrapper/gradle-wrapper.properties`,
    all eight files under `src/**`, all three `.github/workflows/*.yml`, `README.md`.
 4. `PHASE_1_DOC.md` in full, 2 901 lines.
-5. **Last, and only after my own findings were formed:** `PHASE_1_REVIEW.md` through
+5. **Last, and only after my own findings were formed:** `PHASE_1_REVIEW_1.md` through
    `PHASE_1_REVIEW_6.md`, including all six `## Resolutions` sections.
 
 ### 0.1 Read beyond the assigned list, each because a finding turns on it

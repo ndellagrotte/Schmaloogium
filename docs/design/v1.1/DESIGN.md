@@ -1,6 +1,6 @@
 # Schmaloogium — Design Document
 
-> **Status:** v1.1, 2026-07-24. Authored from [RESEARCH.md](RESEARCH.md) (first complete
+> **Status:** v1.1, 2026-07-24. Authored from [RESEARCH.md](../../research/v1/RESEARCH.md) (first complete
 > draft, same date). v1.1 encodes the build/verify wave workflow (§G1, §G5.3).
 > **Role:** The phase-segmented design for building Schmaloogium — OptiFine/Iris-format
 > shader-pack support for Cleanroom clients on Minecraft 1.12.2. Just shaders. Nothing else.
@@ -637,7 +637,7 @@ beyond the facade shape (Phases 5+); GUI framework evaluation (Phase 12).
 - RESEARCH.md §1, §5.1–§5.3, §6.1, §7.2, §12.2.
 - Template ground truth: `Schmaloogium/{build.gradle,gradle.properties,settings.gradle}`,
   `Schmaloogium/gradle/scripts/*.gradle`, `Schmaloogium/src/**`, `Schmaloogium/.github/workflows/*`,
-  `Schmaloogium/README.md`.
+  `README.md`.
 - Skim only: `cleanroom-src/src/main/java/com/cleanroommc/` (boot/mixin bootstrap layout).
 - MCP recipes: `get_porting_guide("mixin-setup")`, `get_project_template(...)` (§12.4).
 

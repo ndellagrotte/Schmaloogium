@@ -20,8 +20,8 @@ date is what the fix-up addenda in §0.4–§0.10 were written on.*
 
 | Input | What was read |
 |---|---|
-| `Schmaloogium/DESIGN.md` | All of Part I (§G0–§G10, lines 1–575) and the Phase 1 spec in Part II (lines 585–658). Phase titles only from §G5.1 for other phases. |
-| `Schmaloogium/RESEARCH.md` | §0 (reading guide, confidence tags), §1 (mission, non-goals, decision log D-1..D-10), §3.2 (source directives — cited by §3's `centerDepthSmooth` row), §4.1 (lifecycle — the GL capability probe set), §4.2 (program-registry mechanics — read for the facade's "use program is the universal state barrier" implication), §5.1, §5.2, §5.3, §6.1, §7.1 (the D-5 sentence only), §7.2, §7.4 (the coexistence sentence only), §8.3, §9, §10.1–§10.3, §11 (full OQ register), §12.2, §12.4, App D.1/D.3 (the `ivec2` uniforms), App E (header only — the "SRG name + descriptor" requirement quoted in §4.5.3), App H (glossary rows for platform terms). **App D.2/D.4, App B, App F.1/F.5/F.6/F.7, §3.4 and §3.5 were *not* read by the build session** — see §0.5, which records the fix-up session's reading and why that omission mattered. |
+| `docs/design/v1.1/DESIGN.md` | All of Part I (§G0–§G10, lines 1–575) and the Phase 1 spec in Part II (lines 585–658). Phase titles only from §G5.1 for other phases. |
+| `docs/research/v1/RESEARCH.md` | §0 (reading guide, confidence tags), §1 (mission, non-goals, decision log D-1..D-10), §3.2 (source directives — cited by §3's `centerDepthSmooth` row), §4.1 (lifecycle — the GL capability probe set), §4.2 (program-registry mechanics — read for the facade's "use program is the universal state barrier" implication), §5.1, §5.2, §5.3, §6.1, §7.1 (the D-5 sentence only), §7.2, §7.4 (the coexistence sentence only), §8.3, §9, §10.1–§10.3, §11 (full OQ register), §12.2, §12.4, App D.1/D.3 (the `ivec2` uniforms), App E (header only — the "SRG name + descriptor" requirement quoted in §4.5.3), App H (glossary rows for platform terms). **App D.2/D.4, App B, App F.1/F.5/F.6/F.7, §3.4 and §3.5 were *not* read by the build session** — see §0.5, which records the fix-up session's reading and why that omission mattered. |
 | `Schmaloogium/build.gradle` | Complete. |
 | `Schmaloogium/settings.gradle` | Complete. |
 | `Schmaloogium/gradle.properties` | Complete. |
@@ -32,7 +32,7 @@ date is what the fix-up addenda in §0.4–§0.10 were written on.*
 | `Schmaloogium/.github/workflows/build.yml` | Complete. |
 | `Schmaloogium/.github/workflows/release.yml` | Complete. |
 | `Schmaloogium/.github/workflows/release-to-cf-mr.yml` | Complete. |
-| `Schmaloogium/README.md` | Complete. |
+| `README.md` | Complete. |
 | `Schmaloogium/.gitignore` | Complete. |
 | `Schmaloogium/src/**` | All eight files: `main/java/com/example/modid/{ExampleMod.java, proxy/{IProxy,CommonProxy,ClientProxy}.java}`, `main/java-templates/com/example/modid/Reference.java`, `main/resource-templates/{mcmod.info,pack.mcmeta}`, `main/resources/modid_at.cfg`. |
 | MCP `cleanroom` | `get_porting_guide("mixin-setup")`, `get_project_template("mixins.json")`, `get_project_template("checklist")`, `explain_concept("mcmod.info", loader="cleanroom")`. |
@@ -99,12 +99,12 @@ None. Phase 1 has no dependencies (§G5.1).
 
 ### 0.4 Fix-up session addendum (round one — 2026-07-24)
 
-A separate fix-up session (§G1.3) applied `Schmaloogium/PHASE_1_REVIEW.md`'s findings F-1 … F-12 to
+A separate fix-up session (§G1.3) applied `docs/phase1/reviews/PHASE_1_REVIEW_1.md`'s findings F-1 … F-12 to
 this document. Its resolutions are recorded in that file under `## Resolutions`; the findings and the
 verdict are unchanged there.
 
 Inputs that session read beyond the build session's list, all for finding F-1 (the facade's missing
-pixel-transfer verbs) and each cited by the finding itself: `PHASE_1_REVIEW.md`; RESEARCH.md §3.1 and
+pixel-transfer verbs) and each cited by the finding itself: `PHASE_1_REVIEW_1.md`; RESEARCH.md §3.1 and
 App A.3 (`.gsh`, `GL_ARB_geometry_shader4` + `maxVerticesOut`), §4.1 step 4 (noise texture creation),
 §4.4 and §6.2 (the synchronous `centerDepthSmooth` readback and its PBO modernization row), App D.3
 (`ivec2` uniforms), App F.5 (custom textures / `texture.noise`). One Maven Central version query was
@@ -133,7 +133,7 @@ would have made the document worse; the reasons are recorded in the resolutions 
 `PHASE_1_REVIEW_3.md` rather than repeated here.
 
 **Inputs this session read beyond the build session's list**, each because a finding turned on it:
-`PHASE_1_REVIEW.md`, `PHASE_1_REVIEW_2.md`, `PHASE_1_REVIEW_3.md`, `PHASE_1_REVIEW_4.md`;
+`PHASE_1_REVIEW_1.md`, `PHASE_1_REVIEW_2.md`, `PHASE_1_REVIEW_3.md`, `PHASE_1_REVIEW_4.md`;
 RESEARCH.md **App D end to end (D.1–D.4)**, **App B.1–B.5**, **App F.1/F.5/F.6/F.7**, **§3.4**,
 **§3.5**, §4.3 and §4.4 (the composite/final draw state and the depth copies), §4.2 (the fixed unit
 map's per-program re-point); DESIGN.md §G1.1/§G1.3/§G5.3 and — for three ownership questions the
@@ -3505,8 +3505,8 @@ designed for, which is the best available evidence that it is drawn in the right
 | D-P1-22 | `:engine` emits `EngineDiagnostic` values with lang **keys**; `:mod` routes to chat/GUI/log | The seam forbids Minecraft types in `:engine`, and Phase 12 needs lang keys for the GUI regardless |
 | D-P1-23 | The bail registry ships with **zero** registered checks and names no mod ids | Naming Celeritas or Nothirium here would be Phase 10's policy decision made by the wrong session; the landscape moves (RESEARCH.md §2.3) |
 | D-P1-24 | CI runs `:engine:test` **and** `:mod:test` as one named "Seam architecture test" step and `:conformance:test` as a second named step, **both placed before `./gradlew build`** | The seam is the project's highest-weight structural risk; its regression should be legible at a glance, not buried in an aggregate build. **Both module tasks** are named because C-1 lives in `:engine` while C-2 and C-3 live in `:mod` (§8.1), so a step running only `:engine:test` would leave half the seam sentence anonymous. **The ordering is load-bearing, not cosmetic:** `./gradlew build` → `check` → `test` runs all four seam tests itself, so a named step placed after it would never execute on the very failure it exists to name — the job would already have aborted inside `build` (§4.11) `[fix-up: PHASE_1_REVIEW_4.md F4-10; PHASE_1_REVIEW_5.md V5-5, V5-3]` |
-| D-P1-25 | The facade carries **pixel-transfer verbs** (`FramebufferService.readDepthPixel`, `FramebufferService.copyDepthToTexture`, `TextureService.upload`, `UniformService.upload(loc,int,int)` and `upload(loc,int,int,int,int)`) and **no pre-link program-parameter hook**; the ARB geometry form is translated upstream of the facade | Dependents cannot implement their milestones without them: Phase 6's synchronous `centerDepthSmooth` readback is a v0.1 consumer (RESEARCH.md §4.4/§6.2), Phase 13 fills the noise/`_n`/`_s`/custom textures (RESEARCH.md §4.1 step 4, App F.5), `atlasSize` (App D.3) and `eyeBrightness` (App D.1) are `ivec2`, `blendFunc` (App D.4) is `ivec4`, and the `depthtex1`/`depthtex2` copies target textures rather than framebuffers (RESEARCH.md §4.3). Each verb carries no policy. The ARB geometry path is a *source-level* construct that RESEARCH.md §6.2's internal translation handles in the front-end, so a GL-level program-parameter verb would be the wrong seam — and its absence is stated, not implied `[fix-up: PHASE_1_REVIEW.md F-1; PHASE_1_REVIEW_4.md F3-2, F4-7]` |
-| D-P1-26 | Shared `GLCapabilityProfile` fixtures live in **`:engine`'s `testFixtures`** source set, consumed by `:conformance`/`:mod` via `testFixtures(project(':engine'))` | C-4 makes `:conformance → :engine` the only legal direction, so fixtures in `:conformance` are unreadable by the `:engine` tests that need them; a fixtures source set keeps the dependency edge legal and Phase 2's ownership of the fixture *set* intact `[fix-up: PHASE_1_REVIEW.md F-2]` |
+| D-P1-25 | The facade carries **pixel-transfer verbs** (`FramebufferService.readDepthPixel`, `FramebufferService.copyDepthToTexture`, `TextureService.upload`, `UniformService.upload(loc,int,int)` and `upload(loc,int,int,int,int)`) and **no pre-link program-parameter hook**; the ARB geometry form is translated upstream of the facade | Dependents cannot implement their milestones without them: Phase 6's synchronous `centerDepthSmooth` readback is a v0.1 consumer (RESEARCH.md §4.4/§6.2), Phase 13 fills the noise/`_n`/`_s`/custom textures (RESEARCH.md §4.1 step 4, App F.5), `atlasSize` (App D.3) and `eyeBrightness` (App D.1) are `ivec2`, `blendFunc` (App D.4) is `ivec4`, and the `depthtex1`/`depthtex2` copies target textures rather than framebuffers (RESEARCH.md §4.3). Each verb carries no policy. The ARB geometry path is a *source-level* construct that RESEARCH.md §6.2's internal translation handles in the front-end, so a GL-level program-parameter verb would be the wrong seam — and its absence is stated, not implied `[fix-up: PHASE_1_REVIEW_1.md F-1; PHASE_1_REVIEW_4.md F3-2, F4-7]` |
+| D-P1-26 | Shared `GLCapabilityProfile` fixtures live in **`:engine`'s `testFixtures`** source set, consumed by `:conformance`/`:mod` via `testFixtures(project(':engine'))` | C-4 makes `:conformance → :engine` the only legal direction, so fixtures in `:conformance` are unreadable by the `:engine` tests that need them; a fixtures source set keeps the dependency edge legal and Phase 2's ownership of the fixture *set* intact `[fix-up: PHASE_1_REVIEW_1.md F-2]` |
 | D-P1-27 | `:conformance` declares its **own** `repositories { mavenCentral() }` (§4.2.4a); `mavenCentral()` is **not** hoisted into the root `subprojects {}` block | Repositories are per-`Project` in Gradle with no inheritance, so without it `:conformance` cannot resolve JUnit and the Impl gate's `./gradlew build` fails in the *test* configuration. Hoisting would fix it in fewer lines but would inject `mavenCentral()` into `:mod` ahead of `dependencies.gradle`'s mod repositories and blur §4.2.3's single-file statement of what `:engine` can see `[fix-up: PHASE_1_REVIEW_4.md F3-5]` |
 | D-P1-28 | **A handle is invalid the moment its `delete` returns**; Phase 5 owns re-acquisition across the uninit/rebuild; `ReplayAssertions.noUseAfterDelete()` enforces under replay what the LWJGL backend cannot | Teardown-and-rebuild is a routine v0.1 event (RESEARCH.md §4.1 step 5 — an option change fires it), and a driver may reissue a GL name after a delete, so a stale handle silently addresses a *different live object*. The recording backend's monotonic, never-reused sequence numbers make the misuse detectable; stating the rule is what turns an accident into a contract `[fix-up: PHASE_1_REVIEW_4.md F4-8]` |
 | D-P1-29 | **Backend obligation:** every `Lwjgl3GLDevice` verb whose GL state `GlStateManager` caches is issued *through* `GlStateManager`, never through raw LWJGL — `bindToUnit` (unit + bind), every `StateService` verb but `viewport`, and clears | §G4.6 forbids bypassing the cache for state it holds, and `DESIGN.md` makes the consequence correctness rather than style ("the cache would go stale and break vanilla rendering"). `bindToUnit` is the highest-frequency instance, not an edge case: the fixed unit map re-points up to 16 units per program switch (RESEARCH.md §4.2). No signature changes; the rule constrains the implementation `[fix-up: PHASE_1_REVIEW_4.md F4-3]` |
@@ -3858,7 +3858,7 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 ---
 
 *End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Ten** verify sessions have
-since run — `PHASE_1_REVIEW.md` through `PHASE_1_REVIEW_10.md`, each returning PASS-WITH-CORRECTIONS —
+since run — `PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_10.md`, each returning PASS-WITH-CORRECTIONS —
 and **seven** fix-up sessions: the first applied round one's F-1 … F-12 (§0.4); the second applied
 rounds two, three and four together, as round four dispositioned them (§0.5); the third applied
 rounds **five and six** together (§0.6), round five's fix-up having never run — which is round six's

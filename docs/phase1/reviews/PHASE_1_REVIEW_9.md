@@ -1,6 +1,6 @@
 # PHASE_1_DOC.md — Verify session, round nine
 
-**Session type:** verify (DESIGN.md §G1.2) · **Subject:** `Schmaloogium/PHASE_1_DOC.md` as of the
+**Session type:** verify (DESIGN.md §G1.2) · **Subject:** `docs/phase1/v10/PHASE_1_DOC.md` as of the
 fifth fix-up (§0.8) · **Date:** 2026-07-25 · **Verdict:** §3.
 
 **Why this round exists.** The fifth fix-up applied `PHASE_1_REVIEW_8.md`'s V8-1 … V8-6 and altered
@@ -896,7 +896,7 @@ will audit this one.
 
 So the next audit can tell a considered omission from an oversight.
 
-- **`PHASE_1_REVIEW.md` … `PHASE_1_REVIEW_8.md`, including their `## Resolutions` sections** — read for
+- **`PHASE_1_REVIEW_1.md` … `PHASE_1_REVIEW_8.md`, including their `## Resolutions` sections** — read for
   V9-2 and V9-6, **not modified**. `PHASE_1_REVIEW_8.md`'s V8-1 `Resolutions` row carries half of V9-2's
   false claim and is evidence; the correction lives in `PHASE_1_DOC.md` §0.8, which is this document's
   own text, and in §0.9.
@@ -958,6 +958,6 @@ nobody, and it is a design call rather than a correction.
 
 *Per §G1.3 this session stops here. It wrote no code, ran no build and no test, launched no review
 agent, made no network request, and modified exactly two files: `PHASE_1_DOC.md` and this
-`## Resolutions` section. `DESIGN.md`, `RESEARCH.md`, and `PHASE_1_REVIEW.md` through
+`## Resolutions` section. `DESIGN.md`, `RESEARCH.md`, and `PHASE_1_REVIEW_1.md` through
 `PHASE_1_REVIEW_8.md` — including their own `## Resolutions` sections — are unmodified, as is
 everything above this heading.*

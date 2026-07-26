@@ -15,9 +15,9 @@
 
 | Input | Extent | Why |
 |---|---|---|
-| `docs/project/DESIGN.md` Part I (§G0–§G10) | whole | §G1.1 mandatory |
-| `docs/project/DESIGN.md` Part II, **Phase 2 spec** (ll. 662–720) | whole | the assignment |
-| `docs/project/RESEARCH.md` §0, §1 | whole | §G1.1 mandatory (reading guide, tags, mission, non-goals, decision log) |
+| `docs/design/v1.1/DESIGN.md` Part I (§G0–§G10) | whole | §G1.1 mandatory |
+| `docs/design/v1.1/DESIGN.md` Part II, **Phase 2 spec** (ll. 662–720) | whole | the assignment |
+| `docs/research/v1/RESEARCH.md` §0, §1 | whole | §G1.1 mandatory (reading guide, tags, mission, non-goals, decision log) |
 | `RESEARCH.md` **§8** (§8.1 matrix, §8.2 tiers, §8.3 harness + fixture policy) | whole | Required input |
 | `RESEARCH.md` **§9** (milestone table, exit-criteria column) | whole | Required input |
 | `RESEARCH.md` **App G** (pack matrix candidates) | whole | Required input |
@@ -27,8 +27,8 @@
 | `RESEARCH.md` §4.1, §4.3, §4.4, §4.5 | read | same — the behavioral families the scene set must cover |
 | `RESEARCH.md` App A.1/A.2/A.3, App B.1, App H | read | program table + backup chains (T3's fallback rule), buffer clear rules, glossary vocabulary (§G4.1) |
 | `RESEARCH.md` §10.3, §11 (OQ-8, OQ-10, OQ-11 rows) | read | fixture licensing, the OQ-10 question verbatim |
-| `docs/phase1/artifacts/PHASE_1_DOC.md` | §2.1–§2.4, §4.2.3 (seam paragraph), §4.2.4a, §4.3, §4.7.2, §4.7.4, §4.7.5, §4.9.2, §4.9.3, §4.11, **§5 whole**, §6, §7, §8, §9, §11.4, §11.5 | the dependency doc; §5 is the binding contract (§G1.1) |
-| `docs/phase1/artifacts/PHASE_1_REVIEW_11.md` | verdict + §G1.3 line only | the gating question in §0.3 item 6 |
+| `docs/phase1/v10/PHASE_1_DOC.md` | §2.1–§2.4, §4.2.3 (seam paragraph), §4.2.4a, §4.3, §4.7.2, §4.7.4, §4.7.5, §4.9.2, §4.9.3, §4.11, **§5 whole**, §6, §7, §8, §9, §11.4, §11.5 | the dependency doc; §5 is the binding contract (§G1.1) |
+| `docs/phase1/reviews/PHASE_1_REVIEW_11.md` | verdict + §G1.3 line only | the gating question in §0.3 item 6 |
 | `Schmaloogium/.github/workflows/{build,release,release-to-cf-mr}.yml` | whole | Required input — CI ground truth |
 | **Web** `github.com/tttsaurus/Mc122RenderBook` (README) and `.../articles/unit_test/junit_gl_extension.md` | whole | Required input, spec-permitted — the JUnit GL extension's actual API (§10.1) |
 | **Web** Modrinth API docs, `getversion` operation | whole | Required input, spec-permitted — the version/file JSON shape the downloader pins against (§4.10) |
@@ -1717,9 +1717,11 @@ Reported, not smoothed over (§G1.1).
    asks RESEARCH.md for the correction.
 2. **Phase-doc paths.** `DESIGN.md` §G1.1 and §G9 specify `Schmaloogium/PHASE_<N>_DOC.md`, and §G1.2
    puts reviews at the repo root beside it. The repository's actual organisation — established by the
-   commit *"docs: fix non-existent document organization"* — places `PHASE_1_DOC.md` and all eleven
-   review files under `docs/phase1/artifacts/` and both project documents under `docs/project/`. This
-   document is at `docs/phase2/artifacts/PHASE_2_DOC.md` on the project owner's instruction, matching
+   commit *"docs: fix non-existent document organization"* and since reorganized into versioned
+   directories — places `PHASE_1_DOC.md` under `docs/phase1/v10/`, all eleven review files under
+   `docs/phase1/reviews/`, and the two project documents under `docs/design/v1.1/` and
+   `docs/research/v1/`. This
+   document is at `docs/phase2/v1/PHASE_2_DOC.md` on the project owner's instruction, matching
    the repository rather than the design document. §11.5 item 3 asks `DESIGN.md` to record the
    convention so no future phase re-decides it.
 3. **Phase 1's gating status** — §0.3 item 6, carried here so it is visible from §11 as well. Open

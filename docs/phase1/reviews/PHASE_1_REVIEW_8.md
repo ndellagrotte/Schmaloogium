@@ -1,6 +1,6 @@
 # PHASE_1_DOC.md — Verify session, round eight
 
-**Session type:** verify (`DESIGN.md` §G1.2) · **Document under review:** `Schmaloogium/PHASE_1_DOC.md` (3 127 lines)
+**Session type:** verify (`DESIGN.md` §G1.2) · **Document under review:** `docs/phase1/v10/PHASE_1_DOC.md` (3 127 lines)
 **Date:** 2026-07-25 (session start 03:48 UTC; network checks 03:50–03:56 UTC) · **Verdict:** **PASS-WITH-CORRECTIONS**
 
 **Sub-agent disclosure:** **none used.** Every quotation in this review was read against its source
@@ -23,7 +23,7 @@ Assigned reading, in the order §G1.2 prescribes:
    `.github/workflows/*` (listing), `README.md`.
 4. `PHASE_1_DOC.md`, §0 through §12.
 5. **Last, and only after my own findings were formed:** `PHASE_1_REVIEW_7.md`, including its
-   `## Resolutions` section, plus targeted searches across `PHASE_1_REVIEW.md` … `_6.md`.
+   `## Resolutions` section, plus targeted searches across `PHASE_1_REVIEW_1.md` … `_6.md`.
 
 ### 0.1 Read beyond the assigned list, each because a finding turns on it
 
@@ -48,7 +48,7 @@ Recorded per §G1.1/§G1.2.
 
 ### 0.2 Deviations from the assigned reading list
 
-**`PHASE_1_REVIEW.md` through `PHASE_1_REVIEW_6.md` were not read end to end.** I read
+**`PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_6.md` were not read end to end.** I read
 `PHASE_1_REVIEW_7.md` in full including its `## Resolutions` section, and searched rounds one to six
 by term for each finding I was preparing to raise — specifically to establish whether the composite-
 loop ownership, the halflife premise, or the drain elision had been litigated before (V8-1 is new;
@@ -545,5 +545,5 @@ and a **ninth verify session** is required before Phase 2, Phase 3 or any other 
 
 *Per §G1.3 this session stops here. It wrote no code, ran no build and no test, launched no review
 agent, and modified exactly two files: `PHASE_1_DOC.md` and this `## Resolutions` section.
-`DESIGN.md`, `RESEARCH.md`, and `PHASE_1_REVIEW.md` through `PHASE_1_REVIEW_7.md` — including their
+`DESIGN.md`, `RESEARCH.md`, and `PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_7.md` — including their
 own `## Resolutions` sections — are unmodified, as is everything above this heading.*

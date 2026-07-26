@@ -13,7 +13,7 @@ than as a claim about the document currently under review.
 
 **Every path in every prompt is repo-relative to `Schmaloogium/`.** The documents moved out of the
 repo root into `docs/` in commit `9df5f05`; the harness originally referenced bare filenames and
-none of them resolved afterwards. This file lives at `docs/project/` for the same reason — it
+none of them resolved afterwards. This file lives at `docs/tooling/` for the same reason — it
 documents phase-agnostic tooling, not Phase 1.
 
 Every template below is written in the eight-part spine that `PHASE_1_REVIEW_9_BRIEF.md`,
@@ -45,7 +45,7 @@ Prepended to all of them. Three of its clauses were each bought with a specific 
   transcript, at any path — anything under `docs/phase*/chatlogs/` (**any** extension; one of them is
   `.md`) and **any `*.txt` at the repo root**. **A sub-agent read one contrary to instruction in
   Phase 1 round nine**; its transcript-derived conclusion was discarded and re-derived from permitted
-  sources (`docs/phase1/artifacts/PHASE_1_REVIEW_9.md` §0.2). §G1.2 bars a reviewer from the author's
+  sources (`docs/phase1/reviews/PHASE_1_REVIEW_9.md` §0.2). §G1.2 bars a reviewer from the author's
   conversation context precisely because it transmits the author's blind spots.
 
   The rule used to read `Schmaloogium/*.txt` — a single-level, `.txt`-only glob on the repo root.
@@ -166,7 +166,7 @@ smoothed one over is a finding.
 
 ### Reading order, and it is a discipline rather than a suggestion
 
-Finders read `docs/project/DESIGN.md` Part I and the phase spec, then the phase doc under review,
+Finders read `docs/design/v1.1/DESIGN.md` Part I and the phase spec, then the phase doc under review,
 then its dependency phase docs where it has any, then only what their lens needs.
 
 **They read no review file for the phase under review** — `PHASE_<N>_REVIEW_*.md` for their own `N`.
@@ -342,7 +342,7 @@ it is what a fix-up owes a cadence in which it gets no adversarial review of its
   fix-up agent refuses with cause and records it, exactly as the fifth fix-up refused V8-3 and the
   sixth declined to re-open the elision. **A design call arriving through a correction is the move
   round eight's rule forbids**, and no adversarial session would review it.
-- **Editing evidence.** `PHASE_1_REVIEW.md` … `_10.md`, including their `## Resolutions` sections,
+- **Editing evidence.** `PHASE_1_REVIEW_1.md` … `_10.md`, including their `## Resolutions` sections,
   are immutable. Where an earlier review contains an error — round nine's `(ll. 2907, 2906)` cited a
   row three rows off — the correction is recorded in the current round's Resolutions, never applied
   to the evidence.

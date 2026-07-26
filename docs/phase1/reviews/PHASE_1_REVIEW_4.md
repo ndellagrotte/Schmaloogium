@@ -1,6 +1,6 @@
 # Schmaloogium — Phase 1 verify session, round four (DESIGN.md §G1.2)
 
-**Document under review:** `Schmaloogium/PHASE_1_DOC.md` as it stands, 2026-07-24 — unchanged since
+**Document under review:** `docs/phase1/v10/PHASE_1_DOC.md` as it stands, 2026-07-24 — unchanged since
 round three, and unchanged since round two.
 **Why this session exists:** `PHASE_1_REVIEW_3.md` returned PASS-WITH-CORRECTIONS with twelve
 findings, three of them §5-touching, and its own F3-1 established that round two's fix-up never ran.
@@ -33,7 +33,7 @@ two or three, applied no fix-up, and inherited no context from any of those sess
 `DESIGN.md` Part I (§G0–§G10) and the Phase 1 spec in Part II (lines 585–658); `RESEARCH.md` §0–§1
 and the spec's Required inputs; `PHASE_1_DOC.md` in full; the template ground truth (`build.gradle`,
 `settings.gradle`, `gradle.properties`, `gradle/scripts/*`, `gradle/wrapper/gradle-wrapper.properties`,
-`src/**`, `.github/workflows/*`, `README.md`); and, last, `PHASE_1_REVIEW.md`,
+`src/**`, `.github/workflows/*`, `README.md`); and, last, `PHASE_1_REVIEW_1.md`,
 `PHASE_1_REVIEW_2.md` and `PHASE_1_REVIEW_3.md`.
 
 ### 0.2 Read beyond the assigned list
@@ -64,7 +64,7 @@ stricter self-imposed practice is on the record rather than silent.
 ### 0.4 Hard rules observed
 
 No code, no builds, no tests, no scope creep, no fixes. `PHASE_1_DOC.md`, `RESEARCH.md`,
-`DESIGN.md`, `PHASE_1_REVIEW.md`, `PHASE_1_REVIEW_2.md` and `PHASE_1_REVIEW_3.md` are unmodified.
+`DESIGN.md`, `PHASE_1_REVIEW_1.md`, `PHASE_1_REVIEW_2.md` and `PHASE_1_REVIEW_3.md` are unmodified.
 
 ---
 

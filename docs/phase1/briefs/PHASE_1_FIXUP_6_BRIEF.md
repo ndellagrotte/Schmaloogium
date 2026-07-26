@@ -1,10 +1,10 @@
 You are a fresh Claude Code session running the sixth fix-up session (DESIGN.md §G1.3) on
-Schmaloogium/PHASE_1_DOC.md, applying `PHASE_1_REVIEW_9.md`. Working directory:
+docs/phase1/v10/PHASE_1_DOC.md, applying `PHASE_1_REVIEW_9.md`. Working directory:
 /home/nick/IdeaProjects/schmaloogium-project/Schmaloogium/.
 
 ## Why this session exists
 
-The cadence: build session → nine verify sessions (`PHASE_1_REVIEW.md` … `_9.md`, every one
+The cadence: build session → nine verify sessions (`PHASE_1_REVIEW_1.md` … `_9.md`, every one
 PASS-WITH-CORRECTIONS) → five fix-ups. The ninth returned **six corrections, five notes, zero
 blocking** (V9-1 … V9-11). One correction — V9-1 — touches §5.2, so on the fix shape round nine
 expected, §G1.3's *"re-verify only if §5 changed"* rule fires again and a tenth verify session is
@@ -179,7 +179,7 @@ fourth buys nothing. If you fetch anything, disclose it and name the finding tha
 ## Hard rules (§G1.3, plus §G1.1's carry-overs)
 
 No code, no builds, no tests, no scope creep. Do not modify `RESEARCH.md` or `DESIGN.md` — proposals go
-in §11.5. **Do not modify `PHASE_1_REVIEW.md` … `PHASE_1_REVIEW_8.md` at all, including their
+in §11.5. **Do not modify `PHASE_1_REVIEW_1.md` … `PHASE_1_REVIEW_8.md` at all, including their
 `## Resolutions` sections — they are evidence.** In `PHASE_1_REVIEW_9.md`, append `## Resolutions` at
 the end and change **nothing** above that heading. Context discipline per §G1.1. Adversarial
 sub-agents: §G1.1 forbids them to a build session and §G1.3 is silent, so the call is yours —
@@ -191,7 +191,7 @@ breached its instructions, which is why the gate matters.
 
 Exactly two files touched, and no others created:
 
-1. **`Schmaloogium/PHASE_1_DOC.md`** — the corrections applied, plus a new **§0.9** addendum following
+1. **`docs/phase1/v10/PHASE_1_DOC.md`** — the corrections applied, plus a new **§0.9** addendum following
    §0.4–§0.8's established shape:
    - what ran (round nine's counts, what was applied / applied-wider / narrowed / refused);
    - **the design calls you made, recorded as arguments rather than outcomes** — a fix-up session gets
@@ -202,7 +202,7 @@ Exactly two files touched, and no others created:
    - a **§G1.3 status** paragraph: whether §5 changed, whether any signature changed, and what the
      next step in the cadence is.
    Restamp §0.8's status header as you supersede it.
-2. **`Schmaloogium/PHASE_1_REVIEW_9.md`** — a `## Resolutions` section: per finding, the disposition
+2. **`docs/phase1/reviews/PHASE_1_REVIEW_9.md`** — a `## Resolutions` section: per finding, the disposition
    (applied / applied wider / narrowed / **refused with cause** / no change required), and a `Where`
    column naming **every site edited, not every site named**. Then a **"Neighbours swept"** list
    (sites your edit reached that round nine did not name), a **"Checked and correctly left alone"**
