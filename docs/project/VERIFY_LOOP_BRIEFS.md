@@ -41,18 +41,24 @@ Prepended to all of them. Three of its clauses were each bought with a specific 
 - **READ-ONLY** for every agent except the adjudicator and the fix-up. No creating, editing or
   deleting; no builds, tests or gradle; no mutating git. No writes via shell redirection, `tee` or
   `sed -i` either — naming the shell routes matters, because `Explore` has `Bash`.
-- **Forbidden sources, named:** do not read any prior session's terminal transcript, at any path —
-  anything under `docs/phase*/chatlogs/` (**any** extension; one of them is `.md`) and
-  `phase2chat.txt` at the repo root. **A sub-agent read one contrary to instruction in Phase 1 round
-  nine**; its transcript-derived conclusion was discarded and re-derived from permitted sources
-  (`docs/phase1/artifacts/PHASE_1_REVIEW_9.md` §0.2). §G1.2 bars a reviewer from the author's
+- **Forbidden sources, by pattern and by provenance:** do not read any prior session's terminal
+  transcript, at any path — anything under `docs/phase*/chatlogs/` (**any** extension; one of them is
+  `.md`) and **any `*.txt` at the repo root**. **A sub-agent read one contrary to instruction in
+  Phase 1 round nine**; its transcript-derived conclusion was discarded and re-derived from permitted
+  sources (`docs/phase1/artifacts/PHASE_1_REVIEW_9.md` §0.2). §G1.2 bars a reviewer from the author's
   conversation context precisely because it transmits the author's blind spots.
 
   The rule used to read `Schmaloogium/*.txt` — a single-level, `.txt`-only glob on the repo root.
   After the reorg that matched **1 of the 17** transcripts on disk: the fifteen Phase 1 chatlogs had
-  moved to `docs/phase1/chatlogs/`, and one was `.md` and had never been covered at all. It is now
-  stated by **provenance rather than by glob**, and the prompt says so explicitly: a transcript found
-  somewhere not listed is still barred. Enforcement remains prompt-level — `Explore` has `Bash`, and
+  moved to `docs/phase1/chatlogs/`, and one was `.md` and had never been covered at all.
+
+  **Both halves are load-bearing, which the repo demonstrated within the hour.** Restating the rule
+  as "`docs/phase*/chatlogs/**` plus `phase2chat.txt`" fixed the moved files but named the root-level
+  transcript individually — and `/export` immediately dropped a second one there
+  (`2026-07-25-175142-….txt`, the session that wrote this harness). Naming files does not survive a
+  command that creates them. Hence: a **pattern** at the root, a **pattern** in `chatlogs/`, and an
+  explicit provenance catch-all telling the agent that an unfamiliar transcript is still barred and
+  that uncertainty means do not open it. Enforcement remains prompt-level — `Explore` has `Bash`, and
   nothing in `settings.local.json` denies these reads — so this is structural, not airtight.
 - **No scope creep.** Answer only what is asked.
 - **The return value is data**, not a message to a human.

@@ -25,3 +25,6 @@ gradle-app.setting
 # IDEA config
 .idea
 
+# reference source code
+reference-src
+

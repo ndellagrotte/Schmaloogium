@@ -145,13 +145,20 @@ not resolve, and silently finding nothing is the failure mode to avoid here.
   Do not write via shell redirection, \`tee\`, \`sed -i\`, or any other route. You may use Read, Grep,
   Glob, and read-only Bash. That is all.
 - **FORBIDDEN SOURCES.** Do **not** read any prior session's terminal transcript, at any path.
-  Concretely: anything under \`docs/phase*/chatlogs/\` (**any** extension — the directory holds both
-  \`.txt\` and \`.md\` transcripts), and \`phase2chat.txt\` at the repo root. §G1.2 bars a reviewer from
-  the author's conversation context because it transmits the author's blind spots, and for this
-  document that context is the most tempting file in the repository. A sub-agent broke exactly this
-  rule in round nine of Phase 1; its conclusion was discarded and re-derived from permitted sources
-  (\`docs/phase1/artifacts/PHASE_1_REVIEW_9.md\` §0.2). Do not repeat it. Note the rule is about
-  provenance, not file type — if you find a transcript somewhere not listed here, it is still barred.
+  Concretely, and both patterns matter:
+  - anything under \`docs/phase*/chatlogs/\` — **any** extension; that directory holds both \`.txt\`
+    and \`.md\` transcripts;
+  - **any \`*.txt\` at the repo root.** \`/export\` drops session transcripts there under a dated
+    filename, so this set grows without anyone editing this rule. Do not read them, and do not treat
+    an unfamiliar root-level \`.txt\` as safe merely because it is not named here.
+
+  §G1.2 bars a reviewer from the author's conversation context because it transmits the author's
+  blind spots, and for this document that context is the most tempting file in the repository — the
+  transcripts include the sessions that designed both the phase doc and this harness. A sub-agent
+  broke exactly this rule in round nine of Phase 1; its conclusion was discarded and re-derived from
+  permitted sources (\`docs/phase1/artifacts/PHASE_1_REVIEW_9.md\` §0.2). Do not repeat it. **The rule
+  is about provenance, not location or file type:** a transcript found somewhere not listed here is
+  still barred, and if you are unsure whether a file is one, do not open it.
 - **No scope creep.** Answer only what you are asked below.
 - Your final text is a return value consumed by a program, not a message to a human.
 
@@ -903,8 +910,8 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     'wrote down.\n\n' +
     'Re-resolve every line number you cite against the finished file before you write it. Do not read\n' +
     'any prior session\'s terminal transcript — anything under `docs/phase*/chatlogs/` (any\n' +
-    'extension) or `phase2chat.txt` at the repo root. They carry the author\'s blind spots, which is\n' +
-    'why §G1.2 bars them.',
+    'extension) or **any `*.txt` at the repo root** (`/export` keeps adding them). They carry the\n' +
+    'author\'s blind spots, which is why §G1.2 bars them.',
     { label: 'fixup:R' + round, phase: 'R' + round + ' Fix up', schema: FIXUP_SCHEMA, agentType: 'general-purpose' }
   )
 
