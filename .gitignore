@@ -28,3 +28,8 @@ gradle-app.setting
 # reference source code
 reference-src
 
+# session transcripts — kept on disk as evidence, out of history.
+# NOTE: the /verify-loop harness bars agents from reading these; the ignore
+# rule is about repo size, not about the forbidden-source rule.
+docs/**/chatlogs/
+
