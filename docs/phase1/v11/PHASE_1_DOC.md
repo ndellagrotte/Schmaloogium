@@ -7,21 +7,23 @@
 **Phase:** 1 — Foundation & project architecture
 **Milestone:** v0.1 · **Depends on:** — (Wave 0; this doc feeds every other phase)
 **Assigned OQs:** OQ-2, OQ-12, OQ-20 (seam hardness), OQ-21
-**Authored:** 2026-07-24 · **Last revised:** 2026-07-26 (§0.11)
+**Authored:** 2026-07-24 · **Last revised:** 2026-07-26 (§0.12)
 **Deliverable:** this document, per DESIGN.md §G9.
 **Verifies against:** `docs/design/v2.0-RC2/DESIGN.md` from §0.11 onward; `docs/design/v1.1/DESIGN.md`
-through §0.10. **RC2 is an unadopted candidate and v1.1 remains the project's governing design** —
-§0.11's first disclosure says what that means for a reader and for the next verify session, and §0.1
-records what was read from each.
+through §0.10. **There is no longer one governing revision for the project:** RC2 governs **this
+phase** and v1.1 still governs Phase 2, so the revision is resolved **per phase** — from
+`docs/MOVES.md` and `PHASE_FACTS` in `.claude/workflows/verify-loop.js`, never from a §0 addendum,
+which is a record of what one session was told rather than of the tree. §0.12 states the adoption
+state as of 2026-07-26; §0.1 records what was read from each revision.
 
 *Both dates are stated, and deliberately. The authoring date is what the rest of the document reads
 against — §4.1's template facts are read from the checkout on 2026-07-24, §4.2.6's thirteen pin rows
 are re-verified 2026-07-24, and `[V:repo]` below is defined as inspection on 2026-07-24 — so a single
 later stamp would silently re-date claims to a day on which they were not performed. The revision
-date is the most recent of the dates the fix-up addenda in §0.4–§0.11 carry, and each addendum states
-its own: §0.4–§0.5 are 2026-07-24, §0.6–§0.10 are 2026-07-25, §0.11 is 2026-07-26. The few
-repository observations the round-eleven fix-up made are tagged `[V:repo 2026-07-26]` inline for the
-same reason the authoring date is kept — §4.1's and §4.2.6's 2026-07-24 reads are not re-dated by a
+date is the most recent of the dates the fix-up addenda in §0.4–§0.12 carry, and each addendum states
+its own: §0.4–§0.5 are 2026-07-24, §0.6–§0.10 are 2026-07-25, §0.11 and §0.12 are both 2026-07-26. The
+few repository observations the round-eleven and round-twelve fix-ups made are tagged
+`[V:repo 2026-07-26]` inline for the same reason the authoring date is kept — §4.1's and §4.2.6's 2026-07-24 reads are not re-dated by a
 later session touching a different part of the tree.*
 
 ### 0.1 Inputs actually read
@@ -29,9 +31,9 @@ later session touching a different part of the tree.*
 | Input | What was read |
 |---|---|
 | `docs/design/v1.1/DESIGN.md` | **The build session's governing revision, and this document's anchor through §0.10.** All of Part I (§G0–§G10, lines 1–575) and the Phase 1 spec in Part II (lines 585–658). Phase titles only from §G5.1 for other phases. Superseded as the anchor by the row below at the round-eleven fix-up; retained rather than replaced because §0.4–§0.10 were written against it and cite it by line, and rewriting a historical record to point at a document it never read would be a worse defect than a stale coordinate (§0.10's head note). |
-| `docs/design/v2.0-RC2/DESIGN.md` | **This document's governing revision from §0.11 onward** — read by the round-eleven fix-up. All of Part I, **lines 76–945**: §G0–§G10 as before, plus **§G11** (ll. 833–943), which is new in REV1 and had been read by no prior session of this phase. The Phase 1 spec in Part II, **lines 957–1067**, in full, including its *Required inputs* (l. 1042) and its *Doc gate* (ll. 1056–1060, whose two **new** REV1 criteria are ll. 1058–1060). Beyond the assigned list and each disclosed in §0.11 with the item it turned on: Phase 6's *Scope — in* and cadence model (ll. 1545–1557, 1601–1607), Phase 9's *Scope — in/out* (ll. 1918–1932), §G5.1's Phase 6/9/11 rows (ll. 572–577) and Phase 11's spec head (ll. 2081–2090) for V11-1 and §6's rung-1 row; Phase 3's and Phase 7's engine-flag bullets (ll. 1260–1265, 1693–1695) for §0.10's coordinate note; the dropped-item audit (l. 2419). **RC2 is an unadopted candidate — §0.11 discloses what that means for a reader and for the next verify session.** |
+| `docs/design/v2.0-RC2/DESIGN.md` | **This document's governing revision from §0.11 onward** — read by the round-eleven fix-up. All of Part I, **lines 76–945**: §G0–§G10 as before, plus **§G11** (ll. 833–943), which is new in REV1 and had been read by no prior session of this phase. The Phase 1 spec in Part II, **lines 957–1067**, in full, including its *Required inputs* (l. 1042) and its *Doc gate* (ll. 1056–1060, whose two **new** REV1 criteria are ll. 1058–1060). Beyond the assigned list and each disclosed in §0.11 with the item it turned on: Phase 6's *Scope — in* and cadence model (ll. 1545–1557, 1601–1607), Phase 9's *Scope — in/out* (ll. 1918–1932), §G5.1's Phase 6/9/11 rows (ll. 572–577) and Phase 11's spec head (ll. 2081–2090) for V11-1 and §6's rung-1 row; Phase 3's and Phase 7's engine-flag bullets (ll. 1260–1265, 1693–1695) for §0.10's coordinate note; the dropped-item audit (l. 2419). Read again by the round-twelve fix-up for §4.12's and §5.1's ownership corrections: **Phase 5's *Scope — in*** (ll. 1487–1489), **Phase 6's sampler-re-pointing bullet** (l. 1563), **Phase 13's companion-atlas and custom-texture bullets** (ll. 2253–2262, 2269–2271), §G5.3's shared-ownership seam list (l. 631) and §G1.1 l. 252 — each disclosed in §0.12 with the finding it turned on. **RC2 governs this phase and remains a candidate overall — §0.12 records the adoption state and where to resolve it.** |
 | `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md` (`PD`) | Read by the round-eleven fix-up, scoped by §G11.6's reading map, which assigns P1 exactly two sections: **§2** (architecture / seam comparison, ll. 70–102) and **§16** (environment & platform notes, ll. 756–779). Also **§17**'s bug catalogue and **§18**'s divergence table, which §G11.4 makes *standing* do-not-inherit lists for any doc consuming Pintonium material — four §17 rows reach this phase and no §18 row does (§11.3 item 11). **No other PD section was read**, and the bound is stated rather than implied because REV2's Context budget names `Pintonium/` in its do-not-explore clause (§0.3 item 1). |
-| `reference-src/pintonium-9c2fcc1/` (Pintonium source) | Read **only** to verify the three PD claims this document builds on, per §G1.1's instruction to treat PD as a pointer and check load-bearing claims at source. Files opened: `common-shaders/src/main/java/org/embeddedt/embeddium/compat/mc/MinecraftVersionShimService.java` (complete — the inventory §4.12 checks against); the declarations of `com/mitchej123/glsm/{GLStateManagerService,RenderSystemService}.java` and `org/taumc/celeritas/CeleritasShaderVersionService.java` (existence and package, which is where PD §2's coordinate proved wrong); `forge122/src/shaders/java/org/taumc/celeritas/mixin/shaders/startup/{MixinGameSettings,MixinInitRenderer,MixinGuiMainMenu}.java` (the `@Mixin`/`@Inject` lines only — §4.13's three stages); `forge122/src/main/java/org/taumc/celeritas/mixin/CeleritasVintageMixinPlugin.java` (its `getMixins()` structure) and `forge122/src/main/resources/mixins.celeritas.json` (complete — §4.5.2a); `settings.gradle.kts` ll. 77–133 and the top-level directory listing (§4.12's module count). **Nothing was copied**; §G11.2's licensing and §G11.3's repository traps applied throughout — in particular no attempt was made to recover the `celeritas-shader-refactor.zip` that §G11.3 records as tracked-but-deleted. |
+| `reference-src/pintonium-9c2fcc1/` (Pintonium source) | Read **only** to verify the three PD claims this document builds on, per §G1.1's instruction to treat PD as a pointer and check load-bearing claims at source. Files opened: `common-shaders/src/main/java/org/embeddedt/embeddium/compat/mc/MinecraftVersionShimService.java` (complete — the inventory §4.12 checks against); `com/mitchej123/glsm/{GLStateManagerService,RenderSystemService}.java` — **existence and package only until the round-twelve fix-up, which read both complete** (92 and 65 lines) because REV2's checklist names them and §4.12 had bucketed neither (V12-5); `org/taumc/celeritas/CeleritasShaderVersionService.java` plus the `org/taumc/celeritas/` and `api/v0/` directory listings and `api/v0/CeleritasShadersApi.java` l. 1 (package and neighbours — where PD §2's coordinate proved wrong, and where the round-eleven statement of *how* it was wrong proved wrong in turn, V12-7); `forge122/src/shaders/java/org/embeddedt/embeddium/impl/MinecraftVintageVersionShimImpl.java` ll. 505–512 (the main-framebuffer pair, read by the round-twelve fix-up — V12-6); `forge122/src/shaders/java/org/taumc/celeritas/mixin/shaders/startup/{MixinGameSettings,MixinInitRenderer,MixinGuiMainMenu}.java` (the `@Mixin`/`@Inject` lines only — §4.13's three stages); `forge122/src/main/java/org/taumc/celeritas/mixin/CeleritasVintageMixinPlugin.java` (its `getMixins()` structure) and `forge122/src/main/resources/mixins.celeritas.json` (complete — §4.5.2a); `settings.gradle.kts` ll. 77–133 and the top-level directory listing (§4.12's module count). **Nothing was copied**; §G11.2's licensing and §G11.3's repository traps applied throughout — in particular no attempt was made to recover the `celeritas-shader-refactor.zip` that §G11.3 records as tracked-but-deleted. |
 | `docs/research/v1/RESEARCH.md` | §0 (reading guide, confidence tags), §1 (mission, non-goals, decision log D-1..D-10), §3.2 (source directives — cited by §3's `centerDepthSmooth` row), §4.1 (lifecycle — the GL capability probe set), §4.2 (program-registry mechanics — read for the facade's "use program is the universal state barrier" implication), §5.1, §5.2, §5.3, §6.1, §7.1 (the D-5 sentence only), §7.2, §7.4 (the coexistence sentence only), §8.3, §9, §10.1–§10.3, §11 (full OQ register), §12.2, §12.4, App D.1/D.3 (the `ivec2` uniforms), App E (header only — the "SRG name + descriptor" requirement quoted in §4.5.3), App H (glossary rows for platform terms). **App D.2/D.4, App B, App F.1/F.5/F.6/F.7, §3.4 and §3.5 were *not* read by the build session** — see §0.5, which records the fix-up session's reading and why that omission mattered. |
 | `Schmaloogium/build.gradle` | Complete. |
 | `Schmaloogium/settings.gradle` | Complete. |
@@ -966,9 +968,14 @@ written down:
   in §4.7.4 produces one for a texture the engine did not create. **The obvious fix is refused on the
   seam**: an `adopt(int glName)` verb would put a raw GL name in an `:engine` signature, which
   `[D-P1-15]` and §4.7.3 exist to prevent and which `SeamBytecodeTest` would pass while the property
-  was gone. What is adopted instead costs no signature — `mod.glue` implements `TextureHandle` for
+  was gone. What is adopted instead costs no facade **verb** — `mod.glue` implements `TextureHandle` for
   vanilla-owned textures, the GL name stays on the `:mod` side of C-1, and §5.1 names the slot while
-  Phase 6 fills it, because the unit map is Phase 6's policy and not this phase's (`[D-P1-36]`).
+  **Phase 5/6** fill it, because the unit map is **Phase 5/6** policy and not this phase's
+  (`[D-P1-36]`). *Two claims in this bullet were corrected at the twelfth round and are narrowed here
+  rather than left to be read as current: it said "Phase 6" alone, where `DESIGN.md` l. 1488 gives the
+  texture-object half to Phase 5 (V12-1); and "costs no signature" was true of the verb list but not of
+  the handle **declarations**, which had to lose `sealed` before a `mod.glue` implementation could
+  compile at all (V12-3). See §0.12.*
 - **§4.13 adopts two of PD §16's three bootstrap stages and deviates from the first, and the deviation
   is the argued part.** Stage 2 — `OpenGlHelper.initializeTextures` at `RETURN` — is adopted outright
   and is the load-bearing one: §7 had said *"at display init"*, which is a description rather than a
@@ -994,8 +1001,11 @@ written down:
   not, and the line between them is drawn explicitly.** §G1.1 asks for verification of load-bearing
   claims, not of every pointer. The three — §2's service inventory, §16's bootstrap sites, §16's
   class-scan plugin — were read at the files named in §0.1, and the reading **corrected PD once**:
-  §2 gives the third seam interface as `org.taumc.celeritas.api.v0.CeleritasShaderVersionService` and
-  the checkout has no `api.v0` package on that path. The four PD §17 rows in §11.3 item 11 were **not**
+  §2 gives the third seam interface as `org.taumc.celeritas.api.v0.CeleritasShaderVersionService` while
+  the interface sits directly in `org.taumc.celeritas`. *The correction as this bullet first stated it —
+  that the checkout has no `api.v0` package — was itself wrong, and is narrowed at §4.12 and §0.12:
+  `api/v0/` exists in the same module and holds `CeleritasShadersApi`, so PD conflates two adjacent API
+  surfaces (V12-7).* The four PD §17 rows in §11.3 item 11 were **not**
   re-opened, because none of them carries a Phase 1 design element, and that limit is stated at the
   site rather than left for a reviewer to discover.
 
@@ -1035,47 +1045,59 @@ application to this document returned one contract-grounded finding. The general
 tests a document against its sources; only a checklist drawn from outside can test it against the
 sources it never had.**
 
-**Three states this document is now in, disclosed rather than left to inference.**
+**Three states this document was in *at the end of the round-eleven fix-up*, disclosed rather than left
+to inference — and all three moved within hours of it, so each carries what has since landed.** The
+three paragraphs are dated rather than rewritten, on §0.10's head-note principle; the current state is
+§0.12's, and a reader who needs it should go to `docs/MOVES.md` and `PHASE_FACTS` rather than to any
+§0 addendum (V12-8).
 
-1. **RC2 is still an unadopted candidate, and this document is anchored to it anyway.** §G0.4's
-   adoption procedure has four steps: re-derive the `/verify-loop` harness's line pins, update the
-   operator docs, migrate the phase docs, relabel. **Only step 3 has been performed**, by the owner's
-   explicit direction that this session leave everything `/verify-loop`-related alone. So `v1.1`
-   remains the *governing* design for the project — `docs/MOVES.md` still says so, and the harness
-   still reads it — while **this document** now verifies against RC2. That mismatch is real and is the
-   trap §G0.4 names: a twelfth verify session briefed with v1.1 line coordinates against an
-   RC2-anchored document would not error, it would silently compare the wrong texts. A session that
-   finds its briefed coordinates disagreeing with this document's should **stop and report**, per
-   §G0.4's closing sentence, rather than guess which is right.
-2. **The `v10` → `v11` directory roll is owed and was deliberately not performed.** `docs/MOVES.md`
-   ll. 100–110 defines the roll as two steps run together — `git mv docs/phase1/v10 docs/phase1/v11`
-   **and** the `docVersion` bump in the harness — and the second is out of this session's scope by the
-   same direction. Doing only the first would point the harness at a directory that no longer exists,
-   which fails silently by design. The rule that `v<K>` equals the highest `§0.K` addendum is now
-   unsatisfied at `v10`, knowingly, and closing that is a maintainer operation rather than a document
-   edit.
-3. **A twelfth verify session is owed and was not run.** See the §G1.3 line below.
+1. **As of the round-eleven fix-up, only §G0.4 step 3 had been performed** — the owner's direction was
+   that this session leave everything `/verify-loop`-related alone — so `v1.1` was still the project's
+   governing design while this document verified against RC2, and the trap §G0.4 names was live: a
+   twelfth verify session briefed with v1.1 coordinates against an RC2-anchored document would not
+   error, it would silently compare the wrong texts. **Since then, steps 1, 2 and 4 have all landed**
+   (commit `afeceda`, the commit after this fix-up's own `c108630`): the harness pins RC2 per phase,
+   `docs/MOVES.md` records RC2 as governing Phase 1 and states that there is no longer one governing
+   revision, and step 4 is settled as a **ruling** — the `-RC` suffix is retained deliberately until
+   *every* downstream doc has adopted the revision. `[V:repo 2026-07-26]` The **stop-and-report
+   instruction stands on its own merits** and is kept: a session whose briefed coordinates disagree
+   with this document's should stop and report rather than guess which is right, whatever the adoption
+   state.
+2. **The `v10` → `v11` directory roll was owed and deliberately not performed at the round-eleven
+   fix-up**, because `docs/MOVES.md` defines it as two steps run together — the `git mv` **and** the
+   `docVersion` bump in the harness — and the second was out of that session's scope, while doing only
+   the first fails silently. **It has since been performed, both halves together with no loop
+   running:** this document is at `docs/phase1/v11/PHASE_1_DOC.md` and `PHASE_FACTS` carries
+   `docVersion: 'v11'`, so the rule that `v<K>` equals the highest `§0.K` addendum holds again — and
+   §0.12 is what makes the *next* roll owed. The one dangling reference the roll cost is recorded in
+   `docs/MOVES.md`, deliberately unrepointed. `[V:repo 2026-07-26]`
+3. **A twelfth verify session was owed and was not run** by that fix-up. **It has since run** —
+   `PHASE_1_REVIEW_12.md`, PASS-WITH-CORRECTIONS — and §0.12 is its fix-up. The only §G0.4 item still
+   outstanding is the one `docs/MOVES.md` names: `PHASE_2_DOC.md` has not migrated to RC2.
 
-**§G1.3 status:** this fix-up **altered §5**, and does not pretend otherwise. Three changes, each
-traceable: V11-1's deletion of the Phase 9 clause from §5.2's pixel-transfer consumer column, and two
-**new §5.1 rows** — the engine bring-up sequence (`[D-P1-37]`) and the `mod.glue` vanilla-texture
-provider slot (`[D-P1-36]`) — the second of which exists because REV2's mandated completeness check
-found a contract the facade could not express. §5.2's per-revision changelog row carries an entry for
-this revision, which §0.10 correctly declined to add when §5 was unchanged and which is owed now that
-it is not. **No service signature was added, removed or changed:** the seven services, every handle
-type and every value type are byte-for-byte what rounds seven through eleven all reviewed, and the two
-new rows are structural contracts rather than verbs — `[D-P1-36]` refuses the verb that would have
-been the easy fix, on the seam. So §G1.3's *"re-verify only if §5 changed"* trigger **fires**, and by
-its own words this fix-up does **not** close the phase. Under §G1.3's third bullet
-`PHASE_1_DOC.md` is **not verified** — there is a §5 change outstanding — it is **not** a valid
-dependency input (§G5.3), and Phase 2, Phase 3 and everything downstream are blocked again until a
-twelfth session returns. What that session inherits is narrow in one dimension and wide in another,
-and both are worth stating: **no finding is left unapplied and none was refused**, so there is no
-re-derivation debt from round eleven; but §4.12, §4.13 and §4.5.2a are **entirely unreviewed
-material**, and round seven's rule applies to them without mercy — *unreviewed material yields
-findings in proportion to its size, not to the document's maturity*. The three new decisions
-`[D-P1-36]`, `[D-P1-37]` and `[D-P1-38]` are where a twelfth session should start, and `[D-P1-36]` is
-the one that changes what a dependent builds.
+**§G1.3 status at the time:** that fix-up **altered §5**, and did not pretend otherwise. Three changes,
+each traceable: V11-1's deletion of the Phase 9 clause from §5.2's pixel-transfer consumer column, and
+two **new §5.1 rows** — the engine bring-up sequence (`[D-P1-37]`) and the `mod.glue` vanilla-texture
+provider slot (`[D-P1-36]`) — the second of which existed because REV2's mandated completeness check
+found a contract the facade could not express. §5.2's per-revision changelog row gained an entry for
+that revision, which §0.10 had correctly declined to add when §5 was unchanged. **No service signature
+was added, removed or changed:** the seven services, every handle type and every value type were
+byte-for-byte what rounds seven through eleven all reviewed, and the two new rows were structural
+contracts rather than verbs — `[D-P1-36]` refused the verb that would have been the easy fix, on the
+seam. *(Round twelve found that claim true of the verb list and **not** of the handle declarations,
+which could not have compiled with a `mod.glue` implementer while they were `sealed` — V12-3, §0.12.)*
+So §G1.3's *"re-verify only if §5 changed"* trigger **fired**, and by its own words that fix-up did
+**not** close the phase: `PHASE_1_DOC.md` was **not verified**, not a valid dependency input (§G5.3),
+and everything downstream stayed blocked until a twelfth session returned. What that session inherited
+was narrow in one dimension and wide in another, and both were worth stating: **no finding was left
+unapplied and none was refused**, so there was no re-derivation debt; but §4.12, §4.13 and §4.5.2a were
+**entirely unreviewed material**, and round seven's rule applied to them without mercy — *unreviewed
+material yields findings in proportion to its size, not to the document's maturity*. **That prediction
+held exactly:** eight of round twelve's nine corrections landed in that material and four of them on
+`[D-P1-36]`, the decision this paragraph named as where a twelfth session should start. **This
+subsection records round eleven only and is no longer the document's current state — see §0.12**, which
+supersedes it on both counts: the §5 trigger fires again, for four corrections rather than one, and the
+three disclosures above are dated rather than current.
 
 *Two notes on convention, so the next session does not read either as an error.* The three new
 decisions carry a `[REV2 migration — §0.11; DESIGN.md …]` marker rather than the
@@ -1084,6 +1106,47 @@ delta, not in a review finding, and inventing a review citation for them would m
 report something false — which is the failure V6-1 used it to detect. And **§0.10's line numbers are
 not updated by this fix-up**, by the rule stated in its own head note; the same will be true of this
 subsection at the next.
+
+### 0.12 Fix-up session addendum (round twelve — 2026-07-26)
+
+**What ran.** `PHASE_1_REVIEW_12.md` (V12-1 … V12-12), PASS-WITH-CORRECTIONS — **nine corrections, three
+notes, zero blocking**, four corrections touching §5. **All nine are applied; the three notes are
+deferred with their reasons**, both recorded in that file's `## Resolutions` — where §G1.3 puts the
+argument, so the rulings below are one line each. Re-derived at source rather than adopted: `DESIGN.md`
+ll. 631, 1056–1060, 1488, 1563, 2269–2271 and §G1.1 l. 252; `GLStateManagerService` and
+`RenderSystemService` **complete**; the shim's main-framebuffer pair; `api/v0/`; `docs/MOVES.md`,
+`PHASE_FACTS` and `git log` read-only `[V:repo 2026-07-26]`; MCP `search_mappings`. No `chatlogs/`, no
+root `*.txt`, no network, no agents.
+
+- **V12-1 — the vanilla-owned texture set is Phase 5's.** `DESIGN.md` l. 1488 gives it *which texture
+  object backs each unit per stage*; Phase 6 gets the pointing (l. 1563). Six sites; §11.4 gains **To Phase 5**.
+- **V12-2 — stage 2 is a requirement on Phase 7's catalog, stage 3 a recommendation.** §5.1 called both
+  requirements; §9, §4.13 and `[D-P1-37]` never did. §11.4's miscount goes with it.
+- **V12-3 — only `GLHandle` stays `sealed`.** JPMS rejected ⇒ permitted subtypes must share the sealed
+  type's package, so `Lwjgl3GLDevice`'s, `RecordingGLDevice`'s and `[D-P1-36]`'s handles were all
+  uncompilable as declared. The four leaves and `UniformLocation` are now `non-sealed` (`[D-P1-15]`).
+- **V12-4 — `ForeignTextureProvider` is declared** in `engine.gl` beside the handles, installed from
+  `mod.core` at §4.13 stage 2. §12 item 22b had shipped it at v0.1 with no site declaring it.
+- **V12-5 — the Doc gate's checklist has two halves and both are now run.** The glsm services are
+  bucketed in §4.12: **no new gap**, and their state-read members corroborate §12 item 22a's hook.
+- **V12-6 — `bindDefault` binds framebuffer name 0** (now in its javadoc), so it serves the shim's
+  *unbind* half only; binding a framebuffer the engine did not create is an absent verb, requesters 7 then 5.
+- **V12-7 — `org.taumc.celeritas.api.v0` exists** and holds `CeleritasShadersApi`. PD conflates two
+  adjacent API surfaces — a narrower and truer correction than the one §0.11 claimed.
+- **V12-8 — §G0.4 steps 1, 2 and 4 and the `v11` roll all landed after the round-eleven fix-up.** §0's
+  header, §0.11's three disclosures and the closing note are **dated, not rewritten**.
+- **V12-9 — the drift test excludes sub-packages another config declares.** The three mixin packages
+  are nested, so the subtree form went red on a *correct* config set at its first real exercise.
+
+**§G1.3 status:** this fix-up **altered §5** at five rows — §5.1's two (V12-1 … V12-4) and §5.2's
+changelog, opaque-handle and non-verbs rows (the last carries V12-6's new absent verb). **No facade verb, result type or value type changed;** two
+declarations did, and both are stated in the changelog row rather than glossed. So §G1.3's trigger
+**fires**: this fix-up does **not** close the phase, `PHASE_1_DOC.md` is **not verified**, it is **not**
+a valid dependency input, and Phase 2, Phase 3 and everything downstream stay blocked until a
+**thirteenth** verify session returns (§G5.3). What that session inherits: the three deferred notes;
+§4.7.3's provider block, §4.12's glsm half and §4.7.4's new absent-verb row as **fresh unreviewed
+material** at round seven's price; and one open question — `sealed` met the JPMS rejection here for the
+first time in twelve rounds, and nothing establishes it was the only declaration that cannot compile.
 
 ---
 
@@ -1121,7 +1184,7 @@ Every concern this document touches but does not own — the §G9 anti-sprawl de
 | Conformance harness content: scenes, capture drivers, image diff, fixture downloader, golden-file format and update workflow, headless-GL-in-CI viability | **Phase 2** |
 | Everything pack-format: discovery, `#include`/preprocessing, option discovery, `shaders.properties` model, identity macros | **Phase 3** |
 | Stage registry contents, the 43 program slots, backup-chain semantics, compile/link flow | **Phase 4** |
-| All GL *policy*: texture formats, the fixed texture-unit map, ping-pong/flip rules, clear colors, buffer sizing, resize | **Phase 5** (buffers) and **Phase 6** (uniforms/samplers) |
+| All GL *policy*: texture formats, the fixed texture-unit map, ping-pong/flip rules, clear colors, buffer sizing, resize | **Phase 5** (buffers) and **Phase 6** (uniforms/samplers). The unit map's own split, because four other sites delegate to this row: **Phase 5** owns *which texture object backs each unit per stage* (`DESIGN.md` l. 1488), **Phase 6** owns *pointing the sampler uniforms at the units* (l. 1563) |
 | The Mixin **hook catalog** — which classes, which methods, which `@At` targets (App E) | **Phase 7** (with additions from **Phase 10** and **Phase 13**) |
 | GL context creation mechanics, HiDPI, resize (OQ-3); CleanMix divergences on hot injections (OQ-4) | **Phase 7** |
 | Coexistence **policy**: which mod ids bail, detection mechanics, the user-visible message text (OQ-5) | **Phase 10** |
@@ -1250,6 +1313,7 @@ consistent with the `com.schmaloogium.{engine,mod,conformance}` tree. Publishing
 | `GLDevice` | `engine.gl` | Root facade handle; hands out the seven services, the capability profile and the GL-error drain |
 | `GLCapabilityProfile` | `engine.gl` | Immutable value object; RESEARCH.md §4.1's probe set + extension set + the macro-header fields (`glslVersion`, `vendor`, `renderer`); serializable as a test fixture |
 | `ProgramHandle`, `ShaderHandle`, `TextureHandle`, `FramebufferHandle`, `UniformLocation` | `engine.gl` | Opaque handles — the engine never holds a raw GL int. **Four** handle types; there is no renderbuffer (§4.7.3) |
+| `ForeignTextureProvider`, `ForeignTextures` | `engine.gl` | The slot a `mod.glue` implementation fills with `TextureHandle`s for textures **Minecraft** owns (`[D-P1-36]`, §4.7.3, §4.12). *Which* textures is Phase 5's, with the unit map |
 | `GLError`, `GLErrorKind` | `engine.gl` | Driver errors as data. Attribution is per **drain window** — one call named when the window held one mutating **facade** call, the sweep named when it held many (`[D-P1-32]`); a window may also hold an error no facade call caused, since the GL flag is per-context (§4.7.4) — and this is the signal §G2.4's **rung 2** acts on; rung 1 is Phase 11's expression isolation and never reaches GL (§6) |
 | `RecordingGLDevice`, `GLCallLog`, `GLCall`, `ScriptedResponses`, `ReplayAssertions` | `engine.gl.record` | The headless test backend |
 | `Log`, `LogSink`, `LogChannels` | `engine.log` | Zero-dependency logging SPI + the fixed channel name list |
@@ -1281,7 +1345,7 @@ debug affordances must satisfy, plus the vocabulary rule.
 | **KHR_debug labels/groups in dev** — the other affordance §G4.5 reserves from day one | DESIGN.md §G4.5 | `DebugService` (§4.7.4) exists as an interface at v0.1 so call sites can label objects immediately; `-Dschmaloogium.debug.glLabels` (§4.9.3) gates it; the implementation is `v0.5` / Phase 14 (§9) | `[V:design]` |
 | Declaring `centerDepthSmooth` enables a **center-depth readback** | RESEARCH.md §3.2, App A.3 for the directive; §4.4 for the synchronous per-frame stall `[V:observed]` | `FramebufferService.readDepthPixel(...)` (§4.7.4) — the verb only; which pixel, at which moment, and the halflife smoothing are Phase 6's policy. The PBO/fence async form is RESEARCH.md §6.2's modernization, deferred to Phase 14 | `[V:doc]` |
 | Noise texture and pack custom textures require **texel upload** | RESEARCH.md §4.1 step 4 ("create noise texture"), App F.5 (`texture.noise`, custom-texture source forms) | `TextureService.upload(TextureHandle, TextureData)` (§4.7.4) — the verb only; generation, formats and unit assignment are Phase 13's (with Phase 5 owning formats) | `[V:observed]` |
-| **App B.3's fixed unit map names textures Minecraft owns** — unit 0 `texture` (the block atlas) and unit 1 `lightmap` on GBUFFERS/SHADOW programs | RESEARCH.md App **B.3**, the unit map packs rely on numerically; the gap was surfaced by §4.12's PD §2 completeness check | `TextureService.bindToUnit(int, TextureHandle)` supplies the **binding**; the `TextureHandle` for a vanilla-owned texture comes from a **`mod.glue` provider**, not from `TextureService.create` (§4.12, `[D-P1-36]`, §5.1). **No facade verb is added** — an `adopt(int glName)` form would put a raw GL name in an `:engine` signature, which §4.7.3 and `[D-P1-15]` exist to prevent. Which textures the map needs, and the map itself, stay Phase 5/6 policy (§1.2) | `[V:doc]` for the map; `[V:observed — PD §2]` for the inventory that found the gap; §G11.4 decision `[D-P1-36]` |
+| **App B.3's fixed unit map names textures Minecraft owns** — unit 0 `texture` (the block atlas) and unit 1 `lightmap` on GBUFFERS/SHADOW programs | RESEARCH.md App **B.3**, the unit map packs rely on numerically; the gap was surfaced by §4.12's PD §2 completeness check | `TextureService.bindToUnit(int, TextureHandle)` supplies the **binding**; the `TextureHandle` for a vanilla-owned texture comes from a **`mod.glue` implementation of `ForeignTextureProvider`** (§4.7.3), not from `TextureService.create` (§4.12, `[D-P1-36]`, §5.1). **No facade verb is added** — an `adopt(int glName)` form would put a raw GL name in an `:engine` signature, which §4.7.3 and `[D-P1-15]` exist to prevent. Which textures the map needs, and the map itself, stay Phase 5/6 policy (§1.2) | `[V:doc]` for the map; `[V:observed — PD §2]` for the inventory that found the gap; §G11.4 decision `[D-P1-36]` |
 | `atlasSize` / `eyeBrightness` are **`ivec2`** uniforms | RESEARCH.md App **D.3** (`atlasSize`, `terrainTextureSize` — camera/matrices/screen) and App **D.1** (`eyeBrightness`, `eyeBrightnessSmooth` — held item/player) | `UniformService.upload(loc, int, int)` (§4.7.4); the values and their cadences are Phase 6's | `[V:doc]` |
 | `blendFunc` is an **`ivec4`** uniform (current blend `srcRGB`, `dstRGB`, `srcA`, `dstA`) | RESEARCH.md App **D.4**, §3.4 | `UniformService.upload(loc, int, int, int, int)` (§4.7.4). Phase 6 owns the value provider and its cadence (`DESIGN.md` §G5.1 puts App D's inventory at **v0.1**). The value is *observed* from `GlStateManager` per §G4.6 — that observation is Phase 6's, not the facade's. **Phase 9 is named nowhere in this row, and the omission is deliberate** (V11-1): `DESIGN.md` routes `blendFunc` to Phase 6 in five independent passages and to Phase 9 in none — Phase 6's *Scope — in* (l. 1601), its cadence model (ll. 1549–1550, where the "at their hooks (Phases 7/9/10 invoke)" gloss names *invokers* of a whole list, not owners of one uniform), Phase 9's own *Scope — in* (ll. 1918–1920, which enumerates its per-draw dynamics exhaustively and excludes `blendFunc`), Phase 9's *Scope — out* (ll. 1931–1932, "uniform upload mechanics (Phase 6)"), and the dropped-item audit (l. 2419, "`blendFunc`/GlStateManager → P6 + G4.6"). **REV2 adds the sixth and makes the duty concrete:** the observation must be *wired*, not assumed — Phase 6 designs the notifier, Phase 7 owns the hook that feeds it, and Phase 6's doc carries a notifier→producer audit table (§G4.6 ll. 554–557; Phase 6's spec ll. 1602–1607). The failure that rule is drawn from is Pintonium's `blendFunc` notifier, never assigned on 1.12.2, so any pack declaring the uniform NPEs at program build — PD §17 B6, a standing do-not-inherit row (§G11.4). Phase 1 handles it by supplying the `ivec4` verb and **not** claiming the observation for the facade | `[V:doc]`; the notifier-wiring duty is `[V:observed — PD §17 B6]`, cited from PD as a pointer to Phase 6/7 rather than re-verified at Pintonium source, because no Phase 1 design element rests on it (§G1.1's load-bearing test) |
 | Geometry programs may declare the **ARB form** (`#extension GL_ARB_geometry_shader4` + `const int maxVerticesOut = N`) | RESEARCH.md §3.1, App A.3, §6.2 | Handled **upstream of the facade**: RESEARCH.md §6.2 lists core GL 3.2 geometry shaders with internal translation as a modernization *opportunity*, which this project adopts, so the ARB form is a source-level rewrite in the Phase 3 front-end / Phase 4 compile path. `ShaderService` therefore exposes no pre-link program-parameter verb, and says so (§4.7.4) | `[V:doc]` |
@@ -2090,9 +2154,15 @@ classloader.
 
 **What is kept from the finding, because the underlying risk is real.** The failure mode a scan
 eliminates — an array drifting out of step with its package — is genuine, and the cheap insurance is
-a **test, not a plugin**: a `:mod` test asserting that every `@Mixin`-annotated class under a config's
-declared package appears in that config's arrays, and vice versa. It is one test, it runs headless,
-it names the drift precisely, and it costs none of the above. Recorded as a §12 item rather than
+a **test, not a plugin**: a `:mod` test asserting that, for each config, the `@Mixin`-annotated classes
+in its declared package **excluding any sub-package another config declares** are exactly the classes
+its arrays name. **The exclusion is load-bearing, not tidy-up to be simplified away later** (V12-9):
+observation 1 above records that DEFAULT's `com.schmaloogium.mod.mixin` is the *parent* of both other
+configs' packages, so a plain subtree assertion would go **red on a correct config set** the first time
+PRE_INIT or MOD acquires a tenant — correctly listed in its own arrays and correctly absent from
+DEFAULT's — which is the first moment the test has anything to check at all. Observation 2's plugin
+class needs no exception: an `IMixinConfigPlugin` is not `@Mixin`-annotated. It is one test, it runs
+headless, it names the drift precisely, and it costs none of the above. Recorded as a §12 item rather than
 folded into `[D-P1-11]`, since it is new work rather than a restatement. `[D-P1-38]`
 
 *One incidental corroboration, recorded because §11.3 item 8 is an open spot check:* Pintonium's
@@ -2321,25 +2391,45 @@ Phase 1 owns the format; Phase 2 owns the fixture set and the update workflow.
 ```java
 package com.schmaloogium.engine.gl;
 
-/** Marker for every GL object the engine holds. Never an int. */
+/** Marker for every GL object the engine holds. Never an int. Sealed — and this is the one
+ *  sealing that means something: the permits list IS the statement that there are exactly
+ *  four handle categories and no renderbuffer (§12 item 18 checks the clause). */
 public sealed interface GLHandle permits
         ProgramHandle, ShaderHandle, TextureHandle, FramebufferHandle {}
 
-public sealed interface ProgramHandle     extends GLHandle permits …  {}
-public sealed interface ShaderHandle      extends GLHandle permits …  {}
-public sealed interface TextureHandle     extends GLHandle permits …  {}
-public sealed interface FramebufferHandle extends GLHandle permits …  {}
+/** A direct subtype of a sealed type must be final, sealed or non-sealed; an interface
+ *  cannot be final, and these four must be implementable by backends OUTSIDE this package
+ *  — so non-sealed is the only correct modifier, not a relaxation. See below. */
+public non-sealed interface ProgramHandle     extends GLHandle {}
+public non-sealed interface ShaderHandle      extends GLHandle {}
+public non-sealed interface TextureHandle     extends GLHandle {}
+public non-sealed interface FramebufferHandle extends GLHandle {}
 
-/** Deliberately NOT a GLHandle — a location is a lookup result, not an object. */
-public sealed interface UniformLocation permits … {
+/** Deliberately NOT a GLHandle — a location is a lookup result, not an object. Not sealed
+ *  either, and for the same reason: `[D-P1-34]` obliges every *backend* to implement it. */
+public interface UniformLocation {
     /** True when the uniform was optimized out; uploads through it are no-ops. */
     boolean isAbsent();
 }
 ```
 
-Each backend supplies the permitted implementations: `Lwjgl3GLDevice` wraps ints;
-`RecordingGLDevice` wraps synthetic sequence numbers; a hypothetical Kirino backend wraps whatever
-it uses. `:engine` sees only the interfaces.
+**Each backend supplies its own implementations, and that is why only `GLHandle` is sealed.**
+`Lwjgl3GLDevice` wraps ints; `RecordingGLDevice` wraps synthetic sequence numbers; a hypothetical
+Kirino backend wraps whatever it uses (§10.3's drill assumes exactly that); and `mod.glue` wraps
+the GL names of textures Minecraft owns (`[D-P1-36]`). **None of those can be a *permitted*
+subtype.** For a sealed type in the **unnamed module** every permitted subtype must sit in the
+sealed type's own **package**, and the unnamed module is what `:engine` compiles into, because
+§4.3 *"considered and rejected"* JPMS (`[D-P1-6]`) — while `Lwjgl3GLDevice` is in `mod.glue` (§2.1,
+§2.4) and `RecordingGLDevice` in `engine.gl.record` (§4.7.5), neither of them
+`com.schmaloogium.engine.gl` and the first not even the same Gradle project. **So sealing the four
+leaves would have made the arrangement this facade is built on uncompilable**, and it had read that
+way since the build session's own listing: `PHASE_1_REVIEW_4.md`'s F3-6 quotes these four
+declarations' literal `permits …` ellipses, and the ellipsis is what hid the defect rather than what
+caused it — no filling-in of it could have made a `mod.glue` class a permitted subtype
+(`[D-P1-15]`, V12-3). **The opaqueness property never lived
+in `sealed`:** it lives in these interfaces exposing no accessor that returns a GL name, plus
+`SeamBytecodeTest` (§4.3) — which is the same trade §4.3 already makes when it prefers a bytecode
+scan to a language-level guarantee. `:engine` sees only the interfaces.
 
 **Four handle types, not five.** There is no `RenderbufferHandle` and no renderbuffer verb anywhere
 in the facade, deliberately: RESEARCH.md §4.3's reference architecture makes **every** attachment a sampleable
@@ -2371,6 +2461,44 @@ routinely optimize out unused uniforms, `glGetUniformLocation` returns `-1`, and
 implementation's per-program location caching (RESEARCH.md §4.2) depends on distinguishing "not
 looked up yet" from "looked up, not present". Exposing that as a boolean instead of a sentinel
 integer is exactly the kind of leak the opaque-handle decision is meant to prevent.
+
+**Handles for textures the engine did not create — the type `[D-P1-36]`'s slot is made of.**
+§4.12's completeness check found that App B.3's units 0 and 1 name **Minecraft's** textures, which
+`TextureService.create` can never produce. The slot is declared here, beside the handle types,
+because §5 promises a dependent everything it needs and §12 item 22b makes this a Phase 1 **v0.1**
+deliverable — a named slot with no declaration would leave a Phase 5/6 session the one route
+§G1.1 l. 252 forbids ("do not invent the missing interface as if it existed"):
+
+```java
+package com.schmaloogium.engine.gl;
+
+/** Handles for GL textures Minecraft owns. Implemented in `mod.glue` — the only place a GL
+ *  name may exist (C-1) — and consumed like any other TextureHandle, so no §4.7.4 verb
+ *  changes and no `adopt(int)` appears anywhere (`[D-P1-36]`, §4.12). */
+public interface ForeignTextureProvider {
+    /** `key` is App B.3's sampler name used verbatim (§G4.1): "texture", "lightmap", … .
+     *  Empty when the platform has no such texture yet, or none under that key — the caller
+     *  degrades per §6 rather than assuming presence. Never exposes the GL name.
+     *  WHICH keys the set contains is NOT this phase's: Phase 5 owns which texture object
+     *  backs each unit per stage, Phase 6 points the sampler uniforms at the units. */
+    Optional<TextureHandle> handleFor(String key);
+}
+
+/** Where `:engine` holds it: the shape §4.9.1 already uses for `LogSink`, for the same
+ *  reason — a `:mod`-implemented SPI that `:engine` reaches from wherever it binds. */
+public final class ForeignTextures {
+    public static void install(ForeignTextureProvider p);   // mod.core, at §4.13 stage 2
+    public static ForeignTextureProvider active();          // before install: empty for every key
+}
+```
+
+It must be an **`:engine`** type: a provider declared in `mod.glue` and consumed by `:engine` would
+invert the `:mod → :engine` edge (§2.2, C-1), which is what makes the declaration Phase 1's rather
+than a dependent's. `mod.core` installs it at **§4.13 stage 2**, where the GL context and the engine
+bootstrap already are; resolution is **lazy per call**, so installation does not require the vanilla
+textures to exist yet. Render thread, like every other `engine.gl` call (§7). Before install — and
+in every headless test that does not script one — `active()` answers empty for every key, the same
+degradation `LogSink` takes (§4.9.1, §6).
 
 #### 4.7.4 The device and its services
 
@@ -2445,6 +2573,11 @@ public interface FramebufferService {
 
     FramebufferStatus check(FramebufferHandle f);
     void bind(FramebufferTarget target, FramebufferHandle f);
+
+    /** Binds framebuffer **name 0**, the GL default framebuffer, on `target`. NOT "whatever
+     *  the platform regards as its default target": Minecraft renders the world into a
+     *  framebuffer object of its own, and no verb here binds that one — see §4.12's bucket
+     *  row and the absent-verbs table below, both of which turn on this sentence. */
     void bindDefault(FramebufferTarget target);
 
     /** Framebuffer-to-framebuffer copy. BlitSpec carries the source and destination rectangles,
@@ -2795,6 +2928,7 @@ the column is headed as it is:
 | **Colour mask** (`glColorMask`-shaped) | The one RESEARCH.md §4.3 state element with a GL consequence that this facade withholds. RESEARCH.md §4.3's `final` pass renders to the vanilla framebuffer with **anaglyph-aware colour masking**, and `DESIGN.md` assigns the anaglyph-aware final to Phase 7. If Phase 7 drives that through vanilla's own path it needs no verb; if it wants it through the facade, the request is additive and this row is where it starts | **7** |
 | **Face-culling state** (`backFace.*`, App F.1) | Terrain draws through vanilla's path, so these flags are applied by `:mod` through `GlStateManager` rather than through the facade. The authoritative assignment is not this document's to make: `DESIGN.md` makes the **engine-flag ownership map** a Phase 3 deliverable (§G5.3's integration review audits it), and this row exists so a reader is not left wondering whether the absence is an oversight | **3** (produces the map; `DESIGN.md`'s own worked example routes `backFace.*` to **7**) |
 | Free-standing pixel-store state (row length, alignment) | Carried *inside* `TextureData`'s layout instead, so an upload cannot leave global state perturbed behind it | — (by design) |
+| **Bind a framebuffer the engine did not create** — Minecraft's own world FBO | `bindDefault` is framebuffer **name 0** (see its javadoc) and `bind` needs a `FramebufferHandle`, which §4.7.4 yields only for framebuffers the engine created: the same shape of hole §4.12 found for `TextureHandle`, in the framebuffer direction. **Nobody in the current phase set has asked yet, and it may never be needed:** App E row 17 catalogs `Framebuffer.bindFramebuffer(Z)V` as the final-to-screen handoff hook — vanilla binds and unbinds its own FBO around the world render — so a `final` pass that simply does not rebind writes there already `[A]`. If a request comes, the cheap answer is `[D-P1-36]`'s shape rather than a new verb: `mod.glue` implements `FramebufferHandle` for that FBO and `bind` takes it unchanged | **7** — RESEARCH.md §4.3's `final` renders to the vanilla framebuffer and `DESIGN.md` makes that a **handoff contract** between Phase 5 and Phase 7; **5**, if the buffer estate ever needs vanilla's FBO as a `blit`/`copyDepthToTexture` **source** |
 | Pre-link program parameters | See the ARB-geometry rule above: the path is translated upstream | **4**, if translation proves insufficient |
 | **Instanced draw** (a `fullscreenQuadInstanced(int)`-shaped verb) | **It cannot express the directive it looks like it serves.** `const int countInstances = N` re-renders the geometry N times with an **incrementing `instanceId` uniform** (RESEARCH.md §3.2, App A.3), and App D.4 declares `instanceId` as an `int` *uniform* — one instanced draw cannot vary a uniform between copies, and the backend could not do it on the caller's behalf either, since it is handed no `UniformLocation`. GLSL 120 has no `gl_InstanceID` (RESEARCH.md §3.5), which is precisely why the contract carries a uniform at all. The faithful shape — **for the composite/deferred programs RESEARCH.md §4.4 observes the loop on** — is a caller-side loop over `fullscreenQuad()` with `UniformService.upload(instanceIdLoc, i)` between copies, which this facade already supports. The directive on a **gbuffers/shadow** program is not this row's subject and would not be served by an instanced verb either: that geometry is vanilla's and is drawn outside the facade (§3's second row, `[D-P1-35]`). A verb of this shape was present in the §0.5 revision, unspecified, and is deleted `[D-P1-33]`. Nobody **requests** this verb; what follows is who owns the served work instead. | **7** — the composite/final **execution** owner, `[v0.5]`: `DESIGN.md` names the `countInstances` instancing loop in Phase 7's *Scope — in* under composite/final execution, and says it a second time and more explicitly in Phase 4's, *"`countInstances` exposure to the pass executor (**execution is Phase 7, tag v0.5**)"* — which is where the milestone comes from. **6** owns the `instanceId` upload the loop makes between copies (`DESIGN.md` carries it among Phase 6's per-draw dynamics). **5** owns the buffer estate those passes read and write — the read/write/flip law the N draws run inside — but not the draw loop that runs them. An instanced verb itself is requested by **7**, and only if a future non-GLSL-120 path ever needs one |
 
@@ -3336,16 +3470,21 @@ common-shaders/src/main/java/…]`:
 
 | PD §2's seam | Path under `reference-src/pintonium-9c2fcc1/` |
 |---|---|
-| `GLStateManagerService`, `RenderSystemService` | `common-shaders/src/main/java/com/mitchej123/glsm/{GLStateManagerService,RenderSystemService}.java` |
+| `GLStateManagerService`, `RenderSystemService` | `common-shaders/src/main/java/com/mitchej123/glsm/{GLStateManagerService,RenderSystemService}.java` — 92 lines / 59 declarations and 65 lines / 31, **both read complete** for the second half of the check (§0.1; added this revision, V12-5) |
 | `MinecraftVersionShimService` | `common-shaders/src/main/java/org/embeddedt/embeddium/compat/mc/MinecraftVersionShimService.java` — 148 lines, ~75 members; the inventory this check runs against |
 | `CeleritasShaderVersionService` | `common-shaders/src/main/java/org/taumc/celeritas/CeleritasShaderVersionService.java` |
 
 **One PD coordinate is corrected rather than repeated.** PD §2 gives the third interface as
-`org.taumc.celeritas.api.v0.CeleritasShaderVersionService` — note the **`api.v0`** segment; the checkout has no such package
-on that path — the interface sits directly in `org.taumc.celeritas`. The inventory PD draws from it
-is unaffected, and this is recorded because §G1.1 asks a session to verify PD's pointers rather than
-inherit them, and a pointer that does not resolve is the cheapest possible demonstration that the
-verification happened.
+`org.taumc.celeritas.api.v0.CeleritasShaderVersionService`; in the checkout the interface sits
+**directly in `org.taumc.celeritas`**, whose only two entries are `CeleritasShaderVersionService.java`
+and `api/`. **The `api.v0` segment is not fictitious, and the round-eleven wording that said the
+checkout has no such package was wrong** (V12-7): `api/v0/` exists in the
+same module and holds `CeleritasShadersApi`, a `ServiceLoader`-based public API surface
+`[V:observed — Pintonium common-shaders/src/main/java/org/taumc/celeritas/api/v0/CeleritasShadersApi.java l. 1]`.
+So PD's coordinate **conflates two adjacent API surfaces** rather than naming a package that does not
+exist. The inventory PD draws from the interface is unaffected, and the correction is recorded because
+§G1.1 asks a session to verify PD's pointers rather than inherit them — and because a demonstration of
+verification that is itself wrong demonstrates the opposite.
 
 **Why an interface-to-interface mapping is not the right check.** PD §2 itself records that
 `common-shaders` *"is **not** headless-testable the way `:engine` is designed to be: it compiles
@@ -3354,15 +3493,38 @@ abstracts *the game*; ours abstracts *the game and GL* (§4.3's C-1 forbids both
 classpath), which is the whole of D-10's difference and the reason §4.7.5's headless backend can
 exist at all. So the useful question is not "which of our interfaces corresponds to theirs" but the
 one REV2 actually poses: **is there anything a version-facing glue seam is field-proven to need that
-our design has nowhere to put?** Every member of `MinecraftVersionShimService` was placed in one of
-four buckets, and the buckets are the answer.
+our design has nowhere to put?** REV2 defines that checklist in **two** parts — *"`MinecraftVersionShimService`'s
+method list … **plus the glsm state services**"* (`DESIGN.md` ll. 999–1000) — so the check is run over
+both halves, and the second half is bucketed after the first rather than folded into it, because its
+counterpart here is §4.7.4 and not `mod.glue` (V12-5; through the §0.11 revision only the shim half
+had been run, and the criterion is scored against the spec's two-part definition). Every member of
+`MinecraftVersionShimService` was placed in one of four buckets, and the buckets are the answer.
 
 | Bucket | Members (representative, not exhaustive) | Where it lands here |
 |---|---|---|
-| **Already served** — a verb or type this phase ships | `getAtlasSize`/`getTextureSize`; `bindMainFramebuffer`/`unbindMainFramebuffer`; `createNativeImage`/`readNativeImage`/`createNativeImageArray`; `getShadowModelView`/`getShadowProjection`; `isModLoaded`; `translate` | §3's `atlasSize` `ivec2` row; `FramebufferService.bindDefault(target)`; `TextureData`'s JDK `ByteBuffer` + `PixelLayout` (decoding is Phase 13's, the **upload verb** exists); `UniformService.uploadMatrix4` (values are Phase 8's); `CompatContext.isModLoaded` (§4.10); `[D-P1-22]`'s lang **keys** — `:engine` holds no user-facing English, which is a stronger answer than a `translate` accessor |
+| **Already served** — a verb or type this phase ships | `getAtlasSize`/`getTextureSize`; `unbindMainFramebuffer` — **but not its `bindMainFramebuffer` partner, which is the second gap below** (V12-6); `createNativeImage`/`readNativeImage`/`createNativeImageArray`; `getShadowModelView`/`getShadowProjection`; `isModLoaded`; `translate` | §3's `atlasSize` `ivec2` row; `FramebufferService.bindDefault(target)`, which binds framebuffer **name 0** and is therefore the *unbind* half exactly (their `unbindMainFramebuffer()` returns to 0 `[V:observed — Pintonium forge122/…/impl/MinecraftVintageVersionShimImpl.java l. 511]`); `TextureData`'s JDK `ByteBuffer` + `PixelLayout` (decoding is Phase 13's, the **upload verb** exists); `UniformService.uploadMatrix4` (values are Phase 8's); `CompatContext.isModLoaded` (§4.10); `[D-P1-22]`'s lang **keys** — `:engine` holds no user-facing English, which is a stronger answer than a `translate` accessor |
 | **A `mod.glue` provider a later phase owns**, with a home §2.1 already assigns | the world/camera/player/weather/dimension accessors — `getSkyAngle`, `getMoonPhase`, `getDayTime`, `getRainStrength`, `getThunderStrength`, `getEyeBrightness`, `getNightVision`, `isEyeInWater`, `getCurrentHealth`/`Hunger`/`Air`/`Armor`, `isHurt`/`isBurning`/`isSneaking`/`isSprinting`/`isInvisible`/`isSpectator`/`isOnGround`, `getEyePosition`, `getPlayerLookVector`/`getPlayerBodyVector`, `getSkyColor`, `getBlindness`, `getPlayerMood`, `getCloudHeight`, `hasCeiling`/`hasSkyLight`/`getAmbientLight`, `isCurrentDimensionNether`/`End`, `getRenderDistance*`, `getUnshiftedCameraPosition`, `getLightningBoltPosition`, `isFirstPersonCamera`, `hideGui`, `isRightHanded`, `getScreenBrightness`, the height-limit trio; plus `populateBlockIds`, `getResourceManager`/`makeResourceLocation`, `markRendererReloadRequired`, `getMipmapLevels` | **Phase 6**'s value providers in `engine.uniforms` behind `mod.glue` adapters for the bulk of them; **Phase 9** for `populateBlockIds`; **Phase 3** for the resource accessors; **Phase 7** for `markRendererReloadRequired` (RESEARCH.md §4.1 step 3's vertex-format rebuild); Phase 5/13 for mipmap levels. §2.1 already assigns `mod.glue` to *"Phases 1 (facade impl shape), 6, 7, 9"* — the inventory adds no phase that table does not name |
 | **Deliberately excluded — multi-backend machinery we do not have** | `ServiceLoader` dispatch itself; `getMcVersion`/`getBackupVersionNumber`; `getOsString`/`isOnOSX` | Pintonium needs version dispatch because one shader core drives several MC backends. **We have one.** D-1 makes Cleanroom-exclusivity binding, and the seam we hold against a *future* backend is the **module** boundary (§2.2, OQ-20), not a version-dispatch service — a service seam inside one module would be ceremony that buys nothing and costs a dispatch on every accessor |
 | **Not ours at any phase** | `isDHPresent`; `getSmartCull`/`setSmartCull`; `getCurrentTick` | Distant Horizons compat is a §1.2 non-goal. Smart-cull is chunk-renderer state: Pintonium's shader support *rides a replacement chunk renderer* (§G11.1) and ours explicitly does not (D-2, and §4.10 exists to **bail** when one is present). `getCurrentTick` is a helper for their cadence buckets; our cadences are Phase 6's design, not a glue accessor |
+
+**The second half of the checklist — the glsm state services, bucketed the same way** (V12-5)
+`[V:observed — Pintonium common-shaders/src/main/java/com/mitchej123/glsm/]`. This is the half of
+their seam that abstracts **GL**, so its counterpart is the facade itself and the mapping runs
+verb-to-verb rather than accessor-to-provider:
+
+| Bucket | Members | Where it lands here |
+|---|---|---|
+| **Already served by a facade verb** | `glGetInteger`/`glGetString`; the program/shader set (`glCreateShader`, `glCompileShader`, `glCreateProgram`, `glAttachShader`, `glLinkProgram`, `glUseProgram`, `glDeleteProgram`/`glDeleteShader`, `glGetProgrami`/`glGetShaderi`, `glGetUniformLocation`, `glGetAttribLocation`/`glBindAttribLocation`); `glUniform1i`, `glUniformMatrix4`; the framebuffer set (`glGenFramebuffers`, `glBindFramebuffer`, `glCheckFramebufferStatus`, `glFramebufferTexture2D`, `glDeleteFramebuffers`); `glGenTextures`/`glDeleteTextures`/`glActiveTexture`/`bindTexture`/`setBoundTexture`; `glViewport`, `glClearColor`, `clear`, depth enable/disable + `glDepthFunc`/`glDepthMask`, blend enable/disable + `glBlendFuncSeparate`; `glCopyTexSubImage2D` | `GLCapabilityProfile`'s probe set (§4.7.2); `ShaderService` (its whole verb list, `bindAttributeLocation` included); `UniformService.upload`/`uploadMatrix4`; `FramebufferService`; `TextureService.create`/`delete`/`bindToUnit`; `StateService.viewport`/`clearColor`/`clear`/`depthTest`/`depthMask`/`blend`. `glCopyTexSubImage2D` is how `copyDepthToTexture` is *implemented*, not a verb above it |
+| **Served by `snapshot()`/`restore()`'s aspect set** — the state **reads** those two verbs are built out of | `getDepthStateMask`; `isBlendEnabled`, `getBlendMode`; `getViewportWidth`/`getViewportHeight` | `StateService.snapshot(EnumSet<StateAspect>)` / `restore(StateSnapshot)`, whose aspect enum has one constant per verb (§4.7.4). **This bucket is also the strongest corroboration the check produced:** it is exactly the member set §12 item **22a**'s review hook audits, added against PD §17 B11 — their `getColorMask()` returns a hardcoded all-true, satisfying every signature while breaking restore discipline |
+| **Already recorded as absent, each with its requester** | `glColorMask` / `getColorMask`; `enableCullFace`/`disableCullFace`; `glPixelStorei`; `glUniformMatrix3`; `glGetTexLevelParameteri` | §4.7.4's absent-verbs table, unchanged by this half: colour mask (**7**), face culling (**3** produces the map, **7** wires it), free-standing pixel-store state (carried inside `TextureData`), `mat3` (no contract consumer). `glGetTexLevelParameteri` is a texture-*dimension* query, and the one dimension the contract needs — `atlasSize` — reaches us as a **value** from `mod.glue` (§3's `atlasSize` row, Phase 13), never as a GL query |
+| **Not ours at any phase** | the binding **reads** `getActiveTexture`, `getActiveTextureAccessor`, `getBoundTexture(int)`, `getActiveBoundTexture`; `glGenBuffers`/`glBindBuffer`, `glGenVertexArrays`/`glBindVertexArray`; `RenderSystemService`'s modern-`RenderSystem` surface — `assertOnRenderThread`/`assertOnRenderThreadOrInit`, `setShaderTexture`/`getShaderTexture`, `setShaderColor`, `getShaderFogColor`/`Start`/`End`, `getFogShape`, `getShaderLineWidth`, `getProjectionMatrix`/`setProjectionMatrixOrth`/`Origin`, `setPositionShader`, `setUnknownBlendState`; and the two `ServiceLoader` singletons | The binding reads are answered by `[D-P1-29]` instead of by a verb: because the backend issues every `GlStateManager`-cached verb *through* `GlStateManager`, vanilla's cache never goes stale and nothing has to read a binding back to restore it. Buffer objects and VAOs are the **backend's** private business — the only geometry this facade draws is `DrawService.fullscreenQuad()`, and D-9 keeps `GL_QUADS` available (§3), so the vertex source is not contract. The `RenderSystem` surface is 1.17+ vanilla, absent on 1.12.2; its fog/line-width/matrix accessors are vanilla **state** reached through `GlStateManager` and the fixed-function matrix stack (Phase 6's FF-matrix capture at Phase 7's hooks), not through a glue accessor. The singletons are the version-dispatch machinery the fourth bucket above already rejects |
+
+**Result: the second half adds no gap, and that is structural rather than luck.** Their glsm services
+exist to abstract GL for a core that otherwise calls GL statically; ours *is* the GL abstraction, so
+every member is a facade verb, a snapshot aspect, an absence already recorded with a requester, or a
+concept 1.12.2 does not have. *Limit stated rather than glossed:* this is a **member-list** check, as
+the criterion asks — not a behavioural comparison, and not a claim that our verbs and theirs have
+matching semantics.
 
 **REV2's count note, checked against the tree rather than the diagram.** The 9c2fcc1 checkout holds
 **three** platform modules — `forge1710/`, `forge122/` and `modern/` — plus **two** shared cores,
@@ -3376,7 +3538,7 @@ is a directory-and-settings observation, not a build audit; why `babric` is decl
 was not investigated, because nothing in this phase turns on the answer. §G3.1's instruction — *"count
 them from the tree, not from PD"* — is what this paragraph obeys.
 
-#### The one gap the check found
+#### The gaps the check found — one in the texture-handle direction, one in the framebuffer direction
 
 `getColorTextureId()`, `getLightTextureId()`, `getMissingTextureId()`, `getTextureManager()` and
 `createDynamicTexture(...)` are the shim's way of naming **textures Minecraft owns**. They have no
@@ -3390,25 +3552,58 @@ therefore **cannot express two of the sixteen unit rows**, because nothing in §
 `TextureHandle` for a texture the engine did not create. The facade has the verb and no way to reach
 its argument.
 
-**Disposition: name the provider slot; do **not** add a facade verb.** `[D-P1-36]` The fix that
+**Disposition: declare the provider; do **not** add a facade verb.** `[D-P1-36]` The fix that
 suggests itself — an `adopt(int glName)` on `TextureService` — is the wrong one, and §4.7.3 says why:
 a raw GL name in an `:engine` signature is exactly the leak opaque handles exist to prevent
 (`[D-P1-15]`), and `SeamBytecodeTest` would pass it happily while the design lost the property that
-test was written to protect. The seam's own answer is better and costs no signature: **`mod.glue`
+test was written to protect. The seam's own answer is better and costs no facade **verb**: **`mod.glue`
 implements `TextureHandle` for vanilla-owned textures and supplies them through a provider**, so the
 GL name never crosses into `:engine` and the consumer receives the same opaque type it receives for
-its own textures. §5.1 carries the slot. Its *contents* are **Phase 6's** — the unit map's binding is
-Phase 6 policy (§1.2) — with **Phase 13** the second consumer, since the `_n`/`_s` companion atlases
-sit at units 2 and 3 beside them. Phase 1 names the slot and stops: enumerating which vanilla
-textures the map needs is the unit map's job, and the unit map is not this phase's.
+its own textures. §5.1 carries the slot and §4.7.3 now carries the **type** — `ForeignTextureProvider`,
+declared this revision, because a §5 row, a §9 tag and a §12 item were pointing at an interface that
+existed nowhere (V12-4), which is the exact inverse of the omission `[D-P1-33]` deleted a verb for.
+**Two costs the §0.11 revision claimed this had none of, stated rather than buried:** the four handle
+sub-interfaces lose `sealed` — a `mod.glue` implementation of a *sealed* `engine.gl` type cannot
+compile at all, and the same was already true of `RecordingGLDevice` (§4.7.3, V12-3) — and `:engine`
+gains the provider type.
 
-**Recorded as a finding rather than quietly closed, because it is the check's only positive result
-and the kind that stays invisible until a dependent hits it.** A Phase 6 session at **v0.1** — its own
-milestone — reading §5 and finding `bindToUnit` had no reason to suspect that half of its unit-0 and
-unit-1 rows had no expressible source. That is precisely the failure §5's *"sufficient on its own"*
-promise exists to prevent, and it took a field-tested inventory to surface it: ten adversarial rounds
-over this facade did not, because every one of them audited what the document **says** against its
-sources, and this is a thing the document does not say.
+**Who owns the contents — corrected against `DESIGN.md` (V12-1).** The unit map's ownership is shared
+and **the half at issue is Phase 5's**: l. 1488 puts *"you own which texture object backs each unit
+per stage"* in **Phase 5's** *Scope — in*, while Phase 6's duty is *"sampler uniforms re-point to the
+App B.3 fixed unit map"* (l. 1563) — Phase 6's spec carries no texture-binding bullet at all. So
+**Phase 5 defines the vanilla-owned set**, **Phase 6** points the samplers at those units, and
+**Phase 13** needs the same slot for the `minecraft:`-asset custom-texture forms its spec lists
+(`dynamic/lightmap_1`, atlas paths — `DESIGN.md` ll. 2269–2271), *not* for the `_n`/`_s` companion
+atlases, which it builds itself and which therefore come from `TextureService.create` like any other
+engine texture. §3's row and `[D-P1-36]` said *"Phase 5/6"* all along; the round-eleven revision said
+*"Phase 6"* at five sites, and `DESIGN.md` l. 631 makes this seam — *"the P5/P6 texture-unit-map
+split"* — one of the shared-ownership seams §G5.3's integration review must cross-check. Phase 1 names
+the slot and stops either way: enumerating the set is the unit map's job, and the unit map is not this
+phase's.
+
+**Recorded as a finding rather than quietly closed, because it is the kind that stays invisible until
+a dependent hits it.** A Phase 5 or Phase 6 session at **v0.1** — its own milestone — reading §5 and
+finding `bindToUnit` had no reason to suspect that its unit-0 and unit-1 rows had no expressible
+source. That is precisely the failure §5's *"sufficient on its own"* promise exists to prevent, and it
+took a field-tested inventory to surface it: ten adversarial rounds over this facade did not, because
+every one of them audited what the document **says** against its sources, and this is a thing the
+document does not say.
+
+**The second gap: the same hole in the framebuffer direction** (V12-6). `bindMainFramebuffer()` binds
+**Minecraft's own framebuffer object** (`CLIENT.getFramebuffer().bindFramebuffer(true)`, l. 506) while
+`unbindMainFramebuffer()` returns to framebuffer **0** (l. 511)
+`[V:observed — Pintonium forge122/src/shaders/java/org/embeddedt/embeddium/impl/MinecraftVintageVersionShimImpl.java]`
+— opposite operations, and one verb cannot be both. `FramebufferService.bindDefault(target)` is
+name 0, which it now says in its javadoc, so it serves the *unbind* half; the *bind* half has no verb,
+because §4.7.4 yields a `FramebufferHandle` only for framebuffers the engine created. It is recorded
+as an **absent verb with named requesters** (§4.7.4's table: Phase 7 for RESEARCH.md §4.3's
+`final`-to-vanilla handoff, which `DESIGN.md` makes a Phase 5 ↔ Phase 7 contract; Phase 5 if it ever
+needs vanilla's FBO as a blit source) rather than as a slot, because **nobody has asked**: vanilla
+binds and unbinds its own FBO around the world render (App E row 17), so a `final` pass that does not
+rebind already writes there `[A]`. If a requester does arrive, the answer is `[D-P1-36]`'s shape — a
+`mod.glue` `FramebufferHandle` — and not a new verb. The distinction from the texture gap is the
+reason both are recorded: there the contract *names* two units at v0.1, here no contract item is
+unserved today.
 
 ### 4.13 Engine bring-up sequence (REV1/REV2)
 
@@ -3451,7 +3646,11 @@ session does not read the split as a contradiction it has to resolve.
    needs and exactly what §7's *"render thread, once, at display init"* was gesturing at without
    naming a site. **Phase 1 names the moment; Phase 7 owns the catalog entry** (App E is its
    deliverable, §1.2), so this is a *requirement on* Phase 7's hook set rather than a hook authored
-   here — no mixin class is written by this phase (§4.5).
+   here — no mixin class is written by this phase (§4.5). **This is also the moment `mod.core` installs
+   the foreign-texture provider** (`ForeignTextures.install(…)`, §4.7.3, `[D-P1-36]`): it is where the
+   GL context and the engine bootstrap already are, and the provider resolves keys lazily, so nothing
+   requires vanilla's own textures to exist yet. Two things ride this stage rather than one, and saying
+   so is the point of naming a moment at all.
 2. **Stage 1 is deviated from: we use the FML lifecycle, not a `GameSettings` mixin.** Cleanroom is
    Forge-lineage and hands us `preInit` and `FMLLoadCompleteEvent` natively; Pintonium hooks
    `loadOptions` because it needs a moment before *its own* options load and has no equivalent event
@@ -3467,9 +3666,11 @@ session does not read the split as a contradiction it has to resolve.
    frame driver. Wiring it at v0.1 would be a hook with no caller. It goes to §11.4 as a named
    recommendation with its source, not into §9 as a v0.1 component.
 
-**What this changes here, stated so the delta is auditable.** No type, no signature, no test. §7's
-`CapabilityProbe` row gains a *named* moment where it had a description; §11.4 gains a Phase 7
-hand-off carrying stages 2 and 3; §5.1 exposes the sequence as a structural contract, because a
+**What this changes here, stated so the delta is auditable.** No type of its own, no facade signature,
+no test — the `ForeignTextures.install(…)` call point above is a *placement* of §4.7.3's type, not a
+declaration made here. §7's `CapabilityProbe` row gains a *named* moment where it had a description;
+§11.4 gains a Phase 7 hand-off carrying stages 2 and 3 — the first as a requirement, the second as a
+recommendation (V12-2); §5.1 exposes the sequence as a structural contract, because a
 dependent that places its own bring-up work relative to ours needs to know where ours sits. The
 sequence is **architecture now, implemented at v0.1 for stage 2 and by Phase 7 thereafter** — §G0.3's
 distinction, applied to a thing that is otherwise easy to mistake for assembly detail.
@@ -3501,24 +3702,24 @@ is a reader this section has to survive.
 | **Package placement rule** | a phase's code goes in the package §2.1 assigns it; `.internal` sub-packages are private to `:engine` | all phases |
 | **Version pin table + re-pin procedure** | §4.2.6 — every row carries the coordinate its value is re-verified against, and step 3 terminates in one of three rulings (record only / extra verification / block the bump) | all phases; operationally, whoever tags a milestone |
 | **Naming** | `mod_id = schmaloogium`, root package `com.schmaloogium`, `Reference` at `com.schmaloogium.Reference` | all phases |
-| **The engine bring-up sequence** | §4.13, `[D-P1-37]`. Three stages, adopted from a proven 1.12.2 reference (PD §16) with one deviation: **(1)** loader-facing setup on the FML lifecycle — log sink at `preInit` (§4.9.1), bail point 1 post-`FMLLoadCompleteEvent` (§4.10) — **not** a `GameSettings` mixin; **(2)** `OpenGlHelper.initializeTextures` at `RETURN` is the **capability-probe moment**, the earliest point at which a GL context exists and vanilla's texture setup has completed; **(3)** `GuiMainMenu.initGui` at `RETURN` is the "loading complete" signal, **recommended and not wired** — Phase 1 has no consumer for it. Exposed here because a dependent placing its own bring-up work relative to ours has to know where ours sits, and because stages 2 and 3 are **requirements on Phase 7's hook catalog** rather than mixins this phase authors (§4.5) | **7** (owns the catalog entries for stages 2 and 3), 5, 6, 13 (anything gated on "caps are ready"), 10 |
-| **A `mod.glue` provider for vanilla-owned textures** | §4.12, `[D-P1-36]`. App B.3's fixed unit map puts the vanilla block atlas at **unit 0** and `lightmap` at **unit 1** on GBUFFERS/SHADOW programs; `TextureService.bindToUnit` takes a `TextureHandle` and §4.7.4 produces one only for textures the engine created. The slot is named here, its **contents are Phase 6's** (the unit map is its policy, §1.2), and the shape is fixed: `mod.glue` implements `TextureHandle` for these textures so the raw GL name never crosses C-1. **No facade verb and no §4.7.4 signature is added** — see `[D-P1-36]` for why `adopt(int)` is refused | **6** (defines the set it needs, with the unit map), **13** (the `_n`/`_s` companion atlases at units 2–3), 5 |
+| **The engine bring-up sequence** | §4.13, `[D-P1-37]`. Three stages, adopted from a proven 1.12.2 reference (PD §16) with one deviation: **(1)** loader-facing setup on the FML lifecycle — log sink at `preInit` (§4.9.1), bail point 1 post-`FMLLoadCompleteEvent` (§4.10) — **not** a `GameSettings` mixin; **(2)** `OpenGlHelper.initializeTextures` at `RETURN` is the **capability-probe moment**, the earliest point at which a GL context exists and vanilla's texture setup has completed; **(3)** `GuiMainMenu.initGui` at `RETURN` is the "loading complete" signal, **recommended and not wired** — Phase 1 has no consumer for it. Exposed here because a dependent placing its own bring-up work relative to ours has to know where ours sits, and because **stage 2 is a requirement on Phase 7's hook catalog while stage 3 is a recommendation Phase 1 does not wire** — neither is a mixin this phase authors (§4.5). The two strengths are not interchangeable: the requirement obliges an App E row at Phase 7's v0.1, the recommendation is Phase 7's to place when its frame driver has a use for it (§9, §11.4, V12-2) | **7** (owns the stage-2 catalog entry, and stage 3's if it chooses to place it), 5, 6, 13 (anything gated on "caps are ready"), 10 |
+| **A `mod.glue` provider for vanilla-owned textures** — `ForeignTextureProvider` | §4.12, `[D-P1-36]`. App B.3's fixed unit map puts the vanilla block atlas at **unit 0** and `lightmap` at **unit 1** on GBUFFERS/SHADOW programs; `TextureService.bindToUnit` takes a `TextureHandle` and §4.7.4 produces one only for textures the engine created. The slot is named here **and its type is declared**: `ForeignTextureProvider` in `com.schmaloogium.engine.gl` (§4.7.3), a `mod.glue` implementation of it installed by `mod.core` at §4.13 stage 2, keyed on App B.3's sampler names. The shape: `mod.glue` implements `TextureHandle` for these textures so the raw GL name never crosses C-1 — **which is why the four handle sub-interfaces are not `sealed`** (§4.7.3: a *sealed* `engine.gl` type cannot be implemented from `mod.glue` at all, and could not be implemented by `RecordingGLDevice` either). **Contents are shared, and the set itself is Phase 5's:** **Phase 5** defines the vanilla-owned set — `DESIGN.md` l. 1488, *"you own which texture object backs each unit per stage"* — and **Phase 6** re-points the samplers at those units (l. 1563); §1.2's row is that joint ownership. **No facade verb and no `adopt(int)` is added** — see `[D-P1-36]`; the two declaration changes this row *does* cost are in §5.2's changelog row | **5** (defines the set: which texture object backs each unit per stage), **6** (points the sampler uniforms at those units), **13** (its `minecraft:`-asset custom-texture forms — *not* the `_n`/`_s` companion atlases, which it builds itself and gets from `TextureService.create`) |
 
 ### 5.2 `engine.gl` — the facade
 
 | Exposed | Detail | Consumed by |
 |---|---|---|
-| `GLDevice` + the seven services | §4.7.4 signatures. **Changed in the §0.5 revision:** `UniformService` gained an `ivec4` overload, `StateService` gained `depthTest`/`fog`, `FramebufferService` gained `copyDepthToTexture`, and `GLDevice` gained `drainErrors()`. **Changed in the §0.6 revision:** `DrawService.fullscreenQuadInstanced(int)` was **removed** (`[D-P1-33]`), `RecordingGLDevice` gained a log-supplying constructor, and the GL-error row's attribution promise was narrowed to what the default cadence delivers. **Changed in the §0.7 revision: nothing in any signature.** Two rows were corrected in prose only — the non-verbs row (the `countInstances` mapping scoped to composite/deferred and the non-composite case handed to Phase 7) and the GL-error row (the drain's cadence, and three preconditions of the rung-2 protocol). **Changed in the §0.8 revision: again nothing in any signature** — the same two rows corrected in prose: the **GL-error row** (the elision bit tracks *facade* calls while the GL flag is per-context, so a non-empty drain does not imply one of Phase 6's uploads failed — V8-1; and property (i) no longer asserts a per-sample halflife premise it had no source for — V8-3), and the **non-verbs row** (the composite `countInstances` loop is **Phase 7's**, not Phase 5's, with Phase 6 named for the `instanceId` upload — V8-2). **Changed in the §0.9 revision: again nothing in any signature** — every service interface, handle type and value type is byte-for-byte what rounds seven, eight and nine all reviewed, and round nine's one edit inside the §4.7.4 block is a **javadoc sentence** on `GLError` and `drainErrors()`, not a declaration (V9-2). The same two rows again, in prose: the **GL-error row** (the frame-level remedy is one of two and carries two limits, not "the only sound remedy" — V9-1; the recurring-foreign replay cost is stated — V9-1; property (i)'s disclaimer is rescoped to what a second evaluation would do — V9-10), and the **non-verbs row** (its header now covers adjacent owners as well as requesters, readmitting **Phase 5** — V9-7; the composite loop carries `DESIGN.md`'s **`[v0.5]`** tag and its Phase 4 citation — V9-8). **Changed in this revision (§0.11): again nothing in any signature — and this time nothing in this row's subject at all.** The seven services, every handle type and every value type are byte-for-byte what rounds seven through **eleven** reviewed. §5 *is* altered this revision, at three places elsewhere: V11-1's deletion from the pixel-transfer row's consumer column, and **two new §5.1 rows** — the engine bring-up sequence (`[D-P1-37]`, §4.13) and the `mod.glue` vanilla-texture provider slot (`[D-P1-36]`, §4.12, which the REV2-mandated PD §2 completeness check produced). Neither new row adds a facade verb, which is exactly why this row is untouched while §5 is not | 4, 5, 6, 7, 8, 13, 14 |
+| `GLDevice` + the seven services | §4.7.4 signatures. **Changed in the §0.5 revision:** `UniformService` gained an `ivec4` overload, `StateService` gained `depthTest`/`fog`, `FramebufferService` gained `copyDepthToTexture`, and `GLDevice` gained `drainErrors()`. **Changed in the §0.6 revision:** `DrawService.fullscreenQuadInstanced(int)` was **removed** (`[D-P1-33]`), `RecordingGLDevice` gained a log-supplying constructor, and the GL-error row's attribution promise was narrowed to what the default cadence delivers. **Changed in the §0.7 revision: nothing in any signature.** Two rows were corrected in prose only — the non-verbs row (the `countInstances` mapping scoped to composite/deferred and the non-composite case handed to Phase 7) and the GL-error row (the drain's cadence, and three preconditions of the rung-2 protocol). **Changed in the §0.8 revision: again nothing in any signature** — the same two rows corrected in prose: the **GL-error row** (the elision bit tracks *facade* calls while the GL flag is per-context, so a non-empty drain does not imply one of Phase 6's uploads failed — V8-1; and property (i) no longer asserts a per-sample halflife premise it had no source for — V8-3), and the **non-verbs row** (the composite `countInstances` loop is **Phase 7's**, not Phase 5's, with Phase 6 named for the `instanceId` upload — V8-2). **Changed in the §0.9 revision: again nothing in any signature** — every service interface, handle type and value type is byte-for-byte what rounds seven, eight and nine all reviewed, and round nine's one edit inside the §4.7.4 block is a **javadoc sentence** on `GLError` and `drainErrors()`, not a declaration (V9-2). The same two rows again, in prose: the **GL-error row** (the frame-level remedy is one of two and carries two limits, not "the only sound remedy" — V9-1; the recurring-foreign replay cost is stated — V9-1; property (i)'s disclaimer is rescoped to what a second evaluation would do — V9-10), and the **non-verbs row** (its header now covers adjacent owners as well as requesters, readmitting **Phase 5** — V9-7; the composite loop carries `DESIGN.md`'s **`[v0.5]`** tag and its Phase 4 citation — V9-8). **Changed in this revision (§0.11): again nothing in any signature — and this time nothing in this row's subject at all.** The seven services, every handle type and every value type are byte-for-byte what rounds seven through **eleven** reviewed. §5 *is* altered this revision, at three places elsewhere: V11-1's deletion from the pixel-transfer row's consumer column, and **two new §5.1 rows** — the engine bring-up sequence (`[D-P1-37]`, §4.13) and the `mod.glue` vanilla-texture provider slot (`[D-P1-36]`, §4.12, which the REV2-mandated PD §2 completeness check produced). Neither new row adds a facade verb, which is exactly why this row is untouched while §5 is not. **Changed in the §0.12 revision — the first revision since §0.5 in which a *declaration* moves, so it is stated first and plainly.** No **verb** is added, removed or changed: the seven services' method lists, the result types and the value types are byte-for-byte what rounds seven through **twelve** reviewed (round twelve swept them member by member and found nothing — its §2 item 7). Two declarations do change, both forced by the round-eleven material rather than chosen. *(a)* The four handle sub-interfaces and `UniformLocation` **lose the `sealed` modifier** (V12-3): with JPMS rejected (§4.3, `[D-P1-6]`) `:engine` compiles into the **unnamed module**, where a sealed type's permitted subtypes must sit in its own **package** — so `Lwjgl3GLDevice`'s handles (`mod.glue`), `RecordingGLDevice`'s (`engine.gl.record`) and `[D-P1-36]`'s `mod.glue` handle were *all* uncompilable as declared. `GLHandle` stays sealed and its `permits` clause is still the enforced "four types, not five" (§12 item 18). *(b)* `engine.gl` gains **`ForeignTextureProvider`** and its installer `ForeignTextures` (V12-4) — the type §5.1's provider row named without declaring. The **non-verbs row** below also gains an entry — binding a framebuffer the engine did not create (V12-6) — and the consumer column names **7** then **5** for it. **No member of any pre-existing type changed and no dependent's call site changes** | 4, 5, 6, 7, 8, 13, 14 |
 | **GL-error surface** — `GLDevice.drainErrors()` → `List<GLError>` (`op`, `subjectLabel`, `kind`, `detail`) | §4.7.4. This is the signal §G2.4's **rung 2** acts on — rung 1 is Phase 11's expression isolation and never reaches GL (§6). **Attribution is scoped to the drain window, and this is contract, not implementation detail:** a window holding exactly one mutating **facade** call yields a record naming that call; a window holding several yields **at most one record per driver error flag** — in practice one, carrying `subjectLabel = "(batched, N calls)"` — because GL holds only the first error in a flag until that flag is cleared. The rung-2 protocol is therefore: drain, upload the program's uniform set, drain — and **only if that drain is non-empty**, re-upload the set draining between uploads, so each record names one uniform, then disable those uniforms only (`[D-P1-32]`). **Three properties of that protocol are contract too, because you cannot implement it correctly without them.** (i) The re-upload reuses the values **already computed for this sweep** and never re-evaluates the providers — `glUniform*` is idempotent on the bound program, so re-uploading cached values changes nothing except *which drain window* each upload lands in, which is the replay's entire purpose. Re-running the sweep would instead re-enter your world-state providers, and **this document deliberately asserts no property of what a second evaluation would do** — not that it is safe, and not that it is harmful. Two facts about the surroundings are relayed, and they are statements about the sources rather than about your providers: RESEARCH.md §4.4 places the world-state sampling at frame begin, and `DESIGN.md` puts the time-corrected halflife formula in **your** *Scope — in*. Both are already inputs of your own spec; the design that follows from them is yours, and that is precisely why the protocol is "re-upload" rather than "re-run". (ii) If the replay comes back clean — `OUT_OF_MEMORY` need not recur, and per the cadence note below the error may not have been ours at all — the sweep is **unattributable**, and falls to §6's 3→4 row rather than silently disabling nothing or guessing. (iii) A `GLError` naming a uniform depends on the backend **retaining the name passed to `locate(p, name)`**; `UniformLocation` carries no name in its signature, so this is a stated backend obligation (`[D-P1-34]`), not something a test can catch. The **cadence** that delivers all of it: a drain is a `glGetError` **loop terminating on `GL_NO_ERROR`** (the GL-sanctioned form — a single call leaks a second flag into the next window and misattributes it), and a drain issues **no query at all** when no mutating **facade** call has occurred since the previous drain — which is what makes the two-drain protocol cost **one** query per clean sweep. **That bit tracks *facade* calls, while the GL error flag is per-context**, so a drain window can hold an error this facade did not cause — vanilla's own draws never reach it (§3's second row). **A non-empty trailing drain therefore does not by itself imply that one of your uploads failed**, which is why (ii) is load-bearing in general rather than an `OUT_OF_MEMORY` corner. **Two consequences you should plan for.** First, a *recurring* foreign error re-enters the replay every frame — reproducing nothing, disabling nothing, and costing a re-upload of the whole set — so a replay that repeatedly comes back clean is evidence of foreign GL rather than of a flaky uniform, and is the case to escalate rather than to retry forever. Second, the mitigation is not this facade's: §4.7.4 states the case once and §11.4 hands **Phase 7** a frame-level drain to place, whose two limits are stated there — it bounds only the gap spanning the frame boundary, and it is subject to the same elision, so it is not unconditional at the driver unless a mutating facade call precedes it. It is one remedy among two, not the only sound one: §4.7.4 records that dropping the elision would also bound the window and is rejected on **cost**, not on soundness. This works in the **shipping** configuration; the per-call cadence under a debug context or `-Dschmaloogium.debug.recordGL`/`glLabels` (those two flags only) is an optimisation of it, not a precondition for it. `ScriptedResponses.glError(...)` makes both window shapes testable headlessly | **6** (rung 2 is its v0.1 scope-in), 4, 5, 14 |
 | `GLCapabilityProfile` | §4.7.2, including `supportsMipmapGeneration()`, `hasExtension()`, `atLeast()`. For **Phase 3** it is the whole GL-side input to RESEARCH.md §3.5's standard macro header, not just the extension macros: `glVersionMajor`/`glVersionMinor` → `MC_GL_VERSION`, `glslVersion` → `MC_GLSL_VERSION`, `vendor` → `MC_GL_VENDOR_*`, `renderer` → `MC_GL_RENDERER_*`, `extensions()` → the on-demand `MC_<GL_extension>` set | 2, 3 (**the whole macro header**), 4, 5, 6, 14 |
 | **`GLCapabilityProfile` text serialization format** | §4.7.2; `parse(Reader)` / `write(Writer)` | **2** (this is "recorded `GLCapabilityProfile`s"), 4, 5, 6 |
-| Opaque handle types | §4.7.3 — four types, `UniformLocation.isAbsent()`, and the **lifetime rule**: a handle is invalid the moment its `delete` returns, and the uninit/rebuild that a pack or option change triggers (RESEARCH.md §4.1 step 5) is a routine v0.1 event. **Phase 5 owns re-acquisition** across it | 4, **5**, 6, 13 |
+| Opaque handle types | §4.7.3 — four types, `UniformLocation.isAbsent()`, and the **lifetime rule**: a handle is invalid the moment its `delete` returns, and the uninit/rebuild that a pack or option change triggers (RESEARCH.md §4.1 step 5) is a routine v0.1 event. **Phase 5 owns re-acquisition** across it. **Only `GLHandle` is sealed** (§0.12, V12-3): the four leaves are `non-sealed`, so any backend — LWJGL3, the recorder, `mod.glue`'s vanilla-texture handle, a future Kirino (§10.3) — can implement them, which is the arrangement §4.7.3 always described and previously could not compile. Also here now: **`ForeignTextureProvider`** / `ForeignTextures`, the `:engine` slot `[D-P1-36]`'s `mod.glue` provider fills | 4, **5**, 6, 13 |
 | `RecordingGLDevice`, `GLCallLog`, `GLCall`, `ScriptedResponses` | §4.7.5. `GLCallLog` is bounded (`bounded(capacity)` + `droppedCallCount()`) and is **supplied to the device**: `RecordingGLDevice(profile, responses, log)`, with `GLCallLog.unbounded()` as the counterpart tests use; `ScriptedResponses` covers compile/link/**validate** failures, absent uniforms, framebuffer status, scripted depth pixels and scripted driver errors | **2**, 4, 5, 6 |
 | `ReplayAssertions` incl. `bindsBalanced()`, `noLeakedObjects()`, **`noUseAfterDelete()`**, `drawBuffersWere()` | §4.7.5. `bindsBalanced()` sees facade-level calls only — the backend's restore obligation on `blit`/`copyDepthToTexture` is a contract in §4.7.4, checked through the restore calls the recorder logs | 2, 4, 5 |
 | `CompileResult` / `LinkResult` / `ValidateResult` | never-throwing result types carrying driver logs | 4 |
 | `StateService` state verbs + `snapshot()` / `restore()` | the §G4.6 perturb-and-restore mechanism, over viewport, clears, depth mask, **depth test**, blend, alpha test and **fog** — the composite/final block RESEARCH.md §4.4 requires. `DrawService.fullscreenQuad()` establishes **no** state: the caller sets the block. The backend issues every `GlStateManager`-cached verb through `GlStateManager` (§4.7.4, `[D-P1-29]`) | 5, 6, **7** |
 | **Pixel-transfer verbs** — `FramebufferService.readDepthPixel(f,x,y)`, `FramebufferService.copyDepthToTexture(src,dst,region)`, `TextureService.upload(t, TextureData)`, `UniformService.upload(loc,int,int)` (ivec2) and `upload(loc,int,int,int,int)` (**ivec4**) | §4.7.4; value types `TextureData` / `TextureRegion` / `PixelLayout` / `BlitSpec` | **6** (the v0.1 synchronous `centerDepthSmooth` readback; `atlasSize`/`eyeBrightness`; **`blendFunc`**, which App D.4 declares `ivec4` and §G5.1 puts in Phase 6's v0.1 inventory), **5** (the `depthtex1`/`depthtex2` copies, and the formats), **8** (the shadow pass's depth→`shadowtex1` copy at v0.2 — RESEARCH.md §4.5, and App B.2 lists it in the same table as `depthtex1`/`depthtex2`), **13** (noise texture, `_n`/`_s` atlases, custom textures) |
-| **The facade's stated non-verbs**, each with the phase that would request it — **and, where a row names an adjacent owner of the served work instead, that phase too** (§4.7.4's table header says which rows those are; the instanced-draw row is the only one today, because nobody *requests* an instanced verb) | §4.7.4's closing table — async/PBO readback, general colour readback, texture readback, `ivec3`/`mat3`, **colour mask**, **face culling**, pre-link program parameters, and **instanced draw**. `ivec4` is **not** among them: it is served. **Scoped in the §0.7 revision:** the caller-side loop that replaces an instanced verb answers `countInstances` **on composite/deferred programs only** — the form RESEARCH.md §4.4 observes. **Retargeted in the §0.8 revision:** the owner of that loop is **Phase 7**, not Phase 5 — `DESIGN.md` names the `countInstances` instancing loop in Phase 7's *Scope — in* under composite/final execution, and Phase 5's *Scope — in* carries no pass-execution bullet. **Cited and tagged in this revision (§0.9):** the stronger citation is `DESIGN.md` Phase 4's *Scope — in*, *"`countInstances` exposure to the pass executor (**execution is Phase 7, tag v0.5**)"*, which settles the owner and the milestone in one line — so the composite loop is **`[v0.5]` work**, not v0.1 work, and Phase 7's own v0.1-exit milestone does not carry it. The same directive on a **gbuffers/shadow** program re-renders vanilla geometry through Phase 7's hooks, never reaches this facade, and is an **open case with named owners** rather than a Phase 1 design element (`[D-P1-35]`, §3's second row, §11.4) | **14** (async readback), **13** (texture readback), **7** (colour mask / anaglyph; **and both halves of `countInstances` — the composite loop itself `[v0.5]`, which `DESIGN.md` names in your *Scope — in* under composite/final execution and tags in Phase 4's, and the non-composite re-render if it proves real** — plus an instanced draw verb only if a future non-GLSL-120 path ever needs one, since `countInstances` on a composite is a caller-side loop, `[D-P1-33]`), **6** (the `instanceId` **upload** that loop makes between copies — `DESIGN.md` carries it among your per-draw dynamics, invoked at Phase 7's hooks), **5** (**not** a requester of an absent verb, and named because the composite loop's N draws run inside the buffer estate you own — the read/write/flip law is yours and the loop does not change it; §4.7.4's table header says why this column carries adjacent owners), **3** (the App F.1 flag-ownership map that settles face culling; **and the `const`-scan that detects `countInstances` at all**), **4** (pre-link program parameters, only if the ARB geometry form is not translated upstream; **and the per-slot instance count**) |
+| **The facade's stated non-verbs**, each with the phase that would request it — **and, where a row names an adjacent owner of the served work instead, that phase too** (§4.7.4's table header says which rows those are; the instanced-draw row is the only one today, because nobody *requests* an instanced verb) | §4.7.4's closing table — async/PBO readback, general colour readback, texture readback, `ivec3`/`mat3`, **colour mask**, **face culling**, free-standing pixel-store state, pre-link program parameters, **instanced draw**, and **new in the §0.12 revision: binding a framebuffer the engine did not create** — Minecraft's own world FBO, which `bindDefault` (framebuffer name 0) does not bind and `bind` cannot take a handle for; requesters **7** then **5**, and the likely answer if one asks is `[D-P1-36]`'s provider shape rather than a verb (§4.12's second gap, V12-6). `ivec4` is **not** among them: it is served. **Scoped in the §0.7 revision:** the caller-side loop that replaces an instanced verb answers `countInstances` **on composite/deferred programs only** — the form RESEARCH.md §4.4 observes. **Retargeted in the §0.8 revision:** the owner of that loop is **Phase 7**, not Phase 5 — `DESIGN.md` names the `countInstances` instancing loop in Phase 7's *Scope — in* under composite/final execution, and Phase 5's *Scope — in* carries no pass-execution bullet. **Cited and tagged in this revision (§0.9):** the stronger citation is `DESIGN.md` Phase 4's *Scope — in*, *"`countInstances` exposure to the pass executor (**execution is Phase 7, tag v0.5**)"*, which settles the owner and the milestone in one line — so the composite loop is **`[v0.5]` work**, not v0.1 work, and Phase 7's own v0.1-exit milestone does not carry it. The same directive on a **gbuffers/shadow** program re-renders vanilla geometry through Phase 7's hooks, never reaches this facade, and is an **open case with named owners** rather than a Phase 1 design element (`[D-P1-35]`, §3's second row, §11.4) | **14** (async readback), **13** (texture readback), **7** (colour mask / anaglyph; **the framebuffer-bind row, for the `final`-to-vanilla handoff** (§0.12, V12-6); **and both halves of `countInstances` — the composite loop itself `[v0.5]`, which `DESIGN.md` names in your *Scope — in* under composite/final execution and tags in Phase 4's, and the non-composite re-render if it proves real** — plus an instanced draw verb only if a future non-GLSL-120 path ever needs one, since `countInstances` on a composite is a caller-side loop, `[D-P1-33]`), **6** (the `instanceId` **upload** that loop makes between copies — `DESIGN.md` carries it among your per-draw dynamics, invoked at Phase 7's hooks), **5** (named on two grounds since the §0.12 revision: as an **adjacent owner**, because the composite loop's N draws run inside the buffer estate you own — the read/write/flip law is yours and the loop does not change it; §4.7.4's table header says why this column carries adjacent owners — **and as the second requester of the framebuffer-bind row**, if the estate ever needs vanilla's own FBO as a `blit`/`copyDepthToTexture` source), **3** (the App F.1 flag-ownership map that settles face culling; **and the `const`-scan that detects `countInstances` at all**), **4** (pre-link program parameters, only if the ARB geometry form is not translated upstream; **and the per-slot instance count**) |
 | **Assumption Phase 3 may contest** — the ARB-geometry source rewrite | §4.7.4 exposes **no** pre-link program-parameter verb because the legacy `#extension GL_ARB_geometry_shader4` + `maxVerticesOut` form is rewritten to the core form **in your front-end**, upstream of GL (§4.7.4, §11.4). This document does not design that rewrite and does not own the translation *strategy* — `DESIGN.md` assigns the strategy to **Phase 4**'s spec, which also forbids ARB entry points through the facade. What is yours is the front-end half; if you conclude the rewrite belongs at the GL level instead, flag it in your §5 and the verb is added additively | **3**, with **4** |
 | `DebugService` | present in v0.1, active at v0.5 | 4, 5 (call sites), **14** (implementation) |
 
@@ -3673,7 +3874,7 @@ under `recordGL`, where it is per-call by definition — which is what the bound
 | `RecordingGLDeviceTest` | `:engine` | Calls are logged in order with correct arguments; handles are distinct, `equals`-comparable and never reused after a `delete`; `ScriptedResponses` drives failure paths including a scripted compile/link/**validate** failure and a scripted `GLError` surfacing through `drainErrors()`; a bounded log discards oldest-first and reports `droppedCallCount()`; a device constructed with a caller-supplied bounded log records into that log; `render()` is stable across runs |
 | `ReplayAssertionsTest` | `:engine` | Each assertion passes on a conforming log and fails with a useful message on a violating one — including `bindsBalanced()`, `noLeakedObjects()` and `noUseAfterDelete()`, since Phase 5's impl gate depends on the first two and the handle-lifetime rule (§4.7.3) depends on the third |
 | `BailRegistryTest` | `:mod` | `Ok`/`Degrade`/`Bail` aggregation; a throwing check is treated as `Bail`; evaluation is idempotent |
-| `MixinConfigAgreementTest` | `:mod` | Every `@Mixin`-annotated class under a config's declared `package` appears in that config's arrays, and every array entry resolves to such a class (§4.5.2a, `[D-P1-38]`) — the drift insurance taken instead of a class-scan plugin |
+| `MixinConfigAgreementTest` | `:mod` | For each config, the `@Mixin`-annotated classes in its declared `package` **minus any sub-package another config declares** are exactly the classes its arrays name (§4.5.2a, `[D-P1-38]`) — the drift insurance taken instead of a class-scan plugin. The sub-package exclusion is required, not optional: the three declared packages are nested (§4.5.2 observation 1) |
 | `LogChannelTest` | `:engine` | Every `LogChannels` constant is unique and starts with `schmaloogium.`; the no-op sink is active before installation |
 | `DiagnosticRoutingTest` | `:mod` | `CHAT`/`SHADER_GUI`/`LOG_ONLY` route correctly; `CHAT` with no player degrades to log; every diagnostic reaches the log |
 
@@ -3787,7 +3988,7 @@ Per §G4.3, every designed component carries exactly one tag meaning "implemente
 | `RecordingGLDevice`, `GLCallLog`, `ScriptedResponses`, `ReplayAssertions` | `v0.1` | D-10 requires the headless path from week one |
 | `CapabilityProbe` + `dumpCapabilities` | `v0.1` | |
 | Engine bring-up sequence — **stage 2** (the capability-probe moment) wired | `v0.1` | §4.13, `[D-P1-37]`. Stage 1's obligations already ship on the FML lifecycle (§4.9.1's sink, §4.10's bail point 1); **stage 3 is recommended, not wired** — Phase 7 places it when its frame driver has a use for it |
-| `mod.glue` **vanilla-texture provider slot** | `v0.1` | §4.12, `[D-P1-36]`. The slot and its shape are v0.1 because App B.3's units 0 and 1 are v0.1 contract; its **contents** arrive with Phase 6's unit map. No facade signature moves |
+| `mod.glue` **vanilla-texture provider slot** | `v0.1` | §4.12, `[D-P1-36]`. The slot, its type (`ForeignTextureProvider`, §4.7.3) and its shape are v0.1 because App B.3's units 0 and 1 are v0.1 contract; its **contents** arrive with the unit map — **Phase 5**'s set, **Phase 6**'s sampler pointing. No facade **verb** moves; the four handle sub-interfaces do lose `sealed`, without which a `mod.glue` handle cannot exist at all (§0.12) |
 | `DebugService` **interface** | `v0.1` | Present so call sites exist |
 | `DebugService` **implementation** (KHR_debug labels/groups) | `v0.5` | Phase 14 |
 | `schmaloogium.debug.glLabels` | `v0.5` | Phase 14 |
@@ -4046,7 +4247,7 @@ designed for, which is the best available evidence that it is drawn in the right
 | D-P1-12 | SRG names in every annotation; MCP names in comments; injected methods prefixed `schmaloogium$` | App E's stated requirement; the prefix is cheap collision insurance in a coremod-heavy ecosystem |
 | D-P1-13 | Refmap generation left to Unimined; `disableRefmap()` not called | Template README and the MCP guide agree; but the `main` branch has never had a config, so first-config refmap generation is an explicit checklist item |
 | D-P1-14 | `enable_lwjglx = false` | Its only effect is `compileOnly org.lwjglx`; with it on, an illegal import compiles silently. RESEARCH.md §6.1 and §G2.2 make the rule binding, so the build should enforce it |
-| D-P1-15 | Grouped role services + opaque handles, not a thin GL-verb layer | A GL-verb facade is OpenGL with a different package name; it encodes imperative semantics into `:engine` and would make the Kirino swap a rewrite (OQ-20) |
+| D-P1-15 | Grouped role services + opaque handles, not a thin GL-verb layer. **Of the handle types only `GLHandle` is `sealed`**; the four sub-interfaces and `UniformLocation` are not | A GL-verb facade is OpenGL with a different package name; it encodes imperative semantics into `:engine` and would make the Kirino swap a rewrite (OQ-20). The sealing was **narrowed** rather than relaxed: with JPMS rejected (§4.3) `:engine` is in the unnamed module, where a sealed type's permitted subtypes must share its **package** — so sealing the leaves contradicted the arrangement §4.7.3 describes in the next sentence (`Lwjgl3GLDevice` in `mod.glue`, `RecordingGLDevice` in `engine.gl.record`, a Kirino backend nowhere in this tree, and `[D-P1-36]`'s `mod.glue` handle) and was uncompilable. `GLHandle`'s `permits` clause keeps the only sealing that states something — four handle types, no renderbuffer — and opaqueness never rested on `sealed` but on the absence of a GL-name accessor plus `SeamBytecodeTest` `[fix-up: PHASE_1_REVIEW_12.md V12-3]` |
 | D-P1-16 | `GLCapabilityProfile` has a stable, sorted, human-readable text serialization | It is what "recorded `GLCapabilityProfile`s" means for Phase 2 and what Phase 4/5/6's "recorded-GL run" gates run against; diff-readability matters when a driver update changes one extension |
 | D-P1-17 | `LICENSE` carries verbatim GPL-3.0; "or-later" lives in SPDX headers and `README.md` | The license text is version-specific; the "or later" grant is a statement about the work, which is where GPL-3.0's own guidance puts it |
 | D-P1-18 | Two-line SPDX header on every source file | Machine-readable, no boilerplate duplication, and the form license scanners actually read |
@@ -4067,7 +4268,7 @@ designed for, which is the best available evidence that it is drawn in the right
 | D-P1-33 | `DrawService.fullscreenQuadInstanced(int)` is **deleted**; `const int countInstances = N` **on a composite/deferred program** is served by a caller-side loop over `fullscreenQuad()` with `UniformService.upload(instanceIdLoc, i)` between copies. The composite scope is stated rather than assumed, and is cited to RESEARCH.md **§4.4** | `instanceId` is an `int` **uniform** (RESEARCH.md App D.4), not `gl_InstanceID` — GLSL 120 has neither (RESEARCH.md §3.5) — so one instanced draw cannot vary it per copy and the verb could not express the directive it appeared to serve. It carried no semantics, no §3 row, no §5 mention, no §9 tag and no checklist item, in a facade whose own rule is that silent additions are not cheap. The absence is now stated in §4.7.4's absent-verbs table and the loop is mapped in §3, so the deletion is not silent either. **The scope qualifier is round seven's correction:** the mapping was written as if it covered the whole directive, but §3.2, App A.3 and App D.4 — the three sources it cited — place `countInstances` in *Vertex Shader Configuration* with no program restriction, and `instanceId` in the **common** uniform block. Only §4.4 restricts the loop to composites, and it was not cited. The row is now scoped and §4.4 is cited; the non-composite half is `[D-P1-35]`'s `[fix-up: PHASE_1_REVIEW_5.md V5-2; PHASE_1_REVIEW_6.md V6-4; PHASE_1_REVIEW_7.md V7-1]` |
 | D-P1-34 | **Backend obligation:** a backend's `UniformLocation` implementation **retains the name passed to `UniformService.locate(program, name)`**, so `GLError.subjectLabel` can carry it. Stated as prose, like `[D-P1-29]`, because no test can catch it; **no signature changes** — `UniformLocation` still exposes only `isAbsent()` (§4.7.3) | `GLError`'s javadoc promises `subjectLabel` is "the debug label of the handle **or the uniform name** involved", and rung 2's whole value is that a record names one uniform. Handles get their label from `create(String debugLabel)`; a location has no such parameter, so the only place the name ever exists is the argument to `locate`. A backend *may* discard it and still satisfy every signature in §4.7.4 — and rung-2 attribution would then be worthless while every test still passed. The facade cannot express the requirement in a type without making `UniformLocation` carry a string it has no other use for, so the obligation is written down instead, and §12 item 22's review hook checks it `[fix-up: PHASE_1_REVIEW_7.md V7-4]` |
 | D-P1-35 | **`countInstances` outside the composite passes has named owners and no Phase 1 design element.** Phase 3 detects the directive in its `const`-scan; Phase 4 carries it as the per-slot instance count; **Phase 7** owns the gbuffers/shadow re-render itself. The facade gains nothing either way | The directive is a *vertex-stage* opt-in with no program restriction in any source this document cites (§3.2, App A.3), `instanceId` is in the **common** uniform block, and RESEARCH.md §4.2 carries "instance count" on all 43 slots — so restricting it to composites, as `[D-P1-33]`'s mapping silently did, is unsupported by that provenance. §4.4 restricts only the *observed loop*. For a gbuffers program "the geometry" is vanilla terrain or entity geometry drawn by Minecraft's own calls through Phase 7's hooks, which never reach the facade, so no verb here can satisfy it and inventing one would be Phase 7's design made by the wrong session. Recorded as an **open case handed onward** (§11.4) rather than designed, because RESEARCH.md documents no non-composite instancing loop and this session has no behavior to be faithful to. **Round eight (V8-2) closed the other half against the same document:** the *composite* loop had been attributed to Phase 5, but `DESIGN.md` names it in **Phase 7**'s *Scope — in* under composite/final execution — and, more explicitly still, in **Phase 4**'s: *"`countInstances` exposure to the pass executor (**execution is Phase 7, tag v0.5**)"*, the citation round nine (V9-8) found unused and this revision adopts, together with the **`[v0.5]`** milestone it carries. So both halves of the directive now land on Phase 7, and §5.2's non-verbs row no longer names two phases for **two halves of** one directive. The two cases remain distinct in kind — the composite loop is **assigned** by `DESIGN.md`, the gbuffers/shadow re-render is **open** `[fix-up: PHASE_1_REVIEW_7.md V7-1; PHASE_1_REVIEW_8.md V8-2; PHASE_1_REVIEW_9.md V9-8]` |
-| D-P1-36 | **A `mod.glue` provider supplies `TextureHandle`s for textures Minecraft owns**; the facade gains **no** `adopt(int glName)` verb, and no §4.7.4 signature changes. The provider's *contents* are Phase 6's (with Phase 13 second), because the unit map is Phase 5/6 policy | §4.12's PD §2 completeness check found the facade unable to express two rows of a contract it must satisfy: App B.3 puts the vanilla block atlas at **unit 0** and `lightmap` at **unit 1** on GBUFFERS/SHADOW programs, `bindToUnit` takes a `TextureHandle`, and nothing in §4.7.4 produces one for a texture `TextureService.create` did not make. The obvious verb is refused on the seam rather than on taste: a raw GL name in an `:engine` signature is the leak `[D-P1-15]`/§4.7.3 exist to prevent, and `SeamBytecodeTest` would pass it while the property it guards was gone. Implementing `TextureHandle` in `mod.glue` keeps the GL name on the `:mod` side of C-1 and hands the consumer the same opaque type it already receives, so the fix costs a slot and no signature. §G11.4 decision: the adopted item is PD §2's *inventory as a checklist*, not a Pintonium mechanism; the contract check is App B.3, cited above `[REV2 migration — §0.11; DESIGN.md Phase 1 spec ll. 998–1003]` |
+| D-P1-36 | **A `mod.glue` implementation of `engine.gl`'s `ForeignTextureProvider` supplies `TextureHandle`s for textures Minecraft owns** (§4.7.3); the facade gains **no** `adopt(int glName)` verb and no §4.7.4 **verb** changes. The provider's *contents* are **Phase 5's** — which texture object backs each unit per stage — with **Phase 6** pointing the sampler uniforms at the units and **Phase 13** a second consumer | §4.12's PD §2 completeness check found the facade unable to express two rows of a contract it must satisfy: App B.3 puts the vanilla block atlas at **unit 0** and `lightmap` at **unit 1** on GBUFFERS/SHADOW programs, `bindToUnit` takes a `TextureHandle`, and nothing in §4.7.4 produces one for a texture `TextureService.create` did not make. The obvious verb is refused on the seam rather than on taste: a raw GL name in an `:engine` signature is the leak `[D-P1-15]`/§4.7.3 exist to prevent, and `SeamBytecodeTest` would pass it while the property it guards was gone. Implementing `TextureHandle` in `mod.glue` keeps the GL name on the `:mod` side of C-1 and hands the consumer the same opaque type it already receives, so the fix costs a slot, one `:engine` interface and the handle sealing — but no facade **verb**. §G11.4 decision: the adopted item is PD §2's *inventory as a checklist*, not a Pintonium mechanism; the contract check is App B.3, cited above. **Round twelve corrected three things inside this decision rather than around it, and the pattern is worth the sentence: every one was a consequence of the same slot, not an independent defect.** The provider *interface* was named at four sites and declared nowhere — now §4.7.3's `ForeignTextureProvider` (V12-4). The handle sub-interfaces could not be implemented from `mod.glue` while they were `sealed`, so the sealing is narrowed to `GLHandle` (`[D-P1-15]`, V12-3). And the *contents* were attributed to Phase 6, where `DESIGN.md` l. 1488 gives the texture-object half to **Phase 5** and l. 1563 gives Phase 6 the sampler half — this cell's own *"Phase 5/6 policy"* had it right while five sites around it did not (V12-1) `[REV2 migration — §0.11; DESIGN.md Phase 1 spec ll. 998–1003]` `[fix-up: PHASE_1_REVIEW_12.md V12-1, V12-3, V12-4]` |
 | D-P1-37 | **PD §16's three-stage 1.12.2 bring-up is adopted**, with stage 1 deviated to the FML lifecycle, stage 2 (`OpenGlHelper.initializeTextures` @`RETURN`) adopted as the capability-probe moment, and stage 3 (`GuiMainMenu.initGui` @`RETURN`) adopted as a signal but left to Phase 7 to place | The sequence is proven on this exact platform and this document previously named no site at all for the probe — §7 said *"at display init"*, which is a description rather than a moment. Stage 1 is deviated because Cleanroom hands us `preInit` and `FMLLoadCompleteEvent` natively and §4.9.1/§4.10 already use them: adopting the `GameSettings.loadOptions` mixin would spend one of D-5's ~25–30 injections on a moment the loader gives away, and would place class-transformation-adjacent machinery ahead of the very check (§4.10 point 1) that decides whether to run. Stage 3 is deferred because Phase 1 has no consumer for it and a hook with no caller is not a design. **§G11.4 contract check, performed and negative:** a bring-up ordering is not contract-visible under §G4.2 (packs observe RESEARCH.md §3 / Apps A–D, F; this is §4.1 lifecycle), and it is *consistent* with §4.1's ordering — probe before discovery before load, with step 4's init staying lazy-at-first-frame in both designs (§4.13) `[REV2 migration — §0.11; DESIGN.md Phase 1 spec ll. 1010–1014, and the Doc gate's REV1 criteria at ll. 1058–1060 within the gate at ll. 1056–1060]` |
 | D-P1-38 | **Pintonium's class-scan mixin plugin is rejected**; the three declarative configs of `[D-P1-11]` stand. A `:mod` **test** asserting config-array ↔ package agreement is adopted in its place (§12 item 30a) | A package scan answers *which classes are mixins* and not *which CleanMix phase each belongs to*. Pintonium runs one config and can therefore let a plugin enumerate an empty array; we run three, keyed on the only axis CleanMix dispatches on, so a phase-aware scan would re-encode in Java — against a sub-package or naming convention that is itself upkeep — the split three JSONs already state declaratively, and would fail at config load rather than at review. Three smaller reasons: the MOD config's `plugin` slot is already reserved for the bail-veto duty (§4.5.2) and discovery-plus-veto in one class is two responsibilities where diagnosis is hardest; D-5's injection budget makes the replaced arrays a few dozen lines across the project's life; and a declared array is auditable by reading it, which §G5.3's integration review and Phase 7's catalog both want. The drift risk the scan removes is real and is answered by the test instead `[REV2 migration — §0.11; DESIGN.md Phase 1 spec ll. 1007–1009, the REV1 clause inside the Mixin-wiring bullet at ll. 1004–1009]` |
 
@@ -4242,8 +4443,9 @@ building the hook catalog on top (§11.3 item 9). `compatibilityLevel` is worth 
 (item 8). The `BailRegistry` bail hook is wired at bootstrap and awaits your frame-driver
 integration.
 
-**Two of the three bring-up stages are requirements on your hook catalog, and one is only a
-recommendation** (§4.13, `[D-P1-37]`). Phase 1 authors no mixin, so what follows is an assignment
+**One of the three bring-up stages is a requirement on your hook catalog, one is a recommendation, and
+one was deviated from** (§4.13, `[D-P1-37]`; through the §0.11 revision this sentence said *two*
+requirements and then enumerated one — V12-2). Phase 1 authors no mixin, so what follows is an assignment
 against App E rather than code you inherit. **Stage 2 is a requirement:**
 `OpenGlHelper.initializeTextures` at `@At("RETURN")` is where `CapabilityProbe` runs, and the reason
 is not convenience — it is the earliest 1.12.2 moment at which a GL context exists *and* vanilla's own
@@ -4321,19 +4523,37 @@ Whether it needs building at all is genuinely open — RESEARCH.md §4.4 observe
 your hook catalog finds real packs relying on it, the work is yours and the request against this
 document (if any) is additive.
 
+**To Phase 5** — **the vanilla-owned texture set is yours to define, and this hand-off is new at the
+twelfth round because the eleventh gave it to Phase 6** (`[D-P1-36]`, §4.12, §5.1; V12-1). Your
+*Scope — in* reproduces App B.3 as your binding table and says in the same breath *"you own which
+texture object backs each unit per stage"* (`DESIGN.md` l. 1488) — so when a unit's texture object is
+one **Minecraft** created, you are the phase that says which one it is. Two of the sixteen rows are
+that case at v0.1: unit 0 `texture` (the vanilla block atlas) and unit 1 `lightmap` on every GBUFFERS
+and SHADOW program. What Phase 1 supplies is the **slot and its type** — `ForeignTextureProvider` in
+`engine.gl` (§4.7.3), implemented in `mod.glue` so the raw GL name never crosses C-1, keyed on App B.3's
+sampler names used verbatim (§G4.1). What Phase 1 deliberately does *not* supply is the key set: naming
+it here would be this document deciding your binding table. Phase 6 is the counterpart, not the owner —
+it re-points sampler uniforms at units (l. 1563) and its spec carries no texture-binding bullet. This
+is one of the shared-ownership seams §G5.3's integration review cross-checks by name (`DESIGN.md`
+l. 631, *"the P5/P6 texture-unit-map split"*), so a disagreement between your table and Phase 6's
+pointing is a thing that review is designed to catch — do not resolve it by silently widening either.
+
 **To Phase 6** — this document carried no §11.4 entry for you until now, because everything it exposed
 to you sat in §5.2's rows and §5's explicit note. Two items are new, and both came out of the RC2
 migration rather than out of a review.
 
-**The `mod.glue` vanilla-texture provider is yours to fill** (`[D-P1-36]`, §4.12, §5.1). Phase 1 names
-the slot and fixes its shape — `mod.glue` implements `TextureHandle` for textures Minecraft owns, so
-the raw GL name never crosses C-1 — and then stops, because **which** textures the set needs is a
-question the fixed unit map answers and the unit map is yours (§1.2). The gap is not hypothetical:
-App B.3 puts the vanilla block atlas at **unit 0** and `lightmap` at **unit 1** on every GBUFFERS and
-SHADOW program, and until this revision the facade could bind a handle to a unit while offering no way
-to obtain one for either. It was found by the PD §2 completeness check REV2 added to this phase's doc
-gate — **not** by eleven rounds of adversarial review, all of which audited what this document *says*
-against its sources. That is worth knowing when you judge how much else of the same kind may be left.
+**The `mod.glue` vanilla-texture provider is the counterpart of your sampler re-pointing**
+(`[D-P1-36]`, §4.12, §5.1). Phase 1 names the slot, declares its type (`ForeignTextureProvider`,
+§4.7.3) and fixes its shape — `mod.glue` implements `TextureHandle` for textures Minecraft owns, so the
+raw GL name never crosses C-1 — and then stops. **Which** textures the set contains is **Phase 5's**,
+not yours: `DESIGN.md` l. 1488 gives it the texture object behind each unit per stage, and l. 1563
+gives you the pointing. (The §0.11 revision said this slot's contents were yours; that was wrong
+against both lines and is corrected here — V12-1.) The gap is not hypothetical: App B.3 puts the
+vanilla block atlas at **unit 0** and `lightmap` at **unit 1** on every GBUFFERS and SHADOW program,
+and until this revision the facade could bind a handle to a unit while offering no way to obtain one
+for either. It was found by the PD §2 completeness check REV2 added to this phase's doc gate — **not**
+by eleven rounds of adversarial review, all of which audited what this document *says* against its
+sources. That is worth knowing when you judge how much else of the same kind may be left.
 
 **The `blendFunc` notifier must be *wired*, not assumed** (§3's `blendFunc` row). Phase 1 supplies the
 `ivec4` upload verb and claims none of the observation: §G4.6 makes the notifier yours to design,
@@ -4472,13 +4692,13 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 |---|---|---|---|
 | 16 | `GLCapabilityProfile` record + `atLeast`/`hasExtension`/`supportsMipmapGeneration`, with defensive copy of `extensions` | `v0.1` | `GLCapabilityProfileDerivationTest` |
 | 17 | `GLCapabilityProfile.parse`/`write` in the §4.7.2 sorted text form; first fixture committed under `engine/src/testFixtures/resources/profiles/` | `v0.1` | `GLCapabilityProfileSerializationTest` — round-trip identity, deterministic output, and the fixture loads from the test-fixtures classpath |
-| 18 | Handle types (`GLHandle` + the **four** sealed sub-interfaces — no `RenderbufferHandle`, §4.7.3 — plus `UniformLocation.isAbsent()`) and the handle-lifetime rule in their javadoc | `v0.1` | Compiles; used by item 19's signatures; the `permits` clause names exactly the four declared types |
+| 18 | Handle types (`GLHandle`, **sealed and permitting exactly the four** sub-interfaces — no `RenderbufferHandle`, §4.7.3 — the four themselves **`non-sealed`**, plus `UniformLocation` and its `isAbsent()`) and the handle-lifetime rule in their javadoc | `v0.1` | Compiles; used by item 19's signatures; **`GLHandle`'s** `permits` clause names exactly the four declared types — **and each of the four admits an implementation declared in another package**, which items 20 and 22/22b demonstrate and which the `sealed` leaves silently forbade until this revision (§0.12, V12-3) |
 | 19 | The seven service interfaces + `GLDevice` + result/value types (`CompileResult`, `LinkResult`, `ValidateResult`, `TextureSpec`, `TextureData`, `TextureRegion`, `PixelLayout`, `BlendState`, `FogState`, `StateAspect`, `StateSnapshot`, `BlitSpec`, `GLError`, `GLErrorKind`, …), **including every pixel-transfer verb** (`readDepthPixel`, `copyDepthToTexture`, `TextureService.upload`, the ivec2 **and ivec4** uploads), the `depthTest`/`fog` state verbs, and `GLDevice.drainErrors()` | `v0.1` | Compiles with no GL constant and no `int` object name in any signature, and no LWJGL buffer type on `TextureData` — verified by review against §4.7.4; `DrawService` declares **`fullscreenQuad()` only**, `fullscreenQuadInstanced` having been deleted per `[D-P1-33]` |
 | 20 | `RecordingGLDevice` (**both constructors** — the two-arg form and the log-supplying three-arg form, §4.7.5), `GLCall`, `GLCallLog` (incl. `bounded(capacity)` / `unbounded()` / `droppedCallCount()`), `ScriptedResponses` (incl. `depthPixel`, `validateFails`, `glError`, and summary-not-content logging of uploads) | `v0.1` | `RecordingGLDeviceTest` — ordering, distinct never-reused handles, scripted failures incl. a scripted depth value and a scripted `GLError`, oldest-first discard on a bounded log, stable `render()` with an upload in the log |
 | 21 | `ReplayAssertions` incl. `bindsBalanced()`, `noLeakedObjects()`, **`noUseAfterDelete()`**, `drawBuffersWere()` | `v0.1` | `ReplayAssertionsTest` — each assertion passes on conforming and fails informatively on violating logs |
 | 22 | `Lwjgl3GLDevice` + the seven service implementations in `mod.glue`, **issuing every `GlStateManager`-cached verb through `GlStateManager`** (`[D-P1-29]`) and implementing the stated `glGetError` cadence behind `drainErrors()` — **per facade call under a debug context or `-Dschmaloogium.debug.recordGL`/`glLabels` (those two flags only); otherwise once per drain, where a drain is a `glGetError` *loop* terminating on `GL_NO_ERROR` and is skipped entirely when no mutating **facade** call has occurred since the previous drain, so that a window holding one mutating **facade** call names that call and a window holding many carries `subjectLabel = "(batched, N calls)"`** (`[D-P1-30]`, `[D-P1-32]`). **The backend also retains the name passed to `locate(program, name)`** on its `UniformLocation` implementation, so a record can carry a uniform name at all (`[D-P1-34]`) | `v0.1` | `SeamLwjglConfinementTest` (item 14) confines it; a manual `runClient` reaching the main menu; a review pass over the verb list in §4.7.4 confirming no raw-LWJGL state call, that the batched record is emitted **once per window and never claims per-call attribution**, that the drain **loops** rather than querying once, that a drain after a drain issues no query, and that `subjectLabel` carries a real uniform name on a single-call window — no test can catch any of these, which is why they are called out here |
 | 22a | **Review hook extension for `[D-P1-29]`, added against PD §17 B11** (§11.3 item 11): confirm by reading that `StateService.snapshot(...)` reads **real** state for every `StateAspect` and returns no constant. Pintonium's `GLStateManagerImpl.getColorMask()` hardcodes all-true, which satisfies every signature and passes every driverless test while silently breaking the §G4.6 restore discipline every later phase depends on. Numbered `22a` because it belongs to item 22's review pass, which exists precisely for obligations no test can catch | `v0.1` | Reviewer confirms each snapshot aspect resolves to a `GlStateManager` read or a driver query, and that `restore()` round-trips a deliberately-perturbed state in a `runClient` spot check |
-| 22b | **The `mod.glue` vanilla-texture provider slot** (`[D-P1-36]`, §4.12): a `mod.glue` implementation of `TextureHandle` for textures Minecraft owns, plus the provider interface `:engine` receives them through. **Ships as the slot and its shape only** — which vanilla textures the set contains is Phase 6's, with the unit map. The point of the item at v0.1 is that App B.3 puts the block atlas at unit 0 and `lightmap` at unit 1 on every GBUFFERS program, so a Phase 6 session must not discover at *its* v0.1 that the handles have no source | `v0.1` | The provider compiles; `SeamBytecodeTest` (item 12) still passes, which is the whole test of the shape — **no raw GL name and no MC type reaches an `:engine` signature**, so the handle crosses C-1 opaque or the build goes red |
+| 22b | **The `mod.glue` vanilla-texture provider slot** (`[D-P1-36]`, §4.12): `engine.gl`'s **`ForeignTextureProvider`** and `ForeignTextures` (§4.7.3 — declared by this phase rather than left to a dependent, V12-4), a `mod.glue` implementation of `TextureHandle` for textures Minecraft owns, and the `ForeignTextures.install(…)` call in `mod.core` at §4.13 stage 2. **Ships as the slot and its shape only** — which vanilla textures the set contains is **Phase 5's**, with the unit map (Phase 6 points the samplers at the units). The point of the item at v0.1 is that App B.3 puts the block atlas at unit 0 and `lightmap` at unit 1 on every GBUFFERS program, so a Phase 5 or Phase 6 session must not discover at *its* v0.1 that the handles have no source | `v0.1` | **The provider compiles *from `mod.glue`*, which is the whole test of the shape** — it cannot unless `TextureHandle` is `non-sealed` (§4.7.3), so this item is where `[D-P1-15]`'s narrowed sealing is checked by the compiler rather than by review; `SeamBytecodeTest` (item 12) still passes, so **no raw GL name and no MC type reaches an `:engine` signature** and the handle crosses C-1 opaque or the build goes red; and `ForeignTextures.active()` before install answers empty for every key rather than throwing |
 | 23 | `CapabilityProbe` in `mod.glue` + `-Dschmaloogium.debug.dumpCapabilities`, invoked at **`OpenGlHelper.initializeTextures` @`RETURN`** — stage 2 of §4.13's bring-up sequence (`[D-P1-37]`). The hook itself is Phase 7's catalog entry (App E); this item is the probe's placement requirement against it | `v0.1` | Running the client with the flag writes a parseable profile that round-trips through item 17, **and the probe runs after vanilla's texture setup rather than before** — a profile with a plausible `GL_MAX_TEXTURE_IMAGE_UNITS` is the cheap signal |
 | 24 | `-Dschmaloogium.debug.recordGL` decorator wrapping the live device, **with a bounded log** (`GLCallLog.bounded(100_000)` by default, oldest discarded and counted) supplied to the device through `new RecordingGLDevice(profile, responses, log)` (§4.7.5) — the decorator constructs the ring, the device does not — and off unless the flag is set | `v0.1` | Flag produces a `GLCallLog` dump in the same format the tests assert over; a long session does not grow the log without bound, and the dump reports `droppedCallCount()` when it wrapped |
 
@@ -4497,7 +4717,7 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 | # | Item | Tag | Test hook |
 |---|---|---|---|
 | 30 | Three mixin config JSONs per §4.5.2, empty `client`/`mixins`/`server`, and **no `plugin` key** (it arrives with item 37) | `v0.1` | Files present at `mod/src/main/resources/`; `runClient` loads all three configs without error |
-| 30a | **Mixin config ↔ package agreement test** in `:mod` (`[D-P1-38]`, §4.5.2a): every `@Mixin`-annotated class under a config's declared `package` appears in that config's arrays, and every array entry resolves to such a class. This is the drift insurance taken **instead of** Pintonium's class-scan plugin, and it is the whole of what the rejection owes | `v0.1` | Passes vacuously at v0.1 (arrays empty, packages empty) and fails informatively when item 33's throwaway mixin is added without a matching array entry — which makes item 33 its first real exercise |
+| 30a | **Mixin config ↔ package agreement test** in `:mod` (`[D-P1-38]`, §4.5.2a): for each config, the `@Mixin`-annotated classes in its declared `package` **excluding any sub-package another config declares** are exactly the classes its arrays name. **The exclusion is part of the specification, not an implementation liberty** — the three packages are nested (§4.5.2 observation 1), so a subtree-scoped predicate fails on a *correct* config set as soon as PRE_INIT or MOD gains a tenant (V12-9). This is the drift insurance taken **instead of** Pintonium's class-scan plugin, and it is the whole of what the rejection owes | `v0.1` | Passes vacuously at v0.1 (arrays empty, packages empty) and fails informatively when item 33's throwaway mixin is added without a matching array entry — which makes item 33 its first real exercise. A second case is worth writing at the same time, because it is the one the predicate exists for: a mixin in `…mixin.preinit`, listed in `schmaloogium.preinit.mixin.json` only, must leave **all three** configs green |
 | 31 | `MixinConfigs` manifest attribute wired into `:mod`'s `jar` `doFirst` from `mixin_configs` | `v0.1` | `unzip -p` the built jar's `MANIFEST.MF` shows all three, comma-separated |
 | 32 | Dev flags on the client run: `mixin.debug.export`, `mixin.checks.interfaces`, gated on `enable_mixin_debug` | `v0.1` | `runClient` writes `.mixin.out/`; `-Penable_mixin_debug=false` suppresses it. **No CI clause:** the flags reach only Unimined's run tasks, which CI never invokes (§4.5.5) |
 | 33 | **Verify Unimined refmap generation** with a single throwaway no-op mixin, then remove it (§11.3 item 9) | `v0.1` | A refmap appears in the built jar; **blocks Phase 7 if it does not** |
@@ -4528,9 +4748,9 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 
 ---
 
-*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Eleven** verify sessions have
-since run — `PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_11.md`, each returning PASS-WITH-CORRECTIONS —
-and **eight** fix-up sessions: the first applied round one's F-1 … F-12 (§0.4); the second applied
+*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Twelve** verify sessions have
+since run — `PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_12.md`, each returning PASS-WITH-CORRECTIONS —
+and **nine** fix-up sessions: the first applied round one's F-1 … F-12 (§0.4); the second applied
 rounds two, three and four together, as round four dispositioned them (§0.5); the third applied
 rounds **five and six** together (§0.6), round five's fix-up having never run — which is round six's
 own headline finding (V6-1) and the reason two rounds are closed in one session; the fourth applied
@@ -4547,28 +4767,32 @@ and recording what that branch leaves; and the **eighth** applied round **eleven
 and **all five** of its notes (§0.11), none refused and none narrowed, and — as a second and
 deliberately separate cause, under the project owner's direction — **migrated this document from
 design v1.1 to `docs/design/v2.0-RC2/DESIGN.md`** per §G0.4 step 3, which required §4.12's glue-seam
-completeness check and §4.13's engine bring-up sequence to satisfy REV2's two new Doc-gate criteria.
+completeness check and §4.13's engine bring-up sequence to satisfy REV2's two new Doc-gate criteria;
+and the **ninth** applied round **twelve**'s **nine corrections** (§0.12), none refused and none
+narrowed, deferring its **three notes** with their reasons recorded in `PHASE_1_REVIEW_12.md`'s
+`## Resolutions` — eight of the nine landing in the material the eighth fix-up had added and four of
+them on `[D-P1-36]` alone, which is exactly what §0.11 predicted of unreviewed material.
 Every finding's disposition is recorded in the review files under `## Resolutions`, including the four
 of round three's proposed fixes and the items of rounds five and six that were deliberately narrowed
 rather than applied as written, and why.
 
-**This fix-up altered §5**, at three places, so it does **not** close the phase. V11-1's correction
-removed a Phase 9 attribution from §5.2's pixel-transfer consumer column that `DESIGN.md` contradicts
-in five independent passages; and §5.1 gained two rows — the engine bring-up sequence (`[D-P1-37]`)
-and the `mod.glue` vanilla-texture provider slot (`[D-P1-36]`), the second because REV2's mandated
-completeness check against PD §2's service inventory found that App B.3's **unit 0 and unit 1**, the
-vanilla block atlas and `lightmap`, had no expressible source through this facade. **No service
-signature was added, removed or changed:** the seven services, every handle type and every value type
-are byte-for-byte what rounds seven through eleven all reviewed, and `[D-P1-36]` refuses on the seam
-the one verb that would have changed that. So §G1.3's *"re-verify only if §5 changed"* trigger
-**fires**; `PHASE_1_DOC.md` is **not verified**, it is **not** a valid dependency input, and Phase 2,
-Phase 3 and everything downstream are blocked until a **twelfth** verify session returns (§G1.3,
-§G5.3). Three further states are disclosed in §0.11 rather than left to inference: **RC2 remains an
-unadopted candidate** — only step 3 of §G0.4's four-step procedure has been performed, so the
-project's governing design is still v1.1 while this document verifies against RC2, and a session
-briefed with coordinates that do not match should stop and report rather than guess; the **`v10` →
-`v11` directory roll is owed** and was deliberately not performed, because its second half is a
-harness edit outside this session's scope and performing only the first half fails silently; and
-§4.12, §4.13 and §4.5.2a are **entirely unreviewed material**, which round seven's rule prices
-honestly — unreviewed material yields findings in proportion to its size, not to the document's
-maturity.*
+**This fix-up altered §5**, at five rows, so it does **not** close the phase. All four corrections land
+on the two §5.1 rows the previous revision added: the vanilla-texture set is **Phase 5's** and not
+Phase 6's (V12-1, `DESIGN.md` l. 1488); bring-up **stage 2** is a requirement on Phase 7's catalog while
+**stage 3** is a recommendation (V12-2); the provider's handle shape could not be written in Java while
+the handle sub-interfaces were `sealed`, so the sealing is narrowed to `GLHandle` (V12-3); and the
+provider interface itself, which §12 item 22b ships at v0.1, is now **declared** — `ForeignTextureProvider`
+in `engine.gl` (V12-4). **No facade verb, result type or value type changed:** the seven services are
+byte-for-byte what rounds seven through twelve reviewed, and `[D-P1-36]` still refuses on the seam the
+one verb that would have changed that — but **two declarations did change**, and §5.2's changelog row
+names both rather than repeating a "nothing moved" claim that would now be false. So §G1.3's
+*"re-verify only if §5 changed"* trigger **fires**; `PHASE_1_DOC.md` is **not verified**, it is **not** a
+valid dependency input, and Phase 2, Phase 3 and everything downstream are blocked until a
+**thirteenth** verify session returns (§G1.3, §G5.3). On the repository state, which round twelve found
+misdescribed here: **§G0.4 steps 1, 2 and 4 and the `v10` → `v11` roll all landed after the round-eleven
+fix-up wrote its disclosures** (V12-8), so RC2 governs *this phase* while v1.1 still governs Phase 2 —
+resolve the revision per phase from `docs/MOVES.md` and `PHASE_FACTS`, never from a §0 addendum, and
+stop-and-report if a briefed coordinate disagrees with this document. The material §4.12, §4.13 and
+§4.5.2a added is no longer unreviewed; what is unreviewed now is what §0.12 added to them, which round
+seven's rule prices exactly as honestly — unreviewed material yields findings in proportion to its size,
+not to the document's maturity.*
