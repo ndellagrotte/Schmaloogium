@@ -42,8 +42,8 @@ Prepended to all of them. Three of its clauses were each bought with a specific 
   deleting; no builds, tests or gradle; no mutating git. No writes via shell redirection, `tee` or
   `sed -i` either — naming the shell routes matters, because `Explore` has `Bash`.
 - **Forbidden sources, by pattern and by provenance:** do not read any prior session's terminal
-  transcript, at any path — anything under `docs/phase*/chatlogs/` (**any** extension; one of them is
-  `.md`) and **any `*.txt` at the repo root**. **A sub-agent read one contrary to instruction in
+  transcript, at any path — anything under a directory named `chatlogs/` **anywhere below `docs/`**
+  (**any** extension; some are `.md`) and **any `*.txt` at the repo root**. **A sub-agent read one contrary to instruction in
   Phase 1 round nine**; its transcript-derived conclusion was discarded and re-derived from permitted
   sources (`docs/phase1/reviews/PHASE_1_REVIEW_9.md` §0.2). §G1.2 bars a reviewer from the author's
   conversation context precisely because it transmits the author's blind spots.
@@ -56,7 +56,11 @@ Prepended to all of them. Three of its clauses were each bought with a specific 
   as "`docs/phase*/chatlogs/**` plus `phase2chat.txt`" fixed the moved files but named the root-level
   transcript individually — and `/export` immediately dropped a second one there
   (`2026-07-25-175142-….txt`, the session that wrote this harness). Naming files does not survive a
-  command that creates them. Hence: a **pattern** at the root, a **pattern** in `chatlogs/`, and an
+  command that creates them. **And the `chatlogs/` half was outrun in turn:** `docs/phase*/chatlogs/`
+  is one directory level deep, so it missed `docs/reference/pintonium/chatlogs/` — a 3,970-line
+  session transcript sitting outside the `phase*` tree entirely. That is three separate times a rule
+  has been narrower than the repository. It now reads *any directory named `chatlogs/` anywhere below
+  `docs/`*. Hence: a **pattern** at the root, a **depth-independent pattern** for `chatlogs/`, and an
   explicit provenance catch-all telling the agent that an unfamiliar transcript is still barred and
   that uncertainty means do not open it. Enforcement remains prompt-level — `Explore` has `Bash`, and
   nothing in `settings.local.json` denies these reads — so this is structural, not airtight.
@@ -227,7 +231,7 @@ not a failure: it returns `corrected_location` instead. Failed findings are **dr
 ## 5. The adjudication brief
 
 One agent, the only one permitted to create a file that round, and it creates exactly one:
-`docs/phase<N>/artifacts/PHASE_<N>_REVIEW_<R>.md` in §0 / §1 / §2 / §3 shape with an explicit
+`docs/phase<N>/reviews/PHASE_<N>_REVIEW_<R>.md` in §0 / §1 / §2 / §3 shape with an explicit
 **touches §5: yes/no** on every finding and **exactly one verdict**, emitted as a heading on its own
 line (`# PASS-WITH-CORRECTIONS`).
 
@@ -303,7 +307,7 @@ line below them, which is the trap that made this session re-resolve its citatio
 ```bash
 cd Schmaloogium
 awk '/^## 5\. Cross-phase interfaces/,/^## 6\. Failure modes/' \
-    docs/phase<N>/artifacts/PHASE_<N>_DOC.md | sha256sum
+    docs/phase<N>/<version>/PHASE_<N>_DOC.md | sha256sum
 ```
 
 Both hashes are returned with `section5_unchanged`. **If §5 did change, say so truthfully** — it
@@ -315,13 +319,15 @@ interfaces` and `## 6. Failure modes` verbatim, per §G9's mandatory template �
 not**, and the bare `PHASE_1_DOC.md` this command used to carry stopped resolving after the reorg.
 
 `git status --short` must show **exactly two paths** touched: the phase doc and the round's review
-file. One caveat the fix-up is told to report rather than paper over: if the phase's artifacts
+file. One caveat the fix-up is told to report rather than paper over: if the phase's `reviews/`
 directory is itself untracked, git collapses it to a single `??` entry and cannot show which files
-changed. `docs/phase2/` is in that state until it is added. The agent returns the check as *degraded*
+changed. `docs/phase2/reviews/` is in that state until its first review is added. The phase doc
+itself is tracked, so a modification to it always shows. The agent returns the check as *degraded*
 in `files_modified` instead of claiming a clean result.
 
 Note the operator-side §5 check in the command's pre-flight is **not** the same command and must not
-use `git show HEAD:…` as its baseline: `docs/phase2/` has no `HEAD` version, and a failed `git show`
+use `git show HEAD:…` as its baseline: in the window between a reorg's `git mv` and its commit,
+`HEAD` still holds the doc at its old path, so the `git show` fails — and a failed `git show`
 still produces a non-empty `diff`, which reads as a false "§5 changed" on every round. Snapshot with
 the content-anchored `awk` above before the run instead.
 

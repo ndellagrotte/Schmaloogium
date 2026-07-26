@@ -51,16 +51,32 @@ const NAME = ['none', 'note', 'correction', 'blocking']
 // `spec` and `docGate` are line ranges into DESIGN.md Part II. They are the one kind of fact here
 // that rots silently: DESIGN.md is edited by fix-up sessions on the governance document, not by
 // this loop, so re-check them if a doc-gate finding ever looks like it is reading the wrong text.
+//
+// THOSE LINE NUMBERS ARE STATED AGAINST v1.1 — `docs/design/v1.1/DESIGN.md` — and `DESIGN` below
+// must stay pinned there. `docs/design/v2.0-RC1/DESIGN.md` is a DIFFERENT document (the unadopted
+// Pintonium revision) that shares the basename since the reorg put the version in the directory.
+// Every line number in this file is v1.1's: in v2.0-RC1's 2,300 lines the same sections sit 52-267
+// lines lower (Phase 1 spec 585 -> 825, Phase 2 spec 662 -> 929, §G1.2 118 -> 170). Re-pointing
+// `DESIGN` would therefore not error — it would silently feed every agent the wrong text. At
+// v2.0-RC1 ll. 649-652 the doc-gate lens reads §G9's template, which looks plausible and is not the
+// doc gate. Move to v2.0-RC1 only by re-deriving every range in this table and in COMMON below.
+//
+// `docVersion` names the directory the phase doc lives in. It is NOT derivable from the phase
+// number — phase 1 is `v10` after ten fix-up rounds, phase 2 is `v1`, freshly built — so it is a
+// declared fact here like every other phase-specific value. See `docPath` below for the roll
+// procedure when a fix-up produces a new revision.
 
 const PHASE_FACTS = {
   1: {
     name: 'Foundation & project architecture',
+    docVersion: 'v10',
     spec: '585-658', docGate: '649-652',
     oqs: 'OQ-2, OQ-12, OQ-20, OQ-21',
     deps: [],
   },
   2: {
     name: 'Conformance harness',
+    docVersion: 'v1',
     spec: '662-723', docGate: '713-715',
     oqs: 'OQ-10',
     deps: [1],
@@ -70,24 +86,48 @@ const PHASE_FACTS = {
 const F = PHASE_FACTS[PHASE]
 if (!F) {
   throw new Error(
-    'No PHASE_FACTS entry for phase ' + PHASE + '. Add one — its name, the DESIGN.md Part II line ' +
-    'ranges for its spec and Doc gate, its assigned OQs, and its dependency phases (all in the ' +
-    '§G5.1 table) — rather than letting the prompts assert another phase\'s facts.')
+    'No PHASE_FACTS entry for phase ' + PHASE + '. Add one — its name, its doc-version directory, ' +
+    'the DESIGN.md Part II line ranges for its spec and Doc gate, its assigned OQs, and its ' +
+    'dependency phases (all in the §G5.1 table) — rather than letting the prompts assert another ' +
+    'phase\'s facts.')
 }
 
 // The documents moved out of the repo root in commit 9df5f05 ("docs: fix non-existent document
-// organization"). Every reference below is repo-relative from REPO; a bare filename no longer
-// resolves, which is exactly how the Phase 1 wiring broke.
-const ARTIFACTS = 'docs/phase' + PHASE + '/artifacts'
-const DOC = ARTIFACTS + '/PHASE_' + PHASE + '_DOC.md'
-const DESIGN = 'docs/project/DESIGN.md'
-const RESEARCH = 'docs/project/RESEARCH.md'
+// organization") and were reorganized again into versioned directories. Every reference below is
+// repo-relative from REPO; a bare filename no longer resolves, which is exactly how the Phase 1
+// wiring broke.
+
+// A phase doc lives in a directory named for its revision — `docs/phase1/v10/PHASE_1_DOC.md`.
+// Resolution goes through PHASE_FACTS rather than string-building from `n`, because a dependency's
+// version is *that* phase's fact, never this one's.
+//
+// ROLLING A VERSION (v10 -> v11 once an eleventh fix-up lands) is two steps, run together, and
+// always AFTER a loop exits:
+//     git mv docs/phase<N>/v<K> docs/phase<N>/v<K+1>
+//     then bump docVersion in PHASE_FACTS above.
+// `v<K>` = the highest `§0.K` fix-up addendum in the doc. Never roll mid-loop: DOC is computed once
+// at startup, so a rename between rounds leaves every later round pointed at a directory that no
+// longer exists, and each agent silently reads nothing.
+function docPath(n) {
+  const f = PHASE_FACTS[n]
+  if (!f || !f.docVersion) {
+    throw new Error(
+      'No PHASE_FACTS.docVersion for phase ' + n + '. Every phase row must name the version ' +
+      'directory its doc lives in (e.g. `v10`) — it cannot be derived from the phase number.')
+  }
+  return 'docs/phase' + n + '/' + f.docVersion + '/PHASE_' + n + '_DOC.md'
+}
+
+const REVIEWS = 'docs/phase' + PHASE + '/reviews'
+const DOC = docPath(PHASE)
+const DESIGN = 'docs/design/v1.1/DESIGN.md'
+const RESEARCH = 'docs/research/v1/RESEARCH.md'
 const DEP_DOCS = F.deps.map(function (n) {
-  return 'docs/phase' + n + '/artifacts/PHASE_' + n + '_DOC.md'
+  return docPath(n)
 })
 
 function reviewPath(r) {
-  return ARTIFACTS + '/PHASE_' + PHASE + '_REVIEW_' + r + '.md'
+  return REVIEWS + '/PHASE_' + PHASE + '_REVIEW_' + r + '.md'
 }
 
 // Phase 1 reached this harness after ten hand-run verify rounds, and several prompts below were
@@ -146,8 +186,9 @@ not resolve, and silently finding nothing is the failure mode to avoid here.
   Glob, and read-only Bash. That is all.
 - **FORBIDDEN SOURCES.** Do **not** read any prior session's terminal transcript, at any path.
   Concretely, and both patterns matter:
-  - anything under \`docs/phase*/chatlogs/\` — **any** extension; that directory holds both \`.txt\`
-    and \`.md\` transcripts;
+  - anything under **a directory named \`chatlogs/\` anywhere below \`docs/\`** — **any** extension.
+    \`docs/phase1/chatlogs/\`, \`docs/phase2/chatlogs/\` and \`docs/reference/pintonium/chatlogs/\` all
+    hold transcripts, in both \`.txt\` and \`.md\`;
   - **any \`*.txt\` at the repo root.** \`/export\` drops session transcripts there under a dated
     filename, so this set grows without anyone editing this rule. Do not read them, and do not treat
     an unfamiliar root-level \`.txt\` as safe merely because it is not named here.
@@ -156,7 +197,7 @@ not resolve, and silently finding nothing is the failure mode to avoid here.
   blind spots, and for this document that context is the most tempting file in the repository — the
   transcripts include the sessions that designed both the phase doc and this harness. A sub-agent
   broke exactly this rule in round nine of Phase 1; its conclusion was discarded and re-derived from
-  permitted sources (\`docs/phase1/artifacts/PHASE_1_REVIEW_9.md\` §0.2). Do not repeat it. **The rule
+  permitted sources (\`docs/phase1/reviews/PHASE_1_REVIEW_9.md\` §0.2). Do not repeat it. **The rule
   is about provenance, not location or file type:** a transcript found somewhere not listed here is
   still barred, and if you are unsure whether a file is one, do not open it.
 - **No scope creep.** Answer only what you are asked below.
@@ -493,7 +534,8 @@ let outcome = 'CAP'
 let lastVerdict = null
 let priorFix = null
 
-log('Phase ' + PHASE + ' ("' + F.name + '") verify loop on `' + DOC + '` — preset `' +
+log('Phase ' + PHASE + ' ("' + F.name + '") verify loop on `' + DOC + '` (doc version ' +
+    F.docVersion + ', design ' + DESIGN + ') — preset `' +
     (A.preset || 'lean') + '` (' + cfg.finders + ' finders, ' + cfg.refuters + ' refuters, steelman ' +
     (cfg.steelman ? 'on' : 'off') + '), starting at round ' + START + ', cap ' + MAX_ROUNDS +
     '. Exit on PASS = zero blocking AND zero corrections.')
@@ -785,7 +827,7 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
         'correction to reach PASS.** Judge the document in front of you.\n\n') +
     '## Deliverable: `' + REVIEW_FILE + '`\n' +
     'Follow the four-section shape the Phase 1 review series settled on — see\n' +
-    '`docs/phase1/artifacts/PHASE_1_REVIEW_11.md` for the format if you need an exemplar (read it\n' +
+    '`docs/phase1/reviews/PHASE_1_REVIEW_11.md` for the format if you need an exemplar (read it\n' +
     'for shape, not for findings; it is about a different document):\n' +
     '1. **§0** — what you read and in what order; reads beyond the list with the finding each turned\n' +
     '   on; deviations; network use; and a **sub-agent disclosure** stating that this round ran as an\n' +
@@ -895,9 +937,10 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     'change, that is a legitimate outcome — say so truthfully; it means §G1.3\'s re-verify trigger\n' +
     'fires. Never report it unchanged without having run the comparison.\n\n' +
     'Also verify with `git status --short` that you touched **exactly two paths**: `' + DOC + '` and\n' +
-    '`' + REVIEW_FILE + '`. Note that `' + ARTIFACTS + '` may be **untracked**, in which case git\n' +
-    'reports the directory as a single `??` entry rather than listing files — if so, say in\n' +
-    '`files_modified` that the check was degraded and confirm by listing the directory instead.\n' +
+    '`' + REVIEW_FILE + '`. Note that `' + REVIEWS + '` is **untracked** until its first review is\n' +
+    'added, in which case git reports the directory as a single `??` entry rather than listing\n' +
+    'files — if so, say in `files_modified` that the check was degraded and confirm by listing the\n' +
+    'directory instead. The phase doc itself is tracked, so a modification to it always shows.\n' +
     'Do not modify `' + DESIGN + '`, `' + RESEARCH + '`' +
     (DEP_DOCS.length ? ', `' + DEP_DOCS.join('`, `') + '`' : '') + ', or any earlier review file —\n' +
     'including their `## Resolutions` sections, which are evidence. If an earlier review contains an\n' +
@@ -909,8 +952,9 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     'A fix-up gets no adversarial review of its own; the next round can only attack reasoning you\n' +
     'wrote down.\n\n' +
     'Re-resolve every line number you cite against the finished file before you write it. Do not read\n' +
-    'any prior session\'s terminal transcript — anything under `docs/phase*/chatlogs/` (any\n' +
-    'extension) or **any `*.txt` at the repo root** (`/export` keeps adding them). They carry the\n' +
+    'any prior session\'s terminal transcript — anything under a directory named `chatlogs/`\n' +
+    'anywhere below `docs/` (any extension) or **any `*.txt` at the repo root** (`/export` keeps\n' +
+    'adding them). They carry the\n' +
     'author\'s blind spots, which is why §G1.2 bars them.',
     { label: 'fixup:R' + round, phase: 'R' + round + ' Fix up', schema: FIXUP_SCHEMA, agentType: 'general-purpose' }
   )
