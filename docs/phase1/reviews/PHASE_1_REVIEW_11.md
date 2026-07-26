@@ -504,3 +504,161 @@ third bullet (*"no §5 change outstanding"*). Accordingly:
 request, and created exactly one file: this one. `PHASE_1_DOC.md`, `DESIGN.md`, `RESEARCH.md`, and
 `PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_10.md` — including their `## Resolutions` sections — are
 unmodified.*
+
+---
+
+## Resolutions
+
+*Written by the **eighth** fix-up session (§G1.3), 2026-07-26, after this review's verdict. **Nothing
+above this heading is modified** — the findings, §2's clean list and the verdict are evidence. Line
+numbers below are `PHASE_1_DOC.md`'s **after** this fix-up (**4573** lines, against the 3887 this
+review read); §0.11 is the addendum recording the session.*
+
+*This fix-up had **two causes**, and they are kept apart here as they are in §0.11. The first is this
+review. The second is a **migration of the document from design v1.1 to
+`docs/design/v2.0-RC2/DESIGN.md`**, directed by the project owner as §G0.4 step 3. The second is much
+the larger, and a `Resolutions` section that folded the two together would misreport what this
+review's six findings actually cost — so **everything below is scoped to the findings**, and the
+migration is accounted for in §0.11. The one place they meet is the §G1.3 line, because both altered
+§5.*
+
+**Method note.** Three disciplines, each made necessary by this review or an earlier one.
+*(1) Nothing was adopted on a citation.* Every finding was re-opened at its site before it was
+touched, and every source coordinate re-resolved at the source file. V11-3's two were confirmed:
+RESEARCH.md §4.4's first-person-item sentence is at **l. 561**, App A.3's `N`-is-none row at
+**l. 1187**, and §4.3 does run **ll. 509–526** without containing the sentence — the review's
+derivation holds in all three limbs. V11-1's ground truth was **re-derived in RC2's coordinates
+rather than shifted from v1.1's**, which is the discipline §G0.4 warns is the whole trap of a
+revision migration. *(2) The sweep ran over formulations, not over sites.* `grep -n "Phase 9"` and
+`grep -n "blendFunc"` were run **after** the V11-1 edits rather than before: `Phase 9` now occurs at
+exactly two places — §3's `blendFunc` row, where it appears in order to be *excluded*, and §4.9.2's
+log-channel row — and `blendFunc` at the eight sites this review counted, with §9's row independently
+re-opened and confirmed to name Phase 6 at v0.1. *(3) V11-2's mechanical check was re-run, not
+trusted.* A pipe count over the absent-verbs table returns **4 for the header and 4 for every one of
+its nine rows**; before the fix, that row returned 3.
+
+**Evidence provenance.** `PHASE_1_DOC.md` was byte-identical to `git HEAD` (`9e11b80`) when this
+session started, so every claim below is provable by one `git diff` rather than reconstructed:
+**53 hunks, 769 insertions, 82 deletions**. **Three hunks fall inside §5** (baseline ll. 3003, 3009,
+3018), enumerated in the §G1.3 status below. The §4.7.4 signature block was extracted from the
+baseline and from the result and diffed on its own: **exactly one hunk, and it is a javadoc
+comment** — V11-3's two lines — with no declaration, no overload, no handle type and no value type
+touched. **No network use of any kind.** **Sub-agents: three read-only exploration agents ran during
+the planning stage, for design-revision delta enumeration only**; the choice is disclosed because
+§G1.3 is silent and the call is therefore this session's. **No finding, coordinate or quotation was
+admitted on an agent's report** — every one was re-derived here, and one agent-reported coordinate was
+checked and found wrong, which is why that rule is stated as practice rather than as intent. No
+directory named `chatlogs/` below `docs/` and no `*.txt` at the repository root was opened, including
+the one currently present (§G1.1's forbidden-sources pattern, stated by pattern for that reason).
+
+**Counts.** Six findings: **six applied, none refused, none narrowed.** This review names **fourteen**
+distinct sites across them; **eight were edited** and **six were checked and correctly left alone**
+(listed below with the reason for each). Two edits reach sites this review did **not** name — §0.10's
+new head note, which is where V11-5's branch (b) had to land, and §5.2's per-revision changelog row,
+which is owed the moment §5 changes. That asymmetry is the standing one: a review names the sites its
+finding turns on; a fix-up owes the sites its *edit* turns on. Two findings offered a choice of fix
+shape (V11-4, V11-5) and in both the branch is argued rather than merely taken.
+
+| Finding | Disposition | Where (every site **edited**, not every site named) |
+|---|---|---|
+| **V11-1** | **Applied, and RC2 makes the case stronger than this review could state.** The review argued the Phase 9 attribution against three `DESIGN.md` passages plus one internal contradiction; all were re-derived, and the migration added a **fifth** independent passage that did not exist in v1.1 — REV2's Phase 6 spec now carries an explicit `blendFunc` notifier-audit duty (ll. 1602–1607) with the matching rule at §G4.6 (ll. 554–557). In RC2's coordinates the five are: Phase 6's *Scope — in* **l. 1601**, its cadence model **ll. 1549–1550** (where *"at their hooks (Phases 7/9/10 invoke)"* names invokers of a whole list, not owners of one uniform), Phase 9's *Scope — in* **ll. 1918–1920** (exhaustive, and `blendFunc` is not in it), Phase 9's *Scope — out* **ll. 1931–1932**, and the dropped-item audit **l. 2419**. The decline branch this review left open is therefore further from viable than when it was written. **Applied wider than the fix shape in one respect, deliberately:** §3's row now states the non-attribution *positively* rather than by deletion alone, because a reader who finds no mention of Phase 9 cannot distinguish a considered exclusion from an oversight — which is exactly the failure this finding documents four rounds of this document making in the other direction | §3's `blendFunc` row, **l. 1286** (the Phase 9 clause deleted; the five-passage derivation and the REV2 notifier duty added in its place). §5.2's pixel-transfer row, **l. 3520** (consumer column: `**9** (per-draw \`blendFunc\` dynamics at v0.3)` deleted; the row's `**6**` entry, which already carried `blendFunc` correctly, is untouched) |
+| **V11-2** | **Applied, at the join the review specified.** The separator goes **after** the discriminator sentence, not before it, so the preamble's claim that *"each row's *Why absent* cell says which kind it is"* stays true of this row once the assignment content moves into column three. The review's diagnosis is adopted over round ten's: the defect was a missing **cell separator**, not a missing sentence boundary — and the missing period was real too, so both are supplied | §4.7.4's absent-verbs table, **l. 2799**. Re-verified mechanically after the edit: the header, the separator and all **nine** rows return a pipe count of 4 |
+| **V11-3** | **Applied, with the stronger citation the review recommended rather than only the corrected section number.** The javadoc now reads *"(RESEARCH.md §4.4's first-person item overlay; App A.3's `N` = none)"* — App A.3's directive table is the better authority for the "none" state *as such*, and §4.4 is where the overlay sentence actually lives. Both coordinates re-opened at RESEARCH.md before the edit | §4.7.4, `FramebufferService.drawBuffers`'s javadoc, **l. 2442**. This is the **only** hunk inside the signature block, and it is a comment |
+| **V11-4** | **Applied — note, and the *body-clause* branch is taken over the widened label.** The review offered both as equal. The label is the name **five sites** delegate to (§4.7.4's precondition (ii), §5.2's GL-error row, `[D-P1-30]`, `[D-P1-32]`, §11.4), so widening it is a change that has to be swept through all five to stay quotable; the distinction it was missing is one sentence, and a reader who reaches the row reaches the sentence. The cell now says plainly that under cause (b) the *Failure* label names the **detection point, not the origin** — the drain window is a *facade* window, so a driver error surfaces on a facade call that did not produce it | §6's 3→4 row, **l. 3585** (*Behavior* cell only; the *Failure* label is deliberately unchanged and the reason is in the cell) |
+| **V11-5** | **Applied — note, and the *narrow-the-claim* branch is taken, because this fix-up is itself the argument for it.** The review offered re-resolving §0.10's internal numbers or narrowing the sentence that claims they were already re-resolved. Re-resolving would have made them correct for exactly as long as it took the next edit to land, and this session's edits shift most of the document — so the numbers stand and the **claim** is narrowed to what is true, with a coordinate note stated **once at the head of §0.10** on the model of l. 853's already-honest *"as round ten read them"*, which the review itself named as the pattern. **Extended past the ask, and disclosed as such:** the note also covers §0.10's `DESIGN.md` coordinates, which are v1.1's and which the migration would otherwise have silently orphaned. Their RC2 equivalents are given *in the note* — §G1.3 at ll. 302–320, §G5.3 at ll. 611–638, Phase 3's engine-flag bullet at ll. 1260–1265, Phase 7's at ll. 1693–1695, each re-derived at the line — and deliberately **not** substituted into the body | §0.10's head note, **ll. 761–774** (new). §0.10's blanket claim, **ll. 867–872** (narrowed, and it now names the sentence it replaces so the correction is legible) |
+| **V11-6** | **Applied, and the count is replaced by the count *plus the span*, which cannot be wrong.** The review offered "seven words" or dropping the count for a form that cannot go stale. Both sites now carry **seven** *and* quote the elided clause — *"at the time that script is compiled"* — which is strictly more informative than either branch and independently checkable against §12 item 4b. The span was re-counted at l. 4491 before either edit | §0.10's V10-4 bullet, **ll. 818–820**; §0.9's round-ten insertion, **ll. 654–656** |
+
+### Neighbours swept, beyond every `Where` column
+
+- **§9's milestone table, l. 3784's pixel-transfer row.** V11-1's own §1 cites it as the document's
+  internal contradiction of the Phase 9 attribution. Re-opened: it names *"Phase 6's center-depth
+  readback and its `blendFunc` (`ivec4`) uniform"* at v0.1 and no Phase 9 — correct as it stands, and
+  now consistent with §3 and §5.2 rather than contradicting them.
+- **§11.4's hand-off blocks.** The review observes that §11.4 carries a block for every phase §5.2
+  names as a consumer *except* Phase 9. After V11-1 that is no longer an asymmetry to explain, because
+  §5.2 no longer names Phase 9. Checked and left alone on those grounds — and a **Phase 6** block was
+  added for an unrelated reason (§0.11), which is the first §11.4 entry that phase has had.
+- **§5.2's per-revision changelog row, l. 3511.** Not named by any finding. §0.10 argued — correctly —
+  that a row recording per-revision §5 changes is owed **no entry for a revision that changes nothing
+  in §5**. §5 changes this revision, so the entry is owed, and the row now carries it. The same
+  paragraph relabels *"Changed in this revision (§0.9)"* to *"Changed in the §0.9 revision"*, which
+  every prior §5-touching fix-up did to its predecessor and which §0.10 correctly declined to do.
+- **`grep -n "unnumbered"` across the whole document.** Run because the migration relabels §6's
+  unnumbered rung to `2a`; it confirms the word survives only where it describes the *history* of that
+  row and in §11.5 item 4's record of the request that closed it.
+
+### Checked and correctly left alone
+
+*So the next audit can tell a considered omission from an oversight.*
+
+- **l. 2479, the absent-verbs table header** (V11-2's other named site). It enumerates three kinds of
+  last-column entry and is true of every row **once l. 2489's cell separator exists**; the defect was
+  the row, not the header. Round ten widened this header for V10-3 and it needs no second widening.
+- **ll. 753 and 829, §0.10's two unflagged stale citations** (V11-5's named sites). Deliberately **not**
+  re-resolved — that is what branch (b) means, and the head note now governs them explicitly. Left
+  standing rather than corrected is a decision, not an omission, and the reason is that correcting
+  them would guarantee they are wrong again after the next fix-up.
+- **l. 853, §0.10's honestly-flagged citation** (V11-5's third named site). It is the model the head
+  note generalises. Unchanged, deliberately.
+- **l. 4449, §12 item 4b's elided span** (V11-6's source site). Re-counted — *"at the time that script
+  is compiled"* is seven words — and correct as written; the defect was the two sites *describing* it.
+- **l. 3784, §9's milestone row** — see above.
+- **Disclosed because it was seen and not taken:** V11-1's fix shape offers naming Phase 9 as an
+  **invoker** per `DESIGN.md` ll. 1549–1550 rather than dropping it entirely. That was available and
+  is **declined**, on the review's own reasoning: the gloss names who invokes a *whole list* of
+  per-draw dynamics, and reproducing it in a row about **one** uniform would re-import exactly the
+  ambiguity the finding exists to remove. §3's row instead states why Phase 9 is absent, which serves
+  the same reader without the risk.
+
+### §G1.3 status
+
+**This fix-up altered §5, and the trigger fires.** The baseline hash of
+`awk '/^## 5\. Cross-phase interfaces/,/^## 6\. Failure modes/'` was
+`b4dc7149d52ae462ed5240b5df7d87291af0351a7e3142a6b6ab7abc2a115e6c`; it is now
+`82491afc8a821b70d75eae5e4b26ab3ad1ba147813acef2337243b9da998559b`. Three hunks, and only one of them
+is this review's:
+
+1. **This review's** — V11-1's deletion from §5.2's pixel-transfer consumer column (baseline l. 3018).
+2. **The migration's** — two new **§5.1** rows (inserted after baseline l. 3003): the engine bring-up
+   sequence (`[D-P1-37]`, §4.13) and the `mod.glue` vanilla-texture provider slot (`[D-P1-36]`,
+   §4.12). The second exists because REV2's mandated PD §2 completeness check found that App B.3's
+   **unit 0 and unit 1** — the vanilla block atlas and `lightmap` — had no expressible source through
+   this facade.
+3. **Both** — §5.2's changelog row (baseline l. 3009), which records the above.
+
+**No service signature was added, removed or changed.** The seven services, every handle type and
+every value type are byte-for-byte what rounds seven through eleven all reviewed; the signature
+block's only hunk is V11-3's javadoc, and `[D-P1-36]` explicitly **refuses on the seam** the one verb
+(`adopt(int glName)`) that would have changed that, because a raw GL name in an `:engine` signature is
+the leak `[D-P1-15]` and §4.7.3 exist to prevent.
+
+So under §G1.3's third bullet the phase is **not verified** — there is a §5 change outstanding —
+`PHASE_1_DOC.md` is **not** a valid dependency input, and a **twelfth** verify session is owed before
+any dependent consumes it (§G5.3). This review's own §G1.3 line anticipated exactly this and
+instructed the fix-up to expect §0.11 to say so rather than restate §0.10's closing paragraph; §0.11
+does.
+
+**Three things are left standing on purpose**, and they belong to whoever comes next rather than to
+this session:
+
+- **RC2 is still unadopted.** Only step 3 of §G0.4's four-step procedure was performed, by explicit
+  direction: the `/verify-loop` harness's line pins and the operator docs are untouched, so the
+  project's governing design remains **v1.1** while this document verifies against **RC2**. A twelfth
+  session briefed with v1.1 coordinates against an RC2-anchored document would not error — it would
+  silently read the wrong text. §G0.4's closing sentence is the instruction: **stop and report**, do
+  not guess.
+- **The `v10` → `v11` directory roll is owed.** `docs/MOVES.md` ll. 100–110 makes it two steps run
+  together, and the second is a harness edit outside this session's scope. Doing only the first fails
+  silently. `v<K>` = the highest `§0.K` addendum is therefore unsatisfied at `v10`, knowingly.
+- **§4.12, §4.13 and §4.5.2a are entirely unreviewed material** — three new subsections and three new
+  decisions (`[D-P1-36]`, `[D-P1-37]`, `[D-P1-38]`), none of which has been through a verify session.
+  Round seven's rule prices that honestly: *unreviewed material yields findings in proportion to its
+  size, not to the document's maturity.* `[D-P1-36]` is the one that changes what a dependent builds,
+  and is where a twelfth session should start.
+
+*Per §G1.3 this session stops here. It wrote no code, ran no build and no test, launched no review or
+adversarial agent, made no network request, and modified exactly two files: `PHASE_1_DOC.md` and this
+`## Resolutions` section. `DESIGN.md` in all three revisions, `RESEARCH.md`, `PINTONIUM_DESIGN.md`,
+`PHASE_2_DOC.md`, `docs/MOVES.md`, the `/verify-loop` harness and its operator documentation, and
+`PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_10.md` — including their `## Resolutions` sections — are
+unmodified.*

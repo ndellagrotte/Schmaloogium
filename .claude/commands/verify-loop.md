@@ -11,10 +11,13 @@ Arguments given: `$ARGUMENTS`
 ## What this is
 
 Throughout this file `DESIGN.md` means **`docs/design/v1.1/DESIGN.md`**. Since the reorg put the
-version in the directory, `docs/design/v2.0-RC1/DESIGN.md` shares the basename — it is a different,
-unadopted document, and the harness must never be re-pointed at it. Every line number the script
-carries is v1.1's; in v2.0-RC1 the same sections sit 52–267 lines lower, so the swap would not
-error, it would silently feed every agent the wrong text.
+version in the directory, `docs/design/v2.0-RC1/DESIGN.md` and `docs/design/v2.0-RC2/DESIGN.md`
+share the basename — both are different, unadopted documents, and the harness must never be
+re-pointed at either. Every line number the script carries is v1.1's; in the v2.0 revisions the
+same sections sit lower (measured 2026-07-26: 47–271 lines across the script's pins in RC1,
+further still in RC2; an earlier "52–267" here derived from MOVES.md's since-corrected column),
+so the swap would not error, it would silently feed every agent the wrong text. Adoption, when
+it happens, follows v2.0-RC2 §G0.4: re-derive every pin first.
 
 `DESIGN.md` §G1.2 assigns each phase doc an adversarial verify session, and §G1.3 a fix-up when the
 verdict is PASS-WITH-CORRECTIONS. This command automates that cadence — brief → verify → brief →
