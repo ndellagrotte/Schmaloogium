@@ -52,31 +52,74 @@ const NAME = ['none', 'note', 'correction', 'blocking']
 // that rots silently: DESIGN.md is edited by fix-up sessions on the governance document, not by
 // this loop, so re-check them if a doc-gate finding ever looks like it is reading the wrong text.
 //
-// THOSE LINE NUMBERS ARE STATED AGAINST v1.1 — `docs/design/v1.1/DESIGN.md` — and `DESIGN` below
-// must stay pinned there. `docs/design/v2.0-RC1/DESIGN.md` is a DIFFERENT document (the unadopted
-// Pintonium revision) that shares the basename since the reorg put the version in the directory.
-// Every line number in this file is v1.1's: in v2.0-RC1's 2,300 lines the same sections sit 52-267
-// lines lower (Phase 1 spec 585 -> 825, Phase 2 spec 662 -> 929, §G1.2 118 -> 170). Re-pointing
-// `DESIGN` would therefore not error — it would silently feed every agent the wrong text. At
-// v2.0-RC1 ll. 649-652 the doc-gate lens reads §G9's template, which looks plausible and is not the
-// doc gate. Move to v2.0-RC1 only by re-deriving every range in this table and in COMMON below.
+// THERE IS NO SINGLE `DESIGN.md`, AND NO SINGLE SET OF LINE NUMBERS. Three files share the
+// basename since the reorg put the version in the directory, they are different documents, and the
+// two phase docs are anchored to DIFFERENT ones:
+//   `docs/design/v1.1/DESIGN.md`     1,586 lines — PHASE_2_DOC's anchor (its §0.1 cites the
+//                                   Phase 2 spec at v1.1 ll. 662-720), and every review to round 11
+//   `docs/design/v2.0-RC2/DESIGN.md` 2,478 lines — PHASE_1_DOC's anchor from §0.11 onward (its
+//                                   l. 12 says so), adopted at the round-eleven fix-up, §G0.4 step 3
+//   `docs/design/v2.0-RC1/DESIGN.md` 2,304 lines — read by nothing; kept for history
+// So the revision is a declared PER-PHASE fact, exactly like `docVersion` below, and its pin set
+// lives in `DESIGN_PINS`. Pointing a phase at the wrong revision does not error — it silently feeds
+// every agent the wrong text at plausible-looking coordinates, which is the whole trap §G0.4 and
+// `docs/MOVES.md` both warn about.
+//
+// ADDING OR MOVING A REVISION means deriving a complete pin set from THAT FILE'S OWN HEADINGS
+// (`grep -n '^#'`, then confirm each range's first and last line by printing it). NEVER shift
+// another revision's numbers by an offset — §G0.4 step 1 forbids exactly that, and the offsets this
+// comment used to carry were wrong when they were written.
 //
 // `docVersion` names the directory the phase doc lives in. It is NOT derivable from the phase
-// number — phase 1 is `v10` after ten fix-up rounds, phase 2 is `v1`, freshly built — so it is a
+// number — phase 1 is `v11` after eleven fix-up rounds, phase 2 is `v1`, freshly built — so it is a
 // declared fact here like every other phase-specific value. See `docPath` below for the roll
 // procedure when a fix-up produces a new revision.
+
+// Pin sets, one per design revision. `sections` is composed whole rather than assembled from parts
+// because the revisions do not carry the same sections — v1.1 has no §G11 — and a conditional
+// clause per section would be a bug farm. Every RC2 number here was derived from RC2's headings and
+// confirmed by printing the range; none was shifted from v1.1's.
+const DESIGN_PINS = {
+  'v1.1': {
+    path: 'docs/design/v1.1/DESIGN.md',
+    sections: '§G0.3 ll. 48-56; §G1.1 68-116; §G1.2 118-149; §G1.3 151-162; §G4.2 310-316; ' +
+      '§G4.3 318-322; §G4.4 324-331; §G4.6 341-348; §G5.1 phase table 356-377; §G5.3 400-425; ' +
+      '§G9 doc template 508-542; §G10 OQ table 544-572',
+    g9: '508-542',
+  },
+  'v2.0-RC2': {
+    path: 'docs/design/v2.0-RC2/DESIGN.md',
+    sections: '§G0.3 ll. 135-143; §G1.1 188-255; §G1.2 257-300; §G1.3 302-320; §G4.2 506-519; ' +
+      '§G4.3 521-525; §G4.4 527-534; §G4.6 545-557; §G5.1 phase table 565-588; §G5.3 611-638; ' +
+      '§G9 doc template 761-798; §G10 OQ table 800-829; ' +
+      '§G11 Pintonium rules of engagement 833-943',
+    g9: '761-798',
+  },
+}
+
+// Every revision is evidence, whichever one a given round reads. The do-not-modify lists name all
+// of them rather than only `DESIGN`, so the protection does not silently narrow to one file the
+// moment a phase moves revisions. `PHASE_1_REVIEW_11.md`'s Resolutions states the same convention:
+// "`DESIGN.md` in all three revisions … are unmodified".
+const DESIGN_ALL = [
+  'docs/design/v1.1/DESIGN.md',
+  'docs/design/v2.0-RC1/DESIGN.md',
+  'docs/design/v2.0-RC2/DESIGN.md',
+]
 
 const PHASE_FACTS = {
   1: {
     name: 'Foundation & project architecture',
-    docVersion: 'v10',
-    spec: '585-658', docGate: '649-652',
+    docVersion: 'v11',
+    design: 'v2.0-RC2',
+    spec: '957-1067', docGate: '1056-1060',
     oqs: 'OQ-2, OQ-12, OQ-20, OQ-21',
     deps: [],
   },
   2: {
     name: 'Conformance harness',
     docVersion: 'v1',
+    design: 'v1.1',
     spec: '662-723', docGate: '713-715',
     oqs: 'OQ-10',
     deps: [1],
@@ -87,9 +130,22 @@ const F = PHASE_FACTS[PHASE]
 if (!F) {
   throw new Error(
     'No PHASE_FACTS entry for phase ' + PHASE + '. Add one — its name, its doc-version directory, ' +
-    'the DESIGN.md Part II line ranges for its spec and Doc gate, its assigned OQs, and its ' +
-    'dependency phases (all in the §G5.1 table) — rather than letting the prompts assert another ' +
-    'phase\'s facts.')
+    'the design revision its doc is anchored to (a key of DESIGN_PINS), the Part II line ranges ' +
+    'for its spec and Doc gate STATED IN THAT REVISION, its assigned OQs, and its dependency ' +
+    'phases (all in the §G5.1 table) — rather than letting the prompts assert another phase\'s ' +
+    'facts.')
+}
+
+// The phase's design revision, resolved to its pin set. A row naming a revision with no pin set is
+// a hard stop, not a fallback: falling back to another revision's numbers is precisely the silent
+// wrong-text failure the table exists to prevent.
+const D = DESIGN_PINS[F.design]
+if (!D) {
+  throw new Error(
+    'PHASE_FACTS[' + PHASE + '].design is ' + JSON.stringify(F.design) + ', which has no ' +
+    'DESIGN_PINS entry (have: ' + Object.keys(DESIGN_PINS).join(', ') + '). Add one — the path, ' +
+    'the section->line list and the §G9 range — all derived from that file\'s own headings, never ' +
+    'shifted from another revision\'s numbers (§G0.4 step 1).')
 }
 
 // The documents moved out of the repo root in commit 9df5f05 ("docs: fix non-existent document
@@ -97,11 +153,11 @@ if (!F) {
 // repo-relative from REPO; a bare filename no longer resolves, which is exactly how the Phase 1
 // wiring broke.
 
-// A phase doc lives in a directory named for its revision — `docs/phase1/v10/PHASE_1_DOC.md`.
+// A phase doc lives in a directory named for its revision — `docs/phase1/v11/PHASE_1_DOC.md`.
 // Resolution goes through PHASE_FACTS rather than string-building from `n`, because a dependency's
 // version is *that* phase's fact, never this one's.
 //
-// ROLLING A VERSION (v10 -> v11 once an eleventh fix-up lands) is two steps, run together, and
+// ROLLING A VERSION (v11 -> v12 once a twelfth fix-up lands) is two steps, run together, and
 // always AFTER a loop exits:
 //     git mv docs/phase<N>/v<K> docs/phase<N>/v<K+1>
 //     then bump docVersion in PHASE_FACTS above.
@@ -113,14 +169,14 @@ function docPath(n) {
   if (!f || !f.docVersion) {
     throw new Error(
       'No PHASE_FACTS.docVersion for phase ' + n + '. Every phase row must name the version ' +
-      'directory its doc lives in (e.g. `v10`) — it cannot be derived from the phase number.')
+      'directory its doc lives in (e.g. `v11`) — it cannot be derived from the phase number.')
   }
   return 'docs/phase' + n + '/' + f.docVersion + '/PHASE_' + n + '_DOC.md'
 }
 
 const REVIEWS = 'docs/phase' + PHASE + '/reviews'
 const DOC = docPath(PHASE)
-const DESIGN = 'docs/design/v1.1/DESIGN.md'
+const DESIGN = D.path
 const RESEARCH = 'docs/research/v1/RESEARCH.md'
 const DEP_DOCS = F.deps.map(function (n) {
   return docPath(n)
@@ -204,10 +260,13 @@ not resolve, and silently finding nothing is the failure mode to avoid here.
 - Your final text is a return value consumed by a program, not a message to a human.
 
 ## Ground truth (read what you need, not everything)
-- \`${DESIGN}\` — the governance document. §G0.3 ll. 48-56; §G1.1 68-116; §G1.2 118-149;
-  §G1.3 151-162; §G4.2 310-316; §G4.3 318-322; §G4.4 324-331; §G4.6 341-348; §G5.1 phase table
-  356-377; §G5.3 400-425; §G9 doc template 508-542; §G10 OQ table 544-572. The Part II **Phase
-  ${PHASE} spec** is at ll. ~${F.spec}, and its **Doc gate** at ll. ~${F.docGate}.
+- \`${DESIGN}\` — the governance document, **design revision ${F.design}**, which is the revision
+  \`${DOC}\` is anchored to. Three files in this repository are named \`DESIGN.md\` and they are
+  different documents; every line number below is stated against *this* one, and a coordinate from
+  another revision will resolve to plausible-looking wrong text rather than erroring. Sections:
+  ${D.sections}. The Part II **Phase ${PHASE} spec** is at ll. ~${F.spec}, and its **Doc gate** at
+  ll. ~${F.docGate}. If a coordinate you are given disagrees with what you find at that line, **stop
+  and report it** rather than guessing which is right (§G0.4).
 - \`${RESEARCH}\` — the contract ground truth. §0 reading guide and confidence tags; §1 mission,
   non-goals and the D-1..D-10 decision log; §4.2 the ~90 built-in uniforms and the 43 program slots;
   §4.4 the frame model; §11 the open-question register; App D and App F.
@@ -454,7 +513,7 @@ claims. Open the cited text; do not trust the citation.`,
 as written — the gate is the one check where the spec's exact wording, not its evident intent, is
 what the document is measured against.
 
-**Template completeness:** all thirteen §G9 sections (ll. 508-542) present *and substantive*, and
+**Template completeness:** all thirteen §G9 sections (ll. ${D.g9}) present *and substantive*, and
 every assigned OQ (${F.oqs}) carrying a full §G4.4 spike spec —
 question / procedure / success-failure criteria / fallback design. A section that exists but says
 nothing is a finding; a section that is short but complete is not.`,
@@ -535,7 +594,7 @@ let lastVerdict = null
 let priorFix = null
 
 log('Phase ' + PHASE + ' ("' + F.name + '") verify loop on `' + DOC + '` (doc version ' +
-    F.docVersion + ', design ' + DESIGN + ') — preset `' +
+    F.docVersion + ', design ' + F.design + ' = ' + DESIGN + ') — preset `' +
     (A.preset || 'lean') + '` (' + cfg.finders + ' finders, ' + cfg.refuters + ' refuters, steelman ' +
     (cfg.steelman ? 'on' : 'off') + '), starting at round ' + START + ', cap ' + MAX_ROUNDS +
     '. Exit on PASS = zero blocking AND zero corrections.')
@@ -846,9 +905,12 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     'in its own schemas and tables. Those are its subject matter, not verdicts, and they are not\n' +
     'evidence about your verdict. Do not let a grep for "PASS" over the document under review inform\n' +
     'the review of it.\n\n' +
-    'Do not modify `' + DOC + '`, `' + DESIGN + '`, `' + RESEARCH + '`' +
+    'Do not modify `' + DOC + '`, `' + DESIGN_ALL.join('`, `') + '`, `' + RESEARCH + '`' +
     (DEP_DOCS.length ? ', `' + DEP_DOCS.join('`, `') + '`' : '') + ', or any prior review file —\n' +
-    'including their `## Resolutions` sections, which are evidence. Create exactly one file: \n' +
+    'including their `## Resolutions` sections, which are evidence. **All three `DESIGN.md`\n' +
+    'revisions are named deliberately:** this round reads `' + DESIGN + '`, but the others are the\n' +
+    'anchors of other phase docs and of earlier reviews, and they are evidence too.\n' +
+    'Create exactly one file: \n' +
     '`' + REVIEW_FILE + '`. Then stop.',
     { label: 'adjudicate:R' + round, phase: 'R' + round + ' Adjudicate', schema: ADJUDICATE_SCHEMA, agentType: 'general-purpose' }
   )
@@ -944,10 +1006,12 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     'listed per-file and the check is exact; that is the case for every phase defined today, so a\n' +
     'degraded result means something is missing. The phase doc itself is tracked, so a modification\n' +
     'to it always shows.\n' +
-    'Do not modify `' + DESIGN + '`, `' + RESEARCH + '`' +
+    'Do not modify `' + DESIGN_ALL.join('`, `') + '`, `' + RESEARCH + '`' +
     (DEP_DOCS.length ? ', `' + DEP_DOCS.join('`, `') + '`' : '') + ', or any earlier review file —\n' +
-    'including their `## Resolutions` sections, which are evidence. If an earlier review contains an\n' +
-    'error, record the correction in your Resolutions; never edit the evidence.\n\n' +
+    'including their `## Resolutions` sections, which are evidence. **All three `DESIGN.md`\n' +
+    'revisions are named deliberately:** this round reads `' + DESIGN + '`, but the others are the\n' +
+    'anchors of other phase docs and of earlier reviews, and they are evidence too. If an earlier\n' +
+    'review contains an error, record the correction in your Resolutions; never edit the evidence.\n\n' +
     '## Then report, as data for the next round\n' +
     'Your structured return is what the next verify round is briefed from — it replaces the\n' +
     'hand-written brief. `weakest_points` is the important field: **the judgement calls you made that\n' +

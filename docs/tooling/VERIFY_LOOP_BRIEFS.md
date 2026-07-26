@@ -5,11 +5,30 @@ string literals in `Schmaloogium/.claude/workflows/verify-loop.js`. The script i
 copy; **this file is the reviewable one.** If you change what an agent is told, change it in both,
 and say which.*
 
+**Last changed 2026-07-26, in both copies**, completing §G0.4 steps 1, 2 and 4 after the
+round-eleven fix-up performed step 3. Four prompt changes: the ground-truth block names its design
+revision and draws its whole pin set from the script's new `DESIGN_PINS` table instead of carrying
+hardcoded v1.1 numbers; the doc-gate lens's §G9 range is interpolated rather than hardcoded; both
+do-not-modify lists name **all three** `DESIGN.md` revisions instead of only the one the round reads;
+and every agent is told to stop and report a briefed coordinate that disagrees with the file rather
+than guess which is right (§G0.4's closing sentence). The operator-facing changes are in
+`.claude/commands/verify-loop.md`.
+
 **The harness is parameterized by phase.** `args.phase` selects the document; paths, the spec and
 doc-gate line ranges, the OQ set and the dependency docs all derive from the script's `PHASE_FACTS`
 table. Adding a phase is a table row, not a prompt edit. Everything below is written generically;
 where a passage was learned from a specific Phase 1 round, the round is named as provenance rather
 than as a claim about the document currently under review.
+
+**The design revision is per-phase table data too, not a constant.** Three files in this repository
+are named `DESIGN.md` and they are different documents, so `PHASE_FACTS` declares which revision each
+phase doc is anchored to and `DESIGN_PINS` holds that revision's complete section→line set. Phase 1
+reads `docs/design/v2.0-RC2/DESIGN.md` (its doc's l. 12 declares it, adopted at the round-eleven
+fix-up); Phase 2 reads `docs/design/v1.1/DESIGN.md` (its §0.1 cites the Phase 2 spec at v1.1
+ll. 662–720) until §G0.4 step 3 migrates it; `docs/design/v2.0-RC1/DESIGN.md` is read by nothing.
+A phase pointed at the wrong revision does not error — it reads plausible-looking wrong text — so a
+new or moved revision needs its pin set derived from **its own headings**, never offset from
+another's.
 
 **Every path in every prompt is repo-relative to `Schmaloogium/`.** The documents moved out of the
 repo root into `docs/` in commit `9df5f05`; the harness originally referenced bare filenames and
@@ -66,6 +85,25 @@ Prepended to all of them. Three of its clauses were each bought with a specific 
   nothing in `settings.local.json` denies these reads — so this is structural, not airtight.
 - **No scope creep.** Answer only what is asked.
 - **The return value is data**, not a message to a human.
+
+### Ground truth, and which `DESIGN.md` it is
+
+The block names the design revision explicitly — *"the governance document, **design revision
+`<rev>`**, which is the revision `<doc>` is anchored to"* — then lists that revision's section→line
+pins from `DESIGN_PINS`, then the phase's spec and Doc-gate ranges. It says outright that three files
+in the repository share the basename, that they are different documents, and that a coordinate from
+another revision resolves to plausible-looking wrong text rather than erroring.
+
+It closes with the escape hatch, and this is the clause worth keeping:
+
+> If a coordinate you are given disagrees with what you find at that line, **stop and report it**
+> rather than guessing which is right (§G0.4).
+
+That is §G0.4's own closing sentence. The failure it guards is not hypothetical: between the
+round-eleven fix-up and 2026-07-26 the harness read v1.1 while `PHASE_1_DOC.md` was anchored to RC2,
+and nothing in the loop would have raised an error — every agent would simply have been handed the
+wrong text. An agent that notices the mismatch is the last line of defence, so it needs permission to
+halt rather than reconcile.
 
 ### What does not count as work
 
@@ -155,11 +193,19 @@ The phase spec's *Doc gate* met **literally**; all thirteen §G9 sections presen
 every assigned OQ carrying a full §G4.4 spike spec. A section that exists but says nothing is a
 finding; a section that is short but complete is not.
 
-The spec line range, the doc-gate line range and the OQ set are interpolated per phase from
-`PHASE_FACTS` (Phase 1: ll. ~585-658 / ~649-652 / OQ-2, OQ-12, OQ-20, OQ-21 · Phase 2: ll. ~662-723
-/ ~713-715 / OQ-10). These are the one kind of fact in the table that rots silently, since `DESIGN.md`
-is edited by sessions other than this loop — re-check them if a doc-gate finding ever looks like it
-is reading the wrong text.
+The spec line range, the doc-gate line range, the §G9 range and the OQ set are interpolated per phase
+from `PHASE_FACTS` and `DESIGN_PINS`. **Each row's ranges are stated in that phase's own design
+revision**, and the two phases no longer share one — so the revision is quoted with the numbers:
+
+| Phase | Revision | Spec | Doc gate | §G9 template | OQs |
+|---|---|---|---|---|---|
+| 1 | `v2.0-RC2` | ll. ~957-1067 | ~1056-1060 | 761-798 | OQ-2, OQ-12, OQ-20, OQ-21 |
+| 2 | `v1.1` | ll. ~662-723 | ~713-715 | 508-542 | OQ-10 |
+
+These are the one kind of fact in the table that rots silently, since `DESIGN.md` is edited by
+sessions other than this loop — re-check them if a doc-gate finding ever looks like it is reading the
+wrong text. Re-checking means re-deriving from the revision's own headings; a number carried across
+from another revision is the defect, not the fix.
 
 ### Lens 5 — scope discipline and binding decisions
 
@@ -170,8 +216,10 @@ smoothed one over is a finding.
 
 ### Reading order, and it is a discipline rather than a suggestion
 
-Finders read `docs/design/v1.1/DESIGN.md` Part I and the phase spec, then the phase doc under review,
-then its dependency phase docs where it has any, then only what their lens needs.
+Finders read **the `DESIGN.md` revision their phase's `PHASE_FACTS` row names** — Part I and the phase
+spec — then the phase doc under review, then its dependency phase docs where it has any, then only
+what their lens needs. The path is interpolated, never written out here, because it differs per phase
+and a hardcoded one in this file would rot the moment a phase migrates.
 
 **They read no review file for the phase under review** — `PHASE_<N>_REVIEW_*.md` for their own `N`.
 The adjudicator reads those, last. The ban is scoped to the phase deliberately: a **dependency**
@@ -350,10 +398,13 @@ it is what a fix-up owes a cadence in which it gets no adversarial review of its
   fix-up agent refuses with cause and records it, exactly as the fifth fix-up refused V8-3 and the
   sixth declined to re-open the elision. **A design call arriving through a correction is the move
   round eight's rule forbids**, and no adversarial session would review it.
-- **Editing evidence.** `PHASE_1_REVIEW_1.md` … `_10.md`, including their `## Resolutions` sections,
+- **Editing evidence.** `PHASE_1_REVIEW_1.md` … `_11.md`, including their `## Resolutions` sections,
   are immutable. Where an earlier review contains an error — round nine's `(ll. 2907, 2906)` cited a
   row three rows off — the correction is recorded in the current round's Resolutions, never applied
-  to the evidence.
+  to the evidence. **`DESIGN.md` is evidence in all three revisions**, not only the one the round
+  reads, so both do-not-modify lists name `v1.1`, `v2.0-RC1` and `v2.0-RC2` explicitly: the other two
+  are the anchors of other phase docs and of earlier reviews, and a list interpolating only the
+  current revision would silently unprotect them the moment a phase migrates.
 - **Network.** Rationed to at most one agent for one purpose, §4.2.6's pin table, disclosed either
   way. No finding in the last four rounds turned on a platform fact.
 
