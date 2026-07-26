@@ -937,10 +937,13 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     'change, that is a legitimate outcome — say so truthfully; it means §G1.3\'s re-verify trigger\n' +
     'fires. Never report it unchanged without having run the comparison.\n\n' +
     'Also verify with `git status --short` that you touched **exactly two paths**: `' + DOC + '` and\n' +
-    '`' + REVIEW_FILE + '`. Note that `' + REVIEWS + '` is **untracked** until its first review is\n' +
-    'added, in which case git reports the directory as a single `??` entry rather than listing\n' +
-    'files — if so, say in `files_modified` that the check was degraded and confirm by listing the\n' +
-    'directory instead. The phase doc itself is tracked, so a modification to it always shows.\n' +
+    '`' + REVIEW_FILE + '`. If git reports `' + REVIEWS + '` as a single `??` entry instead of\n' +
+    'listing the files inside it, that directory holds no tracked file and the check is degraded —\n' +
+    'say so in `files_modified` and confirm by listing the directory instead. **Do not assume that\n' +
+    'state.** A `reviews/` directory holding any tracked file — a prior review, or a `.gitkeep` — is\n' +
+    'listed per-file and the check is exact; that is the case for every phase defined today, so a\n' +
+    'degraded result means something is missing. The phase doc itself is tracked, so a modification\n' +
+    'to it always shows.\n' +
     'Do not modify `' + DESIGN + '`, `' + RESEARCH + '`' +
     (DEP_DOCS.length ? ', `' + DEP_DOCS.join('`, `') + '`' : '') + ', or any earlier review file —\n' +
     'including their `## Resolutions` sections, which are evidence. If an earlier review contains an\n' +

@@ -203,10 +203,10 @@ Only after 1–7 pass should the loop run unattended.
   are both tracked as of the versioned-directory reorg, so the fix-up's `git status --short` check
   reports modifications to them precisely. `docs/phase2/reviews/` is tracked as well — it carries a
   `.gitkeep` — so a new review is listed as its own `??` line and the check is **not** degraded, on
-  round one or any round after. The fix-up prompt in `.claude/workflows/verify-loop.js` still
-  instructs the agent to report a degraded check when git collapses the directory; that condition no
-  longer fires, so a `degraded` result coming back now means the `.gitkeep` has gone missing and is
-  worth investigating rather than accepting. Note that transcripts are now ignored via
+  round one or any round after. The fix-up still reports a degraded check if git ever collapses a
+  `reviews/` directory to one `??` entry, but that now happens only for a newly added phase whose
+  `reviews/` holds no tracked file yet — so a `degraded` result on phase 1 or 2 means a tracked file
+  has gone missing and is worth investigating. Note that transcripts are now ignored via
   `docs/**/chatlogs/`, which is what keeps `git status --short` readable.
 - Confirm Phase 1's status is understood: `PHASE_1_REVIEW_11.md` is PASS-WITH-CORRECTIONS with no
   `## Resolutions` and no `§0.11`, so Phase 1 is **not** "verified" under §G1.3 and §G5.3's gating

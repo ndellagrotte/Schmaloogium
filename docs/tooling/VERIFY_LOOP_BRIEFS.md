@@ -320,10 +320,12 @@ not**, and the bare `PHASE_1_DOC.md` this command used to carry stopped resolvin
 
 `git status --short` must show **exactly two paths** touched: the phase doc and the round's review
 file. One caveat the fix-up is told to report rather than paper over: if the phase's `reviews/`
-directory is itself untracked, git collapses it to a single `??` entry and cannot show which files
-changed. `docs/phase2/reviews/` is in that state until its first review is added. The phase doc
-itself is tracked, so a modification to it always shows. The agent returns the check as *degraded*
-in `files_modified` instead of claiming a clean result.
+directory holds no tracked file, git collapses it to a single `??` entry and cannot show which files
+changed. Neither phase defined today is in that state — `docs/phase1/reviews/` holds eleven reviews
+and `docs/phase2/reviews/` a tracked `.gitkeep` — so the check is exact for both. A newly added
+phase's `reviews/` would collapse until its first review lands or a `.gitkeep` is committed. The
+phase doc itself is tracked, so a modification to it always shows. When the collapse does occur the
+agent returns the check as *degraded* in `files_modified` instead of claiming a clean result.
 
 Note the operator-side §5 check in the command's pre-flight is **not** the same command and must not
 use `git show HEAD:…` as its baseline: in the window between a reorg's `git mv` and its commit,
