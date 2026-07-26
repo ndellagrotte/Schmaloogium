@@ -167,10 +167,11 @@ Run from `/home/nick/IdeaProjects/schmaloogium-project/Schmaloogium`.
    git status --short
    ```
    **Only `docs/phase2/reviews/PHASE_2_REVIEW_1.md` may be new; nothing may be modified.** A finder
-   or refuter that wrote anything is a failed read-only contract — stop and fix the harness. Note
-   that `docs/phase2/reviews/` is a **new** directory and stays untracked until its first review is
-   added, in which case git collapses it to a single `??` entry and this check is degraded for that
-   first round only. The phase doc itself **is** tracked, so a modification to it always shows.
+   or refuter that wrote anything is a failed read-only contract — stop and fix the harness. This
+   check is **precise from round one**: `docs/phase2/reviews/.gitkeep` is tracked, so git lists a
+   new review as its own `?? docs/phase2/reviews/PHASE_2_REVIEW_1.md` line instead of collapsing the
+   directory to a single `??` entry. The phase doc is tracked too, so a modification to it always
+   shows. Should that `.gitkeep` ever be removed, the collapse — and the degraded check — returns.
 4. **Prove the Gate drops things.** Add one fabricated finding citing a line whose quote does not
    match, and confirm the run logs `Gate DROPPED`. A gate that passes everything is not a gate.
 5. **Prove the §5 report is real.** The fix-up returns a before/after sha256 of §5 taken by content
@@ -200,10 +201,12 @@ Only after 1–7 pass should the loop run unattended.
 
 - **Tracking is no longer a prerequisite gap.** The Phase 2 doc and `docs/research/v1/RESEARCH.md`
   are both tracked as of the versioned-directory reorg, so the fix-up's `git status --short` check
-  reports modifications to them precisely. What remains untracked is `docs/phase2/reviews/`, until
-  its first review lands and is added; git collapses an untracked directory to one `??` entry, so
-  the check is degraded for that first round only. The script detects this and reports the check as
-  degraded rather than claiming a clean result. Note that transcripts are now ignored via
+  reports modifications to them precisely. `docs/phase2/reviews/` is tracked as well — it carries a
+  `.gitkeep` — so a new review is listed as its own `??` line and the check is **not** degraded, on
+  round one or any round after. The fix-up prompt in `.claude/workflows/verify-loop.js` still
+  instructs the agent to report a degraded check when git collapses the directory; that condition no
+  longer fires, so a `degraded` result coming back now means the `.gitkeep` has gone missing and is
+  worth investigating rather than accepting. Note that transcripts are now ignored via
   `docs/**/chatlogs/`, which is what keeps `git status --short` readable.
 - Confirm Phase 1's status is understood: `PHASE_1_REVIEW_11.md` is PASS-WITH-CORRECTIONS with no
   `## Resolutions` and no `§0.11`, so Phase 1 is **not** "verified" under §G1.3 and §G5.3's gating
