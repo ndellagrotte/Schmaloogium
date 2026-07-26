@@ -162,8 +162,8 @@ has three steps, then you stop:
   inconsistency) are *reported* in doc §3/§11 with your ruling and its provenance, never
   silently smoothed over.
 - **Do not modify** RESEARCH.md, either design revision (`docs/design/v1.1/DESIGN.md`,
-  `docs/design/v2.0-RC1/DESIGN.md`), PINTONIUM_DESIGN.md, or another phase's doc. Propose changes to any of them in your doc §11 ("requested
-  upstream changes").
+  `docs/design/v2.0-RC1/DESIGN.md`), PINTONIUM_DESIGN.md, or another phase's doc. Propose
+  changes to any of them in your doc §11 ("requested upstream changes").
 - **Dependency docs are contracts.** What a dependency's PHASE doc exposes in its §5
   (cross-phase interfaces) is what you build against. If it is missing something you need,
   flag the request in your doc §5; do not invent the missing interface as if it existed.
