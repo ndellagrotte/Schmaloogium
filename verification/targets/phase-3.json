@@ -1,0 +1,160 @@
+{
+  "$schema": "../../.agents/skills/verify-loop/schemas/manifest.schema.json",
+  "version": 1,
+  "id": "phase-3",
+  "title": "Phase 3 — Pack front-end",
+  "description": "Adversarial verification profile for the current Phase 3 architecture document.",
+  "targets": [
+    {
+      "path": "docs/phase3/v1/PHASE_3_DOC.md",
+      "role": "document under review",
+      "selectors": [
+        {
+          "id": "whole_document",
+          "selector": {
+            "start": "^# Schmaloogium — Phase 3:"
+          }
+        }
+      ]
+    }
+  ],
+  "authoritative_sources": [
+    {
+      "path": "docs/design/v2.0-RC3/DESIGN.md",
+      "role": "governing design revision",
+      "selectors": [
+        {
+          "id": "part_i",
+          "selector": {
+            "start": "^## Part I — Global sections$",
+            "end": "^## Part II — Phase specifications$"
+          }
+        },
+        {
+          "id": "target_spec",
+          "selector": {
+            "start": "^### Phase 3 — Pack front-end:",
+            "end": "^### Phase 4 — Stage/program registry"
+          }
+        },
+        {
+          "id": "doc_gate",
+          "selector": {
+            "start": "^\\*\\*Doc gate:\\*\\* conformance map covers every App F key",
+            "end": "^\\*\\*Impl gate:\\*\\*",
+            "end_mode": "first-after-start"
+          }
+        },
+        {
+          "id": "mandatory_template",
+          "selector": {
+            "start": "^## G9\\. PHASE_X_DOC\\.md — mandatory template$",
+            "end": "^## G10\\. Open-question assignments$"
+          }
+        }
+      ]
+    },
+    {
+      "path": "docs/research/v1/RESEARCH.md",
+      "role": "contract ground truth"
+    }
+  ],
+  "supporting_evidence": [
+    {
+      "path": "docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md",
+      "role": "Pintonium reference evidence"
+    },
+    {
+      "path": "docs/reference/oculus/v1.0/OCULUS_DESIGN.md",
+      "role": "Oculus reference evidence"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "docs/phase1/v14/PHASE_1_DOC.md",
+      "role": "dependency architecture and binding interface",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    }
+  ],
+  "prior_reviews": {
+    "directory": "docs/phase3/reviews",
+    "filename_regex": "^PHASE_3_REVIEW_(?<round>\\d+)\\.md$",
+    "round_group": "round",
+    "read_order": "adjudicator-last",
+    "allow_gaps": false
+  },
+  "forbidden_sources": {
+    "path_patterns": [
+      "docs/**/chatlogs/**",
+      "*.txt"
+    ],
+    "provenance_patterns": [
+      "any prior agent or session transcript, regardless of path or extension"
+    ]
+  },
+  "immutable_paths": [
+    "docs/research/**",
+    "docs/design/**",
+    "docs/reference/**",
+    "docs/phase1/v14/PHASE_1_DOC.md",
+    "docs/phase1/reviews/**",
+    "docs/phase3/reviews/*.md"
+  ],
+  "write_permissions": {
+    "adjudicator": [
+      "{review_output}"
+    ],
+    "fixup": [
+      "docs/phase3/v1/PHASE_3_DOC.md",
+      "{review_output}"
+    ]
+  },
+  "output": {
+    "directory": "docs/phase3/reviews",
+    "review_template": "PHASE_3_REVIEW_{round}.md",
+    "journal_directory": ".verification-runs/phase-3"
+  },
+  "attack_lenses": "verification/lenses/phase-document.json",
+  "lens_order": {
+    "first_review": [
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions",
+      "new-surface"
+    ],
+    "mature": [
+      "new-surface",
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions"
+    ]
+  },
+  "citation": {
+    "format": "repo-relative-line-quote",
+    "resolver": "line-quote",
+    "allow_unique_relocation": true
+  },
+  "interface_regions": [
+    {
+      "id": "cross-phase-interfaces",
+      "path": "docs/phase3/v1/PHASE_3_DOC.md",
+      "selector": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 3 can close."
+    }
+  ],
+  "policy": "verification/policy.json",
+  "target_context": {
+    "assigned_open_questions": "OQ-7",
+    "phase_name": "Pack front-end: ingestion, preprocessing & configuration model",
+    "mandatory_section_count": 13
+  },
+  "fixup_instructions": "This is a first-version document with no mature fix-up-addendum convention. If a correction changes the target, add only a compact next-numbered §0 subsection using its existing header style; do not import Phase 1's supersession sentences, dated-claim ranges, or session-count bookkeeping. Keep full reasoning in the current review's Resolutions and do not roll the v1 directory during a loop."
+}

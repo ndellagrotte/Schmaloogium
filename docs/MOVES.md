@@ -83,15 +83,12 @@ step 3; `PHASE_2_DOC.md` §0.1 still cites v1.1 (the Phase 2 spec at ll. 662–7
 not been run for it; and Phase 3 deliberately adopts RC3 from its initial build. Every Phase 1
 review through round 11 is in v1.1's coordinates.
 
-The `/verify-loop` harness therefore resolves the revision **per phase** rather than globally:
-`design` in each `PHASE_FACTS` row names it, and `DESIGN_PINS` in
-`.claude/workflows/verify-loop.js` holds one complete pin set per revision selected by
-`PHASE_FACTS` — **12 section→line mappings for v1.1, 13 for RC2, and 14 for RC3**, plus the §G9
-range the doc-gate lens quotes and each row's `spec`/`docGate`. `PHASE_FACTS[3]` selects RC3 with
-Phase 3 spec `1316–1470`, Doc gate `1451–1457`, OQ-7, and dependency `[1]`.
-(Before this change there was a single `DESIGN` constant and 17 hardcoded v1.1 numbers spread
-across the file; §G0.4 step 1 and the earlier text here both said "~16", which matched no literal
-count.)
+The `$verify-loop` harness therefore resolves the revision **per target** rather than globally.
+Each profile in `verification/targets/` names its governing design and unique content selectors for
+Part I, the target specification, the document gate, and the mandatory template. The engine resolves
+those selectors against current content at startup and reports current coordinates. Phase 3's
+profile selects RC3, OQ-7, and the Phase 1 dependency; Phase 1 selects RC2; Phase 2 selects v1.1.
+There is no executable line-pin table to synchronize.
 
 **Pointing a phase at the wrong revision would not raise an error — it would silently feed every
 agent the wrong text.** The old pins make the point: at v2.0-RC1 ll. 649–652 the doc-gate lens read
@@ -113,20 +110,19 @@ Directory names come from each document's own header, not from the folder it use
 | `RESEARCH.md` | `v1` | "first complete draft"; no version stated |
 | `PINTONIUM_DESIGN.md` | `v1.0` | header states v1.0 |
 | `PHASE_1_DOC.md` | `v14` | fix-up addenda §0.4–**§0.14**; `PHASE_1_REVIEW_14.md` has complete `## Resolutions`, and round fifteen returned a literal PASS with no further fix-up. Rolled from `v13` on 2026-07-26 after that loop exited |
-| `PHASE_2_DOC.md` | `v1` | initial build session, zero review rounds |
+| `PHASE_2_DOC.md` | `v1` | initial build session; `PHASE_2_REVIEW_1.md` returned literal PASS. Future round state is discovered from the review directory |
 | `PHASE_3_DOC.md` | `v1` | initial build under RC3; rolls only after a fix-up addendum and a later literal PASS |
 
 **Rolling a phase doc's version** (`v14` → `v15` only once a future §0.15 fix-up lands) is two steps,
-run together and only **after** that `/verify-loop` run exits:
+run together and only **after** that `$verify-loop` run exits:
 
 ```bash
 git mv docs/phase1/v14 docs/phase1/v15
-# then bump docVersion in PHASE_FACTS in both byte-identical workflow scripts
+# then update the target, interface, and fix-up paths in verification/targets/phase-1.json
 ```
 
 `v<K>` = the highest `§0.K` fix-up addendum in the doc. Never roll mid-loop: the doc path is
-computed once at startup, so a rename between rounds points every later round at a directory that no
-longer exists.
+resolved once at startup, so a rename between rounds invalidates every later stage.
 
 *The `v10` → `v11` roll was performed 2026-07-26, both steps together, with no loop running. It cost
 one dangling reference, recorded below.*

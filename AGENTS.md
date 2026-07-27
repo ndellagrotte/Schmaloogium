@@ -1,6 +1,7 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides durable repository guidance to Codex. Read it before changing files or reviewing
+any governed document.
 
 ## What this repository is
 
@@ -69,18 +70,19 @@ Everything in `docs/` is governed. Read this before editing, and before citing.
 Supporting files: `docs/MOVES.md` (the path manifest), `docs/tooling/VERIFY_LOOP_BRIEFS.md`,
 `docs/decisions/`, and `docs/phase<N>/briefs/` (the per-session briefs that commissioned a round).
 
-### Three different files are named `DESIGN.md`
+### Four different files are named `DESIGN.md`
 
-`docs/design/v1.1/`, `docs/design/v2.0-RC1/` and `docs/design/v2.0-RC2/` each hold a `DESIGN.md`.
+`docs/design/v1.1/`, `docs/design/v2.0-RC1/`, `docs/design/v2.0-RC2/`, and
+`docs/design/v2.0-RC3/` each hold a `DESIGN.md`.
 They are **different documents**, they do not share line numbers, and phase docs are anchored to
 different ones. Every phase doc and review cites its revision *by line number*.
 
 **Reading the wrong revision does not error — it yields plausible-looking wrong text at
 coordinates that appear to resolve.** So:
 
-- Which revision a phase is anchored to is declared data, not a guess: `PHASE_FACTS[N].design` in
-  `.claude/workflows/verify-loop.js`, whose `DESIGN_PINS` table holds that revision's complete
-  section→line pin set. The phase doc's own §0 header states it too.
+- Which revision a phase is anchored to is declared data, not a guess: the phase's manifest under
+  `verification/targets/`, whose content selectors resolve and validate that revision at startup.
+  The phase doc's own §0 header states it too.
 - Adding or moving a revision means **deriving a whole new pin set from that file's own headings**
   (`grep -n '^#'`, then print each range and confirm its first and last line). Never shift another
   revision's numbers by an offset.
@@ -99,7 +101,8 @@ old→new manifest, the `DESIGN.md` collision warning, and the rule for what eac
 means. It also carries the dangling-reference sweep used as the acceptance check after any move.
 
 A phase doc's `v<K>` = the highest `§0.K` fix-up addendum in it. **Rolling it is two steps run
-together** — `git mv docs/phase<N>/v<K> v<K+1>`, then bump `docVersion` in `PHASE_FACTS` — and
+together** — `git mv docs/phase<N>/v<K> v<K+1>`, then update that phase's paths in its verification
+manifest — and
 only ever **after** a verify loop exits. Rolling mid-loop points every later round at a directory
 that no longer exists, silently.
 
@@ -107,34 +110,50 @@ that no longer exists, silently.
 
 Each phase passes through fresh, separate sessions, always in this order (`DESIGN.md` §G1):
 
-1. **Build** (§G1.1) — one session, one phase spec, writes `docs/phase<N>/v1/PHASE_<N>_DOC.md`,
+1. **Build** (§G1.1) — one fresh Codex session, one phase spec, writes
+   `docs/phase<N>/v1/PHASE_<N>_DOC.md`,
    then stops.
-2. **Verify** (§G1.2) — a *different* session, without the author's context, adversarially
+2. **Verify** (§G1.2) — a *different fresh Codex session*, without the author's context, adversarially
    attacks the doc and writes one numbered review with one verdict, then stops.
-3. **Fix-up** (§G1.3) — applies corrections, records each under `## Resolutions` in the review,
+3. **Fix-up** (§G1.3) — another fresh Codex writing role applies corrections, records each under
+   `## Resolutions` in the review,
    adds a `§0.<K>` addendum to the doc.
 
 A phase is **verified** only per §G1.3's definition, and §G5.3's gating invariant is that a
 dependent build session may not read an unverified doc. If a fix-up changed the doc's §5, a fresh
 verify session is owed before the phase closes.
 
-### The `/verify-loop` harness
+### The `$verify-loop` harness
 
 §G1.2/§G1.3 run mechanized as a multi-agent workflow (Attack → Refute → Steelman → Gate →
 Adjudicate → Fix up), looping until a review returns a literal PASS (zero blocking, zero
-corrections). Three files, and they must stay in step:
+corrections). The Codex implementation has one canonical engine and one canonical prompt/schema set:
 
 | File | Role |
 |---|---|
-| `.claude/commands/verify-loop.md` | Operator runbook: arguments, cost estimates, and the 7-step pre-flight to run **before** any unattended loop. Read this first. |
-| `.claude/workflows/verify-loop.js` | The executable copy. All phase-specific facts live in `PHASE_FACTS` / `DESIGN_PINS` — **adding a phase is a table row, not a prompt edit.** |
-| `docs/tooling/VERIFY_LOOP_BRIEFS.md` | The readable copy of the same prompts. **Change what an agent is told in both, and say which.** |
+| `.agents/skills/verify-loop/SKILL.md` | Fresh-session Codex entry point and safety procedure. Invoke with `$verify-loop`. |
+| `.agents/skills/verify-loop/scripts/` | Generic `codex exec` orchestrator, deterministic barriers, aggregation, path/write checks, and CLI. |
+| `.agents/skills/verify-loop/prompts/` and `schemas/` | The only active role prompts and structured-return schemas. |
+| `verification/targets/` | Data-only target profiles; adding a phase or non-document target requires configuration, not prompt edits. |
+| `docs/tooling/VERIFY_LOOP_BRIEFS.md` | Readable source map pointing to the canonical files; it is not a synchronized prompt copy. |
 
-Load-bearing properties worth preserving: finders/refuters/gate run as read-only agent types;
+Run `scripts/verify --target <id> --dry-run` before any paid run. It validates inputs, prior-review
+state, content selectors, output collisions, write scopes, and reports agent/token estimates.
+Default to the `lean` preset and start with `--review-only --max-rounds 1`.
+If that review has corrections, run `scripts/verify --target <id> --fixup-review latest --dry-run`
+and then the same command without `--dry-run` before beginning the next review.
+
+Load-bearing properties: finders/refuters/steelmen/Gate run in Codex read-only sandboxes;
 the Gate re-resolves every citation at the line and drops anything that does not match verbatim;
 stage boundaries are deliberate barriers (do not convert to a pipeline); `startRound=1` inverts
 the prompts because a never-reviewed document is unreviewed *surface*, not a mature loop. Default
-to the `lean` preset and start with `reviewOnly`.
+state is discovered from prior reviews rather than inferred from an argument. Literal PASS requires
+the `PASS` verdict plus zero blocking and zero corrections. See
+`docs/tooling/CODEX_VERIFICATION.md` for invocation, costs, recovery, and the generic manifest.
+
+The provider-era wording in the immutable governing design revisions is interpreted through
+`docs/tooling/CODEX_MIGRATION_OVERLAY.md`. It preserves their cited bytes and coordinates while
+superseding only the retired execution surface.
 
 ## Rules binding every session here
 
@@ -163,8 +182,8 @@ to, and these glosses must not be treated as the rule:
   `reference-src/cleanroom-0.6.6-alpha/`, `schlorbium-project/` →
   `reference-src/schlorbium-HD_U_G6_pre1/`, `Pintonium/` → `reference-src/pintonium-9c2fcc1/`.
   Read `§G11.3` (v2.0 revisions) before searching Pintonium — it lists real traps.
-- **Use the `cleanroom` MCP server for vanilla symbols** (enabled in
-  `.claude/settings.local.json`). Vanilla render classes exist in `cleanroom-src/` only as
+- **Use the `cleanroom` MCP server for vanilla symbols** (configured for Codex in
+  `.codex/config.toml`). Vanilla render classes exist in `cleanroom-src/` only as
   `.java.patch` files, so grepping it for a method body will mislead you; full sources are
   present only for Forge and loader internals.
 
@@ -178,9 +197,9 @@ here would be worse than none. To learn it:
    whether it is verified and what the next session owes.
 2. Run `git status --short`. A version roll or a harness re-point may be mid-flight, in which
    case the tree and the last commit disagree on purpose.
-3. Resolve any path you find through `docs/MOVES.md`, and check
-   `PHASE_FACTS` in `.claude/workflows/verify-loop.js` for the current `docVersion` and `design`
-   of each phase.
+3. Resolve any path you find through `docs/MOVES.md`, and run the appropriate
+   `verification/targets/<id>.json` profile with `--dry-run` to validate the current artifact,
+   governing revision, selectors, and next review number.
 
 ## Planned mod architecture
 

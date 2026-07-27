@@ -29,7 +29,9 @@ gradle-app.setting
 reference-src
 
 # session transcripts — kept on disk as evidence, out of history.
-# NOTE: the /verify-loop harness bars agents from reading these; the ignore
+# NOTE: the $verify-loop harness bars agents from reading these; the ignore
 # rule is about repo size, not about the forbidden-source rule.
 docs/**/chatlogs/
 
+# Codex verification recovery journals (local run state, not review evidence)
+.verification-runs/

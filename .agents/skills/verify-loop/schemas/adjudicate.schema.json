@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "verdict",
+    "blocking_count",
+    "correction_count",
+    "note_count",
+    "interface_changed",
+    "candidate_dispositions",
+    "review_file",
+    "rationale",
+    "findings_dropped_on_derivation"
+  ],
+  "properties": {
+    "verdict": { "enum": ["PASS", "PASS-WITH-CORRECTIONS", "FAIL"] },
+    "blocking_count": { "type": "integer", "minimum": 0 },
+    "correction_count": { "type": "integer", "minimum": 0 },
+    "note_count": { "type": "integer", "minimum": 0 },
+    "interface_changed": { "type": "boolean" },
+    "candidate_dispositions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate_id", "disposition", "final_severity", "touches_interface", "rationale"],
+        "properties": {
+          "candidate_id": { "type": "string", "minLength": 1 },
+          "disposition": { "enum": ["ADMITTED", "DROPPED"] },
+          "final_severity": { "enum": ["blocking", "correction", "note", "none"] },
+          "touches_interface": { "type": "boolean" },
+          "rationale": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "review_file": { "type": "string", "minLength": 1 },
+    "rationale": { "type": "string", "minLength": 1 },
+    "findings_dropped_on_derivation": { "type": "string" }
+  }
+}

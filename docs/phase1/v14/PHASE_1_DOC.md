@@ -12,8 +12,8 @@
 **Verifies against:** `docs/design/v2.0-RC2/DESIGN.md` from §0.11 onward; `docs/design/v1.1/DESIGN.md`
 through §0.10. **There is no longer one governing revision for the project:** RC2 governs **this
 phase** and v1.1 still governs Phase 2, so the revision is resolved **per phase** — from
-`docs/MOVES.md` and `PHASE_FACTS` in `.claude/workflows/verify-loop.js`, never from a §0 addendum,
-which is a record of what one session was told rather than of the tree. §0.12 states the adoption
+`docs/MOVES.md` and the validated `phase-1` manifest in `verification/targets/`, never from a §0
+addendum, which is a record of what one session was told rather than of the tree. §0.12 states the adoption
 state as of 2026-07-26; §0.1 records what was read from each revision.
 
 *Both dates are stated, and deliberately. The authoring date is what the rest of the document reads
