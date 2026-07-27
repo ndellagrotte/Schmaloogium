@@ -171,7 +171,7 @@ Run from `/home/nick/IdeaProjects/schmaloogium-project/Schmaloogium`.
    `meta`, TypeScript syntax, or a forbidden `Date.now()`.
 2. **Paths resolve.** The check that would have caught the original breakage:
    ```bash
-   ls docs/phase2/v1/PHASE_2_DOC.md docs/phase1/v11/PHASE_1_DOC.md \
+   ls docs/phase2/v1/PHASE_2_DOC.md docs/phase1/v14/PHASE_1_DOC.md \
       docs/research/v1/RESEARCH.md \
       docs/design/v1.1/DESIGN.md docs/design/v2.0-RC2/DESIGN.md
    ```
@@ -211,7 +211,7 @@ Run from `/home/nick/IdeaProjects/schmaloogium-project/Schmaloogium`.
    md5sum docs/phase1/reviews/*.md docs/phase1/briefs/*.md \
           docs/design/v1.1/DESIGN.md docs/design/v2.0-RC1/DESIGN.md \
           docs/design/v2.0-RC2/DESIGN.md docs/research/v1/RESEARCH.md \
-          docs/phase1/v11/PHASE_1_DOC.md
+          docs/phase1/v14/PHASE_1_DOC.md
    ```
    **All three design revisions**, not only the one this run reads: the other two are the anchors of
    other phase docs and of earlier reviews, so they are evidence too, and the prompts' do-not-modify

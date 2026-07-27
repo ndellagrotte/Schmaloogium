@@ -71,7 +71,7 @@ const NAME = ['none', 'note', 'correction', 'blocking']
 // comment used to carry were wrong when they were written.
 //
 // `docVersion` names the directory the phase doc lives in. It is NOT derivable from the phase
-// number — phase 1 is `v11` after eleven fix-up rounds, phase 2 is `v1`, freshly built — so it is a
+// number — phase 1 is `v14` after fourteen fix-up rounds, phase 2 is `v1`, freshly built — so it is a
 // declared fact here like every other phase-specific value. See `docPath` below for the roll
 // procedure when a fix-up produces a new revision.
 
@@ -105,12 +105,13 @@ const DESIGN_ALL = [
   'docs/design/v1.1/DESIGN.md',
   'docs/design/v2.0-RC1/DESIGN.md',
   'docs/design/v2.0-RC2/DESIGN.md',
+  'docs/design/v2.0-RC3/DESIGN.md',
 ]
 
 const PHASE_FACTS = {
   1: {
     name: 'Foundation & project architecture',
-    docVersion: 'v11',
+    docVersion: 'v14',
     design: 'v2.0-RC2',
     spec: '957-1067', docGate: '1056-1060',
     oqs: 'OQ-2, OQ-12, OQ-20, OQ-21',
@@ -153,11 +154,11 @@ if (!D) {
 // repo-relative from REPO; a bare filename no longer resolves, which is exactly how the Phase 1
 // wiring broke.
 
-// A phase doc lives in a directory named for its revision — `docs/phase1/v11/PHASE_1_DOC.md`.
+// A phase doc lives in a directory named for its revision — `docs/phase1/v14/PHASE_1_DOC.md`.
 // Resolution goes through PHASE_FACTS rather than string-building from `n`, because a dependency's
 // version is *that* phase's fact, never this one's.
 //
-// ROLLING A VERSION (v11 -> v12 once a twelfth fix-up lands) is two steps, run together, and
+// ROLLING A VERSION (v14 -> v15 once a fifteenth fix-up lands) is two steps, run together, and
 // always AFTER a loop exits:
 //     git mv docs/phase<N>/v<K> docs/phase<N>/v<K+1>
 //     then bump docVersion in PHASE_FACTS above.
@@ -169,7 +170,7 @@ function docPath(n) {
   if (!f || !f.docVersion) {
     throw new Error(
       'No PHASE_FACTS.docVersion for phase ' + n + '. Every phase row must name the version ' +
-      'directory its doc lives in (e.g. `v11`) — it cannot be derived from the phase number.')
+      'directory its doc lives in (e.g. `v14`) — it cannot be derived from the phase number.')
   }
   return 'docs/phase' + n + '/' + f.docVersion + '/PHASE_' + n + '_DOC.md'
 }

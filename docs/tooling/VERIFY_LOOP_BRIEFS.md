@@ -1,15 +1,20 @@
 # Verify-loop brief templates
 
 *The prompts `/verify-loop` assembles per round, kept here as readable documents rather than only as
-string literals in `Schmaloogium/.claude/workflows/verify-loop.js`. The script is the executable
-copy; **this file is the reviewable one.** If you change what an agent is told, change it in both,
-and say which.*
+string literals in `Schmaloogium/.claude/workflows/verify-loop.js` and its byte-identical copy
+`.claude/workflows/phase-verify-loop.js`. The scripts are the executable copies; **this file is the
+reviewable one.** If you change what an agent is told, change it in both, and say which.*
+
+**Supporting registry update 2026-07-26:** `DESIGN_ALL` now protects all four design revisions in
+both byte-identical scripts: `.claude/workflows/verify-loop.js` and
+`.claude/workflows/phase-verify-loop.js`. This adds RC3 only to the do-not-modify registry; RC3
+remains an unadopted candidate and has no `DESIGN_PINS` entry or `PHASE_FACTS` adoption.
 
 **Last changed 2026-07-26, in both copies**, completing §G0.4 steps 1, 2 and 4 after the
 round-eleven fix-up performed step 3. Four prompt changes: the ground-truth block names its design
 revision and draws its whole pin set from the script's new `DESIGN_PINS` table instead of carrying
 hardcoded v1.1 numbers; the doc-gate lens's §G9 range is interpolated rather than hardcoded; both
-do-not-modify lists name **all three** `DESIGN.md` revisions instead of only the one the round reads;
+do-not-modify lists name **all four** `DESIGN.md` revisions instead of only the one the round reads;
 and every agent is told to stop and report a briefed coordinate that disagrees with the file rather
 than guess which is right (§G0.4's closing sentence). The operator-facing changes are in
 `.claude/commands/verify-loop.md`.
@@ -20,15 +25,16 @@ table. Adding a phase is a table row, not a prompt edit. Everything below is wri
 where a passage was learned from a specific Phase 1 round, the round is named as provenance rather
 than as a claim about the document currently under review.
 
-**The design revision is per-phase table data too, not a constant.** Three files in this repository
-are named `DESIGN.md` and they are different documents, so `PHASE_FACTS` declares which revision each
-phase doc is anchored to and `DESIGN_PINS` holds that revision's complete section→line set. Phase 1
-reads `docs/design/v2.0-RC2/DESIGN.md` (its doc's l. 12 declares it, adopted at the round-eleven
-fix-up); Phase 2 reads `docs/design/v1.1/DESIGN.md` (its §0.1 cites the Phase 2 spec at v1.1
-ll. 662–720) until §G0.4 step 3 migrates it; `docs/design/v2.0-RC1/DESIGN.md` is read by nothing.
-A phase pointed at the wrong revision does not error — it reads plausible-looking wrong text — so a
-new or moved revision needs its pin set derived from **its own headings**, never offset from
-another's.
+**The design revision is per-phase table data too, not a constant.** Four files in this repository
+are named `DESIGN.md` and they are different documents. `DESIGN_ALL` protects all four;
+`PHASE_FACTS` declares which revision each phase doc is anchored to, and `DESIGN_PINS` holds the
+complete section→line sets only for revisions selected there. Phase 1 reads
+`docs/design/v2.0-RC2/DESIGN.md` (its doc's l. 12 declares it, adopted at the round-eleven fix-up);
+Phase 2 reads `docs/design/v1.1/DESIGN.md` (its §0.1 cites the Phase 2 spec at v1.1 ll. 662–720)
+until §G0.4 step 3 migrates it; `docs/design/v2.0-RC1/DESIGN.md` is read by nothing; and
+`docs/design/v2.0-RC3/DESIGN.md` is an unadopted candidate with no pin set. A phase pointed at the
+wrong revision does not error — it reads plausible-looking wrong text — so adopting a revision
+requires deriving its pin set from **its own headings**, never offset from another's.
 
 **Every path in every prompt is repo-relative to `Schmaloogium/`.** The documents moved out of the
 repo root into `docs/` in commit `9df5f05`; the harness originally referenced bare filenames and
@@ -90,7 +96,7 @@ Prepended to all of them. Three of its clauses were each bought with a specific 
 
 The block names the design revision explicitly — *"the governance document, **design revision
 `<rev>`**, which is the revision `<doc>` is anchored to"* — then lists that revision's section→line
-pins from `DESIGN_PINS`, then the phase's spec and Doc-gate ranges. It says outright that three files
+pins from `DESIGN_PINS`, then the phase's spec and Doc-gate ranges. It says outright that four files
 in the repository share the basename, that they are different documents, and that a coordinate from
 another revision resolves to plausible-looking wrong text rather than erroring.
 
@@ -401,10 +407,10 @@ it is what a fix-up owes a cadence in which it gets no adversarial review of its
 - **Editing evidence.** `PHASE_1_REVIEW_1.md` … `_11.md`, including their `## Resolutions` sections,
   are immutable. Where an earlier review contains an error — round nine's `(ll. 2907, 2906)` cited a
   row three rows off — the correction is recorded in the current round's Resolutions, never applied
-  to the evidence. **`DESIGN.md` is evidence in all three revisions**, not only the one the round
-  reads, so both do-not-modify lists name `v1.1`, `v2.0-RC1` and `v2.0-RC2` explicitly: the other two
-  are the anchors of other phase docs and of earlier reviews, and a list interpolating only the
-  current revision would silently unprotect them the moment a phase migrates.
+  to the evidence. **`DESIGN.md` is evidence in all four revisions**, not only the one the round
+  reads, so both do-not-modify lists name `v1.1`, `v2.0-RC1`, `v2.0-RC2` and `v2.0-RC3`
+  explicitly: the others are anchors of phase docs and earlier reviews or an unadopted candidate,
+  and a list interpolating only the current revision would silently unprotect them.
 - **Network.** Rationed to at most one agent for one purpose, §4.2.6's pin table, disclosed either
   way. No finding in the last four rounds turned on a platform fact.
 
