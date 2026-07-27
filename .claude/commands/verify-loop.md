@@ -10,7 +10,7 @@ Arguments given: `$ARGUMENTS`
 
 ## What this is
 
-**A bare `DESIGN.md` is ambiguous in this repository, and the harness no longer has one.** Three
+**A bare `DESIGN.md` is ambiguous in this repository, and the harness no longer has one.** Four
 files carry that basename — the reorg put the version in the directory — and they are different
 documents. Which one a round reads is a **declared per-phase fact**, `design` in the script's
 `PHASE_FACTS`, resolved through the `DESIGN_PINS` table that holds that revision's complete set of
@@ -21,10 +21,12 @@ section→line pins:
 | `docs/design/v1.1/DESIGN.md` | 1,586 | **Phase 2** (`PHASE_2_DOC.md` §0.1 cites the Phase 2 spec at v1.1 ll. 662–720), and every Phase 1 review through round 11 |
 | `docs/design/v2.0-RC2/DESIGN.md` | 2,478 | **Phase 1** from §0.11 onward — `PHASE_1_DOC.md` l. 12 declares it, adopted at the round-eleven fix-up as §G0.4 step 3 |
 | `docs/design/v2.0-RC1/DESIGN.md` | 2,304 | nothing; kept for history |
+| `docs/design/v2.0-RC3/DESIGN.md` | 2,656 | **Phase 3** from its initial build; RC3's 14-map pin set is derived from RC3 itself |
 
-The split is real and it is not a mistake: §G0.4 step 3 migrates phase docs **one at a time**, and
-`PHASE_2_DOC.md` has not been migrated. RC2 therefore keeps its `-RC` suffix (`docs/MOVES.md`'s
-version-label rule) and phase 2 keeps reading v1.1 until it is migrated in turn.
+The split is real and it is not a mistake: §G0.4 adoption is **per phase**. Phase 3 deliberately
+adopts RC3, Phase 1 remains governed by RC2, and Phase 2 remains governed by v1.1. RC3 remains
+`v2.0-RC3`; this partial adoption does not remove the `-RC` suffix (`docs/MOVES.md`'s
+version-label rule).
 
 **Pointing a phase at the wrong revision would not error — it would silently feed every agent the
 wrong text at coordinates that look entirely plausible.** So adding or moving a revision means
@@ -171,15 +173,17 @@ Run from `/home/nick/IdeaProjects/schmaloogium-project/Schmaloogium`.
    `meta`, TypeScript syntax, or a forbidden `Date.now()`.
 2. **Paths resolve.** The check that would have caught the original breakage:
    ```bash
-   ls docs/phase2/v1/PHASE_2_DOC.md docs/phase1/v14/PHASE_1_DOC.md \
+   ls docs/phase3/v1/PHASE_3_DOC.md docs/phase2/v1/PHASE_2_DOC.md \
+      docs/phase1/v14/PHASE_1_DOC.md \
       docs/research/v1/RESEARCH.md \
-      docs/design/v1.1/DESIGN.md docs/design/v2.0-RC2/DESIGN.md
+      docs/design/v1.1/DESIGN.md docs/design/v2.0-RC2/DESIGN.md \
+      docs/design/v2.0-RC3/DESIGN.md
    ```
-   All five must exist — **both** design revisions, because which one resolves depends on the
-   phase's `design` fact and a missing one fails only for the phase that names it. Then confirm the
+   All seven must exist — **all three governing revisions**, because which one resolves depends on
+   the phase's `design` fact and a missing one fails only for the phase that names it. Then confirm the
    target review file does **not**:
    ```bash
-   ls docs/phase2/reviews/PHASE_2_REVIEW_1.md   # must be "No such file"
+   ls docs/phase3/reviews/PHASE_3_REVIEW_1.md   # must be "No such file"
    ```
    The adjudicator is told to create exactly one file; a wrong `startRound` would overwrite evidence.
 3. **One review round, no fix-up.** `phase=2 reviewOnly maxRounds=1`. Then:
@@ -210,12 +214,13 @@ Run from `/home/nick/IdeaProjects/schmaloogium-project/Schmaloogium`.
    ```bash
    md5sum docs/phase1/reviews/*.md docs/phase1/briefs/*.md \
           docs/design/v1.1/DESIGN.md docs/design/v2.0-RC1/DESIGN.md \
-          docs/design/v2.0-RC2/DESIGN.md docs/research/v1/RESEARCH.md \
+          docs/design/v2.0-RC2/DESIGN.md docs/design/v2.0-RC3/DESIGN.md \
+          docs/research/v1/RESEARCH.md \
           docs/phase1/v14/PHASE_1_DOC.md
    ```
-   **All three design revisions**, not only the one this run reads: the other two are the anchors of
-   other phase docs and of earlier reviews, so they are evidence too, and the prompts' do-not-modify
-   lists name all three for the same reason.
+   **All four design revisions**, not only the one this run reads: the others are anchors of other
+   phase docs, earlier reviews, or retained history, so they are evidence too, and the prompts'
+   do-not-modify lists name all four for the same reason.
 7. **Watch it live** with `/workflows`. Each run persists its script and a `journal.jsonl` recording
    every agent's actual return value — read that before diagnosing any round that comes back empty.
 
@@ -232,21 +237,13 @@ Only after 1–7 pass should the loop run unattended.
   `reviews/` holds no tracked file yet — so a `degraded` result on phase 1 or 2 means a tracked file
   has gone missing and is worth investigating. Note that transcripts are now ignored via
   `docs/**/chatlogs/`, which is what keeps `git status --short` readable.
-- Confirm Phase 1's status is understood, because it changed at the round-eleven fix-up (2026-07-26)
-  and the reason it is unverified is no longer the reason it used to be. `PHASE_1_REVIEW_11.md` is
-  PASS-WITH-CORRECTIONS and **its `## Resolutions` now exists**, as does `PHASE_1_DOC.md` **§0.11**;
-  all six findings were applied. Phase 1 is nonetheless still **not** "verified" under §G1.3, now
-  because that fix-up **altered §5** — three hunks: V11-1's deletion from §5.2's pixel-transfer
-  consumer column, plus two new §5.1 rows the RC2 migration added (`[D-P1-36]`, `[D-P1-37]`) — so
-  §G1.3's re-verify trigger has fired and **a twelfth verify session is owed** before any dependent
-  consumes the doc. Run it as `phase=1 startRound=12`; a lower `startRound` overwrites existing
-  review evidence and there is no overwrite guard. §G5.3's gating invariant therefore remains
-  violated by Phase 2 having been built against Phase 1, as `PHASE_2_DOC.md` §0.3 item 6 discloses.
-  The loop proceeds anyway, by decision; the reviewers inherit it as a known open item.
-- Note also that `PHASE_1_DOC.md` §4.12, §4.13 and §4.5.2a — three subsections and three decisions
-  (`[D-P1-36]`, `[D-P1-37]`, `[D-P1-38]`) added by that fix-up — are **entirely unreviewed material**.
-  The standing lesson prices this honestly: unreviewed material yields findings in proportion to its
-  size, not to the document's maturity. Round twelve should not be briefed as a mature-document round.
+- Confirm Phase 1's current dependency status from
+  `docs/phase1/reviews/PHASE_1_REVIEW_15.md`: it contains a literal `# PASS`, zero blocking and
+  zero corrections, orders no fix-up, and leaves no §5 change outstanding. Phase 1 v14, governed
+  by RC2, is therefore a valid dependency for Phase 3 under §G5.3.
+- Phase 3 is deliberately governed by RC3 from its initial build. This does not migrate Phase 1
+  away from RC2 or Phase 2 away from v1.1, and RC3 keeps its `v2.0-RC3` label while adoption is
+  partial.
 
 ## When it stops
 
@@ -261,11 +258,8 @@ The per-round brief templates this harness replaces are kept, readable, in
 `docs/tooling/VERIFY_LOOP_BRIEFS.md` — read them if you need to change what an agent is
 told, and change both, saying which.
 
-**Both copies changed on 2026-07-26** (§G0.4 steps 1, 2 and 4, completing the adoption the
-round-eleven fix-up started at step 3). What changed in the *prompts*: the ground-truth block now
-names its design revision and its whole pin set comes from `DESIGN_PINS` rather than being hardcoded
-v1.1; the doc-gate lens's §G9 range is interpolated instead of hardcoded; both do-not-modify lists
-name all three `DESIGN.md` revisions instead of only the one being read; and every agent is told to
-stop and report a coordinate that disagrees with the file rather than guess (§G0.4). What changed in
-*this file*: the version-pin section above, the pre-flight `ls` and `md5sum`, and the Phase-1-status
-prerequisite. `docs/tooling/VERIFY_LOOP_BRIEFS.md` carries the mirror of the prompt changes.
+**Phase 3 adoption update, 2026-07-27:** both byte-identical workflow copies gained the RC3 pin set
+and `PHASE_FACTS[3]`; the prompts themselves remain phase-parameterized and unchanged. The earlier
+2026-07-26 changes made the ground-truth block revision-specific, interpolated the §G9 range, named
+all four `DESIGN.md` revisions in do-not-modify lists, and required agents to stop on coordinate
+disagreement (§G0.4). `docs/tooling/VERIFY_LOOP_BRIEFS.md` records the same operational state.

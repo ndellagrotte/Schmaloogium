@@ -5,10 +5,12 @@ string literals in `Schmaloogium/.claude/workflows/verify-loop.js` and its byte-
 `.claude/workflows/phase-verify-loop.js`. The scripts are the executable copies; **this file is the
 reviewable one.** If you change what an agent is told, change it in both, and say which.*
 
-**Supporting registry update 2026-07-26:** `DESIGN_ALL` now protects all four design revisions in
-both byte-identical scripts: `.claude/workflows/verify-loop.js` and
-`.claude/workflows/phase-verify-loop.js`. This adds RC3 only to the do-not-modify registry; RC3
-remains an unadopted candidate and has no `DESIGN_PINS` entry or `PHASE_FACTS` adoption.
+**Phase 3 adoption update 2026-07-27:** `DESIGN_ALL` continues to protect all four design
+revisions in both byte-identical scripts: `.claude/workflows/verify-loop.js` and
+`.claude/workflows/phase-verify-loop.js`. RC3 now has its own 14-mapping `DESIGN_PINS` entry,
+derived from RC3's headings and endpoints, and `PHASE_FACTS[3]` selects it for Phase 3. Phase 1
+remains on RC2 and Phase 2 remains on v1.1. RC3 remains `v2.0-RC3`; partial adoption does not
+remove the `-RC` suffix.
 
 **Last changed 2026-07-26, in both copies**, completing §G0.4 steps 1, 2 and 4 after the
 round-eleven fix-up performed step 3. Four prompt changes: the ground-truth block names its design
@@ -30,11 +32,11 @@ are named `DESIGN.md` and they are different documents. `DESIGN_ALL` protects al
 `PHASE_FACTS` declares which revision each phase doc is anchored to, and `DESIGN_PINS` holds the
 complete section→line sets only for revisions selected there. Phase 1 reads
 `docs/design/v2.0-RC2/DESIGN.md` (its doc's l. 12 declares it, adopted at the round-eleven fix-up);
-Phase 2 reads `docs/design/v1.1/DESIGN.md` (its §0.1 cites the Phase 2 spec at v1.1 ll. 662–720)
-until §G0.4 step 3 migrates it; `docs/design/v2.0-RC1/DESIGN.md` is read by nothing; and
-`docs/design/v2.0-RC3/DESIGN.md` is an unadopted candidate with no pin set. A phase pointed at the
-wrong revision does not error — it reads plausible-looking wrong text — so adopting a revision
-requires deriving its pin set from **its own headings**, never offset from another's.
+Phase 2 reads `docs/design/v1.1/DESIGN.md` (its §0.1 cites the Phase 2 spec at v1.1 ll. 662–720);
+Phase 3 reads `docs/design/v2.0-RC3/DESIGN.md` from its initial build; and
+`docs/design/v2.0-RC1/DESIGN.md` is read by nothing. A phase pointed at the wrong revision does not
+error — it reads plausible-looking wrong text — so adopting a revision requires deriving its pin
+set from **its own headings**, never offset from another's.
 
 **Every path in every prompt is repo-relative to `Schmaloogium/`.** The documents moved out of the
 repo root into `docs/` in commit `9df5f05`; the harness originally referenced bare filenames and
@@ -207,6 +209,7 @@ revision**, and the two phases no longer share one — so the revision is quoted
 |---|---|---|---|---|---|
 | 1 | `v2.0-RC2` | ll. ~957-1067 | ~1056-1060 | 761-798 | OQ-2, OQ-12, OQ-20, OQ-21 |
 | 2 | `v1.1` | ll. ~662-723 | ~713-715 | 508-542 | OQ-10 |
+| 3 | `v2.0-RC3` | ll. 1316-1470 | 1451-1457 | 790-828 | OQ-7 |
 
 These are the one kind of fact in the table that rots silently, since `DESIGN.md` is edited by
 sessions other than this loop — re-check them if a doc-gate finding ever looks like it is reading the
@@ -409,8 +412,8 @@ it is what a fix-up owes a cadence in which it gets no adversarial review of its
   row three rows off — the correction is recorded in the current round's Resolutions, never applied
   to the evidence. **`DESIGN.md` is evidence in all four revisions**, not only the one the round
   reads, so both do-not-modify lists name `v1.1`, `v2.0-RC1`, `v2.0-RC2` and `v2.0-RC3`
-  explicitly: the others are anchors of phase docs and earlier reviews or an unadopted candidate,
-  and a list interpolating only the current revision would silently unprotect them.
+  explicitly: the others are anchors of phase docs, earlier reviews, or retained history, and a
+  list interpolating only the current revision would silently unprotect them.
 - **Network.** Rationed to at most one agent for one purpose, §4.2.6's pin table, disclosed either
   way. No finding in the last four rounds turned on a platform fact.
 

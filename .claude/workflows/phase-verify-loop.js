@@ -52,14 +52,16 @@ const NAME = ['none', 'note', 'correction', 'blocking']
 // that rots silently: DESIGN.md is edited by fix-up sessions on the governance document, not by
 // this loop, so re-check them if a doc-gate finding ever looks like it is reading the wrong text.
 //
-// THERE IS NO SINGLE `DESIGN.md`, AND NO SINGLE SET OF LINE NUMBERS. Three files share the
+// THERE IS NO SINGLE `DESIGN.md`, AND NO SINGLE SET OF LINE NUMBERS. Four files share the
 // basename since the reorg put the version in the directory, they are different documents, and the
-// two phase docs are anchored to DIFFERENT ones:
+// three phase docs are anchored per phase:
 //   `docs/design/v1.1/DESIGN.md`     1,586 lines — PHASE_2_DOC's anchor (its §0.1 cites the
 //                                   Phase 2 spec at v1.1 ll. 662-720), and every review to round 11
 //   `docs/design/v2.0-RC2/DESIGN.md` 2,478 lines — PHASE_1_DOC's anchor from §0.11 onward (its
 //                                   l. 12 says so), adopted at the round-eleven fix-up, §G0.4 step 3
 //   `docs/design/v2.0-RC1/DESIGN.md` 2,304 lines — read by nothing; kept for history
+//   `docs/design/v2.0-RC3/DESIGN.md` 2,656 lines — PHASE_3_DOC's anchor from its initial build;
+//                                   RC3 remains `-RC` because adoption is partial
 // So the revision is a declared PER-PHASE fact, exactly like `docVersion` below, and its pin set
 // lives in `DESIGN_PINS`. Pointing a phase at the wrong revision does not error — it silently feeds
 // every agent the wrong text at plausible-looking coordinates, which is the whole trap §G0.4 and
@@ -95,12 +97,21 @@ const DESIGN_PINS = {
       '§G11 Pintonium rules of engagement 833-943',
     g9: '761-798',
   },
+  'v2.0-RC3': {
+    path: 'docs/design/v2.0-RC3/DESIGN.md',
+    sections: '§G0.3 ll. 152-160; §G1.1 206-275; §G1.2 276-320; §G1.3 321-340; ' +
+      '§G4.2 525-539; §G4.3 540-545; §G4.4 546-554; §G4.6 564-577; ' +
+      '§G5.1 phase table 582-608; §G5.3 630-658; §G9 doc template 790-828; ' +
+      '§G10 OQ table 829-860; §G11 Pintonium rules of engagement 862-978; ' +
+      '§G12 Oculus rules of engagement 979-1109',
+    g9: '790-828',
+  },
 }
 
 // Every revision is evidence, whichever one a given round reads. The do-not-modify lists name all
 // of them rather than only `DESIGN`, so the protection does not silently narrow to one file the
-// moment a phase moves revisions. `PHASE_1_REVIEW_11.md`'s Resolutions states the same convention:
-// "`DESIGN.md` in all three revisions … are unmodified".
+// moment a phase moves revisions. `PHASE_1_REVIEW_11.md`'s Resolutions established the same
+// convention when three revisions existed; DESIGN_ALL now carries all four.
 const DESIGN_ALL = [
   'docs/design/v1.1/DESIGN.md',
   'docs/design/v2.0-RC1/DESIGN.md',
@@ -123,6 +134,14 @@ const PHASE_FACTS = {
     design: 'v1.1',
     spec: '662-723', docGate: '713-715',
     oqs: 'OQ-10',
+    deps: [1],
+  },
+  3: {
+    name: 'Pack front-end',
+    docVersion: 'v1',
+    design: 'v2.0-RC3',
+    spec: '1316-1470', docGate: '1451-1457',
+    oqs: 'OQ-7',
     deps: [1],
   },
 }
@@ -262,7 +281,7 @@ not resolve, and silently finding nothing is the failure mode to avoid here.
 
 ## Ground truth (read what you need, not everything)
 - \`${DESIGN}\` — the governance document, **design revision ${F.design}**, which is the revision
-  \`${DOC}\` is anchored to. Three files in this repository are named \`DESIGN.md\` and they are
+  \`${DOC}\` is anchored to. Four files in this repository are named \`DESIGN.md\` and they are
   different documents; every line number below is stated against *this* one, and a coordinate from
   another revision will resolve to plausible-looking wrong text rather than erroring. Sections:
   ${D.sections}. The Part II **Phase ${PHASE} spec** is at ll. ~${F.spec}, and its **Doc gate** at
@@ -908,7 +927,7 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     'the review of it.\n\n' +
     'Do not modify `' + DOC + '`, `' + DESIGN_ALL.join('`, `') + '`, `' + RESEARCH + '`' +
     (DEP_DOCS.length ? ', `' + DEP_DOCS.join('`, `') + '`' : '') + ', or any prior review file —\n' +
-    'including their `## Resolutions` sections, which are evidence. **All three `DESIGN.md`\n' +
+    'including their `## Resolutions` sections, which are evidence. **All four `DESIGN.md`\n' +
     'revisions are named deliberately:** this round reads `' + DESIGN + '`, but the others are the\n' +
     'anchors of other phase docs and of earlier reviews, and they are evidence too.\n' +
     'Create exactly one file: \n' +
@@ -1009,7 +1028,7 @@ for (let i = 0; i < MAX_ROUNDS; i++) {
     'to it always shows.\n' +
     'Do not modify `' + DESIGN_ALL.join('`, `') + '`, `' + RESEARCH + '`' +
     (DEP_DOCS.length ? ', `' + DEP_DOCS.join('`, `') + '`' : '') + ', or any earlier review file —\n' +
-    'including their `## Resolutions` sections, which are evidence. **All three `DESIGN.md`\n' +
+    'including their `## Resolutions` sections, which are evidence. **All four `DESIGN.md`\n' +
     'revisions are named deliberately:** this round reads `' + DESIGN + '`, but the others are the\n' +
     'anchors of other phase docs and of earlier reviews, and they are evidence too. If an earlier\n' +
     'review contains an error, record the correction in your Resolutions; never edit the evidence.\n\n' +

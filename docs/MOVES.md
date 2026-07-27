@@ -66,7 +66,7 @@ Everything else kept its filename. These did not, each for a reason:
 | | `docs/design/v1.1/DESIGN.md` | `docs/design/v2.0-RC1/DESIGN.md` | `docs/design/v2.0-RC2/DESIGN.md` | `docs/design/v2.0-RC3/DESIGN.md` |
 |---|---|---|---|---|
 | Lines | 1,586 | 2,304 | 2,478 | 2,656 |
-| Status | **governs Phase 2**; anchors Phase 1 reviews through round 11 | superseded; read by nothing | **governs Phase 1** from its §0.11 onward | **unadopted candidate overall**; read by no phase |
+| Status | **governs Phase 2**; anchors Phase 1 reviews through round 11 | superseded; read by nothing | **governs Phase 1** from its §0.11 onward | **governs Phase 3 only** from its initial build; partial adoption retains `-RC` |
 | Phase 1 spec at | l. 585 | l. 829 | l. 957 | l. 1,120 |
 | Phase 2 spec at | l. 662 | l. 933 | l. 1,071 | l. 1,234 |
 | §G1.2 at | l. 118 | l. 174 | l. 257 | l. 276 |
@@ -75,17 +75,20 @@ Everything else kept its filename. These did not, each for a reason:
 on disk since it was recorded; corrected while adding the RC2 column.)*
 
 **There is no longer one governing revision, and no longer one set of line numbers** (changed
-2026-07-26, §G0.4 steps 1–2 and 4). Phase docs cite `DESIGN.md` **by line number**, and the two that
-exist are anchored to different revisions: `PHASE_1_DOC.md` l. 12 declares
+2026-07-26, §G0.4 steps 1–2 and 4; Phase 3 adoption recorded 2026-07-27). Phase docs cite
+`DESIGN.md` **by line number**, and the three current phase docs are anchored per phase:
+`PHASE_1_DOC.md` l. 12 declares
 `docs/design/v2.0-RC2/DESIGN.md` from its §0.11 onward, adopted at the round-eleven fix-up as §G0.4
 step 3; `PHASE_2_DOC.md` §0.1 still cites v1.1 (the Phase 2 spec at ll. 662–720) because step 3 has
-not been run for it. Every Phase 1 review through round 11 is in v1.1's coordinates.
+not been run for it; and Phase 3 deliberately adopts RC3 from its initial build. Every Phase 1
+review through round 11 is in v1.1's coordinates.
 
 The `/verify-loop` harness therefore resolves the revision **per phase** rather than globally:
 `design` in each `PHASE_FACTS` row names it, and `DESIGN_PINS` in
 `.claude/workflows/verify-loop.js` holds one complete pin set per revision selected by
-`PHASE_FACTS` — **12 section→line mappings for v1.1 and 13 for RC2**, plus the §G9 range the
-doc-gate lens quotes and each row's `spec`/`docGate`. RC3 is not selected and has no pin set.
+`PHASE_FACTS` — **12 section→line mappings for v1.1, 13 for RC2, and 14 for RC3**, plus the §G9
+range the doc-gate lens quotes and each row's `spec`/`docGate`. `PHASE_FACTS[3]` selects RC3 with
+Phase 3 spec `1316–1470`, Doc gate `1451–1457`, OQ-7, and dependency `[1]`.
 (Before this change there was a single `DESIGN` constant and 17 hardcoded v1.1 numbers spread
 across the file; §G0.4 step 1 and the earlier text here both said "~16", which matched no literal
 count.)
@@ -106,11 +109,12 @@ Directory names come from each document's own header, not from the folder it use
 | `DESIGN.md` | `v1.1` | header states v1.1; REV1 names "v1.1" as what it supersedes |
 | REV1 | `v2.0-RC1` | header states v2.0; recorded as RC because no downstream doc has adopted it |
 | REV2 | `v2.0-RC2` | header states v2.0-RC2 (created 2026-07-26, not a move); supersedes RC1, which stays for history. **`-RC` retained after partial adoption — see the ruling below** |
-| REV3 | `v2.0-RC3` | header states v2.0-RC3 (created 2026-07-26, not a move); **unadopted candidate overall** — RC2 still governs Phase 1 and v1.1 still governs Phase 2 |
+| REV3 | `v2.0-RC3` | header states v2.0-RC3 (created 2026-07-26, not a move); **governs Phase 3 only** — RC2 still governs Phase 1 and v1.1 still governs Phase 2; partial adoption retains `-RC` |
 | `RESEARCH.md` | `v1` | "first complete draft"; no version stated |
 | `PINTONIUM_DESIGN.md` | `v1.0` | header states v1.0 |
 | `PHASE_1_DOC.md` | `v14` | fix-up addenda §0.4–**§0.14**; `PHASE_1_REVIEW_14.md` has complete `## Resolutions`, and round fifteen returned a literal PASS with no further fix-up. Rolled from `v13` on 2026-07-26 after that loop exited |
 | `PHASE_2_DOC.md` | `v1` | initial build session, zero review rounds |
+| `PHASE_3_DOC.md` | `v1` | initial build under RC3; rolls only after a fix-up addendum and a later literal PASS |
 
 **Rolling a phase doc's version** (`v14` → `v15` only once a future §0.15 fix-up lands) is two steps,
 run together and only **after** that `/verify-loop` run exits:
@@ -153,8 +157,9 @@ The rule above is that `-RC` means exactly *"no downstream doc has adopted it"*.
    `DESIGN.md`, which is evidence (§G1.1/§G1.2). **The label cannot move ahead of a design-document
    revision**, whatever the adoption state.
 
-The same reasoning applies to RC1's row: its stated reason ("no downstream doc has adopted it") is
-still true, but the load-bearing reason is now its header.
+The same reasoning applies to RC1 and RC3. RC1 remains unread historical evidence; RC3 is adopted
+only by Phase 3 while Phase 1 stays on RC2 and Phase 2 stays on v1.1. RC3 therefore remains
+`v2.0-RC3`: partial adoption cannot move the label ahead of the design document's own header.
 
 ## What was deliberately left stale
 
