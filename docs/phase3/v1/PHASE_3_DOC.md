@@ -62,6 +62,11 @@ requested in §5.4 rather than assumed.
 - OptiFine's shipped `doc/` files are contract documents and are cited for semantics; no
   decompiled implementation structure is used.
 
+### 0.4 Round 1 fix-up
+
+The public configuration now exposes its schema version, and §3 maps the previously implicit
+discovery, preprocessing, macro, source-attribution, and ID-mapping contract families.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 3 owns
@@ -151,6 +156,7 @@ public sealed interface PackLoadResult {
 }
 
 public record PackConfiguration(
+    int schemaVersion,
     PackIdentity pack,
     CompatibilityStatus compatibility,
     Map<DimensionKey, DimensionConfiguration> dimensions,
@@ -372,6 +378,20 @@ smoothing formula; this phase does not import an alternate unit.
 | Oculus FE-04 unchecked stored values `[V:observed — Oculus reference-src/Oculus-1.12/src/main/java/net/coderbot/iris/shaderpack/option/values/MutableOptionValues.java; loader-independent]` | Allowed values guide UI; a syntactically safe persisted value is retained as an external current value with a warning | App F.3 does not make the UI list a parser rejection set; D-P3-14 | `persistence_outOfListValueRetainedAndWarned` |
 | Oculus FE-01 original-layout split `[V:observed — Oculus reference-src/Oculus-1.12/src/main/java/net/coderbot/iris/shaderpack/ShaderProperties.java; loader-independent]` | Reject as the parse source; all keys, including screen/profile layout, obey active preprocessing. Original spans remain only for diagnostics | §3.3 says the file itself is preprocessed; D-P3-15 | `properties_conditionalScreenLayout` |
 | Oculus PB-03/PB-05/PB-06 loader-independent pitfalls (OD §4.2) | Enforce first-significant-token `#version`; never trim property data lines; suppress only recognized hash comments, never malformed directives | §3.3/§3.5; D-P3-3/D-P3-6 | `preprocess_versionMustLead`, `properties_whitespaceAndHash`, `properties_malformedDirectiveWarns` |
+
+### 3.5 Remaining owned RESEARCH §3 contract families
+
+| Contract item | Satisfying design element | Provenance / named test |
+|---|---|---|
+| `OFF`, `(internal)`, folder, and zip discovery; nested `shaders/` root | `PackDiscovery`, deterministic bounded root selection, and `InternalPackSource` | RESEARCH §3.1; `discovery_sentinelsFolderZipNestedRoot` |
+| Archive lifetime and path containment | one bounded `PackArchiveLease`, closed after snapshot; absolute, drive, NUL, `..`, and symlink escapes rejected | RESEARCH §3.1; `discovery_archiveClosesAndRejectsEscapes` |
+| Source identity and compiler attribution | stable `SourceId`/file numbers, include-boundary `#line`, and `SourceMap` | RESEARCH §3.2; `include_lineAttributionAcrossNestedFiles` |
+| Standard macro identity families | configurable `MacroConfiguration` emits MC/GL/GLSL, OS, vendor, renderer, on-demand extension, and option macros | RESEARCH §3.5; `macro_standardFamiliesExactIdentity` |
+| Conditional preprocessing and substitution | jcpp adapters implement define/undef/if-family/defined/substitution for shaders and properties | RESEARCH §3.5; `preprocess_completeConditionalGrammarAllInputs` |
+| ID-map macro restriction | properties-safe preprocessing supplies standard A–G macros and no option macros | RESEARCH §3.7; `idMap_standardMacrosOnly` |
+| Block/item/entity short, namespaced, property, and legacy `id:meta` rules | unresolved typed `IdRule` lists retain origin/order for Phase 9 | RESEARCH §3.7; `idMap_allDocumentedRuleForms` |
+| Mod-provided ID-map contributions | public pure `IdMappingParser` accepts Phase-9-provided text plus `MappingOrigin` | RESEARCH §3.7; `idMap_modContributionOriginPreserved` |
+| `layer.solid/cutout/cutout_mipped/translucent` and opaque-solid exclusion | typed `LayerRule` plus deferred resolution constraint | RESEARCH §3.7; `idMap_layersAndOpaqueSolidExclusion` |
 
 ## 4. Detailed design
 
@@ -703,8 +723,8 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 | `InternalPackSource` | in-memory source-provider seam, no MC types | Phase 7 supplies content |
 
 Consumers must not re-open the pack, rescan directives, reinterpret properties, or bypass the
-materializer. A reload publishes a new configuration; fingerprint/version equality decides
-whether a consumer may retain derived state.
+materializer. A reload publishes a new configuration. A consumer may retain derived state only
+when both `schemaVersion` and fingerprint equal the values used to derive it.
 
 ### 5.2 Consumed Phase 1 contracts
 
@@ -722,10 +742,13 @@ No GL service or handle is consumed.
 
 ### 5.3 Interface/version discipline
 
-`PackConfiguration` carries `schemaVersion` and a fingerprint. Adding fields is additive; changing
-semantics requires a schema bump and consumer tests. Collection order is deterministic and exposed
-as immutable insertion order where pack order matters. All enums have `UNKNOWN` only for forward
-storage, never as a silently executable state.
+`PackConfiguration.schemaVersion` is a non-negative integer constant of the parser schema and is
+separate from the content fingerprint. Adding an optional field is additive; removing a field,
+changing a field's meaning, or changing executable defaults requires a schema bump and consumer
+compatibility tests. Consumers reject incompatible schema versions rather than interpreting them
+best-effort. Collection order is deterministic and exposed as immutable insertion order where pack
+order matters. All enums have `UNKNOWN` only for forward storage, never as a silently executable
+state.
 
 ### 5.4 Requested changes to the dependency contract
 
