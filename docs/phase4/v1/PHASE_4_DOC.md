@@ -573,28 +573,28 @@ The registry never stores a “main” or “alt” texture choice. That snapsho
 passes and belongs to Phase 5. This is the deliberate difference from Pintonium's per-pass
 `stageReadsFromAlt` field at `CompositeRenderer.java:159`.
 
-### 4.5 Classic catalog construction and the cardinality contradiction
+### 4.5 Classic catalog construction and cardinality independence
 
 `ClassicProgramCatalog` is constructed from declarative rows and validates unique names, legal
 stages, known fallback parents, acyclic edges, virtual-slot isolation, and source-stem uniqueness.
-It is not constructed as `new Slot[43]`.
+It is not constructed with a fixed catalog-size array.
 
-The governing inputs contradict themselves:
+The corrected governing inputs agree:
 
 - `docs/research/v1/RESEARCH.md:1142` says
-  `"Count: 43 slots incl. the 2 virtual programs and the 16-element deferred/composite arrays"`;
-- the same table names 3 shadow slots, 22 gbuffers slots, 17 deferred entries including pre,
+  "Count: 60 named shader/virtual slots, excluding the external `<none>` sentinel";
+- that table names 3 shadow slots, 22 gbuffers slots, 17 deferred entries including pre,
   17 composite entries including pre, and final: **60** named shader/virtual slots, excluding the
   `<none>` sentinel; and
 - the pack-author table at
   `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:61`–`:108` independently lists those
   same names and both arrays through index 15.
 
-The concrete contract rows control over the impossible summary count. The catalog therefore
-contains every table row, reports both `declaredClassicCount = 43` and
-`enumeratedClassicCount = 60` in a diagnostic/contract test, and makes no behavior depend on either
-number. §11 requests an upstream correction. Dropping 17 named rows to manufacture 43 would be a
-contract violation; silently changing the source-of-truth sentence would violate governance.
+The concrete contract rows remain controlling. The catalog therefore contains every table row,
+reports both `declaredClassicCount = 60` and `enumeratedClassicCount = 60` in a contract test, and
+makes no behavior depend on either number. The historic 43/60 contradiction is resolved upstream,
+without dropping any named row or turning the corrected summary count into an allocation constant.
+Catalog rows are constructed first; the numeric total remains validation metadata only.
 
 ### 4.6 Availability and backup-chain resolution
 
@@ -1002,8 +1002,8 @@ Compilation is cold and may allocate readable immutable plans and diagnostics. T
 - the active lock stores at most one state snapshot and logical/effective pair; and
 - generation polling is one primitive equality comparison.
 
-No global 43/60/100-sized sweep runs on every program switch. Compile iterates configured slots;
-activation touches one resolved binding.
+No global catalog- or pass-family-sized sweep runs on every program switch. Compile iterates
+configured slots; activation touches one resolved binding.
 
 ### 7.3 Driver interaction
 
@@ -1023,7 +1023,7 @@ phase never introduces raw LWJGL calls.
 - `computeSlots_primaryAndAThroughZ_areDormant`
 - `stageAccess_neverStoresMainOrAltTextureSide`
 - `classicCatalog_mapsEveryAppendixA1Row`
-- `classicCatalog_reportsDeclared43Enumerated60Contradiction`
+- `classicCatalog_declaredAndEnumeratedCountsAgreeAtSixty`
 - `fallback_exactAppendixAEdges`
 - `fallback_missingDisabledAndFailedUseNearestAncestor`
 - `fallback_inheritsProviderStateWithoutChildOverlay`
@@ -1038,8 +1038,8 @@ phase never introduces raw LWJGL calls.
 - `instanceCount_retainedForEveryProgramFamily`
 - `fingerprint_equalInputsEqualAndGenerationExcluded`
 
-The cardinality test is intentionally red against an upstream assertion, but green as a diagnostic
-test: it proves every table row exists and the contradiction remains visible.
+The cardinality test proves every table row exists and the corrected declared count agrees with the
+enumerated count; runtime behavior still depends on the rows and selected slot, not either count.
 
 ### 8.2 Geometry tests
 
@@ -1109,7 +1109,7 @@ set to linked/resolved state with zero unmapped directives, plus no leaked/use-a
 | Component | Milestone | Architected now / implementation boundary |
 |---|---|---|
 | Nine-identity stage model, multi-occurrence schedule, `PassIndex` 0…99 | `v0.1` | implemented and tested now |
-| Classic G6 configuration and full App A catalog | `v0.1` | implemented now; upstream count contradiction remains diagnostic |
+| Classic G6 configuration and full App A catalog | `v0.1` | implemented now; row coverage is cardinality-independent |
 | Sparse modern configuration fixture with dormant families | `v0.1` | implemented as data/test, not executed |
 | Program-state adapter, route/attribute validation, fallback resolver | `v0.1` | implemented now |
 | Synchronous materialize/compile/link/validate transaction | `v0.1` | implemented after §5.4 dependency gaps close |
@@ -1125,9 +1125,9 @@ set to linked/resolved state with zero unmapped directives, plus no leaked/use-a
 
 ## 10. OQ & spike specifications
 
-Phase 4 has no assigned open question in §G10 or its phase specification. It does not invent a
-spike to decide the upstream cardinality, fixed-function facade, or legacy-geometry contract gaps.
-Those require governed document/dependency corrections through §G1.3, recorded in §11.
+Phase 4 has no assigned open question in §G10 or its phase specification. The catalog cardinality
+is resolved upstream; fixed-function facade and legacy-geometry contract gaps still require
+governed dependency corrections through §G1.3, recorded in §11.
 
 Phase 14's OQ-15 may later change compiler threading but not registry, fallback, barrier, or
 publication semantics.
@@ -1139,7 +1139,7 @@ publication semantics.
 | ID | Decision | Rationale / contract check |
 |---|---|---|
 | D-P4-1 | Separate `StageId` from ordered `StageBand` occurrences | G6 and modern orders contain gbuffers on both sides of deferred; enum ordinal cannot model that without duplicate identities |
-| D-P4-2 | Build the classic catalog from every explicit App A.1/pack-author row, never a fixed 43 array | Concrete `[V:doc]` names are contract-visible; the summary count is arithmetically incompatible and is reported |
+| D-P4-2 | Build the classic catalog from every explicit App A.1/pack-author row, never a fixed-size array | Concrete `[V:doc]` names are contract-visible; the corrected 60-row summary is a test oracle, not an allocation constant |
 | D-P4-3 | Sparse pass families use a validated 0…99 key space and configuration population | Satisfies D-4 without hardcoded 16/8 while keeping compact immutable implementations possible |
 | D-P4-4 | Adopt recursive memoized backup resolution, but resolve to the ancestor's whole immutable binding | Contract check: every App A.1 edge is explicit, App A.2 requires entire configuration, disabled programs are absent, and shadow root has no parent. Pintonium supplies working structural evidence, not values |
 | D-P4-5 | Adopt one ordered program-use barrier with fixed participant slots | Contract check: RESEARCH §4.2 requires sampler re-point, built-in refresh, custom evaluation, alpha/blend lock, and shadow override. Pintonium lines 28–34 validate the bind/refresh shape |
@@ -1169,8 +1169,8 @@ publication semantics.
 
 ### 11.3 Input contradictions and rulings
 
-1. **43 versus 60 explicit slots.** Detailed in §4.5. Ruling: preserve all explicit contract rows,
-   avoid cardinality-dependent behavior, diagnose, and request correction.
+1. **RESOLVED UPSTREAM — 43 versus 60 explicit slots.** §4.5 preserves all 60 contract rows and
+   cardinality-independent behavior; RESEARCH and RC3 now remove the erroneous 43 summary.
 2. **Fixed-function behavior versus facade.** App A requires no-program/fixed/passthrough
    terminals; Phase 1 exposes `use(ProgramHandle)` only. Ruling: request an opaque engine verb,
    assume no null/magic handle.
@@ -1207,10 +1207,10 @@ publication semantics.
 
 ### 11.5 Requested upstream changes
 
-- Correct `docs/research/v1/RESEARCH.md` Appendix A.1 and
-  `docs/design/v2.0-RC3/DESIGN.md` Phase 4's “43” statements to a count derived from the intended
-  table, or correct the table if some named rows are not intended for G6. This session does not
-  choose new source-of-truth bytes.
+- **GRANTED — 2026-07-28 maintainer correction.** `docs/research/v1/RESEARCH.md` now states the
+  60-row Appendix A.1 count, and `docs/design/v2.0-RC3/DESIGN.md` now uses cardinality-neutral
+  Phase 4 wording. Every named row remains; §4.5 and §8 retain equality/coverage tests without
+  making the corrected count behavioral.
 - Apply and re-verify the Phase 1 fixed-function facade request in §5.4.
 - Apply and re-verify one complete legacy-geometry path from §5.4; update Phase 3/Phase 1
   interfaces consistently.
@@ -1226,7 +1226,7 @@ publication semantics.
 2. **[v0.1]** Implement the G6 and full-superset configuration constructors; run all
    `classicSchedule_*`, `modernSchedule_*`, and sparse-family tests.
 3. **[v0.1]** Encode every Appendix A.1 row declaratively, including virtuals and `<none>`;
-   emit the 43/60 contradiction diagnostic and row-coverage test.
+   run row-coverage and declared-versus-enumerated equality tests without fixed-size allocation.
 4. **[v0.1]** Implement catalog validation and memoized backup resolution; run every
    `fallback_*` and `virtualPre_*` test.
 5. **[v0.1]** Implement the Phase 3 adapter for program state, routing, attributes, instance count,

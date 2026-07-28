@@ -490,7 +490,7 @@ All these files are macro-preprocessed (standard macros A–G, no option macros)
 
 ### 4.2 Program registry mechanics
 
-- **43 program slots** (Appendix A): each with stage, backup parent, and per-program state
+- **60 classic program slots** (Appendix A): each with stage, backup parent, and per-program state
   (draw-buffer routing, composite-mipmap bitmask, instance count, alpha/blend overrides,
   render scale, flip config).
 - **Compile flow per file**: read from pack → resolve `#include`s (≤10 deep, with `#line`
@@ -1139,9 +1139,9 @@ registry `[V:observed]`. 2026-07-24. Modern additions: §3.6.1.*
 | `composite` … `composite15` | fullscreen end-of-frame passes | *(none — pass skipped)* |
 | `final` | to screen | *(none — passthrough copy)* |
 
-Count: 43 slots incl. the 2 virtual programs and the 16-element deferred/composite arrays
-`[V:observed]`. Modern spec extends arrays to 99 and adds the §3.6.1 pass families — registry
-must not hardcode either 16 or this table's exact membership `[D-4]`.
+Count: 60 named shader/virtual slots, excluding the external `<none>` sentinel; includes the 2
+virtual programs and the 16-element deferred/composite arrays `[V:doc]`. Modern spec extends arrays
+to 99 and adds the §3.6.1 pass families — registry must not hardcode either 16 or this table's exact membership `[D-4]`.
 
 ### A.2 Backup-chain semantics
 

@@ -586,7 +586,7 @@ hook that feeds it; Phase 6's doc carries a notifier→producer audit table.
 | 1 | Foundation & project architecture | Template → real project: modules, seams, Mixin wiring, license, pins, test scaffolding | v0.1 | — | OQ-2, OQ-12, OQ-20 (seam), OQ-21 |
 | 2 | Conformance harness | T0–T3 machinery, scenes, diffing, fixtures, CI viability | v0.1 (design) | 1 | OQ-10 |
 | 3 | Pack front-end | Discovery → preprocessing → options → shaders.properties → validated PackConfiguration | v0.1 | 1 | OQ-7 (arch) |
-| 4 | Stage/program registry & compilation | Modern-superset stage registry, 43 slots, backup chains, compile/link | v0.1 | 1, 3 | — |
+| 4 | Stage/program registry & compilation | Modern-superset stage registry, all classic catalog slots, backup chains, compile/link | v0.1 | 1, 3 | — |
 | 5 | Framebuffer & buffer architecture | Main/shadow FBOs, ping-pong/flips, clears, formats, sizing, resize | v0.1 | 1, 3, 4 | — |
 | 6 | Uniform & sampler system | App D inventory, cadences, smoothing, unit map, value providers | v0.1 | 1, 3, 4 | — |
 | 7 | Render-loop integration | Frame driver + the full Mixin hook catalog; v0.1 assembly | v0.1 exit | 2, 3, 4, 5, 6 | OQ-3, OQ-4 |
@@ -1477,7 +1477,7 @@ working reference; the attribute pre-bind divergence is flagged as a do-not-copy
 version-counter invalidation is added for reload safety.
 
 **Objective.** The engine's spine: a stage registry modeling the full modern pass sequence
-(D-4) with the G6 five stages as instances, the 43-slot program registry with backup
+(D-4) with the G6 five stages as instances, the classic program registry with backup
 chains, and the compile/link pipeline.
 
 **Deliverable.** `PHASE_4_DOC.md` per §G9.
@@ -1492,7 +1492,7 @@ chains, and the compile/link pipeline.
   to 15. **REV1:** Pintonium's 26-value `WorldRenderingPhase` enum (with `phase` +
   `overridePhase` + deferred-pop semantics) is the Iris-superset shape, working — a
   structural cross-check for the registry's phase model (PD §3.1).
-- **Program registry** (App A.1): all 43 slots incl. virtual `deferred_pre`/`composite_pre`
+- **Program registry** (App A.1): all classic catalog slots incl. virtual `deferred_pre`/`composite_pre`
   (flip-control only); per-slot stage, backup parent, and per-program state (draw-buffer
   routing, composite-mipmap bitmask, instance count, alpha/blend overrides, render scale,
   flip config) — populated from Phase 3's `PackConfiguration`. **REV1:** PD §3.3's
