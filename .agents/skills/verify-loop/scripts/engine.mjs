@@ -868,33 +868,52 @@ export function resolveCitation(root, manifest, evidence) {
   return { ok: true, evidence: corrected, relocated: true };
 }
 
-export function resolveCandidateEvidence(root, manifest, candidate) {
-  const resolveList = (items, label) => {
-    const corrected = [];
-    for (const evidence of items || []) {
-      const result = resolveCitation(root, manifest, evidence);
-      if (!result.ok) {
-        return {
-          ok: false,
-          detail: `${candidate.candidate_id} ${label}: ${evidence.path}:${evidence.line_start}-${evidence.line_end}: ${result.detail}`,
-        };
-      }
-      corrected.push(result.evidence);
+function resolveEvidenceList(root, manifest, candidateId, items, label) {
+  const corrected = [];
+  for (const evidence of items || []) {
+    const result = resolveCitation(root, manifest, evidence);
+    if (!result.ok) {
+      return {
+        ok: false,
+        detail: `${candidateId} ${label}: ${evidence.path}:${evidence.line_start}-${evidence.line_end}: ${result.detail}`,
+      };
     }
-    return { ok: true, evidence: corrected };
-  };
-  const top = resolveList(candidate.evidence, "finder evidence");
+    corrected.push(result.evidence);
+  }
+  return { ok: true, evidence: corrected };
+}
+
+export function resolveCandidateEvidence(root, manifest, candidate) {
+  const top = resolveEvidenceList(
+    root,
+    manifest,
+    candidate.candidate_id,
+    candidate.evidence,
+    "finder evidence",
+  );
   if (!top.ok) return top;
   const refutations = [];
   for (let index = 0; index < (candidate.refutations || []).length; index += 1) {
     const judgment = candidate.refutations[index];
-    const nested = resolveList(judgment.evidence, `refuter ${index + 1} evidence`);
+    const nested = resolveEvidenceList(
+      root,
+      manifest,
+      candidate.candidate_id,
+      judgment.evidence,
+      `refuter ${index + 1} evidence`,
+    );
     if (!nested.ok) return nested;
     refutations.push({ ...judgment, evidence: nested.evidence });
   }
   let steelman = candidate.steelman;
   if (steelman) {
-    const nested = resolveList(steelman.evidence, "steelman evidence");
+    const nested = resolveEvidenceList(
+      root,
+      manifest,
+      candidate.candidate_id,
+      steelman.evidence,
+      "steelman evidence",
+    );
     if (!nested.ok) return nested;
     steelman = { ...steelman, evidence: nested.evidence };
   }
@@ -1813,17 +1832,20 @@ export async function executeVerification(contract, options = {}) {
               "AGENT_ERROR",
             );
           }
-          const resolved = resolveCandidateEvidence(contract.root, contract.manifest, {
-            candidate_id: result.candidate_id,
-            evidence: result.evidence,
-          });
+          const resolved = resolveEvidenceList(
+            contract.root,
+            contract.manifest,
+            result.candidate_id,
+            result.evidence,
+            `refuter ${index + 1} evidence`,
+          );
           if (!resolved.ok) {
             throw new VerificationError(
               `Refuter returned unverifiable evidence: ${resolved.detail}`,
               "AGENT_ERROR",
             );
           }
-          return { ...result, evidence: resolved.candidate.evidence };
+          return { ...result, evidence: resolved.evidence };
         },
       );
       const byCandidate = new Map(candidates.map((candidate) => [candidate.candidate_id, []]));

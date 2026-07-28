@@ -331,10 +331,13 @@ test("contract resolution validates selectors, state, and first-review behavior"
   assert.equal(phase1.startRound, 16);
   assert.equal(phase1.firstReview, false);
   const phase3 = resolveContract(ROOT, "phase-3", { preset: "lean", maxRounds: 0 });
-  assert.equal(phase3.startRound, 1);
-  assert.equal(phase3.firstReview, true);
-  assert.equal(isFirstReviewRound(phase3, 0), true);
-  assert.equal(isFirstReviewRound(phase3, 1), false);
+  assert.equal(phase3.startRound, phase3.priorReviews.length + 1);
+  assert.equal(phase3.firstReview, false);
+  const firstReview = resolveContract(ROOT, "non-phase-fixture", { preset: "lean", maxRounds: 0 });
+  assert.equal(firstReview.startRound, 1);
+  assert.equal(firstReview.firstReview, true);
+  assert.equal(isFirstReviewRound(firstReview, 0), true);
+  assert.equal(isFirstReviewRound(firstReview, 1), false);
   assert.equal(isFirstReviewRound(phase1, 0), false);
   assert.equal(phase3.resolvedSelectors["authority[0]:target_spec"].start_line, 1316);
   assert.throws(
@@ -642,11 +645,43 @@ test("fake-agent execution proves barriers, full loop stages, and first-to-matur
   ]);
   assert.match(calls.find((call) => call.label === "attack:contract:R1").prompt, /entire target is unreviewed/);
   assert.match(calls.find((call) => call.label === "attack:consistency:R2").prompt, /1 review round\(s\) already exist/);
+  const refuterPrompt = calls.find((call) => call.label === "refute:candidate-001:1:R1").prompt;
+  assert.match(refuterPrompt, /finder evidence is already preserved by the orchestrator/);
+  assert.match(refuterPrompt, /Do not copy that\s+evidence into your own `evidence` array/);
+  assert.match(refuterPrompt, /Never reflow wrapped lines/);
   const adjudicatorPrompt = calls.find((call) => call.label === "adjudicate:R1").prompt;
   assert.match(adjudicatorPrompt, /"path": "target\.md"/);
   assert.match(adjudicatorPrompt, /"path": "spec\.md"/);
   assert.match(adjudicatorPrompt, /Candidates eliminated before adjudication/);
   assert.match(readFileSync(join(root, "reviews", "review_1.md"), "utf8"), /^## Resolutions$/m);
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("Refute attributes invalid additional evidence to the refuter", async () => {
+  const { root } = makeMiniRepo();
+  const contract = resolveContract(root, "mini", { preset: "lean", maxRounds: 1 });
+  const calls = [];
+  const baseRunner = makeFakeRunner(root, calls);
+  const invalidRefuterRunner = async (args) => {
+    const result = await baseRunner(args);
+    if (!args.label.startsWith("refute:")) return result;
+    return {
+      ...result,
+      evidence: [{ ...fixtureEvidence(), quote: "not present" }],
+    };
+  };
+  await assert.rejects(
+    executeVerification(contract, {
+      agentRunner: invalidRefuterRunner,
+      logger: () => {},
+    }),
+    (error) => {
+      assert.match(error.message, /Refuter returned unverifiable evidence/);
+      assert.match(error.message, /refuter [12] evidence/);
+      assert.doesNotMatch(error.message, /finder evidence/);
+      return true;
+    },
+  );
   rmSync(root, { recursive: true, force: true });
 });
 
