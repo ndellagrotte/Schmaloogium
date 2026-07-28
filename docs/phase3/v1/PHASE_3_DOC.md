@@ -67,6 +67,36 @@ requested in §5.4 rather than assumed.
 The public configuration now exposes its schema version, and §3 maps the previously implicit
 discovery, preprocessing, macro, source-attribution, and ID-mapping contract families.
 
+### 0.5 Round 2 fix-up
+
+The schema contract is executable, the internal-pack provider has a complete engine-only protocol,
+and directive scanning enforces the shader-stage restrictions in RESEARCH Appendix A.3.
+
+### 0.6 Round 3 fix-up
+
+The load protocol, internal snapshot, macro-contributor publication, and profile inference are now complete.
+
+### 0.7 Round 4 fix-up
+
+Materialization and the reserved macro slot now have executable result shapes; load-result wording
+and option rewrite/persistence traceability are consistent.
+
+### 0.8 Round 5 fix-up
+
+Legacy-geometry rewriting, precipitation ownership, and the exact screen widening boundary are explicit.
+
+### 0.9 Round 6 fix-up
+
+Geometry-plan execution, downstream-only test ownership, and texture-format validation are explicit.
+
+### 0.10 Round 7 fix-up
+
+Geometry-plan absence, closed-enum handling, and option-count screen widening are explicit.
+
+### 0.11 Round 8 fix-up
+
+Load-time analysis is plan-independent, and §5 now carries the executable screen-column semantics.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 3 owns
@@ -118,9 +148,10 @@ buffer, evaluate a custom expression, or load texture pixels.
 
 ### 2.1 Invariants
 
-1. **One publication boundary.** A load either returns a validated `PackConfiguration` or a
-   `PackLoadFailure`. Downstream phases never consume parser objects, filesystem handles, or
-   partially built configuration.
+1. **One publication boundary.** A load returns `PackLoadResult.Off`,
+   `PackLoadResult.Loaded(configuration)`, or `PackLoadResult.Failed(failure)`. Only `Loaded`
+   publishes configuration; downstream phases never consume parser objects, filesystem handles,
+   or partially built configuration.
 2. **One source of downstream truth.** Every source, option value, directive result, property,
    mapping rule, compatibility status, and diagnostic retained for later work is reachable from
    `PackConfiguration`.
@@ -138,7 +169,26 @@ Illustrative signatures name the contracts; implementations remain private under
 
 ```java
 public interface PackFrontEnd {
+    int CURRENT_SCHEMA_VERSION = 1;
     PackLoadResult load(PackLoadRequest request);
+}
+
+public interface InternalPackSource {
+    PackIdentity identity();
+    InternalPackSnapshot snapshot(PackInputLimits limits) throws InternalPackReadException;
+}
+
+public record InternalPackSnapshot(List<InternalPackEntry> entries) {}
+
+public sealed interface InternalPackEntry {
+    NormalizedPackPath path();
+    record File(NormalizedPackPath path, ImmutableBytes bytes) implements InternalPackEntry {}
+    record Directory(NormalizedPackPath path) implements InternalPackEntry {}
+}
+
+public interface ImmutableBytes {
+    int size();
+    byte[] copy();
 }
 
 public record PackLoadRequest(
@@ -151,6 +201,7 @@ public record PackLoadRequest(
     DiagnosticReporter diagnostics) {}
 
 public sealed interface PackLoadResult {
+    record Off() implements PackLoadResult {}
     record Loaded(PackConfiguration configuration) implements PackLoadResult {}
     record Failed(PackLoadFailure failure) implements PackLoadResult {}
 }
@@ -171,34 +222,75 @@ public record PackConfiguration(
 ```
 
 `DimensionKey` is an engine value containing the numeric legacy dimension ID, not a Minecraft
-dimension type. `InternalPackSource` is an engine interface returning named immutable byte sources;
-Phase 7 supplies its content. `RuntimeIdentityData` contains the MC version tuple, engine edition,
-engine version, OS family, and configured per-pack identity override as plain values.
+dimension type. An `OFF` request returns `PackLoadResult.Off` without opening an input, publishing a
+configuration, or reporting failure; Phase 7/12 replace any prior configuration with their owned
+shaders-off state. `InternalPackSource.snapshot` returns one finite, immutable manifest in
+normalized-path order, including empty directories. Phase 3 revalidates every slash-normalized,
+root-relative path, rejects duplicate normalized paths or file/directory collisions, and applies
+the same entry-count, byte-count, path-length, and nesting limits used for archives. A provider
+limit/read violation becomes an attributed pack-level failure. `ImmutableBytes` exposes size plus
+a fresh copy on every `copy()` call; Phase 3 owns that copy, and neither the manifest nor the
+published configuration retains provider storage. `identity()` is stable for equal internal
+content and configuration. Phase 7 supplies the content. `RuntimeIdentityData` contains the MC version tuple,
+engine edition, engine version, OS family, and configured per-pack identity override as plain values.
 
 `SourceCatalog` owns stable `SourceId`s, original logical lines, the include graph, and a
 `SourceMaterializer`:
 
 ```java
 public interface SourceMaterializer {
-    MaterializedSource materialize(
+    MaterializationResult materialize(
         SourceKey root,
         OptionState options,
-        MacroContributions contributions);
+        MacroContribution contribution,
+        GeometryTranslationRequest geometryTranslation);
 }
+
+public sealed interface MaterializationResult {
+    record Available(MaterializedSource source) implements MaterializationResult {}
+    record Unavailable(SourceKey root, List<EngineDiagnostic> diagnostics)
+        implements MaterializationResult {}
+}
+
+public record GeometryTranslationPlan(
+    SourceKey root,
+    GeometryInputPrimitive input,
+    GeometryOutputPrimitive output,
+    int maxVertices) {}
+
+public sealed interface GeometryTranslationRequest {
+    record None() implements GeometryTranslationRequest {}
+    record Translate(GeometryTranslationPlan plan) implements GeometryTranslationRequest {}
+}
+
+public enum GeometryInputPrimitive { POINTS, LINES, LINES_ADJACENCY, TRIANGLES, TRIANGLES_ADJACENCY }
+public enum GeometryOutputPrimitive { POINTS, LINE_STRIP, TRIANGLE_STRIP }
 
 public interface MacroContributor {
     MacroContribution contribute(PackConfiguration configuration);
+}
+
+public sealed interface MacroContribution {
+    record Empty() implements MacroContribution {}
+    record DefineCenterDepthSmooth(String replacementTokens) implements MacroContribution {}
 }
 ```
 
 The only reserved contributor name in this phase is
 `phase6.centerDepthSmoothRedirect`. Its location is after `#version` and active hoisted
 `#extension` directives, in the logical macro header, before the first restored pack `#line`.
-Phase 6 may supply no contribution; the slot exists regardless.
+Phase 6 returns `Empty` or one `DefineCenterDepthSmooth` operation. The latter defines only the
+object-like macro `centerDepthSmooth`; its replacement must be a non-empty, newline-free,
+tokenizable GLSL expression with no preprocessing directive or comment token. Invalid input
+produces `Unavailable` with an attributed diagnostic. Application is deterministic at the stated
+location and no other contributed name or operation is accepted. Materialization catches
+include/preprocessor/validation failures and returns `Unavailable` with the root and all stable,
+source-attributed diagnostics; it never throws for unavailable or malformed pack source.
 
 ### 2.3 Load pipeline
 
-The load is a transaction with no externally visible partial state:
+The load is a transaction with no externally visible partial state. `OFF` short-circuits to
+`PackLoadResult.Off`; every other selection follows this pipeline:
 
 1. enumerate and resolve the selected candidate;
 2. open one bounded `PackInput` lease, locate the effective `shaders/` root, index files, read
@@ -212,12 +304,13 @@ The load is a transaction with no externally visible partial state:
    `GLCapabilityProfile`;
 8. safely preprocess and parse `shaders.properties`, then validate profiles/screens/textures/
    custom declarations/program state;
-9. finalize the active option snapshot and materialize active shader roots using the same
-   line-rewriter/include/jcpp pipeline Phase 4 will call;
+9. finalize the active option snapshot and run plan-independent analysis of active shader roots
+   through line rewriting, include expansion, and jcpp, preserving any attributed legacy geometry
+   pair without translating it;
 10. scan directives/declarations and fold them into immutable `ResourceRequirements`;
 11. preprocess/parse unresolved pack ID maps with standard A–G macros only;
-12. validate cross-field invariants, compute a content fingerprint, optionally emit the debug
-    dump, and atomically publish `PackConfiguration`.
+12. validate cross-field invariants, compute a content fingerprint, and atomically publish
+    `PackConfiguration`; final-source debug dumping occurs only on later successful materialization.
 
 If a dimension folder exists, its `DimensionConfiguration` is built solely from `.vsh`/`.fsh`
 files in that folder. It does not inherit base programs. An empty folder is represented explicitly
@@ -282,6 +375,9 @@ No Appendix F item is left to an implicit “miscellaneous” parser.
 | same-file `#ifdef`/`#ifndef` confirmation | A candidate is eligible only from a confirming reference in that original file; WCC analysis scopes duplicate merging and cannot promote an unconfirmed candidate | Phase 3 | App F.3; `switchOption_sameFileConfirmation` |
 | variable `#define NAME value // tooltip [values]` | `OptionCandidate.Variable`; default is inserted into allowed values | Phase 12 | App F.3; `variableOption_defaultAutoAdded` |
 | const-option whitelist | Explicit table for `shadowMapResolution`, `shadowMapFov`, `shadowDistance`, `shadowDistanceRenderMul`, `shadowIntervalSize`, `generateShadowMipmap`, `generateShadowColorMipmap`, `shadowHardwareFiltering`, `shadowHardwareFiltering0/1`, all documented `shadowtex0/1Mipmap`, `shadowcolor0/1Mipmap`, `shadowtex0/1Nearest`, `shadowcolor0/1Nearest` capitalization aliases, `wetnessHalflife`, `drynessHalflife`, `eyeBrightnessHalflife`, `centerDepthHalflife`, `sunPathRotation`, `ambientOcclusionLevel`, `superSamplingLevel`, and `noiseTextureResolution`; visibility requires values or slider/profile/screen reference | Phase 12 | App F.3; `constOption_completeWhitelistAndAliases` |
+| compile-time option application | `OptionLineRewriter` rewrites only captured switch/value spans before include expansion and preprocessing, retaining `#line` attribution | Phase 4 requests materialization | §4.7/App F.3; `optionRewrite_onlyCapturedSpan`, `optionRewrite_roundTripMaterialization` |
+| per-pack `shaderpacks/<pack>.txt` | ISO-8859-1 Properties codec reads changed values into reload merge and writes changed pack options only | Phase 12 invokes read/write | §4.7; `persistence_packChangedOnlyRoundTripAndApply` |
+| global `optionsshaders.txt` equivalent | separate ISO-8859-1 Properties codec reads/applies engine-global settings and never mixes them with pack options | Phase 12 invokes read/write | §4.7; `persistence_globalRoundTripAndApply` |
 | ambiguous option defaults | `Ambiguity.DISABLED`; retains locations and diagnostic, cannot be changed | Phase 12 displays disabled | App F.3; `optionAmbiguity_conflictingDefaultsDisabled` |
 | `option.<NAME>[.comment]` | `LangDecorations.option` | Phase 12 | App F.3; `lang_optionLabelsAndComments` |
 | `value.<NAME>.<val>` | `LangDecorations.value` | Phase 12 | App F.3; `lang_valueLabels` |
@@ -289,21 +385,22 @@ No Appendix F item is left to an implicit “miscellaneous” parser.
 | `profile.<NAME>[.comment]` in `.lang` | `LangDecorations.profile` | Phase 12 | App F.3; `lang_profileLabelsAndComments` |
 | `screen.<NAME>[.comment]` in `.lang` | `LangDecorations.screen` | Phase 12 | App F.3; `lang_screenLabelsAndComments` |
 | `sliders=<option list>` | Ordered `SliderSet`; unknown/non-variable names diagnose but do not invalidate other entries | Phase 12 | App F.3; `sliders_orderAndUnknownEntry` |
-| `profile.NAME=<tokens>` | `ProfileModel`; supports `OPTION`, `!OPTION`, `OPTION:value`, `OPTION=value`, `profile.OTHER`, dimension-qualified `!program.*`; copies are cycle-guarded and matching uses descending constraint count | Phase 4 consumes disabled programs; Phase 12 selects | App F.4; `profiles_allTokenFormsAndCycles` |
-| `screen=<entries>` | main `ScreenModel` | Phase 12 | App F.4; `screen_mainEntries` |
-| `screen.NAME=<entries>` | named `ScreenModel` with `[SUBSCREEN]`, `<profile>`, `<empty>`, `*`, option entries | Phase 12 | App F.4; `screen_subscreenEntriesAndReferences` |
-| `screen.columns=N` | main column count, default 2 and auto-widen hint retained | Phase 12 | App F.4; `screen_mainColumns` |
-| `screen.NAME.columns=N` | named column count | Phase 12 | App F.4; `screen_subscreenColumns` |
+| `profile.NAME=<tokens>` | `ProfileModel`; supports `OPTION`, `!OPTION`, `OPTION:value`, `OPTION=value`, `profile.OTHER`, dimension-qualified `!program.*`; copies are cycle-guarded; inference tests profiles by descending constraint count with source order as the tie-break, returning the first exact option-state match or `Custom` when none matches | Phase 4 consumes disabled programs; Phase 12 selects | App F.4; `profiles_allTokenFormsAndCycles`, `profiles_inferenceMatchAndCustom` |
+| `screen=<entries>` | main `ScreenModel`; absent columns default to 2 and more than 18 actual options enables auto-widening | Phase 12 | App F.4; `screen_mainEntries`, `screen_columnsBoundaryMixed18And19Options` |
+| `screen.NAME=<entries>` | named `ScreenModel` with `[SUBSCREEN]`, `<profile>`, `<empty>`, `*`, option entries; navigation/layout entries do not count toward widening | Phase 12 | App F.4; `screen_subscreenEntriesAndReferences`, `screen_columnsBoundaryMixed18And19Options` |
+| `screen.columns=N` | main explicit column count; absent means 2, with auto-widening only above 18 actual options | Phase 12 | App F.4; `screen_mainColumns`, `screen_columnsBoundaryMixed18And19Options` |
+| `screen.NAME.columns=N` | named explicit column count; absent means 2, with auto-widening only above 18 actual options | Phase 12 | App F.4; `screen_subscreenColumns`, `screen_columnsBoundaryMixed18And19Options` |
 | `texture.<gbuffers\|deferred\|composite>.<sampler>[.0-9]` pack path | `CustomTextureSpec.PackPath`; duplicate discriminator is separate from sampler and never discarded | Phase 13 | App F.5; `texture_packPathAndDuplicateSuffix` |
 | same key, `minecraft:` asset/live texture | `CustomTextureSpec.MinecraftResource`; keeps `_n`/`_s` and dynamic/atlas identity as text | Phase 13 | App F.5; `texture_minecraftDynamicAndCompanionSuffix` |
-| same key, raw form | `CustomTextureSpec.Raw` with type, internal format, exact dimensions, pixel format/type; malformed arity warns/ignores that line | Phase 13 | App F.5; `texture_rawAllFourTypesAndArity` |
+| same key, raw form | `CustomTextureSpec.Raw` with type, internal format, exact dimensions, pixel format/type; malformed arity or an unknown/incompatible format token warns/ignores that line | Phase 13 | App F.5; `texture_rawAllFourTypesAndArity`, `texture_rawFormatDomainsAcceptedRejected`, `texture_rawIntegerTransferCompatibility` |
 | same texture's `.mcmeta` blur/clamp | `TextureSidecarRef` is retained without loading it; filter/wrap information is not stripped | Phase 13 | App F.5; `texture_sidecarReferencePreserved` |
 | stage mapping | `GBUFFERS` applies to gbuffers+shadow, `DEFERRED` to deferred, `COMPOSITE` to composite+final | Phases 4/13 | App F.5; `texture_stageExpansion` |
 | multiple texture types on one unit | model keys by `(stage,sampler,type)` and validates one sampler type per unit per program later | Phases 4/13 | App F.5; `texture_sharedUnitDistinctTypes` |
 | `texture.noise=<pack path>` | `NoiseTextureSpec.Override`; otherwise generated-noise requirement remains | Phase 13 | App F.5; `texture_noiseOverride` |
 | `uniform.<float\|int\|bool\|vec2\|vec3\|vec4>.<name>` | `CustomExpressionDecl(UNIFORM,type,name,rawExpression)`; no evaluation here | Phase 11 evaluates, Phase 6 uploads | App F.6; `customDecl_allUniformTypesRawExpression` |
 | `variable.<type>.<name>` | `CustomExpressionDecl(VARIABLE,...)`; duplicate/type/name validation only | Phase 11 | App F.6; `customDecl_allVariableTypesAndDuplicates` |
-| F.6 constants/parameters/operators/functions/exclusions/precipitation rule | Expression text and declaration order are lossless; the vocabulary is not pre-validated or evaluated by Phase 3 | Phase 11 | App F.6; `customDecl_expressionTextLossless` |
+| F.6 constants/parameters/operators/functions/exclusions | Expression text and declaration order are lossless; the vocabulary is not pre-validated or evaluated by Phase 3 | Phase 11 | App F.6; `customDecl_expressionTextLossless` |
+| F.6 precipitation rule | Preserve the behavior handoff: render precipitation iff `biome_precipitation != PPT_NONE`; classify rain at `temperature >= 0.15`, otherwise snow; this row has no Phase 3 parser/model assertion | Phase 7 | App F.6; Phase 7 test `precipitation_noneAndTemperatureBoundary` |
 | `alphaTest.<prog>` | parsed `AlphaTestSpec(OFF or func/ref)` with all documented funcs | Phase 4 | App F.7; `programState_alphaTestAllFuncs` |
 | `blend.<prog>` | parsed `BlendSpec(OFF or color pair plus optional alpha pair)` with the 15 documented factors | Phase 4 | App F.7; `programState_blendArityAndFactors` |
 | `scale.<prog>` | `ViewportScale(scale,offsetX,offsetY)`, each in 0…1 | Phase 4 applies, Phase 5 supplies estate | App F.7; `programState_scaleFormsAndRange` |
@@ -324,9 +421,9 @@ identifiers. A malformed occurrence warns and is ignored without clearing a prev
 
 | Appendix A.3 directive | `PackConfiguration` target | Named conformance test |
 |---|---|---|
-| `attribute … mc_Entity / mc_midTexCoord / at_tangent` | per-program `VertexRequirements.attributes` | `directive_extendedAttributeOptIns` |
-| `const int countInstances=N` | per-program `instanceCount` (positive integer) | `directive_countInstances` |
-| `#extension GL_ARB_geometry_shader4` + `maxVerticesOut` | `LegacyGeometryConfig(extensionEnabled,maxVerticesOut)` | `directive_legacyGeometryPair` |
+| `attribute … mc_Entity / mc_midTexCoord / at_tangent` (`.vsh` only) | per-program `VertexRequirements.attributes` | `directive_extendedAttributeOptIns`, `directive_attributeWrongStageIgnored` |
+| `const int countInstances=N` (`.vsh` only) | per-program `instanceCount` (positive integer) | `directive_countInstances`, `directive_countInstancesWrongStageIgnored` |
+| `#extension GL_ARB_geometry_shader4` + `maxVerticesOut` (`.gsh` only) | `LegacyGeometryConfig` plus attributed `LegacyGeometryRewriteSite`; materialization executes Phase 4's selected `GeometryTranslationPlan` and emits deterministic transformed core-form source | `directive_legacyGeometryPair`, `directive_geometryPairWrongStageIgnored`, `geometryRewrite_deterministicAttributedOrUnavailable` |
 | `uniform … shadow/shadowtex0/shadowtex1/watershadow` | `shadowDepthBuffers` minimum 1/2 | `directive_shadowDepthUniformSizing` |
 | `uniform … shadowcolor/shadowcolor0/shadowcolor1` | `shadowColorBuffers` minimum 1/2 | `directive_shadowColorUniformSizing` |
 | `uniform … depthtex0/1/2`, `gdepthtex` | `mainDepthTextures` minimum 1/2/3 | `directive_mainDepthUniformSizing` |
@@ -350,7 +447,7 @@ identifiers. A malformed occurrence warns and is ignored without clearing a prev
 | `ambientOcclusionLevel` | `WorldRenderConstants.ambientOcclusionLevel` constrained 0…1 | `directive_ambientOcclusionLevel` |
 | `superSamplingLevel` | `WorldRenderConstants.superSamplingLevel` positive integer | `directive_superSamplingLevel` |
 | `noiseTextureResolution` | `NoiseRequirement.resolution` and enabled flag | `directive_noiseTextureResolution` |
-| `colortexNFormat` / legacy-name format | per-colortex format request | `directive_colortexFormatsAndAliases` |
+| `colortexNFormat` / legacy-name format | validated per-colortex internal-format request | `directive_colortexFormatsAndAliases`, `directive_colortexFormatDomainAcceptedRejected` |
 | `colortexNClear=false` | per-colortex clear-enabled override | `directive_colortexClear` |
 | `colortexNClearColor=vec4(...)` | per-colortex clear color | `directive_colortexClearColor` |
 | `colortexNMipmapEnabled=true` | per-program colortex mipmap requests | `directive_colortexMipmapEnabled` |
@@ -398,7 +495,8 @@ smoothing formula; this phase does not import an alternate unit.
 ### 4.1 Pack discovery, roots, and lifetime
 
 `PackDiscovery` always returns two logical sentinels first (`OFF`, `(internal)`), followed by
-filesystem candidates in case-insensitive/natural tie-break order. `OFF` produces no load.
+filesystem candidates in case-insensitive/natural tie-break order. `OFF` produces the successful
+non-configuration `PackLoadResult.Off` transition defined in §2.2.
 `(internal)` selects `InternalPackSource`; Phase 7 supplies the bytes and stable identity.
 
 A folder/zip candidate is valid when a bounded recursive search finds at least one directory named
@@ -416,8 +514,8 @@ lifecycle discipline without a global static filesystem
 `[V:observed — Pintonium common-shaders/src/main/java/net/irisshaders/iris/shaderpack/ShaderPack.java]`
 (PD §7.1).
 
-Unreadable/corrupt candidates remain list entries with a diagnostic; selecting one returns a
-pack-level failure and leaves shaders off. No archive error escapes to the client.
+Unreadable/corrupt candidates remain list entries with a diagnostic; selecting one returns
+`PackLoadResult.Failed(failure)` and leaves shaders off. No archive error escapes to the client.
 
 ### 4.2 Dimensions, source identities, and includes
 
@@ -492,6 +590,12 @@ Phase 3 owns codecs and file models. Phase 12 owns when a user applies/discards 
 Reload merges persisted values into a new immutable `OptionState`; it never mutates a published
 configuration.
 
+Every main or named `ScreenModel` stores explicit columns separately from its ordered entries.
+Absent columns resolve to 2; auto-widening is enabled only when the rendered screen has more than
+18 actual options. `[SUBSCREEN]`, `<profile>`, `<empty>`, and other navigation/layout entries do
+not count. Phase 12 retains ownership of deferred `*` expansion; options produced by that expansion
+do count when Phase 12 resolves the column count.
+
 ### 4.4 Standard macros and OQ-7-shaped identity data
 
 `MacroConfiguration` is data, not a hard-coded set:
@@ -552,7 +656,29 @@ Processing order:
 6. collect the active version and extension markers, preserve extension source order, and rebuild:
    `#version`, active `#extension` lines, the logical macro-header boundary, then the processed
    body with a restored root `#line`;
-7. retain a `SourceMap` and preprocessing diagnostics in `MaterializedSource`.
+7. when a root has no attributed legacy geometry pair,
+   `GeometryTranslationRequest.None` succeeds without a geometry rewrite. For a `.gsh` legacy
+   pair, require `Translate(plan)` and apply its immutable plan at the attributed rewrite sites;
+   applicability requires the same root, one recognized legacy pair, a positive `maxVertices`
+   equal to the recognized declaration, and a closed input/output enum.
+   Phase 3 removes the legacy extension and replaces the attributed declaration with the core
+   input/output layout declarations generated from those fields. `None` for a recognized pair, or
+   a mismatched, unsupported, overlapping, or out-of-range plan, returns `Unavailable` with
+   source-local diagnostics rather than exposing untransformed ARB source;
+8. retain transformed text, `SourceMap`, rewrite diagnostics, and plan fingerprint in
+   `MaterializedSource`, making equal inputs byte-identical.
+
+Rewrites are applied in source-span order and may touch only the two spans in
+`LegacyGeometryRewriteSite`; pack text supplied through a plan is impossible. The plan fingerprint
+is Phase-3-generated canonical encoding of the plan schema, root, enum names, positive vertex
+count, and rewrite-site identities/spans—not caller hashing or object identity. Equal sites and
+fields therefore produce equal transformed bytes and fingerprints.
+
+Load-time analysis uses the same deterministic pipeline through directive discovery but stops
+before step 7's geometry rewrite. It records the attributed pair and scan results in the published
+configuration; it neither calls `SourceMaterializer` nor requires a translation request.
+Plan-dependent materialization begins only after Phase 4 receives that configuration and selects
+`None` or `Translate(plan)`.
 
 The marker namespace includes a generated nonce plus a fixed prefix checked before rewriting.
 Unknown/spoofed markers are fatal for that source, not trusted as header material. NUL characters
@@ -607,6 +733,13 @@ location. Resource minima aggregate monotonically across active sources; explici
 state remains per program. Format conflicts are retained as diagnostics plus deterministic
 last-active occurrence, not silently merged.
 
+Stage is part of the table key: extended attributes and `countInstances` populate requirements only
+from `.vsh`, and the legacy geometry pair only from `.gsh`. A recognized directive in any other
+stage is ignored and emits one source-attributed warning; it cannot alter a previously valid value.
+The geometry recognizer retains exact extension/declaration spans as `LegacyGeometryRewriteSite`;
+it does not choose topology or other translation policy. Phase 4 owns that strategy and supplies
+the plan, while Phase 3 alone performs the source rewrite before publication to GL.
+
 `ResourceRequirements` contains:
 
 - main color/depth and shadow depth/color minima;
@@ -635,8 +768,19 @@ The parser dispatches by exact key/prefix to immutable builders. Unknown keys ar
 parsing completes so Phase 12 can show the warning and Phase 7 can keep shaders off. Malformed
 rules warn/ignore only that rule.
 
-Custom texture specs preserve stage, sampler, duplicate suffix, source kind, raw numeric/type
-tokens, and sidecar location. They never open or decode a texture. Custom uniform/variable
+Custom texture specs preserve stage, sampler, duplicate suffix, source kind, typed raw format
+values, and sidecar location. The accepted internal formats are exactly the 37 names in RESEARCH
+Appendix B.4; pixel formats are `RED`, `RG`, `RGB`, `BGR`, `RGBA`, `BGRA` and their `_INTEGER`
+forms; pixel types are `BYTE`, `SHORT`, `INT`, `HALF_FLOAT`, `FLOAT`, `UNSIGNED_BYTE`,
+`UNSIGNED_BYTE_3_3_2`, `UNSIGNED_BYTE_2_3_3_REV`, `UNSIGNED_SHORT`,
+`UNSIGNED_SHORT_5_6_5`, `UNSIGNED_SHORT_5_6_5_REV`, `UNSIGNED_SHORT_4_4_4_4`,
+`UNSIGNED_SHORT_4_4_4_4_REV`, `UNSIGNED_SHORT_5_5_5_1`,
+`UNSIGNED_SHORT_1_5_5_5_REV`, `UNSIGNED_INT`, `UNSIGNED_INT_8_8_8_8`,
+`UNSIGNED_INT_8_8_8_8_REV`, `UNSIGNED_INT_10_10_10_2`, and
+`UNSIGNED_INT_2_10_10_10_REV`. An integer internal format requires the corresponding
+`*_INTEGER` pixel format; either mismatch is diagnosed and that texture line is ignored.
+Unknown format/type tokens receive the same disposition. Colortex format directives accept the
+same 37-value internal-format enum. They never open, decode, or realize a texture. Custom uniform/variable
 declarations validate key structure/type/name and preserve the expression after Java-Properties
 unescaping; they never invoke Phase 11 grammar.
 
@@ -644,6 +788,11 @@ Profile includes use a recursion stack and return a partial valid profile with t
 ignored and diagnosed. Screen models preserve entry order and validate references without
 constructing widgets. `*` expansion is intentionally deferred to Phase 12 because it depends on
 placement across screens.
+
+`ProfileModel.infer(OptionState)` orders valid profiles by descending expanded constraint count
+and then source order, returns the first whose option constraints exactly match the current
+values, and returns the pack-facing `Custom` outcome when none matches. Disabled-program tokens do
+not relax option matching.
 
 `program.*.enabled` is not the full custom-expression language. Phase 3 parses the small Boolean
 switch grammar required before Phase 11 exists. Unknown switch names make the condition false with
@@ -687,8 +836,10 @@ Validation has three levels:
 
 Only level 3 may fail the pack load. Levels 1–2 produce defaults/partial models and diagnostics.
 The immutable configuration fingerprint hashes pack bytes, normalized paths, active options,
-macro policy/contributions, capability identity fields, and parser schema version. It is the cache
-key and reload/change detector.
+load-time macro policy, capability identity fields, and parser schema version. It excludes
+downstream macro contributions and geometry plans; each `MaterializedSource` fingerprint includes
+the contribution and canonical plan actually used. The configuration fingerprint is the reload/
+change detector.
 
 When `schmaloogium.debug.saveSources` is true, the materializer writes final sources plus a
 source-ID manifest under a sanitized runtime `shaderpacks/debug/<pack-id>/` tree. A dump failure
@@ -707,12 +858,12 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 
 | Exposed contract | Content | Consumer(s) |
 |---|---|---|
-| `PackFrontEnd` / `PackLoadRequest` / `PackLoadResult` | atomic discovery-to-configuration entry point | Phase 7 bootstrap/reload; Phase 12 selection |
+| `PackFrontEnd` / `PackLoadRequest` / `PackLoadResult` | atomic entry point; `OFF` is an explicit successful no-configuration result | Phase 7 bootstrap/reload; Phase 12 selection |
 | `PackConfiguration` | single validated downstream truth, immutable and fingerprinted | Phases 4–13 as listed below |
 | `PackIdentity`, `CompatibilityStatus`, `DimensionConfiguration` | selected source, `OFF`/`(internal)`, base/override/disabled dimension state | Phases 7, 12 |
-| `SourceCatalog`, `SourceKey`, `MaterializedSource`, `SourceMap`, `SourceMaterializer` | option/macro-specific processed source and attribution | Phase 4; Phase 2 harness |
-| `MacroConfiguration`, `MacroContribution`, reserved `phase6.centerDepthSmoothRedirect` slot | configurable option-3-shaped identity and extension point | Phase 6 contributor; Phase 4 materialization; G8/S3 |
-| `OptionConfiguration` (`OptionCatalog`, immutable `OptionState`, profiles/screens/sliders/lang) | source options and organization model | Phase 4 enable/source inputs; Phase 12 GUI/reload |
+| `SourceCatalog`, `SourceKey`, `MaterializedSource`, `SourceMap`, `SourceMaterializer`, `MaterializationResult`, `LegacyGeometryRewriteSite`, `GeometryTranslationRequest`, `GeometryTranslationPlan` | load-time analysis records attributed legacy pairs without translation or a request; after publication Phase 4 selects `None` for a root without a pair or `Translate(plan)` for one with a pair. A plan is `(root, closed input primitive, closed output primitive, positive maxVertices)` and must match that pair; `None` succeeds only without a pair, while a pair without `Translate` is `Unavailable`. Phase 3 validates the request, emits only the fixed core layout rewrite, and fingerprints the contribution, plan, and sites in the materialized source rather than the configuration | Phase 4; Phase 2 harness |
+| `MacroConfiguration`, `MacroContributor`, `MacroContribution`, reserved `phase6.centerDepthSmoothRedirect` slot | Phase 6 returns `Empty` or one validated `DefineCenterDepthSmooth(replacementTokens)`; Phase 4 passes that singular value to materialization | Phase 6 contributor; Phase 4 materialization; G8/S3 |
+| `OptionConfiguration` (`OptionCatalog`, immutable `OptionState`, profiles/screens/sliders/lang) | source options and organization model; absent screen columns resolve to 2 and widen only above 18 actual options, excluding navigation/layout entries and including options produced when Phase 12 expands deferred `*` | Phase 4 enable/source inputs; Phase 12 GUI/reload |
 | `OptionPersistenceCodec`, `GlobalShaderOptionsCodec` | ISO-8859-1 changed-only and global formats | Phase 12 |
 | `ShaderPropertiesModel.engineFlags` | all Appendix F.1 raw requested states | behavior owners in §3.1 |
 | `ProgramStateModel` | alpha/blend/scale/flip/enabled and profile-disabled programs | Phase 4; Phase 5 flip estate |
@@ -720,11 +871,12 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 | `CustomTextureSpec`, `NoiseTextureSpec` | lossless specs only | Phase 13 |
 | `CustomExpressionDecl` | typed name + raw expression | Phase 11, then Phase 6 |
 | `UnresolvedIdMappings`, `IdMappingParser` | unresolved pack rules and parser for Phase 9-provided mod text | Phase 9; layer result later Phase 7 |
-| `InternalPackSource` | in-memory source-provider seam, no MC types | Phase 7 supplies content |
+| `InternalPackSource` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; defensive byte copies and attributed failure | Phase 7 supplies content |
 
 Consumers must not re-open the pack, rescan directives, reinterpret properties, or bypass the
 materializer. A reload publishes a new configuration. A consumer may retain derived state only
-when both `schemaVersion` and fingerprint equal the values used to derive it.
+when both `schemaVersion` and configuration fingerprint equal the values used to derive it; state
+derived from materialized text must also match that source's materialization fingerprint.
 
 ### 5.2 Consumed Phase 1 contracts
 
@@ -742,13 +894,16 @@ No GL service or handle is consumed.
 
 ### 5.3 Interface/version discipline
 
-`PackConfiguration.schemaVersion` is a non-negative integer constant of the parser schema and is
-separate from the content fingerprint. Adding an optional field is additive; removing a field,
-changing a field's meaning, or changing executable defaults requires a schema bump and consumer
-compatibility tests. Consumers reject incompatible schema versions rather than interpreting them
-best-effort. Collection order is deterministic and exposed as immutable insertion order where pack
-order matters. All enums have `UNKNOWN` only for forward storage, never as a silently executable
-state.
+`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `1`, and every configuration produced by this revision
+publishes that value. A consumer supports exactly `schemaVersion == CURRENT_SCHEMA_VERSION`; every
+other value is rejected before derived state is created or retained. The schema is separate from
+the content fingerprint. Adding an optional field is additive and does not bump the version;
+removing a field, changing a field's meaning, or changing executable defaults requires incrementing
+the constant and consumer compatibility tests. Collection order is deterministic and exposed as
+immutable insertion order where pack order matters. Enums intended for forward-compatible storage
+include `UNKNOWN`, which is never a silently executable state. Closed executable enums reject
+unknown values; in particular, `GeometryInputPrimitive` and `GeometryOutputPrimitive` contain only
+their declared primitive sets.
 
 ### 5.4 Requested changes to the dependency contract
 
@@ -773,7 +928,7 @@ Phase 3 interfaces supplied by later `:mod` work as plain data.
 | Cyclic profile/subscreen | ignore cyclic edge; retain non-cyclic entries | feature-local, rung 2a |
 | Invalid custom uniform expression text at runtime | Phase 3 preserves it; Phase 11 disables that custom uniform only | rung 1, later owner |
 | Unmet `version.<mcver>` | configuration remains inspectable with incompatible status; Phase 7 keeps the pack off and Phase 12 displays warning | rung 4 |
-| Unreadable/corrupt zip, unsafe root/path, expansion-limit breach, no usable shaders root | return `PackLoadFailure`, close all resources, select shaders-off, chat/log via loader routing | rung 4→5 |
+| Unreadable/corrupt zip, unsafe root/path, expansion-limit breach, no usable shaders root | return `PackLoadResult.Failed(failure)`, close all resources, select shaders-off, chat/log via loader routing | rung 4→5 |
 | Debug-dump/persistence write failure | warn; retain in-memory configuration/state; never turn pack off | rung 2a |
 | Unexpected parser/library exception | catch at front-end boundary, close lease, emit sanitized pack failure with cause in log, return shaders-off | rung 5 |
 
@@ -795,7 +950,7 @@ provide any usable source configuration. A malformed directive or property line 
   cached by content/option/macro fingerprint with bounded entries/bytes; no cache key holds a pack
   filesystem.
 - jcpp instances are not shared. Macro maps and source maps are immutable inputs/results.
-- Directive scanning is a single pass over active materialized text with precompiled patterns and
+- Directive scanning is a single pass over active load-time analysis text with precompiled patterns and
   a table lookup; no whole-pack repeated regex sweep per directive.
 - Debug dumping is opt-in and excluded from hot reload timings. It may contain pack source and is
   never a derived conformance artifact.
@@ -813,6 +968,8 @@ or Minecraft type is needed.
 
 - Discovery/path/lifetime: `discovery_caseFoldThenNatural`,
   `discovery_nestedRootDeterministic`, `discovery_offAndInternal`,
+  `discovery_offReturnsSuccessfulNoConfiguration`,
+  `internalSnapshot_orderDuplicatesLimitsAndEmptyDirectories`,
   `pathRejectsTraversalAbsoluteAndSymlink`, `archiveLeaseClosesOnEveryExit`,
   `archiveBombLimitsFailGracefully`.
 - Dimensions: `dimension_overrideNoMergeAndEmptyDisables`,
@@ -826,17 +983,25 @@ or Minecraft type is needed.
   `preprocess_versionMustLead`, `preprocess_markerSpoofRejected`,
   `preprocess_apiMacrosDoNotShiftLines`, `macro_onDemandExtensionOnly`,
   `macro_mcVersion11202Format`, `macro_vendorRendererOther`,
-  `macro_phase6CenterDepthSlot`.
+  `macro_phase6CenterDepthSlot`, `geometryRewrite_deterministicAttributedOrUnavailable`,
+  `materialize_noGeometryPairAcceptsNone`, `materialize_geometryPairRejectsNone`,
+  `geometryRewrite_allPrimitivePairsAndCanonicalFingerprint`,
+  `geometryRewrite_rejectsRootSiteVertexAndRangeMismatch`,
+  `load_legacyGeometryPublishesBeforePhase4PlanSelection`.
 - Options/components: `switchOption_onOffAndTooltip`,
   `switchOption_sameFileConfirmation`, `variableOption_defaultAutoAdded`,
   `constOption_completeWhitelistAndAliases`, `optionAmbiguity_conflictingDefaultsDisabled`,
   `optionRefsDoNotCrossWcc`, `optionAmbiguity_duplicateNamesAcrossComponents`,
-  `optionRewrite_onlyCapturedSpan`, `persistence_outOfListValueRetainedAndWarned`.
+  `optionRewrite_onlyCapturedSpan`, `optionRewrite_roundTripMaterialization`,
+  `profiles_inferenceMatchAndCustom`, `screen_columnsBoundaryMixed18And19Options`,
+  `persistence_outOfListValueRetainedAndWarned`,
+  `persistence_packChangedOnlyRoundTripAndApply`, `persistence_globalRoundTripAndApply`.
 - Properties safety: `propertyHashRoundTrip`, `properties_whitespaceAndHash`,
   `properties_continuationsEscapesAndComments`, `properties_conditionalScreenLayout`,
   `properties_malformedDirectiveWarns`, `properties_standardMacrosButNoOptionMacros`.
-- Appendix F tests: every test named in §§3.1–3.2 is required; a parameterized key manifest fails
-  if a catalog row lacks a parser assertion.
+- Appendix F tests: every Phase-3-owned test named in §§3.1–3.2 is required; a parameterized key
+  manifest fails if a parser/model row lacks a Phase 3 assertion. Behavior-only handoff rows name
+  their downstream owner's test and are excluded from the Phase 3 parser manifest.
 - Appendix A.3 tests: every test named in §3.3 is required; a generated mapping manifest asserts
   one parser, one field target, and one test ID per row.
 - Pintonium pitfall gates are named exactly:
@@ -846,7 +1011,11 @@ or Minecraft type is needed.
   `propertyHashRoundTrip` (B12).
 - Validation/publication: `malformedLineNeverAbortsPack`,
   `structuralFailurePublishesNoPartialConfiguration`,
-  `packConfigurationIsOnlyLoadOutput`, `fingerprintChangesOnEverySemanticInput`.
+  `packConfigurationIsOnlyLoadOutput`, `fingerprintChangesOnEveryLoadSemanticInput`,
+  `materializedFingerprintChangesWithContributionOrGeometryPlan`.
+  `schema_currentValuePublished`, `schema_additiveFieldNoBump`,
+  `schema_incompatibleChangeBumps`, `schema_unsupportedVersionRejected`,
+  `schemaMismatchInvalidatesRetainedState`.
 
 ### 8.2 Golden and matrix tests
 
@@ -1017,7 +1186,7 @@ Phase 2 adapter.
 
 - Phase 6 must decide whether to populate `phase6.centerDepthSmoothRedirect`; the empty slot is
   valid and tested.
-- Phase 7 must supply `InternalPackSource`, combine its owned engine flags with higher-priority game
+- Phase 7 must supply the bounded `InternalPackSource` snapshot, combine its owned engine flags with higher-priority game
   settings, and publish new configurations on pack/dimension/reload transitions.
 - Phase 9 must define mod-contribution acquisition/merge precedence and registry resolution over
   `UnresolvedIdMappings`.
@@ -1044,8 +1213,9 @@ Each item is independently actionable and names its test hook.
    `optionRefsDoNotCrossWcc`.
 4. `[v0.1]` Implement P3-C05 expansion and numeric `#line` source maps; run
    `include_*Attribution` and `preprocess_lineAttribution`.
-5. `[v0.1]` Apply the Phase 1 dependency fix-up, add jcpp/notice, then implement P3-C10; run all
-   `preprocess_*` and `macro_*` header tests.
+5. `[v0.1]` Apply the Phase 1 dependency fix-up, add jcpp/notice, then implement P3-C10 and the
+   attributed legacy-geometry plan rewrite; run all `preprocess_*`, `macro_*`, and
+   `geometryRewrite_*` tests.
 6. `[v0.1]` Implement P3-C08 macro data, on-demand extensions, per-pack overrides, and the Phase 6
    reserved contributor; run `macro_phase6CenterDepthSlot` and identity snapshots.
 7. `[v0.1]` Implement P3-C06 option/const discovery, same-file confirmation, WCC merge,
@@ -1056,7 +1226,8 @@ Each item is independently actionable and names its test hook.
    whitespace preservation and narrow hash-comment handling; run `propertyHashRoundTrip` and all
    `properties_*`.
 10. `[v0.1]` Implement P3-C14's complete Appendix F dispatcher/model; make the manifest fail on
-    any missing §3.1/§3.2 row.
+    any Phase-3-owned parser/model row missing from §3.1/§3.2, while retaining downstream-only
+    behavior rows as handoff-test obligations.
 11. `[v0.1]` Implement P3-C12's table-driven declaration/const/block-comment/line-comment/routing
     scanner; make the manifest fail on any missing §3.3 row, including B1/B2 tests.
 12. `[v0.1]` Implement P3-C13 requirement folding and cross-field conflict diagnostics; test one
