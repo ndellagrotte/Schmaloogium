@@ -67,14 +67,15 @@ The dry-run reports an upper estimate from the configured assumed candidates per
 For `F` finders, `R` refuters, and assumed total candidates `C`:
 
 ```text
-Attack F + Refute C×R + optional Steelman C + conditional Gate 1
-         + Adjudicate 1 + conditional Fix-up 1
+Attack F + Refute C×R + conditional Refute-correction C×R + optional Steelman C
+         + conditional Gate 1 + Adjudicate 1 + conditional Fix-up 1
 ```
 
 Actual calls fall when finders return fewer/deduplicated candidates, refuters eliminate candidates,
-steelman is disabled, Gate has no survivors, PASS/FAIL stops, or review-only omits fix-up. Each role
-is a fresh Codex session and therefore consumes its own tokens. Parallelism is capped per preset and
-never crosses a stage barrier.
+refuters return valid citations without their one allowed correction attempt, steelman is disabled,
+Gate has no survivors, PASS/FAIL stops, or review-only omits fix-up. Each role is a fresh Codex
+session and therefore consumes its own tokens. Parallelism is capped per preset and never crosses a
+stage barrier.
 
 ## Generic target contract
 
