@@ -97,6 +97,26 @@ Geometry-plan absence, closed-enum handling, and option-count screen widening ar
 
 Load-time analysis is plan-independent, and §5 now carries the executable screen-column semantics.
 
+### 0.12 Round 9 fix-up
+
+Screen-column resolution and the public load-request/result contracts are now executable.
+
+### 0.13 Round 10 fix-up
+
+Filesystem-pack discovery now has a public, immutable consumer contract.
+
+### 0.14 Round 11 fix-up
+
+Discovery-generation selection behavior now has explicit headless coverage and checklist hooks.
+
+### 0.15 Round 12 fix-up
+
+Discovery generations now use one executable host-directory identity rule.
+
+### 0.16 Round 13 fix-up
+
+Selection-first load validation now confines host-directory checks to filesystem selections.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 3 owns
@@ -170,8 +190,25 @@ Illustrative signatures name the contracts; implementations remain private under
 ```java
 public interface PackFrontEnd {
     int CURRENT_SCHEMA_VERSION = 1;
+    PackDiscoveryResult discover(PackDiscoveryRequest request);
     PackLoadResult load(PackLoadRequest request);
 }
+
+public record PackDiscoveryRequest(
+    Path shaderpacksDirectory,
+    DiagnosticReporter diagnostics) {}
+
+public record PackDiscoveryResult(
+    DiscoveryGeneration generation,
+    List<PackCandidate> candidates,
+    List<EngineDiagnostic> diagnostics) {}
+
+public record PackCandidate(
+    PackCandidateId id,
+    PackCandidateKind kind,
+    String displayName,
+    PackCandidateStatus status,
+    List<EngineDiagnostic> diagnostics) {}
 
 public interface InternalPackSource {
     PackIdentity identity();
@@ -386,10 +423,10 @@ No Appendix F item is left to an implicit “miscellaneous” parser.
 | `screen.<NAME>[.comment]` in `.lang` | `LangDecorations.screen` | Phase 12 | App F.3; `lang_screenLabelsAndComments` |
 | `sliders=<option list>` | Ordered `SliderSet`; unknown/non-variable names diagnose but do not invalidate other entries | Phase 12 | App F.3; `sliders_orderAndUnknownEntry` |
 | `profile.NAME=<tokens>` | `ProfileModel`; supports `OPTION`, `!OPTION`, `OPTION:value`, `OPTION=value`, `profile.OTHER`, dimension-qualified `!program.*`; copies are cycle-guarded; inference tests profiles by descending constraint count with source order as the tie-break, returning the first exact option-state match or `Custom` when none matches | Phase 4 consumes disabled programs; Phase 12 selects | App F.4; `profiles_allTokenFormsAndCycles`, `profiles_inferenceMatchAndCustom` |
-| `screen=<entries>` | main `ScreenModel`; absent columns default to 2 and more than 18 actual options enables auto-widening | Phase 12 | App F.4; `screen_mainEntries`, `screen_columnsBoundaryMixed18And19Options` |
+| `screen=<entries>` | main `ScreenModel`; an explicit valid column count wins, otherwise resolved columns are `max(2, ceil(actualOptionCount / 9))` | Phase 12 | App F.4; `screen_mainEntries`, `screen_columnsBoundaryMixed18And19Options` |
 | `screen.NAME=<entries>` | named `ScreenModel` with `[SUBSCREEN]`, `<profile>`, `<empty>`, `*`, option entries; navigation/layout entries do not count toward widening | Phase 12 | App F.4; `screen_subscreenEntriesAndReferences`, `screen_columnsBoundaryMixed18And19Options` |
-| `screen.columns=N` | main explicit column count; absent means 2, with auto-widening only above 18 actual options | Phase 12 | App F.4; `screen_mainColumns`, `screen_columnsBoundaryMixed18And19Options` |
-| `screen.NAME.columns=N` | named explicit column count; absent means 2, with auto-widening only above 18 actual options | Phase 12 | App F.4; `screen_subscreenColumns`, `screen_columnsBoundaryMixed18And19Options` |
+| `screen.columns=N` | main explicit positive column count; valid `N` bypasses auto-widening | Phase 12 | App F.4; `screen_mainColumns`, `screen_columnsBoundaryMixed18And19Options` |
+| `screen.NAME.columns=N` | named explicit positive column count; valid `N` bypasses auto-widening | Phase 12 | App F.4; `screen_subscreenColumns`, `screen_columnsBoundaryMixed18And19Options` |
 | `texture.<gbuffers\|deferred\|composite>.<sampler>[.0-9]` pack path | `CustomTextureSpec.PackPath`; duplicate discriminator is separate from sampler and never discarded | Phase 13 | App F.5; `texture_packPathAndDuplicateSuffix` |
 | same key, `minecraft:` asset/live texture | `CustomTextureSpec.MinecraftResource`; keeps `_n`/`_s` and dynamic/atlas identity as text | Phase 13 | App F.5; `texture_minecraftDynamicAndCompanionSuffix` |
 | same key, raw form | `CustomTextureSpec.Raw` with type, internal format, exact dimensions, pixel format/type; malformed arity or an unknown/incompatible format token warns/ignores that line | Phase 13 | App F.5; `texture_rawAllFourTypesAndArity`, `texture_rawFormatDomainsAcceptedRejected`, `texture_rawIntegerTransferCompatibility` |
@@ -591,10 +628,11 @@ Reload merges persisted values into a new immutable `OptionState`; it never muta
 configuration.
 
 Every main or named `ScreenModel` stores explicit columns separately from its ordered entries.
-Absent columns resolve to 2; auto-widening is enabled only when the rendered screen has more than
-18 actual options. `[SUBSCREEN]`, `<profile>`, `<empty>`, and other navigation/layout entries do
-not count. Phase 12 retains ownership of deferred `*` expansion; options produced by that expansion
-do count when Phase 12 resolves the column count.
+A valid explicit positive column count wins. Otherwise resolved columns are
+`max(2, ceil(actualOptionCount / 9))`: 0–18 actual options resolve to 2, 19–27 to 3, and so on.
+`[SUBSCREEN]`, `<profile>`, `<empty>`, and other navigation/layout entries do not count. Phase 12
+retains ownership of deferred `*` expansion; options produced by that expansion do count before
+Phase 12 evaluates the formula.
 
 ### 4.4 Standard macros and OQ-7-shaped identity data
 
@@ -858,6 +896,7 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 
 | Exposed contract | Content | Consumer(s) |
 |---|---|---|
+| `PackFrontEnd.discover` / `PackDiscoveryRequest` / `PackDiscoveryResult` / `PackCandidate` | deterministic immutable discovery snapshot with opaque IDs, display/status data, and attributed diagnostics | Phase 7 bootstrap/reload; Phase 12 selection UI |
 | `PackFrontEnd` / `PackLoadRequest` / `PackLoadResult` | atomic entry point; `OFF` is an explicit successful no-configuration result | Phase 7 bootstrap/reload; Phase 12 selection |
 | `PackConfiguration` | single validated downstream truth, immutable and fingerprinted | Phases 4–13 as listed below |
 | `PackIdentity`, `CompatibilityStatus`, `DimensionConfiguration` | selected source, `OFF`/`(internal)`, base/override/disabled dimension state | Phases 7, 12 |
@@ -872,6 +911,62 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 | `CustomExpressionDecl` | typed name + raw expression | Phase 11, then Phase 6 |
 | `UnresolvedIdMappings`, `IdMappingParser` | unresolved pack rules and parser for Phase 9-provided mod text | Phase 9; layer result later Phase 7 |
 | `InternalPackSource` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; defensive byte copies and attributed failure | Phase 7 supplies content |
+
+`discover` requires a non-null `shaderpacksDirectory` and `DiagnosticReporter`. It and a
+`Filesystem` load derive the directory identity by calling `toAbsolutePath().normalize()`, then
+`toRealPath()` (which follows a symlink in the supplied directory path), and requiring the result
+to be a readable directory. The resulting real `Path` is the identity and is compared by that
+filesystem provider's `Path.equals`; no independent case-folding occurs. Thus relative/absolute
+and redundant segment aliases, and symlinks that resolve to the same directory, share an identity,
+while provider-distinct real paths remain independent. A nonexistent, non-directory, or unreadable
+path, or any absolute/real-path resolution or security failure, is invalid request data:
+`discover` returns an immutable result with no filesystem candidates and an attributed diagnostic,
+while a `Filesystem` load returns `Failed(INVALID_REQUEST)`; neither throws. The result always
+orders `Off` and `Internal` first, then filesystem candidates by §4.1's deterministic order.
+`PackCandidateKind` is closed as `OFF`, `INTERNAL`, `DIRECTORY`, or `ARCHIVE`;
+`PackCandidateStatus` is closed as `AVAILABLE`, `UNREADABLE`, `UNSAFE`, or `LIMIT_EXCEEDED`. Every
+candidate carries a sanitized display name and immutable diagnostic list; display names are never
+accepted back as paths. `PackCandidateId` and `DiscoveryGeneration` are opaque engine values. A
+filesystem ID is valid only with the latest completed discovery result for the same directory
+identity from that `PackFrontEnd` instance; a later completed discovery for that identity
+supersedes the generation, so an older ID is stale. Discovery does not expose roots, hashes,
+archive leases, or paths. Phase 12 invokes it to populate/refresh selection UI; Phase 7 may invoke
+it at bootstrap or reload and must obtain a current result before loading a persisted filesystem
+selection.
+
+`PackSelection` is closed: `Off`, `Internal`, or
+`Filesystem(PackCandidateId candidate)`, where the opaque candidate ID must have come from the
+current deterministic discovery result for `shaderpacksDirectory`; stale/unknown IDs fail as
+`INVALID_SELECTION`. `load` validates `selection` first. `Off` immediately returns
+`PackLoadResult.Off` without accessing or validating any other request field. `Internal` ignores
+`shaderpacksDirectory` and requires `internalPackSource`; `Filesystem` validates the host directory
+and discovery generation and never accesses `internalPackSource`. Every non-`Off` request requires
+non-null identity, capabilities, engine options, and diagnostics. Null or structurally invalid
+required request data returns `Failed(INVALID_REQUEST)` rather than throwing.
+
+`RuntimeIdentityData` is the immutable `(mcMajor, mcMinor, mcPatch, engineEdition, engineVersion,
+osFamily, perPackIdentityOverrides)` tuple. Version components are non-negative, edition/version
+are non-empty sanitized strings, `osFamily` is the closed macro OS family with `OTHER`, and
+overrides are the validated add/suppress/force map described in §4.4; invalid values fail the
+request and absent overrides become an empty map. `EngineOptionData` is an immutable stable-order
+map of the decoded global `optionsshaders.txt`-equivalent string values; absent input is empty,
+unknown safe keys are retained for round-trip with a warning, and malformed entries are ignored
+with a warning before typed defaults from §3.1 are applied.
+
+`PackInputLimits(maxEntries, maxTotalBytes, maxPathLength, maxNestingDepth)` contains strictly
+positive Phase-3-owned bounds shared by folder, archive, and internal inputs. Phase 3 constructs
+the limits from its configured finite policy and passes them to `snapshot`; Phase 7 must stop
+before exceeding any bound, and Phase 3 independently recounts and rejects an over-limit snapshot.
+`InternalPackSource.identity()` and `snapshot(limits)` are called only for `Internal`; provider
+exceptions, unstable identity, malformed manifests, and limit violations become
+`INTERNAL_SOURCE_INVALID`, never an unchecked exception.
+
+`PackLoadFailure` contains a closed `code`, sanitized user-facing summary, and immutable
+diagnostic IDs; it never exposes a provider exception or partial configuration. Codes are
+`INVALID_REQUEST`, `INVALID_SELECTION`, `INPUT_UNREADABLE`, `INPUT_UNSAFE`,
+`INPUT_LIMIT_EXCEEDED`, `INTERNAL_SOURCE_INVALID`, `STRUCTURALLY_UNUSABLE`, and
+`UNEXPECTED_INTERNAL`. The detailed cause is reported through `DiagnosticReporter`; every failure
+returns exactly one `Failed` and leaves callers in shaders-off state.
 
 Consumers must not re-open the pack, rescan directives, reinterpret properties, or bypass the
 materializer. A reload publishes a new configuration. A consumer may retain derived state only
@@ -969,6 +1064,18 @@ or Minecraft type is needed.
 - Discovery/path/lifetime: `discovery_caseFoldThenNatural`,
   `discovery_nestedRootDeterministic`, `discovery_offAndInternal`,
   `discovery_offReturnsSuccessfulNoConfiguration`,
+  `discovery_generationSupersessionAndDirectoryIndependence`
+  (a later completed discovery through relative/absolute, redundant-segment, or symlink aliases
+  supersedes IDs for the same real directory, while distinct real directories remain independent),
+  `discovery_directoryIdentityCaseAndFailures`
+  (uses provider case semantics and covers nonexistent, non-directory, unreadable, and failed
+  absolute/real-path resolution for both operations),
+  `load_offIgnoresHostDirectory`
+  (null, invalid, and provider-failing host paths still return `Off`),
+  `load_internalIgnoresHostDirectory`
+  (null, invalid, and provider-failing host paths still load from the internal provider),
+  `discovery_staleAndUnknownSelectionInvalid`
+  (stale and unknown filesystem IDs return `INVALID_SELECTION`),
   `internalSnapshot_orderDuplicatesLimitsAndEmptyDirectories`,
   `pathRejectsTraversalAbsoluteAndSymlink`, `archiveLeaseClosesOnEveryExit`,
   `archiveBombLimitsFailGracefully`.
@@ -993,7 +1100,9 @@ or Minecraft type is needed.
   `constOption_completeWhitelistAndAliases`, `optionAmbiguity_conflictingDefaultsDisabled`,
   `optionRefsDoNotCrossWcc`, `optionAmbiguity_duplicateNamesAcrossComponents`,
   `optionRewrite_onlyCapturedSpan`, `optionRewrite_roundTripMaterialization`,
-  `profiles_inferenceMatchAndCustom`, `screen_columnsBoundaryMixed18And19Options`,
+  `profiles_inferenceMatchAndCustom`, `screen_columnsBoundaryMixed18And19Options`
+  (asserts absent 18→2, 19→3, 27→3, 28→4 after `*`, and explicit positive `N` wins),
+  `loadRequest_selectionDependentValidation`, `internalSnapshot_providerBoundaryFailures`,
   `persistence_outOfListValueRetainedAndWarned`,
   `persistence_packChangedOnlyRoundTripAndApply`, `persistence_globalRoundTripAndApply`.
 - Properties safety: `propertyHashRoundTrip`, `properties_whitespaceAndHash`,
@@ -1205,7 +1314,9 @@ Phase 2 adapter.
 Each item is independently actionable and names its test hook.
 
 1. `[v0.1]` Implement P3-C01/P3-C02 discovery, safe root selection, archive limits, and snapshot
-   lifecycle; run `discovery_*`, `pathRejects*`, and `archiveLease*`.
+   lifecycle; run `discovery_generationSupersessionAndDirectoryIndependence`,
+   `discovery_directoryIdentityCaseAndFailures`, `discovery_staleAndUnknownSelectionInvalid`, all
+   other `discovery_*`, `pathRejects*`, and `archiveLease*`.
 2. `[v0.1]` Implement P3-C03 source-set/dimension indexing with the full −128…128 scan; run all
    `dimension_*`.
 3. `[v0.1]` Implement P3-C04 source IDs/include graph/WCC/depth/cycle diagnostics; run
