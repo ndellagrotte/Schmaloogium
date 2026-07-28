@@ -1183,11 +1183,21 @@ function estimateOneRound(contract, reviewOnly) {
   const candidates = finders * contract.policy.cost_estimate.assumed_candidates_per_finder;
   const attack = finders;
   const refute = candidates * contract.preset.refuters;
+  const refuteCorrection = refute;
   const steelman = contract.preset.steelman ? candidates : 0;
   const gate = candidates > 0 ? 1 : 0;
   const adjudicate = 1;
   const fixup = reviewOnly ? 0 : 1;
-  return { attack, refute, steelman, gate, adjudicate, fixup, total: attack + refute + steelman + gate + adjudicate + fixup };
+  return {
+    attack,
+    refute,
+    refute_correction: refuteCorrection,
+    steelman,
+    gate,
+    adjudicate,
+    fixup,
+    total: attack + refute + refuteCorrection + steelman + gate + adjudicate + fixup,
+  };
 }
 
 export function estimateRun(contract, { reviewOnly = false } = {}) {
@@ -1198,6 +1208,7 @@ export function estimateRun(contract, { reviewOnly = false } = {}) {
     assumptions: {
       candidates_per_finder: contract.policy.cost_estimate.assumed_candidates_per_finder,
       full_rounds: rounds,
+      maximum_refute_corrections_per_result: 1,
     },
     per_round_agent_calls: oneRound,
     maximum_agent_calls: totalAgents,
@@ -1815,13 +1826,17 @@ export async function executeVerification(contract, options = {}) {
         refuteJobs,
         contract.preset.max_concurrency,
         async ({ candidate, index }) => {
-          const prompt = renderTemplate(loadPrompt("refute.md"), {
+          const promptVariables = {
             COMMON: common,
             CANDIDATE: JSON.stringify(candidate, null, 2),
             REFUTER_INDEX: index + 1,
             REFUTER_COUNT: contract.preset.refuters,
+          };
+          const prompt = renderTemplate(loadPrompt("refute.md"), {
+            ...promptVariables,
+            CORRECTION_CONTEXT: "",
           });
-          const result = await runAgent(
+          let result = await runAgent(
             `refute:${candidate.candidate_id}:${index + 1}:R${round}`,
             prompt,
             "refute.schema.json",
@@ -1832,7 +1847,7 @@ export async function executeVerification(contract, options = {}) {
               "AGENT_ERROR",
             );
           }
-          const resolved = resolveEvidenceList(
+          let resolved = resolveEvidenceList(
             contract.root,
             contract.manifest,
             result.candidate_id,
@@ -1840,10 +1855,54 @@ export async function executeVerification(contract, options = {}) {
             `refuter ${index + 1} evidence`,
           );
           if (!resolved.ok) {
-            throw new VerificationError(
-              `Refuter returned unverifiable evidence: ${resolved.detail}`,
-              "AGENT_ERROR",
+            const correctionPrompt = renderTemplate(loadPrompt("refute.md"), {
+              ...promptVariables,
+              CORRECTION_CONTEXT: [
+                "## Bounded citation correction",
+                "",
+                `This is the only correction attempt for candidate \`${candidate.candidate_id}\`, refuter ${index + 1}.`,
+                "A prior isolated Refute result was rejected by the deterministic citation resolver:",
+                "",
+                resolved.detail,
+                "",
+                "Rejected result (untrusted; do not patch or assume any citation is valid):",
+                "",
+                "```json",
+                JSON.stringify(result, null, 2),
+                "```",
+                "",
+                "Return a complete replacement Refute result for the same candidate. Re-read every file",
+                "you cite and validate every additional evidence item from scratch: exact repo-relative",
+                "path, inclusive physical line range, and a verbatim quote copied from that range. Do not",
+                "guess, normalize, reflow, relocate, or paraphrase a rejected quote. Use an empty",
+                "`evidence` array when no additional evidence is needed; finder evidence remains preserved",
+                "separately by the orchestrator.",
+              ].join("\n"),
+            });
+            result = await runAgent(
+              `refute:${candidate.candidate_id}:${index + 1}:R${round}:correction`,
+              correctionPrompt,
+              "refute.schema.json",
             );
+            if (result.candidate_id !== candidate.candidate_id) {
+              throw new VerificationError(
+                `Refute correction for ${candidate.candidate_id} refuter ${index + 1} returned ${result.candidate_id}; expected ${candidate.candidate_id}`,
+                "AGENT_ERROR",
+              );
+            }
+            resolved = resolveEvidenceList(
+              contract.root,
+              contract.manifest,
+              result.candidate_id,
+              result.evidence,
+              `refuter ${index + 1} evidence`,
+            );
+            if (!resolved.ok) {
+              throw new VerificationError(
+                `Refuter returned unverifiable evidence after one correction attempt: ${resolved.detail}`,
+                "AGENT_ERROR",
+              );
+            }
           }
           return { ...result, evidence: resolved.evidence };
         },

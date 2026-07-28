@@ -380,6 +380,25 @@ test("stage ordering and zero-agent dry-run are deterministic", () => {
   assert.equal(plan.resolved_selectors["interface:public-contract"].path, "verification/fixtures/non-phase/TARGET.md");
 });
 
+test("dry-run estimates include one conditional Refute correction per result", () => {
+  const contract = resolveContract(ROOT, "non-phase-fixture", { maxRounds: 1, preset: "lean" });
+  const plan = dryRunPlan(contract);
+  assert.equal(plan.estimates.assumptions.maximum_refute_corrections_per_result, 1);
+  assert.deepEqual(plan.estimates.per_round_agent_calls, {
+    attack: 3,
+    refute: 12,
+    refute_correction: 12,
+    steelman: 0,
+    gate: 1,
+    adjudicate: 1,
+    fixup: 1,
+    total: 30,
+  });
+  assert.equal(plan.estimates.maximum_agent_calls, 30);
+  assert.equal(plan.estimates.estimated_input_tokens, 1_350_000);
+  assert.equal(plan.estimates.estimated_output_tokens, 150_000);
+});
+
 test("dedupe and refuter survival/severity policy match the legacy contract", () => {
   const duplicate = {
     candidate_id: "raw",
@@ -433,6 +452,8 @@ test("citation resolver rejects bad evidence and uniquely relocates stale lines"
     evidence: [{ ...base, quote: "not present" }],
   });
   assert.equal(candidate.ok, false);
+  assert.match(candidate.detail, /x finder evidence/);
+  assert.doesNotMatch(candidate.detail, /refuter \d+ evidence/);
   const nested = resolveCandidateEvidence(ROOT, contract.manifest, {
     candidate_id: "nested",
     evidence: [{ ...base, line_start: 7, line_end: 7 }],
@@ -657,7 +678,39 @@ test("fake-agent execution proves barriers, full loop stages, and first-to-matur
   rmSync(root, { recursive: true, force: true });
 });
 
-test("Refute attributes invalid additional evidence to the refuter", async () => {
+test("Refute replaces invalid additional evidence with one valid correction inside its barrier", async () => {
+  const { root } = makeMiniRepo();
+  const contract = resolveContract(root, "mini", { preset: "lean", maxRounds: 1 });
+  const calls = [];
+  const baseRunner = makeFakeRunner(root, calls);
+  const correctedRefuterRunner = async (args) => {
+    const result = await baseRunner(args);
+    if (args.label !== "refute:candidate-001:1:R1") return result;
+    return {
+      ...result,
+      evidence: [{ ...fixtureEvidence(), quote: "not present" }],
+    };
+  };
+  const result = await executeVerification(contract, {
+    agentRunner: correctedRefuterRunner,
+    logger: () => {},
+  });
+  assert.equal(result.outcome, "CAP");
+  const correctionLabel = "refute:candidate-001:1:R1:correction";
+  const correctionIndex = calls.findIndex((call) => call.label === correctionLabel);
+  assert.ok(correctionIndex > -1);
+  assert.equal(calls.filter((call) => call.label === correctionLabel).length, 1);
+  assert.equal(calls[correctionIndex].sandbox, "read-only");
+  assert.match(calls[correctionIndex].prompt, /only correction attempt for candidate `candidate-001`, refuter 1/);
+  assert.match(calls[correctionIndex].prompt, /candidate-001 refuter 1 evidence/);
+  assert.match(calls[correctionIndex].prompt, /Return a complete replacement Refute result/);
+  assert.ok(calls.findIndex((call) => call.label.startsWith("gate:")) > correctionIndex);
+  assert.ok(calls.findIndex((call) => call.label.startsWith("adjudicate:")) > correctionIndex);
+  assert.ok(calls.findIndex((call) => call.label.startsWith("fixup:")) > correctionIndex);
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("Refute fails closed after one invalid correction and attributes refuter evidence accurately", async () => {
   const { root } = makeMiniRepo();
   const contract = resolveContract(root, "mini", { preset: "lean", maxRounds: 1 });
   const calls = [];
@@ -676,12 +729,20 @@ test("Refute attributes invalid additional evidence to the refuter", async () =>
       logger: () => {},
     }),
     (error) => {
-      assert.match(error.message, /Refuter returned unverifiable evidence/);
-      assert.match(error.message, /refuter [12] evidence/);
+      assert.equal(error.code, "AGENT_ERROR");
+      assert.match(error.message, /after one correction attempt/);
+      assert.match(error.message, /candidate-001 refuter [12] evidence/);
       assert.doesNotMatch(error.message, /finder evidence/);
       return true;
     },
   );
+  const correctionCalls = calls.filter((call) => call.label.endsWith(":correction"));
+  assert.equal(correctionCalls.length, 2);
+  assert.ok(correctionCalls.every((call) => call.sandbox === "read-only"));
+  assert.equal(calls.some((call) => call.label.includes(":correction:correction")), false);
+  assert.equal(calls.some((call) => call.label.startsWith("gate:")), false);
+  assert.equal(calls.some((call) => call.label.startsWith("adjudicate:")), false);
+  assert.equal(calls.some((call) => call.label.startsWith("fixup:")), false);
   rmSync(root, { recursive: true, force: true });
 });
 

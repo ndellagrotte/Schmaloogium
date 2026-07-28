@@ -28,3 +28,5 @@ refutation or confirmation; use an empty array when your judgment relies only on
 that you independently verified. For every additional citation, prefer a short exact physical
 line copied directly from the file. Never reflow wrapped lines, add ellipses, include line-number
 prefixes, or substitute a paraphrase for the verbatim `quote`.
+
+{{CORRECTION_CONTEXT}}
