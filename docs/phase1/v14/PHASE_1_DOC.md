@@ -7,7 +7,7 @@
 **Phase:** 1 — Foundation & project architecture
 **Milestone:** v0.1 · **Depends on:** — (Wave 0; this doc feeds every other phase)
 **Assigned OQs:** OQ-2, OQ-12, OQ-20 (seam hardness), OQ-21
-**Authored:** 2026-07-24 · **Last revised:** 2026-07-28 (§0.15)
+**Authored:** 2026-07-24 · **Last revised:** 2026-07-28 (§0.17)
 **Deliverable:** this document, per DESIGN.md §G9.
 **Verifies against:** `docs/design/v2.0-RC2/DESIGN.md` from §0.11 onward; `docs/design/v1.1/DESIGN.md`
 through §0.10. **There is no longer one governing revision for the project:** RC2 governs **this
@@ -20,9 +20,9 @@ state as of 2026-07-26; §0.1 records what was read from each revision.
 against — §4.1's template facts are read from the checkout on 2026-07-24, §4.2.6's thirteen pin rows
 are re-verified 2026-07-24, and `[V:repo]` below is defined as inspection on 2026-07-24 — so a single
 later stamp would silently re-date claims to a day on which they were not performed. The revision
-date is the most recent of the dates the fix-up addenda in §0.4–§0.15 carry, and each addendum states
+date is the most recent of the dates the fix-up addenda in §0.4–§0.17 carry, and each addendum states
 its own: §0.4–§0.5 are 2026-07-24, §0.6–§0.10 are 2026-07-25, §0.11–§0.14 are all
-2026-07-26, and §0.15 is 2026-07-28. The
+2026-07-26, and §0.15–§0.17 are 2026-07-28. The
 few repository observations the round-eleven and round-twelve fix-ups made are tagged
 `[V:repo 2026-07-26]` inline for the same reason the authoring date is kept — §4.1's and §4.2.6's 2026-07-24 reads are not re-dated by a
 later session touching a different part of the tree.*
@@ -1279,6 +1279,37 @@ session returns a literal PASS (or a correction-bearing review is fixed up and r
 version directory stays `v14` and the manifest stays pointed at it while that loop is open; no
 mid-loop roll is permitted.
 
+**Historical status:** round sixteen subsequently returned PASS-WITH-CORRECTIONS; §0.16 supersedes
+this paragraph.
+
+### 0.16 Fix-up session addendum (round sixteen — 2026-07-28)
+
+Round sixteen admitted two corrections, both applied; the full re-derivation and site list are in
+`docs/phase1/reviews/PHASE_1_REVIEW_16.md` under `## Resolutions`.
+
+- §3 now distinguishes the true fixed-pipeline terminals, which select program zero through
+  `useFixedFunction()`, from absent `final`, whose passthrough-copy terminal is downstream-owned.
+- Binding §5 now carries Phase 2's derived-artifact constraints already stated in §11.4: no pack
+  source text in goldens, no rendered images in the repository, and explicit
+  `-PupdateGoldens` regeneration that still fails its regenerating run.
+
+**§G1.3 status:** the second correction changes §5. This document remains **not verified** and is
+not a valid dependency input until a fresh round seventeen returns a literal PASS with zero
+blocking findings and zero corrections. The version and manifest remain at `v14` during the loop.
+
+**Historical status:** round seventeen subsequently returned PASS-WITH-CORRECTIONS; §0.17
+supersedes this paragraph.
+
+### 0.17 Fix-up session addendum (round seventeen — 2026-07-28)
+
+Round seventeen admitted one correction, applied only to the closing session history: §0.4's
+round-one fix-up is now the first session, and §0.5's combined rounds 2–4 fix-up is the second. The
+full re-derivation is in `docs/phase1/reviews/PHASE_1_REVIEW_17.md` under `## Resolutions`.
+
+**§G1.3 status:** this correction does not change §5 or any interface region. With round seventeen's
+only correction applied, this document is **verified** and is a valid dependency input. The version
+stays `v14` until the post-loop version roll.
+
 ---
 
 ## 1. Scope & boundaries
@@ -1479,7 +1510,8 @@ debug affordances must satisfy, plus the vocabulary rule.
 | **App B.3's fixed unit map names textures Minecraft owns** — unit 0 `texture` (the block atlas) and unit 1 `lightmap` on GBUFFERS/SHADOW programs | RESEARCH.md App **B.3**, the unit map packs rely on numerically; the gap was surfaced by §4.12's PD §2 completeness check | `TextureService.bindToUnit(int, TextureHandle)` supplies the **binding**; the `TextureHandle` for a vanilla-owned texture comes from a **`mod.glue` implementation of `ForeignTextureProvider`** (§4.7.3), not from `TextureService.create` (§4.12, `[D-P1-36]`, §5.1). **No facade verb is added** — an `adopt(int glName)` form would put a raw GL name in an `:engine` signature, which §4.7.3 and `[D-P1-15]` exist to prevent. Which textures the map needs, and the map itself, stay Phase 5/6 policy (§1.2) | `[V:doc]` for the map; `[V:observed — PD §2]` for the inventory that found the gap; §G11.4 decision `[D-P1-36]` |
 | `atlasSize` / `eyeBrightness` are **`ivec2`** uniforms | RESEARCH.md App **D.3** (`atlasSize`, `terrainTextureSize` — camera/matrices/screen) and App **D.1** (`eyeBrightness`, `eyeBrightnessSmooth` — held item/player) | `UniformService.upload(loc, int, int)` (§4.7.4); the values and their cadences are Phase 6's | `[V:doc]` |
 | `blendFunc` is an **`ivec4`** uniform (current blend `srcRGB`, `dstRGB`, `srcA`, `dstA`) | RESEARCH.md App **D.4**, §3.4 | `UniformService.upload(loc, int, int, int, int)` (§4.7.4). Phase 6 owns the value provider and its cadence (`DESIGN.md` §G5.1 puts App D's inventory at **v0.1**). The value is *observed* from `GlStateManager` per §G4.6 — that observation is Phase 6's, not the facade's. **Phase 9 is named nowhere in this row, and the omission is deliberate** (V11-1): `DESIGN.md` routes `blendFunc` to Phase 6 in five independent passages and to Phase 9 in none — Phase 6's *Scope — in* (l. 1601), its cadence model (ll. 1549–1550, where the "at their hooks (Phases 7/9/10 invoke)" gloss names *invokers* of a whole list, not owners of one uniform), Phase 9's own *Scope — in* (ll. 1918–1920, which enumerates its per-draw dynamics exhaustively and excludes `blendFunc`), Phase 9's *Scope — out* (ll. 1931–1932, "uniform upload mechanics (Phase 6)"), and the dropped-item audit (l. 2419, "`blendFunc`/GlStateManager → P6 + G4.6"). **REV2 adds the sixth and makes the duty concrete:** the observation must be *wired*, not assumed — Phase 6 designs the notifier, Phase 7 owns the hook that feeds it, and Phase 6's doc carries a notifier→producer audit table (§G4.6 ll. 554–557; Phase 6's spec ll. 1602–1607). The failure that rule is drawn from is Pintonium's `blendFunc` notifier, never assigned on 1.12.2, so any pack declaring the uniform NPEs at program build — PD §17 B6, a standing do-not-inherit row (§G11.4). Phase 1 handles it by supplying the `ivec4` verb and **not** claiming the observation for the facade | `[V:doc]`; the notifier-wiring duty is `[V:observed — PD §17 B6]`, cited from PD as a pointer to Phase 6/7 rather than re-verified at Pintonium source, because no Phase 1 design element rests on it (§G1.1's load-bearing test) |
-| **Appendix A.1 fixed-function terminals** — external `<none>`, an absent `shadow` or `gbuffers_basic` root, and absent `final` passthrough | RESEARCH.md App **A.1**, `docs/research/v1/RESEARCH.md:1106`–`:1145` | `ShaderService.useFixedFunction()` (§4.7.4, `[D-P1-39]`) selects program zero without exposing zero, a null, or a sentinel `ProgramHandle` to `:engine`. Phase 4 alone decides when its resolved binding is a fixed terminal and invokes this verb inside `ProgramStateBarrier`; the facade owns only the selection operation | `[V:doc]` |
+| **Appendix A.1 fixed-function terminals** — external `<none>` and an absent `shadow` or `gbuffers_basic` root | RESEARCH.md App **A.1**, `docs/research/v1/RESEARCH.md:1106`–`:1145` | `ShaderService.useFixedFunction()` (§4.7.4, `[D-P1-39]`) selects program zero without exposing zero, a null, or a sentinel `ProgramHandle` to `:engine`. Phase 4 alone decides when its resolved binding is a fixed terminal and invokes this verb inside `ProgramStateBarrier`; the facade owns only the selection operation | `[V:doc]` |
+| **Absent `final` terminal** — passthrough copy, not fixed-function selection | RESEARCH.md App **A.1**, `docs/research/v1/RESEARCH.md:1139`–`:1140` | Downstream final-pass execution owns the passthrough copy. It does **not** invoke `ShaderService.useFixedFunction()` merely because `final` is absent | `[V:doc]` |
 | Geometry programs may declare the **ARB form** (`#extension GL_ARB_geometry_shader4` + `const int maxVerticesOut = N`) | RESEARCH.md §3.1, App A.3, §6.2 | Handled **upstream of the facade**: RESEARCH.md §6.2 lists core GL 3.2 geometry shaders with internal translation as a modernization *opportunity*, which this project adopts, so the ARB form is a source-level rewrite in the Phase 3 front-end / Phase 4 compile path. `ShaderService` therefore exposes no pre-link program-parameter verb, and says so (§4.7.4) | `[V:doc]` |
 | **Compat-profile baseline; `GL_QUADS` stays available** | RESEARCH.md §6.1 `[D-9]` | The facade is profile-agnostic by construction: `DrawService` exposes a `fullscreenQuad` primitive whose backend chooses `GL_QUADS` or the triangle-strip fallback. No core-profile-only entry point appears in any interface | `[V:doc]` |
 | **No UBOs**; per-program uniform upload with location caching | RESEARCH.md §6.1 `[V:doc]` | `UniformService` exposes only default-block uniform uploads keyed by `UniformLocation`. No uniform-block entry point exists — the facade cannot express a UBO | `[V:doc]` |
@@ -3964,6 +3996,10 @@ refresh workflow (§8.3), and the way a fixture is produced is `mod.glue.Capabil
 `GLCallLog` from a live session in the same format your golden files use (§4.9.3, §4.7.5). Do not
 design a capture path; drive these. What Phase 1 does *not* give you: the fixture set itself, the
 golden-file format for anything other than `GLCallLog.render()`, and any answer to OQ-10.
+Your derived-artifact workflow must keep pack source text out of goldens and rendered images out of
+the repository; committed image oracles are manifests, hashes, and provenance. Golden regeneration
+must be explicit through `-PupdateGoldens`, must never run automatically, and must still fail the
+run in which it regenerates artifacts (§8.3, §11.4).
 
 **Explicit note to Phases 4/5/6:** your impl gates say "a recorded-GL run". The mechanism is
 `RecordingGLDevice` + a `GLCapabilityProfile` fixture + `ReplayAssertions`. The fixtures reach your
@@ -5025,10 +5061,11 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 
 ---
 
-*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Fifteen** verify sessions have
+*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Seventeen** verify sessions have
 since run — `PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_14.md` returned
 PASS-WITH-CORRECTIONS, and `PHASE_1_REVIEW_15.md` returned the literal PASS that closed that loop —
-and **twelve** fix-up sessions: the first applied round one's F-1 … F-12 (§0.4); the second applied
+then `PHASE_1_REVIEW_16.md` and `PHASE_1_REVIEW_17.md` returned PASS-WITH-CORRECTIONS — and
+**fourteen** fix-up sessions: the first applied round one's F-1 … F-12 (§0.4); the second applied
 rounds two, three and four together, as round four dispositioned them (§0.5); the third applied
 rounds **five and six** together (§0.6), round five's fix-up having never run — which is round six's
 own headline finding (V6-1) and the reason two rounds are closed in one session; the fourth applied
@@ -5061,19 +5098,16 @@ other (V14-2) a round-six-created row whose ownership clauses no round had exami
 **twelfth** applied Phase 4's downstream fixed-function request directly through the escape hatch
 §4.7.4/§5.2 defines (§0.15), after round fifteen's PASS and without manufacturing a review finding:
 `ShaderService.useFixedFunction()`, its recorder/replay semantics, backend obligation, tests,
-milestone, decision `[D-P1-39]`, hand-off and checklist all land together.
+milestone, decision `[D-P1-39]`, hand-off and checklist all land together; and the **thirteenth**
+applied round sixteen's two corrections (§0.16), splitting absent-`final` passthrough from actual
+fixed-function terminals and publishing Phase 2's derived-artifact workflow constraints in §5; and
+the **fourteenth** applied round seventeen's sole closing-history correction (§0.17).
 Every finding's disposition is recorded in the review files under `## Resolutions`, including the four
 of round three's proposed fixes and the items of rounds five and six that were deliberately narrowed
 rather than applied as written, and why.
 
-**Current §G1.3 status.** Round fifteen's literal PASS verified the pre-§0.15 bytes and permitted the
-post-loop `v13` → `v14` roll recorded in `docs/MOVES.md`; it superseded the round-fourteen status
-paragraph above. The twelfth fix-up now changes §5 again — this time by adding the
-`ShaderService.useFixedFunction()` declaration and its recorder/replay contract, not merely by
-clarifying prose. The re-verify trigger therefore **fires**: `PHASE_1_DOC.md` is **not verified**, is
-**not** a valid dependency input, and Phase 4 may not consume the new operation until a fresh
-**sixteenth** verify session returns a literal PASS (or a correction-bearing review is fixed and the
-changed §5 is reviewed again). The current unreviewed surface is exactly §0.15's fixed-function
-addition: §3, §4.7.4–§4.7.5, §5.2, §8, §9, `[D-P1-39]`, §11.4, §12 and this closing status. The
-version stays `v14` and `verification/targets/phase-1.json` remains pointed there until the loop exits;
-rolling now would violate `docs/MOVES.md`'s two-step, post-loop-only rule.*
+**Current §G1.3 status.** Round seventeen re-verified §0.16 and the round-sixteen correction surface,
+including the binding §5 change, and returned PASS-WITH-CORRECTIONS only for the closing-history
+ordinal defect. The fourteenth fix-up applied that sole correction without changing §5 or any
+interface region. `PHASE_1_DOC.md` is therefore **verified** and is a valid dependency input. The
+version stays `v14` until the post-loop version roll.*
