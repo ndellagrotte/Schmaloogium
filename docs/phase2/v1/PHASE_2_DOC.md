@@ -69,7 +69,71 @@ cited to a section and listed in §5.2.
    serialization*, *recording/replay*, *debug flags*, *CI job layout*, *log channel* and *constraint
    C-4* rows, and none of them is touched by V11-1 or by any other finding in that review. If the
    pending fix-up nonetheless changes a row §5.2 of this document cites, this document takes a §G1.3
-   fix-up, not a rebuild. Carried into §11.3 as an open item so it is not lost.
+   fix-up, not a rebuild. This paragraph records authoring-time history; Phase 1 v14 has since
+   completed the V11-1 fix-up and verification chain (§11.3 item 3).
+
+### 0.4 Round-2 fix-up
+
+Corrected the live Phase 1 dependency status and replaced the reverse `:engine` →
+`:conformance` golden SPI with an engine-owned snapshot API consumed by a conformance-side adapter.
+The §5 interface changed and requires a fresh verify round.
+
+### 0.5 Round-3 fix-up
+
+Specified the two process-boundary wire schemas, gated complete real goldens on both Phase 3 and
+Phase 4, and expanded §3 traceability for the Phase 2 subrequirements. The §5 interface changed and
+requires a fresh verify round.
+
+### 0.6 Round-4 fix-up
+
+Made every T0 predicate and both baseline identities reconstructible from the canonical run
+manifest, including runner-synthesized failure manifests. The §5 interface changed and requires a
+fresh verify round.
+
+### 0.7 Round-5 fix-up
+
+Closed the world-tree identity domain, completed the run-manifest pack scalars, and exposed the
+dual-spec scheduling conflict. The §5 interface changed and requires a fresh verify round.
+
+### 0.8 Round-6 fix-up
+
+Made the unattributable GL-error count derivable from the wire records and separated the dual-spec
+release cadence from its single implementation milestone. The §5 interface changed.
+
+### 0.9 Round-7 fix-up
+
+Made Complementary's primary-target status family-wide and placed the v0.1 dual-spec runs with the
+other v0.1 render-dependent work.
+
+### 0.10 Round-9 fix-up
+
+Completed the run-manifest resource wire grammar and made tier-ledger evidence scene-set-complete.
+The §5 interface changed and requires a fresh verify round.
+
+### 0.11 Round-10 fix-up
+
+Corrected resource-record ordering, made T3 A/B and manual evidence reachable from the tier ledger,
+and assigned live resource snapshots to Phase 5. The §5 interface changed.
+
+### 0.12 Round-11 fix-up
+
+Made manual attestations content-addressable and made every recorded GL error fail T0. The §5
+interface changed and requires a fresh verify round.
+
+### 0.13 Round-12 fix-up
+
+Anchored ledger artifacts beneath the trusted run-output root and made the real-pack GL smoke part
+of OQ-10's result.
+
+### 0.14 Round-13 fix-up
+
+Fixed canonical, contained locations for every ledger evidence file and specified one shared
+cache/run-root establishment procedure. The §5 interface changed.
+
+### 0.15 Round-14 fix-up
+
+Moved the Git-worktree refusal ahead of cache creation and made GL-error attribution come only
+from a requested replay-aware Phase 1 result. The §5 interface changed.
 
 ---
 
@@ -189,7 +253,7 @@ Inside `:conformance`, at `com.schmaloogium.conformance.*` (the root `PHASE_1_DO
 | `conformance.capture` | `CaptureRunner` (external-process driver), `RunManifest`, `RunManifestReader`, `CaptureArtifacts` |
 | `conformance.diff` | `ImageDiffer`, `TolerancePolicy`, `DiffResult`, `ClusterAnalysis`, `IgnoreMask`, `DiffReportWriter` |
 | `conformance.fixture` | `PackFixtureRegistry`, `PackFixture`, `AcquisitionMode`, `FixtureResolver`, `FixtureCache`, `HttpTransport`, `IntegrityCheck` |
-| `conformance.golden` | `GoldenDocument`, `GoldenSection`, `GoldenWriter`, `GoldenComparer`, `GoldenUpdatePolicy`, `FrontEndProjection` (the SPI §5.4 requests from Phase 3) |
+| `conformance.golden` | `GoldenDocument`, `GoldenSection`, `GoldenWriter`, `GoldenComparer`, `GoldenUpdatePolicy`, `GoldenProjectionAdapter` |
 | `conformance.report` | `ConformanceReport`, `ReportRenderer` (markdown / JSON / JUnit-XML) |
 | `conformance.run` | the named-run catalogue (§4.9) as code: `HarnessRun`, `RunId`, `RunRegistry` |
 
@@ -231,8 +295,9 @@ In `:mod`, at the requested `com.schmaloogium.mod.conformance`:
         ├──────────── context A ──────────────┤
         │                                     │
         ▼                                     ▼
- GoldenComparer ◄── FrontEndProjection   CaptureRunner ═══► [ separate JVM: client ]
-        │              (:engine)                              CaptureAgent
+ GoldenComparer ◄── GoldenProjectionAdapter ◄── PackDecisionSnapshot (:engine)
+        │                                     CaptureRunner ═══► [ separate JVM: client ]
+        │                                                        CaptureAgent
         ▼                                                        │
  golden/*.golden (committed, no pack source)      cache/runs/<id>/shot.png + run.manifest
                                                                  │
@@ -265,8 +330,8 @@ Every row of RESEARCH.md App G, its licence constraint, and the acquisition mode
 | App G pack | Version (App G) | Tier role | Licence constraint (App G / §10.3) | Acquisition mode (§4.10.2) |
 |---|---|---|---|---|
 | BSL Shaders | v10.1.3 | dual-spec | ARR → no bundling; App G names Modrinth-API download at test time | `MODRINTH` |
-| Complementary Reimagined | r5.8.1 | dual-spec | Complementary License 1.6: no redistribution outside Modrinth/CF | `MODRINTH` |
-| Complementary Unbound | r5.8.1 | dual-spec, **primary target** (§8.1, Angelica precedent) | as Reimagined | `MODRINTH` |
+| Complementary Reimagined | r5.8.1 | dual-spec, **primary-target family** (§8.1, Angelica precedent) | Complementary License 1.6: no redistribution outside Modrinth/CF | `MODRINTH` |
+| Complementary Unbound | r5.8.1 | dual-spec, **primary-target family** (§8.1, Angelica precedent) | as Reimagined | `MODRINTH` |
 | Sildur's Vibrant | v2.01 Extreme | dual-spec, strongest legacy candidate | ARR → no bundling | `MODRINTH` **pending verification** — see §11.3 item 1 |
 | Chocapic13 | V9 (final) | classic (T2 oracle tier) | ARR + edit-licence; no unmodified redistribution | `MANUAL` (CurseForge canonical) |
 | SEUS Renewed | 1.0.1 | classic | "© Sonic Ether. All rights reserved." | `MANUAL` (sonicether.com canonical) |
@@ -302,6 +367,14 @@ committed or re-hosted" a structural property rather than a rule someone remembe
 | T2's oracle is OptiFine G6 captured manually outside CI | §G6 | §4.8 |
 | Tier gates as implementation exit criteria for behavioral phases | §G6 slice 3 | §4.9 + §3.5 |
 | Per-phase headless tests against the facade / recorded profiles | §G6 slice 1 | not ours — each phase's §8; this phase supplies the profile *set* (§4.12) |
+| Per-pack tier state and reporting | Phase 2 spec | §4.2.5 (`TierLedger`) + §4.13; verified by `TierLedgerTest` + `ReportRendererTest` |
+| Deterministic setup and suppression of randomness | Phase 2 spec | §4.3 + §4.4; verified by `SceneParserRejectionTest` + `RUN-SCENE-SELFCHECK` |
+| Per-pixel and aggregate thresholds | Phase 2 spec | §4.6.2–§4.6.3; verified by `ImageDifferTest` + `ClusterAnalysisTest` |
+| GPU/driver variance handling | Phase 2 spec | §4.6.3–§4.6.5; verified by `TolerancePolicyTest` and the calibration procedure |
+| Baseline storage and versioning | Phase 2 spec | §4.7.1–§4.7.4; verified by baseline-manifest validation in `RUN-T1-REGRESS` |
+| Diff artifacts | Phase 2 spec | §4.6.4 + §4.13; verified by `ImageDifferTest` + `ReportRendererTest` |
+| Fixture cache layout and CI cache keys | Phase 2 spec | §4.10.3 + §4.14; verified by `FixtureCacheRootTest` and the workflow-dispatch run |
+| Golden format and explicit update workflow | Phase 2 spec | §4.11.1–§4.11.5; verified by `GoldenWriterDeterminismTest`, `GoldenCorpusTest`, and the fail-after-update rule |
 
 ### 3.4 The initial scene set → behavioral families → the contract rows they exercise
 
@@ -342,6 +415,11 @@ Run definitions — inputs, procedure, pass condition, artifacts, where they exe
 | **v0.4** | "options round-trip persistence" | `RUN-OPTIONS-ROUNDTRIP` (headless, no renderer needed) |
 | **v0.5** | "Full classic matrix at T3" | `RUN-T3[classic × all scenes]` |
 | **post-v0.5** | "Modern-matrix progression" | `RUN-T0[dual-spec]`, then `RUN-T1-REGRESS[dual-spec]` |
+
+Appendix G separately requires dual-spec T0/T1 **through v0.5**, conflicting with §9's
+post-v0.5 progression. Pending upstream clarification (§11.3 item 10), the provisional schedule
+runs `RUN-T0[dual-spec]` and `RUN-T1-REGRESS[dual-spec]` at each v0.1–v0.5 release gate;
+modern-stage feature coverage remains post-v0.5.
 
 Two criteria in that table are *not* image runs and are worth naming as such: v0.1's T0 row is
 decided entirely from `RunManifest` predicates (§4.2.1), and v0.4's options round-trip is a headless
@@ -398,14 +476,12 @@ re-derivable from artifacts months later:
 |---|---|---|
 | **parses** | manifest's front-end block: a `PackConfiguration` was produced with zero `FATAL`/`ERROR` diagnostics | any pack-level parse or validation error |
 | **programs compile** | manifest's per-slot table: every slot resolved to a linked **and validated** program or is legitimately absent | any `FAILED` slot |
-| **no GL errors** | manifest's GL-error block — see the qualification below | any `GLError` **attributed to a facade call** |
+| **no GL errors** | manifest's GL-error block | any recorded `GLError` |
 | **stable frame loop** | manifest's frame block: `capturedFrames == plannedFrames`, no uncaught exception, no `CompatVerdict.Bail`, no shaders-off transition, no frame exceeding the hang ceiling | any of those |
 
-**The GL-error predicate carries a qualification that comes straight from the dependency doc, and
-getting it wrong would make T0 either useless or flaky.** `PHASE_1_DOC.md` §4.7.4 states that a
-drain window may hold an error **no facade call caused** — the elision bit tracks *facade* calls
-while the GL error flag is per-context, and vanilla's own draws never reach the facade. A naive
-"drain is non-empty ⇒ T0 fails" rule would therefore fail packs for vanilla's GL. Two design
+`PHASE_1_DOC.md` §4.7.4 states that a drain window may hold an error no facade call caused because
+the GL error flag is per-context. That uncertainty affects diagnosis, not the authoritative T0
+predicate: **every recorded error fails T0**, whether `attributed` is true or false. Two design
 consequences:
 
 - `[D-P2-2]` **Conformance runs set `-Dschmaloogium.debug.recordGL`.** Per `PHASE_1_DOC.md` §4.9.3
@@ -414,10 +490,8 @@ consequences:
   facade call yields a record naming that call"). The cost — a synchronous driver query per facade
   call — is irrelevant here: a conformance run is not a performance measurement (*Scope — out*), and
   the same flag also hands us a `GLCallLog` from a real session in the format §4.11's goldens use.
-- A `GLError` that survives the per-call cadence but names no facade call, or that the engine itself
-  classified as unattributable (§4.7.4's precondition (ii)), is recorded in the manifest as a
-  **warning** and reported, never counted as a T0 failure. The report says how many there were, so a
-  regression in that number is visible without being a false red.
+- The report separately counts records with `attributed=false` so diagnosis does not falsely blame
+  the facade; this count does not exempt them from the T0 failure.
 
 #### 4.2.2 T1 — renders plausibly
 
@@ -471,13 +545,40 @@ Phase 4 to expose it.
 
 #### 4.2.5 The ledger, and the evidence rule
 
-`TierLedger` holds one row per `(packId, packVersion, tier)` with: outcome, the run id that produced
-it, the run manifest's hash, the artifact directory, the date, and the machine class. It is rendered
-to `conformance/TIERS.md` (human) and `conformance/tiers.state` (machine, sorted, §4.1's rule).
+`TierLedger` holds one row per `(packId, packVersion, tier, sceneSetId, sceneSetSha256)` with:
+outcome, artifact directory, date, machine class, and `evidenceIndexSha256`. The referenced
+`evidence.index` is canonical sorted text with dense records
+`{sceneId,featureId,variant,runId,manifestSha256,attestationSha256}`, sorted uniquely by
+`(sceneId,featureId,variant,runId)`, where `variant` is
+`PRIMARY|FEATURE_OFF|FEATURE_ON|MANUAL`. Exactly one `PRIMARY` record (empty `featureId` and
+`attestationSha256`) is required for every constituent scene, and no record may name a scene outside
+the set; this separately enforces exact scene-set coverage while permitting additional evidence.
+Automated T3 rows require one `FEATURE_OFF` and one `FEATURE_ON` record for their declared feature
+and scene, each pointing to the run manifest whose pinned options and shot establish that state and
+whose T1 result passed. Manual T3 rows require one `MANUAL` record whose non-empty
+`attestationSha256` identifies the sign-off artifact; its manifest fields are empty only when no
+capture applies. Its bytes are the regular file
+`<artifact-directory>/attestations/<attestationSha256>.attestation`. The trusted run-output root is
+the established `<cache>/runs` directory from §4.10.3; `artifact-directory` is a normalized
+relative path beneath it and may contain no empty, `.`, or `..` component. The index is exactly
+`<artifact-directory>/evidence.index`; each non-manual record's manifest is exactly
+`<runId>/manifest.manifest`, where `runId` is one non-empty path component other than `.` or `..`.
+Starting from the established root, the ledger resolves every component of those paths and the
+attestation path without following links, requires directory components and a regular-file leaf,
+and rejects missing, escaping, linked, or replaced components. It verifies the index against
+`evidenceIndexSha256`, each manifest against its record's `manifestSha256`, and each attestation
+against the lowercase hash in its filename before deciding the row. All non-manual records require
+a run id and manifest hash. The index SHA-256 covers its exact UTF-8 bytes. It is rendered to
+`conformance/TIERS.md` (human) and
+`conformance/tiers.state` (machine, sorted, §4.1's rule); both show the scene-set id and hash,
+evidence-index hash, and every evidence pointer.
 
 `[D-P2-19]` **The evidence rule: a tier is recorded only with an evidence pointer.** A tier with no
-run id and no manifest hash is `NOT_ATTEMPTED`, never a remembered pass. The report also flags
-*inconsistent* ledgers — a T2 pass sitting above a T0 failure for the same pack and version is
+complete, hash-valid evidence index is `NOT_ATTEMPTED`, never a remembered pass. Changing the
+scene-set id, its file hash, or its membership invalidates the row; a missing/mismatched constituent
+manifest does too. The stored row remains auditable but its effective outcome is `NOT_ATTEMPTED`,
+and both renderers identify the stale field or scene. The report also flags *inconsistent* ledgers
+within the same pack, version, and scene-set identity — a T2 pass sitting above a T0 failure is
 either a harness bug or a stale row, and saying so is cheaper than trusting it.
 
 ### 4.3 The scene specification
@@ -594,8 +695,9 @@ points, which are Phase 7's.
 8. The agent writes the `RunManifest` (§4.5.4), then quits the client cleanly.
 9. `:conformance` reads the manifest and the images, evaluates the tiers the run was asked for, and
    writes the report (§4.13).
-10. On any failure at any step the run is `FAILED` or `SKIPPED` with a reason — never absent, and
-    never silently green (§6).
+10. On any failure before the agent atomically publishes a complete manifest, `CaptureRunner`
+    writes the canonical failure manifest defined in §4.5.4. Thus every attempted run is `FAILED`
+    or `SKIPPED` with a serialized reason — never absent, and never silently green (§6).
 
 #### 4.5.2 The capture plan — a deliberately dumb format
 
@@ -605,6 +707,23 @@ no expressions, no cross-references), one `key = value` per line, shots as an or
 trivial keeps the rich parser, the validator and the error messages on the `:conformance` side where
 they can be unit-tested without a client. `CapturePlanReader` in `:mod` is a reader, not a parser: it
 splits on `=`, it has no defaults, and an unknown key aborts the run rather than being interpreted.
+
+**Canonical schema `schmaloogium.capture-plan/1`.** The first line is
+`schema = schmaloogium.capture-plan/1`; subsequent lines are `<key> = <value>`, sorted
+lexicographically by key. Keys are ASCII dotted identifiers. Strings use JSON string escaping;
+booleans are `true|false`, integers are base-10, and finite doubles use §4.1's fixed decimal form.
+Required scalar keys are `run.id`, `scene.id`, `scene.hash`, `pack.id`, `pack.version`,
+`world.path`, every non-repeated resolved `[world]`, `[client]`, and `[pack]` field from §4.3.2,
+and `shots.count`. Repeated entries use a required count and dense zero-based indices:
+`world.gamerules.<n>.{name,value}`, `world.entities.<n>.{type,pos,nbt}`,
+`pack.options.<n>.{name,value}`, `pack.engineOptions.<n>.{name,value}`, and
+`shots.<n>.{id,pos.x,pos.y,pos.z,look.yaw,look.pitch,heldMain,heldOff,warmupFrames,captureFrames,note}`.
+`heldMain`, `heldOff`, and `note` are required JSON strings (empty means absent); every other listed
+field is required.
+Indices must cover `0..count-1` without gaps, and shot index is execution order. Duplicate,
+missing, malformed, unknown, or out-of-version keys abort before world load; schema major versions
+other than `1` are unsupported. A canonical fixture in
+`conformance/src/test/resources/wire/capture-plan-v1.plan` must parse and re-render byte-identically.
 
 #### 4.5.3 The frame grab
 
@@ -646,16 +765,94 @@ makes a tier claim defensible months later (§4.2.5), and what makes a flaky dif
 | `programs` | per program slot: `SOURCED` \| `CHAIN(from=<slot>)` \| `ABSENT` \| `FAILED(log)`, plus whether the pack shipped a source file for it — the pair that makes §4.2.4's clause 2 decidable |
 | `resources` | the sizing decisions the engine made: colour-buffer count and formats, depth textures, shadow buffers and resolution, `centerDepthSmooth` on/off, noise resolution — the live counterpart of §4.11's `SIZING` golden |
 | `frames` | per shot: planned/actual frame count, world tick, `partialTicks`, `frameCounter`, entity count in frame, wall-clock duration |
-| `gl_errors` | attributed `GLError` records (op, subject, kind, detail) and, separately, the count of unattributable ones (§4.2.1) |
+| `gl_errors` | all `GLError` records (op, subject, kind, detail, attributed); the reported unattributable count is the number whose `attributed=false` (§4.2.1) |
 | `images` | per shot: path, dimensions, pixel-raster SHA-256 |
 | `diagnostics` | every `EngineDiagnostic` emitted during the run, by severity and channel |
+
+**Canonical schema `schmaloogium.run-manifest/1`.** It uses the same line, scalar, escaping, sorting,
+duplicate-key, and major-version rules as the capture plan. The first line is
+`schema = schmaloogium.run-manifest/1`; blocks above become dotted key prefixes. Every scalar
+named in the table has the table's lower-camel dotted name and is required except
+`run.startedAt`/`run.endedAt`, which are optional provenance strings. The required run/environment
+scalars are
+`run.{id,sceneId,sceneHash,planHash,exitStatus,failureReason,uncaughtException,compatVerdict,
+shadersActiveThroughout,hangCeilingMillis,timedOut}`,
+`frontEnd.{completed,packConfigurationProduced}`, and
+`environment.{os,jvm,minecraftVersion,cleanroomVersion,worldSha256,modSetSha256}`, plus
+`gl.available` and `resources.available`.
+The required pack scalars are JSON strings `pack.{id,version,acquisitionMode,archiveSha512,licence}`.
+`pack.id`, `pack.version`, and `pack.licence` are non-empty; `pack.acquisitionMode` is exactly
+`MODRINTH|MANUAL`; and `pack.archiveSha512` is exactly 128 lowercase hexadecimal digits.
+`run.exitStatus` is exactly `COMPLETE|FAILED|SKIPPED`; `failureReason` and `uncaughtException` are
+required strings (empty means none), `compatVerdict` is exactly `Continue|Bail|NOT_REACHED`, and
+the completion/availability fields are booleans while `hangCeilingMillis` is a non-negative
+integer. Repeated records use a required
+`<block>.count` plus dense zero-based
+`<block>.<n>.<field>` keys: `environment.mods{id,sha256}`, `environment.resourcePacks{id,sha256}`,
+`pack.options{name,value}`, `programs{slot,status,from,sourcePresent,driverLog}`,
+`frames{shot,planned,actual,worldTick,partialTicks,frameCounter,entityCount,durationMillis}`,
+`gl_errors{op,subject,kind,detail,attributed}`, `images{shot,path,width,height,pixelSha256}`, and
+`diagnostics{code,severity,channel,file,line}`. `from` is non-empty only for `CHAIN`; `driverLog`
+only for `FAILED`; otherwise both are required empty strings. When `gl.available=true`, the `gl`
+prefix embeds exactly the canonical Phase 1 `GLCapabilityProfile` fields; when false, those fields
+must be absent.
+
+When `resources.available=true`, these keys are required and are the complete resource wire block.
+Counts and resolutions are non-negative decimal integers; booleans are `true|false`; formats and
+program/name fields are JSON strings. `resources.colorBuffers.count` governs dense
+`resources.colorBuffers.<n>.{format,clear,clearColorR,clearColorG,clearColorB,clearColorA}` records;
+clear colours are finite JSON numbers even when `clear=false`.
+`resources.depthTextures.count`, `resources.shadow.{depthTextures,colorTextures,resolution}`,
+`resources.centerDepthSmooth.enabled`, and `resources.noise.resolution` are scalars.
+The three shadow property sets are dense boolean records governed by the corresponding texture
+count: `resources.shadow.depth.<n>.{hardwareFiltering,mipmap,nearest}` and
+`resources.shadow.color.<n>.{hardwareFiltering,mipmap,nearest}`.
+`resources.vertexAttributes.count` governs dense `{program,name}` records, one per opted-in
+`mc_Entity|mc_midTexCoord|at_tangent` pair; `resources.instances.count` governs dense
+`{program,count}` records. Vertex-attribute records are sorted uniquely by `(program,name)`;
+instance records are sorted uniquely by `program`, and instance counts are positive integers.
+`resources.capabilityGate` is exactly `OK|SHORTFALL`;
+`resources.capabilityShortfalls.count` is zero for `OK`, otherwise governs dense
+`{limit,required,available}` records sorted by `limit`, where `limit` is exactly
+`maxDrawBuffers|maxColorAttachments|maxTextureImageUnits` and the values are non-negative integers.
+When `resources.available=false`, every other `resources.*` key is absent. A complete agent manifest
+requires both availability flags true; a runner-synthesized failure manifest may use false.
+`gl_errors.count` counts all dense records, every record's `attributed` field is a required boolean,
+and the unattributable-error count is derived only as
+`count(gl_errors.<n>.attributed == false)`; no separate scalar encodes it.
+Before either copy or hash, the cache tree is walked without following links. Only directories and
+regular files are admitted; every symbolic link, socket, device, FIFO, or other entry is a hard
+containment failure, including a link whose target would remain inside the cache root. The copy
+preserves the admitted relative tree and bytes, and the digest is computed from that copied tree.
+`environment.worldSha256` sorts `/`-separated regular-file relative paths by UTF-8 byte order and
+hashes, for each file, its UTF-8 path, one zero byte, its base-10 byte length, one zero byte, and its
+bytes. `environment.modSetSha256` applies the same
+framing to the `environment.mods` records sorted by `(id,sha256)`, using `id` as path and the
+lowercase hexadecimal jar digest as content. Both are lowercase SHA-256 and are the sole identities
+used by §4.7 baseline approval and invalidation.
+
+T0 is derived without live state: `parses` requires `frontEnd.completed`,
+`frontEnd.packConfigurationProduced`, and no `FATAL`/`ERROR` diagnostic; stable-frame-loop requires
+`exitStatus=COMPLETE`, empty `uncaughtException`, `compatVerdict=Continue`,
+`shadersActiveThroughout=true`, `timedOut=false`, every frame's `actual=planned`, and every
+`durationMillis <= hangCeilingMillis`. Program and GL predicates use their existing blocks, and T0
+also requires both availability flags true.
+`CaptureRunner` validates the agent's temp file and atomically publishes it; if launch, timeout,
+crash, malformed/truncated output, or any earlier step prevents publication, it instead emits a
+schema-valid manifest from the plan and runner observations with `exitStatus=FAILED`,
+`failureReason` set, unknown client evidence represented by the false/`NOT_REACHED` values above,
+and zero counts for unavailable repeated blocks. Such a manifest deterministically fails T0.
+Unknown core keys fail; extension keys under `x.<producer>.*` are preserved and reported, and never
+affect a verdict. A canonical full-block fixture at
+`conformance/src/test/resources/wire/run-manifest-v1.manifest` must round-trip byte-identically;
+truncation or a missing required count/field names the incomplete block.
 
 #### 4.5.5 Worlds
 
 Generated once per `(seed, mcVersion, modSetHash)` into the cache, then copied per run. Generation is
 the slowest and least deterministic step in the pipeline; doing it once and hashing the result turns
-"did worldgen change?" into a cheap comparison instead of a mystery. The world directory hash is
-recorded in the manifest and is a baseline-invalidation trigger (§4.7.4).
+"did worldgen change?" into a cheap comparison instead of a mystery. The canonical world and
+mod-set hashes are recorded in the manifest and are baseline-invalidation triggers (§4.7.4).
 
 #### 4.5.6 The agent's own failure posture
 
@@ -779,8 +976,9 @@ modSetSha256    = 5512…
    every image at review size, with the run manifest inline.
 2. A human looks at every image and decides whether the pack is *rendering plausibly* — §8.2's own
    words, and a judgement no automation makes.
-3. On acceptance the harness promotes the images into the baseline cache and writes the manifest with
-   the approver and date.
+3. On acceptance the harness promotes the images into the baseline cache and writes the baseline
+   manifest with the run manifest's `environment.worldSha256` and
+   `environment.modSetSha256` unchanged, plus the approver and date.
 4. The manifest is committed. From that point the images are a regression oracle and §4.2.2 applies.
 
 **Approval is never automatic, and specifically never automatic in CI.** There is no
@@ -793,7 +991,7 @@ own baselines has no oracle at all.
 |---|---|---|
 | Pack version changed | registry pin / archive SHA-512 | baselines for the old version stay; the new version starts at `NO_BASELINE` |
 | Scene file changed | `sceneSha256` | `NO_BASELINE` for that scene; re-approval required |
-| World or mod set changed | `worldSha256`, `modSetSha256` | `NO_BASELINE`, with the changed field named |
+| World or mod set changed | compare the current run manifest's `environment.worldSha256` / `environment.modSetSha256` to the baseline fields | `NO_BASELINE`, with the changed field named |
 | Machine class changed | manifest comparison | not invalid — the profile escalates to `CROSS_DRIVER` and the report says so |
 | Engine behaviour changed | *not* auto-detected | deliberate: an engine change that alters the image is exactly what T1 exists to catch. A change believed to be an improvement is re-approved by a human, and the manifest's `approvedOn` records that it was |
 
@@ -919,10 +1117,25 @@ checklist item before the first CI run.
 Root resolution order: `-Dschmaloogium.conformance.cacheDir` → `$SCHMALOOGIUM_CONFORMANCE_CACHE` →
 `$XDG_CACHE_HOME/schmaloogium/conformance` → `~/.cache/schmaloogium/conformance`.
 
+`FixtureResolver` and `TierLedger` share one root establishment routine. It resolves a relative
+configured value against the process working directory, converts it to an absolute normalized
+path, and finds its nearest existing ancestor without following links. Before creating anything,
+it walks that ancestor and its ancestors with no-follow component inspection; a `.git` entry
+refuses the configured root. Only after that check does it create missing cache and `runs`
+directories one component at a time, rejecting any existing symbolic-link or non-directory
+component. It then opens the cache and `runs` directories as retained `SecureDirectoryStream`s
+without following links and records their filesystem identities (`fileKey`); unavailable secure
+streams or stable identities are hard unsupported-filesystem failures. Every later descendant
+traversal is descriptor-relative from the retained `runs` stream, uses no-follow component
+operations, and verifies both path identities against the retained identities before and after the
+operation. Replacement, disappearance, or identity change aborts the operation; it never retries
+through the replacement.
+
 ```
 <cache>/packs/<packId>/<versionKey>/<archive>          + .sha512 + SOURCE.txt
 <cache>/worlds/<mcVersion>/<seed>-<modSetSha>/
-<cache>/runs/<runId>/…                                  (plan, images, manifest, diff reports)
+<cache>/runs/<runId>/manifest.manifest                  (canonical run manifest)
+<cache>/runs/<runId>/…                                  (plan, images, diff reports)
 <cache>/baselines/<packId>@<version>/<sceneId>/<shot>.png
 <cache>/oracle/<packId>@<version>/<sceneId>/<shot>.png
 ```
@@ -932,8 +1145,9 @@ source URL and the never-redistribute rule — so a developer who finds the file
 what it is without finding this document.
 
 `[D-P2-9]` **`FixtureResolver` refuses a cache root that lies inside a git work tree.** It walks the
-resolved root and its ancestors looking for a `.git` entry and fails with an explanatory message if
-it finds one. This is the structural half of §G6's *"never re-host"* and of the doc gate's "fixture
+nearest existing ancestor and its ancestors looking for a `.git` entry and fails with an
+explanatory message before creating the requested root if it finds one. This is the structural half
+of §G6's *"never re-host"* and of the doc gate's "fixture
 licensing policy encoded structurally": the rule stops depending on anybody remembering it, and the
 default root is outside the repo anyway. A `.gitignore` entry is *not* the mechanism — it is a belt
 for the case where someone overrides the root deliberately.
@@ -1037,22 +1251,27 @@ The last row is why `RUN-CAPS-GATE` exists: with two synthetic profiles and no G
 proves that a pack needing 8 draw buffers on a 4-draw-buffer profile produces §G2.4 rung 4's graceful
 refusal rather than an exception.
 
-#### 4.11.4 `FrontEndProjection` — the one SPI this phase needs and does not own
+#### 4.11.4 Engine snapshot boundary and conformance adapter
 
-`:conformance` cannot produce a golden by reaching into Phase 3's types: those types do not exist yet
-(§0.3 item 2), and inventing them would violate §G1.1's rule about dependency interfaces. The design
-is therefore an interface **declared by Phase 2, implemented by Phase 3**, and requested in §5.4:
+Phase 3 owns an API and immutable data model in `:engine` that expose front-end decisions without
+depending on the harness. Illustrative names are `FrontEndInspector` and `PackDecisionSnapshot`;
+their final engine package and member layout belong to Phase 3. The directional contract is:
 
 ```java
-package com.schmaloogium.conformance.golden;
-
-/** Implemented in :engine by the Phase 3 front-end. Deterministic: two calls with equal
- *  inputs produce equal documents, independent of locale, timezone, file order and
- *  iteration order (§4.1). Must emit NO pack source text ([D-P2-5]). */
-public interface FrontEndProjection {
-    GoldenDocument project(PackSource pack, GLCapabilityProfile profile);
+// :engine; owns every type in this signature
+public interface FrontEndInspector {
+    PackDecisionSnapshot inspect(PackSource pack, GLCapabilityProfile profile);
 }
 ```
+
+`GoldenProjectionAdapter` lives in `com.schmaloogium.conformance.golden`, consumes that engine
+snapshot, and maps it to `GoldenDocument`. The snapshot is deterministic for equal inputs, exposes
+the Phase-3-owned decisions enumerated by §§4.11.2–4.11.3, and contains diagnostics as structured
+coordinates, never pack source text. Phase 4 enriches that engine-owned model with the per-slot
+resolution fields requested by R10; no `:engine` type implements or references a `:conformance`
+type. A **complete** real golden is producible only after both Phase 3 and Phase 4 land. Before Phase
+4, tests may project an explicitly synthetic/partial document, but no matrix golden may be approved
+and no `RUN-GOLDEN-MATRIX` verdict may be issued.
 
 Until Phase 3 lands, `GoldenWriter`, `GoldenComparer`, the format and every one of their tests are
 exercised against a hand-built `GoldenDocument` — which is why the golden machinery is in the
@@ -1213,15 +1432,15 @@ is inert without its system property.
 
 | Exposed | Detail | Consumed by |
 |---|---|---|
-| **The tier definitions** — T0–T3 with their decision procedures | §4.2. A phase claiming a tier claims *these* predicates | all behavioural phases |
+| **The tier definitions** — T0–T3 with their decision procedures | §4.2. A phase claiming a tier claims *these* predicates; every recorded GL error fails T0 regardless of attribution. Ledger evidence uses §4.2.5's canonical index, manifest, and attestation paths beneath §4.10.3's established run root, with no-follow containment and digest validation | all behavioural phases |
 | **The named-run catalogue** — `RunId`, `HarnessRun`, `RunRegistry` | §4.9. **This is the vocabulary every impl gate should cite**; §5.3 says how | all behavioural phases; whoever tags a milestone |
 | **The scene format and the initial scene set** | §4.3, §3.4. Scene ids are stable and appear in artifact paths | 7, 8, 9, 10, 13 |
 | **The determinism ledger** | §4.4. A phase adding a new time- or randomness-dependent input must add a row, or it has silently broken every baseline | all |
-| **`FrontEndProjection` + the golden document format** | §4.11.1–§4.11.4. Declared here, implemented by Phase 3 | **3**, 4, 5 |
+| **The golden document format + adapter input requirements** | §4.11.1–§4.11.4. Phase 3 owns the `:engine` snapshot API, Phase 4 supplies its per-slot resolution enrichment, and complete real goldens wait for both; Phase 2 maps it in `:conformance` | **3**, **4**, 5 |
 | **The `[sizing]` golden section** — the concrete list of resource-sizing decisions the headless harness validates | §4.11.3 | **3**, **4**, **5** |
 | **The `GLCapabilityProfile` fixture set + `profiles.index`** | §4.12. Phase 1 owns the type and format; this is the *set* your "recorded-GL run" impl gates run against | **4**, **5**, **6**, 14 |
-| **The run manifest format** | §4.5.4. The evidence artifact; the per-slot `programs` block is what makes T3 decidable | **4** (produces the slot data), 7 |
-| **The capture-agent contract** — what `:mod` must implement and what Phase 7 must hook | §4.5, §5.4 R11–R14 | **7** |
+| **The run manifest wire schema** | §4.5.4, schema `schmaloogium.run-manifest/1`, canonically stored at `<cache>/runs/<runId>/manifest.manifest`, including the complete canonical `resources.*` key/type/cardinality/absence grammar. Its required pack scalars fix identity, `MODRINTH|MANUAL` acquisition, SHA-512, and licence; its world identity admits only directories/regular files and rejects links and other entries before copy/hash. It carries every T0 predicate and baseline identity; the per-slot `programs` block makes T3 decidable; consumers derive the reported unattributable-error count by counting `gl_errors` records whose required boolean `attributed=false`, sourced only from R4A's replay-aware result | **3** (front-end and pack configuration), **4** (per-slot program resolution), **5** (immutable live resource snapshot), **7** (capture and serialization, gated on R4A) |
+| **The capture-agent contract + capture-plan wire schema** — what `:mod` must implement and what Phase 7 must hook | §4.5, schema `schmaloogium.capture-plan/1`, §5.4 R11–R14 | **7** |
 | **The fixture registry, cache API and never-rehost rules** | §4.10 | anyone adding a pack; CI |
 | **Tolerance profiles** | §4.6.3, calibrated by §4.6.5 | anyone reading a diff verdict |
 | **The CI task split** — hermetic `test` vs fixture-dependent `conformanceTest`, and the tag policy | §4.14 | anyone adding a test to `:conformance` |
@@ -1247,6 +1466,11 @@ document names Phase 2 explicitly for the first four.
 | `EngineDiagnostic` / `DiagnosticSeverity` / `UserChannel` | §4.9.4 | the manifest's `diagnostics` block |
 | CI job/step layout and the `conformance` extension point | §4.11; §5.3's last row names Phase 2 as its consumer | §4.14 |
 | The version pin table and its re-pin procedure | §4.2.6 | §4.10's refusal to add a dependency coordinate without one |
+
+Phase 1's present four-field `GLError` does **not** supply the manifest's `attributed` boolean.
+The sole admissible source is requested below as R4A: a replay-aware additive result that carries
+the `GLError` and its total attribution classification. Until Phase 1 accepts that request, Phase 7
+cannot produce a conforming run manifest; `op` and `subjectLabel` are never inference substitutes.
 
 **What Phase 1 explicitly does not give this phase**, and this document therefore supplies: the
 fixture set, any golden-file format other than `GLCallLog.render()`, and any answer to OQ-10
@@ -1287,24 +1511,30 @@ existing anywhere in this document.
 | R2 | Two client-read system properties admitted to the `-Dschmaloogium.*` namespace: `schmaloogium.conformance.plan` and `schmaloogium.conformance.out` | §4.9.3 fixes the debug-flag namespace and its table has an owner column; §4.9.2 already establishes the "a later phase adds via requested change" mechanism for channels. These two are read by `:mod`, so they are Phase 1's namespace; `cacheDir` and `offline` are read only by `:conformance` and are ours |
 | R3 | Acknowledgement that `conformance/build.gradle` gains a second test task and JUnit tag configuration (§4.14) | §4.2.4a says "Phase 1 stands the module up; Phase 2 fills it", which most likely already covers this; flagged because the file is Phase 1's artifact and the change is additive rather than internal |
 | R4 | In `mod/build.gradle`: the default `test` task **excludes `@Tag("gl")`**, and a separate `glTest` task (opt-in, `-PglTests`) includes it | Not cosmetic. `PHASE_1_DOC.md` §4.11 step 1 runs `:mod:test` as CI's named "Seam architecture test" step on a headless runner; a GL test inside that task fails the seam step for a non-seam reason on every push (§4.14, §10.2). `:mod/build.gradle` is Phase 1's file, so the change is requested rather than assumed |
+| R4A | An additive replay-aware GL-error result carrying `GLError error` and `boolean attributed`: `true` only when replay reproduces and isolates the error to the named facade operation; `false` when replay is clean or the window remains batched/foreign. The producer returns one result for every drained error, covering single-call, batched, replay-clean, and foreign-error windows without changing `GLError` | The run manifest requires a total boolean for every record, while the current four-field `GLError` cannot supply it (§4.5.4). This classification must come from the owner of the drain/replay protocol, never from Phase 7 guessing from `op` or `subjectLabel` |
 
-No facade change is requested. §4.7.4's absent-verbs table is not touched by this phase: the capture
-path deliberately avoids GL entirely (§4.5.3).
+No facade verb is requested. R4A is an additive diagnostic result from the existing drain/replay
+protocol; §4.7.4's absent-verbs table is not touched.
 
 **To Phase 3** (a Wave-1 sibling — these are requests against its future §5, not consumptions):
 
 | # | Request |
 |---|---|
-| R5 | `FrontEndProjection` (§4.11.4): a deterministic projection of the front-end's decisions into a `GoldenDocument`, emitting **no pack source text** |
+| R5 | An `:engine`-owned API and immutable snapshot model (§4.11.4) exposing Phase 3's decisions in §§4.11.2–4.11.3 deterministically, with **no pack source text** and no reference to `:conformance`; Phase 2's `GoldenProjectionAdapter` performs the `GoldenDocument` mapping, and complete real goldens await R10's Phase 4 enrichment |
 | R6 | A `PackSource` that reads a folder **or a zip** with no Minecraft resource manager involved — the harness feeds it a downloaded archive from a cache directory |
 | R7 | A stable pack-identity hash over the pack's own files, so a golden's `input.packSha512` and a manifest's pack block agree |
-| R8 | The parsed engine constants — `wetnessHalflife`, `drynessHalflife`, `eyeBrightnessHalflife`, `centerDepthHalflife` (§3.2, App A.3) — readable from the projection, because §4.4's warm-up rule computes from them |
+| R8 | The parsed engine constants — `wetnessHalflife`, `drynessHalflife`, `eyeBrightnessHalflife`, `centerDepthHalflife` (§3.2, App A.3) — readable from the snapshot, because §4.4's warm-up rule computes from them |
 | R9 | Diagnostics exposed as **code + severity + file + line**, not as quoted source lines, so `[D-P2-5]` holds for the `[diagnostics]` golden section |
 
 **To Phase 4:** R10 — per program slot, the resolution status `SOURCED` / `CHAIN(from=<slot>)` /
 `ABSENT` / `FAILED(driverLog)` **paired with whether the pack shipped a source file for that slot**,
-queryable at runtime (for §4.5.4's manifest) and present in the projection (for goldens). §4.2.4's
+queryable at runtime (for §4.5.4's manifest) and present in the engine snapshot (for goldens). §4.2.4's
 clause-2 assertion is not implementable without the pair.
+
+**To Phase 5:** R10A — expose to Phase 7 an immutable runtime snapshot containing every canonical
+`resources.*` value in §4.5.4, including the capability gate and shortfalls, with the same
+availability and absence rules. Phase 5 owns these live sizing decisions; Phase 7 only captures and
+serializes the snapshot.
 
 **To Phase 7:**
 
@@ -1314,6 +1544,7 @@ clause-2 assertion is not implementable without the pair.
 | R12 | A readiness signal — "engine active, pack loaded, N frames rendered without error" — so the agent can distinguish "warming up" from "wedged" |
 | R13 | *Conditional:* a fixed-`partialTicks` override, **only if** §4.4's residual risk on animated textures materialises in practice. Not requested now; recorded so it is a known additive route rather than a surprise |
 | R14 | A clean programmatic shutdown after the last shot, so a capture run terminates without a timeout kill |
+| R17 | Capture and serialize every replay-aware result requested by R4A, copying its boolean verbatim to `gl_errors.<n>.attributed`; preserve single-call, batched, replay-clean, and foreign-error records, and never derive attribution from `GLError.op` or `subjectLabel`. This work is gated until Phase 1 accepts R4A |
 
 **To Phase 12:** R15 — programmatic get/set of pack options and engine options, for the scene format's
 `[pack] option.*` and `engine.*` blocks, plus a validation hook so §4.3.3 can reject an unknown
@@ -1409,20 +1640,22 @@ All in `:conformance` unless noted; all in the hermetic `test` task (§4.14) unl
 | `SceneParserRejectionTest` | each §4.3.3 rule fails with a message naming the rule — unknown key, missing required key, id ≠ filename, duplicate shot, shot without pose, warm-up below floor, missing mandatory gamerule |
 | `SceneRoundTripTest` | parse → write → parse is identity, and the written form is sorted and byte-stable (§4.1) |
 | `SceneCorpusTest` | **every committed `conformance/scenes/*.scene` parses and validates** — the guard that keeps the authored corpus honest as the format evolves |
-| `CapturePlanTest` | a scene resolves to a plan with all defaults applied; the same scene twice produces byte-identical plans; an unknown plan key is an abort, not an ignore |
+| `CapturePlanTest` | a scene resolves to the §4.5.2 schema with all defaults applied; the canonical fixture round-trips byte-identically; duplicate, missing, gapped-index, malformed, unknown-key, and unsupported-version inputs abort |
 | `ImageDifferTest` | identical images → zero differing pixels; a single altered pixel is found at the right coordinate; a diffuse ±1 noise field passes `SAME_MACHINE` and fails `IDENTICAL`; a 40×40 solid block **fails** `SAME_MACHINE` on L3 while passing L2 — the case `[D-P2-7]` exists for; dimension mismatch throws rather than scoring |
 | `ClusterAnalysisTest` | 4-connectivity, largest-area and count on hand-built masks, including a diagonal chain that must *not* merge |
 | `TolerancePolicyTest` | profiles load from the committed file; an unknown profile name fails; `ADVISORY` produces a report and refuses to yield a verdict |
 | `IgnoreMaskTest` | rectangles exclude the right pixels; masked fraction is reported; a mask without a `reason` is rejected |
 | `FixtureResolverTest` | with a stubbed `HttpTransport`: cache hit, cache miss then download, hash mismatch → delete + hard fail, empty pin → fail, offline + cold → skip, offline + warm → proceed, `MANUAL` mode never touches the transport |
-| `FixtureCacheRootTest` | the `.git`-ancestor walk refuses an in-repo root (`[D-P2-9]`), including when the root is several levels below the work tree, and accepts a root outside it |
+| `FixtureCacheRootTest` | the no-follow `.git`-ancestor walk refuses an in-repo root (`[D-P2-9]`), including when the requested root is missing and several levels below the work tree, **leaves that requested path absent**, and accepts a root outside it; relative roots resolve against the working directory; linked cache/`runs` components, unavailable secure streams or identities, and replacement of either retained root before or during traversal abort |
 | `RegistryTest` | every App G row is present with a licence line and a source URL; `MODRINTH` entries carry a project and a version id; `MANUAL` entries carry no fetch path |
 | `GoldenWriterDeterminismTest` | byte-identical output across repeated runs, across `Locale.ROOT` vs a comma-decimal locale, across two timezones, and across two different input iteration orders |
 | `GoldenComparerTest` | equal documents pass; a single changed value produces a diff naming section, key, expected and actual |
 | `GoldenCorpusTest` | **every committed golden parses into the document model and re-renders byte-identically.** This is the structural proof of `[D-P2-5]`: a golden that contained free source text could not round-trip through a model that has no field to hold it |
-| `RunManifestReaderTest` | a well-formed manifest reads back all blocks; a truncated one fails with the block named; an unknown block is preserved-and-reported, not dropped |
-| `TierEvaluatorTest` | T0's four predicates including the **unattributable-GL-error** case (warns, does not fail — §4.2.1); T1's `NO_BASELINE`; T2's refusal for a dual-spec pack (`[D-P2-12]`); T3's `CHAIN`-with-source failure and `CHAIN`-without-source pass (`[D-P2-13]`) |
-| `TierLedgerTest` | the evidence rule (no pointer → `NOT_ATTEMPTED`); inconsistent ledgers flagged; rendering is sorted and stable |
+| `RunManifestReaderTest` | the canonical §4.5.4 full-block fixture at `conformance/src/test/resources/wire/run-manifest-v1.manifest`, including T0 state, both baseline hashes, and attributed plus unattributable GL-error records, round-trips byte-identically; duplicate, missing, gapped-index, malformed, unknown-core, unsupported-version, and non-boolean `attributed` inputs abort; `x.<producer>.*` fields are preserved-and-reported |
+| `TierEvaluatorTest` | reconstructs each T0 failure independently from serialized evidence (front-end failure, diagnostic, attributed and unattributable GL errors, program failure, exception, bail, shaders-off, timeout, frame-count mismatch, and over-ceiling frame); derives unattributable diagnostic counts of zero, one, and multiple solely from `attributed=false` records; covers T1's `NO_BASELINE`, T2's dual-spec refusal, and T3's sourced/unsourced `CHAIN` cases |
+| `RunManifestFailureTest` | launch failure, timeout, crash, and truncated agent output each produce a canonical runner-synthesized manifest that round-trips and deterministically fails T0 |
+| `BaselineIdentityTest` | world and mod-set hashes are invariant to traversal/record order, change with any input byte or identity, flow unchanged into approval manifests, and a mismatch yields `NO_BASELINE`; world copy/hash rejects an internal link, an escaping link, FIFO, socket, and representative device entry without following it |
+| `TierLedgerTest` | scene-set identity and exact constituent coverage; missing/hash-mismatched/stale evidence → effective `NOT_ATTEMPTED`; artifact directories reject absolute paths, traversal, and symlinked components; the canonical evidence index and run manifests resolve beneath the established run-output root, and missing, escaping, hash-mismatched, linked-component, replaced-root, or non-regular cases invalidate the row; manual attestations obey the same traversal rule at their content-addressed paths; inconsistent same-scene-set ledgers flagged; both renderings expose all pointers and are sorted and stable |
 | `ReportRendererTest` | snapshot of all three renderings; skips counted separately from passes (§4.13 rule 3); every non-pass carries a reason |
 | `HarnessRunRegistryTest` | every run id in §4.9 resolves; every §3.5 exit criterion maps to at least one existing run — **the doc gate's traceability, as a test** |
 
@@ -1479,7 +1712,7 @@ here is `v0.1` even though the behaviour it will eventually measure is not.
 | Modrinth transport (§4.10.2) | `v0.1` | |
 | Manual-mode instructions and skip reporting (§4.10.2, §4.13) | `v0.1` | |
 | Golden document model, writer, comparer, update workflow (§4.11) | `v0.1` | impl-gate item |
-| `FrontEndProjection` **consumption** | `v0.1` | the interface is declared now; content arrives with Phase 3 |
+| Engine snapshot **consumption through `GoldenProjectionAdapter`** | `v0.1`, when Phase 3 lands | the adapter cannot compile until the engine API and model exist |
 | Micro-pack corpus (§4.11.6) | `v0.1` | |
 | `GLCapabilityProfile` fixture set — synthetic profiles + `profiles.index` (§4.12) | `v0.1` | |
 | Captured hardware profiles | `v0.1`, ongoing | contributed as machines become available |
@@ -1490,7 +1723,8 @@ here is `v0.1` even though the behaviour it will eventually measure is not.
 | Report renderer, three formats (§4.13) | `v0.1` | |
 | CI task split + filled `conformance` job (§4.14) | `v0.1` | |
 | `RUN-GL-SMOKE` + the OQ-10 spike (§10) | `v0.1` | the spike is week-one work: its answer changes what CI can do |
-| Dual-spec matrix scenes and modern-pass families | `post-v0.5` | §G8's S1–S4; §9's post-v0.5 row |
+| Dual-spec `RUN-T0` / `RUN-T1-REGRESS` | `v0.1` | Run definitions implemented with the other T0/T1 runs; execute at every v0.1–v0.5 release gate provisionally under Appendix G, pending §11.3 item 10 |
+| Dual-spec modern-pass families | `post-v0.5` | §G8's S1–S4; §9's post-v0.5 row |
 
 ### 9.2 The "runnable before any renderer exists" subset — the doc-gate list
 
@@ -1501,8 +1735,8 @@ item is buildable and testable with no GL context, no Minecraft, and no renderer
    the in-repo cache refusal, manual-mode instructions. Tests: `FixtureResolverTest`,
    `FixtureCacheRootTest`, `RegistryTest`.
 2. **Scene-spec parser and validator** — plus the six authored scene files and `SceneCorpusTest`.
-3. **Golden-run skeleton** — document model, writer, comparer, update workflow, and the
-   `FrontEndProjection` interface declaration. Tests: `GoldenWriterDeterminismTest`,
+3. **Golden-run skeleton** — document model, writer, comparer, and update workflow over hand-built
+   `GoldenDocument`s. Tests: `GoldenWriterDeterminismTest`,
    `GoldenComparerTest`, `GoldenCorpusTest`.
 4. **Image differ** — all three levels, tolerance profiles, masks, report writer. Testable entirely
    against synthetic image pairs generated in-test.
@@ -1604,7 +1838,7 @@ Capture each successful configuration's profile as a `GLCapabilityProfile` fixtu
 format (§4.12) — the spike pays for itself in fixtures even if it fails its criteria.
 
 **Stage D — only if C succeeds.** Extend to a real smoke: compile the internal default pack's
-programs through `Lwjgl3GLDevice` and assert zero attributed `GLError`s. This is the test that would
+programs through `Lwjgl3GLDevice` and assert zero recorded `GLError`s. This is the test that would
 make a CI GL tier worth having rather than merely possible.
 
 #### (3) Success and failure criteria
@@ -1618,12 +1852,14 @@ Success requires **all** of:
 | S3 | ≥ 8 draw buffers and ≥ 8 colour attachments | App B.1's "8 where hardware allows"; below this the estate a pack builds cannot be exercised |
 | S4 | ≤ 90 s from job start to a usable context | above this, per-push GL testing is not affordable and the tier is pre-release-only anyway |
 | S5 | 20 / 20 consecutive CI runs green | a flaky GL job is worse than no GL job: it trains everyone to ignore red |
+| S6 | In the selected successful CI configuration, Stage D compiles and links the internal default pack with zero recorded `GLError`s | proves the available context can run the real smoke that justifies a CI GL tier |
 
 Failure is any of: no context in any configuration; **core-only in every configuration**; GLSL 120
-rejected; fewer than 20/20.
+rejected; fewer than 20/20; or Stage D compilation, linking, or its zero-`GLError` assertion fails
+in the selected otherwise-successful configuration.
 
-**Partial success is a real outcome and has a defined landing.** If S1, S2, S4 and S5 hold but S3
-does not (a software renderer offering fewer than 8 draw buffers), the CI GL tier is limited to
+**Partial success is a real outcome and has a defined landing.** If S1, S2, S4, S5 and S6 hold but
+S3 does not (a software renderer offering fewer than 8 draw buffers), the CI GL tier is limited to
 "programs compile and link" — worth having — while every buffer-estate assertion stays headless
 against the `hostile-4db` profile (§4.12), where it was going to be more precise anyway.
 
@@ -1667,7 +1903,7 @@ framebuffer size.
 | ID | Decision | Rationale |
 |---|---|---|
 | `D-P2-1` | The capture driver lives in `:mod`; the harness crosses into the client through a **process boundary**, not a classpath edge | C-4 gives `:conformance` no Minecraft in any configuration (§2.2) |
-| `D-P2-2` | Conformance runs set `-Dschmaloogium.debug.recordGL` | it puts the facade on the per-call `glGetError` cadence, which is the only configuration in which `PHASE_1_DOC.md` §4.7.4 promises exact attribution — and T0's third predicate is meaningless without it |
+| `D-P2-2` | Conformance runs set `-Dschmaloogium.debug.recordGL` | it puts the facade on the per-call `glGetError` cadence, maximizing diagnostic attribution; every recorded error still fails T0 |
 | `D-P2-3` | A camera path is an **ordered set of static shots**, not interpolated motion | motion makes previous-frame uniforms frame-ordinal-dependent and pixel diffing a race (§4.3.4) |
 | `D-P2-4` | One determinism rule for every text artifact this phase writes | generalises `PHASE_1_DOC.md` §4.7.5's `render()` guarantee; each artifact is either byte-compared or diff-reviewed (§4.1) |
 | `D-P2-5` | **Goldens never contain pack source text** | goldens are committed and every matrix pack forbids redistribution (§4.11.1) |
@@ -1718,14 +1954,16 @@ Reported, not smoothed over (§G1.1).
 2. **Phase-doc paths.** `DESIGN.md` §G1.1 and §G9 specify `Schmaloogium/PHASE_<N>_DOC.md`, and §G1.2
    puts reviews at the repo root beside it. The repository's actual organisation — established by the
    commit *"docs: fix non-existent document organization"* and since reorganized into versioned
-   directories — places `PHASE_1_DOC.md` under `docs/phase1/v10/`, all eleven review files under
+   directories — places the current dependency at `docs/phase1/v14/PHASE_1_DOC.md`, its review files under
    `docs/phase1/reviews/`, and the two project documents under `docs/design/v1.1/` and
    `docs/research/v1/`. This
    document is at `docs/phase2/v1/PHASE_2_DOC.md` on the project owner's instruction, matching
    the repository rather than the design document. §11.5 item 3 asks `DESIGN.md` to record the
    convention so no future phase re-decides it.
-3. **Phase 1's gating status** — §0.3 item 6, carried here so it is visible from §11 as well. Open
-   until V11-1's fix-up and the re-verify it triggers have run.
+3. **Phase 1's gating status.** The authoring-time exception is recorded in §0.3 item 6. The
+   manifest-selected `docs/phase1/v14/PHASE_1_DOC.md` records V11-1 as applied and its verification
+   chain complete; Phase 1 is verified and valid for dependency consumption. No Phase 1 gate remains
+   open here.
 4. **"Camera path" narrowed.** RESEARCH.md §8.3's scene definition says "camera path"; `[D-P2-3]`
    implements it as an ordered set of static poses. A narrowing of an under-specified phrase, with
    the additive extension (`[path]` blocks) named. Disclosed rather than absorbed.
@@ -1747,11 +1985,15 @@ Reported, not smoothed over (§G1.1).
    the settings which change pixels. The corrective is cheap and scheduled: the first
    `RUN-SCENE-SELFCHECK` and the first `CROSS_DRIVER` calibration will expose any setting that
    matters and was not pinned. Recorded rather than presented as verified.
+10. **Dual-spec timing conflicts.** Appendix G makes the four dual-spec packs T0/T1 targets through
+    v0.5, while §9 places modern-matrix progression after v0.5. This document provisionally runs
+    their T0/T1 gates at every v0.1–v0.5 release while leaving modern-stage coverage post-v0.5
+    (§3.5); §11.5 requests an authoritative reconciliation.
 
 ### 11.4 Items handed onward
 
 **To Phase 3** — R5–R9 (§5.4) are the whole of it, and R5 is the load-bearing one: without a
-deterministic, source-text-free projection there is no golden harness, and the golden harness is what
+deterministic, source-text-free engine snapshot there is no golden harness, and the golden harness is what
 `D-10` buys. The eight micro-packs (§4.11.6) are yours to use as front-end test inputs; they were
 designed against §3.2/§3.3/App F precisely so they would be.
 
@@ -1759,9 +2001,14 @@ designed against §3.2/§3.3/App F precisely so they would be.
 `(resolution status, source present)` as a **pair**. A status alone cannot distinguish App A.2's
 legitimate inheritance from a compile failure the backup chain absorbed.
 
-**To Phase 7** — R11–R14. R11 is the one that gates every image tier: without a defined moment after
-`final` and before present, the capture agent has no correct place to grab a frame. R13 is
-conditional and is recorded so it is a known route rather than a surprise.
+**To Phase 5** — R10A. Supply the immutable live resource snapshot; its fields and absence rules are
+the canonical `resources.*` wire block in §4.5.4.
+
+**To Phase 7** — R11–R14 and R17. R11 is the one that gates every image tier: without a defined moment after
+`final` and before present, the capture agent has no correct place to grab a frame. Capture and
+serialize Phase 3's front-end/pack evidence, Phase 4's program-resolution evidence, and Phase 5's
+R10A snapshot; R17's error attribution is gated on Phase 1's R4A. R13 is conditional and is
+recorded so it is a known route rather than a surprise.
 
 **To Phase 12** — R15/R16. Until R15 exists, `[pack] engine.*` keys are collected and reported as
 **unvalidated** rather than accepted (§4.3.3), so a typo there is visible but not fatal.
@@ -1789,13 +2036,16 @@ more than the answer.
 2. **§8.3's Sildur's-on-Modrinth claim** should carry a verification note, or App G should gain an
    acquisition column, so §11.3 item 1 does not have to be re-derived by whoever populates the
    registry.
+3. **Reconcile dual-spec timing.** Appendix G requires T0/T1 through v0.5 while §9 schedules
+   modern-matrix progression post-v0.5; state whether the former is an additional legacy-path gate
+   or change one of the two schedules.
 
 **To DESIGN.md:**
 
-3. **The phase-document path convention** (§11.3 item 2). §G1.1, §G9 and §G1.2 all name repo-root
+4. **The phase-document path convention** (§11.3 item 2). §G1.1, §G9 and §G1.2 all name repo-root
    paths that no longer match the repository. One line stating the `docs/phase<N>/artifacts/`
    convention would stop every future phase and every verify session re-deciding it.
-4. **§G6's fixture bullet governs pack files; derived artifacts are unaddressed.** Goldens,
+5. **§G6's fixture bullet governs pack files; derived artifacts are unaddressed.** Goldens,
    screenshots and run manifests are where a phase is most likely to leak something re-hostable —
    this document forbids source text in goldens (`[D-P2-5]`) and images in the repository
    (`[D-P2-6]`), but those rules bind only this phase. A clause in §G6 would bind all of them.
@@ -1825,7 +2075,7 @@ Every item names its milestone tag and its test hook.
 | 9 | `FixtureCache` + root resolution + **in-repo refusal** (`[D-P2-9]`) | `v0.1` | `FixtureCacheRootTest` |
 | 10 | `HttpTransport` + Modrinth resolver + SHA-512 integrity + `MANUAL`-mode instructions (§4.10) | `v0.1` | `FixtureResolverTest` with the stub transport |
 | 11 | **Populate the registry pins** — version IDs and SHA-512 for the four `MODRINTH` rows; canonical filenames and hashes for the three `MANUAL` rows (`[D-P2-20]`) | `v0.1` | a live `conformanceTest` resolution of each |
-| 12 | `GoldenDocument` model, `GoldenWriter`, `GoldenComparer`, `-PupdateGoldens` workflow, `FrontEndProjection` **interface** (§4.11) | `v0.1` | `GoldenWriterDeterminismTest`, `GoldenComparerTest`, `GoldenCorpusTest` — **impl gate met here** |
+| 12 | `GoldenDocument` model, `GoldenWriter`, `GoldenComparer`, `-PupdateGoldens` workflow (§4.11) | `v0.1` | `GoldenWriterDeterminismTest`, `GoldenComparerTest`, `GoldenCorpusTest` — **impl gate met here** |
 | 13 | Author the eight micro-packs (§4.11.6) | `v0.1` | they are inputs to items 12 and 16 |
 | 14 | Synthetic `GLCapabilityProfile` fixtures (`minimum-gl21`, `baseline-gl30`, `typical-gl33`, `hostile-4db`) + `profiles.index` (§4.12) | `v0.1` | consumed by items 12 and 16; index validated by `RegistryTest`'s sibling |
 | 15 | `ImageDiffer`, `TolerancePolicy`, `ClusterAnalysis`, `IgnoreMask`, `DiffReportWriter` (§4.6) | `v0.1` | `ImageDifferTest`, `ClusterAnalysisTest`, `TolerancePolicyTest`, `IgnoreMaskTest` |
@@ -1834,14 +2084,14 @@ Every item names its milestone tag and its test hook.
 | 18 | `ConformanceReport` + the three renderers, incl. the skip-counting rule (§4.13) | `v0.1` | `ReportRendererTest` |
 | 19 | `HarnessRun` / `RunRegistry` with §4.9's catalogue | `v0.1` | `HarnessRunRegistryTest` — including the §3.5 traceability assertion |
 | 20 | Fill the CI `conformance` job (§4.14); add the fixture cache step | `v0.1` | a `workflow_dispatch` run resolves fixtures and runs `conformanceTest` |
-| 21 | **Run the OQ-10 spike** (§10.3) and record the outcome in RESEARCH.md §11 + an addendum here | `v0.1` | the spike's own criteria S1–S5 |
+| 21 | **Run the OQ-10 spike** (§10.3) and record the outcome in RESEARCH.md §11 + an addendum here | `v0.1` | the spike's own criteria S1–S6 |
 
-**As soon as Phase 3 lands**
+**As soon as Phase 3 and Phase 4 land**
 
 | # | Item | Tag | Test hook |
 |---|---|---|---|
-| 22 | Implement golden production against Phase 3's `FrontEndProjection` (R5); approve the first golden corpus by review | `v0.1` | `RUN-GOLDEN-CORE` produces real content |
-| 23 | `RUN-GOLDEN-MATRIX` over the seven fixtures × three profiles | `v0.1` | `conformanceTest` |
+| 22 | Implement `GoldenProjectionAdapter` against Phase 3's engine-owned snapshot API plus Phase 4's R10 enrichment; approve the first complete golden corpus by review | `v0.1` | `RUN-GOLDEN-CORE` produces complete real content |
+| 23 | `RUN-GOLDEN-MATRIX` over the seven fixtures × three profiles; unavailable before both inputs land | `v0.1` | `conformanceTest` |
 
 **As soon as v0.1 renders**
 
@@ -1854,17 +2104,18 @@ Every item names its milestone tag and its test hook.
 | 28 | `RUN-T0` across the classic matrix — **v0.1's second exit criterion** | `v0.1` | §4.2.1's predicates |
 | 29 | `RUN-T1-APPROVE` for one classic pack; commit the baseline manifests — **v0.1's first exit criterion** | `v0.1` | contact sheet reviewed and signed |
 | 30 | `RUN-T1-REGRESS` in the pre-release checklist | `v0.1` | |
+| 31 | Implement dual-spec `RUN-T0` / `RUN-T1-REGRESS`; execute them at every v0.1–v0.5 release gate, provisionally pending §11.3 item 10 | `v0.1` | §4.2.1 and §4.2.2 predicates |
 
 **Later milestones**
 
 | # | Item | Tag |
 |---|---|---|
-| 31 | T2: the §4.8 procedure written up as a runbook, the oracle-manifest tool, the T2 evaluator, `RUN-T2-PILOT` | `v0.2` |
-| 32 | Calibrate `CROSS_ENGINE` per §4.6.5 step 3 | `v0.2` |
-| 33 | `RUN-T2` over the milestone's declared scene set | `v0.3` |
-| 34 | `RUN-OPTIONS-ROUNDTRIP` (R16) | `v0.4` |
-| 35 | T3 evaluator + author `conformance/features/<packId>.features` for the classic tier | `v0.4` |
-| 36 | Dual-spec `RUN-T0` / `RUN-T1`, and scenes for the modern pass families | `post-v0.5` |
+| 32 | T2: the §4.8 procedure written up as a runbook, the oracle-manifest tool, the T2 evaluator, `RUN-T2-PILOT` | `v0.2` |
+| 33 | Calibrate `CROSS_ENGINE` per §4.6.5 step 3 | `v0.2` |
+| 34 | `RUN-T2` over the milestone's declared scene set | `v0.3` |
+| 35 | `RUN-OPTIONS-ROUNDTRIP` (R16) | `v0.4` |
+| 36 | T3 evaluator + author `conformance/features/<packId>.features` for the classic tier | `v0.4` |
+| 37 | Scenes for the dual-spec modern-pass families | `post-v0.5` |
 
 ---
 
