@@ -66,9 +66,10 @@ configs, or Pintonium's stale `DESIGN.md`.
 ### 0.2 Dependency PHASE docs consumed
 
 - `docs/phase1/v14/PHASE_1_DOC.md` is verified by the literal PASS in
-  `docs/phase1/reviews/PHASE_1_REVIEW_15.md`. Its §5 was read completely. Its §4.7
+  `docs/phase1/reviews/PHASE_1_REVIEW_18.md`. Its §5 was read completely. Its §4.7
   `engine.gl` facade was read to obtain the exact service and recording signatures that §5 makes
-  binding.
+  binding, including the now-published `ShaderService.useFixedFunction()` operation and its
+  zero-argument recorder event.
 - `docs/phase3/v1/PHASE_3_DOC.md` is verified by the literal PASS, zero findings, and
   no-interface-change disposition in
   `docs/phase3/reviews/PHASE_3_REVIEW_14.md`. Its current path has not yet been rolled after that
@@ -112,6 +113,60 @@ may be incorporated only with notices preserved and modifications marked. This d
 small structural mechanisms, not source text. The OptiFine-derived digest is used only to restate
 observed behavior. The AGPL-risk transformation boundary is prohibited absolutely. These
 dispositions follow D-7/D-8 and `docs/design/v2.0-RC3/DESIGN.md` §G7/§G11.
+
+### 0.5 Review 1 correction addendum
+
+Review 1 closes five interface omissions: immutable stage/pass traversal, closed barrier results,
+publication ownership, registry-wide failure aggregation, and the gbuffers compute exclusion.
+The corrected contracts are integrated into §§2–6 and the test plan. No governing decision,
+dependency contract, or version-directory path changes.
+
+### 0.6 Review 2 correction addendum
+
+Review 2 supplies publication's release context, separates pre-release rejection from forced-off
+recovery after release begins, and repairs two conformance citations. The corrected contracts are
+integrated into §§2–5 and §8.
+
+### 0.7 Review 3 correction addendum
+
+Review 3 exposes the accepted barrier through a generation-checked, non-owning publication view.
+The corrected access, invalidation, off-state, and thread contracts are integrated into §§2, 4,
+5, 7, and 8.
+
+### 0.8 Review 4 correction addendum
+
+Review 4 separates published registry access from teardown authority, supplies immutable Phase 6
+barrier composition, and corrects legacy-geometry conformance accounting. The corrections are
+integrated into §§2–5, §8, and §10.
+
+### 0.9 Review 5 correction addendum
+
+Review 5 makes published resolution handle-free and confines the all-no-op barrier to
+Phase-4-owned bootstrap assembly. The corrections are integrated into §§2, 4, 5, 8, and 12.
+
+### 0.10 Review 6 correction addendum
+
+Review 6 makes both the production participant bundle and the factory-to-publication candidate
+opaque Phase-4-issued products. The corrections are integrated into §§2, 4, 5, 8, and 12.
+
+### 0.11 Review 7 correction addendum
+
+Review 7 supplies the cross-package production-composition route and authenticates compiler
+origin through an opaque registry product. The corrections are integrated into §§4, 5, 8, and 12.
+
+### 0.12 Review 8 correction addendum
+
+Review 8 makes barrier-candidate cleanup callable and completes §5's compiler, publisher, request,
+context, and ownership inventory. The corrections are integrated into §§4, 5, 8, and 12.
+
+### 0.13 Review 9 correction addendum
+
+Review 9 corrects the architecture relationship map to distinguish Phase 7's opaque-candidate
+publication route from downstream non-owning views and separately exposed state contracts.
+
+### 0.14 Review 10 correction addendum
+
+Review 10 corrects the generation branch and narrows Phase 10's input to the fixed attribute table.
 
 ## 1. Scope & boundaries
 
@@ -216,6 +271,20 @@ public sealed interface PassPopulation {
         implements PassPopulation {}
 }
 
+public interface StageRegistry {
+    List<StageStep> schedule(); // immutable, execution order
+    List<PassDescriptor> passes(StageStep step); // immutable population order
+    Optional<PassDescriptor> named(StageStep step, ProgramSlotId id);
+    Optional<PassDescriptor> indexed(StageStep step, PassIndex index);
+}
+
+public record PassDescriptor(
+    StageStep step,
+    ProgramSlotId slot,
+    Optional<PassIndex> index,
+    PassResourceAccess resources,
+    Set<ComputeDispatchSlot> computeSlots) {}
+
 public record PassIndex(int value) {
     public PassIndex {
         if (value < 0 || value > 99) throw new IllegalArgumentException("pass index");
@@ -278,7 +347,7 @@ public record ProgramStateBundle(
     Map<BufferRef, Boolean> explicitFlips,
     Optional<LegacyGeometryConfig> legacyGeometry) {}
 
-public sealed interface CompiledProgramBinding {
+sealed interface CompiledProgramBinding { // Phase-4-private
     ProgramStateBundle state();
     ProgramSlotId provider();
 
@@ -295,9 +364,16 @@ public sealed interface CompiledProgramBinding {
         implements CompiledProgramBinding {}
 }
 
-public record ResolvedProgramBinding(
+record ResolvedCompiledProgramBinding( // Phase-4-private
     ProgramSlotId requested,
     CompiledProgramBinding effective,
+    List<ProgramSlotId> fallbackPath) {}
+
+public record ResolvedProgramDescriptor(
+    ProgramSlotId requested,
+    ProgramSlotId effective,
+    ProgramStateBundle state,
+    List<MaterializationFingerprint> sources,
     List<ProgramSlotId> fallbackPath) {}
 ```
 
@@ -321,31 +397,81 @@ public record RegistryBuildRequest(
     DiagnosticReporter diagnostics) {}
 
 public sealed interface RegistryBuildResult {
-    record Ready(CompiledProgramRegistry registry) implements RegistryBuildResult {}
+    record Ready(CompiledRegistryCandidate candidate) implements RegistryBuildResult {}
     record ShadersOff(RegistryBuildFailure failure) implements RegistryBuildResult {}
 }
 
-public interface CompiledProgramRegistry extends AutoCloseable {
+public interface ProgramRegistryView {
     StageRegistry stages();
-    Optional<ResolvedProgramBinding> resolve(ProgramSlotId requested);
+    Optional<ResolvedProgramDescriptor> resolve(ProgramSlotId requested);
     RegistryFingerprint fingerprint();
+}
+
+public interface CompiledProgramRegistry extends ProgramRegistryView, AutoCloseable {
     void close(); // render thread; idempotent; deletes only Phase-4-owned handles
+}
+
+public final class CompiledRegistryCandidate implements AutoCloseable {
+    CompiledRegistryCandidate(/* private registry + compiler-origin credential */);
+    public ProgramRegistryView view();
+    public void close(); // caller-owned before acceptance; idempotent
+    // opaque product; no public/protected constructor, factory, subclass, or registry accessor
 }
 
 public interface ProgramRegistryPublisher {
     PublishedRegistry current();
-    PublishedRegistry publish(RegistryPublication publication);
+    PublicationResult publish(
+        RegistryPublication publication,
+        BarrierContext releaseContext);
 }
 
 public record PublishedRegistry(
     long generation,
-    Optional<CompiledProgramRegistry> registry) {}
+    Optional<ProgramRegistryView> registry,
+    Optional<PublishedProgramStateBarrier> barrier) {}
+
+public interface PublishedProgramStateBarrier {
+    long generation();
+    BarrierResult activate(UseProgramRequest request);
+    BarrierResult releaseToFixedFunction(BarrierContext context);
+    // non-owning view: deliberately no close operation
+}
+
+public sealed interface RegistryPublication {
+    record Ready(CompiledRegistryCandidate registry, BarrierPublicationCandidate barrier)
+        implements RegistryPublication {}
+    record ShadersOff(RegistryBuildFailure cause) implements RegistryPublication {}
+}
+
+public sealed interface PublicationResult {
+    record Accepted(PublishedRegistry published) implements PublicationResult {}
+    record Rejected(PublishedRegistry unchanged, RegistryBuildFailure cause)
+        implements PublicationResult {}
+    record RecoveredOff(PublishedRegistry published, RegistryBuildFailure cause)
+        implements PublicationResult {}
+}
 ```
 
 `publish` is render-thread-only and increments generation exactly once for every accepted
-replacement, including an accepted shaders-off publication. Failed candidate compilation alone
-does not mutate publication state. Equality, never ordering or subtraction, is the cache protocol;
-eventual signed-`long` wrap does not make a stale equality likely within the life of a process.
+replacement, including accepted shaders-off, and once for forced `RecoveredOff`; pre-release
+rejection and failed candidate compilation alone do not mutate publication state. Equality, never
+ordering or subtraction, is the cache protocol; eventual signed-`long` wrap does not make a stale
+equality likely within the life of a process.
+
+`current()` returns one atomic snapshot: a ready publication contains a non-owning registry view
+and barrier view with the same generation; accepted shaders-off and `RecoveredOff` contain
+neither. The candidate owner receives only `CompiledRegistryCandidate`; only Phase-4 internals and,
+after acceptance, the publisher can reach its private `CompiledProgramRegistry`. Snapshot
+consumers have no registry or barrier teardown capability.
+`ProgramRegistryView.resolve` projects the private compiled binding to an immutable descriptor:
+requested/effective identities, provider state, source fingerprints, and fallback path only.
+Neither that descriptor nor any barrier result contains `ProgramHandle`; only the private registry
+and barrier implementation can obtain the handle used for `ShaderService.use`.
+Every barrier-view method is render-thread-only and first verifies that both its generation and
+identity still match the current ready publication. A replaced barrier view returns
+`BarrierResult.StalePublication` without a GL call or barrier-state change; the caller must not
+draw and must reacquire `current()`. Thus a retained view cannot activate or release a replacement
+generation.
 
 ### 2.3 Relationship map
 
@@ -360,13 +486,19 @@ PackConfiguration + DimensionKey + MacroContribution + GLCapabilityProfile
                               │
                        ProgramCompiler         (render thread, GLDevice)
                               │
-                    CompiledProgramRegistry
-                       │       │         │
-                 Phase 5    Phase 6   Phase 7/8/10
-                  state     barrier      selection
-                       └────────┬────────┘
-                         PublishedRegistry
-                         generation → Phase 12/caches
+                CompiledRegistryCandidate
+                    (private registry)
+                              │
+            Phase 7 production composition + publication
+                              │
+                     PublishedRegistry
+                  (non-owning registry/barrier views)
+                       ├─ Phase 5
+                       ├─ Phase 6
+                       ├─ Phase 7/8
+                       └─ generation → Phase 12/caches
+
+Fixed attribute table ── Phase 10 vertex-source inputs
 ```
 
 ## 3. Contract conformance map
@@ -380,11 +512,12 @@ PackConfiguration + DimensionKey + MacroContribution + GLCapabilityProfile
 | G6 order and five active identities | `ClassicG6Configuration` in §4.2 | `[V:doc]`, `docs/research/v1/RESEARCH.md:220`–`:224` |
 | Per-pass read/write sets and flip bookkeeping | immutable `PassResourceAccess`; exact writes and flips from Phase 3, stage-readable sets from the stage policy | `[D-4]`, `docs/research/v1/RESEARCH.md:835`–`:841` |
 | Dormant `.csh`, `_a`…`_z` companions | `ComputeDispatchSlot`; no compiler/executor path before G8/S2 | `[D-4]`, Phase 4 assignment at `docs/design/v2.0-RC3/DESIGN.md:1486`–`:1491` |
+| `.csh` companions exist for every eligible program except gbuffers | construction rejects every compute descriptor whose pass has `StageId.GBUFFERS` | `[V:doc/web]`, `docs/research/v1/RESEARCH.md:357`–`:361` |
 | Pack-load initialization compiles, resolves fallbacks, then publishes | transactional compiler and publisher | `[V:observed]`, `docs/research/v1/RESEARCH.md:483`–`:488` |
-| Pack/option/dimension/resolution uninit deletes GL objects | registry `close`, candidate cleanup, generation publication | `[V:observed]`, `docs/research/v1/RESEARCH.md:489`–`:491` |
-| Compile → attach → bind 10/11/12 → link → validate | state machine in §4.7 through Phase 1 `ShaderService` | `[V:observed]`, `docs/research/v1/RESEARCH.md:497`–`:505` |
+| Pack/option/dimension/resolution uninit deletes GL objects | registry `close`, candidate cleanup, generation publication | `[V:observed]`, `docs/research/v1/RESEARCH.md:488`–`:491` |
+| Compile → attach → bind 10/11/12 → link → validate | state machine in §4.7 through Phase 1 `ShaderService` | governing sequence at `docs/design/v2.0-RC3/DESIGN.md:1511`–`:1514`; failure/barrier evidence at `docs/research/v1/RESEARCH.md:497`–`:505` |
 | Core program/shader object facade, no ARB object entry points | only Phase 1 `ShaderService` is consumed | `[U]` opportunity adopted by governing spec; `docs/research/v1/RESEARCH.md:766`–`:770` |
-| Legacy and core geometry forms are accepted | plan selection in §4.8; unresolved interface contradiction is explicit, not hidden | `[V:doc]`, `docs/research/v1/RESEARCH.md:213`–`:216`, App A.3 |
+| Core-layout geometry is accepted; legacy ARB geometry is recognized but unavailable and follows fallback | §4.8 requires either a verified Phase 3 complete-source compatibility result or a Phase 1 legacy pre-link configuration route before legacy acceptance | `[V:doc]`, `docs/research/v1/RESEARCH.md:213`–`:216`, App A.3 |
 | Invalid compile/link/validate result deletes program and reports to GUI/log | `ProgramBuildFailure`, cleanup ledger, backup re-resolution | `[V:observed]`, `docs/research/v1/RESEARCH.md:501`–`:505` |
 | Program use re-points samplers, refreshes built-ins, evaluates customs, locks alpha/blend | ordered `ProgramStateBarrier` in §4.10 | `[V:observed]`, `docs/research/v1/RESEARCH.md:505`–`:507`; adoption `D-P4-5` |
 | Shadow pass overrides hook-requested program | barrier selection step 1 | `[V:observed]`, `docs/research/v1/RESEARCH.md:506`–`:507` |
@@ -393,8 +526,9 @@ PackConfiguration + DimensionKey + MacroContribution + GLCapabilityProfile
 ### 3.2 Appendix A.1 program/fallback map
 
 The table below maps every named Appendix A.1 row. “Fixed” means the contract has no shader
-ancestor and requires fixed-function/no-program behavior; it does not mean Phase 4 assumes a facade
-verb that Phase 1 has not published.
+ancestor and requires fixed-function/no-program behavior. Phase 4 selects that terminal through
+Phase 1's published `ShaderService.useFixedFunction()` operation; it never encodes program zero as
+`use(null)`, a raw integer, or a sentinel `ProgramHandle`.
 
 | Slot or family | Stage/band | Fallback/effective absence | State/source design |
 |---|---|---|---|
@@ -428,7 +562,7 @@ verb that Phase 1 has not published.
 | `deferred` … `deferred15` | between gbuffers occurrences | absent pass is skipped | `PassIndex(0…15)` under generic 0…99 family |
 | `composite_pre` | composite prelude | no program/fallback | virtual flip-control state only |
 | `composite` … `composite15` | frame end | absent pass is skipped | `PassIndex(0…15)` under generic 0…99 family |
-| `final` | screen | absent means fixed-function passthrough | terminal raster/fixed binding |
+| `final` | screen | absent means downstream-owned passthrough copy | terminal raster/passthrough binding |
 
 The exact names and edges above come from
 `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:61`–`:108` and
@@ -443,7 +577,7 @@ Its extra modern slots and missing classic `terrain_cutout_mip` row do not alter
 
 | Contract row | Phase 4 field/algorithm | Provenance / decision |
 |---|---|---|
-| Empty source inherits nearest non-empty ancestor's **entire configuration** | `ResolvedProgramBinding` points at the ancestor's one immutable `CompiledProgramBinding`; no child field is overlaid | App A.2 `[V:observed]`; `D-P4-4` |
+| Empty source inherits nearest non-empty ancestor's **entire configuration** | the private resolved binding points at the ancestor's one immutable compiled binding; its public `ResolvedProgramDescriptor` projection overlays no child field | App A.2 `[V:observed]`; `D-P4-4` |
 | Disabled/profile-disabled is absent | availability filter runs before graph resolution | App A.2; Phase 3 §5 `ProgramStateModel` |
 | `shadow` never inherits | `shadow` has no parent; its two children may inherit it as the table says | App A.1/A.2 |
 | `mc_Entity` | `ExtendedAttribute.MC_ENTITY` → bind location 10 when declared | App A.3 `[V:doc]` |
@@ -495,7 +629,17 @@ on both sides of deferred.
 5. `FINAL` is singleton and last in every frame schedule;
 6. `SETUP` is outside the per-frame schedule under `LOAD_OR_RESIZE`;
 7. virtual pre slots precede their corresponding indexed family; and
-8. compute slots are descriptors only unless the configuration explicitly enables G8/S2.
+8. compute slots are descriptors only unless the configuration explicitly enables G8/S2; and
+9. no descriptor in either `GBUFFERS` occurrence has a compute slot.
+
+`StageRegistry.schedule()` is the sole deterministic traversal: configuration order, including
+both distinct gbuffers `StageStep` values. `passes(step)` accepts only a step from that schedule
+and returns named slots in declared catalog order, sparse slots by ascending index (holes omitted),
+and the singleton once. `named` and `indexed` address only the population kind they name and return
+empty for a legal absent key; a foreign step, wrong lookup kind, duplicate key, descriptor outside
+its population, stage/band mismatch, illegal index, or virtual/raster kind mismatch is rejected
+during construction. Every returned `PassDescriptor.step()` is the identical contained schedule
+value; its slot, optional index, resource access, and compute set are the complete per-pass data.
 
 Pintonium's typed rendering phase is evidence that a typed, overrideable phase state works, but it
 does not collapse these two concepts. Its enum is a fine-grained draw-phase list
@@ -544,8 +688,9 @@ Index zero uses the unsuffixed name: `deferred`, `composite`, `begin`, and so on
 append the decimal value without zero padding. The naming function is total only for 0…99 and is
 round-trip-tested.
 
-A raster pass may own compute descriptors `Primary` and `Companion('a'…'z')`. These map to the
-pack's primary `.csh` and suffixed `_a`…`_z.csh` names. The slots contain no source, work-group
+A non-gbuffers raster pass may own compute descriptors `Primary` and `Companion('a'…'z')`; every
+gbuffers descriptor is rejected if that set is non-empty. Eligible slots map to the pack's primary
+`.csh` and suffixed `_a`…`_z.csh` names. The slots contain no source, work-group
 dimensions, image binding, SSBO binding, indirect pointer, or dispatch function at v0.1. That
 information is intentionally impossible to construct before G8/S2.
 
@@ -579,7 +724,7 @@ passes and belongs to Phase 5. This is the deliberate difference from Pintonium'
 stages, known fallback parents, acyclic edges, virtual-slot isolation, and source-stem uniqueness.
 It is not constructed with a fixed catalog-size array.
 
-The corrected governing inputs agree:
+The governing inputs now agree:
 
 - `docs/research/v1/RESEARCH.md:1142` says
   "Count: 60 named shader/virtual slots, excluding the external `<none>` sentinel";
@@ -592,9 +737,10 @@ The corrected governing inputs agree:
 
 The concrete contract rows remain controlling. The catalog therefore contains every table row,
 reports both `declaredClassicCount = 60` and `enumeratedClassicCount = 60` in a contract test, and
-makes no behavior depend on either number. The historic 43/60 contradiction is resolved upstream,
-without dropping any named row or turning the corrected summary count into an allocation constant.
-Catalog rows are constructed first; the numeric total remains validation metadata only.
+makes no behavior depend on either number. The former 43/60 conflict no longer exists in the
+governing inputs: **60** is the authoritative summary count. No named row is dropped, and the count
+does not become an allocation constant. Catalog rows are constructed first; the numeric total
+remains validation metadata only.
 
 ### 4.6 Availability and backup-chain resolution
 
@@ -772,17 +918,102 @@ public record BarrierContext(
 
 public interface ProgramBindingParticipant {
     BarrierParticipantResult afterBind(
-        ResolvedProgramBinding binding,
+        ResolvedProgramDescriptor binding,
         BarrierContext context);
+}
+
+public sealed interface BarrierParticipantResult {
+    record Continue() implements BarrierParticipantResult {}
+    record Degraded(String diagnosticId, String disabledScope)
+        implements BarrierParticipantResult {}
+}
+
+public sealed interface BarrierResult {
+    record Activated(ResolvedProgramDescriptor binding,
+                     List<BarrierParticipantResult.Degraded> degradations)
+        implements BarrierResult {}
+    record FixedFunction(List<ProgramSlotId> fallbackPath) implements BarrierResult {}
+    record Skipped(ProgramSlotId requested) implements BarrierResult {}
+    record ShadersOff(String diagnosticId) implements BarrierResult {}
+    record FailedSafe(String diagnosticId) implements BarrierResult {}
+    record StalePublication(long expectedGeneration, long currentGeneration)
+        implements BarrierResult {}
 }
 
 public interface ProgramStateBarrier {
     BarrierResult activate(UseProgramRequest request);
     BarrierResult releaseToFixedFunction(BarrierContext context);
 }
+
+public final class ProductionBarrierParticipants {
+    ProductionBarrierParticipants(/* three position-named participants + credential */);
+    // opaque product; no public/protected constructor, factory, subclass, or component access
+}
+
+public interface ProgramStateBarrierFactory {
+    BarrierConstructionResult create(
+        CompiledRegistryCandidate registry,
+        ProductionBarrierParticipants participants);
+}
+
+public interface ProductionBarrierComposer {
+    BarrierConstructionResult compose(
+        CompiledRegistryCandidate registry,
+        ProgramBindingParticipant samplers,
+        ProgramBindingParticipant builtIns,
+        ProgramBindingParticipant customs);
+}
+
+public sealed interface BarrierConstructionResult {
+    record Ready(BarrierPublicationCandidate candidate) implements BarrierConstructionResult {}
+    record Invalid(String diagnosticId) implements BarrierConstructionResult {}
+}
+
+public final class BarrierPublicationCandidate implements AutoCloseable {
+    BarrierPublicationCandidate(/* private barrier + registry identity + provenance */);
+    public void close(); // caller-owned before acceptance; idempotent
+    // opaque, inactive, non-operational input; no public/protected constructor/factory/subclass
+}
 ```
 
-Phase 6 supplies three participants in fixed order:
+Phase 7's `com.schmaloogium.mod.core` composition root calls the public
+`com.schmaloogium.engine.registry.ProductionBarrierComposer.compose` operation with the
+compiler-issued candidate and Phase 6's three implementations in the signature's fixed
+sampler/built-in/custom order. The facade delegates to the Phase-4-owned package-private production
+assembler, which alone mints `ProductionBarrierParticipants`, and then to the package-private
+factory implementation. It returns only `BarrierConstructionResult`, never the bundle or its
+credential. Null inputs, a closed or non-compiler-issued registry product, and an internal missing
+member return `Invalid` without GL work or retained participant references. Exactly one successful
+production candidate may be composed per registry product; a repeated call returns `Invalid`.
+Failure retains nothing. Success leaves the registry product and opaque barrier candidate
+caller-owned until publication, and closing either unpublished product is idempotent. Neither
+Phase 6 nor Phase 7 can construct, subclass, or synthesize the opaque bundle or compiler product.
+The factory checks both private credentials and creates a private barrier that invokes the
+positions in sampler/built-in/custom order.
+
+The separate package-private bootstrap assembler may supply three Phase-4-owned `Continue`
+participants only to bootstrap tests and bring-up; it requires the existing package-private
+bootstrap capability and marks the result bootstrap-only. Phase 7 production wiring cannot name
+or obtain that capability. Partial defaults are forbidden. A null registry/bundle, a bundle with
+the wrong provenance, or an internal missing member returns `Invalid` without GL work or retained
+references. Factory/backend exceptions are likewise diagnosed as `Invalid`, never thrown.
+
+`CompiledRegistryCandidate` is minted only by the compiler around its private
+`CompiledProgramRegistry` and compiler-origin credential. `BarrierPublicationCandidate` is the
+factory's opaque, final proof that the private barrier was created from an authenticated
+production bundle for that exact compiler product and registry identity. It exposes no barrier
+operation or credential. A candidate is inactive and caller-owned until supplied with that same
+compiler product in `RegistryPublication.Ready`; rejection leaves both caller-owned and
+acceptance transfers both to the publisher. An unpublished barrier has acquired no GL handle,
+lock, or participant-owned resource; `close()` marks it closed and drops its private barrier and
+participant references without GL work. Close is idempotent before transfer. After successful
+transfer, caller `close()` is an idempotent no-op and cannot affect the publication; the publisher
+alone releases the accepted barrier during replacement/recovery. Participant activation failures
+use the closed results below and never alter that lifecycle. Phase 11 does not install a fourth
+participant: it supplies custom-expression evaluation to Phase 6, whose `customs` participant
+performs that handoff.
+
+The three positions are:
 
 1. `SamplerRepointParticipant`;
 2. `BuiltInUniformRefreshParticipant`; and
@@ -794,7 +1025,7 @@ Activation order is normative:
 2. resolve the effective binding, including a fixed/skip terminal;
 3. restore the previous alpha/blend lock before changing the program;
 4. bind the effective program through `ShaderService.use`, or bind fixed function through the
-   requested Phase 1 addition;
+   published `ShaderService.useFixedFunction()` operation;
 5. for a `ShaderProgram` binding, invoke sampler, built-in, then custom participants; a fixed
    binding has no program locations and skips all three;
 6. snapshot the underlying alpha/blend aspects and apply the effective provider's explicit
@@ -806,9 +1037,21 @@ World state, per-draw values, texture sides, and custom expressions may have cha
 fast path may skip only the actual `use` call if Phase 6 explicitly proves that doing so preserves
 its refresh contract; v0.1 does not take that optimization.
 
-`ProgramBindingParticipant.afterBind` has the stated precondition that
-`binding.effective()` is `CompiledProgramBinding.ShaderProgram`; the barrier enforces it before
-dispatch so participants never branch on or invent fixed-function behavior.
+`ProgramBindingParticipant.afterBind` receives the handle-free descriptor only after the private
+resolved binding is a shader program; the barrier enforces that condition before projection and
+dispatch, so participants never receive an operational handle or invent fixed-function behavior.
+
+These results never throw. `Continue` proceeds; `Degraded` disables only its named participant-owned
+uniform/expression scope, records the diagnostic, and processing continues. `Activated` guarantees
+the program, successful participant work, and provider locks are active; the caller draws and
+retains the degradations for UI/log reporting. `FixedFunction` guarantees locks restored and fixed
+function bound; the caller continues the fixed terminal. `Skipped` guarantees locks restored and
+no pass state newly bound; the caller omits the draw. An unresolvable required request returns
+`ShadersOff` after restoring fixed-function/vanilla-safe state and requires the caller to publish
+off. Failure to prove restoration returns `FailedSafe`, emits its diagnostic, forbids the caller
+from drawing through the shader path, and requires immediate shaders-off/vanilla-path recovery.
+`StalePublication` is produced only by a superseded published view before delegation; it performs
+no GL work, forbids the draw, and requires the caller to reacquire the atomic publication snapshot.
 
 An absent alpha/blend override means “do not lock that aspect.” Explicit `OFF` means lock it
 disabled. A transition restores exactly the snapshot taken before the prior lock; it never
@@ -837,16 +1080,48 @@ It does not hash handles, driver logs, object identity, generation, timestamps, 
 Publication is:
 
 1. build a complete candidate;
-2. if caller accepts it, restore/release the old barrier;
+2. if caller accepts it, supply the current render-thread `BarrierContext` and restore/release the
+   old barrier;
 3. atomically replace `PublishedRegistry`;
 4. increment generation once;
 5. close the old registry on the render thread; and
 6. notify no cache directly—consumers poll equality.
 
 The publisher also accepts `ShadersOff`, represented by an empty registry and a new generation.
-This makes “off” observable to every cache. A failed candidate may leave the prior publication
-active until Phase 7/12 chooses old-registry retention or shaders-off; that user-facing policy is
-not Phase 4's.
+Its barrier view is empty too. This makes “off” observable to every cache. `RecoveredOff` has the
+same empty registry/view shape. A failed candidate may leave the prior publication active until
+Phase 7/12 chooses old-registry retention or shaders-off; that user-facing policy is not Phase
+4's.
+
+`publish(publication, releaseContext)` requires the current non-null render-thread context for both
+ready and off replacement. The publisher validates the context and passes it unchanged to the old
+barrier's `releaseToFixedFunction`; a missing, stale-frame, or stage/band-inconsistent context is a
+pre-release validation failure.
+
+`RegistryPublication.Ready` transfers its compiler-issued registry product and factory-issued
+barrier candidate to the publisher
+only when `Accepted` is returned; `ShadersOff` transfers no GL object. Before release begins, the
+publisher independently validates the registry product's compiler-origin credential and open,
+unpublished state, then validates the barrier candidate's Phase-4 provenance, authenticated
+production composition, exact product and registry identity, open private-barrier state, and
+nonpublication, as well as render-thread ownership and context. It separately rejects a
+bootstrap-marked candidate. A public `CompiledProgramRegistry` implementation has no conversion to
+`CompiledRegistryCandidate`, even when paired with genuine participants. An
+arbitrary `ProgramStateBarrier` implementation has no conversion to
+`BarrierPublicationCandidate` and cannot enter this path. A validation failure returns `Rejected`,
+leaves generation/current and the provably usable old publication unchanged, and leaves the
+candidate with the caller for idempotent close.
+
+Once old-barrier release begins, only `FixedFunction` permits the requested atomic replacement.
+Acceptance installs ready or empty state, increments once, transfers ready-candidate ownership,
+then idempotently closes the old registry. `ShadersOff`, `FailedSafe`, an exception, or any
+protocol-invalid release result instead installs an empty publication and increments once as
+`RecoveredOff`; the old barrier and registry are quarantined from all shader-path use, the old
+registry is idempotently closed, and the ready candidate remains caller-owned for idempotent close.
+The caller must report the returned aggregate failure and immediately continue through the vanilla
+recovery path; `FailedSafe` never claims that GL restoration succeeded. Republish of a transferred
+object is rejected. Old-registry close failure is diagnosed after replacement/recovery and cannot
+roll back or increment again.
 
 Generation adoption is structurally cross-checked against
 `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/net/irisshaders/iris/compat/sodium/impl/shader_overrides/IrisChunkProgramOverrides.java:136-139]`,
@@ -866,6 +1141,25 @@ inherited.
 - fallback path and final disposition; and
 - a stable diagnostic ID.
 
+`RegistryBuildFailure` is a closed, sanitized aggregate:
+
+```java
+public record RegistryBuildFailure(
+    RegistryFailureKind kind,
+    List<ProgramBuildFailure> programFailures,
+    String diagnosticId,
+    String userMessage) {}
+
+public enum RegistryFailureKind {
+    NO_REQUIRED_TERMINAL, CAPABILITY, UNSAFE_STATE, UNEXPECTED_BACKEND
+}
+```
+
+Its program list is immutable, deterministically ordered by requested slot, and may be empty for
+pack-wide capability/unsafe-state failures. Each member retains its own fallback disposition;
+the aggregate means no complete registry is publishable and the final pack-wide disposition is
+`ShadersOff`. Driver logs and source text never enter `userMessage`.
+
 The detailed log goes to `schmaloogium.compile`. A concise error goes through
 `DiagnosticReporter` to the shader GUI/user channel. Debug saved sources remain Phase 3's opt-in
 local artifact and never enter this diagnostic.
@@ -876,15 +1170,17 @@ local artifact and never enter this diagnostic.
 
 | Exposed contract | Exact content | Consumer(s) |
 |---|---|---|
-| `StageRegistry`, `StageId`, `StageBand`, `StageStep`, `PassIndex` | immutable modern-shape and G6 configurations; sparse 0…99 families; duplicated gbuffers occurrence | Phases 5, 7, 8; G8/S1/S2 |
-| `PassDescriptor`, `PassResourceAccess`, `ComputeDispatchSlot` | stage-readable domain, exact/symbolic writes, flip config, mipmap set, dormant primary + a…z compute companions | Phases 5, 7; G8/S2 |
-| `ProgramSlotId`, `ProgramSlotDescriptor`, `ProgramStateBundle` | exact pack-facing name, stage/bands, fallback, routing, mipmaps, instance count, attributes, alpha/blend, scale, flips, geometry | Phases 5, 6, 7, 8, 10 |
-| `CompiledProgramRegistry.resolve` / `ResolvedProgramBinding` | requested/effective identity, entire provider state, fallback path; no mutable handle exposure beyond the binding | Phases 5, 6, 7, 8 |
-| `ProgramStateBarrier.activate/releaseToFixedFunction` | ordered shadow override → resolve → restore → bind → Phase 6 participants → alpha/blend lock | Phases 6, 7, 8 |
-| `ProgramBindingParticipant` and result contract | never-throwing post-bind contribution point; fixed sampler/built-in/custom order; participant owns its rung-1/2 isolation | Phase 6, then Phase 11 through Phase 6 |
-| `PublishedRegistry.generation` | changes once per accepted registry/off publication; consumers compare for inequality | Phase 12 reload paths and every derived program/uniform cache |
+| `StageRegistry`, `StageId`, `StageBand`, `StageStep`, `PassPopulation`, `PassIndex` | immutable schedule-order traversal and kind-correct lookup; sparse 0…99 families; duplicated gbuffers occurrence; legal absence returns empty and invalid construction/key use is rejected | Phases 5, 7, 8; G8/S1/S2 |
+| `PassDescriptor`, `PassResourceAccess`, `ComputeDispatchSlot` | contained schedule step plus named/indexed identity, stage-readable domain, exact/symbolic writes, flip config, mipmap set; dormant primary + a…z companions only outside gbuffers | Phases 5, 7; G8/S2 |
+| `ProgramSlotId`, `ProgramSlotDescriptor`, `ProgramStateBundle` | exact pack-facing name, stage/bands, fallback, routing, mipmaps, instance count, attributes, alpha/blend, scale, flips, geometry | Phases 5, 6, 7, 8 |
+| `ProgramRegistryCompiler.compile` / `RegistryBuildRequest` | synchronous render-thread build entry point; request carries immutable `PackConfiguration`, `DimensionKey`, `MacroContribution`, `GLCapabilityProfile`, caller-owned `GLDevice`, and `DiagnosticReporter`; the compiler retains none after return and returns a caller-owned ready candidate or shaders-off failure | Phases 7, 12 |
+| `PublishedRegistry.registry` / `ProgramRegistryView.resolve` / `ResolvedProgramDescriptor` | generation-coherent non-owning inspection; requested/effective identity, provider state, source fingerprints, fallback path; no registry `close` or `ProgramHandle`. Private compiled bindings remain inside Phase 4; only opaque compiler-issued `CompiledRegistryCandidate` carries the private closable registry into composition/publication | Phases 5, 6, 7, 8 |
+| `PublishedRegistry.barrier` / `PublishedProgramStateBarrier`, `UseProgramRequest`, `BarrierContext`, `BarrierResult` | generation-checked, non-owning, render-thread-only activation/release route; request carries the logical slot and context, whose caller-supplied fields are `shadowPass`, `stage`, `band`, and `frameId`; replacement returns stale without GL work; ready alone exposes a view, while shaders-off/`RecoveredOff` expose none; ordered shadow override → resolve → restore → bind → Phase 6 participants → alpha/blend lock; closed activated/fixed/skipped/off/failed-safe/stale outcomes and caller duties | Phases 6, 7, 8 |
+| `ProductionBarrierComposer.compose`, `ProgramStateBarrierFactory`, opaque `ProductionBarrierParticipants`, `BarrierConstructionResult`, `ProgramBindingParticipant`, `BarrierParticipantResult` | Phase 7 calls the public Phase-4 facade with one compiler product and exactly the Phase-6 sampler/built-in/custom implementations; package-private assembly mints the credentialed bundle and factory candidate without exposing either credential; one success per registry product, while null/closed/repeated/provenance failure has no GL or retention. Phase 11 feeds Phase 6's custom participant rather than installing separately | Phase 6 supplies participants, Phase 11 feeds customs through Phase 6, Phase 7 composes |
+| `ProgramRegistryPublisher.current` / `publish`; `RegistryBuildResult.Ready` / opaque `CompiledRegistryCandidate`; `RegistryPublication`, `BarrierPublicationCandidate`, `PublicationResult` | render-thread-only publisher entry points return the current non-owning snapshot or accept a publication plus mandatory caller-supplied release context. Compiler alone mints the registry product; ready publication accepts it only with the factory product paired to that exact product/registry identity; publisher independently checks compiler origin plus factory and complete-production-composition provenance before release. External registry implementations, arbitrary barriers, and bootstrap candidates cannot enter; caller owns both candidates until accepted and must close rejected/recovered-off products, accepted transfer makes caller close harmless, publisher owns accepted teardown, and empty `RecoveredOff` applies | Phases 7, 12 |
+| `PublishedRegistry.generation` | changes once per accepted registry/off publication or forced `RecoveredOff`; pre-release rejection does not change it; consumers compare for inequality | Phase 12 reload paths and every derived program/uniform cache |
 | `RegistryFingerprint` | deterministic derivation identity distinct from generation | Phases 5, 6, 7, 12 |
-| `ProgramBuildFailure` | sanitized, source-attributed program failure and fallback disposition | Phase 7 activation; Phase 12 shader GUI |
+| `ProgramBuildFailure`, `RegistryBuildFailure` | sanitized per-program fallback disposition plus deterministic registry-wide aggregate whose final disposition is shaders-off | Phase 7 activation/reload; Phase 12 shader GUI |
 | Fixed attribute table | `mc_Entity=10`, `mc_midTexCoord=11`, `at_tangent=12` | Phase 10 |
 | Per-slot `instanceCount` | positive count retained for all programs; no execution semantics hidden here | Phase 7 executes; Phase 6 uploads `instanceId` |
 
@@ -897,18 +1193,19 @@ or overlay requested-slot state on the effective provider. Phase 10 must not ren
 | Phase 1 §5 contract | Use here |
 |---|---|
 | `:engine` layout, package rules, C-1…C-4 seam | all registry/compiler types and tests |
-| `GLDevice`/seven services | `ShaderService`, `StateService`, and no-op `DebugService` call sites only |
+| `GLDevice`/seven services | `ShaderService.use(ProgramHandle)`, `ShaderService.useFixedFunction()`, `StateService`, and no-op `DebugService` call sites only |
 | `GLCapabilityProfile` + serialization | route/attribute/geometry validation and recorded-profile tests |
 | Opaque `ProgramHandle`/`ShaderHandle` lifetime | candidate ownership ledger and registry teardown |
 | `CompileResult` / `LinkResult` / `ValidateResult` | never-throwing build state machine |
-| `RecordingGLDevice`, `ScriptedResponses`, `GLCallLog` | headless compile/failure/barrier tests |
-| `ReplayAssertions` | call order, no leaks, no use-after-delete |
+| `RecordingGLDevice`, `ScriptedResponses`, `GLCallLog` | headless compile/failure/barrier tests, including the zero-argument `shaders.useFixedFunction` event |
+| `ReplayAssertions` | call order, no leaks, no use-after-delete, and fixed-terminal distinction from handle-bearing `shaders.use` |
 | `StateService.snapshot/restore`, `alphaTest`, `blend` | per-program lock |
 | `DiagnosticReporter` and fixed channels | sanitized program/user errors on `.compile` and `.gl` |
 | SPDX/`THIRD-PARTY.md` mechanism | any future LGPL-derived implementation, though this design copies no source |
 
-Phase 1 exposes no fixed-function selection operation. That missing contract is requested in
-§5.4; this phase does not assume that `use(null)`, a magic handle, or integer zero is legal.
+Phase 1 exposes `ShaderService.useFixedFunction()` as the handle-free selection operation for
+program zero. Phase 4 consumes that verified contract directly and continues to forbid
+`use(null)`, a magic handle, or a raw integer.
 
 ### 5.3 Consumed Phase 3 contracts
 
@@ -930,15 +1227,9 @@ materializer.
 
 ### 5.4 Requested changes to dependency contracts
 
-Two changes are required before a fully contract-faithful implementation can close:
+One change is required before a fully contract-faithful implementation can close:
 
-1. **Phase 1 — fixed-function selection.** Add an engine-level
-   `ShaderService.useFixedFunction()` (name refinable, semantics not) that binds program zero
-   through the backend without exposing a raw integer. It is required by App A.1's `<none>`,
-   missing-root, missing-shadow, and missing-final passthrough dispositions and by barrier release.
-   Add the call to `RecordingGLDevice` and replay assertions. Until verified, those terminal
-   actions remain uncallable rather than being silently encoded as `use(null)`.
-2. **Phase 3 or Phase 1 — complete legacy geometry.** Preferred: Phase 3 publishes whether its
+1. **Phase 3 or Phase 1 — complete legacy geometry.** Preferred: Phase 3 publishes whether its
    complete materialized legacy source is core-geometry compatible and, if it claims translation,
    translates every required extension semantic under a source-map/fingerprint contract.
    Alternative: Phase 1 adds an engine-enum pre-link legacy geometry configuration operation
@@ -946,8 +1237,8 @@ Two changes are required before a fully contract-faithful implementation can clo
    without exposing ARB constants. The current two-span rewrite plus no pre-link operation is not
    enough to claim the published dual-form contract.
 
-These are requests, not assumed APIs. They require the dependency fix-up/re-verification route
-because both change binding §5 surfaces.
+This is a request, not an assumed API. It requires the dependency fix-up/re-verification route
+because it changes a binding §5 surface.
 
 ### 5.5 Design-graph note
 
@@ -964,7 +1255,7 @@ DESIGN correction in §11; it does not edit the graph.
 | 2a | alpha/blend override application or optional debug label fails | restore the saved state, disable only that override/feature for this registry generation, diagnose, keep the program |
 | 3 | materialize/compile/link/validate/attribute/geometry failure for one program | delete candidate objects for that program, emit user-visible error, mark it failed, resolve the entire binding through its backup chain |
 | 3 | absent deferred/composite indexed pass | skip it; absence is normal, not an error |
-| 3 | unavailable root with a fixed terminal | select fixed function only after Phase 1 exposes the operation |
+| 3 | unavailable root with a fixed terminal | select fixed function through `ShaderService.useFixedFunction()` and continue the declared terminal/fallback disposition |
 | 4 | registry-wide capability failure—e.g. required estate cannot fit, required high attribute has no fallback, or every required terminal is unavailable | return `ShadersOff`, chat error through caller, do not publish partial registry |
 | 5 | unexpected exception, cleanup failure, stale/use-after-delete invariant, or barrier cannot restore safe state | catch at public boundary, close all owned candidate objects, request shaders-off publication, leave/restore vanilla framebuffer path; never crash client |
 
@@ -988,7 +1279,8 @@ at the public barrier.
   behind OQ-15's successful spike and mandatory synchronous fallback; publication and vanilla-state
   interaction remain render-thread work.
 - `PublishedRegistry` is an immutable snapshot. The publisher may expose it safely to readers, but
-  no off-thread reader may dereference a GL handle or call the barrier.
+  no off-thread reader may dereference a GL handle or call its non-owning barrier view; consumers
+  must treat `StalePublication` as a no-draw signal and reacquire the snapshot.
 
 ### 7.2 Allocation and hot paths
 
@@ -1021,6 +1313,7 @@ phase never introduces raw LWJGL calls.
 - `sparseFamilies_acceptZeroNinetyNineAndHoles`
 - `g6DeferredComposite_populateThroughFifteenWithoutSixteenSizedType`
 - `computeSlots_primaryAndAThroughZ_areDormant`
+- `computeSlots_onEveryGbuffersPassAreRejected`
 - `stageAccess_neverStoresMainOrAltTextureSide`
 - `classicCatalog_mapsEveryAppendixA1Row`
 - `classicCatalog_declaredAndEnumeratedCountsAgreeAtSixty`
@@ -1065,6 +1358,8 @@ Against Phase 1 `RecordingGLDevice` and recorded `GLCapabilityProfile`s:
 - validate failure deletes the program and resolves fallback;
 - missing fragment or geometry stage is not invented; scripted link result controls outcome;
 - disabled/missing slots emit no GL call;
+- a fixed terminal records `shaders.useFixedFunction` after lock restoration and records no
+  handle-bearing `shaders.use`;
 - `ReplayAssertions.noLeakedObjects()` holds after candidate failure and registry close;
 - `noUseAfterDelete()` holds across reload publication;
 - negative Pintonium fixture asserts locations 13/14 and double-bound 11 never appear; and
@@ -1072,6 +1367,21 @@ Against Phase 1 `RecordingGLDevice` and recorded `GLCapabilityProfile`s:
 
 ### 8.4 Barrier and generation tests
 
+- `publishedRegistryView_hasNoCloseAndCannotDeleteCurrentHandles`
+- `publishedResolutionAndActivatedResult_apiShapeContainsNoProgramHandle`
+- `retainedDescriptorAfterStalePublicationCannotDriveShaderServiceUse`
+- `bootstrapNoOpCapability_isPackagePrivateAndUnavailableToPhase7`
+- `productionPublication_rejectsBootstrapBarrierBeforeRelease`
+- `productionParticipants_synthesizedNoOpBundleCannotReachFactoryReady`
+- `productionComposer_crossPackagePhase7RouteHasFixedParticipantOrder`
+- `productionComposer_nullClosedOrRepeatedCallIsInvalidWithoutRetention`
+- `externalCompiledRegistry_evenWithGenuineParticipantsCannotComposeOrPublish`
+- `productionPublication_arbitraryBarrierCannotFormReadyInput`
+- `barrierFactory_rejectsNullInvalidOrWrongProvenanceWithoutGLOrRetention`
+- `barrierFactory_acceptTransfersOwnership_rejectRetainsCallerOwnership`
+- `barrierCandidate_closeBeforeTransferIsIdempotentAndDropsReferencesWithoutGL`
+- `barrierCandidate_closeAfterAcceptedTransferCannotAffectPublication`
+- `barrierFactory_customPositionReceivesPhase11ThroughPhase6`
 - `barrier_order_shadowResolveRestoreBindSamplerBuiltinCustomLock`
 - `barrier_shadowPassForcesShadowBeforeFallback`
 - `barrier_sameHandleStillRefreshesParticipants`
@@ -1079,9 +1389,19 @@ Against Phase 1 `RecordingGLDevice` and recorded `GLCapabilityProfile`s:
 - `barrier_absentOverrideDoesNotLock_explicitOffDoes`
 - `barrier_transitionRestoresUnderlyingStateNotPriorOverride`
 - `barrier_participantFailureIsIsolatedByOwner`
-- `barrier_fixedTerminalRequiresPublishedFacadeOperation`
-- `publication_acceptIncrementsOnce_failureDoesNot`
+- `barrier_fixedTerminalRestoresThenCallsUseFixedFunction`
+- `publication_releaseReceivesCurrentContext_forReadyAndOff`
+- `publication_preReleaseValidationRejectsWithoutGenerationOrOwnershipChange`
+- `publication_releaseFixedFunctionPermitsRequestedReplacement`
+- `publication_releaseShadersOffRecoversEmptyAndIncrementsOnce`
+- `publication_releaseFailedSafeOrPartialQuarantinesOldAndRecoversEmpty`
+- `publication_recoveredOffLeavesReadyCandidateCallerOwnedAndClosesOld`
+- `publication_acceptIncrementsOnce_preReleaseValidationDoesNot`
 - `publication_shadersOffInvalidatesEveryPriorGeneration`
+- `publication_readyExposesMatchingNonOwningBarrierView`
+- `publication_offAndRecoveredOffExposeNoBarrierView`
+- `publication_replacedBarrierViewReturnsStaleWithoutGL`
+- `publication_barrierViewRequiresRenderThreadAndCannotClose`
 - `cache_pollInvalidatesOnInequality`
 - `registryClose_isIdempotent`
 
@@ -1112,7 +1432,7 @@ set to linked/resolved state with zero unmapped directives, plus no leaked/use-a
 | Classic G6 configuration and full App A catalog | `v0.1` | implemented now; row coverage is cardinality-independent |
 | Sparse modern configuration fixture with dormant families | `v0.1` | implemented as data/test, not executed |
 | Program-state adapter, route/attribute validation, fallback resolver | `v0.1` | implemented now |
-| Synchronous materialize/compile/link/validate transaction | `v0.1` | implemented after §5.4 dependency gaps close |
+| Synchronous materialize/compile/link/validate transaction | `v0.1` | implemented after the §5.4 legacy-geometry dependency gap closes |
 | Barrier, alpha/blend lock, fixed Phase 6 participant slots | `v0.1` | interface and P4 mechanics now; P6 implementations later |
 | Shadow force-selection branch | `v0.1` | interface/mechanics now; Phase 8 invokes at `v0.2` |
 | Pipeline generation and fingerprints | `v0.1` | implemented now; Phase 12 consumes at `v0.4` |
@@ -1126,8 +1446,8 @@ set to linked/resolved state with zero unmapped directives, plus no leaked/use-a
 ## 10. OQ & spike specifications
 
 Phase 4 has no assigned open question in §G10 or its phase specification. The catalog cardinality
-is resolved upstream; fixed-function facade and legacy-geometry contract gaps still require
-governed dependency corrections through §G1.3, recorded in §11.
+and fixed-function facade are resolved upstream; only the legacy-geometry contract gap still
+requires a governed dependency correction through §G1.3, recorded in §11.
 
 Phase 14's OQ-15 may later change compiler threading but not registry, fallback, barrier, or
 publication semantics.
@@ -1171,9 +1491,11 @@ publication semantics.
 
 1. **RESOLVED UPSTREAM — 43 versus 60 explicit slots.** §4.5 preserves all 60 contract rows and
    cardinality-independent behavior; RESEARCH and RC3 now remove the erroneous 43 summary.
-2. **Fixed-function behavior versus facade.** App A requires no-program/fixed/passthrough
-   terminals; Phase 1 exposes `use(ProgramHandle)` only. Ruling: request an opaque engine verb,
-   assume no null/magic handle.
+2. **RESOLVED UPSTREAM — fixed-function behavior versus facade.** App A's fixed terminals require
+   no-program selection, while absent `final` remains a downstream-owned passthrough copy. Phase 1
+   now exposes `ShaderService.useFixedFunction()` alongside `use(ProgramHandle)`. Ruling: consume
+   the published handle-free verb for fixed terminals; retain the ban on null, magic handles, and
+   raw program zero.
 3. **Dual-form geometry versus current handoff.** The assigned design requires internal
    translation; Phase 3 exposes only a two-span configuration rewrite and Phase 1 exposes no
    legacy parameter operation. Ruling: never claim incomplete translation; request a verified
@@ -1211,7 +1533,12 @@ publication semantics.
   60-row Appendix A.1 count, and `docs/design/v2.0-RC3/DESIGN.md` now uses cardinality-neutral
   Phase 4 wording. Every named row remains; §4.5 and §8 retain equality/coverage tests without
   making the corrected count behavioral.
-- Apply and re-verify the Phase 1 fixed-function facade request in §5.4.
+- **GRANTED — Phase 1 §0.15, verified by round 18.**
+  `docs/phase1/v14/PHASE_1_DOC.md:2757`–`:2759` publishes
+  `ShaderService.useFixedFunction()`, and
+  `docs/phase1/v14/PHASE_1_DOC.md:3224`–`:3231` publishes its distinct
+  `shaders.useFixedFunction` recorder/replay semantics. The literal PASS at
+  `docs/phase1/reviews/PHASE_1_REVIEW_18.md:50`–`:62` closes that dependency change.
 - Apply and re-verify one complete legacy-geometry path from §5.4; update Phase 3/Phase 1
   interfaces consistently.
 - Add Phase 4 to Phase 12's declared dependency list, or state the generation is consumed
@@ -1231,8 +1558,10 @@ publication semantics.
    `fallback_*` and `virtualPre_*` test.
 5. **[v0.1]** Implement the Phase 3 adapter for program state, routing, attributes, instance count,
    source keys, and fingerprints; prohibit rescanning/reopening by package/API tests.
-6. **[v0.1]** Resolve the Phase 1 fixed-function request and add recorder support before
-   implementing terminal actions.
+6. **[v0.1]** Implement fixed-terminal actions through Phase 1's verified
+   `ShaderService.useFixedFunction()` contract and assert the distinct
+   `shaders.useFixedFunction` recorder event; never encode the terminal as null, a magic handle,
+   or a raw integer.
 7. **[v0.1]** Resolve the legacy-geometry dependency request; implement only the verified strategy
    and all `geometry_*` tests.
 8. **[v0.1]** Implement pure build planning/materialization and deterministic V/G/F ordering;
@@ -1241,14 +1570,18 @@ publication semantics.
    script compile/link/validate failures and prove no leak/use-after-delete.
 10. **[v0.1]** Bind only declared extended attributes at 10/11/12 with exact capability gates;
     run negative Pintonium-numbering test.
-11. **[v0.1]** Implement immutable compiled registry, idempotent close, fingerprints, and
-    transaction-only publication.
+11. **[v0.1]** Implement immutable compiled registry, opaque compiler-origin product, idempotent
+    close, fingerprints, and transaction-only publication.
 12. **[v0.1]** Implement generation publication for registry and shaders-off replacements; run
     cache inequality tests.
-13. **[v0.1]** Implement barrier selection/restore/bind/participant/lock order with no-op
-    participants; run recorded state tests.
-14. **[v0.1]** Expose Phase 6 participant installation without global mutable pack state; add
-    never-throw result and ordering tests.
+13. **[v0.1]** Implement barrier selection/restore/bind/participant/lock order with the
+    package-private bootstrap composition; run recorded state tests.
+14. **[v0.1]** Implement the Phase-4-owned composition facade and immutable barrier factory;
+    prove cross-package Phase 7 wiring, compiler-product and production-bundle provenance,
+    factory-issued publication-candidate provenance, external-registry/synthesized-participant/
+    arbitrary-barrier rejection, bootstrap confinement, handle-free results, invalid/repeated-call
+    behavior, idempotent pre-transfer barrier-candidate close, harmless post-transfer close, fixed
+    order, Phase 11 handoff, and publication ownership lifecycle.
 15. **[v0.1]** Add `ProgramBuildFailure` diagnostics to `.compile` and shader-GUI channels,
     sanitizing source and driver data.
 16. **[v0.1]** Add dormant compute companion descriptors and prove no compile/dispatch GL calls.
