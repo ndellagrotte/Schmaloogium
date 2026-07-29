@@ -121,6 +121,108 @@ as §G7 permits. Pintonium is LGPL-3.0 evidence. No file in a `chatlogs/` direct
 No build, test, verification loop, review agent, or source-code edit was performed. This is the
 Phase 5 build-session architecture deliverable only.
 
+### 0.4 Round-1 fix-up
+
+Round 1 added the missing Phase 13 overlay supply seam, synchronous resize-notice delivery,
+implementable shadow-estate operations, and explicit conformance rows for clear batching, sizing,
+resize invalidation, supersampling, and Final handoff. The changed §5 contract requires a fresh
+verify round before Phase 5 can close.
+
+### 0.5 Round-2 fix-up
+
+Round 2 completed resize-failure publication, registration, color-clear execution, composite-blend,
+and anaglyph-aware Final handoff contracts. The changed §5 contract requires a fresh verify round.
+
+### 0.6 Round-3 fix-up
+
+Round 3 bound mandatory full-clear state to successful execution and made resize retries use each
+consumer's acknowledged sizing baseline. The changed §5 contract requires a fresh verify round.
+
+### 0.7 Round-4 fix-up
+
+Round 4 aligned the resize-registration signature and mapped the legacy shadow-depth swizzle.
+
+### 0.8 Round-6 fix-up
+
+Round 6 completed the publication state/result model and the public planning/build input inventory.
+The changed §5 contract requires a fresh verify round.
+
+### 0.9 Round-7 fix-up
+
+Round 7 closed successful planning, resize-consumer identity, and main-color allocation mapping.
+The changed §5 contract requires a fresh verify round.
+
+### 0.10 Round-8 fix-up
+
+Round 8 defined the resize-failure delivered-count invariant and its conformance oracle.
+
+### 0.11 Round-9 fix-up
+
+Round 9 defined the published-estate main-depth refresh operation and resize-required carrier.
+
+### 0.12 Round-10 fix-up
+
+Round 10 completed successful and failed same-extent main-depth refresh transitions.
+
+### 0.13 Round-11 fix-up
+
+Round 11 completed format-sensitive depth-copy-target refresh and observable resize-registration
+rejection. The changed §5 contract requires a fresh verify round.
+
+### 0.14 Round-12 fix-up
+
+Round 12 aligned depth-refresh classification and completed resize-registration and texture-overlay
+handoff contracts. The changed §5 contract requires a fresh verify round.
+
+### 0.15 Round-13 fix-up
+
+Round 13 corrected the Phase 1 request count, completed unit 15's `NOISE` resolution, and separated
+pre-publication inspection from publisher-assigned generation. The changed §5 contract requires a
+fresh verify round.
+
+### 0.16 Round-14 fix-up
+
+Round 14 defined the published sizing, inventory, and resize-notice value contracts.
+
+### 0.17 Round-15 fix-up
+
+Round 15 removed the unused runtime revision from the planning input contract.
+
+### 0.18 Round-16 fix-up
+
+Round 16 completed the Phase 7 publication transaction and SCREEN-terminal routing contracts.
+The changed §5 contract requires a fresh verify round.
+
+### 0.19 Round-17 fix-up
+
+Round 17 gave pass snapshots a closed engine-FBO/SCREEN target and completed the public frame
+lifecycle result contracts. The changed §5 contract requires a fresh verify round.
+
+### 0.20 Round-18 fix-up
+
+Round 18 made pass acquisition and completion outcomes closed and observable.
+
+### 0.21 Round-19 fix-up
+
+Round 19 closed and tested the main-pass rejection matrix and the shadow-pass operation outcomes.
+The changed §5 contract requires a fresh verify round.
+
+### 0.22 Round-20 fix-up
+
+Round 20 completed the shadow view, snapshot, result-carrier, and already-open rejection contracts.
+The changed §5 contract requires a fresh verify round.
+
+### 0.23 Round-21 fix-up
+
+Round 21 distinguished unrequested shadows from failure, made the shadow family public, and
+requested binding exposure of Phase 4's existing candidate view. The changed §5 contract requires
+a fresh verify round.
+
+### 0.24 Round-22 fix-up
+
+Round 22 completed the dependent-facing component contracts embedded in shadow snapshots.
+The changed §5 contract requires a fresh verify round.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 5 owns
@@ -151,8 +253,8 @@ Mixins observe and delegate; no flip, clear, sizing, or fallback policy lives in
 ### 1.2 Explicit adjacent ownership
 
 - **Owned by Phase 1:** `GLDevice`, services, opaque handles, `GLCapabilityProfile`, recording/replay,
-  diagnostics, log channels, and bring-up stage 2. Phase 5 requests two narrow facade-contract
-  corrections in §5.5 and assumes neither.
+  diagnostics, log channels, and bring-up stage 2. Phase 5 requests three narrow facade-contract
+  corrections in §5.5 and assumes none.
 - **Owned by Phase 3:** parsing and validation of format/clear/mipmap/shadow/supersampling
   directives, `ProgramStateModel`, `ResourceRequirements`, immutable configuration, and its
   fingerprint. Phase 5 never reopens or rescans the pack.
@@ -162,9 +264,9 @@ Mixins observe and delegate; no flip, clear, sizing, or fallback policy lives in
 - **Owned by Phase 6:** sampler-uniform location caching and uploading fixed unit numbers. Phase 5
   supplies a pass-coherent unit→texture snapshot; it does not upload a sampler uniform.
 - **Owned by Phase 7:** when frame clears and depth copies occur, pass execution, viewport/state
-  setup, final rendering to Minecraft's framebuffer, frame-driver try/finally, runtime display and
-  quality inputs, preparation of Minecraft's shader framebuffer at Phase 5's required main extent,
-  and orchestration of registry/estate publication.
+  setup, final rendering to Minecraft's framebuffer with its anaglyph-aware color mask,
+  frame-driver try/finally, runtime display and quality inputs, preparation of Minecraft's shader
+  framebuffer at Phase 5's required main extent, and orchestration of registry/estate publication.
 - **Owned by Phase 8:** shadow camera, traversal, shadow pass execution, and the moment of the
   shadowtex1 split. Phase 5 supplies sfb and its operations.
 - **Owned by Phase 13:** generated noise, `_n`/`_s` companion atlases, and custom texture objects.
@@ -181,7 +283,8 @@ Mixins observe and delegate; no flip, clear, sizing, or fallback policy lives in
 This phase does not decide pass timing, execute a shader, upload a uniform, author a shadow camera,
 load a custom texture, or introduce a direct LWJGL call in `:engine`. `Final` has no Phase-5-owned
 FBO. Its buffer plan returns a `SCREEN` terminal that obliges Phase 7 to bind Minecraft's framebuffer
-through its platform path before drawing, consistent with
+through its platform path and apply Minecraft's anaglyph-aware color mask before drawing, consistent
+with `docs/research/v1/RESEARCH.md:526` and
 `docs/phase1/v14/PHASE_1_DOC.md:3986`, which warns that `bindDefault` means GL framebuffer name zero,
 not Minecraft's world FBO.
 
@@ -227,11 +330,55 @@ public record LogicalBuffer(BufferDomain domain, BufferIndex index) {}
 public record Extent2i(int width, int height) {}
 public enum PhysicalSide { A, B }
 
+public record BufferSizing(
+    Extent2i mainExtent,
+    Optional<Extent2i> shadowExtent,
+    int superSamplingLevel) {}
+
+public sealed interface ResolvedBufferFormat {
+    record Color(ColorInternalFormat value) implements ResolvedBufferFormat {}
+    record Depth(DepthAttachmentFormat value) implements ResolvedBufferFormat {}
+}
+
+public record BufferInventoryEntry(
+    LogicalBuffer buffer,
+    ResolvedBufferFormat format) {}
+
+public record BufferInventory(List<BufferInventoryEntry> entries) {
+    public BufferInventory { entries = List.copyOf(entries); }
+    public int count(BufferDomain domain) {
+        return (int) entries.stream().filter(e -> e.buffer().domain() == domain).count();
+    }
+}
+
+public enum BufferResizeReason {
+    DISPLAY_EXTENT,
+    RENDER_QUALITY,
+    MAIN_DEPTH_EXTENT,
+    SHADOW_RESOLUTION,
+    SHADOW_QUALITY,
+    PACK_CONFIGURATION,
+    REGISTRY_PLAN,
+    COLOR_INVENTORY_OR_FORMAT
+}
+
+public record BufferResizeNotice(
+    BufferSizing oldSizing,
+    BufferSizing newSizing,
+    long newGeneration,
+    BufferResizeReason reason) {}
+
 public record BufferRuntimeInputs(
     Extent2i displayExtent,
     double renderQuality,
-    double shadowQuality,
-    long runtimeRevision) {}
+    double shadowQuality) {}
+
+public record BufferPlanRequest(
+    PackConfiguration configuration,
+    ProgramRegistryView registry,
+    RegistryFingerprint registryFingerprint,
+    GLCapabilityProfile capabilities,
+    BufferRuntimeInputs runtime) {}
 
 public record BufferBuildRequest(
     PackConfiguration configuration,
@@ -242,6 +389,11 @@ public record BufferBuildRequest(
     MainDepthSource mainDepth,
     GLDevice device,
     DiagnosticReporter diagnostics) {}
+
+public sealed interface BufferPlanResult {
+    record Valid(BufferPlan plan) implements BufferPlanResult {}
+    record Invalid(BufferFailure failure) implements BufferPlanResult {}
+}
 
 public sealed interface BufferBuildResult {
     record Ready(BufferEstateCandidate candidate) implements BufferBuildResult {}
@@ -255,8 +407,14 @@ public interface BufferArchitecture {
 }
 
 public final class BufferEstateCandidate implements AutoCloseable {
-    public BufferEstateView view();
+    public BufferEstateInspection inspection();
     public void close(); // idempotent while caller-owned; deletes only owned handles
+}
+
+public interface BufferEstateInspection {
+    RegistryFingerprint registryFingerprint();
+    BufferSizing sizing();
+    BufferInventory inventory();
 }
 
 public interface BufferEstatePublisher {
@@ -265,18 +423,78 @@ public interface BufferEstatePublisher {
         BufferEstateCandidate candidate,
         RegistryFingerprint acceptedRegistry);
     BufferPublicationResult publishOff(BufferFailure cause);
+    BufferResizeRegistrationResult addResizeConsumer(
+        String consumerId,
+        BufferResizeConsumer consumer,
+        BufferSizing acknowledgedSizing,
+        long acknowledgedGeneration);
 }
 
 public record PublishedBufferEstate(
     long generation,
     Optional<BufferEstateView> estate) {}
+
+public interface BufferResizeRegistration extends AutoCloseable {
+    void close(); // idempotent render-thread removal
+}
+
+public sealed interface BufferResizeRegistrationResult {
+    record Registered(BufferResizeRegistration registration)
+        implements BufferResizeRegistrationResult {}
+    record Rejected(BufferResizeRegistrationRejection reason)
+        implements BufferResizeRegistrationResult {}
+}
+
+public enum BufferResizeRegistrationRejection {
+    BLANK_CONSUMER_ID,
+    DUPLICATE_LIVE_CONSUMER_ID,
+    FUTURE_ACKNOWLEDGED_GENERATION,
+    UNKNOWN_ACKNOWLEDGED_GENERATION,
+    ACKNOWLEDGED_SIZING_MISMATCH
+}
+
+public interface BufferResizeConsumer {
+    ResizeConsumerResult resize(BufferResizeNotice notice); // render thread; no throw
+}
+
+public enum ResizeConsumerResult { SUCCESS, FAILED }
+
+public sealed interface BufferPublicationResult {
+    record Published(PublishedBufferEstate publication) implements BufferPublicationResult {}
+    record ProvenanceRejected(RegistryFingerprint candidateRegistry,
+                              RegistryFingerprint acceptedRegistry)
+        implements BufferPublicationResult {}
+    record ConsumerFailed(long failedGeneration, PublishedBufferEstate offPublication,
+                          String consumerId, int deliveredCount) implements BufferPublicationResult {}
+}
 ```
 
-`BufferEstateCandidate` is an opaque, compiler-created ownership product. It is usable only for
-inspection and publication. Acceptance transfers ownership; caller `close()` becomes harmless.
-Rejection leaves it caller-owned. `publish` requires the exact `RegistryFingerprint` used to build
-the candidate. That prevents a buffer plan produced for one effective registry from being paired
-with another.
+`BufferPlanRequest` contains the complete immutable planning input. Its configuration must have a
+valid Phase 3 schema/fingerprint, `registryFingerprint` must equal `registry.fingerprint()`, runtime
+extents/multipliers must satisfy §4.11, and capabilities must be one immutable profile.
+The three `BufferRuntimeInputs` fields participate by value in planning identity and plan reuse;
+there is no separate runtime revision or rebuild trigger.
+`BufferPlan` is an opaque immutable value containing the resolved sizing and inventory, ordered
+resource descriptors, pass/FBO keys, clear groups, fixed texture-unit rows, and teardown order.
+Its value equality covers all those artifacts. `create` does not consume a prior plan: it reruns
+the same deterministic planning operation from the planning fields of `BufferBuildRequest`, then
+performs GL creation only for a valid result.
+`BufferSizing` is structurally value-equal across all three components; `shadowExtent` is empty
+exactly when no sfb is planned. `BufferInventory.entries` is immutable, ordered by
+`BufferDomain` declaration order and then `BufferIndex`, and contains exactly one row for every
+logical texture in the estate; `count(domain)` is the number of rows in that domain. Thus identities,
+counts, and final fallback-resolved color/depth formats are consumer-visible without exposing a GL
+handle.
+`BufferEstateCandidate` is an opaque, compiler-created ownership product. Its pre-publication
+`inspection()` is metadata-only: it exposes no generation, snapshots, or mutating estate operation.
+Acceptance transfers ownership; caller `close()` becomes harmless. The publisher then assigns the
+next generation atomically and creates the sole accepted `BufferEstateView`; that generation is
+immutable for the view's lifetime. Rejection leaves the candidate caller-owned. `publish` requires
+the exact `RegistryFingerprint` used to build the candidate. That prevents a buffer plan produced
+for one effective registry from being paired with another. A mismatch returns
+`ProvenanceRejected` without ownership transfer, publication, generation change, or resize
+notification; the candidate remains caller-owned. Snapshots and stale checks use only the
+publisher-assigned generation of an accepted view.
 
 The non-owning view:
 
@@ -287,19 +505,75 @@ public interface BufferEstateView {
     BufferSizing sizing();
     BufferInventory inventory();
 
+    MainDepthRefreshResult refreshMainDepth();
     FrameBeginResult beginFrame(long frameId);
-    PassBufferSnapshot snapshot(PassDescriptor pass, ResolvedProgramDescriptor program);
-    void completePass(PassBufferSnapshot snapshot);
+    PassSnapshotResult snapshot(PassDescriptor pass, ResolvedProgramDescriptor program);
+    PassCompletionResult completePass(PassBufferSnapshot snapshot);
     ClearExecutionPlan clearPlan(ClearRequest request);
+    ClearExecutionResult executeClear(ClearExecutionPlan plan);
     DepthCopyResult copyDepth(DepthCopyPoint point, long frameId);
     FrameEndResult commitFrame(long frameId);
     FrameEndResult abortFrame(long frameId, String diagnosticId);
 
-    TextureBindingSnapshot textureBindings(PassBufferSnapshot snapshot);
-    Optional<ShadowEstateView> shadow();
+    TextureBindingSnapshot textureBindings(
+        PassBufferSnapshot snapshot,
+        TextureOverlayLease overlay,
+        TextureOverlayPublicationId expectedOverlay);
+    ShadowEstateResult shadow();
+}
+
+public enum ClearExecutionResult { SUCCESS, STALE_OR_PROTOCOL_REJECTED, BACKEND_FAILED }
+
+public sealed interface MainDepthRefreshResult {
+    record Unchanged(long version) implements MainDepthRefreshResult {}
+    record Reattached(long version, long depthAttachmentEpoch) implements MainDepthRefreshResult {}
+    record ResizeRequired(BufferFailure failure) implements MainDepthRefreshResult {}
+    record Failed(BufferFailure failure) implements MainDepthRefreshResult {}
 }
 
 public enum DepthCopyPoint { PRE_TRANSLUCENT, PRE_WEATHER }
+
+public enum FrameProtocolRejection {
+    STALE_GENERATION,
+    STALE_DEPTH_ATTACHMENT_EPOCH,
+    FRAME_ALREADY_OPEN,
+    NO_OPEN_FRAME,
+    WRONG_FRAME_ID,
+    NON_NORMALIZED_FLIP_STATE,
+    OPEN_PASS_SNAPSHOT,
+    INVALID_PASS_SNAPSHOT
+}
+
+public sealed interface FrameBeginResult {
+    record Begun(long estateGeneration, long depthAttachmentEpoch, long frameId)
+        implements FrameBeginResult {}
+    record Rejected(FrameProtocolRejection reason) implements FrameBeginResult {}
+    record BackendFailed(BufferFailure failure) implements FrameBeginResult {}
+}
+
+public sealed interface FrameEndResult {
+    record Committed(long frameId) implements FrameEndResult {}
+    record Aborted(long frameId, String diagnosticId, boolean fullClearRequired)
+        implements FrameEndResult {}
+    record Rejected(FrameProtocolRejection reason) implements FrameEndResult {}
+    record BackendFailed(BufferFailure failure, boolean fullClearRequired)
+        implements FrameEndResult {}
+}
+
+public sealed interface PassSnapshotResult {
+    record Acquired(PassBufferSnapshot snapshot) implements PassSnapshotResult {}
+    record Rejected(FrameProtocolRejection reason) implements PassSnapshotResult {}
+}
+
+public sealed interface PassCompletionResult {
+    record Completed(long frameId) implements PassCompletionResult {}
+    record Rejected(FrameProtocolRejection reason) implements PassCompletionResult {}
+}
+
+public sealed interface PassDrawTarget {
+    record EngineFramebuffer(FramebufferHandle framebuffer) implements PassDrawTarget {}
+    enum Screen implements PassDrawTarget { INSTANCE }
+}
 
 public record PassBufferSnapshot(
     long estateGeneration,
@@ -309,12 +583,24 @@ public record PassBufferSnapshot(
     List<ColorAttachment> colorAttachments,
     Map<LogicalBuffer, TextureHandle> readableTextures,
     Set<LogicalBuffer> flipAfterPass,
-    FramebufferHandle framebuffer) {}
+    PassDrawTarget drawTarget) {}
 ```
 
 Every mutating method rejects a stale generation, depth-attachment epoch, or frame token before a GL
-call. `completePass` accepts exactly one open snapshot and applies exactly its recorded transition.
-A duplicate or foreign snapshot is a diagnosed caller error and does not mutate state.
+call. `snapshot` returns `Acquired` only with a matching current view, open frame, and no open pass;
+otherwise it returns the applicable `STALE_GENERATION`, `STALE_DEPTH_ATTACHMENT_EPOCH`,
+`NO_OPEN_FRAME`, or `OPEN_PASS_SNAPSHOT` rejection without GL or mutation. `completePass` returns
+`Completed` only for the one currently open snapshot after applying its recorded transition.
+Acquisition cannot return `WRONG_FRAME_ID`: it accepts no caller frame ID and stamps the installed
+open-frame token into the acquired snapshot.
+Generation, epoch, and frame mismatches return their corresponding rejection; a foreign,
+duplicate, or already-consumed snapshot returns `INVALID_PASS_SNAPSHOT`. Every rejection performs
+no GL and leaves the open token and flip state unchanged. `snapshot` returns
+`PassDrawTarget.Screen.INSTANCE` exactly for `StageId.FINAL`; all other wired
+raster passes return `EngineFramebuffer`. SCREEN carries no framebuffer handle. It is still an open,
+generation/epoch/frame-checked snapshot: Phase 7 validates it, performs the platform framebuffer
+bind and anaglyph-aware color mask, draws, and requires `Completed` exactly as for an engine target.
+Completion consumes the snapshot and applies its recorded flip set; SCREEN invents no extra flip.
 
 ### 2.3 Relationship map
 
@@ -349,12 +635,14 @@ fail for a driver reason; provenance rejection is checked before Phase 4 publica
 | colortex1 / gdepth, white clear, conditional RGBA32F | §4.2 format resolution and §4.6 clear table | `[V:doc]` `docs/research/v1/RESEARCH.md:1204`; Phase 3 already publishes the conditional upgrade at `docs/phase3/v1/PHASE_3_DOC.md:468` |
 | colortex2–7 transparent black | §4.6 default table | `[V:doc]` `docs/research/v1/RESEARCH.md:1205`–`:1207` |
 | at least 4, up to 8 in G6 | §4.1 capability/count gate and contiguous scan-driven inventory | `[V:doc]` `docs/research/v1/RESEARCH.md:1209` |
-| main/alt pair for every color | `ColorPair(A,B)` in §4.3 | `[V:doc]` `docs/research/v1/RESEARCH.md:1210`; `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTarget.java]` at `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTarget.java:36`–`:46`; D-P5-1 |
+| main/alt pair for every color, allocated up front with contract parameters | `ColorPair(A,B)` allocation in §4.3; §4.2 applies `CLAMP_TO_EDGE`, NEAREST for integer formats, and LINEAR otherwise to both sides | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1595`–`:1597`; `[V:doc]` `docs/research/v1/RESEARCH.md:1210`; `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTarget.java]` at `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTarget.java:36`–`:46`; D-P5-1 |
 | gbuffers reads/writes main | `PassMode.GBUFFERS_MAIN` in §4.5 | `[V:doc]` `docs/research/v1/RESEARCH.md:1210`–`:1212` |
 | deferred/composite read main, write alt, then flip written buffers | pass snapshot + `completePass` transition in §4.4–§4.5 | `[V:doc]` `docs/research/v1/RESEARCH.md:1210`–`:1212`; D-P5-1 |
 | explicit `flip.*`; virtual `*_pre` | transition rows in §4.4 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:33`–`:39`; Phase 3 publication at `docs/phase3/v1/PHASE_3_DOC.md:443`–`:445` |
 | last writer leaves flip enabled for later reads | relative flip remains set through final; frame end rebases the physical committed side and clears only the relative bit | `[V:doc]` `docs/research/v1/RESEARCH.md:1513`–`:1514`; D-P5-4 |
-| composite blending caveat | buffer snapshot exposes read/write intersection diagnostic; Phase 7/4 own blend state | `[V:doc]` `docs/research/v1/RESEARCH.md:1212`–`:1214`; explicit Phase 7 boundary |
+| composite blend/read-write rules | Phase 7/4 disable blending while a composite writes color attachments; independently, the buffer snapshot reports a read/write intersection diagnostic | `[V:doc]` `docs/research/v1/RESEARCH.md:1212`–`:1214`; explicit Phase 7 boundary |
+| per-buffer clear enable/color overrides and flip-aware clears | §4.6 resolves Phase 3 overrides, preserves mandatory full clears, and selects one/both physical sides from flip state | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1606`–`:1613`; Phase 3 clear policy |
+| clear batching by implementation limit | §4.6 groups equal extent/color/side and chunks by `maxDrawBuffers` | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1611`–`:1613` |
 
 ### 3.2 Depth and shadow buffers
 
@@ -367,7 +655,12 @@ fail for a driver reason; provenance rejection is checked before Phase 4 publica
 | shadowtex1 pre-shadow-translucent copy | owned shadow split target; Phase 8 calls the copy | `[V:doc]` `docs/research/v1/RESEARCH.md:1224`; §4.10 |
 | shadowcolor0/1, future 2–7 | paired `ShadowColorPair` indexed without a hard cap; v0.1 allocation gate ≤2 | `[V:doc]` `docs/research/v1/RESEARCH.md:1225`; growth source `docs/research/v1/RESEARCH.md:385` |
 | optional hardware PCF and filter/mipmap | `ShadowTexturePolicy` in §4.10 | `[V:doc]` `docs/research/v1/RESEARCH.md:523`–`:525` |
+| legacy shadow-depth `R,R,R,1` sampling swizzle | `ShadowTexturePolicy` in §4.10 applies it to depth textures | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1630`–`:1637`; Pintonium mechanism evidence `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:273`–`:276` |
 | real shadow flip semantics | same generic `FlipState` over shadowcolor; no stub | Pintonium B4 is negative evidence at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:785`–`:791`; D-P5-8 |
+| main and shadow sizing | checked display × render-quality and shadow-resolution × shadow-quality formulas in §4.11.1 | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1638`–`:1644`; RESEARCH §4.3 |
+| `superSamplingLevel` | retained in `BufferSizing` for Phase 7 SSAA execution, without changing allocation extent | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1638`–`:1645`; D-P5-10 |
+| resize/recreate triggers and owned invalidation | §4.11.2 trigger matrix and complete owned-object/full-clear/notice checklist | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1638`–`:1646`; PD §5.3; D-P5-14 |
+| Final renders to Minecraft framebuffer | §4.5 returns `SCREEN`; §1.3 requires Phase 7's platform bind and anaglyph-aware color mask before drawing | `[V:doc]` `docs/research/v1/RESEARCH.md:526`; RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1647`–`:1649` |
 
 ### 3.3 Fixed texture-unit map
 
@@ -451,8 +744,11 @@ Planning steps:
 9. resolve every format/parameter/clear rule into closed engine enums; and
 10. produce deterministic FBO keys, clear groups, texture-unit rows, and teardown order.
 
-A validation failure returns `BufferPlanResult.Invalid(BufferFailure)` without a GL call. Capability
-failure is a pack-level `ERROR/CHAT` on `schmaloogium.buffers` and leaves shaders off.
+A successful call returns `BufferPlanResult.Valid(BufferPlan)` with the immutable artifacts from
+step 10. A validation failure returns `BufferPlanResult.Invalid(BufferFailure)` without a GL call.
+Capability failure is a pack-level `ERROR/CHAT` on `schmaloogium.buffers` and leaves shaders off.
+Candidate creation independently repeats these steps from `BufferBuildRequest`; equal planning
+fields must yield a value-equal plan before any GL allocation.
 
 The packed-attachment rule maps fragment-output ordinal to the route's logical buffer while attaching
 that buffer to an available FBO color slot. It avoids encoding logical colortex index as a physical
@@ -613,8 +909,11 @@ Effective transition rules:
 | virtual pre | none | absent/`false` | no transition |
 | skipped/failed-safe pass | none committed | any | no transition |
 
-`completePass` is the success boundary. Constructing or binding a snapshot never changes flip state.
-This makes a skipped draw unable to expose an unwritten alt side.
+`Acquired` is the only permission to bind or draw. Phase 7 corrects no/open-frame ordering or
+reacquires the current publication on stale acquisition rejection. `Completed` is the success boundary; Phase 7 may
+advance only on it, and on completion rejection aborts the frame before applying the §6 recovery
+for that rejection. Constructing or binding a snapshot never changes flip state. This makes a
+skipped draw unable to expose an unwritten alt side.
 
 #### 4.4.3 Frame end: carryover without copy-back
 
@@ -633,9 +932,22 @@ logical main, satisfying the assignment's requirement that the next frame begin 
 preserving OF-faithful last-writer carryover. The copy-back conflict is explicit in
 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:229`–`:236`; RESEARCH wins.
 
-`beginFrame` refuses a non-normalized state. `abortFrame` rebases the current readable side, clears
-every relative flip, marks `fullClearRequired`, and returns a diagnostic. It cannot undo texels
-already written, so the next frame's mandatory full clear is the safety boundary.
+`beginFrame` returns `Begun` only after installing the frame token; on stale generation/epoch,
+another open frame, or non-normalized state it returns the corresponding `Rejected` without GL or
+state mutation. A setup-backend failure returns `BackendFailed`, installs no frame token, and makes
+the estate stale under §6 recovery.
+
+`commitFrame` requires the matching open frame and no open pass snapshot. `Committed` performs the
+rebase above, clears the frame token, and leaves normalized flip state. A protocol rejection changes
+nothing. `abortFrame` has the same token checks, but intentionally consumes any open pass snapshot,
+rebases the current readable side, clears every relative flip and the frame token, marks
+`fullClearRequired`, and returns `Aborted` with the caller's sanitized diagnostic ID. It cannot undo
+texels already written, so the next frame's mandatory full clear is the safety boundary. If backend
+work needed by either end operation fails, `BackendFailed` clears the token, normalizes by the same
+rebase, requires full clear, makes the estate stale, and enters §6 shaders-off recovery. Phase 7
+must branch on every closed result: proceed only on `Begun`/`Committed`, retain the diagnostic and
+honor the mandatory clear on `Aborted`, correct protocol ordering on `Rejected`, and publish
+shaders-off before another shader draw on `BackendFailed`.
 
 The same generic machine is used for shadowcolor pairs. There is no `ShadowRenderTargets.flip()`
 stub or hardcoded “read main” shortcut.
@@ -653,7 +965,9 @@ Phase 4 exposes exact/symbolic writes and explicitly warns:
 - uses the effective provider's entire `ProgramStateBundle`, never requested-slot overlays;
 - merges Phase 4's logical pass resource access with the current Phase 5 snapshot;
 - reports a read/write intersection as a pack diagnostic but preserves the contract behavior;
-- returns no engine FBO for `StageId.FINAL`; and
+- returns `PassDrawTarget.Screen.INSTANCE` and no engine FBO for `StageId.FINAL`; that terminal
+  requires Phase 7 to bind
+  Minecraft's framebuffer and apply Minecraft's anaglyph-aware color mask before the draw; and
 - retains dormant `SHADOWCOMP`, `PREPARE`, `BEGIN`, and `SETUP` identities without wiring them.
 
 Pass FBO attachment updates occur before binding. `FramebufferService.check` runs at candidate build
@@ -708,9 +1022,19 @@ chunks no larger than `maxDrawBuffers`. This adopts the deployed batching shape 
 `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/ClearPassCreator.java:59`
 –`:67` and keeps differently sized future buffers separate.
 
-Phase 7 owns the depth clear moment and Minecraft state bracketing. Phase 5's clear plan clears color
-attachments only and restores the prior framebuffer binding/viewport through Phase 1's
-snapshot/restore discipline.
+Phase 7 owns the depth clear moment and Minecraft state bracketing. At that moment it calls
+`executeClear(clearPlan(request))` on the render thread. The immutable plan carries estate
+generation, attachment epoch, frame token, and ordered color-clear batches. `executeClear` rejects
+a foreign, stale, previously executed, or wrong-frame plan before GL; otherwise Phase 5 executes
+the batches exactly once and restores the prior framebuffer binding and viewport through Phase 1's
+snapshot/restore discipline on success or failure. Its result names success, stale/protocol
+rejection, or backend failure; it never clears depth or escapes an exception.
+
+`clearPlan` derives effective full-clear intent as
+`request.fullClear || estate.fullClearRequired`; the caller cannot suppress estate policy. The bit
+is cleared only after every batch in that plan succeeds for its validated generation. Rejection,
+partial execution, or backend failure retains or re-establishes it, so the next valid plan remains
+a full clear.
 
 ### 4.7 Allocation, framebuffer validation, and RGBA fallback
 
@@ -802,20 +1126,50 @@ extent exactly equals the plan. This closes the render-quality case that Pintoni
 because PD says its global render-quality multiplier is fixed at 1.0
 (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:267`–`:270`).
 
-On a new same-extent version, Phase 5:
+On a new same-extent version, Phase 5 first advances `depthAttachmentEpoch`, invalidating all
+extant pass, clear, binding, and shadow snapshots, and then:
 
 1. closes every open pass snapshot;
 2. reattaches every owned FBO that uses main depth, choosing depth-only or combined depth-stencil;
-3. leaves depthtex1/depthtex2 destination FBOs attached to their owned targets;
-4. rechecks affected FBOs;
-5. marks both depth-copy targets uninitialized;
-6. forces a full color clear; and
-7. increments `depthAttachmentEpoch` before another consumer snapshot can act.
+3. allocates both depth-copy targets in the new main-depth format, attaches their destination FBOs,
+   and marks them uninitialized;
+4. rechecks every affected main-depth and copy-destination FBO;
+5. deletes the superseded copy-target textures only after all allocations, attachments, and checks
+   succeed;
+6. forces a full color clear.
 
-An extent mismatch does none of those in-place operations. It returns `MAIN_DEPTH_RESIZE_REQUIRED`;
-Phase 7 aborts/normalizes any open shader frame, runs the prepare/build/publication sequence, and
-does not permit another shader draw until a matching new estate is published. The replaced estate
-then becomes stale by normal publication generation.
+`BufferEstateView.refreshMainDepth()` is the public render-thread comparison operation. Phase 7
+calls it before `beginFrame` and again before each shader draw. It compares
+`MainDepthSource.current()` with the version, format, handle identity, and extent cached by that
+published estate. No change returns `Unchanged`; a new same-extent available snapshot performs
+steps 1–6 above and returns `Reattached` with the new version and attachment epoch. An unavailable
+snapshot or reattachment failure returns `Failed(BufferFailure)` under the §6 containment rules.
+
+Successful `Reattached` is resumable in the same shader frame. Phase 7 abandons the invalidated
+open pass snapshot without calling `completePass`, reacquires the current pass and texture-binding
+snapshots, and only then may issue that shader draw. Earlier completed-pass flip state remains
+intact; the forced full clear and uninitialized depth copies govern the remainder of the frame.
+
+Refresh is fail-closed, not rolled back. If copy-target allocation, attachment, or any completeness
+check fails, Phase 5 stops, deletes every newly allocated unattached or partially attached copy
+target, closes open snapshots, leaves the advanced epoch in place, and marks the estate stale and
+unusable. Superseded copy targets remain owned by the poisoned estate and are deleted when that
+estate is closed after shaders-off replacement. Its cached prior depth identity is not updated, no
+new snapshot or mutating operation is permitted, and partially refreshed FBOs are never drawn.
+Phase 7 must
+abort/normalize any active shader frame and publish shaders off; a later safe point must prepare,
+build, and publish a complete replacement before shader drawing resumes. An unavailable
+`current()` follows the same caller transition without attempting reattachment: it marks the
+estate stale, advances the epoch once, and retains the cached prior identity.
+
+An extent mismatch returns `ResizeRequired(BufferFailure)` whose failure code is exactly
+`MAIN_DEPTH_RESIZE_REQUIRED`. That variant performs no GL call and changes neither estate state,
+frame/flip state, attachments, generation, nor attachment epoch. Phase 7 must abort/normalize any
+open shader frame, call `prepare(plan.mainExtent())`, build and publish a matching replacement, and
+permit no further shader draw until that publication succeeds. The replaced estate then becomes
+stale by normal publication generation. `ResizeRequired` construction rejects any other failure
+code; `Failed` rejects `MAIN_DEPTH_RESIZE_REQUIRED`, so the closed result has one unambiguous
+carrier for this transition.
 
 This mirrors the assigned version-driven behavior at
 `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTargets.java:148`
@@ -914,11 +1268,90 @@ split copy. Shadowcolor uses the generic pair/flip state now, even though shadow
 post-v0.5. This makes the future `SHADOWCOMP` stage a new schedule population, not a new buffer
 architecture.
 
-If sfb creation fails while main dfb succeeds, the shadow feature is disabled, neutral shadow
-bindings are supplied, and the program/main pipeline may continue (rung 2a). The candidate owns one
+When no sfb is planned, Phase 8 receives `ShadowEstateNotRequested`; this is ordinary absence and
+does not create a `BufferFailure`. If sfb creation fails while main dfb succeeds, the shadow
+feature is disabled, neutral shadow bindings are supplied, and the program/main pipeline may
+continue (rung 2a). The candidate owns one
 1×1 fully-far depth fallback and one 1×1 opaque-white color fallback, configured to the pack's
 compare/filter expectations; units 4/5 and 13/14 reuse those objects when their real target is
 absent. Phase 8 receives `ShadowEstateUnavailable`, not a partial sfb.
+
+`shadow()` and the available view have this complete public shape:
+
+```java
+public sealed interface ShadowEstateResult
+    permits ShadowEstateAvailable, ShadowEstateNotRequested, ShadowEstateUnavailable {}
+public record ShadowEstateAvailable(ShadowEstateView view) implements ShadowEstateResult {}
+public record ShadowEstateNotRequested(long estateGeneration) implements ShadowEstateResult {}
+public record ShadowEstateUnavailable(BufferFailure reason, long estateGeneration)
+    implements ShadowEstateResult {}
+
+public interface ShadowEstateView {
+    long estateGeneration();
+    ShadowBeginResult beginPass(
+        long frameId, PassDescriptor pass, ResolvedProgramDescriptor program);
+    ShadowOperationResult bind(ShadowPassSnapshot snapshot);
+    ShadowOperationResult clear(ShadowPassSnapshot snapshot, ClearRequest request);
+    ShadowOperationResult copyDepth(
+        ShadowPassSnapshot snapshot, ShadowDepthCopyPoint point);
+    ShadowCompletionResult completePass(ShadowPassSnapshot snapshot);
+    ShadowAbortResult abortPass(ShadowPassSnapshot snapshot, String diagnosticId);
+}
+
+public record ShadowPassSnapshot(
+    long estateGeneration,
+    long depthAttachmentEpoch,
+    long frameId,
+    PassDescriptor pass,
+    ResolvedProgramDescriptor program,
+    FramebufferHandle framebuffer,
+    List<ColorAttachment> colorAttachments,
+    Map<LogicalBuffer, TextureHandle> readableShadowcolorTextures,
+    Set<LogicalBuffer> flipAfterPass) {}
+
+public enum ShadowProtocolRejection {
+    STALE_GENERATION, STALE_DEPTH_ATTACHMENT_EPOCH, PASS_ALREADY_OPEN, NO_OPEN_PASS,
+    WRONG_FRAME_ID, FOREIGN_SNAPSHOT, CLOSED_SNAPSHOT
+}
+public enum ShadowDepthCopyPoint { SHADOW_PRE_TRANSLUCENT }
+public sealed interface ShadowBeginResult {
+    record Acquired(ShadowPassSnapshot snapshot) implements ShadowBeginResult {}
+    record Rejected(ShadowProtocolRejection reason) implements ShadowBeginResult {}
+}
+public sealed interface ShadowOperationResult {
+    record Applied() implements ShadowOperationResult {}
+    record Rejected(ShadowProtocolRejection reason) implements ShadowOperationResult {}
+    record BackendFailed(BufferFailure failure) implements ShadowOperationResult {}
+}
+public sealed interface ShadowCompletionResult {
+    record Completed(long frameId) implements ShadowCompletionResult {}
+    record Rejected(ShadowProtocolRejection reason) implements ShadowCompletionResult {}
+}
+public sealed interface ShadowAbortResult {
+    record Aborted(long frameId, String diagnosticId, boolean fullClearRequired)
+        implements ShadowAbortResult {}
+    record Rejected(ShadowProtocolRejection reason) implements ShadowAbortResult {}
+}
+```
+
+`beginPass(frameId,pass,program) -> ShadowBeginResult` acquires the sole open
+`ShadowPassSnapshot` or returns `Rejected`; a call while one is open returns
+`Rejected(PASS_ALREADY_OPEN)` before GL and without mutation. `bind(snapshot)`,
+`clear(snapshot,request)`, and
+`copyDepth(snapshot,SHADOW_PRE_TRANSLUCENT)` each return `ShadowOperationResult`; and
+`completePass(snapshot)` / `abortPass(snapshot,diagnosticId)` return their corresponding closed
+result.
+
+All calls are render-thread-only. Validation returns the exact `ShadowProtocolRejection` before GL
+with no token, full-clear, or flip mutation. `Applied` means the requested bind, clear, or copy
+finished; `BackendFailed(BufferFailure)` is possible only for those three GL operations, leaves the
+token open and flip state unchanged, and requires Phase 8 to call `abortPass`. `Completed` consumes
+the token and applies exactly its generic shadowcolor transitions. `Aborted` consumes it without
+flip, marks shadow full-clear-required, and records the diagnostic. A consumed token thereafter
+returns `CLOSED_SNAPSHOT`; a snapshot not issued by this view returns `FOREIGN_SNAPSHOT`. Phase 8
+branches only on these results: continue on acquisition/operation success, correct ordering or
+reacquire the current estate after rejection, and abort immediately after backend failure. It
+chooses pass order and the copy moment but cannot mutate sides directly.
 
 ### 4.11 Sizing, resize, and invalidation
 
@@ -949,7 +1382,7 @@ draw/sample sequence. This ruling is D-P5-10 and the upstream clarification requ
 | Change | Action |
 |---|---|
 | display or render-quality change | Phase 7 prepares Minecraft's shader framebuffer at the new main extent; rebuild/reallocate dfb pairs and depthtex1/2; rebuild pass/clear keys; full clear |
-| same-extent main-depth identity/format change | §4.8 in-place reattachment; reallocate copy targets if format changed; attachment-epoch bump; full clear |
+| same-extent main-depth identity/format change | §4.8 in-place reattachment; reallocate both copy targets in the current main-depth format and reattach their destination FBOs; attachment-epoch bump; full clear |
 | main-depth extent differs from planned main extent | no attachment; full prepare/build/publication sequence; old estate goes stale |
 | shadow resolution/quality change | rebuild sfb only; force shadow clear |
 | pack/configuration fingerprint change | full candidate rebuild |
@@ -958,8 +1391,49 @@ draw/sample sequence. This ruling is D-P5-10 and the upstream clarification requ
 | Phase 13 relative resource | publish `BufferResizeNotice`; Phase 13 resizes its own texture |
 | G8/S2 relative SSBO/custom image | publish notice; later owner resizes its own object |
 
-`BufferResizeNotice(oldSizing,newSizing,newGeneration,reason)` is immutable and published only after
-the new estate is ready. Phase 5 does not resize Phase 13/14 objects.
+`BufferResizeNotice` is immutable and published only after the new estate is ready. Its closed
+`BufferResizeReason` maps respectively to the rebuild-causing rows above: display extent, render
+quality, main-depth extent mismatch, shadow resolution, shadow quality, pack/configuration
+fingerprint, registry/route/flip plan, or color count/format. If several change in one publication,
+the first applicable enum value in declaration order is reported deterministically. Phase 5 does
+not resize Phase 13/14 objects.
+
+`BufferEstatePublisher.addResizeConsumer(String consumerId, BufferResizeConsumer consumer,
+BufferSizing acknowledgedSizing, long acknowledgedGeneration)` is render-thread-only and returns
+the closed `BufferResizeRegistrationResult`: `Registered(registration)` on success or
+`Rejected(reason)` with exactly `BLANK_CONSUMER_ID`, `DUPLICATE_LIVE_CONSUMER_ID`,
+`FUTURE_ACKNOWLEDGED_GENERATION`, `UNKNOWN_ACKNOWLEDGED_GENERATION`, or
+`ACKNOWLEDGED_SIZING_MISMATCH`. Rejection installs no
+registration and changes no consumer acknowledgement, publication, generation, or drawing state.
+A successful registration's `close()` removes the consumer idempotently at the same safe point.
+`consumerId` must be nonblank and unique among live registrations. The publisher retains that
+caller-supplied stable diagnostic identity unchanged for the registration's lifetime.
+During accepted publication, the publisher installs the new generation, invokes consumers in
+registration order once with its notice, and opens drawing only after every consumer returns
+success. Callbacks and registration mutation are not reentrant.
+
+The publisher tracks each registration's last successfully acknowledged sizing and generation.
+A new registration supplies the sizing/generation its already-created resources acknowledge;
+the publisher retains a generation→sizing fact for every successfully installed ready estate until
+that publisher closes. A supplied generation greater than `current().generation()` is future; any
+other generation absent from that ledger (including off and never-installed generations) is
+unknown. A known generation is accepted only when `acknowledgedSizing` equals its recorded sizing;
+otherwise rejection is `ACKNOWLEDGED_SIZING_MISMATCH`. Each callback receives
+`BufferResizeNotice(oldSizing,newSizing,newGeneration,reason)` whose `oldSizing` is that consumer's
+acknowledged sizing; success advances only that consumer's baseline. Thus a retry may send
+different truthful `oldSizing` values to consumers and converges them on one `newSizing`.
+
+On the first failed result or thrown callback, dispatch stops. The installed generation never opens
+for drawing; consumers before the failure have received its notice and remaining consumers have
+not. `ConsumerFailed.deliveredCount` is exactly the number of consumers before the failing consumer
+that returned `SUCCESS` and advanced their acknowledged baselines; it excludes the failing callback
+whether that callback returned `FAILED` or threw. The publisher diagnoses the consumer, replaces
+that estate immediately with a shaders-off publication whose generation is the next integer, marks
+the failed estate `REPLACED`, and closes its owned objects after outstanding non-owning calls are
+excluded. `ConsumerFailed` returns the failed generation, resulting off publication, consumer
+identity, and that count to Phase 7 as the recovery signal. Phase 7 must keep drawing gated and
+decide registry replacement or retry; Phase 5 performs no registry rollback. Off publication sends
+no resize notice.
 
 The full resize checklist is therefore: colortex A/B, depthtex1/2, pass FBO keys, clear FBO keys,
 copy destination state, full-clear bit, sfb when its extent changes, and a downstream notice. It
@@ -973,7 +1447,9 @@ ownership out (D-P5-14).
 ABSENT
   -> CANDIDATE_BUILDING
   -> READY_UNPUBLISHED
-  -> PUBLISHED
+  -> PUBLISHED_NOT_OPEN
+      -- all consumers succeed --> PUBLISHED
+      -- consumer failure --> REPLACED -> CLOSED; publisher -> SHADERS_OFF
   -> REPLACED
   -> CLOSED
 
@@ -981,8 +1457,8 @@ Any pre-publication failure -> CLOSED_PARTIAL -> SHADERS_OFF
 ```
 
 All transitions are render-thread-only except pure planning. `close` is idempotent. A replaced view
-returns `STALE_ESTATE` before GL. The publisher increments generation once per accepted ready/off
-replacement. Consumers compare equality only.
+returns `STALE_ESTATE` before GL. Each installed ready or off publication increments generation
+once, so consumer failure consumes two consecutive generations. Consumers compare equality only.
 
 ### 4.12 Fixed texture-unit object table
 
@@ -993,6 +1469,25 @@ Phase 13 object at that stage and otherwise uses the stated fallback;
 `CopyOrMain(copy,depthtex0)` applies §4.9's initialization/failure state; `Missing` reports a
 `MissingTextureBinding`; and `Absent` means Phase 6 still assigns no different number and the
 binding plan reports no object.
+
+`TextureOverlayKey` is closed as `NORMALS`, `SPECULAR`, `GAUX1`…`GAUX4`, or `NOISE`;
+`TextureOverlayAbsence` is closed as `NOT_CONFIGURED`, `NOT_APPLICABLE_TO_STAGE`, or
+`PUBLICATION_UNAVAILABLE`. `TextureOverlayEntry` is exactly `Present(TextureHandle)` or
+`Absent(TextureOverlayAbsence)`. An immutable `TextureOverlaySnapshot` exposes
+`TextureOverlayPublicationId id()`, `RegistryFingerprint registryFingerprint()`, and total
+`entry(StageId,TextureOverlayKey)` lookup; the publication ID is `(long generation,
+TextureOverlayFingerprint contentFingerprint)`, where the fingerprint is an opaque Phase-13 value.
+
+Phase 7 acquires a Phase-13-owned `TextureOverlayLease extends TextureOverlaySnapshot,
+AutoCloseable`, an immutable snapshot view, and passes it with the `TextureOverlayPublicationId`
+read from the same atomic Phase 13 publication to `textureBindings`. Phase 5 requires the lease ID
+to equal that expected ID and its
+`RegistryFingerprint` to equal the estate's `registryFingerprint`; mismatch yields
+`MissingTextureBinding` and no draw. A successful `TextureBindingSnapshot` retains the lease.
+`TextureBindingSnapshot` is `AutoCloseable` with idempotent `close`. Phase 7 closes it in the
+enclosing draw's `finally`, after the draw completes; closure releases the lease and is Phase 13's
+deterministic permission to destroy referenced handles. Phase 13 retains registry, allocation,
+upload, ownership, and destruction.
 
 | Unit | GBUFFERS / SHADOW backing object | DEFERRED / COMPOSITE / FINAL backing object |
 |---:|---|---|
@@ -1011,11 +1506,16 @@ binding plan reports no object.
 | 12 | `Absent` | `CopyOrMain(depthtex2, depthtex0)` |
 | 13 | `OwnedOrNeutral(shadowcolor0.read, color)`; alias `shadowcolor` | same |
 | 14 | `OwnedOrNeutral(shadowcolor1.read, color)` | same |
-| 15 | Phase 13 `noisetex` slot | Phase 13 `noisetex` slot |
+| 15 | `Overlay(NOISE, Missing)` | `Overlay(NOISE, Missing)` |
 
 Missing unallocated optional buffers yield an explicit `MissingTextureBinding`; they never index
 past an array or cause dynamic unit reassignment. Phase 7/Phase 6 may then degrade the affected
 program or feature according to §6.
+
+For unit 15 at every listed stage, `NOISE -> Present(handle)` binds exactly that handle.
+`Absent(NOT_CONFIGURED)`, `Absent(NOT_APPLICABLE_TO_STAGE)`, and
+`Absent(PUBLICATION_UNAVAILABLE)` each produce `MissingTextureBinding`; no fallback object is
+substituted.
 
 `TextureBindingSnapshot` contains the estate generation, depth-attachment epoch, frame/pass
 identity, and immutable unit→handle rows. It closes over the exact `PassBufferSnapshot`, so Phase 6
@@ -1070,15 +1570,17 @@ The recording backend must prove `noLeakedObjects()` and `noUseAfterDelete()`.
 
 | Exposed contract | Exact content | Consumer(s) |
 |---|---|---|
-| `BufferArchitecture.plan/create`, `BufferPlanResult`, `BufferBuildResult`, `BufferFailure` | pure deterministic planning plus render-thread candidate creation; ready/awaiting-depth/closed-failure results, no partial publication | Phase 7 bootstrap/reload; Phase 2 tests |
-| `BufferEstateCandidate`, `BufferEstatePublisher`, `PublishedBufferEstate` | provenance-checked ownership transfer, equality generation, shaders-off publication, idempotent close | Phase 7; Phase 12 indirectly through Phase 7 |
-| `BufferEstateView`, `BufferInventory`, `BufferSizing` | immutable non-owning estate metadata, registry fingerprint, exact extents/counts/formats | Phases 6, 7, 8, 13, 14 |
-| `FrameBeginResult`, `PassBufferSnapshot`, `completePass`, `commitFrame`, `abortFrame` | generation/attachment-epoch/frame-checked flip state machine; one immutable side snapshot drives both FBO and sampler bindings | Phase 7; G8/S1 |
-| `ClearRequest`, `ClearExecutionPlan` | exact colors, side rules, override/full-clear semantics, max-draw-buffer batching | Phase 7 |
+| `BufferArchitecture.plan/create`, `BufferPlanRequest`, `BufferBuildRequest`, `BufferRuntimeInputs`, `BufferPlan`, `BufferPlanResult`, `BufferBuildResult`, `BufferFailure` | Phase-7-owned immutable configuration/registry/fingerprint/capability inputs plus runtime display extent, render quality, and shadow quality; all three runtime fields participate by value in planning identity and reuse, with no separate runtime revision or rebuild trigger; closed valid/invalid pure planning with an immutable resolved-artifact plan; `create` independently reruns identical planning from its request before render-thread creation; ready/awaiting-depth/closed-failure build results, no partial publication | Phase 7 bootstrap/reload; Phase 2 tests |
+| `BufferEstateCandidate`, `BufferEstateInspection`, `BufferEstatePublisher`, `PublishedBufferEstate`, `BufferPublicationResult` | candidate inspection exposes only registry fingerprint, sizing, and inventory, never a generation or estate operation; Phase 7 validates that fingerprint against the Phase 4 candidate before publishing Phase 4, composes and publishes Phase 4 first, closes its still-owned Phase 5 candidate if Phase 4 publication fails, then publishes the ready Phase 5 candidate and permits no shader draw until both publications complete; acceptance atomically transfers ownership, assigns the next generation, and creates the sole generation-bearing view; accepted generation is immutable and is the only generation snapshots/stale checks use; `ProvenanceRejected` leaves the candidate caller-owned and changes no publication state; `ConsumerFailed` exposes failed/off generations, stable consumer identity, and the count of preceding successful acknowledgements, excluding the failing callback | Phase 7; Phase 12 indirectly through Phase 7 |
+| `BufferEstateView`, `BufferSizing`, `BufferInventory`, `BufferInventoryEntry`, `ResolvedBufferFormat` | accepted immutable non-owning estate metadata and publisher-assigned generation; structural sizing equality over exact main extent, optional shadow extent, and supersampling level; immutable domain/index-ordered logical inventory with per-domain counts and final resolved color/depth format; no GL handles | Phases 6, 7, 8, 13, 14 |
+| `refreshMainDepth`, `MainDepthRefreshResult` | public render-thread comparison against the published estate; closed unchanged/reattached/resize-required/failed outcomes; successful same-extent reattachment invalidates open snapshots but permits same-frame continuation only after Phase 7 abandons them and reacquires pass/binding snapshots; resize-required carries exactly `BufferFailureCode.MAIN_DEPTH_RESIZE_REQUIRED`, performs no GL or mutation, and requires abort/normalize plus prepare/build/publication; every failed outcome advances the attachment epoch, retains the cached prior identity, makes the estate stale/unusable, and requires abort/normalize plus shaders-off publication until safe-point replacement succeeds; no shader draw is permitted during either recovery | Phase 7 |
+| `FrameProtocolRejection`, `FrameBeginResult`, `FrameEndResult`, `PassSnapshotResult`, `PassCompletionResult`, `PassDrawTarget`, `PassBufferSnapshot`, `completePass`, `commitFrame`, `abortFrame` | closed generation/attachment-epoch/frame-checked lifecycle: begin succeeds with the installed token or rejects/fails without opening a frame; snapshot acquisition returns `Acquired` or an applicable stale/epoch/no-frame/open-pass rejection; completion returns `Completed` or the applicable stale/epoch/wrong-frame/invalid-snapshot rejection, with every rejection observable and mutation-free; commit requires the matching token and no open snapshot, rebases and normalizes on success; abort consumes an open snapshot, rebases, normalizes, and requires full clear; backend end failure performs the same safe normalization, makes the estate stale, and requires shaders-off recovery. Phase 7 binds/draws only on `Acquired`, advances only on `Completed`, corrects ordering or reacquires the current publication after acquisition rejection, and aborts the frame on completion rejection; it proceeds only on begun/committed, honors aborted diagnostics/full clear, and publishes off on backend failure. One immutable side snapshot drives bindings and carries a closed draw target: wired raster passes use `EngineFramebuffer(handle)`, while `StageId.FINAL` uses `Screen.INSTANCE` with no engine handle; Phase 7 performs the platform bind and anaglyph-aware color mask, then requires `Completed` for SCREEN under the same validation and flip rules. Dormant `SHADOWCOMP`, `PREPARE`, `BEGIN`, and `SETUP` identities remain unwired | Phase 7; G8/S1 |
+| `ClearRequest`, `ClearExecutionPlan`, `executeClear`, `ClearExecutionResult` | effective full clear is caller intent OR estate-owned requirement; generation/epoch/frame-checked, exactly-once color-clear execution consumes that requirement only after every batch succeeds; exact colors, side rules, batching, and guaranteed framebuffer/viewport restoration | Phase 7 |
 | `DepthCopyPoint`, `copyDepth`, `DepthCopyResult` | PRE_TRANSLUCENT/PRE_WEATHER mechanics and ordering; caller owns moments | Phase 7 |
-| `ShadowEstateView`, `ShadowEstateUnavailable` | sfb bind/clear/copy/snapshot operations, real shadowcolor flip state, no camera/traversal | Phase 8; G8/S1 |
-| `TextureBindingSnapshot`, fixed App B.3 table, `MissingTextureBinding` | pass-coherent fixed unit→texture objects; no uniform upload and no dynamic allocation | Phase 7 composition; Phase 6 sampler participant; Phase 13 overlay |
-| `BufferResizeNotice` | old/new sizing, generation, reason after accepted change | Phases 13 and 14; G8/S2 |
+| `BufferDomain`, `BufferIndex`, `LogicalBuffer`, `ColorAttachment` | immutable `BufferDomain { COLORTEX, SHADOWCOLOR, SHADOWTEX, DEPTH }`; `BufferIndex(int value)` rejects negative values; `LogicalBuffer(BufferDomain domain, BufferIndex index)`; `ColorAttachment(int outputOrdinal, int framebufferAttachment, LogicalBuffer logicalBuffer, TextureHandle physicalTexture)` | Phase 8; Phase 7 |
+| `ShadowEstateResult`, `ShadowEstateAvailable`, `ShadowEstateNotRequested`, `ShadowEstateUnavailable`, `ShadowEstateView`, `ShadowPassSnapshot`, `ShadowProtocolRejection`, `ShadowDepthCopyPoint`, `ShadowBeginResult`, `ShadowOperationResult`, `ShadowCompletionResult`, `ShadowAbortResult` | `shadow()` returns exactly `ShadowEstateAvailable(view)` when planned and created, `ShadowEstateNotRequested(estateGeneration)` when no sfb was planned, or `ShadowEstateUnavailable(BufferFailure,estateGeneration)` after creation failure; ordinary absence never creates a `BufferFailure`. The view exposes its generation plus typed begin/bind/clear/`SHADOW_PRE_TRANSLUCENT` split-copy/complete/abort methods. The immutable snapshot carries generation, depth-attachment epoch, frame/pass/program identity, sfb handle, color attachments, readable shadowcolor handles, and `flipAfterPass`. Acquisition returns `Acquired(snapshot)` or `Rejected(reason)`, including exact `PASS_ALREADY_OPEN` for a second begin; operations return `Applied`, `Rejected(reason)`, or `BackendFailed(BufferFailure)`; completion returns `Completed(frameId)` or `Rejected(reason)`; abort returns `Aborted(frameId,diagnosticId,fullClearRequired)` or `Rejected(reason)`. Every named top-level shadow type is public. Every validation rejection is pre-GL and mutation-free; backend failure leaves the token open and flip unchanged for mandatory abort; completion alone applies flip, while abort closes without flip and requires full clear. Phase 8 continues only on success, corrects ordering or reacquires after rejection, and aborts on backend failure | Phase 8; G8/S1 |
+| `TextureOverlayLease`, `TextureOverlaySnapshot`, `TextureOverlayPublicationId`, `TextureOverlayFingerprint`, `TextureOverlayKey`, `TextureOverlayEntry`, `TextureOverlayAbsence`, `TextureBindingSnapshot`, fixed App B.3 table, `MissingTextureBinding` | closed total Phase 13 stage/key lookup; exact publication-ID and estate-registry-fingerprint checks; successful binding snapshot retains the lease until Phase 7 closes it after the enclosing draw; pass-coherent fixed unit→texture objects; unit 15 resolves `NOISE` `Present(handle)` to that handle and each of the three closed absence values to `MissingTextureBinding`; no uniform upload or dynamic allocation | Phase 7 composition; Phase 6 sampler participant; Phase 13 overlay |
+| `BufferResizeNotice`, `BufferResizeReason`, `BufferResizeConsumer`, `ResizeConsumerResult`, `BufferResizeRegistrationResult`, `BufferResizeRegistration`, `BufferResizeRegistrationRejection` | notice exposes old/new structural sizing, new generation, and one closed rebuild reason with declaration-order priority for simultaneous changes; registration returns `Registered` or a stable rejected reason for blank ID, duplicate live ID, future generation, unknown generation, or sizing mismatch; ready generation→sizing facts remain known for the publisher lifetime, off/never-installed generations are unknown, and supplied sizing must exactly equal the known fact; rejection installs nothing and changes no acknowledgement/publication state; accepted identity is retained unchanged and returned by `ConsumerFailed`; render-thread removal, per-consumer acknowledged sizing/generation, and ordered synchronous delivery after install and before drawing; retry `oldSizing` is each consumer's truthful acknowledged baseline; first failure stops dispatch, disposes the unopened estate, and returns the consequent off publication | Phases 13 and 14; G8/S2 |
 | `MainDepthSource`, `MainDepthPreparation`, `MainDepthSnapshot`, `BorrowedDepthAttachmentHandle` | engine-side SPI implemented by `mod.glue`; safe-point platform-FBO preparation plus opaque depth identity/version/format/extent, no GL name | Phase 7 installs/prepares; Phase 5 consumes |
 | `ColorInternalFormat`, `PixelFormat`, `PixelType`, `DepthAttachmentFormat`, `DepthTransferLayout` | exact App B.4 vocabulary plus private color fallback/depth allocation values; integer classification and allocation layout | Phase 5 facade calls; Phase 13 raw-upload adapter |
 
@@ -1109,7 +1611,8 @@ No Phase 1 operation is widened silently. The three required corrections are §5
 | immutable publication/version discipline | no pack reopen/rescan or retained parser builders |
 
 Runtime display/render/shadow quality values are Phase-5 `BufferRuntimeInputs` supplied later by
-Phase 7. Phase 5 does not assume they are fields Phase 3 currently exposes.
+Phase 7. Those three values are the complete runtime portion of planning identity; Phase 5 does
+not assume a separate revision or that they are fields Phase 3 currently exposes.
 
 ### 5.4 Consumed Phase 4 contracts
 
@@ -1119,6 +1622,7 @@ Phase 7. Phase 5 does not assume they are fields Phase 3 currently exposes.
 | `PassResourceAccess` | readable, exact/symbolic writes, explicit logical flips, mipmap declarations |
 | `ProgramStateBundle` | routing, effective provider flip/scale/state data |
 | `ProgramRegistryView.resolve`, `ResolvedProgramDescriptor` | whole effective provider; no fallback re-resolution |
+| `CompiledRegistryCandidate.view()` | non-owning pre-publication `ProgramRegistryView` used by Phases 5 and 7 to derive and validate the buffer candidate before Phase 4 publication; candidate ownership and provenance remain unchanged |
 | `RegistryFingerprint` | estate derivation identity/publication pairing |
 | generation/stale-view discipline | Phase 7 orchestration and invalidation |
 
@@ -1157,7 +1661,14 @@ All three are additive but alter Phase 1 §5 and therefore require a Phase 1 fix
 verify round before Phase 5 implementation or any dependent implementation consumes the amended
 surface. This document assumes none is already granted.
 
-No Phase 3 or Phase 4 contract change is requested.
+No Phase 3 contract change is requested.
+
+Phase 4 §5 must add the already-defined public `CompiledRegistryCandidate.view()` as a non-owning
+pre-publication `ProgramRegistryView` consumed by Phases 5 and 7. This is a binding-surface
+clarification only: it preserves the candidate's existing opacity, caller ownership before
+acceptance, compiler-origin credential, publication provenance checks, and absence of a public
+registry accessor. Phase 5 assumes no new inspection API and does not treat this clarification as
+already granted.
 
 ## 6. Failure modes & degradation
 
@@ -1166,16 +1677,19 @@ No Phase 3 or Phase 4 contract change is requested.
 | malformed/null request, stale schema/fingerprint, invalid route | return closed failure before GL; keep/publish shaders off | 4/5 |
 | requested color formats produce allocation/FBO failure | delete whole attempt, retry all colors as `RGBA_COMPAT`, user-visible warning | 2a |
 | RGBA fallback also fails | delete partial estate; publish shaders off; vanilla path remains | 4→5 |
-| main depth unavailable or borrowed-attachment contract not granted | do not create a false depthtex0; shaders off with chat diagnostic | 4 |
+| main depth unavailable or borrowed-attachment contract not granted | mark any published estate stale, advance its attachment epoch, abort/normalize any active frame, and publish shaders off; do not create a false depthtex0; require successful safe-point replacement before another shader draw | 4 |
 | prepared main-depth extent differs from planned main extent | attach nothing; remain on vanilla path and repeat safe-point prepare/build, with bounded retry diagnostics | 4/5 containment |
-| main-depth version changes mid-frame | reject stale snapshot, abort/normalize frame, force rebuild/full clear before next shader draw | 5 containment |
+| same-extent main-depth version changes mid-frame | successful reattachment invalidates the open snapshot; abandon it and reacquire pass/binding snapshots before continuing; failure follows the shaders-off recovery above | 5 containment |
+| main-depth reattachment/check fails | retain the advanced epoch and prior cached identity, mark the partially mutated estate stale/unusable, abort/normalize any active frame, publish shaders off, and require safe-point replacement before another shader draw | 5 containment |
 | one depthtex1/2 copy fails | bind current depthtex0 as non-stale fallback for that unit, disable copied-depth feature view, warn | 2a |
 | combined stencil has no legal copy tier | copied-depth feature unavailable; pack requiring the split may gate off, otherwise bind depthtex0 fallback | 2a/4 |
 | sfb creation fails while dfb is healthy | disable shadow estate only; Phase 8 skips; bind neutral shadow objects | 2a |
 | clear call fails | abort shader frame, mark full clear; recurring or unrecoverable failure publishes off | 2a→4 |
 | missing Phase 13 overlay/noise/companion texture | explicit missing binding; affected sampler/program degrades, never steals a unit | 2a/3 |
 | missing vanilla `texture`/`lightmap` foreign handle | affected draw is skipped/fixed-fallback through Phase 4/7; no null/raw handle | 3 |
-| stale candidate/view/pass snapshot | no GL work; reacquire current publication | local protocol failure |
+| pass acquisition rejection | no GL work; correct ordering for no/open-frame rejection, or reacquire the current publication for stale generation/epoch | local protocol failure |
+| pass completion rejection | no GL work or flip mutation; abort the frame, then correct ordering or reacquire the current publication according to the rejection | local protocol failure |
+| resize consumer fails after install | stop dispatch, publish next-generation off, close unopened estate, return `ConsumerFailed`; Phase 7 retains registry recovery policy | 4/5 containment |
 | delete/close reports backend error | continue reverse ledger cleanup, aggregate diagnostics, quarantine handles, never throw into client | 5 |
 | unexpected backend exception | catch at public boundary, clean partial ownership, publish off/vanilla | 5 |
 
@@ -1234,7 +1748,16 @@ No 2^N FBO variant cache exists.
 5. Run the same properties over shadowcolor identities and assert the Pintonium B4 stub behavior is
    impossible.
 6. Test ordinary/full clear side matrices, fog alpha 1.0, explicit color replacement, clear-disable,
-   equal-size/color batching, and `maxDrawBuffers` chunking.
+   equal-size/color batching, and `maxDrawBuffers` chunking. Also prove an estate-required full
+   clear overrides ordinary caller intent, is consumed only after all batches succeed, and survives
+   rejection, partial execution, and backend failure.
+7. Table-test every applicable main-pass acquisition/completion rejection, including foreign,
+   duplicate, and consumed snapshots; assert the exact reason, zero GL calls, and unchanged open
+   frame/pass and flip state, and prove acquisition never returns `WRONG_FRAME_ID`.
+8. Table-test every shadow acquisition, bind, clear, copy, completion, and abort result, including
+   `PASS_ALREADY_OPEN` on a second begin: exact validation rejection is pre-GL and mutation-free;
+   scripted bind/clear/copy backend failure keeps the token open for abort; only completion flips;
+   abort closes and requires full clear.
 
 ### 8.2 Contract-table tests
 
@@ -1257,14 +1780,38 @@ Using Phase 1 `RecordingGLDevice` and serialized profiles:
 2. create an eight-buffer estate and assert both sides, filters, wrap, and route attachments;
 3. script one requested-format FBO failure and prove the entire retry is `RGBA_COMPAT`;
 4. script retry failure and prove every partial handle is deleted and off is published;
-5. change main-depth version and prove every depth-using FBO reattaches, destination FBOs do not,
-   the attachment epoch changes, and a full clear is required;
-6. change main-depth extent and prove no old estate attachment occurs before prepare/rebuild;
-7. distinguish `attachDepth` from requested `attachDepthStencil`;
-8. exercise first-copy and steady copy protocol events;
-9. test resize/rebuild and generation inequality;
-10. prove borrowed/foreign handles are never deleted or used in forbidden verbs; and
-11. create/destroy the full classic estate for the implementation gate with
+5. call `refreshMainDepth` after same-extent identity-only and format-changing versions; prove every
+   depth-using FBO reattaches, both copy targets are reallocated in the new format and their
+   destination FBOs reattach, old targets are deleted only after all checks, both new targets are
+   uninitialized, full clear is forced, and `Reattached` reports the advanced attachment epoch;
+   inject allocation, destination-attachment, and completeness failures and prove new partial
+   targets are deleted while the poisoned estate follows `Failed(BufferFailure)` recovery; perform
+   refresh after pass/binding snapshot creation and before draw, abandon the invalidated pass,
+   reacquire both snapshots, and prove the same frame may then draw;
+6. call `refreshMainDepth` after a main-depth extent change and prove `ResizeRequired` carries
+   `MAIN_DEPTH_RESIZE_REQUIRED`, records zero GL calls and zero estate/frame/epoch mutation, and no
+   shader draw occurs before Phase 7 abort/normalize plus prepare/build/publication;
+7. return unavailable current depth before `beginFrame` and mid-frame, and inject failures at the
+   first, a middle, and final reattachment/check step; prove epoch advance, retained prior identity,
+   stale estate, no partial-FBO draw, abort/normalize when active, shaders-off publication, and the
+   draw bar until replacement;
+8. distinguish `attachDepth` from requested `attachDepthStencil`;
+9. exercise first-copy and steady copy protocol events;
+10. prove candidate inspection exposes metadata but no generation or estate operation; publish it,
+    then test immutable accepted generation plus resize/rebuild generation inequality;
+11. register current and retained historical ready generations with matching sizing; reject blank
+    and duplicate-live IDs, future generations, off/never-installed unknown generations, and known
+    generations with mismatched sizing; assert each exact reason and zero registration,
+    acknowledgement, publication, or generation mutation;
+12. fail the first, each middle, and last resize-consumer position by returned `FAILED` and throw;
+    assert `deliveredCount` is respectively zero or the exact number of preceding `SUCCESS`
+    acknowledgements, and prove consecutive ready/off generations, unopened-estate disposal, no
+    later callback, and retry convergence from each consumer's distinct acknowledged sizing baseline;
+13. prove borrowed/foreign handles are never deleted or used in forbidden verbs;
+14. exercise every overlay key and absence reason; reject expected-ID and registry-fingerprint
+    mismatches without drawing, and prove referenced handles remain live until the successful
+    binding snapshot is closed after the enclosing draw; and
+15. create/destroy the full classic estate for the implementation gate with
     `ReplayAssertions.noLeakedObjects()` and `noUseAfterDelete()`.
 
 The tier selector receives scripted function-pointer/blit/combined-stencil booleans. The actual
