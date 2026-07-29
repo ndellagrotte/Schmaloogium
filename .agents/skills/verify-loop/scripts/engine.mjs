@@ -432,6 +432,41 @@ function validateArtifact(root, manifest, artifact, resolvedSelectors, prefix) {
   }
 }
 
+function resolveManifestContent(root, manifest) {
+  const interfaceIds = manifest.interface_regions.map((region) => region.id);
+  if (new Set(interfaceIds).size !== interfaceIds.length) {
+    throw new VerificationError("Interface/change-trigger region IDs must be unique.");
+  }
+  const artifacts = [
+    ...manifest.targets.map((artifact, index) => ({ artifact, prefix: `target[${index}]` })),
+    ...manifest.authoritative_sources.map((artifact, index) => ({
+      artifact,
+      prefix: `authority[${index}]`,
+    })),
+    ...manifest.supporting_evidence.map((artifact, index) => ({
+      artifact,
+      prefix: `evidence[${index}]`,
+    })),
+    ...manifest.dependencies.map((artifact, index) => ({
+      artifact,
+      prefix: `dependency[${index}]`,
+    })),
+    ...manifest.interface_regions.map((region) => ({
+      artifact: {
+        path: region.path,
+        role: "interface/change-trigger region",
+        selectors: [{ id: region.id, selector: region.selector }],
+      },
+      prefix: "interface",
+    })),
+  ];
+  const resolvedSelectors = {};
+  for (const { artifact, prefix } of artifacts) {
+    validateArtifact(root, manifest, artifact, resolvedSelectors, prefix);
+  }
+  return resolvedSelectors;
+}
+
 export function discoverPriorReviews(root, manifest) {
   const directory = resolveRepoPath(root, manifest.prior_reviews.directory, {
     kind: "prior-review directory",
@@ -534,23 +569,7 @@ export function resolveContract(root, manifestSpec, options = {}) {
     );
   }
 
-  const resolvedSelectors = {};
-  manifest.targets.forEach((artifact, index) => validateArtifact(root, manifest, artifact, resolvedSelectors, `target[${index}]`));
-  manifest.authoritative_sources.forEach((artifact, index) => validateArtifact(root, manifest, artifact, resolvedSelectors, `authority[${index}]`));
-  manifest.supporting_evidence.forEach((artifact, index) => validateArtifact(root, manifest, artifact, resolvedSelectors, `evidence[${index}]`));
-  manifest.dependencies.forEach((artifact, index) => validateArtifact(root, manifest, artifact, resolvedSelectors, `dependency[${index}]`));
-  const interfaceIds = manifest.interface_regions.map((region) => region.id);
-  if (new Set(interfaceIds).size !== interfaceIds.length) {
-    throw new VerificationError("Interface/change-trigger region IDs must be unique.");
-  }
-  manifest.interface_regions.forEach((region) => {
-    resolvedSelectors[`interface:${region.id}`] = resolveSelector(
-      root,
-      region.path,
-      region.selector,
-      `interface:${region.id}`,
-    );
-  });
+  const resolvedSelectors = resolveManifestContent(root, manifest);
 
   const lensById = new Map(lensSet.lenses.map((lens) => [lens.id, lens]));
   if (lensById.size !== lensSet.lenses.length) {
@@ -977,6 +996,15 @@ function loadPrompt(name) {
   return readFileSync(join(PROMPT_ROOT, name), "utf8");
 }
 
+function selectorCoordinates(resolvedSelectors) {
+  return Object.fromEntries(
+    Object.entries(resolvedSelectors).map(([id, value]) => [
+      id,
+      { path: value.path, start_line: value.start_line, end_line: value.end_line },
+    ]),
+  );
+}
+
 export function renderTemplate(template, variables) {
   const rendered = template.replace(/\{\{([A-Z0-9_]+)\}\}/g, (_, key) => {
     if (!Object.hasOwn(variables, key)) throw new VerificationError(`Missing prompt variable ${key}`);
@@ -1007,12 +1035,7 @@ function contractContext(contract) {
       read_order: contract.manifest.prior_reviews.read_order,
       discovered_deny_list: contract.priorReviews.map((item) => item.path),
     },
-    resolved_selectors: Object.fromEntries(
-      Object.entries(contract.resolvedSelectors).map(([id, value]) => [
-        id,
-        { path: value.path, start_line: value.start_line, end_line: value.end_line },
-      ]),
-    ),
+    resolved_selectors: selectorCoordinates(contract.resolvedSelectors),
     forbidden_sources: contract.manifest.forbidden_sources,
     interface_regions: contract.manifest.interface_regions.map((region) => ({
       id: region.id,
@@ -1232,6 +1255,33 @@ function interfaceHashes(contract) {
     );
     return { id: region.id, hash: sha256Text(resolved.text) };
   });
+}
+
+function resolveRoundContext(contract, round) {
+  const resolvedSelectors = resolveManifestContent(contract.root, contract.manifest);
+  const priorReviews = discoverPriorReviews(contract.root, contract.manifest);
+  const nextRound = priorReviews.length ? priorReviews.at(-1).round + 1 : 1;
+  if (nextRound !== round) {
+    throw new VerificationError(
+      `Prior-review state changed before round ${round}; current filesystem resolves next round ${nextRound}`,
+    );
+  }
+  const immutablePaths = expandPatterns(contract.root, contract.manifest.immutable_paths);
+  for (const prior of priorReviews) {
+    if (!immutablePaths.includes(prior.path)) {
+      throw new VerificationError(
+        `Prior review is not protected by immutable_paths at round ${round}: ${prior.path}`,
+      );
+    }
+  }
+  return { resolvedSelectors, priorReviews, immutablePaths };
+}
+
+function extendImmutableBaseline(root, baseline, immutablePaths, manifest) {
+  const additions = immutablePaths.filter((path) => !baseline.has(path));
+  for (const [path, fingerprint] of snapshotImmutable(root, additions, manifest)) {
+    baseline.set(path, fingerprint);
+  }
 }
 
 function writeJournal(path, journal) {
@@ -1500,12 +1550,7 @@ export function dryRunPlan(contract, options = {}) {
     stage_order: STAGE_ORDER,
     barriers: true,
     selected_lenses: selectedLenses(contract).map((lens) => lens.id),
-    resolved_selectors: Object.fromEntries(
-      Object.entries(contract.resolvedSelectors).map(([id, value]) => [
-        id,
-        { path: value.path, start_line: value.start_line, end_line: value.end_line },
-      ]),
-    ),
+    resolved_selectors: selectorCoordinates(contract.resolvedSelectors),
     immutable_paths: contract.immutablePaths,
     allowed_writes: contract.allowedWrites,
     estimates,
@@ -1773,17 +1818,49 @@ export async function executeVerification(contract, options = {}) {
       const firstReviewRound = isFirstReviewRound(contract, offset);
       lastRound = round;
       const reviewOutput = renderOutputPath(contract.root, contract.manifest, round);
-      if (pathEntryExists(join(contract.root, reviewOutput))) {
-        throw new VerificationError(`Review output collision before round ${round}: ${reviewOutput}`);
-      }
-      const allowedWrites = {
-        adjudicator: renderAllowedPaths(contract.root, contract.manifest, "adjudicator", reviewOutput),
-        fixup: renderAllowedPaths(contract.root, contract.manifest, "fixup", reviewOutput),
-      };
       const roundJournal = { round, review: reviewOutput, completed_stages: [], gate_drops: [] };
       journal.rounds.push(roundJournal);
       const stageDispositions = [];
 
+      journal.stage = `R${round} Context refresh`;
+      writeJournal(journalPath, journal);
+      try {
+        if (pathEntryExists(join(contract.root, reviewOutput))) {
+          throw new VerificationError(`Review output collision before round ${round}: ${reviewOutput}`);
+        }
+        assertImmutable(contract.root, immutableBaseline, contract.manifest);
+        const refreshed = resolveRoundContext(contract, round);
+        contract.resolvedSelectors = refreshed.resolvedSelectors;
+        contract.priorReviews = refreshed.priorReviews;
+        contract.immutablePaths = refreshed.immutablePaths;
+        extendImmutableBaseline(
+          contract.root,
+          immutableBaseline,
+          refreshed.immutablePaths,
+          contract.manifest,
+        );
+        roundJournal.context_refresh = {
+          status: "complete",
+          resolved_selectors: selectorCoordinates(refreshed.resolvedSelectors),
+          discovered_prior_reviews: refreshed.priorReviews,
+        };
+        writeJournal(journalPath, journal);
+      } catch (error) {
+        roundJournal.context_refresh = {
+          status: "error",
+          error: { message: error.message, code: error.code || "ERROR" },
+          previous_resolved_selectors: selectorCoordinates(contract.resolvedSelectors),
+          expected_prior_reviews: contract.priorReviews,
+        };
+        journal.pending_work = `Round ${round} filesystem context failed revalidation before Attack; inspect the named source and current review state before retrying.`;
+        writeJournal(journalPath, journal);
+        throw error;
+      }
+
+      const allowedWrites = {
+        adjudicator: renderAllowedPaths(contract.root, contract.manifest, "adjudicator", reviewOutput),
+        fixup: renderAllowedPaths(contract.root, contract.manifest, "fixup", reviewOutput),
+      };
       logger(`Round ${round} Attack`);
       journal.stage = `R${round} Attack`;
       writeJournal(journalPath, journal);

@@ -98,10 +98,16 @@ Paths must be repository-relative. Existing paths and symlink targets must remai
 root. Missing, ambiguous, colliding, gapped, or conflicting configuration fails before any agent
 runs. Selector starts are unique. Ends default to `unique-after-start`; a manifest must explicitly
 choose `first-after-start` when a repeated terminator is intentional. The engine reports current
-coordinates rather than trusting permanent line numbers. Output naming must round-trip through
-prior-review discovery, prior reviews must be immutable, journal/output/write areas cannot overlap,
-and empty immutable globs fail unless they intentionally match the next review output. Verdict,
-stop, and refuter policies declare fixed preserved semantics; contradictory policy data is rejected.
+coordinates rather than trusting permanent line numbers. It revalidates every target, authority,
+supporting-evidence, dependency binding-contract, and interface selector from the current
+filesystem at each round boundary before dispatching Attack, then replaces the selector context
+for every role in that round. The same refresh rediscovers prior reviews for the read-only deny
+list and adjudicator-last context. A missing, ambiguous, escaped, or otherwise invalid refreshed
+source fails before Attack and is recorded in the run journal. Output naming must round-trip
+through prior-review discovery, prior reviews must be immutable, journal/output/write areas cannot
+overlap, and empty immutable globs fail unless they intentionally match the next review output.
+Verdict, stop, and refuter policies declare fixed preserved semantics; contradictory policy data
+is rejected.
 
 Current production profiles are `phase-1`, `phase-2`, `phase-3`, and `phase-4`. The
 `non-phase-fixture` profile is intentionally tiny and proves the core has no phase number,
@@ -137,7 +143,7 @@ The tests cover schema/config parsing, target selection, missing/ambiguous/confl
 containment, prior-review/output state, selectors, stage order and stops, refuter aggregation,
 citation rejection/relocation, recursive Gate evidence, write allowlists, ignored-file/mode checks,
 literal PASS, fake-agent full orchestration, first-to-mature transitions, review-only continuation,
-failure journaling, and the non-phase fixture.
+round-boundary selector/prior-review refresh, failure journaling, and the non-phase fixture.
 
 ## Partial failure
 

@@ -176,7 +176,10 @@ function writeReview(root, path, verdict, counts, admitted = []) {
   );
 }
 
-function makeFakeRunner(root, calls, { secondRoundPass = false } = {}) {
+function makeFakeRunner(root, calls, {
+  secondRoundPass = false,
+  fixupTargetAppend = "",
+} = {}) {
   const interfaceText = "## Public\n\nalpha\n";
   const interfaceHash = createHash("sha256").update(interfaceText).digest("hex");
   return async ({ label, prompt, sandbox }) => {
@@ -252,8 +255,14 @@ function makeFakeRunner(root, calls, { secondRoundPass = false } = {}) {
       const review = label.includes("continuation") ? "reviews/review_1.md" : "reviews/review_1.md";
       const before = readFileSync(join(root, review), "utf8");
       writeFileSync(join(root, review), `${before}\n## Resolutions\n\nCorrection recorded.\n`);
+      if (fixupTargetAppend) {
+        const targetBefore = readFileSync(join(root, "target.md"), "utf8");
+        writeFileSync(join(root, "target.md"), `${targetBefore}${fixupTargetAppend}`);
+      }
       return {
-        sites_edited: ["review resolution"],
+        sites_edited: fixupTargetAppend
+          ? ["review resolution", "target append"]
+          : ["review resolution"],
         interface_regions: [{
           id: "public",
           hash_before: interfaceHash,
@@ -264,7 +273,7 @@ function makeFakeRunner(root, calls, { secondRoundPass = false } = {}) {
         new_prose_lines: 3,
         weakest_points: ["wording"],
         do_not_refight: ["resolved wording"],
-        files_modified: [review],
+        files_modified: fixupTargetAppend ? [review, "target.md"] : [review],
         refused_with_cause: "",
       };
     }
@@ -288,6 +297,17 @@ function makeFakeRunner(root, calls, { secondRoundPass = false } = {}) {
     }
     throw new Error(`Unexpected fake role ${label}`);
   };
+}
+
+function selectorRangeFromPrompt(prompt, selectorId) {
+  const escaped = selectorId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = prompt.match(
+    new RegExp(
+      `"${escaped}"\\s*:\\s*\\{[^}]*"start_line"\\s*:\\s*(\\d+),[^}]*"end_line"\\s*:\\s*(\\d+)`,
+    ),
+  );
+  assert.ok(match, `selector ${selectorId} was not present in prompt`);
+  return { start: Number(match[1]), end: Number(match[2]) };
 }
 
 test("all JSON configuration and schemas parse", () => {
@@ -669,7 +689,12 @@ test("fake-agent execution proves barriers, full loop stages, and first-to-matur
     "attack:edge-cases:R2",
   ]);
   assert.match(calls.find((call) => call.label === "attack:contract:R1").prompt, /entire target is unreviewed/);
-  assert.match(calls.find((call) => call.label === "attack:consistency:R2").prompt, /1 review round\(s\) already exist/);
+  const round2Attack = calls.find((call) => call.label === "attack:consistency:R2");
+  assert.match(round2Attack.prompt, /1 review round\(s\) already exist/);
+  assert.match(
+    round2Attack.prompt,
+    /"discovered_deny_list": \[\s*"reviews\/review_1\.md"\s*\]/,
+  );
   const refuterPrompt = calls.find((call) => call.label === "refute:candidate-001:1:R1").prompt;
   assert.match(refuterPrompt, /finder evidence is already preserved by the orchestrator/);
   assert.match(refuterPrompt, /Do not copy that\s+evidence into your own `evidence` array/);
@@ -678,7 +703,76 @@ test("fake-agent execution proves barriers, full loop stages, and first-to-matur
   assert.match(adjudicatorPrompt, /"path": "target\.md"/);
   assert.match(adjudicatorPrompt, /"path": "spec\.md"/);
   assert.match(adjudicatorPrompt, /Candidates eliminated before adjudication/);
+  assert.match(
+    calls.find((call) => call.label === "adjudicate:R2").prompt,
+    /prior reviews listed below[\s\S]*"round": 1,\s*"path": "reviews\/review_1\.md"/i,
+  );
   assert.match(readFileSync(join(root, "reviews", "review_1.md"), "utf8"), /^## Resolutions$/m);
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("round refresh dispatches post-fix-up selector bounds to Attack and Adjudicate", async () => {
+  const { root, manifest } = makeMiniRepo();
+  manifest.targets[0].selectors[0].selector = { start: "^# Target$" };
+  writeJson(join(root, "verification", "targets", "mini.json"), manifest);
+  const contract = resolveContract(root, "mini", { preset: "lean", maxRounds: 2 });
+  const initialEnd = contract.resolvedSelectors["target[0]:public"].end_line;
+  const appendedText = "\n## Added contract\n\nnewly appended substantive requirement\n";
+  const calls = [];
+  const result = await executeVerification(contract, {
+    agentRunner: makeFakeRunner(root, calls, {
+      secondRoundPass: true,
+      fixupTargetAppend: appendedText,
+    }),
+    logger: () => {},
+  });
+  assert.equal(result.outcome, "PASS");
+
+  const finalLines = readFileSync(join(root, "target.md"), "utf8").split(/\r?\n/);
+  const appendedLine = finalLines.indexOf("newly appended substantive requirement") + 1;
+  const refreshedEnd = contract.resolvedSelectors["target[0]:public"].end_line;
+  assert.ok(refreshedEnd > initialEnd);
+  assert.equal(refreshedEnd, finalLines.length);
+
+  for (const label of ["attack:consistency:R2", "adjudicate:R2"]) {
+    const range = selectorRangeFromPrompt(
+      calls.find((call) => call.label === label).prompt,
+      "target[0]:public",
+    );
+    assert.equal(range.end, refreshedEnd, `${label} must receive the refreshed EOF`);
+    assert.notEqual(range.end, initialEnd, `${label} must not receive the pre-fix-up endpoint`);
+    assert.ok(appendedLine >= range.start && appendedLine <= range.end);
+  }
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("round refresh fails closed before Attack when a fix-up invalidates a selector", async () => {
+  const { root, manifest } = makeMiniRepo();
+  manifest.targets[0].selectors[0].selector = { start: "^# Target$" };
+  writeJson(join(root, "verification", "targets", "mini.json"), manifest);
+  const contract = resolveContract(root, "mini", { preset: "lean", maxRounds: 2 });
+  const calls = [];
+  await assert.rejects(
+    executeVerification(contract, {
+      agentRunner: makeFakeRunner(root, calls, {
+        secondRoundPass: true,
+        fixupTargetAppend: "\n# Target\n\nambiguous post-fix-up surface\n",
+      }),
+      logger: () => {},
+    }),
+    (error) => {
+      assert.equal(error.code, "VALIDATION_ERROR");
+      assert.match(error.message, /target\[0\]:public start.*matched 2 lines/);
+      assert.equal(error.details.stage, "R2 Context refresh");
+      assert.match(error.details.journal, /^\.runs\//);
+      const journal = JSON.parse(readFileSync(join(root, error.details.journal), "utf8"));
+      assert.equal(journal.rounds[1].context_refresh.status, "error");
+      assert.match(journal.rounds[1].context_refresh.error.message, /matched 2 lines/);
+      assert.match(journal.pending_work, /failed revalidation before Attack/);
+      return true;
+    },
+  );
+  assert.equal(calls.some((call) => call.label.startsWith("attack:") && call.label.endsWith(":R2")), false);
   rmSync(root, { recursive: true, force: true });
 });
 
