@@ -103,7 +103,7 @@ prior-review discovery, prior reviews must be immutable, journal/output/write ar
 and empty immutable globs fail unless they intentionally match the next review output. Verdict,
 stop, and refuter policies declare fixed preserved semantics; contradictory policy data is rejected.
 
-Current production profiles are `phase-1`, `phase-2`, and `phase-3`. The
+Current production profiles are `phase-1`, `phase-2`, `phase-3`, and `phase-4`. The
 `non-phase-fixture` profile is intentionally tiny and proves the core has no phase number,
 document basename, version-directory, review-directory, or section-number dependency.
 
@@ -128,6 +128,7 @@ node tests/verify-engine.test.mjs
 scripts/verify --target phase-1 --dry-run
 scripts/verify --target phase-2 --dry-run
 scripts/verify --target phase-3 --dry-run
+scripts/verify --target phase-4 --dry-run
 scripts/verify --target non-phase-fixture --dry-run
 git diff --check
 ```

@@ -30,8 +30,8 @@ costly multi-round run until its dry-run estimate has been surfaced and authoriz
 
 The generic manifest is documented in
 `.agents/skills/verify-loop/references/OPERATIONS.md`. Current targets are `phase-1`, `phase-2`,
-`phase-3`, and the test-only `non-phase-fixture`. New targets require data/configuration, not engine
-or prompt changes.
+`phase-3`, `phase-4`, and the test-only `non-phase-fixture`. New targets require
+data/configuration, not engine or prompt changes.
 
 Real runs checkpoint below `.verification-runs/` (gitignored), and failures report the exact
 journal path/stage. If a role fails, inspect the journal,

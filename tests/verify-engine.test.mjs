@@ -316,6 +316,7 @@ test("repository path containment rejects traversal and absolute paths", () => {
 
 test("target selection resolves IDs and rejects missing or ambiguous matches", () => {
   assert.match(resolveManifestPath(ROOT, "phase-3"), /verification\/targets\/phase-3\.json$/);
+  assert.match(resolveManifestPath(ROOT, "phase-4"), /verification\/targets\/phase-4\.json$/);
   assert.throws(() => resolveManifestPath(ROOT, "does-not-exist"), /No verification target/);
 
   const root = mkdtempSync(join(tmpdir(), "verify-targets-"));
@@ -328,11 +329,14 @@ test("target selection resolves IDs and rejects missing or ambiguous matches", (
 
 test("contract resolution validates selectors, state, and first-review behavior", () => {
   const phase1 = resolveContract(ROOT, "phase-1", { preset: "lean", maxRounds: 0 });
-  assert.equal(phase1.startRound, 16);
+  assert.equal(phase1.startRound, phase1.priorReviews.length + 1);
   assert.equal(phase1.firstReview, false);
   const phase3 = resolveContract(ROOT, "phase-3", { preset: "lean", maxRounds: 0 });
   assert.equal(phase3.startRound, phase3.priorReviews.length + 1);
   assert.equal(phase3.firstReview, false);
+  const phase4 = resolveContract(ROOT, "phase-4", { preset: "lean", maxRounds: 0 });
+  assert.equal(phase4.startRound, phase4.priorReviews.length + 1);
+  assert.equal(phase4.firstReview, false);
   const firstReview = resolveContract(ROOT, "non-phase-fixture", { preset: "lean", maxRounds: 0 });
   assert.equal(firstReview.startRound, 1);
   assert.equal(firstReview.firstReview, true);
