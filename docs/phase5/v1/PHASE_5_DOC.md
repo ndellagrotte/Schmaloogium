@@ -10,7 +10,7 @@
 
 **Assigned OQs:** none
 
-**Authored:** 2026-07-28
+**Authored:** 2026-07-28 · **Last revised:** 2026-07-29 (§0.31)
 
 **Deliverable:** this document, following
 `docs/design/v2.0-RC3/DESIGN.md:790`–`:826` and its mandatory thirteen-section template.
@@ -37,14 +37,14 @@
 | `docs/phase1/v14/PHASE_1_DOC.md` | Verified dependency. Read its header/current status, module/seam and package placement, `engine.gl` handles and facade, recording/replay, diagnostic/logging conventions, bring-up/depth-adjacent material, and binding §5 in full. |
 | `docs/phase3/v1/PHASE_3_DOC.md` | Verified dependency. Read its public `PackConfiguration` shape, directive/resource aggregation, format/clear/flip rows, relevant detailed design, §5 in full, and relevant decisions/hand-offs. |
 | `docs/phase4/v1/PHASE_4_DOC.md` | Verified dependency. Read its public stage/pass/resource/program-state shape, routing and side-ownership rules, §5 in full, and relevant decisions/hand-offs. |
-| Latest dependency reviews | `docs/phase1/reviews/PHASE_1_REVIEW_18.md`, `docs/phase3/reviews/PHASE_3_REVIEW_14.md`, and `docs/phase4/reviews/PHASE_4_REVIEW_11.md`. Each ends in literal `PASS`, zero corrections, and no outstanding §5 change. Phase 2's latest review was also checked for wave state but Phase 2 is not a Phase 5 dependency. |
+| Latest dependency reviews | `docs/phase1/reviews/PHASE_1_REVIEW_20.md`, `docs/phase3/reviews/PHASE_3_REVIEW_14.md`, and `docs/phase4/reviews/PHASE_4_REVIEW_15.md`. Each ends in literal `PASS`, zero corrections, and no outstanding §5 change. Phase 2's latest review was also checked for wave state but Phase 2 is not a Phase 5 dependency. |
 
-The dependency gate is satisfied. Phase 1's latest review says *"Phase 1 remains verified and is a
-valid dependency input"* (`docs/phase1/reviews/PHASE_1_REVIEW_18.md:60`–`:61`); Phase 3's latest
+The dependency gate is satisfied. Phase 1's latest review says Phase 1 is verified and a valid
+dependency input (`docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75`); Phase 3's latest
 review records *"literal PASS"* and no owed interface change
 (`docs/phase3/reviews/PHASE_3_REVIEW_14.md:42`–`:48`); Phase 4's latest review says its fresh review
 of the corrected §5 surface established convergence
-(`docs/phase4/reviews/PHASE_4_REVIEW_11.md:50`–`:59`).
+(`docs/phase4/reviews/PHASE_4_REVIEW_15.md:59`–`:72`).
 
 ### 0.2 Provenance and legal posture
 
@@ -223,6 +223,57 @@ a fresh verify round.
 Round 22 completed the dependent-facing component contracts embedded in shadow snapshots.
 The changed §5 contract requires a fresh verify round.
 
+### 0.25 Dependency-adoption addendum (2026-07-29)
+
+Phase 1 accepted the three requested framebuffer/depth capabilities, added the authenticated
+borrowed-handle issuance route required by review, and reconverged at literal PASS in
+`docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75`. Phase 4 published its existing candidate
+view in binding §5, completed the retained-view lifecycle as an immutable detached metadata
+snapshot, and reconverged at literal PASS in
+`docs/phase4/reviews/PHASE_4_REVIEW_15.md:59`–`:72`. The already-present
+`verification/targets/phase-5.json` also grants the tooling request recorded below.
+
+Sections 4, 5, 6, 9, 10, 11, and 12 now consume those verified contracts and remove the historical
+blocked-until-granted wording. The future `superSamplingLevel` authority clarification remains
+pending and non-blocking under D-P5-10: main allocation extent is
+`round(display × renderQuality)`, supersampling does not multiply it, and Phase 7 owns eventual
+SSAA execution.
+
+**Current §G1.3 status:** round twenty-three's literal PASS applies to the pre-§0.25 bytes. This
+addendum changes binding §5, so Phase 5 is **not verified** and is not a valid dependency input
+until a fresh round twenty-four returns literal PASS (or any corrections are fixed and the
+changed interface is re-verified). The version directory remains `v1` while the loop is open.
+
+### 0.26 Round-24 fix-up
+
+Round 24 made texture-binding validation a closed result and settled overlay-lease ownership on
+both success and rejection. The changed §5 contract requires a fresh verify round.
+
+### 0.27 Round-25 fix-up
+
+Round 25 removed the inapplicable per-unit missing payload from whole-call texture-binding
+rejections. The changed §5 contract requires a fresh verify round.
+
+### 0.28 Round-26 fix-up
+
+Round 26 completed the successful texture-binding snapshot's fixed-unit outcome contract.
+The changed §5 contract requires a fresh verify round.
+
+### 0.29 Round-27 fix-up
+
+Round 27 added the omitted `Extent2i` leaf value to binding §5.
+The changed §5 contract requires a fresh verify round.
+
+### 0.30 Round-28 fix-up
+
+Round 28 defined the closed depth-copy result contract and completed the binding clear-request
+shape. The changed §5 contract requires a fresh verify round.
+
+### 0.31 Round-29 fix-up
+
+Round 29 aligned the depth-copy rejection prose and completed the binding resize-reason order.
+The changed §5 contract requires a fresh verify round.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 5 owns
@@ -253,14 +304,15 @@ Mixins observe and delegate; no flip, clear, sizing, or fallback policy lives in
 ### 1.2 Explicit adjacent ownership
 
 - **Owned by Phase 1:** `GLDevice`, services, opaque handles, `GLCapabilityProfile`, recording/replay,
-  diagnostics, log channels, and bring-up stage 2. Phase 5 requests three narrow facade-contract
-  corrections in §5.5 and assumes none.
+  diagnostics, log channels, bring-up stage 2, and the verified authenticated borrowed-depth,
+  combined depth/stencil, and first-versus-steady depth-copy facade shape consumed in §5.2.
 - **Owned by Phase 3:** parsing and validation of format/clear/mipmap/shadow/supersampling
   directives, `ProgramStateModel`, `ResourceRequirements`, immutable configuration, and its
   fingerprint. Phase 5 never reopens or rescans the pack.
 - **Owned by Phase 4:** stage/pass registry, program fallback, effective `ProgramStateBundle`,
-  draw-routing values, symbolic `AllUsedBuffers`, and explicit flip configuration. Phase 5 resolves
-  physical sides but never stores them back into Phase 4 state.
+  draw-routing values, symbolic `AllUsedBuffers`, explicit flip configuration, and the verified
+  detached pre-publication candidate view. Phase 5 resolves physical sides but never stores them
+  back into Phase 4 state.
 - **Owned by Phase 6:** sampler-uniform location caching and uploading fixed unit numbers. Phase 5
   supplies a pass-coherent unit→texture snapshot; it does not upload a sampler uniform.
 - **Owned by Phase 7:** when frame clears and depth copies occur, pass execution, viewport/state
@@ -515,7 +567,7 @@ public interface BufferEstateView {
     FrameEndResult commitFrame(long frameId);
     FrameEndResult abortFrame(long frameId, String diagnosticId);
 
-    TextureBindingSnapshot textureBindings(
+    TextureBindingResult textureBindings(
         PassBufferSnapshot snapshot,
         TextureOverlayLease overlay,
         TextureOverlayPublicationId expectedOverlay);
@@ -533,12 +585,22 @@ public sealed interface MainDepthRefreshResult {
 
 public enum DepthCopyPoint { PRE_TRANSLUCENT, PRE_WEATHER }
 
+public sealed interface DepthCopyResult {
+    record Copied(DepthCopyPoint point, boolean initialized) implements DepthCopyResult {}
+    record DuplicateIgnored(DepthCopyPoint point, String diagnosticId) implements DepthCopyResult {}
+    record Rejected(FrameProtocolRejection reason) implements DepthCopyResult {}
+    record BackendDegraded(
+        DepthCopyPoint point, BufferFailure failure, String diagnosticId)
+        implements DepthCopyResult {}
+}
+
 public enum FrameProtocolRejection {
     STALE_GENERATION,
     STALE_DEPTH_ATTACHMENT_EPOCH,
     FRAME_ALREADY_OPEN,
     NO_OPEN_FRAME,
     WRONG_FRAME_ID,
+    DEPTH_COPY_OUT_OF_ORDER,
     NON_NORMALIZED_FLIP_STATE,
     OPEN_PASS_SNAPSHOT,
     INVALID_PASS_SNAPSHOT
@@ -698,7 +760,7 @@ The eight four-member families plus five mixed formats total exactly 37. Pintoni
 
 Phase 3 already canonicalizes every B.5 prefix into an index
 (`docs/phase3/v1/PHASE_3_DOC.md:487`–`:493`), and Phase 4 preserves ordered routing
-(`docs/phase4/v1/PHASE_4_DOC.md:869`–`:878`). Phase 5 consumes only `BufferRef`; it never parses
+(`docs/phase4/v1/PHASE_4_DOC.md:742`–`:757`). Phase 5 consumes only `BufferRef`; it never parses
 `gcolor` or `DRAWBUFFERS`. The growth model accepts non-negative indices and sparse route sets, but
 v0.1's G6 realization rejects a required colortex index above 7 with a named unsupported-post-v0.5
 failure rather than silently dropping it. `RENDERTARGETS`, 16/32 colortex, custom images, SSBOs, and
@@ -956,7 +1018,7 @@ stub or hardcoded “read main” shortcut.
 
 Phase 4 exposes exact/symbolic writes and explicitly warns:
 *"Phase 5 must not infer a resolved ping-pong side from `explicitFlips`; it owns the side state"*
-(`docs/phase4/v1/PHASE_4_DOC.md:1187`). Phase 5 obeys that division.
+(`docs/phase4/v1/PHASE_4_DOC.md:1227`). Phase 5 obeys that division.
 
 `PassBufferPlanner`:
 
@@ -1084,8 +1146,10 @@ Schmaloogium's equivalent has three pieces:
    no policy. These symbols/descriptors were resolved through the repository-required Cleanroom
    mappings service, not inferred from a patched source filename.
 2. **`mod.glue` implementation:** create a NEAREST, CLAMP_TO_EDGE depth texture; attach it to depth
-   and, when enabled, stencil; delete it with the owning Minecraft framebuffer; expose an opaque
-   Phase-5 marker handle and monotonically changing version.
+   and, when enabled, stencil; delete it with the owning Minecraft framebuffer; present its live
+   ordinary platform `TextureHandle` to the same Phase 1 device's
+   `FramebufferService.borrowDepthAttachment`, and expose the resulting backend-authenticated,
+   non-owned `BorrowedDepthAttachmentHandle` with a monotonically changing Phase-5 version.
 3. **`engine.buffers` SPI:**
 
 ```java
@@ -1109,7 +1173,8 @@ public sealed interface MainDepthSnapshot {
     record Unavailable(long version, String diagnosticId) implements MainDepthSnapshot {}
 }
 
-public interface BorrowedDepthAttachmentHandle extends TextureHandle {}
+// BorrowedDepthAttachmentHandle is the verified Phase 1 engine.gl type. Phase 5 neither
+// redeclares nor implements it; the receiving GLDevice issues it through borrowDepthAttachment.
 public enum DepthAttachmentFormat { DEPTH_COMPONENT, DEPTH24_STENCIL8 }
 ```
 
@@ -1176,16 +1241,23 @@ This mirrors the assigned version-driven behavior at
 and its reattachment block beginning at
 `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTargets.java:166`.
 
-The existing Phase 1 contract does **not** permit step 2: its §5 says a foreign texture is illegal
-for `FramebufferService.attachDepth` (`docs/phase1/v14/PHASE_1_DOC.md:3970` and
-`docs/phase1/v14/PHASE_1_DOC.md:3980`). Phase 5 therefore requests the narrow correction in §5.5.
-Until that request is fixed up and re-verified, the design is complete but implementation of the
-depth bridge is blocked; no wider foreign-handle permission is assumed.
+Phase 1 now supplies this exact narrow route. Its binding §5 distinguishes ordinary
+`ForeignTextureProvider` values from backend-issued borrowed depth, exposes
+`borrowDepthAttachment`, `attachDepthStencil`, and
+`initializeDepthTextureFromFramebuffer`, and preserves Phase 5 ownership of format, freshness,
+cadence, allocation/copy tier, restoration policy, and Minecraft lifetime
+(`docs/phase1/v14/PHASE_1_DOC.md:4107`–`:4123`). The whole-document service contract additionally
+requires forged, wrong-origin, wrong-device, stale, and illegal owned-versus-borrowed uses to fail
+before GL; only an authenticated borrowed value may be sampled/labeled or used by depth-only and
+combined depth/stencil attachment operations
+(`docs/phase1/v14/PHASE_1_DOC.md:3015`–`:3035`). Round twenty verified that amended surface
+(`docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75`).
 
-Combined depth-stencil also requires an explicit facade operation that attaches the same texture to
-both depth and stencil. The second §5.5 request is additive and equally narrow. The mandatory
-first-copy operation is not expressible separately from Phase 1's steady-copy verb; §5.5 requests
-that third distinction rather than assuming backend state heuristics.
+Phase 5 therefore uses `attachDepth` for depth-only snapshots and
+`attachDepthStencil` only for `DEPTH24_STENCIL8`, reissuing/reacquiring the borrowed handle when
+the platform identity changes. It never widens ordinary foreign handles, deletes or allocates a
+borrowed handle, trusts a public marker implementation, or substitutes backend-state heuristics
+for the explicit combined and initialization operations.
 
 ### 4.9 depthtex1/depthtex2 copies
 
@@ -1197,7 +1269,7 @@ Both copy targets:
 - are reallocated and marked uninitialized on size/format/version change; and
 - are never substituted for depthtex0's attachment.
 
-The first copy after allocation/reallocation uses the requested
+The first copy after allocation/reallocation uses the verified
 `FramebufferService.initializeDepthTextureFromFramebuffer` operation, whose contract is
 `glCopyTexImage2D` semantics. Later `FramebufferService.copyDepthToTexture` calls use the fastest
 valid backend tier:
@@ -1214,8 +1286,9 @@ warns that caps can lie at
 `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/DepthCopyStrategy.java:16`
 –`:30`.
 
-Backend operations restore read/draw framebuffer and texture bindings before return, as Phase 1's
-facade requires. A pure `DepthCopyStrategySelector` is tested with independent
+Phase 5 requires the selected backend operations to restore read/draw framebuffer and texture
+bindings before return, matching the verified detailed Phase 1 service behavior. A pure
+`DepthCopyStrategySelector` is tested with independent
 `copyImageCallable`, `blitAvailable`, and `combinedStencil` booleans; those booleans are
 `mod.glue` backend facts and do not leak GL constants into `:engine`.
 
@@ -1241,10 +1314,20 @@ behavior before the new frame reaches that point. A successful initialization af
 the destination to `VALID`.
 
 Phase 7 owns the calls. A duplicate is diagnosed and ignored; an out-of-order request is
-`FailedSafe` for the current shader frame. A first-copy failure or recurring copy failure binds
-depthtex0 as the temporary backing for the affected unit, reports a feature-local degradation, and
-marks that copied-depth view unavailable to conformance diagnostics. It never exposes stale
-previous-frame contents as current.
+`Rejected(DEPTH_COPY_OUT_OF_ORDER)`, and Phase 7 aborts the current shader frame. A first-copy
+failure or recurring copy failure binds depthtex0 as the temporary backing for the affected unit,
+reports a feature-local degradation, and marks that copied-depth view unavailable to conformance
+diagnostics. It never exposes stale previous-frame contents as current.
+
+`DepthCopyResult` makes every outcome closed and observable. `Copied(point, initialized)` advances
+the copy-point state and reports whether the successful operation initialized storage.
+`DuplicateIgnored` emits its diagnostic but changes neither copy-point nor destination state.
+`Rejected` covers the applicable stale-generation, stale-attachment-epoch, no-open-frame,
+wrong-frame, or `DEPTH_COPY_OUT_OF_ORDER` rejection; it is pre-copy and mutation-free, and Phase 7
+must abort the current shader frame. `BackendDegraded` moves the affected destination to
+`DEGRADED_TO_DEPTHTEX0`, installs the depthtex0 fallback for its fixed unit, emits the carried
+failure and diagnostic, and permits Phase 7 to continue that frame using the fallback. These four
+variants exhaust success, duplicate/no-op, protocol rejection, and backend failure.
 
 ### 4.10 Shadow estate
 
@@ -1482,8 +1565,15 @@ Phase 7 acquires a Phase-13-owned `TextureOverlayLease extends TextureOverlaySna
 AutoCloseable`, an immutable snapshot view, and passes it with the `TextureOverlayPublicationId`
 read from the same atomic Phase 13 publication to `textureBindings`. Phase 5 requires the lease ID
 to equal that expected ID and its
-`RegistryFingerprint` to equal the estate's `registryFingerprint`; mismatch yields
-`MissingTextureBinding` and no draw. A successful `TextureBindingSnapshot` retains the lease.
+`RegistryFingerprint` to equal the estate's `registryFingerprint`.
+
+`textureBindings` returns the closed `TextureBindingResult`: `Bound(TextureBindingSnapshot)` or
+`Rejected(TextureBindingRejection)`. `TextureBindingRejection` is exactly
+`OVERLAY_PUBLICATION_ID_MISMATCH` or `REGISTRY_FINGERPRINT_MISMATCH`; validation checks publication
+ID first, so that reason wins when both checks fail. Rejection occurs before any bind, transfers no
+ownership, and requires Phase 7 to suppress the draw and close the still caller-owned lease. On
+`Bound`, ownership of the lease transfers into the
+`TextureBindingSnapshot`; Phase 7 must not close the lease separately.
 `TextureBindingSnapshot` is `AutoCloseable` with idempotent `close`. Phase 7 closes it in the
 enclosing draw's `finally`, after the draw completes; closure releases the lease and is Phase 13's
 deterministic permission to destroy referenced handles. Phase 13 retains registry, allocation,
@@ -1518,11 +1608,20 @@ For unit 15 at every listed stage, `NOISE -> Present(handle)` binds exactly that
 substituted.
 
 `TextureBindingSnapshot` contains the estate generation, depth-attachment epoch, frame/pass
-identity, and immutable unit→handle rows. It closes over the exact `PassBufferSnapshot`, so Phase 6
-cannot observe a flip transition between attaching an output and binding its sampler inputs. Phase
-6 uploads sampler integers; Phase 5 or Phase 7 executes `TextureService.bindToUnit` from this
-snapshot before the draw. The Phase 7 composition must order the object binds before Phase 6's
-sampler-uniform upload inside Phase 4's sampler participant.
+identity, and exactly sixteen immutable `TextureBindingRow(unit,outcome)` rows in ascending unit
+order. `unit` is therefore always 0 through 15, preserving fixed sampler identity.
+`TextureBindingOutcome` is closed as `Bindable(TextureHandle)`,
+`Missing(MissingTextureBinding)`, or `Absent`; total `outcome(int unit)` lookup rejects units
+outside 0 through 15. Table resolution maps a texture object to `Bindable`, every explicit
+`Missing` result to `Missing`, and the table's `Absent` cell to `Absent`.
+
+The snapshot closes over the exact `PassBufferSnapshot`, so Phase 6 cannot observe a flip
+transition between attaching an output and binding its sampler inputs. Before the draw, Phase 7
+iterates the rows in ascending order, executes `TextureService.bindToUnit` only for `Bindable`,
+routes `Missing` to the affected-program degradation policy in §6, and performs no bind for
+`Absent`. Phase 6 uploads sampler integers for their fixed units; it neither binds nor interprets
+handles. The Phase 7 composition must order the object binds before Phase 6's sampler-uniform
+upload inside Phase 4's sampler participant.
 
 The map is never searched for a free unit. Pintonium's dynamic unit allocation is the pre-decided
 rejection in §G11.4 and is not an alternative implementation.
@@ -1572,16 +1671,16 @@ The recording backend must prove `noLeakedObjects()` and `noUseAfterDelete()`.
 |---|---|---|
 | `BufferArchitecture.plan/create`, `BufferPlanRequest`, `BufferBuildRequest`, `BufferRuntimeInputs`, `BufferPlan`, `BufferPlanResult`, `BufferBuildResult`, `BufferFailure` | Phase-7-owned immutable configuration/registry/fingerprint/capability inputs plus runtime display extent, render quality, and shadow quality; all three runtime fields participate by value in planning identity and reuse, with no separate runtime revision or rebuild trigger; closed valid/invalid pure planning with an immutable resolved-artifact plan; `create` independently reruns identical planning from its request before render-thread creation; ready/awaiting-depth/closed-failure build results, no partial publication | Phase 7 bootstrap/reload; Phase 2 tests |
 | `BufferEstateCandidate`, `BufferEstateInspection`, `BufferEstatePublisher`, `PublishedBufferEstate`, `BufferPublicationResult` | candidate inspection exposes only registry fingerprint, sizing, and inventory, never a generation or estate operation; Phase 7 validates that fingerprint against the Phase 4 candidate before publishing Phase 4, composes and publishes Phase 4 first, closes its still-owned Phase 5 candidate if Phase 4 publication fails, then publishes the ready Phase 5 candidate and permits no shader draw until both publications complete; acceptance atomically transfers ownership, assigns the next generation, and creates the sole generation-bearing view; accepted generation is immutable and is the only generation snapshots/stale checks use; `ProvenanceRejected` leaves the candidate caller-owned and changes no publication state; `ConsumerFailed` exposes failed/off generations, stable consumer identity, and the count of preceding successful acknowledgements, excluding the failing callback | Phase 7; Phase 12 indirectly through Phase 7 |
-| `BufferEstateView`, `BufferSizing`, `BufferInventory`, `BufferInventoryEntry`, `ResolvedBufferFormat` | accepted immutable non-owning estate metadata and publisher-assigned generation; structural sizing equality over exact main extent, optional shadow extent, and supersampling level; immutable domain/index-ordered logical inventory with per-domain counts and final resolved color/depth format; no GL handles | Phases 6, 7, 8, 13, 14 |
+| `BufferEstateView`, `BufferSizing`, `Extent2i`, `BufferInventory`, `BufferInventoryEntry`, `ResolvedBufferFormat` | accepted immutable non-owning estate metadata and publisher-assigned generation; `Extent2i(int width, int height)` is the exact immutable extent pair and performs no constructor validation, while positive display dimensions remain a sizing precondition; structural sizing equality over exact main extent, optional shadow extent, and supersampling level; immutable domain/index-ordered logical inventory with per-domain counts and final resolved color/depth format; no GL handles | Phases 6, 7, 8, 13, 14 |
 | `refreshMainDepth`, `MainDepthRefreshResult` | public render-thread comparison against the published estate; closed unchanged/reattached/resize-required/failed outcomes; successful same-extent reattachment invalidates open snapshots but permits same-frame continuation only after Phase 7 abandons them and reacquires pass/binding snapshots; resize-required carries exactly `BufferFailureCode.MAIN_DEPTH_RESIZE_REQUIRED`, performs no GL or mutation, and requires abort/normalize plus prepare/build/publication; every failed outcome advances the attachment epoch, retains the cached prior identity, makes the estate stale/unusable, and requires abort/normalize plus shaders-off publication until safe-point replacement succeeds; no shader draw is permitted during either recovery | Phase 7 |
 | `FrameProtocolRejection`, `FrameBeginResult`, `FrameEndResult`, `PassSnapshotResult`, `PassCompletionResult`, `PassDrawTarget`, `PassBufferSnapshot`, `completePass`, `commitFrame`, `abortFrame` | closed generation/attachment-epoch/frame-checked lifecycle: begin succeeds with the installed token or rejects/fails without opening a frame; snapshot acquisition returns `Acquired` or an applicable stale/epoch/no-frame/open-pass rejection; completion returns `Completed` or the applicable stale/epoch/wrong-frame/invalid-snapshot rejection, with every rejection observable and mutation-free; commit requires the matching token and no open snapshot, rebases and normalizes on success; abort consumes an open snapshot, rebases, normalizes, and requires full clear; backend end failure performs the same safe normalization, makes the estate stale, and requires shaders-off recovery. Phase 7 binds/draws only on `Acquired`, advances only on `Completed`, corrects ordering or reacquires the current publication after acquisition rejection, and aborts the frame on completion rejection; it proceeds only on begun/committed, honors aborted diagnostics/full clear, and publishes off on backend failure. One immutable side snapshot drives bindings and carries a closed draw target: wired raster passes use `EngineFramebuffer(handle)`, while `StageId.FINAL` uses `Screen.INSTANCE` with no engine handle; Phase 7 performs the platform bind and anaglyph-aware color mask, then requires `Completed` for SCREEN under the same validation and flip rules. Dormant `SHADOWCOMP`, `PREPARE`, `BEGIN`, and `SETUP` identities remain unwired | Phase 7; G8/S1 |
-| `ClearRequest`, `ClearExecutionPlan`, `executeClear`, `ClearExecutionResult` | effective full clear is caller intent OR estate-owned requirement; generation/epoch/frame-checked, exactly-once color-clear execution consumes that requirement only after every batch succeeds; exact colors, side rules, batching, and guaranteed framebuffer/viewport restoration | Phase 7 |
-| `DepthCopyPoint`, `copyDepth`, `DepthCopyResult` | PRE_TRANSLUCENT/PRE_WEATHER mechanics and ordering; caller owns moments | Phase 7 |
+| `ClearRequest`, `ClearExecutionPlan`, `executeClear`, `ClearExecutionResult` | exact immutable shape `ClearRequest(long frameId, float fogRed, float fogGreen, float fogBlue, boolean fullClear)`: `frameId` identifies the open frame, the three fog components supply colortex0 RGB, and `fullClear` is caller intent; effective full clear is that intent OR estate-owned requirement; generation/epoch/frame-checked, exactly-once color-clear execution consumes that requirement only after every batch succeeds; exact colors, side rules, batching, and guaranteed framebuffer/viewport restoration | Phase 7 |
+| `DepthCopyPoint`, `copyDepth`, `DepthCopyResult` | caller owns the PRE_TRANSLUCENT/PRE_WEATHER moments and handles exactly one closed result: `Copied(point,initialized)` advances the ordered point and makes the destination valid; `DuplicateIgnored(point,diagnosticId)` is diagnosed and mutation-free; `Rejected(FrameProtocolRejection)` is pre-copy and mutation-free for stale generation/epoch, no frame, wrong frame, or `DEPTH_COPY_OUT_OF_ORDER` and requires frame abort; `BackendDegraded(point,failure,diagnosticId)` marks the destination degraded, binds depthtex0 fallback, diagnoses the failure, and permits continued drawing with that fallback | Phase 7 |
 | `BufferDomain`, `BufferIndex`, `LogicalBuffer`, `ColorAttachment` | immutable `BufferDomain { COLORTEX, SHADOWCOLOR, SHADOWTEX, DEPTH }`; `BufferIndex(int value)` rejects negative values; `LogicalBuffer(BufferDomain domain, BufferIndex index)`; `ColorAttachment(int outputOrdinal, int framebufferAttachment, LogicalBuffer logicalBuffer, TextureHandle physicalTexture)` | Phase 8; Phase 7 |
 | `ShadowEstateResult`, `ShadowEstateAvailable`, `ShadowEstateNotRequested`, `ShadowEstateUnavailable`, `ShadowEstateView`, `ShadowPassSnapshot`, `ShadowProtocolRejection`, `ShadowDepthCopyPoint`, `ShadowBeginResult`, `ShadowOperationResult`, `ShadowCompletionResult`, `ShadowAbortResult` | `shadow()` returns exactly `ShadowEstateAvailable(view)` when planned and created, `ShadowEstateNotRequested(estateGeneration)` when no sfb was planned, or `ShadowEstateUnavailable(BufferFailure,estateGeneration)` after creation failure; ordinary absence never creates a `BufferFailure`. The view exposes its generation plus typed begin/bind/clear/`SHADOW_PRE_TRANSLUCENT` split-copy/complete/abort methods. The immutable snapshot carries generation, depth-attachment epoch, frame/pass/program identity, sfb handle, color attachments, readable shadowcolor handles, and `flipAfterPass`. Acquisition returns `Acquired(snapshot)` or `Rejected(reason)`, including exact `PASS_ALREADY_OPEN` for a second begin; operations return `Applied`, `Rejected(reason)`, or `BackendFailed(BufferFailure)`; completion returns `Completed(frameId)` or `Rejected(reason)`; abort returns `Aborted(frameId,diagnosticId,fullClearRequired)` or `Rejected(reason)`. Every named top-level shadow type is public. Every validation rejection is pre-GL and mutation-free; backend failure leaves the token open and flip unchanged for mandatory abort; completion alone applies flip, while abort closes without flip and requires full clear. Phase 8 continues only on success, corrects ordering or reacquires after rejection, and aborts on backend failure | Phase 8; G8/S1 |
-| `TextureOverlayLease`, `TextureOverlaySnapshot`, `TextureOverlayPublicationId`, `TextureOverlayFingerprint`, `TextureOverlayKey`, `TextureOverlayEntry`, `TextureOverlayAbsence`, `TextureBindingSnapshot`, fixed App B.3 table, `MissingTextureBinding` | closed total Phase 13 stage/key lookup; exact publication-ID and estate-registry-fingerprint checks; successful binding snapshot retains the lease until Phase 7 closes it after the enclosing draw; pass-coherent fixed unit→texture objects; unit 15 resolves `NOISE` `Present(handle)` to that handle and each of the three closed absence values to `MissingTextureBinding`; no uniform upload or dynamic allocation | Phase 7 composition; Phase 6 sampler participant; Phase 13 overlay |
-| `BufferResizeNotice`, `BufferResizeReason`, `BufferResizeConsumer`, `ResizeConsumerResult`, `BufferResizeRegistrationResult`, `BufferResizeRegistration`, `BufferResizeRegistrationRejection` | notice exposes old/new structural sizing, new generation, and one closed rebuild reason with declaration-order priority for simultaneous changes; registration returns `Registered` or a stable rejected reason for blank ID, duplicate live ID, future generation, unknown generation, or sizing mismatch; ready generation→sizing facts remain known for the publisher lifetime, off/never-installed generations are unknown, and supplied sizing must exactly equal the known fact; rejection installs nothing and changes no acknowledgement/publication state; accepted identity is retained unchanged and returned by `ConsumerFailed`; render-thread removal, per-consumer acknowledged sizing/generation, and ordered synchronous delivery after install and before drawing; retry `oldSizing` is each consumer's truthful acknowledged baseline; first failure stops dispatch, disposes the unopened estate, and returns the consequent off publication | Phases 13 and 14; G8/S2 |
-| `MainDepthSource`, `MainDepthPreparation`, `MainDepthSnapshot`, `BorrowedDepthAttachmentHandle` | engine-side SPI implemented by `mod.glue`; safe-point platform-FBO preparation plus opaque depth identity/version/format/extent, no GL name | Phase 7 installs/prepares; Phase 5 consumes |
+| `TextureOverlayLease`, `TextureOverlaySnapshot`, `TextureOverlayPublicationId`, `TextureOverlayFingerprint`, `TextureOverlayKey`, `TextureOverlayEntry`, `TextureOverlayAbsence`, `TextureBindingResult`, `TextureBindingRejection`, `TextureBindingSnapshot`, `TextureBindingRow`, `TextureBindingOutcome`, fixed App B.3 table, `MissingTextureBinding` | closed total Phase 13 stage/key lookup; `textureBindings` returns exactly `Bound(snapshot)` or `Rejected(reason)`, with rejection reasons `OVERLAY_PUBLICATION_ID_MISMATCH` and `REGISTRY_FINGERPRINT_MISMATCH` checked in that priority order; rejection is pre-bind, suppresses the draw, transfers no ownership, and leaves Phase 7 responsible for closing the lease; success transfers the lease into the binding snapshot until Phase 7 closes that snapshot after the enclosing draw; the snapshot has exactly sixteen ascending fixed-unit rows and total lookup, with each outcome closed as `Bindable(TextureHandle)`, `Missing(MissingTextureBinding)`, or `Absent`; Phase 7 binds only `Bindable`, degrades `Missing`, and skips `Absent`, while Phase 6 only uploads fixed sampler integers; unit 15 resolves `NOISE` `Present(handle)` to that handle and each closed absence value to `Missing`; no dynamic allocation | Phase 7 composition; Phase 6 sampler participant; Phase 13 overlay |
+| `BufferResizeNotice`, `BufferResizeReason`, `BufferResizeConsumer`, `ResizeConsumerResult`, `BufferResizeRegistrationResult`, `BufferResizeRegistration`, `BufferResizeRegistrationRejection` | notice exposes old/new structural sizing, new generation, and one closed rebuild reason; `BufferResizeReason` is ordered `DISPLAY_EXTENT`, `RENDER_QUALITY`, `MAIN_DEPTH_EXTENT`, `SHADOW_RESOLUTION`, `SHADOW_QUALITY`, `PACK_CONFIGURATION`, `REGISTRY_PLAN`, `COLOR_INVENTORY_OR_FORMAT`, and that listed declaration order is the priority for simultaneous changes; registration returns `Registered` or a stable rejected reason for blank ID, duplicate live ID, future generation, unknown generation, or sizing mismatch; ready generation→sizing facts remain known for the publisher lifetime, off/never-installed generations are unknown, and supplied sizing must exactly equal the known fact; rejection installs nothing and changes no acknowledgement/publication state; accepted identity is retained unchanged and returned by `ConsumerFailed`; render-thread removal, per-consumer acknowledged sizing/generation, and ordered synchronous delivery after install and before drawing; retry `oldSizing` is each consumer's truthful acknowledged baseline; first failure stops dispatch, disposes the unopened estate, and returns the consequent off publication | Phases 13 and 14; G8/S2 |
+| `MainDepthSource`, `MainDepthPreparation`, `MainDepthSnapshot` | Phase-5-owned engine-side SPI implemented by `mod.glue`; safe-point platform-FBO preparation plus opaque depth identity/version/format/extent, no GL name. `MainDepthSnapshot.Available` embeds Phase 1's verified `BorrowedDepthAttachmentHandle`; Phase 5 does not redeclare or mint that type | Phase 7 installs/prepares; Phase 5 consumes |
 | `ColorInternalFormat`, `PixelFormat`, `PixelType`, `DepthAttachmentFormat`, `DepthTransferLayout` | exact App B.4 vocabulary plus private color fallback/depth allocation values; integer classification and allocation layout | Phase 5 facade calls; Phase 13 raw-upload adapter |
 
 ### 5.2 Consumed Phase 1 contracts
@@ -1591,14 +1690,16 @@ The recording backend must prove `noLeakedObjects()` and `noUseAfterDelete()`.
 | module layout, C-1…C-4, package and `.internal` rules | all pure policy and glue placement |
 | engine bring-up stage 2 | install the main-depth/foreign texture providers only after GL capabilities exist |
 | `GLDevice` and seven services | create/allocate/parameterize/bind/delete textures and FBOs, clear, snapshot/restore, labels |
-| `FramebufferService.copyDepthToTexture` | depthtex1/depthtex2 and Phase 8 shadow split |
+| `FramebufferService.borrowDepthAttachment`, `attachDepth`, `attachDepthStencil` | the same-device backend authenticates the live platform texture and returns a non-owned borrowed handle; only owned or authenticated borrowed depth may be attached, forged/wrong-origin values fail before GL, depth-only detaches stale stencil, and the combined form uses the same packed object at depth and stencil. Phase 5 owns format choice, freshness, reattachment cadence, restoration policy, and Minecraft lifetime |
+| `FramebufferService.initializeDepthTextureFromFramebuffer`, `copyDepthToTexture` | explicit first-copy initialization versus storage-preserving steady copy for depthtex1/depthtex2 and the Phase 8 shadow split; destinations are owned, never ordinary foreign or borrowed, and Phase 5 owns the copy tier/cadence and restoration policy |
 | `GLCapabilityProfile` and serialization | limits, extents, format/copy strategy fixtures |
 | opaque handle lifetime | candidate ledger, generation/stale-view rules, re-acquisition |
-| `ForeignTextureProvider` | bind-only unit-map sources; never attachment or deletion |
-| `RecordingGLDevice`, `ScriptedResponses`, `GLCallLog`, `ReplayAssertions` | fallback, state-machine call sequence, leaks, use-after-delete |
+| `ForeignTextureProvider` and authenticated borrowed-depth permission matrix | ordinary foreign values remain bind-and-label-only and are never attached, copied into, allocated, or deleted; authenticated borrowed depth is additionally sampleable and legal only at depth/depth-stencil attachment operations; neither foreign class is Phase-5-owned |
+| `RecordingGLDevice`, `ScriptedResponses`, `GLCallLog`, `ReplayAssertions` | fallback and state-machine call sequence, including distinct `framebuffers.attachDepth`, `framebuffers.attachDepthStencil`, `framebuffers.initializeDepthTextureFromFramebuffer`, and steady `framebuffers.copyDepthToTexture` events; forged/wrong-origin rejection records no event; borrowed handles are not leak-counted or deletable |
 | diagnostic/log conventions | `schmaloogium.buffers`, `.gl`; chat/GUI/log routing |
 
-No Phase 1 operation is widened silently. The three required corrections are §5.5.
+No Phase 1 operation is widened silently. Section 5.5 records the verified upstream grant and its
+literal-PASS review.
 
 ### 5.3 Consumed Phase 3 contracts
 
@@ -1622,7 +1723,7 @@ not assume a separate revision or that they are fields Phase 3 currently exposes
 | `PassResourceAccess` | readable, exact/symbolic writes, explicit logical flips, mipmap declarations |
 | `ProgramStateBundle` | routing, effective provider flip/scale/state data |
 | `ProgramRegistryView.resolve`, `ResolvedProgramDescriptor` | whole effective provider; no fallback re-resolution |
-| `CompiledRegistryCandidate.view()` | non-owning pre-publication `ProgramRegistryView` used by Phases 5 and 7 to derive and validate the buffer candidate before Phase 4 publication; candidate ownership and provenance remain unchanged |
+| `CompiledRegistryCandidate.view()` | verified non-owning, generationless, pre-publication `ProgramRegistryView` used by Phases 5 and 7 to derive and validate the buffer candidate. It is an immutable detached metadata snapshot that remains safe after candidate close, rejection/recovery, or accepted transfer, but is never live publication state; candidate ownership, opacity, and compiler provenance remain unchanged |
 | `RegistryFingerprint` | estate derivation identity/publication pairing |
 | generation/stale-view discipline | Phase 7 orchestration and invalidation |
 
@@ -1631,44 +1732,26 @@ Phase 4 type.
 
 ### 5.5 Requested changes to dependency contracts
 
-Three Phase 1 changes are required before implementation:
+1. **GRANTED — Phase 1 framebuffer/depth contract.** Phase 1 §0.18/§0.19 and binding §5 now expose
+   the backend-authenticated `BorrowedDepthAttachmentHandle`, its
+   `borrowDepthAttachment(platformTexture)` issuance route, the ordinary-versus-borrowed
+   permission matrix, `attachDepthStencil`, and
+   `initializeDepthTextureFromFramebuffer`, with distinct recorder/replay operations
+   (`docs/phase1/v14/PHASE_1_DOC.md:4107`–`:4123`). The whole document retains the detailed
+   owned/borrowed validation, forged/wrong-origin rejection, combined depth/stencil behavior, and
+   first-versus-steady copy semantics while assigning Phase 5 the downstream format, freshness,
+   cadence, tier, restoration-policy, and Minecraft-lifetime decisions. The literal PASS in
+   `docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75` closes that dependency change.
+2. **GRANTED — Phase 4 candidate-view binding.** Phase 4 §5 explicitly publishes
+   `CompiledRegistryCandidate.view()` as the non-owning, immutable detached pre-publication
+   `ProgramRegistryView` for Phases 5 and 7, without a generation, close operation, handle,
+   private-registry accessor, or provenance credential
+   (`docs/phase4/v1/PHASE_4_DOC.md:1213`–`:1219`). Candidate ownership, opacity, and
+   compiler/publication provenance remain with the opaque candidate. The literal PASS in
+   `docs/phase4/reviews/PHASE_4_REVIEW_15.md:59`–`:72` closes that binding clarification.
 
-1. **Borrowed depth attachment permission.** Add the Phase-5-owned
-   `BorrowedDepthAttachmentHandle extends TextureHandle` marker to the Phase 1 foreign-handle
-   contract. A backend-authenticated handle of that marker may be passed to
-   `FramebufferService.attachDepth` and the new combined operation below. It remains illegal for
-   `TextureService.allocate`, `setParameters`, `upload`, `generateMipmap`, `delete`,
-   `FramebufferService.attachColor`, and `copyDepthToTexture` destination use. Ordinary
-   `ForeignTextureProvider` handles remain bind-only. The backend must reject forged or wrong-origin
-   marker handles. This narrow exception is safe specifically because Phase 5 consumes the exposed
-   version and reattaches on every identity change.
-2. **Combined depth-stencil attachment.** Add
-   `FramebufferService.attachDepthStencil(FramebufferHandle, TextureHandle)`, with the contract that
-   the same combined texture is attached to both depth and stencil and prior bindings are restored.
-   `attachDepth` remains depth-only. The current surface exposes only that verb at
-   `docs/phase1/v14/PHASE_1_DOC.md:2778`–`:2782`. Recording/replay must distinguish the operation.
-3. **First depth-copy initialization.** Add
-   `FramebufferService.initializeDepthTextureFromFramebuffer(FramebufferHandle, TextureHandle,
-   TextureRegion)`. It redefines the destination level and extent with the source framebuffer's
-   exact depth/depth-stencil format and contents using `glCopyTexImage2D` semantics, restores prior
-   bindings, and is legal only for an owned destination. Phase 5 calls it on the first copy after
-   creation/reallocation; subsequent copies use the existing `copyDepthToTexture` verb and its
-   capability-tiered backend, whose current contract is
-   `docs/phase1/v14/PHASE_1_DOC.md:2810`–`:2815`. Recording and replay must distinguish
-   initialization from a steady copy.
-
-All three are additive but alter Phase 1 §5 and therefore require a Phase 1 fix-up plus a fresh
-verify round before Phase 5 implementation or any dependent implementation consumes the amended
-surface. This document assumes none is already granted.
-
-No Phase 3 contract change is requested.
-
-Phase 4 §5 must add the already-defined public `CompiledRegistryCandidate.view()` as a non-owning
-pre-publication `ProgramRegistryView` consumed by Phases 5 and 7. This is a binding-surface
-clarification only: it preserves the candidate's existing opacity, caller ownership before
-acceptance, compiler-origin credential, publication provenance checks, and absence of a public
-registry accessor. Phase 5 assumes no new inspection API and does not treat this clarification as
-already granted.
+No Phase 3 contract change is requested. The only still-pending upstream documentation request is
+the non-blocking supersampling authority clarification recorded in §11.5.
 
 ## 6. Failure modes & degradation
 
@@ -1677,7 +1760,7 @@ already granted.
 | malformed/null request, stale schema/fingerprint, invalid route | return closed failure before GL; keep/publish shaders off | 4/5 |
 | requested color formats produce allocation/FBO failure | delete whole attempt, retry all colors as `RGBA_COMPAT`, user-visible warning | 2a |
 | RGBA fallback also fails | delete partial estate; publish shaders off; vanilla path remains | 4→5 |
-| main depth unavailable or borrowed-attachment contract not granted | mark any published estate stale, advance its attachment epoch, abort/normalize any active frame, and publish shaders off; do not create a false depthtex0; require successful safe-point replacement before another shader draw | 4 |
+| main depth unavailable or backend authentication/issuance fails | mark any published estate stale, advance its attachment epoch, abort/normalize any active frame, and publish shaders off; do not create a false depthtex0; require successful safe-point replacement before another shader draw | 4 |
 | prepared main-depth extent differs from planned main extent | attach nothing; remain on vanilla path and repeat safe-point prepare/build, with bounded retry diagnostics | 4/5 containment |
 | same-extent main-depth version changes mid-frame | successful reattachment invalidates the open snapshot; abandon it and reacquire pass/binding snapshots before continuing; failure follows the shaders-off recovery above | 5 containment |
 | main-depth reattachment/check fails | retain the advanced epoch and prior cached identity, mark the partially mutated estate stale/unusable, abort/normalize any active frame, publish shaders off, and require safe-point replacement before another shader draw | 5 containment |
@@ -1795,8 +1878,9 @@ Using Phase 1 `RecordingGLDevice` and serialized profiles:
    first, a middle, and final reattachment/check step; prove epoch advance, retained prior identity,
    stale estate, no partial-FBO draw, abort/normalize when active, shaders-off publication, and the
    draw bar until replacement;
-8. distinguish `attachDepth` from requested `attachDepthStencil`;
-9. exercise first-copy and steady copy protocol events;
+8. distinguish verified `attachDepth` from `attachDepthStencil`, including authenticated borrowed
+   acceptance and forged/wrong-origin/ordinary-foreign rejection before any recorded event;
+9. exercise the verified, distinct first-copy and steady-copy protocol events;
 10. prove candidate inspection exposes metadata but no generation or estate operation; publish it,
     then test immutable accepted generation plus resize/rebuild generation inequality;
 11. register current and retained historical ready generations with matching sizing; reject blank
@@ -1809,8 +1893,14 @@ Using Phase 1 `RecordingGLDevice` and serialized profiles:
     later callback, and retry convergence from each consumer's distinct acknowledged sizing baseline;
 13. prove borrowed/foreign handles are never deleted or used in forbidden verbs;
 14. exercise every overlay key and absence reason; reject expected-ID and registry-fingerprint
-    mismatches without drawing, and prove referenced handles remain live until the successful
-    binding snapshot is closed after the enclosing draw; and
+    mismatches as `Rejected(reason)` with their exact `TextureBindingRejection`, no missing-binding
+    payload, no bind or draw, and caller closure of
+    the retained lease; prove publication-ID rejection wins when both mismatch; prove success
+    transfers the lease exactly once and referenced handles remain live until the binding snapshot
+    is closed after the enclosing draw; for every successful stage assert exactly sixteen
+    ascending rows, total fixed-unit lookup, and the exact `Bindable`/`Missing`/`Absent` outcome
+    from the table, with binds only for `Bindable`, degradation only for `Missing`, no bind for
+    `Absent`, and unchanged sampler-unit identity; and
 15. create/destroy the full classic estate for the implementation gate with
     `ReplayAssertions.noLeakedObjects()` and `noUseAfterDelete()`.
 
@@ -1837,7 +1927,7 @@ hash/provenance manifests under Phase 2 policy.
 | dfb colortex0–7 main/alt pairs | v0.1 | implement |
 | flip/virtual-pre/frame-end rebase state machine | v0.1 | implement |
 | clear policy/batching/fog alpha rule | v0.1 | implement |
-| depthtex0 replacement/provider/version/extent-preparation tracking | v0.1 | implement after §5.5 Phase 1 fix-up |
+| depthtex0 replacement/provider/version/extent-preparation tracking | v0.1 | implement against the verified Phase 1 §5 contract |
 | depthtex1/2 allocation and copy mechanics | v0.1 | implement; Phase 7 supplies moments |
 | requested-format → all-RGBA fallback | v0.1 | implement |
 | fixed App B.3 object map | v0.1 | implement core/P5 objects; Phase 13 slots remain explicit |
@@ -1850,12 +1940,9 @@ hash/provenance manifests under Phase 2 policy.
 
 ## 10. OQ & spike specifications
 
-Phase 5 has no assigned open question. No spike is invented.
-
-Two prerequisites are verification work, not OQs:
-
-- Phase 1 must fix up and re-verify §5.5's borrowed-depth attachment contracts.
-- The Phase 5 verification session must attack this document after the build session stops.
+Phase 5 has no assigned open question. No spike is invented. The Phase 1 and Phase 4 dependency
+requests and the Phase 5 target-profile request are granted; §0.25 records their verified state.
+This dependency-adoption surface now requires its own fresh Phase 5 verification round.
 
 The unresolved `superSamplingLevel` ownership wording is an upstream clarification request in §11.5,
 not a Phase-5 implementation spike: the fallback behavior is already designed in §4.11.
@@ -1870,7 +1957,7 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
 | D-P5-2 | Adopt clear grouping, both-side behavior, and fog alpha 1.0. App B.1/§4.3 control the base colors and flipped clearing; the alpha quirk is deployed evidence consistent with them. |
 | D-P5-3 | Retry an incomplete requested-format estate only as a wholly recreated `RGBA_COMPAT` estate. This restates §4.3's estate-wide plain-RGBA fallback and avoids an uncontracted mixed retry. |
 | D-P5-4 | Reject alt→main copy-back. Preserve App F.7's last-writer state, then rebase the physical committed-main identity and clear the relative bit at frame end. No bandwidth copy occurs. |
-| D-P5-5 | Adopt Pintonium's depth-renderbuffer replacement/version shape behind a Phase-5 SPI, with a requested narrow Phase 1 borrowed-attachment permission. App B.2 requires sampleable depthtex0; no raw GL name crosses D-6. |
+| D-P5-5 | Adopt Pintonium's depth-renderbuffer replacement/version shape behind a Phase-5 SPI and consume Phase 1's verified narrow borrowed-attachment issuance/permission contract. App B.2 requires sampleable depthtex0; no raw GL name crosses D-6. |
 | D-P5-6 | Adopt function-pointer-checked copy image → combined blit → depth copy-sub-image tiers as backend mechanics. App B.2 constrains contents/moments, not the mechanism. |
 | D-P5-7 | Allocate a contiguous minimum-four G6 inventory through the highest required index, never unconditional 16. This satisfies App B.1 and RC3's scan-driven ruling while retaining growth-shaped IDs. |
 | D-P5-8 | Use the generic real flip machine for shadowcolor and reject Pintonium B4's stub. Structure is reusable; the stub is contract-visible missing behavior. |
@@ -1908,11 +1995,14 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
    identities grow later.
 4. **Pintonium shadow structure versus stubbed flip.** **Ruling: reuse structure, reject stub** and
    test real state.
-5. **Phase 1 foreign-handle rule versus mandatory depth reattachment.** Phase 1 correctly forbids
-   ordinary foreign attachment, but RC3 mandates reattaching owned FBOs to a platform-owned
-   replacement depth texture. **Ruling: request the marker-scoped exception; do not assume it.**
-6. **Phase 1 has no combined depth-stencil attachment verb.** `attachDepth` does not contractually
-   attach stencil. **Ruling: request an additive explicit operation.**
+5. **RESOLVED UPSTREAM — Phase 1 foreign-handle rule versus mandatory depth reattachment.**
+   Ordinary foreign attachment remains forbidden; Phase 1 now authenticates and issues the
+   narrower borrowed-depth handle and permits it only for sampling/labeling and depth/depth-stencil
+   attachment. **Ruling: consume the verified marker-scoped issuance and permission matrix.**
+6. **RESOLVED UPSTREAM — combined attachment and first-copy initialization.** Phase 1 now exposes
+   distinct `attachDepthStencil` and `initializeDepthTextureFromFramebuffer` operations alongside
+   depth-only attachment and storage-preserving steady copy. **Ruling: consume the explicit
+   operations and their distinct recorder events; never infer backend state.**
 7. **`superSamplingLevel` allocation ambiguity.** App A.3 says only “SSAA multiplier”; §4.3 says
    display × render quality; observed behavior separates them. **Ruling: D-P5-10** and request
    upstream wording.
@@ -1929,8 +2019,8 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
 
 ### 11.4 Hand-offs
 
-- **Phase 6:** consume `TextureBindingSnapshot` through the Phase 7 composition; upload only fixed
-  unit integers and never select a physical side independently.
+- **Phase 6:** consume only a successful `TextureBindingResult.Bound` snapshot through the Phase 7
+  composition; upload only fixed unit integers and never select a physical side independently.
 - **Phase 7:** own frame/copy/clear moments, final-to-Minecraft bind, SSAA execution, try/finally
   commit/abort, runtime quality input, safe-point `MainDepthSource.prepare(plan.mainExtent())`, and
   registry→estate publication ordering. Never build or draw with a mismatched depth extent.
@@ -1944,13 +2034,22 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
 
 ### 11.5 Requested upstream changes
 
-1. Apply and re-verify the three Phase 1 contract corrections in §5.5.
-2. Clarify in a future RESEARCH/DESIGN revision whether `superSamplingLevel` affects framebuffer
+1. **GRANTED — Phase 1 framebuffer/depth additions.** Phase 1 §0.18/§0.19 and §5 expose the
+   authenticated borrowed-depth issuance/permissions, combined depth/stencil attachment, and
+   first-copy initialization requested in §5.5. The literal PASS at
+   `docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75` closes the amended dependency surface.
+2. **PENDING, NON-BLOCKING.** Clarify in a future RESEARCH/DESIGN revision whether `superSamplingLevel` affects framebuffer
    allocation or only Phase 7's SSAA execution, and specify multiplier-to-integer rounding. This
-   document follows the observed separation and `round` pending that clarification.
-3. Add a data-only `verification/targets/phase-5.json` profile anchored to RC3 before the separate
-   verify session. Creating/running the verification harness is outside this build-session
-   document deliverable.
+   document follows D-P5-10 pending that clarification: framebuffer extent is
+   `max(1, round(display × renderQuality))`, `superSamplingLevel` does not alter allocation
+   extent, and Phase 7 owns eventual SSAA execution.
+3. **GRANTED — verification target.** The data-only
+   `verification/targets/phase-5.json` profile exists, resolves RC3 and this artifact, and has
+   already driven the completed Phase 5 reviews.
+4. **GRANTED — Phase 4 candidate-view binding.** Phase 4 §5 publishes the immutable detached,
+   non-owning, generationless pre-publication `CompiledRegistryCandidate.view()` required by
+   §5.5 while preserving opaque-candidate ownership and provenance. The literal PASS at
+   `docs/phase4/reviews/PHASE_4_REVIEW_15.md:59`–`:72` closes that dependency change.
 
 ## 12. Implementation checklist
 
@@ -1961,7 +2060,7 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
 | 3 | Implement exact 37-format table + private `RGBA_COMPAT` | v0.1 | `formatTable_hasExactly37PackFacingNames` |
 | 4 | Implement checked main/shadow extent formulas and limits | v0.1 | overflow/round/maxTextureSize tests |
 | 5 | Implement scan-driven contiguous colortex inventory | v0.1 | min4/highest-index/not16 tests |
-| 6 | Implement Phase 4 route expansion and packed attachment map | v0.1 | explicit/symbolic/sparse route tests |
+| 6 | Consume the verified detached `CompiledRegistryCandidate.view()` and implement Phase 4 route expansion and packed attachment map without treating the snapshot as live publication state | v0.1 | explicit/symbolic/sparse route tests plus retained-snapshot planning |
 | 7 | Implement main/alt `FlipState` and immutable snapshots | v0.1 | exhaustive four-state tests |
 | 8 | Implement raster/virtual-pre transition rules | v0.1 | override permutation property tests |
 | 9 | Implement frame-end metadata rebase and abort/full-clear | v0.1 | no-copy next-frame continuity test |
@@ -1969,9 +2068,9 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
 | 11 | Implement dfb texture allocation and pass/clear FBO cache | v0.1 | recorded attachment/filter/wrap run |
 | 12 | Implement candidate ownership ledger and idempotent close | v0.1 | leak/use-after-delete assertions |
 | 13 | Implement requested-format attempt and all-RGBA retry | v0.1 | scripted incomplete-FBO tests |
-| 14 | Apply Phase 1 borrowed-depth contract fix-up and re-verify | v0.1 prerequisite | Phase 1 review PASS |
-| 15 | Apply Phase 1 combined depth-stencil verb fix-up/replay | v0.1 prerequisite | distinct recorded operation |
-| 16 | Apply Phase 1 first-depth-copy initialization fix-up/replay | v0.1 prerequisite | initialization distinct from steady copy |
+| 14 | Consume Phase 1's verified authenticated borrowed-depth issuance and permission matrix | v0.1 prerequisite | R20 literal PASS; forged/wrong-origin/ordinary-foreign rejection |
+| 15 | Consume the verified combined depth-stencil verb and replay event | v0.1 prerequisite | distinct recorded operation |
+| 16 | Consume the verified first-depth-copy initialization verb and replay event | v0.1 prerequisite | initialization distinct from steady copy |
 | 17 | Implement dumb framebuffer depth-replacement mixin | v0.1 | live create/delete/stencil smoke |
 | 18 | Implement `MainDepthSource` safe-point prepare plus version/extent snapshots | v0.1 | ready/pending/mismatch/version tests |
 | 19 | Implement depth-version reattachment and FBO recheck | v0.1 | recorded reattach/epoch test |
@@ -1979,7 +2078,7 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
 | 21 | Implement first-copy and three-tier steady copy backend | v0.1 | selector matrix + live pointer test |
 | 22 | Implement copy-point ordering and non-stale fallback | v0.1 | duplicate/out-of-order/failure tests |
 | 23 | Implement exact App B.3 object table | v0.1 | 16-row × stage equality test |
-| 24 | Implement pass-coherent `TextureBindingSnapshot` | v0.1 | flip-between-bind prevention test |
+| 24 | Implement closed `TextureBindingResult` and pass-coherent `TextureBindingSnapshot` | v0.1 | mismatch reason/no-bind/lease-ownership and flip-between-bind tests |
 | 25 | Implement sfb structure, neutral fallbacks, and shadow policy | v0.1 | recorded creation/filter/PCF/swizzle |
 | 26 | Implement real shadowcolor flip state | v0.1 | B4-negative state-machine test |
 | 27 | Implement estate publisher/generation/fingerprint checks | v0.1 | stale/cross-registry rejection |
@@ -1991,5 +2090,6 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
 | 33 | Lift modern buffer/stage population gates | post-v0.5 | 16/32/sparse/shadowcomp tests |
 | 34 | Run the implementation gate: full classic estate create/use/destroy | v0.1 exit | `noLeakedObjects`, `noUseAfterDelete` |
 
-The future coding effort must complete items in dependency order. Items 14–16 are hard prerequisites
-for 17–21; no implementation may bypass them with a raw GL name or direct engine-side LWJGL call.
+The future coding effort must complete items in dependency order. The verified contracts in items
+14–16 are hard prerequisites for 17–21; no implementation may bypass them with a raw GL name or
+direct engine-side LWJGL call.

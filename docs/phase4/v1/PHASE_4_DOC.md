@@ -4,7 +4,7 @@
 
 **Phase:** 4 — Stage/program registry & compilation
 
-**Date:** 2026-07-28
+**Date:** 2026-07-29
 
 **Milestone:** v0.1, with the full modern-superset shape present but later families dormant
 
@@ -66,16 +66,18 @@ configs, or Pintonium's stale `DESIGN.md`.
 ### 0.2 Dependency PHASE docs consumed
 
 - `docs/phase1/v14/PHASE_1_DOC.md` is verified by the literal PASS in
-  `docs/phase1/reviews/PHASE_1_REVIEW_18.md`. Its §5 was read completely. Its §4.7
+  `docs/phase1/reviews/PHASE_1_REVIEW_20.md`. Its §5 was read completely. Its §4.7
   `engine.gl` facade was read to obtain the exact service and recording signatures that §5 makes
   binding, including the now-published `ShaderService.useFixedFunction()` operation and its
-  zero-argument recorder event.
+  zero-argument recorder event. Phase 1's later framebuffer/depth amendment is outside Phase 4's
+  use, but round twenty's literal PASS is the current dependency gate.
 - `docs/phase3/v1/PHASE_3_DOC.md` is verified by the literal PASS, zero findings, and
   no-interface-change disposition in
-  `docs/phase3/reviews/PHASE_3_REVIEW_14.md`. Its current path has not yet been rolled after that
+  `docs/phase3/reviews/PHASE_3_REVIEW_20.md`. Its current path has not yet been rolled after that
   loop, so this document cites the artifact actually verified in the worktree. Its §5 was read
   completely; §2.2, §3.2–§3.3, and §4.5/§4.7–§4.10 were read to clarify the published
-  `PackConfiguration`, materializer, geometry, per-program state, and fingerprint contracts.
+  `PackConfiguration`, materializer, declared-uniform catalog, geometry, per-program state,
+  resource-requirement, and fingerprint contracts.
 
 Only the dependencies' §5 surfaces bind this phase. Clarifying prose is not silently promoted to
 an interface.
@@ -168,6 +170,65 @@ publication route from downstream non-owning views and separately exposed state 
 
 Review 10 corrects the generation branch and narrows Phase 10's input to the fixed attribute table.
 
+### 0.15 Maintenance addendum (Phase 5 candidate-view binding — 2026-07-29)
+
+Phase 5's verified dependency request identified that §2 already declared
+`CompiledRegistryCandidate.view()`, but binding §5 exposed only the post-publication
+`PublishedRegistry.registry` route. Section 5.1 now publishes the existing method explicitly as
+the non-owning, pre-publication `ProgramRegistryView` consumed by Phases 5 and 7 while the
+compiler-issued candidate remains caller-owned. This clarification does not add a registry or
+handle accessor, transfer or weaken candidate ownership, expose the compiler-origin credential,
+or assign a publication generation to an unpublished view.
+
+### 0.16 Review 12 correction addendum
+
+Review 12 aligns §5.3's Phase 3 inventory with the dependency's binding surface: legacy-pair
+discovery, rewrite sites, translation selection/validation, and materialized fingerprints stay
+with the source/materialization and geometry contracts, while `ResourceRequirements` is narrowed
+to the concerns that Phase 3 publishes there.
+
+### 0.17 Review 13 correction addendum
+
+Review 13 adds the missing non-owning pre-publication candidate-view branch to §2.3's relationship
+map while preserving the opaque candidate's Phase 7 composition/publication path.
+
+### 0.18 Review 14 correction addendum
+
+Review 14 defines `view()` as an immutable detached metadata snapshot whose safe lifetime is
+independent of later candidate close, rejection, recovery, or ownership transfer. The lifecycle
+contract and representative retention tests are integrated into §§2, 5, 8, 11, and 12.
+
+**Current §G1.3 status:** round fourteen's correction is fixed, but because §5 changed, Phase 4 is
+**not verified** and is not a valid dependency input until a fresh round fifteen returns literal
+PASS. The version directory remains `v1` while the loop is open.
+
+### 0.19 Maintenance addendum (Phase 6 uniform-layout and bound-access contracts — 2026-07-29)
+
+Round fifteen returned literal PASS for the candidate-view surface. Phase 6's verified dependency
+request and Phase 3's now-verified declaration catalog require two additional binding contracts:
+Phase 4 merges final per-stage declarations into a handle-free effective
+`ProgramUniformLayout`, and each successful shader activation supplies the three Phase 6
+participants with callback-scoped `BoundProgramUniformAccess` plus a retainable, non-operational
+activity token. Sections 2, 4, 5, 7, 8, 11, and 12 now close merge conflicts, cache identity,
+lookup lifetime, invalidation, and failure behavior without exposing a `ProgramHandle`.
+
+**Current §G1.3 status:** round fifteen's literal PASS applies to the pre-§0.19 bytes. This
+addendum changes binding §5, so Phase 4 is **not verified** and is not a valid dependency input
+until a fresh round sixteen returns literal PASS (or any corrections are fixed and the changed
+interface is re-verified). The version directory remains `v1` while the loop is open.
+
+### 0.20 Review 16 correction addendum
+
+Review 16 makes `Activated` compatible with recorded isolated participant degradations and replaces
+caller-invented barrier context fields with opaque, Phase-4-issued per-frame activation and release
+contexts. Sections 4, 5, 8, and 12 define context issuance, freshness, consistency, replacement,
+and rejection coverage.
+
+### 0.21 Review 17 correction addendum
+
+Review 17 defines public barrier-context interfaces as acceptance-checked views and fixes
+release-kind `shadowPass()` at `false`. Sections 4, 5, 8, and 12 align the contract and tests.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 4 owns
@@ -184,11 +245,14 @@ Phase 4 owns:
 - immutable per-program state assembled exclusively from Phase 3 output;
 - validation of draw routing, attribute-location capability, source-stage composition, and
   geometry strategy before GL publication;
+- deterministic merge of Phase 3's final per-stage declared-uniform catalogs into one immutable
+  effective linked-program layout, with source-attributed type-conflict rejection;
 - render-thread compile, attach, fixed pre-link attribute binding, link, validate, cleanup, and
   rung-3 failure conversion through `engine.gl`;
 - immutable compiled-registry publication and teardown of Phase-4-owned shader/program handles;
 - the “use program” state-barrier interface, including shadow override, program selection,
-  alpha/blend lock lifetime, and ordered extension points for Phase 6;
+  alpha/blend lock lifetime, ordered extension points for Phase 6, and a narrow bound-uniform
+  lookup/activity capability;
 - a monotonically changing pipeline generation consumed by caches and reload paths; and
 - diagnostic data needed for the log and shader GUI.
 
@@ -347,6 +411,22 @@ public record ProgramStateBundle(
     Map<BufferRef, Boolean> explicitFlips,
     Optional<LegacyGeometryConfig> legacyGeometry) {}
 
+public record ProgramUniformLayout(
+    ProgramUniformLayoutFingerprint fingerprint,
+    Map<String, ProgramUniformDeclaration> declarations) {}
+
+public record ProgramUniformDeclaration(
+    String exactName,
+    DeclaredGlslType type,
+    List<ProgramUniformDeclarationSite> sites) {}
+
+public record ProgramUniformDeclarationSite(
+    ShaderSourceStage declaringStage,
+    AttributedSourceLocation location,
+    MaterializationFingerprint materialization) {}
+
+public record ProgramUniformLayoutFingerprint(String value) {}
+
 sealed interface CompiledProgramBinding { // Phase-4-private
     ProgramStateBundle state();
     ProgramSlotId provider();
@@ -355,6 +435,7 @@ sealed interface CompiledProgramBinding { // Phase-4-private
         ProgramSlotId provider,
         ProgramHandle handle,
         ProgramStateBundle state,
+        ProgramUniformLayout uniformLayout,
         List<MaterializationFingerprint> sources)
         implements CompiledProgramBinding {}
 
@@ -373,6 +454,7 @@ public record ResolvedProgramDescriptor(
     ProgramSlotId requested,
     ProgramSlotId effective,
     ProgramStateBundle state,
+    ProgramUniformLayout uniformLayout,
     List<MaterializationFingerprint> sources,
     List<ProgramSlotId> fallbackPath) {}
 ```
@@ -380,6 +462,13 @@ public record ResolvedProgramDescriptor(
 `AlphaTestSpec`, `BlendSpec`, `ViewportScale`, `LegacyGeometryConfig`, and
 `ExtendedAttribute` are Phase 3 values or lossless Phase-4-owned mirrors created by an explicit
 adapter. They never contain GL constants.
+`DeclaredGlslType`, `ShaderSourceStage`, `AttributedSourceLocation`, and
+`MaterializationFingerprint` are the verified Phase 3 values; Phase 4 neither reparses source nor
+redefines their type algebra. `ProgramUniformLayout.declarations` is immutable and iterates by
+exact uniform name in Unicode code-point order. Each declaration's `sites` preserves linked-stage
+order `VERTEX`, `GEOMETRY`, `FRAGMENT`, then `COMPUTE`, and source token order within a stage.
+Fixed-function descriptors use the canonical empty layout; shader descriptors carry the effective
+provider's merged layout.
 
 The registry build/publication boundary:
 
@@ -413,7 +502,7 @@ public interface CompiledProgramRegistry extends ProgramRegistryView, AutoClosea
 
 public final class CompiledRegistryCandidate implements AutoCloseable {
     CompiledRegistryCandidate(/* private registry + compiler-origin credential */);
-    public ProgramRegistryView view();
+    public ProgramRegistryView view(); // immutable detached metadata snapshot
     public void close(); // caller-owned before acceptance; idempotent
     // opaque product; no public/protected constructor, factory, subclass, or registry accessor
 }
@@ -428,7 +517,8 @@ public interface ProgramRegistryPublisher {
 public record PublishedRegistry(
     long generation,
     Optional<ProgramRegistryView> registry,
-    Optional<PublishedProgramStateBarrier> barrier) {}
+    Optional<PublishedProgramStateBarrier> barrier,
+    BarrierContextSource contexts) {}
 
 public interface PublishedProgramStateBarrier {
     long generation();
@@ -464,9 +554,14 @@ neither. The candidate owner receives only `CompiledRegistryCandidate`; only Pha
 after acceptance, the publisher can reach its private `CompiledProgramRegistry`. Snapshot
 consumers have no registry or barrier teardown capability.
 `ProgramRegistryView.resolve` projects the private compiled binding to an immutable descriptor:
-requested/effective identities, provider state, source fingerprints, and fallback path only.
+requested/effective identities, provider state, handle-free uniform layout, source fingerprints,
+and fallback path only.
 Neither that descriptor nor any barrier result contains `ProgramHandle`; only the private registry
 and barrier implementation can obtain the handle used for `ShaderService.use`.
+`CompiledRegistryCandidate.view()` copies that immutable metadata into a detached snapshot at the
+call. The snapshot remains safe and unchanged after candidate close, pre-release rejection,
+`RecoveredOff`, or accepted ownership transfer; it neither observes later publication state nor
+keeps the candidate, private registry, or any GL handle alive.
 Every barrier-view method is render-thread-only and first verifies that both its generation and
 identity still match the current ready publication. A replaced barrier view returns
 `BarrierResult.StalePublication` without a GL call or barrier-state change; the caller must not
@@ -481,6 +576,9 @@ PackConfiguration + DimensionKey + MacroContribution + GLCapabilityProfile
              ├─ StageRegistryDefinition ── G6 / modern configuration
              ├─ ClassicProgramCatalog  ── fallback graph
              └─ SourceMaterializer requests (Phase 3)
+                    └─ DeclaredUniformCatalogs
+                              │
+                    effective ProgramUniformLayout
                               │
                        RegistryBuildPlan       (pure/off-thread)
                               │
@@ -488,15 +586,17 @@ PackConfiguration + DimensionKey + MacroContribution + GLCapabilityProfile
                               │
                 CompiledRegistryCandidate
                     (private registry)
-                              │
-            Phase 7 production composition + publication
-                              │
-                     PublishedRegistry
-                  (non-owning registry/barrier views)
-                       ├─ Phase 5
-                       ├─ Phase 6
-                       ├─ Phase 7/8
-                       └─ generation → Phase 12/caches
+                    ├─ non-owning view() ── Phase 5/7
+                    │                       pre-publication derivation/validation
+                    │
+                    └─ opaque candidate ── Phase 7 production composition + publication
+                                              │
+                                      PublishedRegistry
+                                   (non-owning registry/barrier views)
+                                        ├─ Phase 5
+                                        ├─ Phase 6
+                                        ├─ Phase 7/8
+                                        └─ generation → Phase 12/caches
 
 Fixed attribute table ── Phase 10 vertex-source inputs
 ```
@@ -519,7 +619,9 @@ Fixed attribute table ── Phase 10 vertex-source inputs
 | Core program/shader object facade, no ARB object entry points | only Phase 1 `ShaderService` is consumed | `[U]` opportunity adopted by governing spec; `docs/research/v1/RESEARCH.md:766`–`:770` |
 | Core-layout geometry is accepted; legacy ARB geometry is recognized but unavailable and follows fallback | §4.8 requires either a verified Phase 3 complete-source compatibility result or a Phase 1 legacy pre-link configuration route before legacy acceptance | `[V:doc]`, `docs/research/v1/RESEARCH.md:213`–`:216`, App A.3 |
 | Invalid compile/link/validate result deletes program and reports to GUI/log | `ProgramBuildFailure`, cleanup ledger, backup re-resolution | `[V:observed]`, `docs/research/v1/RESEARCH.md:501`–`:505` |
+| Final materialized declarations are not reopened or inferred from driver activity | merge Phase 3 `DeclaredUniformCatalog`s into an attributed `ProgramUniformLayout`; reject unequal structural types before GL and treat lookup absence as authoritative only for activity | verified dependency contract at `docs/phase3/v1/PHASE_3_DOC.md:1115`; Phase 6 request at `docs/phase6/v1/PHASE_6_DOC.md:1202`–`:1213` |
 | Program use re-points samplers, refreshes built-ins, evaluates customs, locks alpha/blend | ordered `ProgramStateBarrier` in §4.10 | `[V:observed]`, `docs/research/v1/RESEARCH.md:505`–`:507`; adoption `D-P4-5` |
+| Phase 6 participants require bound lookup and between-activation activity proof without a program handle | callback-scoped `BoundProgramUniformAccess`, generation/provider/layout cache key, and retainable operation-free epoch token | D-6; verified downstream request at `docs/phase6/v1/PHASE_6_DOC.md:1215`–`:1228` |
 | Shadow pass overrides hook-requested program | barrier selection step 1 | `[V:observed]`, `docs/research/v1/RESEARCH.md:506`–`:507` |
 | Reload invalidates downstream derived caches | `PublishedRegistry.generation` equality protocol | `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/pipeline/PipelineManager.java:87, "versionCounterForSodiumShaderReload++"]`; `D-P4-8` |
 
@@ -790,12 +892,29 @@ Planning is pure:
 4. choose `GeometryTranslationRequest.None` or the geometry strategy in §4.8;
 5. call `SourceMaterializer.materialize` once per available source stage with the exact active
    `OptionState`, singular Phase 6 contribution, and geometry request;
-6. retain each `MaterializedSource`, source map, diagnostics, and materialization fingerprint;
-7. adapt Phase 3's per-program state into `ProgramStateBundle`; and
-8. validate routing and attribute requirements against the supplied capability profile.
+6. retain each `MaterializedSource`, source map, diagnostics, materialization fingerprint, and
+   verified `DeclaredUniformCatalog`;
+7. merge the stage catalogs into the immutable `ProgramUniformLayout`;
+8. adapt Phase 3's evaluated per-program state into `ProgramStateBundle`; and
+9. validate routing and attribute requirements against the supplied capability profile.
 
 Consumers never read a source from `SourceCatalog` and parse it themselves. An unavailable
 materialization makes that program `Failed` and eligible for fallback.
+
+The uniform-layout merge is pure and precedes every GL call. It visits materialized stages in
+`VERTEX`, `GEOMETRY`, `FRAGMENT`, `COMPUTE` order and declarations in each catalog's published
+token order. Repeated exact names with structurally equal `DeclaredGlslType` values merge into one
+`ProgramUniformDeclaration` while retaining every attributed site and its catalog/materialization
+fingerprint. The same exact name with unequal structural types is a source-attributed
+`UNIFORM_TYPE_CONFLICT`: the program becomes `Failed`, no shader/program object is created, and
+the ordinary backup chain applies. Case is significant; different names remain different.
+
+The layout fingerprint hashes a schema tag plus the canonical exact-name order, Phase 3
+structural type values, ordered sites, and their materialization fingerprints. It contains no GL
+handle, location, post-link activity result, generation, or object identity. Equal merged inputs
+produce an equal fingerprint. A driver may optimize any declared name out after link; the
+declaration remains in the layout and a later Phase 1 `UniformLocation.isAbsent()` is
+authoritative for upload activity.
 
 GL compilation is render-thread-only and uses this state machine:
 
@@ -910,16 +1029,41 @@ public record UseProgramRequest(
     ProgramSlotId requested,
     BarrierContext context) {}
 
-public record BarrierContext(
-    boolean shadowPass,
-    StageId stage,
-    StageBand band,
-    long frameId) {}
+public interface BarrierContextSource {
+    FrameBarrierContexts beginFrame();
+}
+
+public interface FrameBarrierContexts {
+    BarrierContext activation(StageStep step, boolean shadowPass);
+    BarrierContext release();
+}
+
+public interface BarrierContext {
+    boolean shadowPass();
+    StageId stage();
+    StageBand band();
+}
+
+public record ProgramUniformCacheKey(
+    long registryGeneration,
+    ProgramSlotId effectiveProvider,
+    ProgramUniformLayoutFingerprint linkedLayout) {}
+
+public interface BoundProgramActivityToken {
+    boolean isCurrent();
+}
+
+public interface BoundProgramUniformAccess {
+    ProgramUniformCacheKey cacheKey();
+    UniformLocation locate(String exactName);
+    BoundProgramActivityToken activityToken();
+}
 
 public interface ProgramBindingParticipant {
     BarrierParticipantResult afterBind(
         ResolvedProgramDescriptor binding,
-        BarrierContext context);
+        BarrierContext context,
+        BoundProgramUniformAccess uniforms);
 }
 
 public sealed interface BarrierParticipantResult {
@@ -1021,37 +1165,81 @@ The three positions are:
 
 Activation order is normative:
 
-1. if `shadowPass`, replace the requested slot with `shadow` before resolution;
-2. resolve the effective binding, including a fixed/skip terminal;
-3. restore the previous alpha/blend lock before changing the program;
-4. bind the effective program through `ShaderService.use`, or bind fixed function through the
+1. invalidate the prior `BoundProgramActivityToken`, if any, before resolution or GL work;
+2. if `shadowPass`, replace the requested slot with `shadow` before resolution;
+3. resolve the effective binding, including a fixed/skip terminal;
+4. restore the previous alpha/blend lock before changing the program;
+5. bind the effective program through `ShaderService.use`, or bind fixed function through the
    published `ShaderService.useFixedFunction()` operation;
-5. for a `ShaderProgram` binding, invoke sampler, built-in, then custom participants; a fixed
-   binding has no program locations and skips all three;
-6. snapshot the underlying alpha/blend aspects and apply the effective provider's explicit
+6. for a `ShaderProgram` binding, mint one activation-scoped `BoundProgramUniformAccess` and invoke
+   sampler, built-in, then custom participants with that same cache key and activity token; a
+   fixed binding has no program locations and skips all three;
+7. snapshot the underlying alpha/blend aspects and apply the effective provider's explicit
    overrides through `StateService`; and
-7. publish the active logical/effective pair for diagnostics.
+8. publish the active logical/effective pair for diagnostics.
 
 Participants run on every successful `activate`, even when the same handle remains active.
 World state, per-draw values, texture sides, and custom expressions may have changed. An equality
 fast path may skip only the actual `use` call if Phase 6 explicitly proves that doing so preserves
 its refresh contract; v0.1 does not take that optimization.
 
-`ProgramBindingParticipant.afterBind` receives the handle-free descriptor only after the private
-resolved binding is a shader program; the barrier enforces that condition before projection and
-dispatch, so participants never receive an operational handle or invent fixed-function behavior.
+`ProgramBindingParticipant.afterBind` receives the handle-free descriptor and bound-uniform
+access only after the private resolved binding is a shader program; the barrier enforces that
+condition before projection and dispatch, so participants never receive an operational handle or
+invent fixed-function behavior. `cacheKey()` is stable for every activation of the same effective
+provider/layout in one published generation; fallback children therefore share the provider's
+key. Locations returned by `locate` remain cacheable only until generation inequality.
+
+`BoundProgramUniformAccess` is render-thread and callback scoped. During each participant call,
+`locate(exactName)` accepts only a non-empty name present in the effective
+`ProgramUniformLayout`, delegates internally to
+`UniformService.locate(privateProgramHandle, exactName)`, and returns the Phase 1 present/absent
+opaque location. A blank/undeclared name or use outside the currently executing callback fails
+before any GL lookup; the barrier converts a participant misuse/exception to that participant's
+`Degraded` result, closes its callback window, and continues later positions. The access object,
+private handle, and lookup operation may not be retained. Returned `UniformLocation`s and the
+`ProgramUniformCacheKey` may be retained under the generation rule.
+
+Only the opaque `BoundProgramActivityToken` may be retained to authorize Phase 6's already-cached
+immediate signal uploads between activations. Its `isCurrent()` is a pure thread-safe epoch
+comparison with no GL query or side effect. The token becomes current after the successful bind
+and before the first participant, remains current through the enclosing draw, and is invalidated
+before every later activation (including the same effective program), fixed-function release,
+failed-safe/off transition, ready/off publication replacement, or registry teardown. Invalidation
+precedes program unbind/rebind and handle deletion. A stale token never becomes current again and
+confers no lookup, bind, upload, delete, or lifecycle operation.
 
 These results never throw. `Continue` proceeds; `Degraded` disables only its named participant-owned
 uniform/expression scope, records the diagnostic, and processing continues. `Activated` guarantees
-the program, successful participant work, and provider locks are active; the caller draws and
-retains the degradations for UI/log reporting. `FixedFunction` guarantees locks restored and fixed
-function bound; the caller continues the fixed terminal. `Skipped` guarantees locks restored and
-no pass state newly bound; the caller omits the draw. An unresolvable required request returns
-`ShadersOff` after restoring fixed-function/vanilla-safe state and requires the caller to publish
-off. Failure to prove restoration returns `FailedSafe`, emits its diagnostic, forbids the caller
-from drawing through the shader path, and requires immediate shaders-off/vanilla-path recovery.
-`StalePublication` is produced only by a superseded published view before delegation; it performs
-no GL work, forbids the draw, and requires the caller to reacquire the atomic publication snapshot.
+the program and provider locks are active and the ordered participant sequence completed, with
+every isolated degradation recorded in `degradations`; the caller draws and retains that list for
+UI/log reporting. `FixedFunction` guarantees locks restored and fixed function bound; the caller
+continues the fixed terminal. `Skipped` guarantees locks restored and no pass state newly bound;
+the caller omits the draw. An unresolvable required request returns `ShadersOff` after restoring
+fixed-function/vanilla-safe state and requires the caller to publish off. Failure to prove
+restoration returns `FailedSafe`, emits its diagnostic, forbids the caller from drawing through the
+shader path, and requires immediate shaders-off/vanilla-path recovery. `StalePublication` is
+produced only by a superseded published view before delegation; it performs no GL work, forbids the
+draw, and requires the caller to reacquire the atomic publication snapshot.
+
+`BarrierContextSource` is Phase-4-owned and render-thread-only. Phase 7 calls `beginFrame()` exactly
+once at frame entry; it monotonically advances a private epoch, permanently retires the prior
+`FrameBarrierContexts`, and returns the sole issuer for that frame. `activation(step, shadowPass)`
+accepts only a `StageStep` from the current published `StageRegistry`; it requires
+`shadowPass == (step.stage() == SHADOW && step.band() == SHADOW)` and issues a context view
+carrying the source identity, current epoch, context kind, stage, and band. `release()` issues the
+frame's canonical release-kind context and copies the most recently issued activation stage/band,
+or uses `FINAL`/`SCREEN` when none was issued; its `shadowPass()` is always `false`, including when
+the copied pair is `SHADOW`/`SHADOW`. These are ordinary public interfaces, so callers may
+implement them, but only Phase 4 can mint an implementation accepted by a barrier or publisher;
+no public operation accepts a caller-supplied frame number, source identity, epoch, or kind.
+
+Activation accepts only an activation-kind context from its own current source/epoch, requires the
+context step to equal the current registry step for the requested slot and its band to be in that
+slot's `permittedBands`, and rechecks the shadow equivalence above. Release and publication accept
+only a release-kind context from that same current source/epoch. Wrong source, retired epoch,
+wrong kind, unknown step, slot/stage/band mismatch, or shadow mismatch is rejected before token
+invalidation, GL work, lock change, or publication release.
 
 An absent alpha/blend override means “do not lock that aspect.” Explicit `OFF` means lock it
 disabled. A transition restores exactly the snapshot taken before the prior lock; it never
@@ -1070,18 +1258,23 @@ not invoked at v0.1; their slots remain G8/S2.
 - Phase 3 schema version and configuration fingerprint;
 - active dimension identity/mode;
 - materialization fingerprints for every attempted stage;
+- canonical merged `ProgramUniformLayout` fingerprints for every shader binding;
 - the Phase 6 macro contribution;
 - canonical geometry strategies;
 - capability fields that affect validation/build; and
 - the registry schema version.
 
-It does not hash handles, driver logs, object identity, generation, timestamps, or source text.
+It does not hash handles, locations, post-link activity, driver logs, object identity, generation,
+timestamps, or source text. `ProgramUniformCacheKey` is the separate activation/upload-cache
+identity `(published generation, effective provider, linked layout fingerprint)`. Generation
+inequality invalidates every cached location; within one generation, requested fallback children
+that resolve to the same effective provider/layout intentionally share the key.
 
 Publication is:
 
 1. build a complete candidate;
-2. if caller accepts it, supply the current render-thread `BarrierContext` and restore/release the
-   old barrier;
+2. if caller accepts it, invalidate the old activity token, supply the current render-thread
+   `BarrierContext`, and restore/release the old barrier;
 3. atomically replace `PublishedRegistry`;
 4. increment generation once;
 5. close the old registry on the render thread; and
@@ -1093,10 +1286,12 @@ same empty registry/view shape. A failed candidate may leave the prior publicati
 Phase 7/12 chooses old-registry retention or shaders-off; that user-facing policy is not Phase
 4's.
 
-`publish(publication, releaseContext)` requires the current non-null render-thread context for both
-ready and off replacement. The publisher validates the context and passes it unchanged to the old
-barrier's `releaseToFixedFunction`; a missing, stale-frame, or stage/band-inconsistent context is a
-pre-release validation failure.
+`publish(publication, releaseContext)` requires a non-null current release-kind context issued by
+the old publication's `BarrierContextSource` for both ready and off replacement, including
+replacement outside ordinary activation. The publisher validates source identity, current private
+frame epoch, and release kind, then passes the context unchanged to the old barrier's
+`releaseToFixedFunction`; a missing, foreign, retired, or activation-kind context is a pre-release
+validation failure.
 
 `RegistryPublication.Ready` transfers its compiler-issued registry product and factory-issued
 barrier candidate to the publisher
@@ -1174,12 +1369,13 @@ local artifact and never enter this diagnostic.
 | `PassDescriptor`, `PassResourceAccess`, `ComputeDispatchSlot` | contained schedule step plus named/indexed identity, stage-readable domain, exact/symbolic writes, flip config, mipmap set; dormant primary + a…z companions only outside gbuffers | Phases 5, 7; G8/S2 |
 | `ProgramSlotId`, `ProgramSlotDescriptor`, `ProgramStateBundle` | exact pack-facing name, stage/bands, fallback, routing, mipmaps, instance count, attributes, alpha/blend, scale, flips, geometry | Phases 5, 6, 7, 8 |
 | `ProgramRegistryCompiler.compile` / `RegistryBuildRequest` | synchronous render-thread build entry point; request carries immutable `PackConfiguration`, `DimensionKey`, `MacroContribution`, `GLCapabilityProfile`, caller-owned `GLDevice`, and `DiagnosticReporter`; the compiler retains none after return and returns a caller-owned ready candidate or shaders-off failure | Phases 7, 12 |
-| `PublishedRegistry.registry` / `ProgramRegistryView.resolve` / `ResolvedProgramDescriptor` | generation-coherent non-owning inspection; requested/effective identity, provider state, source fingerprints, fallback path; no registry `close` or `ProgramHandle`. Private compiled bindings remain inside Phase 4; only opaque compiler-issued `CompiledRegistryCandidate` carries the private closable registry into composition/publication | Phases 5, 6, 7, 8 |
-| `PublishedRegistry.barrier` / `PublishedProgramStateBarrier`, `UseProgramRequest`, `BarrierContext`, `BarrierResult` | generation-checked, non-owning, render-thread-only activation/release route; request carries the logical slot and context, whose caller-supplied fields are `shadowPass`, `stage`, `band`, and `frameId`; replacement returns stale without GL work; ready alone exposes a view, while shaders-off/`RecoveredOff` expose none; ordered shadow override → resolve → restore → bind → Phase 6 participants → alpha/blend lock; closed activated/fixed/skipped/off/failed-safe/stale outcomes and caller duties | Phases 6, 7, 8 |
-| `ProductionBarrierComposer.compose`, `ProgramStateBarrierFactory`, opaque `ProductionBarrierParticipants`, `BarrierConstructionResult`, `ProgramBindingParticipant`, `BarrierParticipantResult` | Phase 7 calls the public Phase-4 facade with one compiler product and exactly the Phase-6 sampler/built-in/custom implementations; package-private assembly mints the credentialed bundle and factory candidate without exposing either credential; one success per registry product, while null/closed/repeated/provenance failure has no GL or retention. Phase 11 feeds Phase 6's custom participant rather than installing separately | Phase 6 supplies participants, Phase 11 feeds customs through Phase 6, Phase 7 composes |
+| `CompiledRegistryCandidate.view()` | while the compiler-issued opaque candidate is open and caller-owned, returns an immutable detached metadata snapshot implementing `ProgramRegistryView`. Phases 5 and 7 may derive and validate candidate-dependent buffer/pass and composition state before publication without acquiring ownership. A retained snapshot remains safe and unchanged after candidate close, pre-release rejection, `RecoveredOff`, or accepted ownership transfer; it retains no candidate, private registry, or GL handle and does not observe publication. It has no publication generation, `close`, `ProgramHandle`, private-registry accessor, or compiler-origin credential; obtaining it neither publishes nor transfers the candidate, and the candidate remains the sole authenticated ownership/provenance product accepted by composition and publication | Phases 5, 7 |
+| `PublishedRegistry.registry` / `ProgramRegistryView.resolve` / `ResolvedProgramDescriptor` / `ProgramUniformLayout` | generation-coherent non-owning inspection; requested/effective identity, provider state, immutable exact-name declared-uniform layout with closed Phase 3 types and attributed sites, source/layout fingerprints, and fallback path; fixed descriptors use the canonical empty layout. No registry `close`, `ProgramHandle`, `UniformLocation`, or activity claim. Private compiled bindings remain inside Phase 4; only opaque compiler-issued `CompiledRegistryCandidate` carries the private closable registry into composition/publication | Phases 5, 6, 7, 8 |
+| `PublishedRegistry.barrier` / `PublishedProgramStateBarrier`, `BarrierContextSource`, `FrameBarrierContexts`, `BarrierContext`, `UseProgramRequest`, `BarrierResult`, `ProgramUniformCacheKey` | generation-checked, non-owning, render-thread-only activation/release route. The context types are public views, but caller implementations are never accepted: Phase 7 begins one Phase-4-issued private epoch per frame, and only its current issuer can mint accepted activation contexts from published `StageStep`s or the canonical release context used even outside ordinary activation. Activation requires current source/epoch, activation kind, exact slot stage/band membership, and `shadowPass == (stage == SHADOW && band == SHADOW)`; release/publication require current source/epoch and release kind, and release `shadowPass()` is always false even when it copies a prior shadow stage/band. Every mismatch is rejected before GL/state/publication work. Replacement returns stale without GL work; ready alone exposes a view, while shaders-off/`RecoveredOff` expose none; ordered prior-token invalidation → shadow override → resolve → restore → bind → Phase 6 participants → alpha/blend lock; `Activated` means the ordered participant sequence completed with isolated degradations recorded, plus the other closed outcomes and caller duties. The cache key is exactly generation + effective provider + linked-layout fingerprint and is shared by fallback children of that provider | Phases 6, 7, 8 |
+| `ProductionBarrierComposer.compose`, `ProgramStateBarrierFactory`, opaque `ProductionBarrierParticipants`, `BarrierConstructionResult`, `ProgramBindingParticipant`, `BoundProgramUniformAccess`, `BoundProgramActivityToken`, `BarrierParticipantResult` | Phase 7 calls the public Phase-4 facade with one compiler product and exactly the Phase-6 sampler/built-in/custom implementations; package-private assembly mints the credentialed bundle and factory candidate without exposing either credential; one success per registry product, while null/closed/repeated/provenance failure has no GL or retention. Each shader callback receives invocation-only `locate` over the private bound program and one retainable non-operational epoch token; locations cache only within the generation, and the token invalidates before every later activation/release/off/replacement/teardown. No handle or program operation is exposed. Phase 11 feeds Phase 6's custom participant rather than installing separately | Phase 6 supplies/consumes participants, Phase 11 feeds customs through Phase 6, Phase 7 composes |
 | `ProgramRegistryPublisher.current` / `publish`; `RegistryBuildResult.Ready` / opaque `CompiledRegistryCandidate`; `RegistryPublication`, `BarrierPublicationCandidate`, `PublicationResult` | render-thread-only publisher entry points return the current non-owning snapshot or accept a publication plus mandatory caller-supplied release context. Compiler alone mints the registry product; ready publication accepts it only with the factory product paired to that exact product/registry identity; publisher independently checks compiler origin plus factory and complete-production-composition provenance before release. External registry implementations, arbitrary barriers, and bootstrap candidates cannot enter; caller owns both candidates until accepted and must close rejected/recovered-off products, accepted transfer makes caller close harmless, publisher owns accepted teardown, and empty `RecoveredOff` applies | Phases 7, 12 |
 | `PublishedRegistry.generation` | changes once per accepted registry/off publication or forced `RecoveredOff`; pre-release rejection does not change it; consumers compare for inequality | Phase 12 reload paths and every derived program/uniform cache |
-| `RegistryFingerprint` | deterministic derivation identity distinct from generation | Phases 5, 6, 7, 12 |
+| `RegistryFingerprint` / `ProgramUniformLayoutFingerprint` | deterministic registry derivation and exact linked-declaration identities, both distinct from generation and GL activity | Phases 5, 6, 7, 12 |
 | `ProgramBuildFailure`, `RegistryBuildFailure` | sanitized per-program fallback disposition plus deterministic registry-wide aggregate whose final disposition is shaders-off | Phase 7 activation/reload; Phase 12 shader GUI |
 | Fixed attribute table | `mc_Entity=10`, `mc_midTexCoord=11`, `at_tangent=12` | Phase 10 |
 | Per-slot `instanceCount` | positive count retained for all programs; no execution semantics hidden here | Phase 7 executes; Phase 6 uploads `instanceId` |
@@ -1193,7 +1389,8 @@ or overlay requested-slot state on the effective provider. Phase 10 must not ren
 | Phase 1 §5 contract | Use here |
 |---|---|
 | `:engine` layout, package rules, C-1…C-4 seam | all registry/compiler types and tests |
-| `GLDevice`/seven services | `ShaderService.use(ProgramHandle)`, `ShaderService.useFixedFunction()`, `StateService`, and no-op `DebugService` call sites only |
+| `GLDevice`/seven services | `ShaderService.use(ProgramHandle)`, `ShaderService.useFixedFunction()`, `UniformService.locate`, `StateService`, and no-op `DebugService` call sites only |
+| `UniformLocation` present/absent opaque value | callback-scoped lookup result passed to Phase 6 without exposing the private program handle; locations may be cached only for the current publication generation |
 | `GLCapabilityProfile` + serialization | route/attribute/geometry validation and recorded-profile tests |
 | Opaque `ProgramHandle`/`ShaderHandle` lifetime | candidate ownership ledger and registry teardown |
 | `CompileResult` / `LinkResult` / `ValidateResult` | never-throwing build state machine |
@@ -1213,13 +1410,14 @@ program zero. Phase 4 consumes that verified contract directly and continues to 
 |---|---|
 | `PackConfiguration`, schema/fingerprint discipline | sole registry-build truth and cache key |
 | `DimensionConfiguration` | exact no-base-merge source selection or disabled outcome |
-| `SourceCatalog`, `SourceKey`, `SourceMaterializer`, `MaterializedSource`, `SourceMap` | source planning/materialization without reopening or rescanning |
-| `GeometryTranslationRequest` / `GeometryTranslationPlan` | legacy configuration rewrite request |
+| `SourceCatalog`, `SourceKey`, `SourceMaterializer`, `MaterializedSource`, `SourceMap`, `LegacyGeometryRewriteSite` | source planning/materialization without reopening or rescanning; legacy-pair discovery, attributed rewrite sites, and materialized-source contribution/plan/site fingerprints |
+| `DeclaredUniformCatalog`, `DeclaredUniform`, `DeclaredGlslType`, `ShaderSourceStage`, attributed locations | complete final per-stage declaration metadata and materialization identity; Phase 4 merges equal types, rejects same-name unequal types before GL, and never infers optimized-out activity |
+| `GeometryTranslationRequest` / `GeometryTranslationPlan` | legacy translation selection and Phase-3 validation |
 | singular `MacroContribution` | Phase 6 contribution passed unchanged to every materialization |
 | `OptionConfiguration` / immutable `OptionState` | exact materialization option state |
-| `ProgramStateModel` | alpha/blend/scale/flip/enabled/profile-disabled |
-| `ResourceRequirements` | routing, mipmaps, instance count, attributes, legacy geometry and allocation bounds needed for validation |
-| materialization/configuration fingerprints | derivation identity and cache reuse |
+| `ProgramStateModel` / ordered `EvaluatedProgramStates` | exact dimension/program key, typed alpha/blend/scale, property-enabled/profile-disabled/final-enabled results; final false is absent to fallback. Phase 5 alone receives the separate flip-only projection |
+| closed `ResourceRequirements` algebra | Phase 4 consumes only dimension/program-keyed routing, mipmaps, attributes, instance count, and optional legacy geometry; it does not reinterpret Phase 5/6/7/8/10/13 projections |
+| materialization/configuration/catalog fingerprints | registry/layout derivation identity and cache reuse |
 | diagnostics | source-attributed unavailable/failure conversion |
 
 Phase 4 never reopens the pack, rescans a directive, interprets properties, or bypasses the
@@ -1252,12 +1450,16 @@ DESIGN correction in §11; it does not edit the graph.
 |---|---|---|
 | 1 | custom-uniform participant reports one expression/uniform failure | Phase 11/6 disables only that custom uniform; barrier continues |
 | 2 | built-in uniform participant reports one upload failure | Phase 6 disables only that built-in uniform under Phase 1's replay protocol; program remains active |
+| 2 | one participant misuses callback-scoped lookup or throws | close that callback window, record its `Degraded` scope, continue later participant positions; never expose or retry with a handle |
 | 2a | alpha/blend override application or optional debug label fails | restore the saved state, disable only that override/feature for this registry generation, diagnose, keep the program |
-| 3 | materialize/compile/link/validate/attribute/geometry failure for one program | delete candidate objects for that program, emit user-visible error, mark it failed, resolve the entire binding through its backup chain |
+| 3 | materialize/declaration-layout conflict/compile/link/validate/attribute/geometry failure for one program | delete candidate objects for that program, emit source-attributed/user-visible error, mark it failed, resolve the entire binding through its backup chain |
 | 3 | absent deferred/composite indexed pass | skip it; absence is normal, not an error |
 | 3 | unavailable root with a fixed terminal | select fixed function through `ShaderService.useFixedFunction()` and continue the declared terminal/fallback disposition |
 | 4 | registry-wide capability failure—e.g. required estate cannot fit, required high attribute has no fallback, or every required terminal is unavailable | return `ShadersOff`, chat error through caller, do not publish partial registry |
 | 5 | unexpected exception, cleanup failure, stale/use-after-delete invariant, or barrier cannot restore safe state | catch at public boundary, close all owned candidate objects, request shaders-off publication, leave/restore vanilla framebuffer path; never crash client |
+
+A stale activity token is a normal no-upload condition, not a failure rung. Phase 6 retains its
+cached value for the next activation and issues no GL call.
 
 Compilation failure never substitutes a pack-layout heuristic or Pintonium-style generated
 lighting guess. A generated passthrough is legal only when it is a deterministic, explicitly owned
@@ -1275,6 +1477,9 @@ at the public barrier.
   state adaptation, and fingerprints are pure and may run off-thread on immutable inputs.
 - Every `GLDevice` call, candidate publication, registry close, and barrier call runs on the render
   thread.
+- `BoundProgramUniformAccess.locate` is legal only in the current render-thread participant
+  callback. The retained activity token's epoch comparison is thread-safe and side-effect-free,
+  but a true result does not waive the render-thread rule of the upload facade.
 - The v0.1 compiler is synchronous. Phase 14 may move the compile portion to a shared context only
   behind OQ-15's successful spike and mandatory synchronous fallback; publication and vanilla-state
   interaction remain render-thread work.
@@ -1289,10 +1494,12 @@ Compilation is cold and may allocate readable immutable plans and diagnostics. T
 - slot lookup is by stable catalog ordinal plus pass-family index, not a per-switch string map;
 - resolved backup results are memoized in the immutable registry;
 - participant list and effective state bundle are immutable arrays/records;
+- merged uniform layouts and location-cache keys are immutable cold-build products; no source
+  token, source map, declaration merge, or layout hash runs during activation;
 - no stream, list copy, boxing, formatted log message, or source-map work occurs on a clean
   activation;
 - the active lock stores at most one state snapshot and logical/effective pair; and
-- generation polling is one primitive equality comparison.
+- generation polling and activity-token checks are primitive epoch comparisons.
 
 No global catalog- or pass-family-sized sweep runs on every program switch. Compile iterates
 configured slots; activation touches one resolved binding.
@@ -1329,6 +1536,12 @@ phase never introduces raw LWJGL calls.
 - `attributeLocations_areExactlyTenElevenTwelve`
 - `attributeCapability_checkedOnlyWhenDeclared`
 - `instanceCount_retainedForEveryProgramFamily`
+- `uniformLayout_sameTypeAcrossStagesMergesAllAttributedSites`
+- `uniformLayout_sameNameDifferentTypeFailsBeforeGL`
+- `uniformLayout_exactNameCaseSensitiveAndDeterministicallyOrdered`
+- `uniformLayout_fingerprintEqualInputsEqualAndExcludesActivity`
+- `fallback_descriptorUsesEffectiveProviderUniformLayout`
+- `fixedFunction_descriptorUsesCanonicalEmptyUniformLayout`
 - `fingerprint_equalInputsEqualAndGenerationExcluded`
 
 The cardinality test proves every table row exists and the corrected declared count agrees with the
@@ -1358,6 +1571,8 @@ Against Phase 1 `RecordingGLDevice` and recorded `GLCapabilityProfile`s:
 - validate failure deletes the program and resolves fallback;
 - missing fragment or geometry stage is not invented; scripted link result controls outcome;
 - disabled/missing slots emit no GL call;
+- a cross-stage uniform type conflict emits an attributed program failure and no create/compile/
+  link/locate GL call;
 - a fixed terminal records `shaders.useFixedFunction` after lock restoration and records no
   handle-bearing `shaders.use`;
 - `ReplayAssertions.noLeakedObjects()` holds after candidate failure and registry close;
@@ -1370,6 +1585,9 @@ Against Phase 1 `RecordingGLDevice` and recorded `GLCapabilityProfile`s:
 - `publishedRegistryView_hasNoCloseAndCannotDeleteCurrentHandles`
 - `publishedResolutionAndActivatedResult_apiShapeContainsNoProgramHandle`
 - `retainedDescriptorAfterStalePublicationCannotDriveShaderServiceUse`
+- `candidateView_retainedAcrossCandidateCloseRemainsDetachedMetadata`
+- `candidateView_retainedAcrossAcceptedPublicationRemainsDetachedMetadata`
+- `candidateView_retainedAcrossRejectionAndRecoveredOffRemainsDetachedMetadata`
 - `bootstrapNoOpCapability_isPackagePrivateAndUnavailableToPhase7`
 - `productionPublication_rejectsBootstrapBarrierBeforeRelease`
 - `productionParticipants_synthesizedNoOpBundleCannotReachFactoryReady`
@@ -1384,11 +1602,27 @@ Against Phase 1 `RecordingGLDevice` and recorded `GLCapabilityProfile`s:
 - `barrierFactory_customPositionReceivesPhase11ThroughPhase6`
 - `barrier_order_shadowResolveRestoreBindSamplerBuiltinCustomLock`
 - `barrier_shadowPassForcesShadowBeforeFallback`
+- `barrier_contextCurrentActivationAccepted`
+- `barrier_contextForeignRetiredWrongKindStageBandAndShadowRejectedBeforeWork`
+- `barrier_publicContextImplementationsCannotMintAcceptedContext`
+- `barrier_releaseContextCurrentAcceptedOutsideActivation`
+- `barrier_releaseContextShadowPassAlwaysFalseIncludingCopiedShadowStep`
+- `barrier_releaseContextMissingForeignRetiredAndActivationKindRejectPublication`
 - `barrier_sameHandleStillRefreshesParticipants`
+- `barrier_allThreeParticipantsReceiveSameBoundAccessKeyAndToken`
+- `boundUniformAccess_locateDelegatesPrivateHandleWithoutExposingIt`
+- `boundUniformAccess_blankUndeclaredOrOutOfCallbackDegradesWithoutLookup`
+- `boundUniformAccess_locationsCacheOnlyUntilGenerationInequality`
+- `activityToken_currentThroughDrawAndStaleBeforeEveryLaterActivation`
+- `activityToken_invalidBeforeFixedReleaseOffReplacementFailedSafeAndTeardown`
+- `activityToken_staleNeverRevalidatesAndHasNoOperations`
+- `fallback_childrenShareEffectiveProgramUniformCacheKey`
+- `sameProviderNewGenerationHasDifferentUniformCacheKey`
 - `barrier_requestedChildUsesEntireProviderState`
 - `barrier_absentOverrideDoesNotLock_explicitOffDoes`
 - `barrier_transitionRestoresUnderlyingStateNotPriorOverride`
 - `barrier_participantFailureIsIsolatedByOwner`
+- `barrier_activatedRecordsIsolatedDegradationAfterSequenceCompletes`
 - `barrier_fixedTerminalRestoresThenCallsUseFixedFunction`
 - `publication_releaseReceivesCurrentContext_forReadyAndOff`
 - `publication_preReleaseValidationRejectsWithoutGenerationOrOwnershipChange`
@@ -1431,9 +1665,9 @@ set to linked/resolved state with zero unmapped directives, plus no leaked/use-a
 | Nine-identity stage model, multi-occurrence schedule, `PassIndex` 0…99 | `v0.1` | implemented and tested now |
 | Classic G6 configuration and full App A catalog | `v0.1` | implemented now; row coverage is cardinality-independent |
 | Sparse modern configuration fixture with dormant families | `v0.1` | implemented as data/test, not executed |
-| Program-state adapter, route/attribute validation, fallback resolver | `v0.1` | implemented now |
+| Program-state/declaration adapter, uniform-layout merge, route/attribute validation, fallback resolver | `v0.1` | implemented now; conflicts fail before GL |
 | Synchronous materialize/compile/link/validate transaction | `v0.1` | implemented after the §5.4 legacy-geometry dependency gap closes |
-| Barrier, alpha/blend lock, fixed Phase 6 participant slots | `v0.1` | interface and P4 mechanics now; P6 implementations later |
+| Barrier, bound-uniform lookup/activity capability, alpha/blend lock, fixed Phase 6 participant slots | `v0.1` | interface and P4 mechanics now; P6 implementations later |
 | Shadow force-selection branch | `v0.1` | interface/mechanics now; Phase 8 invokes at `v0.2` |
 | Pipeline generation and fingerprints | `v0.1` | implemented now; Phase 12 consumes at `v0.4` |
 | `instanceCount` storage/exposure | `v0.1` | stored now; Phase 7 composite execution at `v0.5`, non-composite case remains its handoff |
@@ -1471,6 +1705,8 @@ publication semantics.
 | D-P4-11 | Do not adopt Pintonium per-buffer blending or compute execution at v0.1 | Neither is a current Phase 3/App F.7 input; compute is explicitly G8/S2 |
 | D-P4-12 | A barrier refreshes participants even when the same effective handle remains bound | Uniforms, sampler sides, and custom values can change independently of program identity |
 | D-P4-13 | Fixed-function terminals remain explicit variants and never magic/null handles | Phase 1's opaque-handle seam forbids smuggling program zero through an integer or null convention |
+| D-P4-14 | Merge verified Phase 3 declared-uniform catalogs before GL and reject same-name structural type conflicts with all attributed sites | Phase 6 needs exact declared types and stages without reopening source; post-link lookup cannot recover optimized-out declarations or source attribution |
+| D-P4-15 | Give participants callback-scoped bound lookup plus a retainable operation-free epoch token | Phase 1 lookup requires the private handle, while Phase 6 needs generation-cached locations and between-activation immediate uploads; this capability supplies only those facts and preserves D-6 |
 
 ### 11.2 D-1…D-10 disposition
 
@@ -1510,13 +1746,21 @@ publication semantics.
 
 ### 11.4 Hand-offs and open items
 
-- **Phase 5:** resolve symbolic `AllUsedBuffers`, realize FBO routing and ping-pong sides, apply
-  virtual-pre flips, and never store foreign/FBO handles in Phase 4 state.
-- **Phase 6:** implement the three ordered participants, preserve the “every activation refreshes”
-  rule, and surface per-uniform isolation results without throwing.
+- **Phase 5:** use `CompiledRegistryCandidate.view()` for non-owning pre-publication derivation and
+  validation, resolve symbolic `AllUsedBuffers`, realize FBO routing and ping-pong sides, apply
+  virtual-pre flips, and never store foreign/FBO handles in Phase 4 state. Do not close, publish,
+  unwrap, or assign a generation to the candidate view. It may retain the detached metadata
+  snapshot after candidate close or transfer, but must not treat it as live publication state.
+- **Phase 6:** implement the three ordered participants against the effective
+  `ProgramUniformLayout`; preserve the “every activation refreshes” rule; cache returned locations
+  only by `ProgramUniformCacheKey`; retain only the activity token for immediate signals; and
+  surface per-uniform isolation results without retaining access or receiving a handle.
 - **Phase 7:** map hook phases to exact logical slots and gbuffers bands; execute pass arrays,
-  scale, mipmaps, fixed/passthrough terminals, and both `countInstances` cases; choose old-registry
-  retention versus shaders-off on failed reload.
+  scale, mipmaps, fixed/passthrough terminals, and both `countInstances` cases; use the candidate
+  view for pre-publication composition/validation while retaining ownership of the opaque
+  candidate. A retained snapshot remains metadata-only across rejection, recovery, close, or
+  accepted transfer; reacquire `current()` for publication state. Choose old-registry retention
+  versus shaders-off on failed reload.
 - **Phase 8:** set `shadowPass=true` and rely on force selection; do not duplicate it in hooks.
 - **Phase 10:** configure vertex sources/pointers at the fixed locations; no renumbering.
 - **Phase 12:** poll generation inequality and discard every derived program/uniform/UI compile
@@ -1533,19 +1777,30 @@ publication semantics.
   60-row Appendix A.1 count, and `docs/design/v2.0-RC3/DESIGN.md` now uses cardinality-neutral
   Phase 4 wording. Every named row remains; §4.5 and §8 retain equality/coverage tests without
   making the corrected count behavioral.
-- **GRANTED — Phase 1 §0.15, verified by round 18.**
-  `docs/phase1/v14/PHASE_1_DOC.md:2757`–`:2759` publishes
+- **GRANTED — Phase 1 §0.15, currently verified by round 20.**
+  `docs/phase1/v14/PHASE_1_DOC.md:2835` publishes
   `ShaderService.useFixedFunction()`, and
-  `docs/phase1/v14/PHASE_1_DOC.md:3224`–`:3231` publishes its distinct
+  `docs/phase1/v14/PHASE_1_DOC.md:3347`–`:3349` publishes its distinct
   `shaders.useFixedFunction` recorder/replay semantics. The literal PASS at
-  `docs/phase1/reviews/PHASE_1_REVIEW_18.md:50`–`:62` closes that dependency change.
+  `docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75` closes the current dependency surface.
+- **GRANTED AND VERIFIED — Phase 5 candidate-view clarification.** Section 5.1 publishes the
+  existing `CompiledRegistryCandidate.view()` as the non-owning, generationless pre-publication
+  `ProgramRegistryView` for Phases 5 and 7 without exposing registry/handle access or weakening
+  candidate ownership, opacity, or compiler provenance. Because this grant changed binding §5,
+  round fifteen supplied the required fresh literal PASS at
+  `docs/phase4/reviews/PHASE_4_REVIEW_15.md:59`–`:71`.
+- **GRANTED LOCALLY — Phase 6 uniform-layout and bound-access request.** Sections 2, 4, and 5 now
+  merge Phase 3's verified final declaration catalogs into an attributed, handle-free effective
+  `ProgramUniformLayout`, reject structural type conflicts before GL, and give the fixed three
+  participants callback-scoped `BoundProgramUniformAccess` plus a retainable non-operational
+  activity token. Locations are generation-scoped and no `ProgramHandle` crosses the boundary.
+  A fresh Phase 4 review is owed because this grant changes binding §5.
 - Apply and re-verify one complete legacy-geometry path from §5.4; update Phase 3/Phase 1
   interfaces consistently.
 - Add Phase 4 to Phase 12's declared dependency list, or state the generation is consumed
   indirectly through a declared Phase 7 interface.
-- Add a future `verification/targets/phase-4.json` profile anchored to RC3 before the separate
-  verify session. No Phase 4 target existed at build-session start, and creating verification
-  harness configuration is outside this document-only deliverable.
+- **GRANTED — verification target.** `verification/targets/phase-4.json` is anchored to RC3 and
+  drives the separate review/fix-up loop.
 
 ## 12. Implementation checklist
 
@@ -1556,8 +1811,10 @@ publication semantics.
    run row-coverage and declared-versus-enumerated equality tests without fixed-size allocation.
 4. **[v0.1]** Implement catalog validation and memoized backup resolution; run every
    `fallback_*` and `virtualPre_*` test.
-5. **[v0.1]** Implement the Phase 3 adapter for program state, routing, attributes, instance count,
-   source keys, and fingerprints; prohibit rescanning/reopening by package/API tests.
+5. **[v0.1]** Implement the Phase 3 adapter for evaluated program state, routing, attributes,
+   instance count, source keys, declared-uniform catalogs, and fingerprints; merge the exact
+   effective `ProgramUniformLayout`, reject attributed type conflicts before GL, and prohibit
+   rescanning/reopening by package/API tests.
 6. **[v0.1]** Implement fixed-terminal actions through Phase 1's verified
    `ShaderService.useFixedFunction()` contract and assert the distinct
    `shaders.useFixedFunction` recorder event; never encode the terminal as null, a magic handle,
@@ -1571,11 +1828,20 @@ publication semantics.
 10. **[v0.1]** Bind only declared extended attributes at 10/11/12 with exact capability gates;
     run negative Pintonium-numbering test.
 11. **[v0.1]** Implement immutable compiled registry, opaque compiler-origin product, idempotent
-    close, fingerprints, and transaction-only publication.
+    close, fingerprints, and transaction-only publication. Prove that
+    `CompiledRegistryCandidate.view()` returns an immutable detached metadata snapshot with no
+    generation, close, handle, private-registry accessor, or provenance credential; retained
+    snapshots remain safe after candidate close, rejection/recovery, and accepted transfer.
+    Candidate ownership and compiler-origin authentication remain unchanged until
+    composition/publication accepts the opaque candidate itself.
 12. **[v0.1]** Implement generation publication for registry and shaders-off replacements; run
     cache inequality tests.
-13. **[v0.1]** Implement barrier selection/restore/bind/participant/lock order with the
-    package-private bootstrap composition; run recorded state tests.
+13. **[v0.1]** Implement the authoritative per-frame context source and its complete
+    source/epoch/kind/stage/band/shadow rejection matrix, including rejection of caller
+    implementations and release-kind `shadowPass() == false`, then barrier
+    token-invalidate/selection/restore/bind/participant/lock order, callback-scoped private-handle
+    lookup, generation/layout/provider cache keys, and the retainable operation-free activity token
+    with the package-private bootstrap composition; run recorded state and full invalidation tests.
 14. **[v0.1]** Implement the Phase-4-owned composition facade and immutable barrier factory;
     prove cross-package Phase 7 wiring, compiler-product and production-bundle provenance,
     factory-issued publication-candidate provenance, external-registry/synthesized-participant/

@@ -7,7 +7,7 @@
 **Phase:** 1 — Foundation & project architecture
 **Milestone:** v0.1 · **Depends on:** — (Wave 0; this doc feeds every other phase)
 **Assigned OQs:** OQ-2, OQ-12, OQ-20 (seam hardness), OQ-21
-**Authored:** 2026-07-24 · **Last revised:** 2026-07-28 (§0.17)
+**Authored:** 2026-07-24 · **Last revised:** 2026-07-29 (§0.19)
 **Deliverable:** this document, per DESIGN.md §G9.
 **Verifies against:** `docs/design/v2.0-RC2/DESIGN.md` from §0.11 onward; `docs/design/v1.1/DESIGN.md`
 through §0.10. **There is no longer one governing revision for the project:** RC2 governs **this
@@ -20,9 +20,9 @@ state as of 2026-07-26; §0.1 records what was read from each revision.
 against — §4.1's template facts are read from the checkout on 2026-07-24, §4.2.6's thirteen pin rows
 are re-verified 2026-07-24, and `[V:repo]` below is defined as inspection on 2026-07-24 — so a single
 later stamp would silently re-date claims to a day on which they were not performed. The revision
-date is the most recent of the dates the fix-up addenda in §0.4–§0.17 carry, and each addendum states
+date is the most recent of the dates the fix-up addenda in §0.4–§0.19 carry, and each addendum states
 its own: §0.4–§0.5 are 2026-07-24, §0.6–§0.10 are 2026-07-25, §0.11–§0.14 are all
-2026-07-26, and §0.15–§0.17 are 2026-07-28. The
+2026-07-26, §0.15–§0.17 are 2026-07-28, and §0.18–§0.19 are 2026-07-29. The
 few repository observations the round-eleven and round-twelve fix-ups made are tagged
 `[V:repo 2026-07-26]` inline for the same reason the authoring date is kept — §4.1's and §4.2.6's 2026-07-24 reads are not re-dated by a
 later session touching a different part of the tree.*
@@ -1310,6 +1310,63 @@ full re-derivation is in `docs/phase1/reviews/PHASE_1_REVIEW_17.md` under `## Re
 only correction applied, this document is **verified** and is a valid dependency input. The version
 stays `v14` until the post-loop version roll.
 
+**Historical status:** round eighteen subsequently returned a literal PASS with zero findings
+(`docs/phase1/reviews/PHASE_1_REVIEW_18.md:48`–`:64`). The downstream-request amendment below
+supersedes that verified byte state.
+
+### 0.18 Downstream-request addendum (Phase 5 framebuffer/depth contract — 2026-07-29)
+
+**What triggered this amendment.** Phase 5 followed the §G1.1 dependency rule and requested three
+narrow additions instead of inventing raw-LWJGL or uncontracted handle behavior. Its converged
+review records the requested Phase 1 framebuffer/depth operations and the separate Phase 4
+candidate-view clarification at
+`docs/phase5/reviews/PHASE_5_REVIEW_23.md:34`–`:38`. The requests were re-derived against
+RESEARCH.md's real `depthtex0` attachment and two copy-target contents
+(`docs/research/v1/RESEARCH.md:509`–`:526`,
+`docs/research/v1/RESEARCH.md:1216`–`:1225`) and RC3's mandatory first-copy/capability-tiered
+depth path (`docs/design/v2.0-RC3/DESIGN.md:1621`–`:1652`).
+
+- **The foreign-handle contract gains one authenticated exception, not a widening.**
+  `BorrowedDepthAttachmentHandle extends TextureHandle` is the opaque `engine.gl` marker for the
+  platform-owned, sampleable main-depth texture. A marker value is usable for sampling
+  (`bindToUnit`), labeling, `attachDepth`, and `attachDepthStencil` only when the receiving backend
+  authenticates that it issued the value for the same device/context. Merely implementing the
+  public marker does not confer permission: forged and wrong-origin values are rejected before GL.
+  Ordinary `ForeignTextureProvider` handles remain bind-and-label-only.
+- **`FramebufferService` gains two distinct operations.**
+  `attachDepthStencil(f,t)` attaches one compatible texture to both attachment points while
+  `attachDepth(f,t)` remains depth-only.
+  `initializeDepthTextureFromFramebuffer(src,dst,region)` defines owned destination level zero
+  from the source's exact depth or packed depth/stencil format and contents on the first copy after
+  creation/reallocation. The existing `copyDepthToTexture` is the steady-copy operation: it never
+  defines or changes destination storage.
+- **Validation, restoration, recording, and tests move with the signatures.** Owned and borrowed
+  matrices, live/same-device provenance, combined-format validation, first-versus-steady copy
+  state, prior framebuffer/texture-binding restoration, exact recorder operation names, facade
+  tables, conformance mapping, milestones, `[D-P1-40]`, Phase 5's handoff, and checklist hooks are
+  updated together.
+
+**§G1.3 status:** this amendment changes the binding §5 interface region. Round eighteen's PASS is
+the historical verdict on the pre-§0.18 bytes; it does not review this addition. Phase 1 is
+therefore **not verified** and is not a valid dependency input until a fresh round nineteen returns
+a literal PASS, or any correction-bearing review is fixed up and the resulting §5 surface
+re-verified. The version directory and target remain at `v14` while the loop is open.
+
+### 0.19 Fix-up addendum (round nineteen — 2026-07-29)
+
+Round nineteen's three corrections are applied; full dispositions are in
+`docs/phase1/reviews/PHASE_1_REVIEW_19.md` under `## Resolutions`.
+
+The §0.18 mechanics sourced only to RC3 are no longer binding Phase 1 requirements. The facade
+retains the three requested operation shapes and gains `borrowDepthAttachment`; Phase 5 owns
+format, attachment/copy cadence, storage, freshness, restoration, and Minecraft lifetime policy.
+Issuance proves only that the receiving device recognizes the live platform texture and returns
+its own opaque, non-owned handle; it does not import RC3 policy.
+
+**Historical status:** §0.18's live status is superseded. **Current §G1.3 status:** this fix-up
+changes §5, so Phase 1 remains **not verified** and is not a valid dependency input until a fresh
+round returns literal PASS. The version remains `v14` while the loop is open.
+
 ---
 
 ## 1. Scope & boundaries
@@ -1474,8 +1531,8 @@ consistent with the `com.schmaloogium.{engine,mod,conformance}` tree. Publishing
 |---|---|---|
 | `GLDevice` | `engine.gl` | Root facade handle; hands out the seven services, the capability profile and the GL-error drain |
 | `GLCapabilityProfile` | `engine.gl` | Immutable value object; RESEARCH.md §4.1's probe set + extension set + the macro-header fields (`glslVersion`, `vendor`, `renderer`); serializable as a test fixture |
-| `ProgramHandle`, `ShaderHandle`, `TextureHandle`, `FramebufferHandle`, `UniformLocation` | `engine.gl` | Opaque handles — the engine never holds a raw GL int. **Four** handle types; there is no renderbuffer (§4.7.3) |
-| `ForeignTextureProvider`, `ForeignTextures` | `engine.gl` | The slot a `mod.glue` implementation fills with `TextureHandle`s for textures **Minecraft** owns (`[D-P1-36]`, §4.7.3, §4.12). *Which* textures is not this phase's: the unit-map keys are **Phase 5's**, the `minecraft:`-resource-location keys **Phase 13's**. Those handles are **bind-only** and outside the handle-lifetime rule (§4.7.3) |
+| `ProgramHandle`, `ShaderHandle`, `TextureHandle`, `BorrowedDepthAttachmentHandle`, `FramebufferHandle`, `UniformLocation` | `engine.gl` | Opaque handles — the engine never holds a raw GL int. **Four** direct `GLHandle` categories; the borrowed-depth marker is a narrower `TextureHandle`, not a fifth category, and there is no renderbuffer (§4.7.3) |
+| `ForeignTextureProvider`, `ForeignTextures` | `engine.gl` | The slot a `mod.glue` implementation fills with ordinary `TextureHandle`s for textures **Minecraft** owns (`[D-P1-36]`, §4.7.3, §4.12). *Which* textures is not this phase's: the unit-map keys are **Phase 5's**, the `minecraft:`-resource-location keys **Phase 13's**. Those handles are **bind-and-label-only**, distinct from authenticated borrowed depth, and outside the owned-handle lifetime rule (§4.7.3) |
 | `GLError`, `GLErrorKind` | `engine.gl` | Driver errors as data. Attribution is per **drain window** — one call named when the window held one mutating **facade** call, the sweep named when it held many (`[D-P1-32]`); a window may also hold an error no facade call caused, since the GL flag is per-context (§4.7.4) — and this is the signal §G2.4's **rung 2** acts on; rung 1 is Phase 11's expression isolation and never reaches GL (§6) |
 | `RecordingGLDevice`, `GLCallLog`, `GLCall`, `ScriptedResponses`, `ReplayAssertions` | `engine.gl.record` | The headless test backend |
 | `Log`, `LogSink`, `LogChannels` | `engine.log` | Zero-dependency logging SPI + the fixed channel name list |
@@ -1506,6 +1563,8 @@ debug affordances must satisfy, plus the vocabulary rule.
 | `shaders.debug.save` equivalent — dump processed sources | RESEARCH.md App F.8; DESIGN.md §G4.5 | `-Dschmaloogium.debug.saveSources` reserved in §4.9.3's flag namespace; the dump itself is Phase 3's | `[V:doc]` |
 | **KHR_debug labels/groups in dev** — the other affordance §G4.5 reserves from day one | DESIGN.md §G4.5 | `DebugService` (§4.7.4) exists as an interface at v0.1 so call sites can label objects immediately; `-Dschmaloogium.debug.glLabels` (§4.9.3) gates it; the implementation is `v0.5` / Phase 14 (§9) | `[V:design]` |
 | Declaring `centerDepthSmooth` enables a **center-depth readback** | RESEARCH.md §3.2, App A.3 for the directive; §4.4 for the synchronous per-frame stall `[V:observed]` | `FramebufferService.readDepthPixel(...)` (§4.7.4) — the verb only; which pixel, at which moment, and the halflife smoothing are Phase 6's policy. The PBO/fence async form is RESEARCH.md §6.2's modernization, deferred to Phase 14 | `[V:doc]` |
+| `depthtex0` is the real, sampleable main-depth attachment | RESEARCH.md §4.3 and App B.2 | Facade shape only: `borrowDepthAttachment`, `attachDepth`, and `attachDepthStencil`; Phase 5 owns format, freshness, reattachment, and Minecraft lifetime policy (`[D-P1-40]`) | `[V:observed]`; operation shape is a downstream request |
+| `depthtex1`/`depthtex2` receive the documented depth moments | RESEARCH.md App B.2 | Facade shape only: distinct initialization and steady-copy operations; Phase 5 owns allocation, format, copy tier, cadence, and restoration (`[D-P1-40]`) | `[V:doc]`; operation shape is a downstream request |
 | Noise texture and pack custom textures require **texel upload** | RESEARCH.md §4.1 step 4 ("create noise texture"), App F.5 (`texture.noise`, custom-texture source forms) | `TextureService.upload(TextureHandle, TextureData)` (§4.7.4) — the verb only; generation, formats and unit assignment are Phase 13's (with Phase 5 owning formats) | `[V:observed]` |
 | **App B.3's fixed unit map names textures Minecraft owns** — unit 0 `texture` (the block atlas) and unit 1 `lightmap` on GBUFFERS/SHADOW programs | RESEARCH.md App **B.3**, the unit map packs rely on numerically; the gap was surfaced by §4.12's PD §2 completeness check | `TextureService.bindToUnit(int, TextureHandle)` supplies the **binding**; the `TextureHandle` for a vanilla-owned texture comes from a **`mod.glue` implementation of `ForeignTextureProvider`** (§4.7.3), not from `TextureService.create` (§4.12, `[D-P1-36]`, §5.1). **No facade verb is added** — an `adopt(int glName)` form would put a raw GL name in an `:engine` signature, which §4.7.3 and `[D-P1-15]` exist to prevent. Which textures the map needs, and the map itself, stay Phase 5/6 policy (§1.2) | `[V:doc]` for the map; `[V:observed — PD §2]` for the inventory that found the gap; §G11.4 decision `[D-P1-36]` |
 | `atlasSize` / `eyeBrightness` are **`ivec2`** uniforms | RESEARCH.md App **D.3** (`atlasSize`, `terrainTextureSize` — camera/matrices/screen) and App **D.1** (`eyeBrightness`, `eyeBrightnessSmooth` — held item/player) | `UniformService.upload(loc, int, int)` (§4.7.4); the values and their cadences are Phase 6's | `[V:doc]` |
@@ -2569,6 +2628,12 @@ public non-sealed interface ShaderHandle      extends GLHandle {}
 public non-sealed interface TextureHandle     extends GLHandle {}
 public non-sealed interface FramebufferHandle extends GLHandle {}
 
+/** A platform-owned, sampleable main-depth texture. The public marker is necessary but
+ *  never sufficient permission: each backend authenticates that it issued the concrete
+ *  value for this GLDevice/context before accepting it at the narrow borrowed-depth
+ *  call sites below ([D-P1-40]). Merely implementing this interface is a forgery. */
+public interface BorrowedDepthAttachmentHandle extends TextureHandle {}
+
 /** Deliberately NOT a GLHandle — a location is a lookup result, not an object. Not sealed
  *  either, and for the same reason: `[D-P1-34]` obliges every *backend* to implement it. */
 public interface UniformLocation {
@@ -2676,30 +2741,42 @@ textures to exist yet. Render thread, like every other `engine.gl` call (§7). B
 in every headless test that does not script one — `active()` answers empty for every key, the same
 degradation `LogSink` takes (§4.9.1, §6).
 
-**A foreign handle is bind-only, and the lifetime rule above does not reach it (V13-3).** The type is
-deliberately indistinguishable from an engine-created `TextureHandle` — that *is* the shape, and it is
-why the raw GL name never crosses C-1 — so the contract has to carry the distinction the type does not,
-and §5.2 has to repeat it or §5 is not "sufficient on its own". Three rules, and none of them is
-"obvious enough" to leave unwritten: `SeamBytecodeTest` sees no GL name and no MC type crossing either
-way, so nothing here is mechanically checkable.
+**Foreign handles are backend-authenticated and split into two closed permission classes
+(`[D-P1-40]`).** The common `TextureHandle` supertype is what keeps the raw GL name on the `:mod`
+side of C-1, but it cannot prove ownership or origin. Every accepting backend therefore classifies
+the concrete value before GL: its own live engine-owned texture, its own ordinary
+`ForeignTextureProvider` value, its own `BorrowedDepthAttachmentHandle`, a value issued by another
+device/context, or an unknown/forged implementation. Wrong-device, wrong-context, forged, deleted,
+and otherwise unknown values are rejected with `IllegalArgumentException` before any binding or
+attachment mutation. The two legal foreign classes then have different, narrow permissions:
 
-- **Legal arguments, stated by closure over §4.7.4 rather than by list (V14-1):**
+- **Ordinary foreign texture — bind-and-label-only, stated by closure over §4.7.4
+  (V14-1, amended by §0.18):**
   `TextureService.bindToUnit(int, TextureHandle)` and `DebugService.label(…)` — and **nothing else in
   §4.7.4 that accepts a `TextureHandle`**. **Illegal:** `TextureService`'s
   `allocate`/`setParameters`/`upload`/`generateMipmap`/`delete`, and `FramebufferService`'s three
-  `TextureHandle`-accepting verbs — `attachColor`/`attachDepth`, which would make a vanilla-owned
+  attachment forms — `attachColor`/`attachDepth`/`attachDepthStencil`, which would make a
+  vanilla-owned
   texture a render target of an engine FBO *and* capture the object in the FBO's attachment state,
   past the reach of the per-use resolution rule below, so the attachment dangles across a vanilla
-  reload; and `copyDepthToTexture`, the **destructive** case: its `dst` is *written into*, so a
-  foreign handle there overwrites Minecraft's own texture object — the same §6 rung-5 outcome as the
-  stray `delete` below, reached through a verb the old five-verb list never named. A backend
-  **rejects** a foreign handle on all eight with `IllegalArgumentException` rather than silently
-  performing them — the same class of caller programming error as use-after-delete above, and caught by
-  §6's last row rather than reaching vanilla state. §12 item 22b carries the closure, not the list, as
-  the review obligation.
+  reload; and both `initializeDepthTextureFromFramebuffer` and `copyDepthToTexture`, the
+  **destructive** cases whose `dst` is defined or written. A backend rejects every such use before
+  GL rather than overwriting/deleting Minecraft state. §12 item 22b carries the closure, not the
+  current list, as the review obligation.
+- **Authenticated borrowed depth — sample, label, or depth-attach only.** A
+  `BorrowedDepthAttachmentHandle` issued by this backend may be passed to `bindToUnit`,
+  `DebugService.label`, `FramebufferService.attachDepth`, and
+  `FramebufferService.attachDepthStencil`; it remains illegal everywhere else. The combined form
+  additionally requires the authenticated metadata to say `DEPTH24_STENCIL8`; the depth-only form
+  accepts either a depth-only or packed texture but attaches only its depth aspect. It is never a
+  legal color attachment, allocation/parameter/upload/mipmap/delete target, or initialization/
+  steady-copy destination. The provider version/identity and reattachment cadence stay Phase 5's;
+  Phase 1 authenticates origin and permission only. §12 item 22c tests this matrix, including a
+  user-defined marker implementation and a genuine marker from another recording device.
 - **No `delete`, therefore no re-acquisition duty.** The engine did not create the object and never
-  calls `delete` on it, so *"invalid the moment its `delete` returns"* has no trigger and **Phase 5's
-  drop-and-re-create across an uninit/rebuild does not apply to foreign handles.** This is the sharp
+  calls `delete` on either foreign class, so *"invalid the moment its `delete` returns"* has no
+  trigger and **Phase 5's drop-and-re-create across an uninit/rebuild does not apply to foreign
+  handles.** This is the sharp
   edge, and it is worth naming as a failure rather than as a rule: RESEARCH.md §4.1 step 5's uninit is
   *"delete all GL objects"* and a routine v0.1 event, and Phase 5 is simultaneously the phase that owns
   that loop and the phase that defines vocabulary (a) — so a delete walked over a unit table holding the
@@ -2777,8 +2854,19 @@ public interface UniformService {
 
 public interface FramebufferService {
     FramebufferHandle create(String debugLabel);
+    BorrowedDepthAttachmentHandle borrowDepthAttachment(TextureHandle platformTexture);
     void attachColor(FramebufferHandle f, int attachmentIndex, TextureHandle t);
+
+    /** Replaces f's depth attachment and leaves f with no stencil attachment. `t` may be
+     *  live and owned by this device or an authenticated same-device
+     *  BorrowedDepthAttachmentHandle. Restores prior read/draw bindings before return. */
     void attachDepth(FramebufferHandle f, TextureHandle t);
+
+    /** Replaces both depth and stencil attachments with the SAME DEPTH24_STENCIL8 texture.
+     *  `t` may be live and owned by this device or an authenticated same-device borrowed
+     *  depth handle whose backend metadata proves the combined format. Restores prior
+     *  read/draw bindings before return. */
+    void attachDepthStencil(FramebufferHandle f, TextureHandle t);
 
     /** Which attachments this framebuffer writes. A ZERO-LENGTH array means the contract's
      *  "draw-buffers = none" state (RESEARCH.md §4.4's first-person item overlay; App A.3's
@@ -2807,11 +2895,22 @@ public interface FramebufferService {
      *  facade's own "no verb without a consumer" rule. */
     void blit(FramebufferHandle src, FramebufferHandle dst, BlitSpec spec);
 
+    /** First copy after destination creation/reallocation. Redefines owned dst level zero
+     *  to region.width × region.height using src's exact depth or packed depth/stencil
+     *  internal format, then copies the region's contents (glCopyTexImage2D semantics).
+     *  It is never legal for any foreign destination. Restores prior read/draw framebuffer
+     *  and texture bindings before return. */
+    void initializeDepthTextureFromFramebuffer(
+        FramebufferHandle src, TextureHandle dst, TextureRegion region);
+
     /** Copy a region of f's depth attachment into a standalone texture. This — not blit — is the
      *  verb the contract's depth copies need: depthtex1 and depthtex2 are copy-target *textures*,
      *  not attachments (RESEARCH.md §4.3), so there is no destination framebuffer to blit into and
-     *  Phase 5 is not expected to invent one. Called mid-frame between two draws into the main FBO
-     *  (RESEARCH.md §4.4), so it too restores the caller's prior bindings. */
+     *  Phase 5 is not expected to invent one. STEADY COPY ONLY: dst must be an owned, live texture
+     *  whose level zero is already defined with the same format and region extent; this operation
+     *  changes contents only and never reallocates/redefines storage. Called mid-frame between two
+     *  draws into the main FBO (RESEARCH.md §4.4), so it restores the caller's prior read/draw
+     *  framebuffer and texture bindings. */
     void copyDepthToTexture(FramebufferHandle src, TextureHandle dst, TextureRegion region);
 
     /** Synchronous single-pixel depth readback from f's depth attachment. Returns immediately
@@ -2913,6 +3012,27 @@ Design rules embedded above, each with a reason:
   sampler/uniform/custom refresh, and the per-program alpha/blend lock (RESEARCH.md §4.2;
   `docs/phase4/v1/PHASE_4_DOC.md:758`–`:821`). The facade does not silently absorb that policy
   merely because the old `use` comment called one low-level verb “the universal state barrier.”
+- **Framebuffer depth operations validate ownership, format, extent, and origin before GL
+  (`[D-P1-40]`).** Every framebuffer argument must be a live handle created by the receiving
+  device. Every owned texture argument must be live and from that device. A borrowed-depth
+  argument is legal only at `attachDepth`/`attachDepthStencil`, and only when the backend's private
+  credential proves that it issued the concrete handle for the same device/context; the public
+  marker alone proves nothing. A wrong-device owned handle, wrong-origin borrowed handle, or forged
+  marker is rejected with `IllegalArgumentException` before a GL call, attachment change, or
+  recorder mutation. `attachDepth` leaves the FBO depth-only by detaching any prior stencil
+  attachment; `attachDepthStencil` requires one exact packed `DEPTH24_STENCIL8` object and installs
+  that same object at both attachment points. Both restore the caller's prior read and draw
+  framebuffer bindings in a `finally` path, including when the driver reports failure.
+
+  Initialization and steady copy are deliberately different calls. The initialization operation
+  accepts an owned destination only, validates a positive in-bounds source region, and redefines
+  destination level zero to the region's extent and the source attachment's exact depth or packed
+  depth/stencil format before copying contents. `copyDepthToTexture` accepts an owned destination
+  only and requires an already-defined, equal-format, equal-extent level zero; it changes contents
+  without redefining storage. Both restore prior read/draw framebuffer and texture bindings before
+  return. A driver/capability failure remains observable through `drainErrors()` and leaves recovery
+  to Phase 5's ledger/completeness rules; a precondition or provenance failure is rejected before
+  GL and is mutation-free.
 - **`StateService` is deliberately narrow, and the inclusion criterion is stated rather than
   implied.** A verb exists here when the *reference pass structure* requires the engine itself to
   perturb that state to run a pack pass: viewport and clears (per-buffer clears, sub-viewport
@@ -3229,6 +3349,17 @@ Behavior:
   `neverCalled("shaders.use")` can prove a fixed terminal without a special assertion API, while
   `noUseAfterDelete()` examines the handle-bearing `shaders.use` call and treats the handle-free
   fixed-function selection as legal even after a prior program was deleted (`[D-P1-39]`).
+- Framebuffer depth operations also have exact, distinct stable names:
+  `attachDepth` appends `GLCall("framebuffers.attachDepth", List.of(f,t,restoredRead,restoredDraw))`;
+  `attachDepthStencil` appends
+  `GLCall("framebuffers.attachDepthStencil", List.of(f,t,restoredRead,restoredDraw))`;
+  initialization appends
+  `GLCall("framebuffers.initializeDepthTextureFromFramebuffer",
+  List.of(src,dst,region,restoredRead,restoredDraw,restoredTexture))`; and steady copy remains
+  `framebuffers.copyDepthToTexture`. The recorder mints authenticated borrowed-depth handles with
+  its own private device token for tests; it rejects a user-implemented marker and a handle minted
+  by another recorder before appending anything. An authentic borrowed handle is never counted as
+  created, leaked, or deletable by `noLeakedObjects()`/`noUseAfterDelete()`.
 - Every mutating call appends a `GLCall`. Object-creation calls return a synthetic handle (a
   monotonic sequence number wrapped in the appropriate handle type). Handles are
   `equals`-comparable so assertions can
@@ -3242,8 +3373,10 @@ Behavior:
   not an implementation note.
 - **Bulk data is logged by summary, never by content.** A `TextureService.upload` call records its
   destination region, mip level, layout, texel count and a stable content hash — not the bytes.
-  Raw texel dumps would make `render()` unreadable and its golden files unreviewable, which would
-  defeat the point of the format. `readDepthPixel` records the coordinates and the answer it gave.
+  Depth initialization and steady copy record handles, exact format/extent, region, and restored
+  binding identities, never copied depth values. Raw texel dumps would make `render()` unreadable
+  and its golden files unreviewable, which would defeat the point of the format.
+  `readDepthPixel` records the coordinates and the answer it gave.
 
 Assertions:
 
@@ -3273,11 +3406,13 @@ also place it after Phase 4's lock restoration and before any following state ca
 explicit reuse decision, not an omission from `ReplayAssertions`.
 
 **What `bindsBalanced()` can and cannot see.** It reads the `GLCallLog`, so it sees facade-level
-calls only. A binding perturbed *inside* the backend — `blit` and `copyDepthToTexture` both change
-the framebuffer binding to do their work — is invisible to it. That is why §4.7.4 states the
-restore as a **contract on those two verbs** rather than leaving it to this assertion, and why the
-recording backend logs the restore explicitly: `blit` and `copyDepthToTexture` each append one call
-recording the binding they restored, so `calledInOrder` can catch a backend that forgets.
+calls only. A binding perturbed *inside* the backend — `blit`, `attachDepth`,
+`attachDepthStencil`, `initializeDepthTextureFromFramebuffer`, and `copyDepthToTexture` bind
+objects to do their work — is invisible to it. That is why §4.7.4 states restoration as a
+**contract on those verbs** rather than leaving it to this assertion, and why the recording backend
+logs the restored binding identities explicitly. `calledInOrder` plus argument inspection can
+therefore catch a backend/recorder contract mismatch even though a live driver's internal binds are
+not independently visible to replay.
 
 **The fixture-production loop.** `mod.glue.CapabilityProbe` builds a `GLCapabilityProfile` from a
 live context at display init and, under `-Dschmaloogium.debug.dumpCapabilities`, writes it in the
@@ -3969,20 +4104,27 @@ is a reader this section has to survive.
 | **The engine bring-up sequence** | §4.13, `[D-P1-37]`. Three stages, adopted from a proven 1.12.2 reference (PD §16) with one deviation: **(1)** loader-facing setup on the FML lifecycle — log sink at `preInit` (§4.9.1), bail point 1 post-`FMLLoadCompleteEvent` (§4.10) — **not** a `GameSettings` mixin; **(2)** `OpenGlHelper.initializeTextures` at `RETURN` is the **capability-probe moment**, the earliest point at which a GL context exists and vanilla's texture setup has completed; **(3)** `GuiMainMenu.initGui` at `RETURN` is the "loading complete" signal, **recommended and not wired** — Phase 1 has no consumer for it. Exposed here because a dependent placing its own bring-up work relative to ours has to know where ours sits, and because **stage 2 is a requirement on Phase 7's hook catalog while stage 3 is a recommendation Phase 1 does not wire** — neither is a mixin this phase authors (§4.5). The two strengths are not interchangeable: the requirement obliges an App E row at Phase 7's v0.1, the recommendation is Phase 7's to place when its frame driver has a use for it (§9, §11.4, V12-2) | **7** (owns the stage-2 catalog entry, and stage 3's if it chooses to place it), 5, 6, 13 (anything gated on "caps are ready"), 10 |
 | **A `mod.glue` provider for vanilla-owned textures** — `ForeignTextureProvider` | §4.12, `[D-P1-36]`. App B.3's fixed unit map puts the vanilla block atlas at **unit 0** and `lightmap` at **unit 1** on GBUFFERS/SHADOW programs; `TextureService.bindToUnit` takes a `TextureHandle` and §4.7.4 produces one only for textures the engine created. The slot is named here **and its type is declared**: `ForeignTextureProvider` in `com.schmaloogium.engine.gl` (§4.7.3), a `mod.glue` implementation of it installed by `mod.core` at §4.13 stage 2. **Keyed on a pack-facing texture identifier in two disjoint vocabularies** (§4.7.3, V13-2): **(a)** App B.3's sampler names, bare, for the fixed unit map, and **(b)** `minecraft:`-namespaced resource locations, for App F.5's custom-texture forms that name a **live** Minecraft-owned texture (`dynamic/lightmap_1`, atlas paths). They cannot collide — no App B.3 name contains a colon. A `minecraft:` form that is a *static* asset needs no foreign handle and goes through `TextureService.create`/`upload`. **The handles are bind-only and outside §4.7.3's lifetime rule** (V13-3; stated by closure since V14-1): legal to `bindToUnit` and `DebugService.label` and to **nothing else in §4.7.4 that accepts a `TextureHandle`** — illegal to `allocate`/`setParameters`/`upload`/`generateMipmap`/**`delete`** and to `FramebufferService.attachColor`/`attachDepth`/`copyDepthToTexture`, whose `dst` is *written into* (the destructive case) — and they survive Minecraft's own resource reloads because the `mod.glue` handle resolves its object at each use. The shape: `mod.glue` implements `TextureHandle` for these textures so the raw GL name never crosses C-1 — **which is why the four handle sub-interfaces are not `sealed`** (§4.7.3: a *sealed* `engine.gl` type cannot be implemented from `mod.glue` at all, and could not be implemented by `RecordingGLDevice` either). **Contents are shared, and each vocabulary has one owner:** **Phase 5** defines vocabulary (a), the vanilla-owned unit-map set — `DESIGN.md` l. 1488, *"you own which texture object backs each unit per stage"* — **Phase 6** re-points the samplers at those units (l. 1563), and **Phase 13** owns vocabulary (b), which `DESIGN.md` ll. 2269–2271 give it and which l. 2287's *Scope — out* keeps clear of the unit map; §1.2's row is that joint ownership. Phase 1 enumerates neither vocabulary. **No facade verb and no `adopt(int)` is added** — see `[D-P1-36]`; the two declaration changes this row *does* cost are in §5.2's changelog row | **5** (defines vocabulary (a): which texture object backs each unit per stage), **6** (points the sampler uniforms at those units), **13** (defines vocabulary (b): its `minecraft:`-asset custom-texture forms that name a live vanilla texture — *not* the `_n`/`_s` companion atlases, which it builds itself and gets from `TextureService.create`, and *not* static `minecraft:` assets, which it can load and upload) |
 
+**§0.18 clarification of the row above:** every value returned by `ForeignTextureProvider` is an
+**ordinary** foreign texture and remains bind-and-label-only. Its closure now also forbids
+`attachDepthStencil` and `initializeDepthTextureFromFramebuffer`. The separately declared
+`BorrowedDepthAttachmentHandle` is issued by the main-depth bridge, not by this provider; its exact
+authenticated permission matrix is the binding §5.2 row below.
+
 ### 5.2 `engine.gl` — the facade
 
 | Exposed | Detail | Consumed by |
 |---|---|---|
 | `GLDevice` + the seven services | §4.7.4 signatures. **Changed in the §0.5 revision:** `UniformService` gained an `ivec4` overload, `StateService` gained `depthTest`/`fog`, `FramebufferService` gained `copyDepthToTexture`, and `GLDevice` gained `drainErrors()`. **Changed in the §0.6 revision:** `DrawService.fullscreenQuadInstanced(int)` was **removed** (`[D-P1-33]`), `RecordingGLDevice` gained a log-supplying constructor, and the GL-error row's attribution promise was narrowed to what the default cadence delivers. **Changed in the §0.7 revision: nothing in any signature.** Two rows were corrected in prose only — the non-verbs row (the `countInstances` mapping scoped to composite/deferred and the non-composite case handed to Phase 7) and the GL-error row (the drain's cadence, and three preconditions of the rung-2 protocol). **Changed in the §0.8 revision: again nothing in any signature** — the same two rows corrected in prose: the **GL-error row** (the elision bit tracks *facade* calls while the GL flag is per-context, so a non-empty drain does not imply one of Phase 6's uploads failed — V8-1; and property (i) no longer asserts a per-sample halflife premise it had no source for — V8-3), and the **non-verbs row** (the composite `countInstances` loop is **Phase 7's**, not Phase 5's, with Phase 6 named for the `instanceId` upload — V8-2). **Changed in the §0.9 revision: again nothing in any signature** — every service interface, handle type and value type is byte-for-byte what rounds seven, eight and nine all reviewed, and round nine's one edit inside the §4.7.4 block is a **javadoc sentence** on `GLError` and `drainErrors()`, not a declaration (V9-2). The same two rows again, in prose: the **GL-error row** (the frame-level remedy is one of two and carries two limits, not "the only sound remedy" — V9-1; the recurring-foreign replay cost is stated — V9-1; property (i)'s disclaimer is rescoped to what a second evaluation would do — V9-10), and the **non-verbs row** (its header now covers adjacent owners as well as requesters, readmitting **Phase 5** — V9-7; the composite loop carries `DESIGN.md`'s **`[v0.5]`** tag and its Phase 4 citation — V9-8). **Changed in this revision (§0.11): again nothing in any signature — and this time nothing in this row's subject at all.** The seven services, every handle type and every value type are byte-for-byte what rounds seven through **eleven** reviewed. §5 *is* altered this revision, at three places elsewhere: V11-1's deletion from the pixel-transfer row's consumer column, and **two new §5.1 rows** — the engine bring-up sequence (`[D-P1-37]`, §4.13) and the `mod.glue` vanilla-texture provider slot (`[D-P1-36]`, §4.12, which the REV2-mandated PD §2 completeness check produced). Neither new row adds a facade verb, which is exactly why this row is untouched while §5 is not. **Changed in the §0.12 revision — the first revision since §0.5 in which a *declaration* moves, so it is stated first and plainly.** No **verb** is added, removed or changed: the seven services' method lists, the result types and the value types are byte-for-byte what rounds seven through **twelve** reviewed (round twelve swept them member by member and found nothing — its §2 item 7). Two declarations do change, both forced by the round-eleven material rather than chosen. *(a)* The four handle sub-interfaces and `UniformLocation` **lose the `sealed` modifier** (V12-3): with JPMS rejected (§4.3, `[D-P1-6]`) `:engine` compiles into the **unnamed module**, where a sealed type's permitted subtypes must sit in its own **package** — so `Lwjgl3GLDevice`'s handles (`mod.glue`), `RecordingGLDevice`'s (`engine.gl.record`) and `[D-P1-36]`'s `mod.glue` handle were *all* uncompilable as declared. `GLHandle` stays sealed and its `permits` clause is still the enforced "four types, not five" (§12 item 18). *(b)* `engine.gl` gains **`ForeignTextureProvider`** and its installer `ForeignTextures` (V12-4) — the type §5.1's provider row named without declaring. The **non-verbs row** below also gains an entry — binding a framebuffer the engine did not create (V12-6) — and the consumer column names **7** then **5** for it. **No member of any pre-existing type changed and no dependent's call site changes. Changed in §0.15:** `ShaderService` gains `useFixedFunction()`, the first new facade verb since §0.5, to select program zero without exposing a raw integer, null, or sentinel handle. It is the exact Phase 4 §5.4 request and is additive to `use(ProgramHandle)` (`[D-P1-39]`) | 4, 5, 6, 7, 8, 13, 14 |
+| **§0.18/§0.19 framebuffer/depth additions** | Facade shape: `BorrowedDepthAttachmentHandle extends TextureHandle`; `FramebufferService.borrowDepthAttachment(platformTexture)`, `attachDepthStencil(f,t)`, and `initializeDepthTextureFromFramebuffer(src,dst,region)`. Issuance accepts a live ordinary foreign handle recognized by the receiving device and returns its opaque, non-owned borrowed handle; rejection is pre-GL. Phase 5 owns format, freshness, attachment/copy cadence, allocation/copy tier, restoration, and Minecraft lifetime (`[D-P1-40]`) | **5**, 7, 8 |
 | **GL-error surface** — `GLDevice.drainErrors()` → `List<GLError>` (`op`, `subjectLabel`, `kind`, `detail`) | §4.7.4. This is the signal §G2.4's **rung 2** acts on — rung 1 is Phase 11's expression isolation and never reaches GL (§6). **Attribution is scoped to the drain window, and this is contract, not implementation detail:** a window holding exactly one mutating **facade** call yields a record naming that call; a window holding several yields **at most one record per driver error flag** — in practice one, carrying `subjectLabel = "(batched, N calls)"` — because GL holds only the first error in a flag until that flag is cleared. The rung-2 protocol is therefore: drain, upload the program's uniform set, drain — and **only if that drain is non-empty**, re-upload the set draining between uploads, so each record names one uniform, then disable those uniforms only (`[D-P1-32]`). **Three properties of that protocol are contract too, because you cannot implement it correctly without them.** (i) The re-upload reuses the values **already computed for this sweep** and never re-evaluates the providers — `glUniform*` is idempotent on the bound program, so re-uploading cached values changes nothing except *which drain window* each upload lands in, which is the replay's entire purpose. Re-running the sweep would instead re-enter your world-state providers, and **this document deliberately asserts no property of what a second evaluation would do** — not that it is safe, and not that it is harmful. Two facts about the surroundings are relayed, and they are statements about the sources rather than about your providers: RESEARCH.md §4.4 places the world-state sampling at frame begin, and `DESIGN.md` puts the time-corrected halflife formula in **your** *Scope — in*. Both are already inputs of your own spec; the design that follows from them is yours, and that is precisely why the protocol is "re-upload" rather than "re-run". (ii) If the replay comes back clean — `OUT_OF_MEMORY` need not recur, and per the cadence note below the error may not have been ours at all — the sweep is **unattributable**, and falls to §6's 3→4 row rather than silently disabling nothing or guessing. (iii) A `GLError` naming a uniform depends on the backend **retaining the name passed to `locate(p, name)`**; `UniformLocation` carries no name in its signature, so this is a stated backend obligation (`[D-P1-34]`), not something a test can catch. The **cadence** that delivers all of it: a drain is a `glGetError` **loop terminating on `GL_NO_ERROR`** (the GL-sanctioned form — a single call leaks a second flag into the next window and misattributes it), and a drain issues **no query at all** when no mutating **facade** call has occurred since the previous drain — which is what makes the two-drain protocol cost **one** query per clean sweep. **That bit tracks *facade* calls, while the GL error flag is per-context**, so a drain window can hold an error this facade did not cause — vanilla's own draws never reach it (§3's second row). **A non-empty trailing drain therefore does not by itself imply that one of your uploads failed**, which is why (ii) is load-bearing in general rather than an `OUT_OF_MEMORY` corner. **Two consequences you should plan for.** First, a *recurring* foreign error re-enters the replay every frame — reproducing nothing, disabling nothing, and costing a re-upload of the whole set — so a replay that repeatedly comes back clean is evidence of foreign GL rather than of a flaky uniform, and is the case to escalate rather than to retry forever. Second, the mitigation is not this facade's: §4.7.4 states the case once and §11.4 hands **Phase 7** a frame-level drain to place, whose two limits are stated there — it bounds only the gap spanning the frame boundary, and it is subject to the same elision, so it is not unconditional at the driver unless a mutating facade call precedes it. It is one remedy among two, not the only sound one: §4.7.4 records that dropping the elision would also bound the window and is rejected on **cost**, not on soundness. This works in the **shipping** configuration; the per-call cadence under a debug context or `-Dschmaloogium.debug.recordGL`/`glLabels` (those two flags only) is an optimisation of it, not a precondition for it. `ScriptedResponses.glError(...)` makes both window shapes testable headlessly | **6** (rung 2 is its v0.1 scope-in), 4, 5, 14 |
 | `GLCapabilityProfile` | §4.7.2, including `supportsMipmapGeneration()`, `hasExtension()`, `atLeast()`. For **Phase 3** it is the whole GL-side input to RESEARCH.md §3.5's standard macro header, not just the extension macros: `glVersionMajor`/`glVersionMinor` → `MC_GL_VERSION`, `glslVersion` → `MC_GLSL_VERSION`, `vendor` → `MC_GL_VENDOR_*`, `renderer` → `MC_GL_RENDERER_*`, `extensions()` → the on-demand `MC_<GL_extension>` set. **`supportsMipmapGeneration()` is the gate `TextureService.generateMipmap` obliges its *caller* to check** (§4.7.4), so its consumers are the phases that generate: **7** for per-pass composite mipmaps (`DESIGN.md` l. 1683) and **8** on the shadow side (l. 1828) — both were missing from this column while §3 named Phase 5, which owns neither (V13-4) | 2, 3 (**the whole macro header**), 4, 5, 6, **7**, **8**, 14 |
 | **`GLCapabilityProfile` text serialization format** | §4.7.2; `parse(Reader)` / `write(Writer)` | **2** (this is "recorded `GLCapabilityProfile`s"), 4, 5, 6 |
-| Opaque handle types | §4.7.3 — four types, `UniformLocation.isAbsent()`, and the **lifetime rule**: a handle is invalid the moment its `delete` returns, and the uninit/rebuild that a pack or option change triggers (RESEARCH.md §4.1 step 5) is a routine v0.1 event. **Phase 5 owns re-acquisition** across it. **Only `GLHandle` is sealed** (§0.12, V12-3): the four leaves are `non-sealed`, so any backend — LWJGL3, the recorder, `mod.glue`'s vanilla-texture handle, a future Kirino (§10.3) — can implement them, which is the arrangement §4.7.3 always described and previously could not compile. Also here now: **`ForeignTextureProvider`** / `ForeignTextures`, the `:engine` slot `[D-P1-36]`'s `mod.glue` provider fills — **and its handles are the same type under a narrower contract, which this row has to state because the type cannot** (V13-3). A foreign handle is **bind-only, and the rule is closure over §4.7.4, not a list** (V14-1): a legal argument to `bindToUnit` and `DebugService.label` and to nothing else that accepts a `TextureHandle` — illegal to `allocate`/`setParameters`/`upload`/`generateMipmap`/**`delete`** and to `FramebufferService.attachColor`/`attachDepth`/`copyDepthToTexture`, whose `dst` a foreign handle would let a depth copy **overwrite** — all eight rejected by the backend rather than performed (§12 item 22b). It is **outside the lifetime rule above**: the engine never created the object and never deletes it, so **Phase 5's drop-and-re-create does not apply to it** — carrying a foreign handle into the uninit delete loop destroys **Minecraft's block atlas**, and §6's rung 5 is the invariant that breaks. It stays valid across Minecraft's *own* resource reloads, because the `mod.glue` handle resolves its object at each use rather than capturing a GL name (§4.7.3) | 4, **5**, 6, 13 |
-| `RecordingGLDevice`, `GLCallLog`, `GLCall`, `ScriptedResponses` | §4.7.5. `GLCallLog` is bounded (`bounded(capacity)` + `droppedCallCount()`) and is **supplied to the device**: `RecordingGLDevice(profile, responses, log)`, with `GLCallLog.unbounded()` as the counterpart tests use; `ScriptedResponses` covers compile/link/**validate** failures, absent uniforms, framebuffer status, scripted depth pixels and scripted driver errors. **§0.15:** fixed-function selection records the exact zero-argument operation `shaders.useFixedFunction`, distinct from handle-bearing `shaders.use` | **2**, **4**, 5, 6 |
-| `ReplayAssertions` incl. `bindsBalanced()`, `noLeakedObjects()`, **`noUseAfterDelete()`**, `drawBuffersWere()` | §4.7.5. `bindsBalanced()` sees facade-level calls only — the backend's restore obligation on `blit`/`copyDepthToTexture` is a contract in §4.7.4, checked through the restore calls the recorder logs. Phase 4 proves a fixed terminal with existing `calledInOrder("shaders.useFixedFunction", …)` / `neverCalled("shaders.use")`; no special fifth assertion is needed, and `noUseAfterDelete()` does not reject the handle-free call (`[D-P1-39]`) | 2, **4**, 5 |
+| Opaque handle types | §4.7.3 — four direct `GLHandle` categories, `UniformLocation.isAbsent()`, and the owned-handle lifetime rule. `BorrowedDepthAttachmentHandle` is a narrower `TextureHandle`, not a fifth category. Backends classify every texture argument before GL. Ordinary `ForeignTextureProvider` values are legal only at `bindToUnit` and `DebugService.label`. An authenticated same-device borrowed-depth value is additionally legal at `attachDepth` and `attachDepthStencil`, with the combined form requiring packed depth/stencil metadata. Both foreign classes are illegal for allocation, parameters, upload, mipmaps, deletion, color attachment, and initialization/steady-copy destination use. A public marker implementation, wrong-device value, or wrong-origin borrowed value is rejected before GL. Neither foreign class is owned/deleted by the engine; ordinary provider handles resolve their underlying vanilla object per use, while Phase 5 detects borrowed-depth identity/version changes and reattaches (`[D-P1-40]`) | 4, **5**, 6, 7, 8, 13 |
+| `RecordingGLDevice`, `GLCallLog`, `GLCall`, `ScriptedResponses` | §4.7.5. `GLCallLog` is bounded (`bounded(capacity)` + `droppedCallCount()`) and is supplied to the device. Scripted responses cover compile/link/validate failures, absent uniforms, framebuffer status, depth pixels, and driver errors. Fixed-function selection records zero-argument `shaders.useFixedFunction`. §0.18 adds distinct `framebuffers.attachDepthStencil` and `framebuffers.initializeDepthTextureFromFramebuffer` events, keeps steady `framebuffers.copyDepthToTexture` distinct, records restored binding identities and format/extent summaries, and authenticates recorder-issued borrowed-depth values without treating them as owned/leak-counted objects | **2**, **4**, 5, 6, 8 |
+| `ReplayAssertions` incl. `bindsBalanced()`, `noLeakedObjects()`, **`noUseAfterDelete()`**, `drawBuffersWere()` | §4.7.5. `bindsBalanced()` sees facade-level calls only; the backend restore obligations on blit, depth attachment, initialization, and steady copy are contracts checked through restored-binding identities in their recorder events. Generic `calledInOrder`/argument inspection distinguishes combined attachment and initialization from depth-only attachment and steady copy. Borrowed handles are never counted as created/leaked/deletable; forged/wrong-origin rejection appends no call. Phase 4's fixed-terminal assertions remain unchanged | 2, **4**, 5, 8 |
 | `CompileResult` / `LinkResult` / `ValidateResult` | never-throwing result types carrying driver logs | 4 |
 | `StateService` state verbs + `snapshot()` / `restore()` | the §G4.6 perturb-and-restore mechanism, over viewport, clears, depth mask, **depth test**, blend, alpha test and **fog** — the composite/final block RESEARCH.md §4.4 requires. `DrawService.fullscreenQuad()` establishes **no** state: the caller sets the block. The backend issues every `GlStateManager`-cached verb through `GlStateManager` (§4.7.4, `[D-P1-29]`). **Phase 4 is a consumer too (V14-2):** the per-program `alphaTest.<prog>`/`blend.<prog>` override values are Phase 4's to apply — its use-program barrier carries the *"per-program alpha/blend lock"* (`DESIGN.md` ll. 1245, 1365) — through `alphaTest(...)`/`blend(...)` here, with Phase 7 invoking the barrier (§3's rows) | **4** (the alpha/blend lock at the use-program barrier, `DESIGN.md` ll. 1245, 1365), 5, 6, **7** |
-| **Pixel-transfer verbs** — `FramebufferService.readDepthPixel(f,x,y)`, `FramebufferService.copyDepthToTexture(src,dst,region)`, `TextureService.upload(t, TextureData)`, `UniformService.upload(loc,int,int)` (ivec2) and `upload(loc,int,int,int,int)` (**ivec4**) | §4.7.4; value types `TextureData` / `TextureRegion` / `PixelLayout` / `BlitSpec` | **6** (the v0.1 synchronous `centerDepthSmooth` readback; `atlasSize`/`eyeBrightness`; **`blendFunc`**, which App D.4 declares `ivec4` and §G5.1 puts in Phase 6's v0.1 inventory), **5** (the `depthtex1`/`depthtex2` copies, and the formats), **8** (the shadow pass's depth→`shadowtex1` copy at v0.2 — RESEARCH.md §4.5, and App B.2 lists it in the same table as `depthtex1`/`depthtex2`), **13** (noise texture, `_n`/`_s` atlases, custom textures) |
+| **Pixel-transfer verbs** — `FramebufferService.readDepthPixel(f,x,y)`, `initializeDepthTextureFromFramebuffer(src,dst,region)`, `copyDepthToTexture(src,dst,region)`, `TextureService.upload(t, TextureData)`, `UniformService.upload(loc,int,int)` (ivec2) and `upload(loc,int,int,int,int)` (**ivec4**) | §4.7.4; value types `TextureData` / `TextureRegion` / `PixelLayout` / `BlitSpec`. Depth initialization is first-copy exact-format storage definition on an owned destination; steady copy requires matching defined storage. Neither accepts a foreign destination, and both restore framebuffer/texture bindings | **6** (the v0.1 synchronous `centerDepthSmooth` readback; `atlasSize`/`eyeBrightness`; `blendFunc`), **5** (`depthtex1`/`depthtex2` first and steady copies plus formats), **8** (shadow depth→`shadowtex1`), **13** (noise, companion atlases, custom textures) |
 | **The facade's stated non-verbs**, each with the phase that would request it — **and, where a row names an adjacent owner of the served work instead, that phase too** (§4.7.4's table header says which rows those are; the instanced-draw row is the only one today, because nobody *requests* an instanced verb) | §4.7.4's closing table — async/PBO readback, general colour readback, texture readback, `ivec3`/`mat3`, **colour mask**, **face culling**, free-standing pixel-store state, pre-link program parameters, **instanced draw**, and **new in the §0.12 revision: binding a framebuffer the engine did not create** — Minecraft's own world FBO, which `bindDefault` (framebuffer name 0) does not bind and `bind` cannot take a handle for; requesters **7** then **5**. **Phase 7: this is a v0.1 fact about you, and it was printed as a someday one through the §0.12 revision (V13-1).** RESEARCH.md l. 526 and `DESIGN.md` ll. 1486/1685 put the `final`-to-vanilla render at v0.1, and **nothing in this facade binds Minecraft's framebuffer object** — so your `final` pass arranges that bind itself, through vanilla's own path at the `renderWorldPass` TAIL site `DESIGN.md` l. 1713 already names. A `final` pass that simply does not rebind writes into the last composite's colortex, and `bindsBalanced()` will not tell you, because it sees facade-level calls only. If you want it as a verb instead, the answer is `[D-P1-36]`'s provider shape rather than a new verb (§4.12's second gap, V12-6). `ivec4` is **not** among them: it is served. **Scoped in the §0.7 revision:** the caller-side loop that replaces an instanced verb answers `countInstances` **on composite/deferred programs only** — the form RESEARCH.md §4.4 observes. **Retargeted in the §0.8 revision:** the owner of that loop is **Phase 7**, not Phase 5 — `DESIGN.md` names the `countInstances` instancing loop in Phase 7's *Scope — in* under composite/final execution, and Phase 5's *Scope — in* carries no pass-execution bullet. **Cited and tagged in this revision (§0.9):** the stronger citation is `DESIGN.md` Phase 4's *Scope — in*, *"`countInstances` exposure to the pass executor (**execution is Phase 7, tag v0.5**)"*, which settles the owner and the milestone in one line — so the composite loop is **`[v0.5]` work**, not v0.1 work, and Phase 7's own v0.1-exit milestone does not carry it. The same directive on a **gbuffers/shadow** program re-renders vanilla geometry through Phase 7's hooks, never reaches this facade, and is an **open case with named owners** rather than a Phase 1 design element (`[D-P1-35]`, §3's second row, §11.4) | **14** (async readback), **13** (texture readback), **7** (colour mask / anaglyph; **the framebuffer-bind row, for the `final`-to-vanilla handoff** (§0.12, V12-6); **and both halves of `countInstances` — the composite loop itself `[v0.5]`, which `DESIGN.md` names in your *Scope — in* under composite/final execution and tags in Phase 4's, and the non-composite re-render if it proves real** — plus an instanced draw verb only if a future non-GLSL-120 path ever needs one, since `countInstances` on a composite is a caller-side loop, `[D-P1-33]`), **6** (the `instanceId` **upload** that loop makes between copies — `DESIGN.md` carries it among your per-draw dynamics, invoked at Phase 7's hooks), **5** (named on two grounds since the §0.12 revision: as an **adjacent owner**, because the composite loop's N draws run inside the buffer estate you own — the read/write/flip law is yours and the loop does not change it; §4.7.4's table header says why this column carries adjacent owners — **and as the second requester of the framebuffer-bind row**, if the estate ever needs vanilla's own FBO as a `blit`/`copyDepthToTexture` source), **3** (the App F.1 flag-ownership map that settles face culling; **and the `const`-scan that detects `countInstances` at all**), **4** (pre-link program parameters, only if the ARB geometry form is not translated upstream; **and the per-slot instance count**) |
 | **Assumption Phase 3 may contest** — the ARB-geometry source rewrite | §4.7.4 exposes **no** pre-link program-parameter verb because the legacy `#extension GL_ARB_geometry_shader4` + `maxVerticesOut` form is rewritten to the core form **in your front-end**, upstream of GL (§4.7.4, §11.4). This document does not design that rewrite and does not own the translation *strategy* — `DESIGN.md` assigns the strategy to **Phase 4**'s spec, which also forbids ARB entry points through the facade. What is yours is the front-end half; if you conclude the rewrite belongs at the GL level instead, flag it in your §5 and the verb is added additively | **3**, with **4** |
 | `DebugService` | present in v0.1, active at v0.5 | 4, 5 (call sites), **14** (implementation) |
@@ -4139,8 +4281,9 @@ under `recordGL`, where it is per-call by definition — which is what the bound
 | `SeamConformanceDependencyTest` | `:conformance` | Constraint **C-4** — no `:mod` artifact on `:conformance`'s classpaths and no `com.schmaloogium.mod.` reference in its classes (§8.2) |
 | `GLCapabilityProfileSerializationTest` | `:engine` | Round-trip `write` → `parse` is identity; output is sorted and deterministic; a hand-written fixture parses to the expected values |
 | `GLCapabilityProfileDerivationTest` | `:engine` | `atLeast`, `hasExtension`, and `supportsMipmapGeneration()` (true at 3.0, false at 2.1 — the RESEARCH.md §4.1 gate) |
-| `RecordingGLDeviceTest` | `:engine` | Calls are logged in order with correct arguments, including `use(p)` as handle-bearing `shaders.use` and `useFixedFunction()` as zero-argument `shaders.useFixedFunction`; no synthetic program-zero handle is created. Handles are distinct, `equals`-comparable and never reused after a `delete`; `ScriptedResponses` drives failure paths including a scripted compile/link/**validate** failure and a scripted `GLError` surfacing through `drainErrors()`; a bounded log discards oldest-first and reports `droppedCallCount()`; a device constructed with a caller-supplied bounded log records into that log; `render()` is stable across runs |
-| `ReplayAssertionsTest` | `:engine` | Each assertion passes on a conforming log and fails with a useful message on a violating one — including `bindsBalanced()`, `noLeakedObjects()` and `noUseAfterDelete()`, since Phase 5's impl gate depends on the first two and the handle-lifetime rule (§4.7.3) depends on the third. A fixed-terminal fixture proves `calledInOrder`/`neverCalled` distinguish `shaders.useFixedFunction` from `shaders.use`, and that the handle-free call remains legal after deletion |
+| `RecordingGLDeviceTest` | `:engine` | Calls are logged in order with correct arguments, including distinct `shaders.use`/`shaders.useFixedFunction`, `framebuffers.attachDepth`/`attachDepthStencil`, and initialization/steady-copy events. Handles are distinct and never reused after delete; recorder-issued borrowed-depth handles carry a private device origin and are not leak-counted; copied depth is summarized, not logged; restored read/draw/texture binding identities are present. Scripted compile/link/validate/GL-error paths, bounded-log behavior, supplied-log behavior, and stable rendering remain covered |
+| `FramebufferDepthContractTest` | `:engine` | Exhaustive owned/ordinary-foreign/authenticated-borrowed/forged-marker/wrong-device/deleted matrix for every texture-accepting framebuffer verb; all invalid cases reject pre-GL with an unchanged log. `attachDepth` removes stencil, `attachDepthStencil` accepts only exact packed metadata and attaches the same handle to both points, and both report restored read/draw bindings. Initialization accepts owned destination only and defines exact format/extent; steady copy rejects undefined or mismatched storage and never redefines it; both restore read/draw/texture bindings |
+| `ReplayAssertionsTest` | `:engine` | Each assertion passes on a conforming log and fails informatively on a violation, including balanced binds, leaks, and use-after-delete. Fixed-terminal fixtures distinguish `shaders.useFixedFunction`; depth fixtures distinguish combined attachment and initialization from depth-only/steady operations, assert restored binding identities, and prove borrowed handles are neither created/leaked nor deletable |
 | `BailRegistryTest` | `:mod` | `Ok`/`Degrade`/`Bail` aggregation; a throwing check is treated as `Bail`; evaluation is idempotent |
 | `MixinConfigAgreementTest` | `:mod` | For each config, the `@Mixin`-annotated classes in its declared `package` **minus any sub-package another config declares** are exactly the classes its arrays name (§4.5.2a, `[D-P1-38]`) — the drift insurance taken instead of a class-scan plugin. The sub-package exclusion is required, not optional: the three declared packages are nested (§4.5.2 observation 1) |
 | `LogChannelTest` | `:engine` | Every `LogChannels` constant is unique and starts with `schmaloogium.`; the no-op sink is active before installation |
@@ -4249,10 +4392,10 @@ Per §G4.3, every designed component carries exactly one tag meaning "implemente
 | Version pin table + `PINS.md` + re-pin procedure | `v0.1` | Re-run at every milestone thereafter |
 | `LICENSE` (GPL-3.0), SPDX headers, `THIRD-PARTY.md` | `v0.1` | |
 | `GLCapabilityProfile` + serialization | `v0.1` | |
-| `GLDevice`, `ShaderService`, `UniformService`, `TextureService`, `FramebufferService`, `StateService`, `DrawService` | `v0.1` | Interfaces + the LWJGL3 implementation, including both explicit program-selection modes: `ShaderService.use(ProgramHandle)` and `useFixedFunction()` (`[D-P1-39]`) |
-| Pixel-transfer verbs (`readDepthPixel`, `copyDepthToTexture`, `TextureService.upload`, ivec2 and **ivec4** uploads) + `TextureData`/`TextureRegion`/`PixelLayout`/`BlitSpec` | `v0.1` | Interfaces and LWJGL3 implementation at v0.1 because the first consumers are v0.1: Phase 6's center-depth readback and its `blendFunc` (`ivec4`) uniform, Phase 5's `depthtex1`/`depthtex2` copies, and **Phase 8**'s shadow-pass depth→`shadowtex1` copy at `v0.2` (RESEARCH.md §4.5, App B.2). Phase 13's texture uploads arrive at `v0.5` against the same verbs |
+| `GLDevice`, `ShaderService`, `UniformService`, `TextureService`, `FramebufferService`, `StateService`, `DrawService` | `v0.1` | Interfaces + the LWJGL3 implementation, including both explicit program-selection modes and the authenticated depth-only/combined depth-stencil attachment operations (`[D-P1-39]`, `[D-P1-40]`) |
+| Pixel-transfer verbs (`readDepthPixel`, first-copy `initializeDepthTextureFromFramebuffer`, steady `copyDepthToTexture`, `TextureService.upload`, ivec2 and **ivec4** uploads) + `TextureData`/`TextureRegion`/`PixelLayout`/`BlitSpec` | `v0.1` | Interfaces and LWJGL3 implementation. Phase 5's depthtex1/depthtex2 first copy defines exact storage; later copies preserve it. Phase 6 owns center-depth readback/ivec uploads, Phase 8 consumes the same depth-copy split for shadowtex1, and Phase 13 consumes texture upload |
 | GL-error surface (`GLDevice.drainErrors()`, `GLError`, `GLErrorKind`) + the backend's `glGetError` policy | `v0.1` | §G2.4 rung 2 is Phase 6's v0.1 scope-in, so the signal it acts on cannot be later than v0.1. The **cadence** ships with it: batched by default with window-scoped attribution — each drain a `glGetError` loop, elided entirely when nothing mutating has happened **through the facade** since the last one — and per call under a debug context or the `recordGL`/`glLabels` flags (`[D-P1-30]`, `[D-P1-32]`). Rung 2 is implementable at v0.1 in the *shipping* configuration, which is the property this tag asserts |
-| Opaque handle types + the handle-lifetime rule | `v0.1` | `noUseAfterDelete()` ships with `ReplayAssertions` |
+| Opaque handle types + owned/foreign/borrowed lifetime and provenance rules | `v0.1` | `BorrowedDepthAttachmentHandle` is a `TextureHandle`, not a fifth category; `FramebufferDepthContractTest` proves backend origin authentication and the permission matrix; `noUseAfterDelete()` ships with `ReplayAssertions` |
 | `RecordingGLDevice`, `GLCallLog`, `ScriptedResponses`, `ReplayAssertions` | `v0.1` | D-10 requires the headless path from week one |
 | `CapabilityProbe` + `dumpCapabilities` | `v0.1` | |
 | Engine bring-up sequence — **stage 2** (the capability-probe moment) wired | `v0.1` | §4.13, `[D-P1-37]`. Stage 1's obligations already ship on the FML lifecycle (§4.9.1's sink, §4.10's bail point 1); **stage 3 is recommended, not wired** — Phase 7 places it when its frame driver has a use for it |
@@ -4540,6 +4683,7 @@ designed for, which is the best available evidence that it is drawn in the right
 | D-P1-37 | **PD §16's three-stage 1.12.2 bring-up is adopted**, with stage 1 deviated to the FML lifecycle, stage 2 (`OpenGlHelper.initializeTextures` @`RETURN`) adopted as the capability-probe moment, and stage 3 (`GuiMainMenu.initGui` @`RETURN`) adopted as a signal but left to Phase 7 to place | The sequence is proven on this exact platform and this document previously named no site at all for the probe — §7 said *"at display init"*, which is a description rather than a moment. Stage 1 is deviated because Cleanroom hands us `preInit` and `FMLLoadCompleteEvent` natively and §4.9.1/§4.10 already use them: adopting the `GameSettings.loadOptions` mixin would spend one of D-5's ~25–30 injections on a moment the loader gives away, and would place class-transformation-adjacent machinery ahead of the very check (§4.10 point 1) that decides whether to run. Stage 3 is deferred because Phase 1 has no consumer for it and a hook with no caller is not a design. **§G11.4 contract check, performed and negative:** a bring-up ordering is not contract-visible under §G4.2 (packs observe RESEARCH.md §3 / Apps A–D, F; this is §4.1 lifecycle), and it is *consistent* with §4.1's ordering — probe before discovery before load, with step 4's init staying lazy-at-first-frame in both designs (§4.13) `[REV2 migration — §0.11; DESIGN.md Phase 1 spec ll. 1010–1014, and the Doc gate's REV1 criteria at ll. 1058–1060 within the gate at ll. 1056–1060]` |
 | D-P1-38 | **Pintonium's class-scan mixin plugin is rejected**; the three declarative configs of `[D-P1-11]` stand. A `:mod` **test** asserting config-array ↔ package agreement is adopted in its place (§12 item 30a) | A package scan answers *which classes are mixins* and not *which CleanMix phase each belongs to*. Pintonium runs one config and can therefore let a plugin enumerate an empty array; we run three, keyed on the only axis CleanMix dispatches on, so a phase-aware scan would re-encode in Java — against a sub-package or naming convention that is itself upkeep — the split three JSONs already state declaratively, and would fail at config load rather than at review. Three smaller reasons: the MOD config's `plugin` slot is already reserved for the bail-veto duty (§4.5.2) and discovery-plus-veto in one class is two responsibilities where diagnosis is hardest; D-5's injection budget makes the replaced arrays a few dozen lines across the project's life; and a declared array is auditable by reading it, which §G5.3's integration review and Phase 7's catalog both want. The drift risk the scan removes is real and is answered by the test instead `[REV2 migration — §0.11; DESIGN.md Phase 1 spec ll. 1007–1009, the REV1 clause inside the Mixin-wiring bullet at ll. 1004–1009]` |
 | D-P1-39 | **`ShaderService` exposes `useFixedFunction()` as the explicit no-program selection operation, additive to `use(ProgramHandle)`.** It binds program zero inside the backend; callers may not encode the state as `use(null)`, a magic/sentinel handle, or an engine-visible integer. Recording uses zero-argument `shaders.useFixedFunction`, and the existing generic replay assertions inspect that exact operation | RESEARCH.md Appendix A.1 has fixed-pipeline terminals for `<none>` and absent shader roots plus absent-`final` passthrough, while the verified Phase 1 surface exposed only handle-bearing `use`. Phase 4 obeyed the dependency rule by requesting the missing verb in `docs/phase4/v1/PHASE_4_DOC.md:931`–`:946` instead of inventing it. A distinct zero-argument operation preserves C-1 and the handle-lifetime model: program zero is backend state, not an engine object, so it is neither created/deleted nor eligible for `noUseAfterDelete()`. Phase 4 retains every policy decision in `ProgramStateBarrier`; this verb performs selection only (§0.15, §3, §4.7.4–§4.7.5) |
+| D-P1-40 | **Admit one backend-authenticated borrowed-depth subtype and separate depth attachment, combined depth/stencil attachment, first-copy initialization, and steady-copy operations.** Ordinary foreign textures remain bind-and-label-only; a public marker alone never grants permission. All provenance/precondition rejection is pre-GL, and every internal binding is restored | RESEARCH.md §4.3/App B.2 require a real sampleable `depthtex0` attachment and defined `depthtex1`/`depthtex2` contents; RC3's Phase 5 assignment requires the proven 1.12.2 borrowed-depth reattachment path, exact packed-depth/stencil handling, first-frame `glCopyTexImage2D`, and later capability-tiered copies (`docs/design/v2.0-RC3/DESIGN.md:1621`–`:1652`). A single unrestricted foreign-texture permission would permit deletion/color attachment/copy overwrite of Minecraft objects; one backend-authenticated subtype plus distinct verbs expresses exactly the required operations without a raw GL name, ownership transfer, or backend-state heuristic (§0.18, §4.7.3–§4.7.5) |
 
 ### 11.2 D-1..D-10 disposition
 
@@ -4817,18 +4961,26 @@ custom-texture forms, is Phase 13's, and the two cannot collide because no App B
 colon (V13-2). What Phase 1 deliberately does *not* supply is the key set: naming
 it here would be this document deciding your binding table.
 
-**Two rules about these handles that §4.7.3's lifetime rule does not give you, and one of them is a
-client-crashing trap** (V13-3). They are **bind-only** — legal to `bindToUnit` and `DebugService.label`
-and to **nothing else in §4.7.4 that accepts a `TextureHandle`**: not
-`allocate`/`setParameters`/`upload`/`generateMipmap`/**`delete`**, and not
-`FramebufferService.attachColor`/`attachDepth`/`copyDepthToTexture`, whose `dst` is written into — hand
-it a foreign handle and the copy overwrites the vanilla texture (V14-1) — and they are **outside**
-the drop-and-re-create duty §4.7.3 otherwise puts on you. You own the uninit loop RESEARCH.md §4.1
-step 5 describes as *"delete all GL objects"*, and you also own the unit table these handles sit in; a
-delete walked over that table destroys **Minecraft's block atlas** and breaks §6's rung-5 invariant
-outright. Treat a foreign handle as something you were lent: bind it, never free it, and do not re-create
-it across an uninit — `mod.glue` resolves the underlying object at each use, so it survives Minecraft's
-own resource reloads without your help.
+**Your three framebuffer/depth requests are accepted as `[D-P1-40]`.**
+`BorrowedDepthAttachmentHandle` is now the Phase 1 facade marker your `MainDepthSnapshot` carries.
+The backend-authenticated handle may be sampled, labeled, and passed to `attachDepth`; pass it to
+`attachDepthStencil` only when its snapshot format is `DEPTH24_STENCIL8`. Reattach on every
+identity/version change as your design requires: Phase 1 authenticates origin and operation, but
+does not infer freshness. Use `initializeDepthTextureFromFramebuffer` for the first
+`depthtex1`/`depthtex2` copy after creation/reallocation and `copyDepthToTexture` only after matching
+level-zero storage exists. Both are owned-destination-only, exact-format operations with binding
+restoration; do not use backend state heuristics to collapse them into one call.
+
+**Two rules about ordinary `ForeignTextureProvider` handles remain, and one is a client-crashing
+trap** (V13-3). They are bind-and-label-only and illegal at every other texture-accepting facade
+operation, including both new §0.18 verbs. They are also outside the drop-and-re-create duty
+§4.7.3 otherwise puts on you. You own the uninit loop RESEARCH.md §4.1 step 5 describes as
+*"delete all GL objects"*, and you also own the unit table these handles sit in; a delete walked
+over that table destroys **Minecraft's block atlas** and breaks §6's rung-5 invariant outright.
+Treat an ordinary foreign handle as something you were lent: bind it, never free or attach it, and
+do not re-create it across an uninit — `mod.glue` resolves the underlying object at each use, so it
+survives Minecraft's own resource reloads without your help. Borrowed depth is equally non-owned,
+but has only the additional authenticated depth-attachment permissions stated above.
 
 Phase 6 is the counterpart, not the owner —
 it re-points sampler uniforms at units (l. 1563) and its spec carries no texture-binding bullet. This
@@ -5005,13 +5157,14 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 |---|---|---|---|
 | 16 | `GLCapabilityProfile` record + `atLeast`/`hasExtension`/`supportsMipmapGeneration`, with defensive copy of `extensions` | `v0.1` | `GLCapabilityProfileDerivationTest` |
 | 17 | `GLCapabilityProfile.parse`/`write` in the §4.7.2 sorted text form; first fixture committed under `engine/src/testFixtures/resources/profiles/` | `v0.1` | `GLCapabilityProfileSerializationTest` — round-trip identity, deterministic output, and the fixture loads from the test-fixtures classpath |
-| 18 | Handle types (`GLHandle`, **sealed and permitting exactly the four** sub-interfaces — no `RenderbufferHandle`, §4.7.3 — the four themselves **`non-sealed`**, plus `UniformLocation` and its `isAbsent()`) and the handle-lifetime rule in their javadoc | `v0.1` | Compiles; used by item 19's signatures; **`GLHandle`'s** `permits` clause names exactly the four declared types — **and each of the four admits an implementation declared in another package**, which items 20 and 22/22b demonstrate and which the `sealed` leaves silently forbade until this revision (§0.12, V12-3) |
-| 19 | The seven service interfaces + `GLDevice` + result/value types (`CompileResult`, `LinkResult`, `ValidateResult`, `TextureSpec`, `TextureData`, `TextureRegion`, `PixelLayout`, `BlendState`, `FogState`, `StateAspect`, `StateSnapshot`, `BlitSpec`, `GLError`, `GLErrorKind`, …), **including both program-selection modes** (`ShaderService.use(ProgramHandle)` and zero-argument `useFixedFunction()`), every pixel-transfer verb (`readDepthPixel`, `copyDepthToTexture`, `TextureService.upload`, the ivec2 **and ivec4** uploads), the `depthTest`/`fog` state verbs, and `GLDevice.drainErrors()` | `v0.1` | Compiles with no GL constant and no `int` object name in any signature, and no LWJGL buffer type on `TextureData`; fixed function is not expressible as null or a `ProgramHandle` (`[D-P1-39]`). `DrawService` declares **`fullscreenQuad()` only**, `fullscreenQuadInstanced` having been deleted per `[D-P1-33]` |
-| 20 | `RecordingGLDevice` (**both constructors** — the two-arg form and the log-supplying three-arg form, §4.7.5), `GLCall`, `GLCallLog` (incl. `bounded(capacity)` / `unbounded()` / `droppedCallCount()`), `ScriptedResponses` (incl. `depthPixel`, `validateFails`, `glError`, and summary-not-content logging of uploads) | `v0.1` | `RecordingGLDeviceTest` — ordering, distinct never-reused handles, scripted failures incl. a scripted depth value and a scripted `GLError`, oldest-first discard on a bounded log, stable `render()` with an upload in the log; `useFixedFunction()` records zero-argument `shaders.useFixedFunction` and creates no handle |
-| 21 | `ReplayAssertions` incl. `bindsBalanced()`, `noLeakedObjects()`, **`noUseAfterDelete()`**, `drawBuffersWere()` | `v0.1` | `ReplayAssertionsTest` — each assertion passes on conforming and fails informatively on violating logs; a fixed-terminal fixture proves `calledInOrder`/`neverCalled` distinguish `shaders.useFixedFunction` from `shaders.use`, and that `noUseAfterDelete()` accepts the handle-free operation |
+| 18 | Handle types (`GLHandle`, sealed and permitting exactly four direct categories; the four leaves non-sealed; `BorrowedDepthAttachmentHandle extends TextureHandle`; `UniformLocation`) plus owned/foreign lifetime and origin rules | `v0.1` | `GLHandle.permits` still names exactly four categories and no renderbuffer. Backend/recorder implementations compile outside the package; the borrowed marker adds no category and item 22c proves that a public implementation alone confers no permission |
+| 19 | The seven service interfaces + `GLDevice` + result/value types, including both program-selection modes, `attachDepth`/`attachDepthStencil`, first-copy `initializeDepthTextureFromFramebuffer`, steady `copyDepthToTexture`, readback/upload/ivec verbs, state verbs, and `drainErrors()` | `v0.1` | Compiles with no GL constant/raw object name and no LWJGL buffer type; combined attachment and first-copy initialization are explicit operations, not nullable handles or backend-state heuristics (`[D-P1-39]`, `[D-P1-40]`) |
+| 20 | `RecordingGLDevice` constructors, `GLCall`, `GLCallLog`, `ScriptedResponses`, authenticated recorder borrowed-depth handles, and summary-not-content logging | `v0.1` | `RecordingGLDeviceTest` — exact distinct event names/arguments for fixed-function, depth-only/combined attachment, first/steady copy; restored binding identities; borrowed handles not leak-counted; forged/wrong-origin rejection appends nothing; existing ordering/failure/bounded-log/stable-render checks |
+| 21 | `ReplayAssertions` incl. `bindsBalanced()`, `noLeakedObjects()`, **`noUseAfterDelete()`**, `drawBuffersWere()` | `v0.1` | `ReplayAssertionsTest` — conforming/violating fixtures, fixed-terminal distinction, depth operation distinction and restored-binding arguments; borrowed handles are neither created/leaked nor deletable |
 | 22 | `Lwjgl3GLDevice` + the seven service implementations in `mod.glue`, **issuing every `GlStateManager`-cached verb through `GlStateManager`** (`[D-P1-29]`) and implementing the stated `glGetError` cadence behind `drainErrors()` — **per facade call under a debug context or `-Dschmaloogium.debug.recordGL`/`glLabels` (those two flags only); otherwise once per drain, where a drain is a `glGetError` *loop* terminating on `GL_NO_ERROR` and is skipped entirely when no mutating **facade** call has occurred since the previous drain, so that a window holding one mutating **facade** call names that call and a window holding many carries `subjectLabel = "(batched, N calls)"`** (`[D-P1-30]`, `[D-P1-32]`). **The backend also retains the name passed to `locate(program, name)`** on its `UniformLocation` implementation, so a record can carry a uniform name at all (`[D-P1-34]`). It maps `useFixedFunction()` to program zero internally through the same selection path as `use`, without constructing/deleting a zero handle or exposing the integer across C-1 (`[D-P1-39]`) | `v0.1` | `SeamLwjglConfinementTest` (item 14) confines it; a manual `runClient` reaching the main menu; a review pass over the verb list in §4.7.4 confirming no raw-LWJGL state call, that the two program-selection modes map respectively to the supplied live program and program zero, that the batched record is emitted **once per window and never claims per-call attribution**, that the drain **loops** rather than querying once, that a drain after a drain issues no query, and that `subjectLabel` carries a real uniform name on a single-call window — no headless test can prove the live backend mapping, which is why it is called out here |
 | 22a | **Review hook extension for `[D-P1-29]`, added against PD §17 B11** (§11.3 item 11): confirm by reading that `StateService.snapshot(...)` reads **real** state for every `StateAspect` and returns no constant. Pintonium's `GLStateManagerImpl.getColorMask()` hardcodes all-true, which satisfies every signature and passes every driverless test while silently breaking the §G4.6 restore discipline every later phase depends on. Numbered `22a` because it belongs to item 22's review pass, which exists precisely for obligations no test can catch | `v0.1` | Reviewer confirms each snapshot aspect resolves to a `GlStateManager` read or a driver query, and that `restore()` round-trips a deliberately-perturbed state in a `runClient` spot check |
-| 22b | **The `mod.glue` vanilla-texture provider slot** (`[D-P1-36]`, §4.12): `engine.gl`'s **`ForeignTextureProvider`** and `ForeignTextures` (§4.7.3 — declared by this phase rather than left to a dependent, V12-4), a `mod.glue` implementation of `TextureHandle` for textures Minecraft owns, and the `ForeignTextures.install(…)` call in `mod.core` at §4.13 stage 2. **Ships as the slot and its shape only** — which vanilla textures the set contains is **Phase 5's** for the unit-map keys (Phase 6 points the samplers at the units) and **Phase 13's** for the `minecraft:` resource-location keys (§4.7.3's two vocabularies). The point of the item at v0.1 is that App B.3 puts the block atlas at unit 0 and `lightmap` at unit 1 on every GBUFFERS program, so a Phase 5 or Phase 6 session must not discover at *its* v0.1 that the handles have no source | `v0.1` | **The provider compiles *from `mod.glue`*, which is the whole test of the shape** — it cannot unless `TextureHandle` is `non-sealed` (§4.7.3), so this item is where `[D-P1-15]`'s narrowed sealing is checked by the compiler rather than by review; `SeamBytecodeTest` (item 12) still passes, so **no raw GL name and no MC type reaches an `:engine` signature** and the handle crosses C-1 opaque or the build goes red; and `ForeignTextures.active()` before install answers empty for every key rather than throwing. **Two obligations no test can catch** (V13-3; the first widened to closure by V14-1) — a reviewer confirms that a foreign `TextureHandle` is **rejected** with `IllegalArgumentException` by **every §4.7.4 verb that accepts a `TextureHandle` except `bindToUnit` and `DebugService.label`** — today `allocate`/`setParameters`/`upload`/`generateMipmap`/`delete` plus `FramebufferService.attachColor`/`attachDepth`/`copyDepthToTexture`, and **the check is the closure, not the list**, so a `TextureHandle`-accepting verb added later is in scope the day it lands (a Phase 5 uninit loop that deletes it destroys Minecraft's block atlas, and a foreign `dst` under `copyDepthToTexture` is overwritten — §6 rung 5 either way) — and that it **resolves the underlying vanilla object at each use** rather than capturing a GL name at hand-out, so it survives Minecraft's own resource reloads. Both are properties of an implementation `SeamBytecodeTest` cannot see, which is why they sit in item 22's review pass |
+| 22b | The `mod.glue` ordinary vanilla-texture provider slot (`ForeignTextureProvider` / `ForeignTextures`, `[D-P1-36]`) and per-use object resolution | `v0.1` | Provider compiles from `mod.glue`; seam tests pass; before-install lookup is empty. `FramebufferDepthContractTest` plus live-backend review confirms closure: ordinary values are accepted only by `bindToUnit`/label and rejected by every other texture-accepting verb, including both §0.18 additions; per-use resolution survives vanilla reload |
+| 22c | `Lwjgl3GLDevice` borrowed-depth authentication and framebuffer-depth implementation (`[D-P1-40]`): private same-device/context credential, owned-versus-borrowed matrix, exact combined-format check, first-versus-steady storage state, and binding restoration | `v0.1` | `FramebufferDepthContractTest` exhausts owned/ordinary/borrowed/forged/wrong-origin/deleted cases in the recorder. Live-backend review confirms no public-marker trust, `attachDepth` detaches stencil, combined attachment uses the same packed object twice, initialization maps to exact-format `glCopyTexImage2D`, steady copy never redefines storage, and every exit restores read/draw/texture bindings |
 | 23 | `CapabilityProbe` in `mod.glue` + `-Dschmaloogium.debug.dumpCapabilities`, invoked at **`OpenGlHelper.initializeTextures` @`RETURN`** — stage 2 of §4.13's bring-up sequence (`[D-P1-37]`). The hook itself is Phase 7's catalog entry (App E); this item is the probe's placement requirement against it | `v0.1` | Running the client with the flag writes a parseable profile that round-trips through item 17, **and the probe runs after vanilla's texture setup rather than before** — a profile with a plausible `GL_MAX_TEXTURE_IMAGE_UNITS` is the cheap signal |
 | 24 | `-Dschmaloogium.debug.recordGL` decorator wrapping the live device, **with a bounded log** (`GLCallLog.bounded(100_000)` by default, oldest discarded and counted) supplied to the device through `new RecordingGLDevice(profile, responses, log)` (§4.7.5) — the decorator constructs the ring, the device does not — and off unless the flag is set | `v0.1` | Flag produces a `GLCallLog` dump in the same format the tests assert over; a long session does not grow the log without bound, and the dump reports `droppedCallCount()` when it wrapped |
 
@@ -5061,11 +5214,12 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 
 ---
 
-*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Seventeen** verify sessions have
+*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Nineteen** verify sessions have
 since run — `PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_14.md` returned
 PASS-WITH-CORRECTIONS, and `PHASE_1_REVIEW_15.md` returned the literal PASS that closed that loop —
 then `PHASE_1_REVIEW_16.md` and `PHASE_1_REVIEW_17.md` returned PASS-WITH-CORRECTIONS — and
-**fourteen** fix-up sessions: the first applied round one's F-1 … F-12 (§0.4); the second applied
+`PHASE_1_REVIEW_18.md` returned literal PASS, and round nineteen returned PASS-WITH-CORRECTIONS —
+and **sixteen** fix-up/maintenance sessions: the first applied round one's F-1 … F-12 (§0.4); the second applied
 rounds two, three and four together, as round four dispositioned them (§0.5); the third applied
 rounds **five and six** together (§0.6), round five's fix-up having never run — which is round six's
 own headline finding (V6-1) and the reason two rounds are closed in one session; the fourth applied
@@ -5101,13 +5255,15 @@ other (V14-2) a round-six-created row whose ownership clauses no round had exami
 milestone, decision `[D-P1-39]`, hand-off and checklist all land together; and the **thirteenth**
 applied round sixteen's two corrections (§0.16), splitting absent-`final` passthrough from actual
 fixed-function terminals and publishing Phase 2's derived-artifact workflow constraints in §5; and
-the **fourteenth** applied round seventeen's sole closing-history correction (§0.17).
+the **fourteenth** applied round seventeen's sole closing-history correction (§0.17); and the
+**fifteenth** accepted Phase 5's three downstream framebuffer/depth requests as `[D-P1-40]`
+(§0.18), after round eighteen's literal PASS and without manufacturing a review finding; and the
+**sixteenth** applied round nineteen's three corrections (§0.19).
 Every finding's disposition is recorded in the review files under `## Resolutions`, including the four
 of round three's proposed fixes and the items of rounds five and six that were deliberately narrowed
 rather than applied as written, and why.
 
-**Current §G1.3 status.** Round seventeen re-verified §0.16 and the round-sixteen correction surface,
-including the binding §5 change, and returned PASS-WITH-CORRECTIONS only for the closing-history
-ordinal defect. The fourteenth fix-up applied that sole correction without changing §5 or any
-interface region. `PHASE_1_DOC.md` is therefore **verified** and is a valid dependency input. The
-version stays `v14` until the post-loop version roll.*
+**Current §G1.3 status.** Round nineteen returned PASS-WITH-CORRECTIONS; §0.19 applies all three and
+changes §5. `PHASE_1_DOC.md` is therefore **not verified** and is not a valid dependency input until
+a fresh review returns literal PASS. The version stays
+`v14` while that loop is open.*
