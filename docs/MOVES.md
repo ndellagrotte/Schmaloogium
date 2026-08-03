@@ -12,8 +12,9 @@ citations across the tree (`RESEARCH.md` ~660, `DESIGN.md` ~390, `PHASE_1_DOC.md
 basenames meant only *paths* went stale, not prose — so the repair touched ~87 sites rather than
 ~1,200.
 
-The cost of that trade is one collision: **four files are now named `DESIGN.md`** (the third and
-fourth joined 2026-07-26). They are different documents. See the warning below.
+The cost of that trade is one collision: **five files are now named `DESIGN.md`** (the third and
+fourth joined 2026-07-26; the fifth joined 2026-08-03). They are different documents. See the
+warning below.
 
 ## Documents
 
@@ -61,34 +62,36 @@ Everything else kept its filename. These did not, each for a reason:
    `PHASE_<N>_REVIEW_<r>.md`, so round one was the only review it could not address. 40 citations
    updated.
 
-## ⚠️ Four files named `DESIGN.md`
+## ⚠️ Five files named `DESIGN.md`
 
-| | `docs/design/v1.1/DESIGN.md` | `docs/design/v2.0-RC1/DESIGN.md` | `docs/design/v2.0-RC2/DESIGN.md` | `docs/design/v2.0-RC3/DESIGN.md` |
-|---|---|---|---|---|
-| Lines | 1,586 | 2,304 | 2,478 | 2,656 |
-| Status | **governs Phase 2**; anchors Phase 1 reviews through round 11 | superseded; read by nothing | **governs Phase 1** from its §0.11 onward | **governs Phase 3 only** from its initial build; partial adoption retains `-RC` |
-| Phase 1 spec at | l. 585 | l. 829 | l. 957 | l. 1,120 |
-| Phase 2 spec at | l. 662 | l. 933 | l. 1,071 | l. 1,234 |
-| §G1.2 at | l. 118 | l. 174 | l. 257 | l. 276 |
+| | `docs/design/v1.1/DESIGN.md` | `docs/design/v2.0-RC1/DESIGN.md` | `docs/design/v2.0-RC2/DESIGN.md` | `docs/design/v2.0-RC3/DESIGN.md` | `docs/design/v2.0-RC4/DESIGN.md` |
+|---|---|---|---|---|---|
+| Lines | 1,586 | 2,304 | 2,478 | 2,656 | 2,683 |
+| Status | **governs Phase 2**; anchors Phase 1 reviews through round 11 | superseded; read by nothing | **governs Phase 1** from its §0.11 onward | **governs Phases 3–9** from their initial builds; partial adoption retains `-RC` | **unadopted candidate**; no phase or target points to it |
+| Phase 1 spec at | l. 585 | l. 829 | l. 957 | l. 1,120 | l. 1,130 |
+| Phase 2 spec at | l. 662 | l. 933 | l. 1,071 | l. 1,234 | l. 1,244 |
+| §G1.2 at | l. 118 | l. 174 | l. 257 | l. 276 | l. 286 |
 
 *(2026-07-26: the RC1 column previously read 2,300 / 825 / 929 / 170 — off by four against the file
 on disk since it was recorded; corrected while adding the RC2 column.)*
 
 **There is no longer one governing revision, and no longer one set of line numbers** (changed
-2026-07-26, §G0.4 steps 1–2 and 4; Phase 3 adoption recorded 2026-07-27). Phase docs cite
-`DESIGN.md` **by line number**, and the three current phase docs are anchored per phase:
+2026-07-26, §G0.4 steps 1–2 and 4; Phase 3 adoption recorded 2026-07-27; RC4 candidate recorded
+2026-08-03). Phase docs cite `DESIGN.md` **by line number**, and the nine current phase docs are
+anchored per phase:
 `PHASE_1_DOC.md` l. 12 declares
 `docs/design/v2.0-RC2/DESIGN.md` from its §0.11 onward, adopted at the round-eleven fix-up as §G0.4
 step 3; `PHASE_2_DOC.md` §0.1 still cites v1.1 (the Phase 2 spec at ll. 662–720) because step 3 has
-not been run for it; and Phase 3 deliberately adopts RC3 from its initial build. Every Phase 1
-review through round 11 is in v1.1's coordinates.
+not been run for it; and Phases 3–9 deliberately adopt RC3 from their initial builds. Every Phase 1
+review through round 11 is in v1.1's coordinates. RC4 is not adopted by any phase.
 
 The `$verify-loop` harness therefore resolves the revision **per target** rather than globally.
 Each profile in `verification/targets/` names its governing design and unique content selectors for
 Part I, the target specification, the document gate, and the mandatory template. The engine resolves
 those selectors against current content at startup and reports current coordinates. Phase 3's
-profile selects RC3, OQ-7, and the Phase 1 dependency; Phase 1 selects RC2; Phase 2 selects v1.1.
-There is no executable line-pin table to synchronize.
+profile selects RC3, OQ-7, and the Phase 1 dependency; the Phase 4–8 profiles also select RC3;
+Phase 1 selects RC2; Phase 2 selects v1.1. Phase 9 declares RC3 in its document header and has no
+target profile yet. No profile selects RC4. There is no executable line-pin table to synchronize.
 
 **Pointing a phase at the wrong revision would not raise an error — it would silently feed every
 agent the wrong text.** The old pins make the point: at v2.0-RC1 ll. 649–652 the doc-gate lens read
@@ -106,7 +109,8 @@ Directory names come from each document's own header, not from the folder it use
 | `DESIGN.md` | `v1.1` | header states v1.1; REV1 names "v1.1" as what it supersedes |
 | REV1 | `v2.0-RC1` | header states v2.0; recorded as RC because no downstream doc has adopted it |
 | REV2 | `v2.0-RC2` | header states v2.0-RC2 (created 2026-07-26, not a move); supersedes RC1, which stays for history. **`-RC` retained after partial adoption — see the ruling below** |
-| REV3 | `v2.0-RC3` | header states v2.0-RC3 (created 2026-07-26, not a move); **governs Phase 3 only** — RC2 still governs Phase 1 and v1.1 still governs Phase 2; partial adoption retains `-RC` |
+| REV3 | `v2.0-RC3` | header states v2.0-RC3 (created 2026-07-26, not a move); **governs Phases 3–9** — RC2 still governs Phase 1 and v1.1 still governs Phase 2; partial adoption retains `-RC` |
+| REV4 | `v2.0-RC4` | header states v2.0-RC4 (created 2026-08-03, not a move); unadopted candidate implementing PHASE_9_DOC §11.4's tag-evidence qualification; no phase or target points to it |
 | `RESEARCH.md` | `v1` | "first complete draft"; no version stated |
 | `PINTONIUM_DESIGN.md` | `v1.0` | header states v1.0 |
 | `PHASE_1_DOC.md` | `v14` | fix-up addenda §0.4–**§0.14**; `PHASE_1_REVIEW_14.md` has complete `## Resolutions`, and round fifteen returned a literal PASS with no further fix-up. Rolled from `v13` on 2026-07-26 after that loop exited |
@@ -153,9 +157,10 @@ The rule above is that `-RC` means exactly *"no downstream doc has adopted it"*.
    `DESIGN.md`, which is evidence (§G1.1/§G1.2). **The label cannot move ahead of a design-document
    revision**, whatever the adoption state.
 
-The same reasoning applies to RC1 and RC3. RC1 remains unread historical evidence; RC3 is adopted
-only by Phase 3 while Phase 1 stays on RC2 and Phase 2 stays on v1.1. RC3 therefore remains
-`v2.0-RC3`: partial adoption cannot move the label ahead of the design document's own header.
+The same reasoning applies to RC1, RC3, and RC4. RC1 remains unread historical evidence; RC3 is
+adopted by Phases 3–9 while Phase 1 stays on RC2 and Phase 2 stays on v1.1. RC3 therefore remains
+`v2.0-RC3`: partial adoption cannot move the label ahead of the design document's own header. RC4
+remains `v2.0-RC4` because it is unadopted and its own header declares that candidate label.
 
 ## What was deliberately left stale
 
@@ -164,6 +169,10 @@ only by Phase 3 while Phase 1 stays on RC2 and Phase 2 stays on v1.1. RC3 theref
 - One `[RESEARCH.md](RESEARCH.md)` link in `docs/reference/pintonium/chatlogs/` — it appears inside a
   quoted dump of a *different repository's* `DESIGN.md` (`/home/nick/Documents/Pintonium/`), so
   repointing it into this tree would be wrong rather than consistent.
+- **`docs/decisions/OQ-3_GL_CONTEXT.md` and `docs/decisions/OQ-4_CLEANMIX_HOOKS.md` are deliberate
+  forward references.** Phase 7 names them as the future outputs of its two implementation-time
+  spikes; neither decision has been run or authored yet. Both references already existed before
+  the 2026-08-03 RC4 candidate work and must not be “resolved” by inventing decision outcomes.
 - **`docs/phase1/v10/PHASE_1_DOC.md`, stranded by the `v10` → `v11` roll (2026-07-26).** Cited at
   **15 sites across 14 files**: `PHASE_1_REVIEW_1.md`…`_10.md` (l. 3 of each), the three briefs
   (`PHASE_1_FIXUP_6_BRIEF.md` ll. 2 and 194, `PHASE_1_REVIEW_9_BRIEF.md` l. 2,
@@ -196,21 +205,23 @@ grep -rhoE 'docs/[A-Za-z0-9._/-]+\.md' docs --include='*.md' --exclude=MOVES.md 
   [ -f "$p" ] || echo "DANGLING: $p"; done
 ```
 
-**Since the `v13` → `v14` post-loop roll on 2026-07-26, "clean" means exactly three lines, not zero:**
+**As re-audited while adding RC4 on 2026-08-03, "clean" means exactly five lines, not zero:**
 
 ```
+DANGLING: docs/decisions/OQ-3_GL_CONTEXT.md
+DANGLING: docs/decisions/OQ-4_CLEANMIX_HOOKS.md
 DANGLING: docs/phase1/v10/PHASE_1_DOC.md
 DANGLING: docs/phase1/v11/PHASE_1_DOC.md
 DANGLING: docs/phase1/v13/PHASE_1_DOC.md
 ```
 
-The three historical citation sets — 15 citations for `v10`, 15 for `v11` and 7 for `v13` — dedup
-to those three entries through `sort -u`, so the recorded expectation stays a three-liner however
-many immutable records cite them, and **any fourth line is a real regression.** The sweep command is
-deliberately left unchanged: adding `--exclude` for the reviews and briefs would make the output read
-empty again, but an exclusion list that grows each time something is legitimately stale is how
-genuine dangling references stop being noticed.
+The two pending decision artifacts plus the three historical citation sets — 15 citations for
+`v10`, 15 for `v11` and 7 for `v13` — dedup to those five entries through `sort -u`, so the recorded
+expectation stays a five-liner however many immutable records cite them, and **any sixth line is a
+real regression.** The sweep command is deliberately left unchanged: adding exclusions for reviews,
+briefs, or planned outputs would make the result look empty, but an exclusion list that grows each
+time something is legitimately absent is how genuine dangling references stop being noticed.
 
 Only after a future §0.15 fix-up lands and its loop exits is the next illustrative roll `v14` →
-`v15`. If that roll strands a fourth path, extend the expected list rather than the exclusions, and
+`v15`. If that roll strands a sixth path, extend the expected list rather than the exclusions, and
 say which roll each entry came from.

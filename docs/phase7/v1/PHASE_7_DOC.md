@@ -4,7 +4,7 @@
 
 **Phase:** 7, both mandated parts: (a) engine-side frame driver and (b) Mixin hook catalog.  
 **Document version:** v1, initial build.  
-**Date:** 2026-08-02.  
+**Date:** 2026-08-03.
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`; its Phase 7 assignment begins at
 `docs/design/v2.0-RC3/DESIGN.md:1805` and names dependencies 2–6 at
 `docs/design/v2.0-RC3/DESIGN.md:1807`. The heading and ranges were derived from this
@@ -60,7 +60,7 @@ establish the §G5.3 gate, before their current binding contracts were used:
 | Dependency | Current artifact consumed | Binding material actually read | Gate evidence |
 |---|---|---|---|
 | Phase 2 | `docs/phase2/v1/PHASE_2_DOC.md` | §3.5, §4.5, §4.9, §5 | literal `PASS` at `docs/phase2/reviews/PHASE_2_REVIEW_15.md:67` |
-| Phase 3 | `docs/phase3/v1/PHASE_3_DOC.md` | §§2.2–2.4, §§3.1–3.2, §§4.1–4.2, §§4.7–4.8, §5 | literal `PASS` at `docs/phase3/reviews/PHASE_3_REVIEW_20.md:58` |
+| Phase 3 | `docs/phase3/v1/PHASE_3_DOC.md` | §§2.2–2.4, §§3.1–3.2, §§4.1–4.2, §§4.7–4.9, §5 | literal `PASS` at `docs/phase3/reviews/PHASE_3_REVIEW_22.md:51` |
 | Phase 4 | `docs/phase4/v1/PHASE_4_DOC.md` | §§2.2–2.3, §§3.2–3.3, §§4.1–4.2, §4.10, §5 | literal `PASS` at `docs/phase4/reviews/PHASE_4_REVIEW_18.md:57` |
 | Phase 5 | `docs/phase5/v1/PHASE_5_DOC.md` | §§2.1–2.3, §§4.4–4.5, §4.9, §5 | literal `PASS` at `docs/phase5/reviews/PHASE_5_REVIEW_30.md:54` |
 | Phase 6 | `docs/phase6/v1/PHASE_6_DOC.md` | §§2.1–2.3, §4.2, §§4.6–4.7, §4.12, §5 | literal `PASS` at `docs/phase6/reviews/PHASE_6_REVIEW_7.md:52` |
@@ -189,6 +189,32 @@ The §5 interface region changed and requires fresh verification.
 Round 18 synchronizes reload polling into the §5 exposed-contract inventory. The §5 interface
 region changed and requires fresh verification.
 
+### 0.23 Maintenance addendum (Phase 9 coordinated integration — 2026-08-03)
+
+Phase 9's R9-2 request is granted across §§1–9, 11, and 12. The safe-boundary transaction now owns
+and publishes the Phase 9 ID-runtime candidate as a fourth coherent component, resets per-draw
+dynamics on every terminal path, samples held values immediately after Phase 6 accepts a frame,
+orders entity and block-entity ID scopes around existing program scopes, and replaces the former
+RETURN-only color observer with exact `GL_TEXTURE_ENV_COLOR` operand capture. Registry remap and
+ID-source reasons enter the reload queue, Phase-9 hook rows enter `HookApplicationReport`, and a
+generation change gates layer/chunk invalidation before another shader frame.
+
+The maintenance read was limited to Phase 9's R9-2 request and the detailed regions it names in
+`docs/phase9/v1/PHASE_9_DOC.md` §§4.9 and 4.11–4.14, §§5.1–5.4, and §8. Phase 9 is a downstream
+request source, not a declared Phase 7 dependency; Phase 7 consumes its runtime contracts only
+after Phase 9 itself is verified. Phase 3's R9-1 surface was re-read only after its fresh literal
+PASS in `docs/phase3/reviews/PHASE_3_REVIEW_22.md`.
+
+**Current §G1.3 status:** round nineteen's literal PASS applies only to the pre-§0.23 bytes. This
+addendum changes §5, so Phase 7 is **not verified** and is not a valid dependency input until a
+fresh verification round returns literal PASS. The version directory remains `v1` while the loop
+is open.
+
+### 0.24 Round-20 fix-up
+
+Round 20 corrects the two active Phase 9 ID-row counts to use the declared Mixin injection-anchor
+unit. The §5 interface region changed and requires fresh verification.
+
 ---
 
 ## 1. Scope & boundaries
@@ -198,8 +224,9 @@ region changed and requires fresh verification.
 Phase 7 owns:
 
 1. the pure-`:engine` frame state machine that coordinates Phases 3–6 into one world frame;
-2. transactional pipeline preparation/publication, shaders-off recovery, the per-dimension slot
-   cache, and its equality-only `PipelineVersion` invalidation signal;
+2. transactional Phase 3/4/5/6/9 pipeline preparation/publication, shaders-off recovery, coherent
+   ID-dependent geometry invalidation, the per-dimension slot cache, and its equality-only
+   `PipelineVersion` invalidation signal;
 3. exact classic-program dispatch, nested push/pop semantics, the deferred trigger, composite/final
    executor, fullscreen draw policy, and the strict composite guarantee;
 4. the bounded internal passthrough pack supplied through Phase 3's `InternalPackSource`;
@@ -232,8 +259,10 @@ Phase 7 owns:
   typed event cells, upload caches, and barrier participants. Phase 7 produces hook events.
 - **Owned by Phase 8:** shadow camera, traversal, content, split depth, PCF, and shadow completion.
   Phase 7 leaves and invokes one slot before main gbuffers drawing.
-- **Owned by Phase 9:** alias resolution and entity/block-entity/held-item ID values. Phase 7 owns the
-  render scopes that will carry those values.
+- **Owned by Phase 9:** registry/mod/tag snapshots, alias/layer tables, hand policy, ID-runtime
+  candidate/publication, entity/block-entity/held/color values, and per-draw tokens. Phase 7 owns
+  coordinated publication, accepted-frame/terminal calls, hook coordinates, and ordering around
+  its existing render scopes; it never resolves an alias or samples a registry itself.
 - **Owned by Phase 10:** vertex writes, chunk-build push/pop, attribute pointers, and the final
   chunk-renderer coexistence policy. Appendix-E classes 3–9 are catalogued, not specified here.
 - **Owned by Phase 11:** custom-expression evaluation. It enters only through Phase 6's custom
@@ -291,7 +320,9 @@ Phase 7 expression of D-6 and the explicit Part-(a)/Part-(b) seam required at
 surface. Its exact operations are `open`, `beforeFirstClear`, `afterFirstClear`,
 `captureMainCamera`, `afterTerrainSetup`, balanced `enter`/`exit`, `finish`, and `abort`. All return
 closed result algebras. `FrameToken` and `ScopeToken` are opaque credentials rather than caller-made
-frame IDs.
+frame IDs. The optional v0.3 `IdDynamicsFrameSlot` is a construction dependency of the driver, not
+a new vanilla hook surface; it is paired atomically with the Phase 9 publisher and receives only
+accepted-frame and terminal-reset calls.
 
 ```java
 public interface FrameHookSink {
@@ -332,11 +363,11 @@ mod.mixin handlers ── dumb call ──> FrameHookBridge (:mod glue)
                                       │ immutable values/callbacks
                                       v
                          FrameDriver / FrameHookSink (:engine)
-                         │         │          │
-                Phase 4 barrier   Phase 5    Phase 6 runtime
-                + stage view      estate     + event sink
-                         │         │          │
-                         └──── coordinated frame token ────┘
+                         │         │          │             │
+                Phase 4 barrier   Phase 5    Phase 6       Phase 9 runtime
+                + stage view      estate     runtime/sink  aliases/dynamics
+                         │         │          │             │
+                         └──── coordinated frame/publication token ─────┘
                                       │
                          FrameRenderPort (:mod glue)
                                       │
@@ -365,11 +396,18 @@ the Phase 5 snapshot, and branches on every closed result.
    race only through the same token.
 9. A healthy early exit still executes composite/final. A protocol/backend failure aborts instead;
    it never draws from an untrusted snapshot merely to satisfy the guarantee.
-10. No draw occurs between Phase 4 publication and the matching Phase 5 publication.
+10. No draw occurs between Phase 4 publication and the matching Phase 5 and, once activated,
+    Phase 9 publications;
+    a frame opens only after all active identities are coherent.
 11. Every off/replacement/teardown invalidates Phase 4 activity tokens and increments the Phase-7
     equality-only `PipelineVersion` once.
 12. Shaders-off means no Phase 4/5 shader draw, no engine FBO interception, and the unmodified
     Minecraft framebuffer path remains reachable.
+13. A Phase 9 generation change is followed by one successful alias/layer-dependent geometry
+    invalidation before another shader frame; stale chunk products are never drawn under a new ID
+    runtime.
+14. Phase 9 per-draw entity, block-entity, and color stacks are neutralized before Phase 4 fixed-
+    function release on every normal, early, thrown, abort, off, replacement, and teardown path.
 
 ---
 
@@ -391,7 +429,7 @@ the Phase 5 snapshot, and branches on every closed result.
 | identity fullscreen state, mipmaps, scale, instances | `FullscreenPassExecutor` §4.6 | `[V:observed]` `docs/research/v1/RESEARCH.md:562`–`:564` |
 | composite guarantee | outer render wrapper + idempotent `finish` | `[V:observed]` `docs/research/v1/RESEARCH.md:565` — “guarantees composites run even on early exits” |
 | `(internal)` is a real pack and `Off` is no shaders | §4.7 separates `PackSelection.Internal` from `PackSelection.Off` | `[V:doc]` `docs/research/v1/RESEARCH.md:478`–`:481` |
-| dimension cache and all uninit/reinit triggers | §4.8 per-`DimensionKey` cache plus pack-, option-, dimension-, and resolution-triggered safe-point rebuild | `[V:doc]` `docs/research/v1/RESEARCH.md:483`–`:489`; assigned Pintonium mechanism, not contract, at `docs/design/v2.0-RC3/DESIGN.md:1853`–`:1855` |
+| dimension cache and all uninit/reinit triggers | §4.8 per-`DimensionKey` cache plus pack-, option-, resource-, dimension-, resolution-, registry-remap-, and ID-source/catalog/policy-triggered safe-point rebuild | `[V:doc]` `docs/research/v1/RESEARCH.md:483`–`:489`; assigned Pintonium mechanism, not contract, at `docs/design/v2.0-RC3/DESIGN.md:1853`–`:1855`; Phase 9 R9-2 adds the identity triggers |
 
 ### 3.2 Appendix A.1: every program row
 
@@ -430,7 +468,7 @@ Phase 7 not to overlay requested-slot state on the effective provider
 
 | Need | Disposition | Provenance |
 |---:|---|---|
-| 1 frame begin/end | H-FRAME-01…07 plus outer-finally H-FRAME-00 | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
+| 1 frame begin/end | H-FRAME-01…07 plus outer-finally H-FRAME-00; v0.3 H9-HELD-01 follows accepted begin and `IdDynamicsFrameSlot.resetFrame` precedes terminal release | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
 | 2 camera matrices | H-FRAME-04 after `setupCameraTransform`, once | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
 | 3 shadow invocation | H-FRAME-05; content deferred to Phase 8/v0.2 | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
 | 4 all per-phase switches | H-SKY, H-TERRAIN, H-DAMAGE, H-LINE, H-ENTITY, H-LEASH, H-GLINT, H-EYES, H-BEAM, H-PARTICLE, H-CLOUD, H-WEATHER, H-BORDER, H-HAND, and R7-3-gated H-OVERLAY-01 | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
@@ -511,8 +549,10 @@ corroboration statement.
 
 `DimensionPipelineManager` is the one render-thread composition root. It owns the selected
 `PackConfiguration`, `DimensionKey`, caller-owned candidates during preparation, the successful
-`UniformRuntime`, the active non-owning Phase 4/5 publications, hook-health/compatibility facts, and
-one `PipelineVersion`. It never owns a program or texture handle directly.
+`UniformRuntime`, the active non-owning Phase 4/5 publications and optional v0.3 Phase 9
+publication, hook-health/compatibility facts,
+the ID-dependent geometry invalidator, and one `PipelineVersion`. It never owns a program, texture,
+registry object, alias table, or raw handle directly.
 
 The closed manager states are:
 
@@ -524,47 +564,69 @@ LOADING
   └─ Loaded -> PREPARING
 PREPARING
   ├─ any closed failure -> OFF_PUBLICATION_PENDING
-  └─ registry + uniform + buffer + barrier candidates ready -> READY_TO_PUBLISH
+  └─ registry + uniform + buffer + barrier (+ installed v0.3 ID) candidates ready
+       -> READY_TO_PUBLISH
 READY_TO_PUBLISH
   ├─ Phase 4 rejected/recovered-off -> close caller-owned remainder -> OFF
-  └─ Phase 4 accepted -> publish matching Phase 5 candidate, with no intervening draw
-       ├─ Published -> ACTIVE
-       └─ provenance/consumer failure -> compensate with Phase 4 off -> OFF
+  └─ Phase 4 accepted -> publish matching Phase 5, then Phase 9, with no intervening draw
+       ├─ all accepted + geometry invalidated -> ACTIVE
+       └─ rejection/provenance/invalidation failure -> compensate all accepted parts to off -> OFF
 ACTIVE
-  ├─ safe reload/dimension/resize request -> QUIESCING
+  ├─ safe reload/dimension/resize/remap/ID-source request -> QUIESCING
   ├─ runtime fatal/backend failure -> OFF_PUBLICATION_PENDING
   └─ world render -> frame state machine §4.2
-QUIESCING -> finish/abort current frame -> release fixed function -> publish off -> PREPARING/OFF
+QUIESCING -> finish/abort -> reset Phase 9 dynamics -> release fixed function
+          -> deactivate Phase 9 then publish Phase 5/4 off -> PREPARING/OFF
 ```
 
 Preparation follows dependency ownership exactly:
 
 1. obtain one validated Phase 3 `PackConfiguration`; reject any schema version other than
-   `PackFrontEnd.CURRENT_SCHEMA_VERSION` before deriving state;
+   `PackFrontEnd.CURRENT_SCHEMA_VERSION`, or a nested `IdMappingInput.schemaVersion` mismatch,
+   before deriving state;
 2. select its base, explicit override, or explicit disabled `DimensionConfiguration`; disabled does
    not inherit base;
 3. reject `CompatibilityStatus.REQUIRES_NEWER_EDITION` to shaders-off with the Phase 3 diagnostic;
 4. create Phase 6's `UniformRuntime` from immutable configuration and loader-neutral providers;
-5. call Phase 4 `ProgramRegistryCompiler.compile`, using Phase 6's **empty**
+5. through `mod.glue.id`, freeze the live registry/tag/mod-source/hand-policy inputs required by
+   Phase 9, call its `IdRuntimeBuilder`, and retain the returned caller-owned candidate; validate
+   that its view identifies this exact configuration and registry fingerprint;
+6. call Phase 4 `ProgramRegistryCompiler.compile`, using Phase 6's **empty**
    `centerDepthMacroContributor` contribution and the exact dimension;
-6. inspect `CompiledRegistryCandidate.view()` without taking or inventing ownership;
-7. call Phase 5 `BufferArchitecture.create` from that view, its exact fingerprint, capabilities,
+7. inspect `CompiledRegistryCandidate.view()` without taking or inventing ownership;
+8. call Phase 5 `BufferArchitecture.create` from that view, its exact fingerprint, capabilities,
    runtime sizing, `MainDepthSource`, device, and diagnostics; `AwaitingMainDepth` defers publication
    and permits only vanilla drawing;
-8. call `ProductionBarrierComposer.compose` exactly once with the compiler candidate and Phase 6's
+9. call `ProductionBarrierComposer.compose` exactly once with the compiler candidate and Phase 6's
    sampler/built-in/custom participants in that fixed order;
-9. compare `BufferEstateCandidate.inspection().registryFingerprint()` to the registry candidate's
-   fingerprint before any publication;
-10. at a no-draw safe point, acquire the current Phase-4 publication's issued release context and
+10. compare `BufferEstateCandidate.inspection().registryFingerprint()` to the registry candidate's
+    fingerprint and recheck every Phase 9 candidate input fingerprint before any publication;
+11. at a no-draw, no-open-frame safe point, reset all old Phase 9 per-draw scopes, acquire the
+    current Phase-4 publication's issued release context, and
     publish `RegistryPublication.Ready`; close all caller-owned candidates on rejection;
-11. only after Phase 4 accepts, publish the already-created matching buffer candidate; and
-12. permit shader drawing only after both returned publications and the retained runtime form one
-    `ActivePipeline`.
+12. only after Phase 4 accepts, publish the already-created matching buffer candidate;
+13. only after Phase 5 accepts, publish the Phase 9 candidate with the matching world,
+    configuration, and registry context;
+14. after the Phase 9 generation changes, synchronously submit its old/new generation and
+    alias/layer fingerprints to the installed ID-dependent geometry invalidator; and
+15. permit shader drawing only after all three publications, the retained runtime, and successful
+    invalidation form one `ActivePipeline`.
 
 The Phase 5 ordering is binding at `docs/phase5/v1/PHASE_5_DOC.md:1672`–`:1676`. A buffer consumer
-failure after Phase 4 acceptance publishes both systems off before returning to vanilla. A Phase 4
-`RecoveredOff` is already off and never receives a buffer publication. An accepted candidate is not
-closed by Phase 7; caller close is harmless after transfer, but the publisher is the owner.
+failure after Phase 4 acceptance publishes both systems off before returning to vanilla. If Phase 9
+rejects after Phase 4/5 accept, Phase 7 immediately recovers Phase 4/5 off and deactivates the old ID
+publication after reset; it never opens a frame that combines new programs/buffers with old ordinals.
+If post-publication geometry invalidation fails, Phase 7 deactivates the new ID runtime, recovers
+Phase 4/5 off, and requires a full invalidation before any later activation. A Phase 4
+`RecoveredOff` is already off and receives neither buffer nor ID publication. An accepted candidate
+is not closed by Phase 7; caller close is harmless after transfer, but its publisher is the owner.
+
+`ActivePipeline` is the immutable composition of one `PublishedRegistry`, one
+`PublishedBufferEstate`, its retained `UniformRuntime`, one `PipelineVersion`, and either both
+`Optional<PublishedIdRuntime>` plus `Optional<IdDynamicsFrameSlot>` present or both absent before
+v0.3. Present components must share the transaction's configuration, registry, world, and hook-
+report capability identities. The manager atomically replaces this composition only after §5.3's
+last gate; hooks borrow one snapshot for the whole frame and never assemble components separately.
 
 #### Per-dimension cache and version counter
 
@@ -572,24 +634,25 @@ The required Pintonium shape is adopted as a mechanism, not as dimension semanti
 (`D-P7-3`). `DimensionPipelineCache` is a deterministic map from Phase 3 `DimensionKey` to:
 
 ```text
-Disabled | PlanOnly(configuration fingerprint + dimension + pure plan fingerprints)
-         | ReadyUnpublished(caller-owned candidates)
-         | Active(non-owning publication identities)
+Disabled | PlanOnly(configuration + registry/mod/tag/policy + dimension + pure plan fingerprints)
+         | ReadyUnpublished(caller-owned Phase 4/5/9 candidates)
+         | Active(non-owning Phase 4/5/9 publication identities)
 ```
 
-Only one slot can be `Active`. Phase 4/5 do not return accepted candidates to the caller when a
+Only one slot can be `Active`. Phase 4/5/9 do not return accepted candidates to the caller when a
 publication is replaced, so switching away demotes that slot to `PlanOnly`; Phase 7 does not invent
 a reusable live-object lease. Other slots may retain caller-owned, not-yet-published candidates if
 they were prepared on the render thread. Pack reload, option change, capability change, or config
-fingerprint inequality closes every unpublished candidate and clears the map. This retains the
+fingerprint inequality, registry remap, or ID-source/catalog/policy fingerprint change closes every
+unpublished candidate and clears the map. This retains the
 per-dimension lookup and invalidation shape observed at
 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:110`–`:114` without contradicting Phase 3's
 no-base-merge world-folder contract.
 
-`PipelineVersion(long value)` increments exactly once after each accepted ready publication,
+`PipelineVersion(long value)` increments exactly once after each fully accepted ready publication,
 accepted off publication, or forced recovered-off outcome. Consumers compare equality only; it is
 not a clock and ordering/subtraction is forbidden. Phase 4 and Phase 5 generations remain their own
-authorities; Phase 7 never claims the values are equal.
+authorities, as does Phase 9's runtime generation; Phase 7 never claims the values are equal.
 
 ### 4.2 Per-frame state machine and composite guarantee
 
@@ -597,7 +660,8 @@ The per-frame machine is separate from pipeline lifecycle:
 
 ```text
 IDLE
-  -> SAMPLED            Phase 6 beginFrame accepted/duplicate; Phase 4 contexts issued
+  -> SAMPLED            Phase 6 beginFrame accepted; Phase 9 held sample accepted;
+                        Phase 4 contexts issued
   -> BUFFER_OPEN        Phase 5 refresh/replacement check then beginFrame(Begun)
   -> MATRICES_CAPTURED  current gbuffer matrices captured after camera setup
   -> SHADOW_DONE        Phase 8 slot returns/absent; main estate clear/bind succeeds
@@ -614,8 +678,8 @@ Any state from BUFFER_OPEN onward
   -> RECOVERING/OFF     on backend failure; otherwise IDLE for the next full-clear frame
 ```
 
-`open` rejects a second frame, a wrong thread, a stale active publication, a non-world pass, or a
-missing world/camera without GL work. A duplicate Phase 6 begin is a safe no-op and may continue;
+`open` rejects a second frame, a wrong thread, a stale active Phase 4/5/9 publication, a non-world
+pass, or a missing world/camera without GL work. A duplicate Phase 6 begin is a safe no-op and may continue;
 `REJECTED_STALE_FRAME` or `REJECTED_GENERATION` forbids shader drawing and reacquires the current
 publication as required by `docs/phase6/v1/PHASE_6_DOC.md:754`–`:759`.
 
@@ -623,8 +687,11 @@ H-FRAME-06 calls `finish(NORMAL)` on ordinary TAIL. H-FRAME-00 wraps the contain
 `renderWorld` invocation and calls `finish(EARLY_RETURN|THROWN)` from `finally`. Both use the
 same opaque token and `compare-and-finish`; the loser is a no-op. If the frame is healthy,
 `finish` closes/suspends any current gbuffers scope, runs all remaining composite passes and final,
-fires the before-present observer, commits Phase 5, releases Phase 4 to fixed function, and restores
-the vanilla state lease. This is deliberately stronger than the Pintonium normal-TAIL behavior.
+fires the before-present observer, commits Phase 5, calls Phase 9 `PerDrawDynamics.resetFrame` to
+neutralize entity/block-entity/color stacks, releases Phase 4 to fixed function, and restores the
+vanilla state lease. Abort, thrown, resize, off, replacement, and teardown paths call the same reset
+before fixed-function release and before any later shader draw. This is deliberately stronger than
+the Pintonium normal-TAIL behavior.
 
 An engine protocol/backend error is not a healthy “early exit.” It calls `abortFrame`, never commits
 an unwritten alt side, releases fixed function, and publishes off if Phase 5 returns
@@ -639,6 +706,11 @@ The seven reference moments are split into the following normative sequence:
    issue Phase 4 `FrameBarrierContexts` and call Phase 6 `beginFrame`. This rotates previous values,
    samples world/tick/frame state, and reads the **completed prior framebuffer** before Phase 5 is
    touched. New-world epoch reset uses prior dimensions `0,0` and cannot read cross-world depth.
+   Only after Phase 6 returns its accepted/duplicate frame result, call the current Phase 9 held-
+   hands operation with that exact `FrameBeginSignal`/runtime generation; glue samples both hands
+   once, Phase 9 resolves them, and its Phase 6 sink update completes before shadow or any gbuffers
+   activation. A missing/rejected held provider writes the typed zero tuple for this frame and
+   disables only held delivery; a stale Phase 9 generation rejects the shader frame.
 2. **Before ordinal-zero `GlStateManager.clear`:** normalize only vanilla cached state required for
    a known starting point. No engine buffer is cleared here.
 3. **After that clear:** sample `BufferRuntimeInputs`; refresh the borrowed main-depth identity; if
@@ -692,6 +764,13 @@ not a global “current program” assignment. A leaked nested scope is diagnose
 During a Phase 8 traversal, `ShadowExecutionBridge` sets `shadowPass=true`; the Phase-4 barrier then
 forces the requested program to `shadow` before backup resolution. Phase 7 never implements its own
 shadow override.
+
+At v0.3 the active pipeline also lends Phase 9's `RenderLayerLookup` to the loader-side block-state
+classification adapter. Glue translates the exact state to the current dense ordinal and applies
+only the returned `SOLID`/`CUTOUT`/`CUTOUT_MIPPED`/`TRANSLUCENT` decision; absence preserves
+vanilla. H-TERRAIN still receives the resulting vanilla `BlockRenderLayer` and never resolves a
+name, property, tag, or alias on the draw path. The lookup generation is stamped into the compiled
+product, and §5.3's invalidation gate prevents an old classification from reaching a new frame.
 
 ### 4.5 Depth-copy and deferred trigger
 
@@ -812,19 +891,31 @@ those identity fields from resize observations. The numeric dimension ID becomes
 Dimension change behavior is:
 
 1. mark the active frame vanilla-only and quiesce the old pipeline;
-2. release/close through publishers at the next no-draw safe point;
+2. reset Phase 9 per-draw dynamics, deactivate its publication, then release/close Phase 5/4
+   through their publishers at the next no-draw safe point;
 3. look up the new `DimensionKey` in the per-dimension cache;
 4. explicit `DimensionMode.DISABLED` publishes off; an explicit override compiles only its `.vsh`/
    `.fsh` set; a missing entry selects base;
 5. prepare/publish transactionally per §4.1; and
 6. reset Phase 6 with a new world epoch so previous matrices/camera initialize current=current.
 
-Pack selection, option changes, resource reload, and resolution multiplier changes use the same
-`ShaderReloadController.request(ReloadRequest)` queue. Selection-change intents supersede older
-selection intents; active-rebuild intents coalesce only when their expected active identity matches,
-while all trigger reasons are retained for diagnostics. A request accepted
+Pack selection, option changes, resource reload, resolution multiplier changes, registry remaps,
+changed mod ID files, tag/alias-catalog changes, and hand-light policy changes use the same
+`ShaderReloadController.request(ReloadRequest)` queue. `FMLModIdMappingEvent` submits a validated
+active rebuild with `REGISTRY_REMAP`; resource callbacks use `RESOURCE_RELOAD`, and the Phase 9
+source/catalog adapters add their narrower reasons when their fingerprints change. Selection-change
+intents supersede older selection intents; active-rebuild intents coalesce only when their expected
+active identity matches, while all trigger reasons are retained for diagnostics. A request accepted
 during a frame is not executed until `finish`/abort establishes fixed-function, normalized state.
 There is no GL destruction from a GUI/event thread.
+
+Every accepted reason re-snapshots the Phase 9 registry/mod/tag/policy inputs before candidate
+construction; equality may prove the resulting ID candidate unchanged, but the controller never
+assumes that from the reason name. `RESOURCE_RELOAD` rebuilds Phase 3 and Phase 9 together.
+`REGISTRY_REMAP` always advances the registry snapshot identity even when pack bytes are unchanged.
+After Phase 9 accepts a changed generation, the transaction invokes the Phase 10/vanilla chunk and
+layer invalidator before marking Active. Repeated reasons coalesce, but no new frame opens while
+that invalidation is pending or failed.
 
 Display/main-framebuffer change is observed by H-RESIZE. Phase 7 does not trust logical window size:
 it samples the actual main framebuffer extent/version through `MainDepthSource` and Phase 5. On an
@@ -895,6 +986,7 @@ depending on Mixin's default fatal-injection behavior.
 | H-BOOT-03 `GuiMainMenu` | `func_73866_w_()V` (`initGui`) RETURN, once | `BootstrapHooks.onClientLoadingComplete()` | `FEATURE`; shader startup may remain deferred |
 | H-FRAME-00 `EntityRenderer` | `func_181560_a(FJ)V`, AROUND its `func_78471_a(FJ)V` (`renderWorld`) invocation | `WorldRenderBoundary.invoke(original, partialTicks, finishTimeNano)` | `CORE`; the outer `finally` is the early-exit guarantee |
 | H-FRAME-01 `EntityRenderer` | `func_175068_a(IFJ)V` HEAD | `FrameHooks.open(pass, partialTicks, finishTimeNano)` | `CORE`; Pintonium row 1 and App E row 1 (`docs/research/v1/RESEARCH.md:1398`) |
+| H9-HELD-01 accepted H-FRAME-01 boundary | no additional Mixin; immediately after Phase 6 accepts the copied frame identity | call current Phase 9 held sampler/resolver once and complete `updateHeldItems` before any program activation | `DEFERRED(P9,v0.3)` until installed, then `FEATURE`; zero tuple on provider failure, stale generation aborts the shader frame |
 | H-FRAME-02 `EntityRenderer` | `func_175068_a(IFJ)V`, BEFORE `GlStateManager.clear(I)V`, ordinal 0 | `FrameHooks.normalizeVanillaState(frameToken)` | `CORE`; validated Pintonium row 2 |
 | H-FRAME-03 `EntityRenderer` | same invocation, shift AFTER | `FrameHooks.afterFirstClear(frameToken)` | `CORE`; creates/refreshes Phase 5 frame resources but does not claim matrices |
 | H-FRAME-04 `EntityRenderer` | `func_175068_a(IFJ)V`, AFTER INVOKE `func_78479_a(FI)V` (`setupCameraTransform`) | `FrameHooks.captureMainCamera(frameToken)` | `CORE`; exact post-camera point, once per frame |
@@ -929,14 +1021,15 @@ explicit U7-1 correction request, not an unreported substitution.
 | ID / class | SRG target and injection | Engine action | Health / evidence |
 |---|---|---|---|
 | H-ENTITY-01 `RenderGlobal` | `func_180446_a(Entity,ICamera,F)V` HEAD/RETURN; REDIRECT its `RenderManager.func_178632_c(Z)V` calls | enter/exit `gbuffers_entities`; call the original outline toggle and push/pop `gbuffers_entities_glowing` when the argument becomes true/false | `FEATURE`; App E row 2 |
-| H-ENTITY-02 `RenderManager` | `func_188388_a(Entity,F,Z)V` and `func_188391_a(Entity,D,D,D,F,F,Z)V` HEAD/RETURN | Phase 9 ID scope around an already selected entity program | `DEFERRED(P9)`; App E row 13 (`docs/research/v1/RESEARCH.md:1410`) |
-| H-ENTITY-03 `TileEntityRendererDispatcher` | `func_147549_a(TileEntity,D,D,D,F)V` HEAD/RETURN | enter/exit `gbuffers_block`; Phase 9 later augments the same scope with block-entity ID | `FEATURE` for program scope / `DEFERRED(P9)` for ID; App E row 14 (`docs/research/v1/RESEARCH.md:1411`) |
+| H-ENTITY-02 / H9-ENTITY-ID-01 `RenderManager` | `func_188388_a(Entity,F,Z)V` and `func_188391_a(Entity,D,D,D,F,F,Z)V` HEAD/RETURN | within the already-selected entity program: HEAD maps the exact entity ordinal, pushes prior `entityId`, and publishes mapped-or-zero; RETURN validates/restores the Phase 9 LIFO token. Nested calls of one overload from the other remain nested ID scopes | `DEFERRED(P9,v0.3)` until installed, then `FEATURE`; App E row 13 (`docs/research/v1/RESEARCH.md:1410`); mismatch disables ID delivery and writes zero, not the surrounding entity program |
+| H-ENTITY-03 / H9-BLOCK-ENTITY-ID-01 `TileEntityRendererDispatcher` | `func_147549_a(TileEntity,D,D,D,F)V` HEAD/RETURN | HEAD first opens `gbuffers_block`; only an accepted program scope may obtain the TE state ordinal, push prior `blockEntityId`, and publish mapped-or-zero. RETURN restores the ID token **before** closing the Phase 7 program scope | `FEATURE` for program scope; ID augmentation is `DEFERRED(P9,v0.3)` until installed then `FEATURE`; App E row 14 (`docs/research/v1/RESEARCH.md:1411`); detached/unknown TE publishes zero |
 | H-LEASH-01 `RenderLiving` | `func_110827_b(EntityLiving,D,D,D,F,F)V` HEAD/RETURN | suspend parent snapshot, push `gbuffers_basic`, then reacquire parent | `FEATURE`; required push/pop semantics |
 | H-GLINT-01 `LayerArmorBase` | `func_188364_a(RenderLivingBase,EntityLivingBase,ModelBase,F,F,F,F,F,F,F)V` HEAD/RETURN | suspend parent, push `gbuffers_armor_glint`, then reacquire parent | `FEATURE`; required push/pop semantics |
 | H-EYES-01 `LayerSpiderEyes`, `LayerEndermanEyes`, `LayerEnderDragonEyes` | each `func_177141_a(<concrete entity>;FFFFFFF)V` HEAD/RETURN: `EntitySpider`, `EntityEnderman`, or `EntityDragon` descriptor respectively | suspend parent, push `gbuffers_spidereyes`, then reacquire parent | `FEATURE`; bridge overloads taking `EntityLivingBase` are excluded by descriptor |
 | H-BEAM-01 `TileEntityBeaconRenderer` | both `func_188204_a(DDDDDDII[F)V` and `func_188205_a(DDDDDDII[FDD)V` HEAD/RETURN | enter/exit `gbuffers_beaconbeam`; scoped `beaconBeamDepth` | `FEATURE` |
 | H-BEAM-02 `RenderDragon` | `func_188325_a(DDDFDDDIDDD)V` HEAD/RETURN | enter/exit `gbuffers_beaconbeam`; scoped `beaconBeamDepth` | `FEATURE`; Pintonium supporting hook |
-| H-COLOR-01 `RenderLivingBase` | `func_177092_a(EntityLivingBase,F,Z)Z` RETURN and `func_177091_f()V` RETURN | publish/reset `entityColor` through Phase 6's typed sink | `OBSERVER`; no policy in mixin |
+| H9-COLOR-01 `RenderLivingBase` | within `func_177092_a(EntityLivingBase,F,Z)Z`, redirect the exact `GlStateManager.func_187448_b(IILjava/nio/FloatBuffer;)V` invocation | when `(target,pname)` is exactly `(GL_TEXTURE_ENV,GL_TEXTURE_ENV_COLOR)`, duplicate the buffer, copy four floats from its current position into the current Phase 9 color scope, then always call the original unchanged | `DEFERRED(P9,v0.3)` until installed, then `OBSERVER`; exactly one injection anchor, runtime observation once only on the true/effect path |
+| H9-COLOR-02 `RenderLivingBase` | `func_177091_f()V` RETURN | pop/restore the current Phase 9 color scope after vanilla unsets the effect; neutral when no outer scope remains | `DEFERRED(P9,v0.3)` until installed, then `OBSERVER`; frame reset is the throw fallback |
 
 `PassScopeStack` never asks Phase 5 for two simultaneous open snapshots. Push completes the parent
 snapshot without applying its flip set, acquires/binds the child, and records the parent's effective
@@ -944,6 +1037,20 @@ provider. Pop completes the child normally and reacquires that provider through 
 Any rejection aborts the shader frame. An AROUND hook restores in its local `finally`; a
 HEAD/RETURN hook leaked by a throw is drained and restored by the H-FRAME-00 boundary before the
 original throwable escapes.
+
+The Phase 9 augmentation order is one reverse-close stack, not three independent callbacks. On
+normal entity/TE RETURN it restores color, then entity/block-entity ID, then the Phase 7 program
+scope implicated by that call. On any throw or terminal frame path, H-FRAME-00 asks Phase 9 to
+`resetFrame` before Phase 7 drains program scopes or releases fixed function. The mixins retain only
+call-local opaque tokens/ordinals; alias lookup, nesting, diagnostics, and neutral writes remain in
+Phase 9.
+
+H9-COLOR-01 never queries TexEnv after the call and never reconstructs vanilla hurt/creeper
+formulas. Glue validates four readable floats at the duplicate's current position, finite-checks
+them, and neither mutates nor retains the original buffer. A wrong target/pname, short buffer,
+missing/extra observation, or stale scope forwards the original call but disables color delivery
+for that frame and publishes neutral. This is the exact operand/current-scope refinement required
+by R9-2; the former RETURN-only H-COLOR description is superseded.
 
 #### 4.10.5 Particles, clouds, weather, border, hand, and overlays
 
@@ -1005,7 +1112,7 @@ absence for omission.
 
 | App E row | Class | Phase 7 disposition |
 |---:|---|---|
-| 1 | `EntityRenderer` | H-FRAME, H-WEATHER, H-HAND; implemented v0.1 |
+| 1 | `EntityRenderer` | H-FRAME, H-WEATHER, H-HAND implemented v0.1; H9-HELD-01 accepted-frame augmentation activates with Phase 9 at v0.3 |
 | 2 | `RenderGlobal` | H-SKY, H-TERRAIN, H-DAMAGE, H-LINE, H-ENTITY, H-CLOUD, H-BORDER; implemented v0.1 |
 | 3 | `RenderChunk.func_178581_b(FFF,ChunkCompileTaskGenerator)V` | `DEFERRED(P10,v0.3)`: chunk-build entity-data push/pop |
 | 4 | `ChunkRenderDispatcher` | `DEFERRED(P10,v0.3)`: async build-context propagation; exact method chosen by Phase 10 |
@@ -1017,10 +1124,10 @@ absence for omission.
 | 10 | `TextureMap.func_110551_a(IResourceManager)V`, `func_110571_b(IResourceManager)V` | `DEFERRED(P13,v0.5)`: companion atlas lifecycle and `atlasSize`; prefer `TextureStitchEvent.Pre/Post` where sufficient |
 | 11 | `TextureAtlasSprite` class-level lifecycle | `DEFERRED(P13,v0.5)`: per-sprite companions; exact method chosen by Phase 13 |
 | 12 | `ItemRenderer.func_78440_a(F)V` | H-HAND/H-OVERLAY; implemented v0.1 |
-| 13 | `RenderManager.func_188388_a(Entity,F,Z)V`, `func_188391_a(Entity,D,D,D,F,F,Z)V` | `DEFERRED(P9,v0.3)`: IDs only; Phase 7 entity program scope is H-ENTITY-01 |
-| 14 | `TileEntityRendererDispatcher.func_147549_a(TileEntity,D,D,D,F)V` | H-ENTITY-03 program scope at v0.1; `DEFERRED(P9,v0.3)` augmentation for block-entity IDs |
+| 13 | `RenderManager.func_188388_a(Entity,F,Z)V`, `func_188391_a(Entity,D,D,D,F,F,Z)V` | H9-ENTITY-ID-01 is fully ordered/specified here and activates at v0.3; Phase 7's surrounding entity program scope remains H-ENTITY-01 |
+| 14 | `TileEntityRendererDispatcher.func_147549_a(TileEntity,D,D,D,F)V` | H-ENTITY-03 program scope at v0.1; H9-BLOCK-ENTITY-ID-01's inside-open/before-close augmentation activates at v0.3 |
 | 15 | `ParticleManager.func_78874_a(Entity,F)V` | H-PARTICLE; implemented v0.1 |
-| 16 | `GlStateManager` class-level | H-BLEND/H-FOG/H-STATE; implemented v0.1 |
+| 16 | `GlStateManager` class-level | H-BLEND/H-FOG/H-STATE implemented v0.1; the exact H9-COLOR-01 TexEnv operand redirect and H9-COLOR-02 reset activate at v0.3 |
 | 17 | `Framebuffer.func_147610_a(Z)V` | H-FBO/H-RESIZE; implemented v0.1 |
 | 18 | `WorldClient` class-level | Forge `WorldEvent.Unload` plus Phase 6 provider; no Phase 7 world mixin |
 
@@ -1038,6 +1145,7 @@ integration are pure mod-side work. Phase 7 exposes `ShaderReloadController`; it
 | vignette | use `RenderGameOverlayEvent.Pre(VIGNETTE)` | exact cancelable behavior |
 | fog state | use `EntityViewRenderEvent` family plus minimal GL observers | events supply view-level values; GL observers preserve exact effective state |
 | world teardown | use `WorldEvent.Unload` | exact lifecycle signal, avoids a `WorldClient` mixin |
+| registry remap | use `FMLModIdMappingEvent` | enqueue `RebuildActive` with `REGISTRY_REMAP`; the callback never resolves IDs or publishes directly |
 | atlas | defer with preference for `TextureStitchEvent.Pre/Post` | Phase 13 decides whether sprite-companion fidelity needs more |
 | resize | no suitable event found | H-RESIZE/H-FBO implement the OQ-3 fallback |
 
@@ -1053,8 +1161,17 @@ group from applying and selects `Off`; `ReplaceableBackendDetected` may select a
 adapter only when its capability contract covers §5.1. Otherwise it also selects `Off`. There is no
 partial double-injection into a replaced chunk/world pipeline.
 
-`HookApplicationReport` contains catalog ID, target, expected count, actual count, failure classes,
-deferred owner phase where applicable, and fallback. It is frozen before first frame, printed once on the `schmaloogium.hooks` channel, and
+`HookApplicationReport` contains catalog ID, target description, expected count, actual count,
+failure classes, deferred owner phase where applicable, and fallback. In addition to the Phase 7
+rows above it always contains H9-HELD-01, H9-ENTITY-ID-01, H9-BLOCK-ENTITY-ID-01, H9-COLOR-01, and
+H9-COLOR-02. Before Phase 9 activation those rows are `DEFERRED`, owner 9, expected/actual zero, and
+`VANILLA`; after a verified Phase 9 participant is installed they are respectively 1/1 participant
+registration, then 4/4, 2/2, 1/1, and 1/1 Mixin anchors, with `FEATURE` for held/IDs and
+`OBSERVER` for color. Partial ID-row activation disables the whole ID/held feature group and
+neutralizes its sinks; color observation degrades independently. No Phase 9 row is hidden merely
+because its milestone is dormant.
+
+The report is frozen before first frame, printed once on the `schmaloogium.hooks` channel, and
 included in capture diagnostics. The bridge measures aggregate nanoseconds/call count only when a
 debug profiler is enabled; production hot paths allocate no report records and perform one token
 check plus one interface call.
@@ -1175,6 +1292,29 @@ public sealed interface FrameAbortResult {
     record Failed(FailureId failure) implements FrameAbortResult {}
 }
 
+public interface IdDynamicsFrameSlot {
+    IdAcceptedFrameResult afterUniformFrameAccepted(
+        FrameToken frame, FrameBeginSignal signal, PublishedIdRuntime runtime);
+    IdResetFrameResult resetFrame(
+        FrameToken frame, PublishedIdRuntime runtime, IdFrameResetReason reason);
+}
+public sealed interface IdAcceptedFrameResult {
+    record Completed() implements IdAcceptedFrameResult {}
+    record HeldFeatureDisabled(FailureId failure) implements IdAcceptedFrameResult {}
+    record Rejected(IdFrameRejection reason) implements IdAcceptedFrameResult {}
+    record Failed(FailureId failure) implements IdAcceptedFrameResult {}
+}
+public sealed interface IdResetFrameResult {
+    record Reset() implements IdResetFrameResult {}
+    record AlreadyNeutral() implements IdResetFrameResult {}
+    record Rejected(IdFrameRejection reason) implements IdResetFrameResult {}
+    record Failed(FailureId failure) implements IdResetFrameResult {}
+}
+public enum IdFrameRejection { WRONG_FRAME, STALE_RUNTIME, WRONG_THREAD }
+public enum IdFrameResetReason {
+    NORMAL, EARLY_RETURN, THROWN, ABORT, RESIZE, OFF, REPLACEMENT, TEARDOWN
+}
+
 public interface ShadowInvocationSlot {
     ShadowInvocationResult invoke(ShadowInvocationContext context);
 }
@@ -1244,9 +1384,27 @@ public enum PipelineCacheState { PLAN_ONLY, READY_UNPUBLISHED, ACTIVE }
 public record PipelineVersion(long value) {}
 public record ReloadToken(long value) {}
 public enum ReloadReason {
-    PACK_SELECTION, OPTION_CHANGE, RESOURCE_RELOAD, DIMENSION_CHANGE, RESOLUTION_MULTIPLIER
+    PACK_SELECTION, OPTION_CHANGE, RESOURCE_RELOAD, DIMENSION_CHANGE, RESOLUTION_MULTIPLIER,
+    REGISTRY_REMAP, MOD_ID_SOURCE_CHANGE, TAG_OR_ALIAS_CATALOG_CHANGE, HAND_LIGHT_POLICY_CHANGE
 }
 public record ReloadReasons(Set<ReloadReason> values) {}
+
+public interface IdDependentGeometryInvalidator {
+    IdGeometryInvalidationResult invalidate(IdPublicationChange change);
+}
+public record IdPublicationChange(
+    OptionalLong previousGeneration, long currentGeneration,
+    Optional<IdRuntimeFingerprint> previousFingerprint,
+    IdRuntimeFingerprint currentFingerprint) {}
+public sealed interface IdGeometryInvalidationResult {
+    record Completed() implements IdGeometryInvalidationResult {}
+    record Rejected(IdGeometryInvalidationRejection reason)
+        implements IdGeometryInvalidationResult {}
+    record Failed(FailureId failure) implements IdGeometryInvalidationResult {}
+}
+public enum IdGeometryInvalidationRejection {
+    STALE_GENERATION, INVALID_CHANGE, SCHEDULER_UNAVAILABLE
+}
 
 public interface ResizeObservationPort {
     ResizeObservationResult observe(ResizeObservation observation);
@@ -1349,6 +1507,7 @@ public sealed interface ReloadStatus {
 
 public record FrameReadiness(
     PipelineIdentity identity, long registryGeneration, long bufferEstateGeneration,
+    OptionalLong idRuntimeGeneration,
     int consecutiveFinalizedFrames, Optional<FailureId> failure) {}
 public record FinalizedFrame(
     long frameId, PipelineIdentity identity, PipelineVersion version,
@@ -1380,7 +1539,6 @@ public interface UniformSignalBridge {
     SignalResult frame(FrameBeginSignal signal);
     SignalResult camera(FrameToken frame, CameraSnapshot camera);
     SignalResult event(FrameToken frame, UniformSignal signal);
-    SignalResult scopedColor(FrameToken frame, ScopeToken scope, ColorValue color);
 }
 public sealed interface UniformSignal {
     record Celestial(float sunAngle, float shadowAngle, float rainStrength) implements UniformSignal {}
@@ -1399,6 +1557,15 @@ public sealed interface SignalResult {
 `Accepted.token()`. `status` returns `Unknown` for any token the controller did not issue; that
 query is mutation-free. Issued tokens remain queryable through their current closed status; this
 contract does not introduce token expiry or a separate supersession history.
+
+`IdPublicationChange.previousGeneration/previousFingerprint` are both empty on first activation and
+both present thereafter; partial presence is invalid. `currentGeneration` and its fingerprint must
+equal the just-accepted `PublishedIdRuntime`. Every generation change schedules every Phase 10
+stamped chunk product from the old generation and invalidates vanilla/compat render-layer
+classification, even when the underlying mapping bytes compare equal; consumers authenticate to
+the generation, not to a guessed sub-fingerprint. `Completed` is the sole result that permits
+Active; rejection/failure follows §5.3 compensation and never leaks a Minecraft object across this
+seam.
 
 `BuiltInPassthroughPack` is always constructible and loadable through Phase 3 without a manifest.
 `InternalPackManifestProducer` is a separate post-R7-9 capability and must not be implemented,
@@ -1433,6 +1600,17 @@ invalidates all tokens; `AlreadyTerminal` is the mandatory no-op response to the
 call. `FrameAbortResult.Aborted` reports completed cleanup, while its `Failed` reports best-effort
 cleanup plus shaders-off recovery. No terminal result permits another shader call in that frame.
 
+`IdDynamicsFrameSlot` is construction-installed together with the verified Phase 9 publisher or is
+absent together with it before v0.3; partial presence is an invalid composition. Immediately after
+Phase 6 accepts a frame, `FrameDriver` calls `afterUniformFrameAccepted` once with the borrowed
+current ID runtime. `Completed` permits the next step; `HeldFeatureDisabled` means the slot already
+wrote the typed zero held tuple and permits the frame without held delivery; `Rejected` aborts this
+shader frame; `Failed` also schedules shaders off. Before every terminal fixed-function release,
+the driver calls `resetFrame` with the exact reason. Only `Reset`/`AlreadyNeutral` permit later
+shader activation; a reset rejection/failure forces off and no later shader draw occurs until a new
+runtime passes the boundary. The slot retains neither frame nor publication and delegates all
+sampling/value/stack policy to Phase 9's `PerDrawDynamics` and glue providers.
+
 `ShadowInvocationContext` is a synchronous, invocation-borrowed view: Phase 8 may use its current
 frame/publication credentials only during `invoke`, must not retain or close them, and must return
 before Phase 7 binds or clears the main estate. `NotInstalled` and `Completed` advance to the main
@@ -1445,8 +1623,9 @@ owns its internal failure taxonomy and all shadow camera/traversal/framebuffer/p
 The driver assigns `frameId` and supplies the active registry generation; neither is hook-made.
 Inputs reject non-finite time/matrix values and non-positive target extents before mutation. Both
 interfaces are `:engine` types. Their values contain booleans, finite scalars, immutable
-matrices, extents, closed enums, and existing Phase 1/3/4/5/6 engine types—never MC, Forge, Mixin,
-LWJGL, or raw GL integer names. The exact exposed contracts are:
+matrices, extents, closed enums, and verified Phase 1/3/4/5/6 types plus the v0.3 Phase 9 opaque
+fingerprint/generation types—never MC, Forge, Mixin, LWJGL, or raw GL integer names. The exact
+exposed contracts are:
 
 Every operation above is render-thread-only except `ShaderReloadController.request`, which may be
 called on the client main thread and only queues immutable copied values. Null values, blank report
@@ -1463,6 +1642,10 @@ into `FailureId`; Phase 7 never sanitizes, rewrites, or assigns them a longer li
 `HookApplicationRow.classes` is non-empty and contains every class on its catalog row. It may contain
 multiple values; no row is split or collapsed. `deferredOwnerPhase` is present exactly when
 `classes` contains `DEFERRED` and preserves that row's `Pn`; otherwise it is empty.
+For Mixin rows counts are successfully applied injection anchors. H9-HELD-01's target explicitly
+names the accepted-frame participant slot, whose 1/1 count is construction-time registration and
+never pretends to be a Mixin. The five Phase 9 rows obey §4.12's dormant/active count table; their
+active counts are respectively 1/1 registration, then 4/4, 2/2, 1/1, and 1/1 Mixin anchors.
 
 At bootstrap, `FrameDriver` receives exactly one `Optional<FrameCaptureListener>` construction
 dependency; absence means capture is disabled for that driver, and the listener cannot be replaced
@@ -1474,20 +1657,26 @@ off; Phase 2 retains the artifact-failure and shot-acknowledgement policy in §6
 
 `FrameReadiness.registryGeneration` equals the `PublishedRegistry.generation` accepted for the
 frame, and `bufferEstateGeneration` equals the accepted `BufferEstateView.generation()` used for
-that frame. They are independent `long` equality tokens and are not compared to each other.
-`FinalizedFrame.version` separately identifies the coordinated Phase 7 pipeline publication.
+that frame. `idRuntimeGeneration` is empty before the v0.3 participant activates and otherwise
+equals the `PublishedIdRuntime.generation()` whose aliases and per-draw dynamics were used. The
+present generations are independent equality tokens and are not compared to each other.
+`FinalizedFrame.version` separately identifies the coordinated Phase 7 publication.
 
 For `ReloadIntent.Select`, the controller invokes its construction-installed Phase 3 front end and
 load environment, obtains the current discovery generation where required, and owns the resulting
 `PackConfiguration`; callers supply no configuration. A `Select` request must include
 `PACK_SELECTION`; omission is rejected as `INVALID_REQUEST`. `RebuildActive` reuses only the currently
 active, manager-owned configuration and is rejected as `INVALID_REQUEST` unless `expectedActive`
-equals the active identity; it cannot carry `PACK_SELECTION`. Thus selection provenance and
-configuration provenance cannot be paired by a caller.
+equals the active identity; it cannot carry `PACK_SELECTION`. `REGISTRY_REMAP`,
+`MOD_ID_SOURCE_CHANGE`, `TAG_OR_ALIAS_CATALOG_CHANGE`, and `HAND_LIGHT_POLICY_CHANGE` are legal only
+on `RebuildActive`. `RESOURCE_RELOAD` is legal on either intent and forces both Phase 3 and Phase 9
+input refresh. Every accepted set is non-empty and preserved through coalescing. Thus selection,
+configuration, and ID-snapshot provenance cannot be paired by a caller.
 
 | Exposed contract | Exact content | Consumer(s) |
 |---|---|---|
 | `FrameDriver` / `FrameHookSink` | render-thread transaction owner; closed open/step/scope/finish/abort results; idempotent normal/finally finish | vanilla Mixin/event adapter; future Kirino adapter |
+| `IdDynamicsFrameSlot` and closed accepted/reset results | optional v0.3 slot paired with the Phase 9 publisher; held delivery exactly after Phase 6 frame acceptance and neutral reset before every terminal fixed-function release, without moving value policy into Phase 7 | Phase 9 `PerDrawDynamics`/glue adapter |
 | `FrameToken` / `ScopeToken` | opaque frame/epoch/generation and balanced-scope credentials; equality only; invalid after finish/abort/publication | `mod.glue.frame` call stack only |
 | `FrameBeginSignal` / `CameraSnapshot` / `FrameExitKind` | immutable frame/pass/time/dimension signal, copied main-camera matrices, and `NORMAL`, `EARLY_RETURN`, `THROWN` exit classification | hook adapters; Phase 6 producer bridge |
 | `RenderSection` | closed vanilla-phase vocabulary mapped to §3.2's exact pack-facing slots, including terrain variants and nested effects; no backup logic | hook adapters; Phases 8/9 may submit owned sections |
@@ -1495,11 +1684,12 @@ configuration provenance cannot be paired by a caller.
 | `FullscreenPassExecutor` / `FullscreenDraw` | typed execution of deferred/composite/final descriptors, mipmap set, viewport scale, instance index/count, QUADS-or-triangle-strip primitive choice | driver; recorded-GL tests |
 | `BuiltInPassthroughPack` / `InternalPackSource` | always-available Phase 3 source protocol: stable identity and limit-bounded snapshot throwing `InternalPackReadException` for Phase 3 to map to `INTERNAL_SOURCE_INVALID` | bootstrap; Phase 3 loader |
 | `InternalPackManifestProducer` | separate R7-9-gated deterministic GPL manifest/digest capability; unavailable before grant and reverification | Phase 2 headless golden input |
-| `ShaderReloadController` / `ReloadRequest` / `ReloadIntent` / `ReloadResult` / `ReloadToken` / `ReloadStatus` | main-thread asynchronous closed selection-change or validated active-rebuild intent whose render-thread commit uses `PipelineCoordinator`; accepted and coalesced issued tokens are polled through stable closed statuses, remain queryable, and mutation-free `Unknown` identifies unissued tokens; never accepts caller-paired selection/configuration or publishes half a pipeline | Phase 12 GUI/F3+R/command |
-| `FrameReadiness` | active pipeline identity, independent accepted Phase 4 registry and Phase 5 estate generations, consecutive finalized-frame count, and optional failure ID | Phase 2 capture agent |
+| `ShaderReloadController` / `ReloadRequest` / `ReloadIntent` / `ReloadResult` / `ReloadToken` / `ReloadStatus` | main-thread asynchronous closed selection-change or validated active-rebuild intent, including resource/remap/mod-source/tag-alias/hand-policy reasons, whose render-thread commit uses `PipelineCoordinator`; accepted/coalesced tokens remain queryable; never accepts caller-paired selection/configuration/ID snapshots or publishes a partial pipeline | Phase 12 GUI/F3+R/command; Forge/resource/Phase 9 glue producers |
+| `IdDependentGeometryInvalidator` / `IdPublicationChange` / closed result | synchronous safe-boundary gate after an accepted Phase 9 generation change; schedules alias/layer-dependent vanilla and Phase 10 chunk products before another shader frame, with no registry object crossing the seam | Phase 10 and `mod.glue` chunk scheduler |
+| `FrameReadiness` | active pipeline identity, independent accepted Phase 4 registry, Phase 5 estate, and Phase 9 ID-runtime generations, consecutive finalized-frame count, and optional failure ID | Phase 2 capture agent |
 | `FinalizedFrame` / `FrameCaptureListener` | construction-installed optional listener; exactly-once render-thread notification after final/pass completion and before presentation; borrowed view, dimensions, eye, frame ID, identities, no retained framebuffer handle | Phase 2 `:mod` capture agent |
-| `HookApplicationReport` | immutable catalog ID/target/expected/actual/class-set/deferred-owner/fallback rows frozen before first frame | diagnostics, Phase 2 manifest diagnostics, Phase 10 coexistence policy |
-| `UniformSignalBridge` | maps frame/camera/celestial/fog/blend and scoped-color signals to Phase 6's `UniformEventSink` without resampling | Phase 6 integration |
+| `HookApplicationReport` | immutable catalog ID/target/expected/actual/class-set/deferred-owner/fallback rows, including all five Phase 9 rows, frozen before first frame | diagnostics, Phase 2 manifest diagnostics, Phase 10 coexistence policy |
+| `UniformSignalBridge` | maps frame/camera/celestial/fog/blend signals to Phase 6's `UniformEventSink` without resampling; Phase 9 delivers held/entity/TE/color through authenticated `PerDrawDynamics` | Phase 6 integration; Phase 9 remains value owner |
 | `ShadowInvocationSlot` / `ShadowInvocationContext` / `ShadowInvocationResult` | synchronous borrowed frame/camera/publication/barrier credentials; closed `NotInstalled`, `Completed`, `Rejected`, `Failed` outcomes and the cleanup rules above | Phase 8 |
 
 No exposed contract contains a `ProgramHandle`, framebuffer GL name, physical ping-pong side, parsed
@@ -1526,13 +1716,15 @@ The binding Phase 2 surfaces are at `docs/phase2/v1/PHASE_2_DOC.md:1431`–`:144
 |---|---|
 | `PackFrontEnd`, discovery/load requests/results | bootstrap, selection, reload |
 | `PackConfiguration`, `PackIdentity`, `DimensionConfiguration`, fingerprint/version discipline | sole configuration and per-dimension cache truth |
+| schema-v2 `IdMappingInput` and nested schema/version discipline | handed unchanged into the Phase 9 candidate request; Phase 7 validates equality but never parses or resolves a rule |
 | `ProgramStateModel`, `ProgramState`, `EvaluatedProgramStates` | typed engine flags and evaluated property state; no properties reparse |
 | `ResourceRequirements` | Phase 4/5/6 build inputs and Phase 7 world constants/routing |
 | `InternalPackSource` / `InternalPackSnapshot` | Phase 7 supplies the built-in bytes through the Phase 3-owned protocol |
 | `centerDepthMacroContributor` slot | pass Phase 6's empty contribution into materialization |
 
 The complete Phase 3 exposure is binding at
-`docs/phase3/v1/PHASE_3_DOC.md:1103`–`:1186`.
+`docs/phase3/v1/PHASE_3_DOC.md:1251`–`:1337` and is freshly verified by
+`docs/phase3/reviews/PHASE_3_REVIEW_22.md`.
 
 #### Phase 4
 
@@ -1578,23 +1770,45 @@ The ordering and public surface are binding at
 
 ### 5.3 Candidate composition/publication protocol
 
-One `PipelineBuildTransaction` owns all unaccepted candidates. On the render thread it:
+One `PipelineBuildTransaction` owns all unaccepted candidates. It executes on the render thread;
+only step 2's pure Phase 9 build may complete off-thread after glue freezes all inputs, and its
+result rejoins the same transaction before step 3:
 
-1. loads one immutable Phase 3 configuration/dimension view and creates the Phase 6 runtime;
-2. compiles the Phase 4 candidate with Phase 6's macro contribution;
-3. takes the detached Phase 4 candidate view, plans and creates the Phase 5 candidate, and validates
+1. loads one immutable Phase 3 configuration/dimension view, validates schema-v2 ID input, and
+   creates the Phase 6 runtime;
+2. snapshots the Phase 9 registry/tag/mod-source/alias-catalog/hand-policy inputs through D-6 glue,
+   builds the opaque Phase 9 candidate, and validates its configuration/registry identities;
+3. compiles the Phase 4 candidate with Phase 6's macro contribution;
+4. takes the detached Phase 4 candidate view, plans and creates the Phase 5 candidate, and validates
    matching registry fingerprints;
-4. composes the Phase 4 barrier candidate with exactly the three participants from that Phase 6
+5. composes the Phase 4 barrier candidate with exactly the three participants from that Phase 6
    runtime;
-5. publishes Phase 4 first with a Phase-4-issued release context;
-6. publishes Phase 5 second, synchronously delivering its resize notice; and
-7. marks the pipeline Active only after both accept. No shader draw is legal between steps 5–7.
+6. at a no-frame/no-draw boundary resets the old Phase 9 per-draw stacks, then publishes Phase 4
+   first with a Phase-4-issued release context;
+7. publishes Phase 5 second, synchronously delivering its resize notice;
+8. publishes Phase 9 third with the exact configuration/registry/world context;
+9. if the Phase 9 generation changed, completes `IdDependentGeometryInvalidator.invalidate` for
+   alias/layer-dependent vanilla and Phase 10 chunk products; and
+10. marks the pipeline Active only after all publications and invalidation accept. No shader draw
+    is legal between steps 6–10.
 
-Any failure before step 5 closes every still-owned object in reverse order. Phase 4 rejection leaves
-both candidates caller-owned. If Phase 4 accepts but Phase 5 rejects, the transaction immediately
-publishes Phase 4 `RecoveredOff`, closes the rejected Phase 5 candidate, closes the unattached Phase
-6 runtime, and renders vanilla; it never exposes the new registry without its buffer estate.
-Acceptance transfers candidate ownership exactly once.
+Any failure before step 6 closes every still-owned object in reverse order. Phase 4 rejection leaves
+all candidates caller-owned. If Phase 4 accepts but Phase 5 rejects, the transaction immediately
+publishes Phase 4 `RecoveredOff`, closes the rejected Phase 5 and still-owned Phase 9 candidates,
+closes the unattached Phase 6 runtime, and renders vanilla. If Phase 9 rejects after Phase 4/5
+accept, Phase 7 recovers both earlier publications off and deactivates the old ID runtime after
+reset; it never exposes new programs/buffers with old ordinals. If invalidation rejects/fails after
+Phase 9 accepts, Phase 7 deactivates that new runtime, recovers Phase 4/5 off, and records a required
+full geometry invalidation before any retry. Shaders-off and teardown always reset dynamics, then
+deactivate Phase 9, then release Phase 5/4 in reverse composition order. Acceptance transfers each
+candidate's ownership exactly once.
+
+Phase 9 is not retroactively added to Phase 7's declared build dependencies. These v0.3 steps are a
+binding downstream integration slot: they remain dormant and report `DEFERRED(P9)` until a Phase 9
+artifact with a verified §5 supplies `IdRuntimeBuilder`, `IdRuntimeCandidate`, `IdRuntimePublisher`,
+`PublishedIdRuntime`, `RenderLayerLookup`, and `PerDrawDynamics`, and its glue installs
+`IdDynamicsFrameSlot`. Once installed, the transaction
+uses only those contracts and never reads Phase 9 internals.
 
 ### 5.4 Requested changes to dependency contracts — flagged, never assumed
 
@@ -1621,8 +1835,8 @@ none of those documents.
 | Phase | Contract handed onward |
 |---:|---|
 | 8 | use `ShadowInvocationSlot`; Phase 8 owns shadow traversal/camera/content and must return before the main clear |
-| 9 | use H-ENTITY-02/03 signal scopes to provide IDs; Phase 7 owns surrounding program selection |
-| 10 | activate only Appendix E rows 3–9 and supply the Phase 1 coexistence policy outcome |
+| 9 | supply the §5.3 candidate/publisher/dynamics contracts; Phase 7 publishes them third, calls held/reset at the accepted/terminal frame boundaries, and orders H9 entity/TE/color augmentation exactly as §4.10 specifies |
+| 10 | activate only Appendix E rows 3–9, implement `IdDependentGeometryInvalidator` scheduling for alias/layer generations, and supply the Phase 1 coexistence policy outcome |
 | 11 | install into Phase 6's custom participant; no new Phase 7 barrier participant |
 | 12 | use `ShaderReloadController`, never publish Phase 3/4/5 objects independently |
 | 13 | implement overlay/atlas leases behind Phase 5 and the deferred event/mixin rows |
@@ -1637,9 +1851,12 @@ none of those documents.
 | internal/default pack bytes invalid | Phase 3 load | deterministic diagnostic; publish `Off`; vanilla continues |
 | pack/preprocess/compile failure | Phase 3/4 closed result | close candidates; current active publication remains unless replacement was explicitly requested as Off |
 | uniform runtime creation/composition failure | Phase 6/4 closed result | close transaction; publish/recover `Off` if no prior healthy pipeline |
+| ID snapshot/build failure | Phase 9 closed result before publication | close transaction in reverse order; retain prior coherent active pipeline or `Off`; never publish a partial replacement |
 | buffer planning/build failure | Phase 5 closed result | close registry candidate; retain prior active or `Off`; no partial estate |
 | Phase 4 publish rejection | publisher result | close both caller-owned candidates; no generation change |
 | Phase 5 reject after Phase 4 accepts | publisher result | immediate Phase 4 `RecoveredOff`; close owned resources; no draw in between |
+| Phase 9 reject after Phase 4/5 accept | ID publisher result | recover Phase 4/5 off, reset/deactivate old ID publication, close caller-owned ID candidate; no frame opens with mixed ordinals |
+| ID geometry invalidation reject/failure | synchronous post-ID-publication gate | deactivate new ID runtime, recover Phase 4/5 off, require full chunk/layer invalidation before retry |
 | missing CORE hook | startup application audit | disable shader group for session (rung 3); vanilla render |
 | missing FEATURE hook/event | application/report audit | disable only that phase/flag (rung 2a) and restore vanilla state |
 | stale frame/barrier/generation or protocol rejection | closed Phase 4/5 result | abort shader frame, normalize, reacquire only at next frame; never retry inside a draw |
@@ -1647,6 +1864,7 @@ none of those documents.
 | backend pass/final failure | Phase 5 completion/port result | abort, normalize, recover `Off`; present vanilla if still valid |
 | resize/attachment epoch changes mid-frame | refresh/observer result | abort shader frame, schedule one safe-boundary rebuild, continue vanilla |
 | nested scope throws | local AROUND `finally` or H-FRAME-00 leaked-scope drain | abort child/frame, restore platform state, preserve the original throwable |
+| Phase 9 ID/color scope mismatch or throw | Phase 9 token result / H-FRAME-00 drain | reset entity/block-entity/color to neutral before Phase 7 program drain; disable only producer unless generation is stale |
 | ordinary early return | H-FRAME-00 `finally` with coherent token | run remaining composites and final exactly once, then commit |
 | early return after protocol/backend corruption | token marked unhealthy | do not issue unsafe fullscreen draws; abort/normalize and fall back to vanilla |
 | capture image/manifest write failure | capture agent commit | Phase 2-owned failure manifest; do not acknowledge shot; clean shutdown remains available |
@@ -1662,9 +1880,12 @@ unsafe.”
 
 ## 7. Threading & performance notes
 
-- Pipeline compile, Phase 4/5 candidate creation/publication, all hook signals, barrier activation,
+- Pipeline compile, Phase 4/5/9 candidate publication, all hook signals, barrier activation,
   fullscreen execution, resize delivery, capture, and teardown occur on the render thread. A reload
   request may be queued elsewhere but crosses as an immutable request and commits only there.
+- Phase 9's registry/mod/tag/policy snapshot is taken on its documented loader boundary; its pure
+  candidate build may run off-thread only after that snapshot freezes, while publication,
+  per-draw calls, and geometry invalidation remain render-thread safe-boundary operations.
 - `DimensionPipelineCache` is render-thread-confined. `PipelineVersion` is a 64-bit equality token;
   no greater-than comparison or temporal inference survives wrap.
 - Hot hook paths allocate no collections or strings. Catalog IDs and `RenderSection`s are constants;
@@ -1694,7 +1915,9 @@ unsafe.”
 | composite guarantee | normal, early-return, and thrown exits finalize exactly once when coherent; corrupted token aborts instead |
 | phase-dispatch completeness | every §3.2 program maps to one requested slot/fixed/virtual/deferral; no hidden string fallback |
 | nested scope property tests | arbitrary bounded push/pop/throw sequences leave no open Phase 5 snapshot and restore parent/fixed state |
-| candidate ownership model | every failure step closes exactly the caller-owned candidates; no draw between dual publication steps |
+| candidate ownership model | every failure step closes exactly the caller-owned Phase 4/5/9 candidates; no draw between the three publication steps or geometry invalidation |
+| ID-runtime coordination | schema/config/registry fingerprint mismatch, Phase 9 rejection after either earlier acceptance, reverse off order, generation invalidation, and unchanged-generation no-op |
+| per-draw dynamics | accepted Phase 6 frame → held sample before activation; nested entity overloads; TE ID strictly inside block program; color operand copy; normal/throw reset ordering |
 | dimension cache | base/override/disabled switches, version equality, failed build retention, demotion to plan-only |
 | fullscreen plan | mipmap-before-pass, identity projection, exact scale viewport, instances `0..N-1`, restore `0`, final/passthrough |
 | internal pack source/golden | pre-R7-9 Phase 3 load and limit rejection require no manifest; post-R7-9 exact manifest identity/path list and SHA-256-v1 digest cover every accepting limit; rejecting limits cannot yield a subset |
@@ -1712,7 +1935,10 @@ minimum GL 2.1 profile and one without quad support to force triangle strip.
 Mixin integration tests launch the Cleanroom dev client with the catalog report enabled and assert
 application counts, call order, early-exit finalization, actual-vs-window framebuffer extent, and
 event cancellation. Sky/cloud/weather—the three reference-free families—are tested before any pack
-matrix run. OQ-4 is a separate spike gate, not replaced by unit tests.
+matrix run. At v0.3 they additionally assert the five H9 report rows and exact expected counts,
+`FMLModIdMappingEvent` → queued `REGISTRY_REMAP`, both RenderManager entry methods, TE inside-open/
+before-close order, buffer-position-preserving color capture, and reset-before-fixed-function on an
+injected throw. OQ-4 is a separate spike gate, not replaced by unit tests.
 
 ### 8.3 Phase 2 implementation and milestone gates
 
@@ -1737,7 +1963,7 @@ licensing and cache rules.
 | 1 | dependency grant R7-8; grant and Phase 3 owner reverification of R7-9 before row 3 manifest/digest production; R7-1…R7-3 remain gates only for their named features | package/seam compile tests; dependency reviews literal PASS where §5 changed |
 | 2 | install Phase 1 bootstrap/GL-ready providers and the Phase 2 capture-plan skeleton required by D-10 | startup reaches `Off` and exits cleanly without renderer |
 | 3 | supply/load Phase 7's internal pack through Phase 3; after R7-9 grant and Phase 3 owner reverification, produce its canonical manifest/digest and run the headless golden; build Phase 6 runtime | headless internal golden and uniform-runtime tests |
-| 4 | compile Phase 4 candidate, derive Phase 5 candidate, compose participants, perform dual publication | recorded-GL ownership/publication tests |
+| 4 | compile Phase 4 candidate, derive Phase 5 candidate, compose participants, perform the v0.1 dual publication; the third Phase 9 publication activates at v0.3 | recorded-GL ownership/publication tests |
 | 5 | wire H-FRAME core transaction and fixed/final passthrough | empty world renders and early-return test finalizes once |
 | 6 | prove reference-free H-SKY, H-CLOUD, H-WEATHER first | dev hook report plus one fixed scene per family |
 | 7 | add terrain/damage/entity/effect/particle/border balanced routes | phase-dispatch coverage and recorded activations |
@@ -1754,7 +1980,7 @@ path could hide them. It also yields a valid fixed/passthrough frame before opti
 | Milestone | Phase 7 increment |
 |---|---|
 | v0.2 | Phase 8 fills `ShadowInvocationSlot`; main driver contract unchanged |
-| v0.3 | Phase 9 ID scopes and Phase 10 Appendix E rows 3–9 activate; coexistence registry policy lands |
+| v0.3 | Phase 9 candidate/publication, held/reset, entity/TE/color hooks, remap/source reasons, report rows, and Phase 10 alias/layer chunk invalidation activate coherently; Appendix E rows 3–9 and coexistence policy land |
 | v0.4 | Phase 11 custom bridge and Phase 12 reload/GUI consume existing contracts |
 | v0.5 | enable actual PRE_WEATHER/PRE_TRANSLUCENT copies after R7-1, render-scale viewports, instance loops, Phase 13 atlas/overlay bindings |
 | post-v0.5 | schedule new Phase 4 families data-first; no new catch-all render hook |
@@ -1848,6 +2074,7 @@ slice, or continue partially. Any selected alternative is recorded by a Phase 7 
 | D-P7-9 | `require=0` plus independent post-application health groups | missing hooks degrade instead of crashing, but cannot disappear silently |
 | D-P7-10 | final fixed/absent slot performs typed passthrough; quad capability selects strip fallback | final is total on the GL 2.1 baseline |
 | D-P7-11 | map Phase 3's typed flags to the narrow cancellable draws, scoped GL leases, and catalogued visibility queries in §3.5 | Phase 3 assigns behavior ownership but not hook-level semantics; narrow scopes preserve vanilla defaults and make restoration testable |
+| D-P7-12 | publish Phase 9 after Phase 4/5, invalidate ID-dependent geometry before Active, and reset its per-draw stacks before fixed-function release | grants R9-2 without moving alias/value policy into hooks or permitting mixed publication generations |
 
 ### 11.2 Binding decision disposition
 
@@ -1872,7 +2099,9 @@ slice, or continue partially. Any selected alternative is recorded by a Phase 7 
 - R7-4…R7-7 block COMPLETE run-manifest claims and T3 evidence, not ordinary v0.1 rendering.
 - R7-8 blocks implementation package placement under Phase 1's closed table.
 - R7-9 blocks internal-pack manifest/digest production pending its Phase 3 grant and reverification.
-- Phase 8/9/10/13-owned deferrals remain deliberately dormant at their stated milestones.
+- Phase 8/10/13-owned deferrals remain deliberately dormant at their stated milestones. Phase 9's
+  v0.3 integration is now fully ordered but remains dormant until its own §5 is verified and the
+  Phase 10/vanilla ID-dependent geometry invalidator is installed.
 
 ### 11.4 Input contradictions and rulings
 
@@ -1911,7 +2140,7 @@ This session does not edit `docs/research/v1/RESEARCH.md`, any `docs/design/*/DE
 | 4 | implement `DimensionPipelineCache` and equality-only versions | v0.1 | dimension/base/override/failure matrix |
 | 5 | implement project-owned `BuiltInPassthroughPack` as Phase 3 `InternalPackSource` with stable identity and whole-corpus bounded snapshot/checked provider failure; only after R7-9 add the separate `InternalPackManifestProducer` | v0.1 | pre-grant Phase 3 load/limit/provider-failure; post-grant manifest/digest golden |
 | 6 | implement pipeline build ownership ledger and reverse close | v0.1 | fault at every build step |
-| 7 | compose Phase 6 participants and paired Phase 4/5 publication exactly as §5.3 | v0.1 | recorded publication order/no-draw assertion |
+| 7 | compose Phase 6 participants and paired Phase 4/5 publication at v0.1; at v0.3 add the Phase 9 candidate/publication and geometry-invalidation gate exactly as §5.3 | v0.1/v0.3 | recorded three-publication order, reverse compensation, no-draw assertion |
 | 8 | implement `FrameRenderPort` through Phase 1 facade only | v0.1 | seam + recorded-GL tests |
 | 9 | implement bootstrap H-BOOT-01…03 | v0.1 | ordered startup test |
 | 10 | implement H-FRAME-00…07 and outer-finally/idempotence | v0.1 | normal/early/throw integration |
@@ -1921,22 +2150,22 @@ This session does not edit `docs/research/v1/RESEARCH.md`, any `docs/design/*/DE
 | 14 | prove H-CLOUD reference-free family and cloud flag precedence | v0.1 | fast/fancy/off scene matrix |
 | 15 | prove H-WEATHER reference-free family; keep actual copy v0.5-gated | v0.1 | rain/snow/depth restoration scenes |
 | 16 | implement terrain/deferred trigger and virtual transition after R7-2 | v0.1 | solid→deferred→water activation log |
-| 17 | implement damaged block/line/entity/block-entity subsection routing | v0.1 | scoped activation tests |
+| 17 | implement damaged block/line/entity/block-entity subsection routing; at v0.3 add H9 entity and inside-TE ID augmentation | v0.1/v0.3 | scoped activation, nested overload, and reverse-close tests |
 | 18 | implement leash/glint/eyes/beam nested scope stack | v0.1 | injected exception restores parent |
 | 19 | implement lit/unlit particle and world-border scopes | v0.1 | recorded slot selection |
 | 20 | implement split hand/depth-scale and overlay lease after R7-3 | v0.1 | solid/translucent/overlay scene |
-| 21 | implement flag/event wiring and state observers with recursion guard | v0.1 | all §3.5 tri-state/restoration tests |
+| 21 | implement flag/event wiring and state observers with recursion guard; at v0.3 replace legacy H-COLOR with exact H9 TexEnv operand/current-scope capture | v0.1/v0.3 | all §3.5 tests plus buffer-position/nested-color/throw-reset tests |
 | 22 | implement fullscreen executor: mipmaps, identity ortho, scale plumbing, strip fallback, final passthrough | v0.1 | two recorded capability profiles |
 | 23 | implement resize/FBO epochs and safe-boundary rebuild | v0.1 | resize/HiDPI/fullscreen fault matrix |
-| 24 | implement world unload/pack/dimension/reload teardown | v0.1 | no stale token/handle tests |
-| 25 | implement Mixin health plugin, group report, compatibility-registry bail | v0.1 | missing/overmatched/unsafe-renderer tests |
+| 24 | implement world unload/pack/dimension/resource/remap/ID-source reload teardown and reverse Phase 9→5→4 off order | v0.1/v0.3 | no stale token/handle/generation tests |
+| 25 | implement Mixin health plugin, group report, compatibility-registry bail, and all five dormant/active Phase 9 report rows | v0.1/v0.3 | missing/overmatched/unsafe-renderer and H9 count tests |
 | 26 | run and record OQ-3 spike; retain default fallback until success | v0.1 | `docs/decisions/OQ-3_GL_CONTEXT.md` |
 | 27 | run and record OQ-4 spike before production hot hooks close | v0.1 | `docs/decisions/OQ-4_CLEANMIX_HOOKS.md` |
 | 28 | implement capture readiness/frame boundary/shutdown without inferred manifest fields | v0.1 | capture-plan success/failure integration |
 | 29 | run reference-free family integration and `RUN-SCENE-SELFCHECK` | v0.1 | all repeated frames identical |
 | 30 | run Phase 7 impl gate: classic T0 matrix and one classic pack T1 | v0.1 | Phase 2 named artifacts/manifests |
 | 31 | fill Phase 8 shadow slot | v0.2 | shadow T1 scene |
-| 32 | activate Phase 9/10 deferred hooks | v0.3 | ID/vertex/coexistence suites |
+| 32 | activate the verified Phase 9 candidate/publisher, accepted-frame held call, terminal reset, H9 entity/TE/color hooks, reason producers, and Phase 10 ID-dependent geometry invalidator as one coherent v0.3 capability | v0.3 | ID/vertex/layer/remap/report/coexistence suites |
 | 33 | connect Phase 11/12 consumers | v0.4 | custom/reload/options tests |
 | 34 | enable depth copies, scale, instances, and Phase 13 overlay/atlas paths | v0.5 | copied-depth/multi-instance/T3 scenes |
 

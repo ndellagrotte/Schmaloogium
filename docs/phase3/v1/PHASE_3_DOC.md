@@ -3,7 +3,7 @@
 ## 0. Header
 
 **Phase:** 3 — Pack front-end: ingestion, preprocessing, and configuration model
-**Date:** 2026-07-29
+**Date:** 2026-08-03
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 3
 specification only. RC3 governs this phase only; this document does not change the Phase 1 or
 Phase 2 governance pins.
@@ -153,6 +153,28 @@ The immutable program-state aggregate and its Phase 4/5 projections are now exec
 
 Record-component changes now bump the configuration schema, and `RENDERTARGETS` work is post-v0.5.
 
+### 0.23 Maintenance addendum (Phase 9 ID-mapping input — 2026-08-03)
+
+Phase 9's R9-1 dependency request is applied across §§1–5, 8–9, 11, and 12. The former unresolved
+list aggregate is replaced by schema-versioned `IdMappingInput`: it preserves `ABSENT` versus
+`PRESENT_EMPTY` versus `PRESENT_RULES` independently for every mapping kind, classifies entry and
+tag selectors, carries per-rule classic/modern era provenance, and includes both ordinary and
+forced-`MC_VERSION=11300` entity parses. The same pure parser operation is exposed for bounded
+Phase-9-provided mod bytes. Because the published `PackConfiguration` component meaning and ID
+surface change, `PackFrontEnd.CURRENT_SCHEMA_VERSION` is incremented from 1 to 2.
+
+**Current §G1.3 status:** round twenty's literal PASS applies only to the pre-§0.23 bytes. This
+addendum changes §5, so Phase 3 is **not verified** and is not a valid dependency input until a
+fresh verification round returns literal PASS. The version directory remains `v1` while the loop
+is open.
+
+### 0.24 Maintenance addendum (closed ID-mapping value types — 2026-08-03)
+
+The schema-v2 publication now closes `PropertyPredicate` and `MappingOrigin`: predicates expose
+their canonical property name and ordered accepted values, while origins distinguish the selected
+pack from an ordered Phase-9 mod contribution and carry stable attribution identity. Matching,
+validation, equality, and construction semantics are fixed in §§2.2, 4.9, 5.1, and 8.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 3 owns
@@ -174,7 +196,8 @@ Phase 3 owns the complete pure-JVM path from a selected pack location to one imm
   materialization fingerprint;
 - all Appendix A.3 directive recognition and aggregation into requirements/configuration data;
 - the complete Appendix F `shaders.properties` model;
-- unresolved ID-mapping grammar and layer rules;
+- schema-versioned unresolved ID-mapping inputs, per-file presence, entry/tag and era provenance,
+  ordinary/forced-11300 entity parses, and layer rules;
 - per-pack/global persistence formats;
 - processed-source debug dumping; and
 - validation, diagnostics, and the atomic publication of `PackConfiguration`.
@@ -228,7 +251,7 @@ Illustrative signatures name the contracts; implementations remain private under
 
 ```java
 public interface PackFrontEnd {
-    int CURRENT_SCHEMA_VERSION = 1;
+    int CURRENT_SCHEMA_VERSION = 2;
     PackDiscoveryResult discover(PackDiscoveryRequest request);
     PackLoadResult load(PackLoadRequest request);
 }
@@ -292,9 +315,80 @@ public record PackConfiguration(
     MacroConfiguration macros,
     ShaderPropertiesModel properties,
     ResourceRequirements resources,
-    UnresolvedIdMappings idMappings,
+    IdMappingInput idMappings,
     List<EngineDiagnostic> diagnostics,
     ConfigurationFingerprint fingerprint) {}
+
+public record IdMappingInput(
+    int schemaVersion,
+    IdMappingMacroEnvironment parserEnvironment,
+    IdMappingFileInput blocks,
+    IdMappingFileInput items,
+    IdMappingFileInput entities,
+    IdMappingFileInput layers) {}
+
+public record IdMappingFileInput(
+    MappingKind kind,
+    MappingFileState state,
+    List<MappingRule> ordinaryRules,
+    List<MappingRule> forced11300Rules,
+    IdMappingFileFingerprint fingerprint) {}
+
+public interface IdMappingParser {
+    IdMappingFileInput parse(IdMappingParseRequest request);
+}
+
+public record IdMappingParseRequest(
+    MappingKind kind,
+    Optional<ImmutableBytes> source,
+    MappingOrigin origin,
+    IdMappingMacroEnvironment environment,
+    DiagnosticReporter diagnostics) {}
+
+public sealed interface MappingRule permits IdRule, LayerRule {
+    SelectorKind selectorKind();
+    String selectorToken();
+    MappingEra era();
+    MappingOrigin origin();
+    int sourceLine();
+    int selectorOrdinal();
+}
+
+public record IdRule(
+    int shaderId,
+    SelectorKind selectorKind,
+    String selectorToken,
+    OptionalInt legacyMetadata,
+    List<PropertyPredicate> propertyPredicates,
+    MappingEra era,
+    MappingOrigin origin,
+    int sourceLine,
+    int selectorOrdinal) implements MappingRule {}
+
+public record LayerRule(
+    RequestedRenderLayer layer,
+    SelectorKind selectorKind,
+    String selectorToken,
+    OptionalInt legacyMetadata,
+    List<PropertyPredicate> propertyPredicates,
+    MappingEra era,
+    MappingOrigin origin,
+    int sourceLine,
+    int selectorOrdinal) implements MappingRule {}
+
+public record PropertyPredicate(String propertyName, List<String> acceptedValues) {}
+
+public sealed interface MappingOrigin permits PackMappingOrigin, ModMappingOrigin {}
+public record PackMappingOrigin(PackIdentity pack, NormalizedPackPath source)
+    implements MappingOrigin {}
+public record ModMappingOrigin(
+    String modId, int contributionOrdinal, String sourceName) implements MappingOrigin {}
+
+public enum MappingKind { BLOCK, ITEM, ENTITY, LAYER }
+public enum MappingFileState { ABSENT, PRESENT_EMPTY, PRESENT_RULES }
+public enum SelectorKind { ENTRY, TAG }
+public enum MappingEra { CLASSIC, MODERN }
+public enum RequestedRenderLayer { SOLID, CUTOUT, CUTOUT_MIPPED, TRANSLUCENT }
 ```
 
 `DimensionKey` is an engine value containing the numeric legacy dimension ID, not a Minecraft
@@ -441,7 +535,8 @@ The load is a transaction with no externally visible partial state. `OFF` short-
    through line rewriting, include expansion, and jcpp, preserving any attributed legacy geometry
    pair without translating it;
 10. scan directives/declarations and fold them into immutable `ResourceRequirements`;
-11. preprocess/parse unresolved pack ID maps with standard A–G macros only;
+11. snapshot each pack ID-map file's presence, preprocess/parse it with standard A–G macros only,
+    and for a present entity file also produce the isolated forced-`MC_VERSION=11300` parse;
 12. validate cross-field invariants, compute a content fingerprint, and atomically publish
     `PackConfiguration`; final-source debug dumping occurs only on later successful materialization.
 
@@ -456,7 +551,7 @@ PackInputSnapshot
   ├─ SourceCatalog ─ IncludeGraph ─ OptionCatalog ─ SourceMaterializer
   ├─ ShaderPropertiesModel ─ Option/Profile/Screen/Texture/Expression/ProgramState models
   ├─ DirectiveScan ─ ResourceRequirements
-  └─ UnresolvedIdMappings
+  └─ IdMappingInput (four file states + ordinary/forced entity rules)
                          ↓ validate/freeze
                   PackConfiguration
                          ↓ only downstream input
@@ -619,9 +714,10 @@ smoothing formula; this phase does not import an alternate unit.
 | Standard macro identity families | configurable `MacroConfiguration` emits MC/GL/GLSL, OS, vendor, renderer, on-demand extension, and option macros | RESEARCH §3.5; `macro_standardFamiliesExactIdentity` |
 | Conditional preprocessing and substitution | jcpp adapters implement define/undef/if-family/defined/substitution for shaders and properties | RESEARCH §3.5; `preprocess_completeConditionalGrammarAllInputs` |
 | ID-map macro restriction | properties-safe preprocessing supplies standard A–G macros and no option macros | RESEARCH §3.7; `idMap_standardMacrosOnly` |
-| Block/item/entity short, namespaced, property, and legacy `id:meta` rules | unresolved typed `IdRule` lists retain origin/order for Phase 9 | RESEARCH §3.7; `idMap_allDocumentedRuleForms` |
-| Mod-provided ID-map contributions | public pure `IdMappingParser` accepts Phase-9-provided text plus `MappingOrigin` | RESEARCH §3.7; `idMap_modContributionOriginPreserved` |
-| `layer.solid/cutout/cutout_mipped/translucent` and opaque-solid exclusion | typed `LayerRule` plus deferred resolution constraint | RESEARCH §3.7; `idMap_layersAndOpaqueSolidExclusion` |
+| Block/item/entity short, namespaced, property, legacy `id:meta`, and `%namespace:path` tag rules | schema-v2 `IdMappingInput` retains typed rules, selector order/kind, file state, origin, and classic/modern era for Phase 9 | RESEARCH §3.7; `idMap_allDocumentedRuleForms`, `idMap_selectorKindEntryAndTag` |
+| Entity compatibility preprocessing | a present entity file publishes ordinary A–G results and a separate result made by replacing only `MC_VERSION` with `11300`; no selection or merge occurs here | RESEARCH §3.7 preprocessing requirement; `idMap_entityForced11300Isolated` |
+| Mod-provided ID-map contributions | public pure `IdMappingParser` accepts optional bounded bytes, mapping kind, the published parser environment, and `MappingOrigin` from Phase 9 | RESEARCH §3.7; `idMap_modContributionOriginPreserved` |
+| `layer.solid/cutout/cutout_mipped/translucent` and opaque-solid exclusion | typed `LayerRule` with the same selector/era provenance plus deferred resolution constraint | RESEARCH §3.7; `idMap_layersAndOpaqueSolidExclusion` |
 
 ## 4. Detailed design
 
@@ -1041,30 +1137,83 @@ means absent to its backup chain. Phase 5 receives only the ordered
 `Map<ProgramKey, Map<FlipBufferKey, FlipOverride>>`; absence means no explicit flip override.
 Neither view defaults render state beyond these stated absence results.
 
-### 4.9 Unresolved ID mappings
+### 4.9 Schema-versioned ID-mapping input
 
-`IdMappingParser` accepts named text sources with `MappingOrigin` metadata. Pack files are loaded
-here; future per-mod contributions may call the same pure parser after Phase 9 obtains their bytes.
-The output is deliberately unresolved:
+`PackConfiguration.idMappings()` is the schema-v2 `IdMappingInput` in §2.2, not a flattened list.
+Its four `IdMappingFileInput`s have exactly matching `MappingKind`s and immutable source order.
+For pack input, paths are exactly `shaders/block.properties`, `shaders/item.properties`,
+`shaders/entity.properties`, and `shaders/block.properties`'s `layer.*` family: block rules and
+layer rules therefore share bytes/origin but retain independent kind/state/result fingerprints.
+The published `parserEnvironment` is the immutable, loader-neutral Standard-Macro A–G environment
+used for those parses, including the ordinary integer `MC_VERSION`; it contains no option macro,
+pack handle, parser object, Minecraft type, or mutable map.
 
-```java
-public record UnresolvedIdMappings(
-    List<IdRule> blocks,
-    List<IdRule> items,
-    List<IdRule> entities,
-    List<LayerRule> layers) {}
-```
+`IdMappingParser.parse` is the one pure operation used both by `PackFrontEnd.load` and by Phase 9
+for a bounded mod contribution. `source=Optional.empty()` returns `ABSENT`, two empty rule lists,
+and the canonical absent fingerprint without preprocessing or a diagnostic. A present byte source
+is decoded as ISO-8859-1, properties-safe preprocessed, and parsed under the supplied environment.
+The parser defensively copies `ImmutableBytes`, applies Phase 3's finite source/line/token/
+diagnostic limits, returns immutable data, and catches every decode/preprocess/parse failure as an
+attributed diagnostic plus a valid empty result; it retains no caller storage. Phase 9 supplies
+only already containment-checked bounded bytes, an origin, the mapping kind, the exact
+`IdMappingInput.parserEnvironment`, and a reporter. It neither reconstructs macros nor parses Java
+Properties syntax.
 
-`IdRule` retains substitute integer ID, namespace/path or legacy numeric ID, optional metadata,
-ordered property predicates, source origin, and line. It supports short names, namespaced long
-names, block property matching, and legacy `id:meta`. `LayerRule` supports exactly
-`solid`, `cutout`, `cutout_mipped`, and `translucent`. The solid-opaque-cube exclusion is stored as
-a resolution constraint for Phase 9/7, not guessed without registries.
+`MappingFileState` is derived solely from the ordinary parse: no bytes is `ABSENT`; present bytes
+with zero valid ordinary rules is `PRESENT_EMPTY`; present bytes with at least one valid ordinary
+rule is `PRESENT_RULES`. Whitespace/comments, a conditionally empty file, and a file whose every
+line is invalid are all present-empty. State never depends on the forced parse, so a present entity
+file with no ordinary rule and one forced rule remains `PRESENT_EMPTY`—the distinction Phase 9
+needs for its conditional retry. Block, item, and layer inputs always have an empty
+`forced11300Rules` list.
 
-All three files are properties-safe preprocessed with A–G only. Unknown namespaces/names are not
-errors here. Invalid numeric keys, malformed predicates, or invalid layer names warn and ignore
-the line. Phase 9 owns pack/mod precedence, registry lookup, unknown-name warnings, and alias
-tables; Phase 7 owns render-layer dispatch.
+For a present `ENTITY` request the parser runs twice from the same copied bytes. The ordinary run
+uses `parserEnvironment` unchanged. The alternate run makes a private copy and replaces exactly
+the `MC_VERSION` macro value with integer `11300`; every other macro, parser option, source byte,
+origin, and bound is identical. The results are never merged or selected in Phase 3. Ordinary
+rules carry `MappingEra.CLASSIC`; alternate rules carry `MappingEra.MODERN`. An invalid alternate
+run is diagnosed and represented by an empty alternate list without changing the ordinary result.
+For an absent entity file neither run occurs. `IdMappingFileFingerprint` hashes schema version,
+kind, state, origin identity, exact source bytes/presence, canonical parser environment, both
+ordered rule lists, and diagnostics that affect rule acceptance; this Phase-3 fingerprint does not
+encode which list Phase 9 later selects.
+
+One property line may contain multiple selector tokens. The parser emits one `IdRule` or
+`LayerRule` per selector occurrence, with `selectorOrdinal` preserving left-to-right order after
+`sourceLine`; rules never combine entries and tags in one opaque collection. An ordinary short,
+namespaced, property-bearing, or legacy numeric selector is `SelectorKind.ENTRY`. A token beginning
+with exactly one `%` must contain a valid lower-case short name or `namespace:path`; the parser
+removes `%`, canonicalizes a short name to the `minecraft` namespace, and publishes it as
+`SelectorKind.TAG` without resolving membership. Empty, doubled-`%`, malformed, property-bearing,
+metadata-bearing, or numeric tag tokens warn and contribute no rule. Phase 9 alone expands tags
+through its 1.12 shim.
+
+`IdRule` retains the substitute full signed integer shader ID, canonical unresolved selector,
+optional legacy metadata, ordered property predicates, era, origin, line, and selector ordinal.
+`LayerRule` carries the same selector/provenance fields and exactly one of `SOLID`, `CUTOUT`,
+`CUTOUT_MIPPED`, or `TRANSLUCENT`. Unknown namespaces/names are not errors here. Invalid numeric
+keys, malformed/overflowing predicates, or invalid layer names warn and omit only that selector;
+the parser never drops a bad predicate and broadens the match. Solid-opaque-cube exclusion remains
+a Phase 9 resolution constraint because Phase 3 has no registry snapshot. Phase 9 owns ordinary/
+alternate selection, pack/mod/entry/tag precedence, registry lookup, unknown-name diagnostics, and
+aliases; Phase 7 owns render-layer dispatch.
+
+Each `PropertyPredicate` is one parsed `property=value` constraint in source order.
+`propertyName` is the non-empty lower-case registry property identifier; `acceptedValues` is the
+non-empty, immutable, comma-order list of distinct non-empty value tokens after grammar whitespace
+is removed. A predicate matches only when the resolved state exposes that property and its
+canonical value equals one listed token; predicates on a rule are ANDed. Invalid names, empty or
+duplicate values, an empty list, or duplicate property names within one selector invalidate that
+selector as described above; Phase 3 never publishes a predicate it cannot interpret this way.
+
+`MappingOrigin` is closed. Pack loading alone constructs
+`PackMappingOrigin(selected PackIdentity, normalized mapping-file path)`. Phase 9 alone constructs
+`ModMappingOrigin(non-empty canonical modId, non-negative contributionOrdinal, non-empty sanitized
+sourceName)`; the ordinal is its stable order within that mod's contribution snapshot. Null,
+malformed, or out-of-range components make the parse request invalid and yield an empty diagnosed
+result. Record equality is origin identity; diagnostics render the pack/path or mod/source name.
+Phase 9 uses the closed origin variant, `modId`, and ordinal as precedence inputs under its own
+policy—Phase 3 assigns no pack/mod or inter-mod precedence and does not compare origins.
 
 ### 4.10 Validation, fingerprints, debug dump, and publication
 
@@ -1078,7 +1227,8 @@ Validation has three levels:
 
 Only level 3 may fail the pack load. Levels 1–2 produce defaults/partial models and diagnostics.
 The immutable configuration fingerprint hashes pack bytes, normalized paths, active options,
-load-time macro policy, capability identity fields, and parser schema version. It excludes
+load-time macro policy, capability identity fields, parser schema version, and the canonical
+schema-v2 `IdMappingInput` including every file state and ordinary/forced rule-list fingerprint. It excludes
 downstream macro contributions and geometry plans; each `MaterializedSource` fingerprint includes
 the contribution and canonical plan actually used. It also includes the deterministic canonical
 encoding of `CanonicalDeclaredUniformPayload(schemaVersion, declarations)`: fixed field order,
@@ -1121,7 +1271,7 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 | `ResourceRequirements` and the closed §4.7 algebra | immutable typed minima, indexed attachment requirements, shadow/center-depth/noise records, smoothing/world constants, and dimension/program-keyed routing, mipmaps, attributes, instances, and optional legacy geometry; §4.7 defines defaults, absence, and deterministic order | Phase 4: program routing/geometry/instances; Phase 5: minima/attachments/pass mipmaps; Phase 6: center depth/smoothing; Phase 7: routing/instances/world constants; Phase 8: shadow; Phase 10: vertex attributes; Phase 13: noise enablement/resolution |
 | `CustomTextureSpec`, `NoiseTextureSpec` | lossless specs only | Phase 13 |
 | `CustomExpressionDecl` | typed name + raw expression | Phase 11, then Phase 6 |
-| `UnresolvedIdMappings`, `IdMappingParser` | unresolved pack rules and parser for Phase 9-provided mod text | Phase 9; layer result later Phase 7 |
+| `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, closed `MappingOrigin` variants | schema-v2 per-kind `ABSENT`/`PRESENT_EMPTY`/`PRESENT_RULES`; ordered entry/tag rules and predicates; pack or ordered mod-contribution origin; ordinary and isolated forced-11300 entity results; canonical parser environment and fingerprints. The same pure bounded-byte operation parses Phase-9-provided mod sources without reopening the pack or reconstructing macros | Phase 9; resolved layer result later Phase 7 |
 | `InternalPackSource` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; defensive byte copies and attributed failure | Phase 7 supplies content |
 
 `discover` requires a non-null `shaderpacksDirectory` and `DiagnosticReporter`. It and a
@@ -1201,7 +1351,7 @@ No GL service or handle is consumed.
 
 ### 5.3 Interface/version discipline
 
-`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `1`, and every configuration produced by this revision
+`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `2`, and every configuration produced by this revision
 publishes that value. A consumer supports exactly `schemaVersion == CURRENT_SCHEMA_VERSION`; every
 other value is rejected before derived state is created or retained. The schema is separate from
 the content fingerprint. Any change to the published `PackConfiguration` record-component set,
@@ -1212,6 +1362,9 @@ and default semantics. Collection order is deterministic and exposed as immutabl
 where pack order matters. Enums intended for forward-compatible storage include `UNKNOWN`, which
 is never a silently executable state. Closed executable enums reject unknown values; in particular,
 `GeometryInputPrimitive` and `GeometryOutputPrimitive` contain only their declared primitive sets.
+`IdMappingInput.schemaVersion` must equal its containing `PackConfiguration.schemaVersion`; Phase 9
+rejects a mismatch before parsing mod bytes or building aliases. Version 1 configurations are
+incompatible with the R9-1 surface and are never upgraded by inference.
 
 ### 5.4 Requested changes to the dependency contract
 
@@ -1330,6 +1483,19 @@ or Minecraft type is needed.
 - Properties safety: `propertyHashRoundTrip`, `properties_whitespaceAndHash`,
   `properties_continuationsEscapesAndComments`, `properties_conditionalScreenLayout`,
   `properties_malformedDirectiveWarns`, `properties_standardMacrosButNoOptionMacros`.
+- ID mapping input: `idMap_fileStateAbsentEmptyRulesPerKind` distinguishes missing, blank,
+  conditional-empty, all-invalid, and nonempty block/item/entity/layer inputs;
+  `idMap_entityForced11300Isolated` proves identical bytes/environment except `MC_VERSION`, no
+  absent-file parse, ordinary `CLASSIC`, alternate `MODERN`, independent diagnostics, and no merge;
+  `idMap_selectorKindEntryAndTag` covers short/namespaced entries, canonical `%` tags, ordering,
+  and every rejected tag form; `idMap_propertyPredicateAlgebraAndRejection` covers OR-within,
+  AND-between, missing properties, canonical ordering, and every invalid predicate shape;
+  `idMap_modContributionOriginPreserved` feeds defensive bounded
+  ISO-8859-1 bytes through the public operation and gets the same canonical output as pack loading;
+  `idMap_originVariantsIdentityValidationAndOrdering` covers pack attribution, canonical mod IDs,
+  per-mod ordinals, record equality, invalid construction, and leaves precedence evaluation to Phase 9;
+  `idMap_fingerprintCoversPresenceEnvironmentAndBothParses` mutates each load-bearing input; and
+  `idMap_schemaAndContainingConfigurationMustMatch` rejects v1 and mismatched nested schemas.
 - Appendix F tests: every Phase-3-owned test named in §§3.1–3.2 is required; a parameterized key
   manifest fails if a parser/model row lacks a Phase 3 assertion. Behavior-only handoff rows name
   their downstream owner's test and are excluded from the Phase 3 parser manifest.
@@ -1401,7 +1567,7 @@ milestone.
 | P3-C12 | legacy Appendix A.3 directive scanner, excluding `RENDERTARGETS` | `v0.1` |
 | P3-C13 | immutable resource-requirement aggregator | `v0.1` |
 | P3-C14 | complete Appendix F `ShaderPropertiesModel` | `v0.1` |
-| P3-C15 | unresolved ID-mapping/layer parser | `v0.1` |
+| P3-C15 | schema-v2 ID-mapping/layer parser, file-state/selector/era provenance, and forced-11300 entity parse | `v0.1` |
 | P3-C16 | source materializer and local processed-source debug dump | `v0.1` |
 | P3-C17 | validation, fingerprint, and atomic `PackConfiguration` publication | `v0.1` |
 | P3-C18 | logging/loader-neutral diagnostics and degradation adapter | `v0.1` |
@@ -1488,6 +1654,7 @@ not a decision (PD §7.6).
 | D-P3-20 | Store half-life directives as ticks because Appendix A.3 is normative; alternate units belong to Phase 6's explicitly recorded conflict handling, not this parser. |
 | D-P3-21 | Keep modern `.csh` recognition as post-v0.5 P3-C19 and `RENDERTARGETS` recognition/precedence as post-v0.5 P3-C22; the v0.1 routing model remains growth-shaped without implementing either modern parser path. |
 | D-P3-22 | Capture complete default-block declaration metadata from the final materialized token stream and bind it to that materialization's fingerprint; load-time resource recognition is too early to describe contribution/rewrite results, while post-link introspection cannot supply source attribution or declared-but-optimized-out entries. |
+| D-P3-23 | Publish file presence, entry/tag classification, per-rule era, and both isolated entity parses instead of making Phase 9 reopen bytes or infer preprocessing history; this grants R9-1 while keeping registry resolution and branch selection outside Phase 3. |
 
 ### 11.2 Binding-decision disposition
 
@@ -1526,8 +1693,9 @@ Phase 2 adapter.
   the Phase 3 type algebra.
 - Phase 7 must supply the bounded `InternalPackSource` snapshot, combine its owned engine flags with higher-priority game
   settings, and publish new configurations on pack/dimension/reload transitions.
-- Phase 9 must define mod-contribution acquisition/merge precedence and registry resolution over
-  `UnresolvedIdMappings`.
+- Phase 9 consumes `IdMappingInput`, selects an entity ordinary/forced result under its documented
+  present-empty rule, parses bounded mod bytes only through the published operation/environment,
+  and owns mod precedence, tag expansion, registry resolution, and aliases.
 - Phase 12 must define apply/discard timing and global setting UX without changing the codecs.
 - G8/S3 owns OQ-7's final policy after §10's spike.
 - G8/S2 consumes P3-C19; it must not alter legacy dimension-file rules silently.
@@ -1574,8 +1742,9 @@ Each item is independently actionable and names its test hook.
     `directive_rendertargetsAndPrecedence`.
 12. `[v0.1]` Implement P3-C13 requirement folding and cross-field conflict diagnostics; test one
     hand-verified classic-pack expectation.
-13. `[v0.1]` Implement P3-C15 unresolved ID/layer grammar with A–G preprocessing; run long/short/
-    property/legacy/layer and malformed-line tests.
+13. `[v0.1]` Implement P3-C15's schema-v2 `IdMappingInput`, four per-kind file states, pure bounded-
+    byte parser, entry/tag classification, per-rule era, and isolated forced-11300 entity result;
+    run all `idMap_*` tests, including long/short/property/legacy/layer and malformed-line cases.
 14. `[v0.1]` Implement P3-C16 materialization cache, the complete fingerprint-bound
     `DeclaredUniformCatalog`, and local-only sanitized debug dump; run every
     `declaredUniformCatalog_*` test and assert dumps never enter golden manifests.

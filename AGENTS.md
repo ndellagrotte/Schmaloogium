@@ -70,10 +70,10 @@ Everything in `docs/` is governed. Read this before editing, and before citing.
 Supporting files: `docs/MOVES.md` (the path manifest), `docs/tooling/VERIFY_LOOP_BRIEFS.md`,
 `docs/decisions/`, and `docs/phase<N>/briefs/` (the per-session briefs that commissioned a round).
 
-### Four different files are named `DESIGN.md`
+### Five different files are named `DESIGN.md`
 
-`docs/design/v1.1/`, `docs/design/v2.0-RC1/`, `docs/design/v2.0-RC2/`, and
-`docs/design/v2.0-RC3/` each hold a `DESIGN.md`.
+`docs/design/v1.1/`, `docs/design/v2.0-RC1/`, `docs/design/v2.0-RC2/`,
+`docs/design/v2.0-RC3/`, and `docs/design/v2.0-RC4/` each hold a `DESIGN.md`.
 They are **different documents**, they do not share line numbers, and phase docs are anchored to
 different ones. Every phase doc and review cites its revision *by line number*.
 
