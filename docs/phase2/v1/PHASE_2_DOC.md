@@ -2,7 +2,7 @@
 
 > **Phase:** 2 — Conformance harness · **Milestone:** v0.1 (design; implementation starts week one)
 > **Depends on:** Phase 1 · **OQs assigned:** OQ-10
-> **Date:** 2026-07-25
+> **Date:** 2026-07-25 · **Last revised:** 2026-08-03 (§0.16)
 > **Session type:** `DESIGN.md` §G1.1 build session. No source was written, no build or test was run,
 > no review agent was launched, and this document was not self-reviewed. Verification is the separate
 > §G1.2 session.
@@ -134,6 +134,16 @@ cache/run-root establishment procedure. The §5 interface changed.
 
 Moved the Git-worktree refusal ahead of cache creation and made GL-error attribution come only
 from a requested replay-aware Phase 1 result. The §5 interface changed.
+
+### 0.16 Downstream-request addendum (Phase 8 hook evidence — 2026-08-03)
+
+Review round 15 ended in literal **PASS** with zero blocking findings and zero corrections
+(`docs/phase2/reviews/PHASE_2_REVIEW_15.md`). This maintenance amendment accepts Phase 8 R8-5's
+Phase-2 half: `schmaloogium.run-manifest/1` now carries the complete immutable Phase 7 application
+report, including nested Phase 8 health rows, by direct field-for-field projection. The schema
+forbids deriving health or capability from rendered behavior. Because §§4.5.4 and 5 change, Phase 2
+v1 is unverified pending fresh review round 16; the version directory is unchanged while that loop
+is open.
 
 ---
 
@@ -764,6 +774,7 @@ makes a tier claim defensible months later (§4.2.5), and what makes a flaky dif
 | `pack` | pack id, version key, acquisition mode, archive SHA-512, licence line copied from the registry (§3.1), the option values pinned by the scene |
 | `programs` | per program slot: `SOURCED` \| `CHAIN(from=<slot>)` \| `ABSENT` \| `FAILED(log)`, plus whether the pack shipped a source file for it — the pair that makes §4.2.4's clause 2 decidable |
 | `resources` | the sizing decisions the engine made: colour-buffer count and formats, depth textures, shadow buffers and resolution, `centerDepthSmooth` on/off, noise resolution — the live counterpart of §4.11's `SIZING` golden |
+| `hooks` | the complete frozen Phase 7 hook-application report: every primary row plus every nested owner subreport, including Phase 8's immutable health rows when installed; never a capability reconstruction |
 | `frames` | per shot: planned/actual frame count, world tick, `partialTicks`, `frameCounter`, entity count in frame, wall-clock duration |
 | `gl_errors` | all `GLError` records (op, subject, kind, detail, attributed); the reported unattributable count is the number whose `attributed=false` (§4.2.1) |
 | `images` | per shot: path, dimensions, pixel-raster SHA-256 |
@@ -779,7 +790,7 @@ scalars are
 shadersActiveThroughout,hangCeilingMillis,timedOut}`,
 `frontEnd.{completed,packConfigurationProduced}`, and
 `environment.{os,jvm,minecraftVersion,cleanroomVersion,worldSha256,modSetSha256}`, plus
-`gl.available` and `resources.available`.
+`gl.available`, `resources.available`, and `hooks.available`.
 The required pack scalars are JSON strings `pack.{id,version,acquisitionMode,archiveSha512,licence}`.
 `pack.id`, `pack.version`, and `pack.licence` are non-empty; `pack.acquisitionMode` is exactly
 `MODRINTH|MANUAL`; and `pack.archiveSha512` is exactly 128 lowercase hexadecimal digits.
@@ -816,7 +827,34 @@ instance records are sorted uniquely by `program`, and instance counts are posit
 `{limit,required,available}` records sorted by `limit`, where `limit` is exactly
 `maxDrawBuffers|maxColorAttachments|maxTextureImageUnits` and the values are non-negative integers.
 When `resources.available=false`, every other `resources.*` key is absent. A complete agent manifest
-requires both availability flags true; a runner-synthesized failure manifest may use false.
+requires all three availability flags true; a runner-synthesized failure manifest may use false.
+
+When `hooks.available=true`, `hooks.rows.count` governs the complete dense primary report in its
+source list order. Every `hooks.rows.<n>` has required
+`{catalogId,target,expectedCount,actualCount,classes.count,fallback}` fields;
+`hooks.rows.<n>.classes.<m>` is dense, unique, and in closed enum order
+`CORE,FEATURE,OBSERVER,DEFERRED`, with values drawn only from that set. `catalogId` and `target` are
+non-empty JSON strings, counts are non-negative integers, `classes.count` is positive, and
+`fallback` is exactly `NONE|EVENT|VANILLA|SHADERS_OFF`.
+`hooks.rows.<n>.deferredOwnerPhase` is present and a positive integer exactly when the class list
+contains `DEFERRED`; otherwise that key is absent. Primary catalog IDs are unique. The writer
+preserves the frozen Phase 7 list's IDs, target strings, order, counts, classes, deferred owner, and
+fallback exactly; it neither sorts the report into a new identity nor drops dormant rows.
+
+`hooks.subreports.count` governs dense records sorted by unique positive
+`hooks.subreports.<n>.ownerPhase`. Each record requires
+`{ownerPhase,canonicalFingerprint,featureEnabled,rows.count}`;
+`canonicalFingerprint` is exactly 64 lowercase hexadecimal digits, `featureEnabled` is boolean,
+and `rows.count` is positive. Its dense rows require
+`{catalogId,expectedCount,actualCount,disposition}`, are sorted by unique non-empty `catalogId`, and
+use only `HEALTHY|FEATURE_DISABLED`. Owner phase 8, when present, is a byte-for-value projection of
+Phase 7's nested `ShadowHookHealth` report: all eight rows, their existing IDs, expected/actual
+counts, dispositions, canonical fingerprint, and aggregate enabled bit. Missing owner phase 8 is
+explicit absence, never healthy shadow capability. `hooks.available=false` requires every other
+`hooks.*` key to be absent. No manifest producer or consumer may infer a row, count, disposition,
+fingerprint, or enabled bit from a successful frame, image, selected program, bound resource,
+diagnostic, or any other runtime behavior; the sole source is Phase 7's frozen
+`HookApplicationReport`.
 `gl_errors.count` counts all dense records, every record's `attributed` field is a required boolean,
 and the unattributable-error count is derived only as
 `count(gl_errors.<n>.attributed == false)`; no separate scalar encodes it.
@@ -836,7 +874,9 @@ T0 is derived without live state: `parses` requires `frontEnd.completed`,
 `exitStatus=COMPLETE`, empty `uncaughtException`, `compatVerdict=Continue`,
 `shadersActiveThroughout=true`, `timedOut=false`, every frame's `actual=planned`, and every
 `durationMillis <= hangCeilingMillis`. Program and GL predicates use their existing blocks, and T0
-also requires both availability flags true.
+also requires all three availability flags true. Hook availability proves evidence completeness;
+individual hook dispositions affect T0 only through existing engine outcomes such as
+`shadersActiveThroughout`, never through a Phase-2 capability guess.
 `CaptureRunner` validates the agent's temp file and atomically publishes it; if launch, timeout,
 crash, malformed/truncated output, or any earlier step prevents publication, it instead emits a
 schema-valid manifest from the plan and runner observations with `exitStatus=FAILED`,
@@ -1439,8 +1479,8 @@ is inert without its system property.
 | **The golden document format + adapter input requirements** | §4.11.1–§4.11.4. Phase 3 owns the `:engine` snapshot API, Phase 4 supplies its per-slot resolution enrichment, and complete real goldens wait for both; Phase 2 maps it in `:conformance` | **3**, **4**, 5 |
 | **The `[sizing]` golden section** — the concrete list of resource-sizing decisions the headless harness validates | §4.11.3 | **3**, **4**, **5** |
 | **The `GLCapabilityProfile` fixture set + `profiles.index`** | §4.12. Phase 1 owns the type and format; this is the *set* your "recorded-GL run" impl gates run against | **4**, **5**, **6**, 14 |
-| **The run manifest wire schema** | §4.5.4, schema `schmaloogium.run-manifest/1`, canonically stored at `<cache>/runs/<runId>/manifest.manifest`, including the complete canonical `resources.*` key/type/cardinality/absence grammar. Its required pack scalars fix identity, `MODRINTH|MANUAL` acquisition, SHA-512, and licence; its world identity admits only directories/regular files and rejects links and other entries before copy/hash. It carries every T0 predicate and baseline identity; the per-slot `programs` block makes T3 decidable; consumers derive the reported unattributable-error count by counting `gl_errors` records whose required boolean `attributed=false`, sourced only from R4A's replay-aware result | **3** (front-end and pack configuration), **4** (per-slot program resolution), **5** (immutable live resource snapshot), **7** (capture and serialization, gated on R4A) |
-| **The capture-agent contract + capture-plan wire schema** — what `:mod` must implement and what Phase 7 must hook | §4.5, schema `schmaloogium.capture-plan/1`, §5.4 R11–R14 | **7** |
+| **The run manifest wire schema** | §4.5.4, schema `schmaloogium.run-manifest/1`, canonically stored at `<cache>/runs/<runId>/manifest.manifest`, including the complete canonical `resources.*` and `hooks.*` key/type/cardinality/absence grammars. Its required pack scalars fix identity, `MODRINTH|MANUAL` acquisition, SHA-512, and licence; its world identity admits only directories/regular files and rejects links and other entries before copy/hash. It carries every T0 predicate and baseline identity; the per-slot `programs` block makes T3 decidable; hook rows are a complete direct copy of Phase 7's frozen primary/nested report with no capability inference; consumers derive the reported unattributable-error count by counting `gl_errors` records whose required boolean `attributed=false`, sourced only from R4A's replay-aware result | **3** (front-end and pack configuration), **4** (per-slot program resolution), **5** (immutable live resource snapshot), **7** (capture, frozen hook report, and serialization, gated on R4A) |
+| **The capture-agent contract + capture-plan wire schema** — what `:mod` must implement and what Phase 7 must hook | §4.5, schema `schmaloogium.capture-plan/1`, §5.4 R11–R14 and R17–R18 | **7** |
 | **The fixture registry, cache API and never-rehost rules** | §4.10 | anyone adding a pack; CI |
 | **Tolerance profiles** | §4.6.3, calibrated by §4.6.5 | anyone reading a diff verdict |
 | **The CI task split** — hermetic `test` vs fixture-dependent `conformanceTest`, and the tag policy | §4.14 | anyone adding a test to `:conformance` |
@@ -1545,6 +1585,7 @@ serializes the snapshot.
 | R13 | *Conditional:* a fixed-`partialTicks` override, **only if** §4.4's residual risk on animated textures materialises in practice. Not requested now; recorded so it is a known additive route rather than a surprise |
 | R14 | A clean programmatic shutdown after the last shot, so a capture run terminates without a timeout kill |
 | R17 | Capture and serialize every replay-aware result requested by R4A, copying its boolean verbatim to `gl_errors.<n>.attributed`; preserve single-call, batched, replay-clean, and foreign-error records, and never derive attribution from `GLError.op` or `subjectLabel`. This work is gated until Phase 1 accepts R4A |
+| R18 | Capture and serialize the complete frozen `HookApplicationReport` defined by Phase 7: preserve every primary catalog ID/target/order/count/class/deferred-owner/fallback and every nested owner-phase/fingerprint/enabled/row field exactly. Include Phase 8's eight-row nested report when present; represent absence as absence; never infer hook health or capability from runtime behavior |
 
 **To Phase 12:** R15 — programmatic get/set of pack options and engine options, for the scene format's
 `[pack] option.*` and `engine.*` blocks, plus a validation hook so §4.3.3 can reject an unknown
@@ -1586,6 +1627,7 @@ is claimed without evidence** (§4.2.5).
 | Oracle absent for a T2 shot | `SKIPPED(oracle-absent)` with §4.8's procedure referenced |
 | Candidate and baseline dimensions differ | Hard failure, not a large diff (§4.6.1) |
 | Client process times out or exits non-zero | Run `FAILED`; the partial manifest, the client log and any images already written are preserved in the run directory. A timeout is never a skip |
+| Hook report missing, mutable, malformed, filtered, or unavailable | The agent cannot publish a complete manifest; runner fallback writes `hooks.available=false`, omits all other `hooks.*` keys, and T0 fails. No observed rendering is used to reconstruct the report |
 | A shot's `captureFrames > 1` frames are not `IDENTICAL` | Run `FAILED` with a determinism-leak message pointing at §4.4's ledger. This is a harness/scene defect, and saying so is more useful than reporting it as a pack failure |
 | Golden mismatch | Test failure showing the unified diff of two sorted text documents. Never auto-updated: `-PupdateGoldens` is explicit and fails the build after writing (§4.11.5) |
 | Scene file invalid | Refused at parse with the rule that was violated; the run does not start (§4.3.3) |
@@ -1651,9 +1693,10 @@ All in `:conformance` unless noted; all in the hermetic `test` task (§4.14) unl
 | `GoldenWriterDeterminismTest` | byte-identical output across repeated runs, across `Locale.ROOT` vs a comma-decimal locale, across two timezones, and across two different input iteration orders |
 | `GoldenComparerTest` | equal documents pass; a single changed value produces a diff naming section, key, expected and actual |
 | `GoldenCorpusTest` | **every committed golden parses into the document model and re-renders byte-identically.** This is the structural proof of `[D-P2-5]`: a golden that contained free source text could not round-trip through a model that has no field to hold it |
-| `RunManifestReaderTest` | the canonical §4.5.4 full-block fixture at `conformance/src/test/resources/wire/run-manifest-v1.manifest`, including T0 state, both baseline hashes, and attributed plus unattributable GL-error records, round-trips byte-identically; duplicate, missing, gapped-index, malformed, unknown-core, unsupported-version, and non-boolean `attributed` inputs abort; `x.<producer>.*` fields are preserved-and-reported |
-| `TierEvaluatorTest` | reconstructs each T0 failure independently from serialized evidence (front-end failure, diagnostic, attributed and unattributable GL errors, program failure, exception, bail, shaders-off, timeout, frame-count mismatch, and over-ceiling frame); derives unattributable diagnostic counts of zero, one, and multiple solely from `attributed=false` records; covers T1's `NO_BASELINE`, T2's dual-spec refusal, and T3's sourced/unsourced `CHAIN` cases |
-| `RunManifestFailureTest` | launch failure, timeout, crash, and truncated agent output each produce a canonical runner-synthesized manifest that round-trips and deterministically fails T0 |
+| `RunManifestReaderTest` | the canonical §4.5.4 full-block fixture at `conformance/src/test/resources/wire/run-manifest-v1.manifest`, including T0 state, both baseline hashes, attributed plus unattributable GL errors, all primary hook rows, and a nested eight-row Phase 8 report, round-trips byte-identically; duplicate/missing/gapped hook rows, duplicate catalog/owner IDs, bad class order, illegal deferred-owner presence, bad fingerprint/disposition, filtering/reordering, malformed input, unknown core keys, unsupported versions, and non-boolean fields abort; `x.<producer>.*` fields are preserved-and-reported |
+| `TierEvaluatorTest` | reconstructs each T0 failure independently from serialized evidence (front-end failure, diagnostic, attributed and unattributable GL errors, program failure, exception, bail, shaders-off, timeout, frame-count mismatch, over-ceiling frame, and unavailable hook evidence); derives unattributable diagnostic counts solely from `attributed=false`; covers T1's `NO_BASELINE`, T2's dual-spec refusal, and T3's sourced/unsourced `CHAIN` cases without inferring capabilities from hook or image behavior |
+| `RunManifestFailureTest` | launch failure, timeout, crash, truncated agent output, and missing hook report each produce a canonical runner-synthesized manifest with all three availability flags false where evidence is unknown, round-trip, and deterministically fail T0 |
+| `HookManifestEvidenceTest` | serialization is a field-for-field copy of a frozen Phase 7 report; Phase 7 primary IDs/order never change; an owner-phase-8 subreport preserves exactly eight IDs/counts/dispositions and its fingerprint/enabled bit; absence stays absent; successful frames and images cannot synthesize health |
 | `BaselineIdentityTest` | world and mod-set hashes are invariant to traversal/record order, change with any input byte or identity, flow unchanged into approval manifests, and a mismatch yields `NO_BASELINE`; world copy/hash rejects an internal link, an escaping link, FIFO, socket, and representative device entry without following it |
 | `TierLedgerTest` | scene-set identity and exact constituent coverage; missing/hash-mismatched/stale evidence → effective `NOT_ATTEMPTED`; artifact directories reject absolute paths, traversal, and symlinked components; the canonical evidence index and run manifests resolve beneath the established run-output root, and missing, escaping, hash-mismatched, linked-component, replaced-root, or non-regular cases invalidate the row; manual attestations obey the same traversal rule at their content-addressed paths; inconsistent same-scene-set ledgers flagged; both renderings expose all pointers and are sorted and stable |
 | `ReportRendererTest` | snapshot of all three renderings; skips counted separately from passes (§4.13 rule 3); every non-pass carries a reason |
@@ -1698,7 +1741,7 @@ here is `v0.1` even though the behaviour it will eventually measure is not.
 | Scene `weather-rain` | authored `v0.1`, first gated `v0.5` | `gbuffers_weather` itself is a v0.1 gbuffers program, but the behaviour this scene exists to check — the `depthtex2` copy taken *before* weather so composites get a weather-free depth view (§4.3 of RESEARCH.md) — arrives with §9's v0.5 depth-copy row |
 | Capture plan format + `CapturePlanWriter` (§4.5.2) | `v0.1` | |
 | `CaptureAgent`, `SceneApplier`, `FrameGrabber`, `RunManifestWriter` (§4.5) | `v0.1` | designed now, runnable the moment v0.1 renders — the spec's own phrasing |
-| Run manifest format + reader (§4.5.4) | `v0.1` | T0 and T3 both decide from it |
+| Run manifest format + reader (§4.5.4), including complete primary/nested hook evidence | `v0.1` | T0 and T3 both decide from it; owner-phase-8 rows activate at v0.2 without a schema change |
 | World generation cache (§4.5.5) | `v0.1` | |
 | Image differ, tolerance profiles, cluster analysis, ignore masks (§4.6) | `v0.1` | testable against synthetic images with no renderer |
 | Tolerance calibration (§4.6.5) | `v0.1` | first real captures replace the starting numbers |
@@ -1923,6 +1966,7 @@ framebuffer size.
 | `D-P2-19` | The evidence rule: a tier is recorded only with a run id and a manifest hash | a remembered pass is not a pass (§4.2.5) |
 | `D-P2-20` | Registry version IDs and hashes are **left unfilled** here and populated by the implementation effort; an empty pin is a hard failure, never "latest" | App G gives version names, not pins; a fabricated pin is one CI would trust (§4.10.1) |
 | `D-P2-21` | OQ-10's fallback is designed now and costs no milestone gate | §10.3(4) |
+| `D-P2-22` | Hook evidence is serialized only as a complete direct projection of Phase 7's frozen primary/nested application report | application facts have stable owners and IDs; rendered behavior cannot authenticate whether an injection applied |
 
 ### 11.2 Disposition of `D-1` … `D-10`
 
@@ -2004,11 +2048,13 @@ legitimate inheritance from a compile failure the backup chain absorbed.
 **To Phase 5** — R10A. Supply the immutable live resource snapshot; its fields and absence rules are
 the canonical `resources.*` wire block in §4.5.4.
 
-**To Phase 7** — R11–R14 and R17. R11 is the one that gates every image tier: without a defined moment after
+**To Phase 7** — R11–R14, R17, and R18. R11 is the one that gates every image tier: without a defined moment after
 `final` and before present, the capture agent has no correct place to grab a frame. Capture and
 serialize Phase 3's front-end/pack evidence, Phase 4's program-resolution evidence, and Phase 5's
-R10A snapshot; R17's error attribution is gated on Phase 1's R4A. R13 is conditional and is
-recorded so it is a known route rather than a surprise.
+R10A snapshot; R17's error attribution is gated on Phase 1's R4A. R18 requires a complete direct
+copy of the frozen primary/nested application report, including Phase 8 when present, with no
+renamed IDs or inferred capability. R13 is conditional and is recorded so it is a known route
+rather than a surprise.
 
 **To Phase 12** — R15/R16. Until R15 exists, `[pack] engine.*` keys are collected and reported as
 **unvalidated** rather than accepted (§4.3.3), so a typo there is visible but not fatal.
@@ -2097,7 +2143,7 @@ Every item names its milestone tag and its test hook.
 
 | # | Item | Tag | Test hook |
 |---|---|---|---|
-| 24 | `CaptureAgent`, `CapturePlanReader`, `SceneApplier`, `FrameGrabber`, `RunManifestWriter` in the requested `mod.conformance` package (R1, R2) | `v0.1` | `RUN-SCENE-SELFCHECK` on one scene |
+| 24 | `CaptureAgent`, `CapturePlanReader`, `SceneApplier`, `FrameGrabber`, `RunManifestWriter` in the requested `mod.conformance` package (R1, R2), including R18's complete direct primary/nested hook-report serialization | `v0.1` | `RUN-SCENE-SELFCHECK` plus `HookManifestEvidenceTest` |
 | 25 | `CaptureRunner` + world cache + timeout handling (§4.5.1, §4.5.5) | `v0.1` | a complete run directory with a manifest |
 | 26 | `RUN-SCENE-SELFCHECK` across all six scenes with `captureFrames = 3` — **the determinism ledger's acceptance test** | `v0.1` | all shots `IDENTICAL`; any failure is a §4.4 leak, not a pack defect |
 | 27 | Calibrate `SAME_MACHINE` and `CROSS_DRIVER` (§4.6.5) and write `calibratedOn` | `v0.1` | the profile file stops carrying placeholder numbers |
@@ -2119,6 +2165,5 @@ Every item names its milestone tag and its test hook.
 
 ---
 
-*Per §G1.1 this build session stops here. It wrote no source, ran no build and no test, launched no
-review agent, and created exactly one file: this one. `DESIGN.md`, `RESEARCH.md`, `PHASE_1_DOC.md`
-and every Phase 1 review file are unmodified.*
+*Review round 15 ended in PASS before §0.16. This maintenance addendum changes binding §5 and leaves
+Phase 2 v1 unverified pending fresh review round 16; no version roll occurs while the loop is open.*

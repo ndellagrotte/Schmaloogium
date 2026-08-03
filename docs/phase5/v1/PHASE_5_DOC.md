@@ -10,7 +10,7 @@
 
 **Assigned OQs:** none
 
-**Authored:** 2026-07-28 · **Last revised:** 2026-07-29 (§0.31)
+**Authored:** 2026-07-28 · **Last revised:** 2026-08-03 (§0.32)
 
 **Deliverable:** this document, following
 `docs/design/v2.0-RC3/DESIGN.md:790`–`:826` and its mandatory thirteen-section template.
@@ -274,6 +274,25 @@ shape. The changed §5 contract requires a fresh verify round.
 Round 29 aligned the depth-copy rejection prose and completed the binding resize-reason order.
 The changed §5 contract requires a fresh verify round.
 
+### 0.32 Downstream-request addendum (Phase 8 shadow runtime contract — 2026-08-03)
+
+Round thirty subsequently returned literal PASS with zero findings
+(`docs/phase5/reviews/PHASE_5_REVIEW_30.md`). This maintenance amendment accepts Phase 8's complete
+R8-2 request from `docs/phase8/v1/PHASE_8_DOC.md` §5.5. The shadow estate now exposes a
+generation/frame/snapshot-checked four-unit binding snapshot, typed post-pass mipmap generation
+with per-buffer outcomes, and an idempotent generation-checked runtime transition to coherent
+neutral shadow state.
+
+The grant preserves Phase 5 ownership: Phase 8 receives opaque borrowed handles and closed
+outcomes, never GL names or mutable flip/filter state. Validation order, lifetime, per-buffer
+filter restoration, open-pass abort, neutral fixed-unit backing, old-snapshot invalidation, and
+later `shadow()` behavior are specified together in §§4.10, 4.12, 5, 6, 8, 9, 11, and 12.
+
+**Current §G1.3 status:** round thirty's PASS applies to the pre-§0.32 bytes. This amendment changes
+binding §5, so Phase 5 is **not verified** and is not a valid dependency input until a fresh round
+thirty-one returns literal PASS (or any corrections are fixed and the changed interface is
+re-verified). The version directory and manifest remain at `v1` while the loop is open.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 5 owns
@@ -337,7 +356,7 @@ load a custom texture, or introduce a direct LWJGL call in `:engine`. `Final` ha
 FBO. Its buffer plan returns a `SCREEN` terminal that obliges Phase 7 to bind Minecraft's framebuffer
 through its platform path and apply Minecraft's anaglyph-aware color mask before drawing, consistent
 with `docs/research/v1/RESEARCH.md:526` and
-`docs/phase1/v14/PHASE_1_DOC.md:3986`, which warns that `bindDefault` means GL framebuffer name zero,
+`docs/phase1/v14/PHASE_1_DOC.md:4009`, which warns that `bindDefault` means GL framebuffer name zero,
 not Minecraft's world FBO.
 
 ## 2. Architecture overview
@@ -1246,11 +1265,11 @@ Phase 1 now supplies this exact narrow route. Its binding §5 distinguishes ordi
 `borrowDepthAttachment`, `attachDepthStencil`, and
 `initializeDepthTextureFromFramebuffer`, and preserves Phase 5 ownership of format, freshness,
 cadence, allocation/copy tier, restoration policy, and Minecraft lifetime
-(`docs/phase1/v14/PHASE_1_DOC.md:4107`–`:4123`). The whole-document service contract additionally
+(`docs/phase1/v14/PHASE_1_DOC.md:4131`–`:4147`). The whole-document service contract additionally
 requires forged, wrong-origin, wrong-device, stale, and illegal owned-versus-borrowed uses to fail
 before GL; only an authenticated borrowed value may be sampled/labeled or used by depth-only and
 combined depth/stencil attachment operations
-(`docs/phase1/v14/PHASE_1_DOC.md:3015`–`:3035`). Round twenty verified that amended surface
+(`docs/phase1/v14/PHASE_1_DOC.md:3038`–`:3058`). Round twenty verified that amended surface
 (`docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75`).
 
 Phase 5 therefore uses `attachDepth` for depth-only snapshots and
@@ -1357,7 +1376,10 @@ feature is disabled, neutral shadow bindings are supplied, and the program/main 
 continue (rung 2a). The candidate owns one
 1×1 fully-far depth fallback and one 1×1 opaque-white color fallback, configured to the pack's
 compare/filter expectations; units 4/5 and 13/14 reuse those objects when their real target is
-absent. Phase 8 receives `ShadowEstateUnavailable`, not a partial sfb.
+absent. Phase 8 receives `ShadowEstateUnavailable`, not a partial sfb. The same unavailable result
+is returned after a successful runtime `degradeToNeutral`; its `BufferFailure` identifies the
+first neutralizing reason/diagnostic while the fixed unit table remains backed by the neutral
+objects for that generation.
 
 `shadow()` and the available view have this complete public shape:
 
@@ -1377,6 +1399,13 @@ public interface ShadowEstateView {
     ShadowOperationResult clear(ShadowPassSnapshot snapshot, ClearRequest request);
     ShadowOperationResult copyDepth(
         ShadowPassSnapshot snapshot, ShadowDepthCopyPoint point);
+    ShadowBindingResult shadowBindings(
+        long generation, long frameId, ShadowPassSnapshot snapshot);
+    ShadowMipmapResult generateShadowMipmaps(
+        long generation, long frameId, ShadowPassSnapshot snapshot,
+        ShadowMipmapPolicy policy);
+    ShadowNeutralizationResult degradeToNeutral(
+        long generation, ShadowNeutralReason reason);
     ShadowCompletionResult completePass(ShadowPassSnapshot snapshot);
     ShadowAbortResult abortPass(ShadowPassSnapshot snapshot, String diagnosticId);
 }
@@ -1415,6 +1444,49 @@ public sealed interface ShadowAbortResult {
         implements ShadowAbortResult {}
     record Rejected(ShadowProtocolRejection reason) implements ShadowAbortResult {}
 }
+
+public record ShadowMipmapPolicy(List<LogicalBuffer> buffers) {}
+public sealed interface ShadowBindingResult {
+    record Bound(ShadowBindingSnapshot snapshot) implements ShadowBindingResult {}
+    record Rejected(ShadowProtocolRejection reason) implements ShadowBindingResult {}
+}
+public record ShadowBindingSnapshot(
+    long estateGeneration,
+    long depthAttachmentEpoch,
+    long frameId,
+    List<ShadowBindingRow> rows) {}
+public record ShadowBindingRow(int unit, ShadowBindingOutcome outcome) {}
+public sealed interface ShadowBindingOutcome {
+    record Bindable(TextureHandle handle) implements ShadowBindingOutcome {}
+    record Neutral(TextureHandle handle) implements ShadowBindingOutcome {}
+}
+public sealed interface ShadowMipmapResult {
+    record Generated(List<ShadowMipmapOutcome> outcomes) implements ShadowMipmapResult {}
+    record Rejected(ShadowProtocolRejection reason) implements ShadowMipmapResult {}
+}
+public sealed interface ShadowMipmapOutcome {
+    record Generated(LogicalBuffer buffer) implements ShadowMipmapOutcome {}
+    record NotAllocated(LogicalBuffer buffer) implements ShadowMipmapOutcome {}
+    record Degraded(
+        LogicalBuffer buffer, BufferFailure failure, String diagnosticId)
+        implements ShadowMipmapOutcome {}
+}
+public enum ShadowNeutralReason {
+    BIND_BACKEND_FAILURE,
+    CLEAR_BACKEND_FAILURE,
+    DEPTH_COPY_BACKEND_FAILURE,
+    PASS_BACKEND_FAILURE,
+    EXPLICIT_FEATURE_DISABLE
+}
+public sealed interface ShadowNeutralizationResult {
+    record Neutralized(
+        long generation, String diagnosticId, boolean openSnapshotAborted)
+        implements ShadowNeutralizationResult {}
+    record AlreadyNeutral(long generation, String diagnosticId)
+        implements ShadowNeutralizationResult {}
+    record Rejected(ShadowProtocolRejection reason)
+        implements ShadowNeutralizationResult {}
+}
 ```
 
 `beginPass(frameId,pass,program) -> ShadowBeginResult` acquires the sole open
@@ -1424,6 +1496,36 @@ public sealed interface ShadowAbortResult {
 `copyDepth(snapshot,SHADOW_PRE_TRANSLUCENT)` each return `ShadowOperationResult`; and
 `completePass(snapshot)` / `abortPass(snapshot,diagnosticId)` return their corresponding closed
 result.
+
+`shadowBindings(generation,frameId,snapshot)` validates the supplied estate generation first, the
+existence and identity of the open frame second, and the snapshot identity/depth-attachment epoch
+last. The first failed check wins and no failed check binds or mutates GL. `Bound` carries an
+immutable, borrowed `ShadowBindingSnapshot` with exactly four rows in ascending unit order: 4, 5,
+13, and 14. A real current shadow texture is `Bindable`; an absent or runtime-neutralized member is
+the Phase-5-owned compare/filter-compatible `Neutral` object. Phase 8 neither closes nor retains
+the snapshot. It remains valid only until the associated `ShadowPassSnapshot` completes, aborts,
+is invalidated, or the estate neutralizes; every old binding snapshot then becomes unusable.
+
+`ShadowMipmapPolicy.buffers` is immutable, duplicate-free, contains only typed shadow depth/color
+logical buffers, and is stored in canonical `LogicalBuffer` order. Construction rejects any
+out-of-domain or non-canonical value before the render transaction. `generateShadowMipmaps` uses
+the same generation/frame/snapshot validation order as `shadowBindings`, then processes every
+requested buffer in canonical order after drawing and before completion. The result contains one
+outcome per request: `Generated`, `NotAllocated`, or `Degraded`. One buffer's backend failure does
+not stop later buffers; Phase 5 restores that texture's configured non-mipmap min filter before
+returning `Degraded`, records the stable diagnostic ID, and never advertises its stale chain as
+fresh. Phase 5 alone chooses the current shadowcolor side and calls the capability-gated facade
+verb.
+
+`degradeToNeutral(generation,reason)` checks generation before mutation. A stale generation returns
+`Rejected(STALE_GENERATION)`. First success atomically aborts and invalidates any open shadow
+snapshot without applying flips, restores safe framebuffer/texture state, invalidates every old
+binding/pass snapshot, and changes the shared estate state so all later `shadow()` calls return
+`ShadowEstateUnavailable` while units 4, 5, 13, and 14 resolve to the Phase-5-owned neutral
+objects. It returns one stable diagnostic ID and whether it aborted an open snapshot. Repetition
+returns `AlreadyNeutral` with the same generation/diagnostic and performs no GL or state mutation.
+Real shadow handles remain Phase-5-owned and are deleted only by the ordinary reverse estate
+teardown; no borrowed snapshot survives the transition.
 
 All calls are render-thread-only. Validation returns the exact `ShadowProtocolRejection` before GL
 with no token, full-clear, or flip mutation. `Applied` means the requested bind, clear, or copy
@@ -1623,6 +1725,13 @@ routes `Missing` to the affected-program degradation policy in §6, and performs
 handles. The Phase 7 composition must order the object binds before Phase 6's sampler-uniform
 upload inside Phase 4's sampler participant.
 
+The shadow-specific four-row snapshot in §4.10 is deliberately separate from this main-pass
+sixteen-row snapshot because it authenticates a `ShadowPassSnapshot`, not a
+`PassBufferSnapshot`, and borrows no Phase 13 overlay lease. Both resolve units 4, 5, 13, and 14
+from the same Phase-5-owned state. After `degradeToNeutral`, every newly acquired main-pass binding
+snapshot resolves those four units to the neutral objects and no old main or shadow binding
+snapshot remains valid. Thus Phase 6 cannot observe a mixed real/neutral generation.
+
 The map is never searched for a free unit. Pintonium's dynamic unit allocation is the pre-decided
 rejection in §G11.4 and is not an alternative implementation.
 
@@ -1677,7 +1786,10 @@ The recording backend must prove `noLeakedObjects()` and `noUseAfterDelete()`.
 | `ClearRequest`, `ClearExecutionPlan`, `executeClear`, `ClearExecutionResult` | exact immutable shape `ClearRequest(long frameId, float fogRed, float fogGreen, float fogBlue, boolean fullClear)`: `frameId` identifies the open frame, the three fog components supply colortex0 RGB, and `fullClear` is caller intent; effective full clear is that intent OR estate-owned requirement; generation/epoch/frame-checked, exactly-once color-clear execution consumes that requirement only after every batch succeeds; exact colors, side rules, batching, and guaranteed framebuffer/viewport restoration | Phase 7 |
 | `DepthCopyPoint`, `copyDepth`, `DepthCopyResult` | caller owns the PRE_TRANSLUCENT/PRE_WEATHER moments and handles exactly one closed result: `Copied(point,initialized)` advances the ordered point and makes the destination valid; `DuplicateIgnored(point,diagnosticId)` is diagnosed and mutation-free; `Rejected(FrameProtocolRejection)` is pre-copy and mutation-free for stale generation/epoch, no frame, wrong frame, or `DEPTH_COPY_OUT_OF_ORDER` and requires frame abort; `BackendDegraded(point,failure,diagnosticId)` marks the destination degraded, binds depthtex0 fallback, diagnoses the failure, and permits continued drawing with that fallback | Phase 7 |
 | `BufferDomain`, `BufferIndex`, `LogicalBuffer`, `ColorAttachment` | immutable `BufferDomain { COLORTEX, SHADOWCOLOR, SHADOWTEX, DEPTH }`; `BufferIndex(int value)` rejects negative values; `LogicalBuffer(BufferDomain domain, BufferIndex index)`; `ColorAttachment(int outputOrdinal, int framebufferAttachment, LogicalBuffer logicalBuffer, TextureHandle physicalTexture)` | Phase 8; Phase 7 |
-| `ShadowEstateResult`, `ShadowEstateAvailable`, `ShadowEstateNotRequested`, `ShadowEstateUnavailable`, `ShadowEstateView`, `ShadowPassSnapshot`, `ShadowProtocolRejection`, `ShadowDepthCopyPoint`, `ShadowBeginResult`, `ShadowOperationResult`, `ShadowCompletionResult`, `ShadowAbortResult` | `shadow()` returns exactly `ShadowEstateAvailable(view)` when planned and created, `ShadowEstateNotRequested(estateGeneration)` when no sfb was planned, or `ShadowEstateUnavailable(BufferFailure,estateGeneration)` after creation failure; ordinary absence never creates a `BufferFailure`. The view exposes its generation plus typed begin/bind/clear/`SHADOW_PRE_TRANSLUCENT` split-copy/complete/abort methods. The immutable snapshot carries generation, depth-attachment epoch, frame/pass/program identity, sfb handle, color attachments, readable shadowcolor handles, and `flipAfterPass`. Acquisition returns `Acquired(snapshot)` or `Rejected(reason)`, including exact `PASS_ALREADY_OPEN` for a second begin; operations return `Applied`, `Rejected(reason)`, or `BackendFailed(BufferFailure)`; completion returns `Completed(frameId)` or `Rejected(reason)`; abort returns `Aborted(frameId,diagnosticId,fullClearRequired)` or `Rejected(reason)`. Every named top-level shadow type is public. Every validation rejection is pre-GL and mutation-free; backend failure leaves the token open and flip unchanged for mandatory abort; completion alone applies flip, while abort closes without flip and requires full clear. Phase 8 continues only on success, corrects ordering or reacquires after rejection, and aborts on backend failure | Phase 8; G8/S1 |
+| `ShadowEstateResult`, `ShadowEstateAvailable`, `ShadowEstateNotRequested`, `ShadowEstateUnavailable`, `ShadowEstateView`, `ShadowPassSnapshot`, `ShadowProtocolRejection`, `ShadowDepthCopyPoint`, `ShadowBeginResult`, `ShadowOperationResult`, `ShadowCompletionResult`, `ShadowAbortResult` | `shadow()` returns available only while the planned sfb is usable, not-requested for ordinary absence, and unavailable after creation failure or runtime neutralization. The view exposes generation plus typed begin/bind/clear/split-copy/complete/abort. Snapshot identity, closed outcomes, pre-GL rejection, no-flip abort, and mandatory backend-failure abort semantics are exactly §4.10; every named top-level shadow type is public | Phase 8; G8/S1 |
+| `ShadowBindingResult`, `ShadowBindingSnapshot`, `ShadowBindingRow`, `ShadowBindingOutcome` | generation → open-frame ID → snapshot identity/epoch checked in that priority order; `Bound` carries exactly ascending units 4, 5, 13, 14 with closed `Bindable(real current handle)` or `Neutral(Phase-5-owned fallback)` outcomes. The immutable borrowed snapshot is valid only until its associated pass completes/aborts/invalidates or the estate neutralizes; Phase 8 neither closes nor retains it and binds these objects before Phase 6 uploads sampler integers | Phase 8 |
+| `ShadowMipmapPolicy`, `ShadowMipmapResult`, `ShadowMipmapOutcome` | immutable canonical typed shadow-buffer request; the same generation/frame/snapshot validation; one canonical-order outcome per request, exactly `Generated`, `NotAllocated`, or `Degraded(buffer,failure,diagnosticId)`. A degraded buffer has its base non-mipmap min filter restored before return and does not stop later buffers | Phase 8 |
+| `ShadowNeutralReason`, `ShadowNeutralizationResult`, `degradeToNeutral` | generation-checked render-thread transition returning exactly `Neutralized(generation,diagnosticId,openSnapshotAborted)`, idempotent `AlreadyNeutral`, or `Rejected(STALE_GENERATION)`. First success aborts/invalidates an open snapshot without flips, restores safe bindings, invalidates every old pass/binding snapshot, makes later `shadow()` unavailable, and makes fixed units 4/5/13/14 coherently neutral for that generation | Phase 8; Phase 7 failure containment |
 | `TextureOverlayLease`, `TextureOverlaySnapshot`, `TextureOverlayPublicationId`, `TextureOverlayFingerprint`, `TextureOverlayKey`, `TextureOverlayEntry`, `TextureOverlayAbsence`, `TextureBindingResult`, `TextureBindingRejection`, `TextureBindingSnapshot`, `TextureBindingRow`, `TextureBindingOutcome`, fixed App B.3 table, `MissingTextureBinding` | closed total Phase 13 stage/key lookup; `textureBindings` returns exactly `Bound(snapshot)` or `Rejected(reason)`, with rejection reasons `OVERLAY_PUBLICATION_ID_MISMATCH` and `REGISTRY_FINGERPRINT_MISMATCH` checked in that priority order; rejection is pre-bind, suppresses the draw, transfers no ownership, and leaves Phase 7 responsible for closing the lease; success transfers the lease into the binding snapshot until Phase 7 closes that snapshot after the enclosing draw; the snapshot has exactly sixteen ascending fixed-unit rows and total lookup, with each outcome closed as `Bindable(TextureHandle)`, `Missing(MissingTextureBinding)`, or `Absent`; Phase 7 binds only `Bindable`, degrades `Missing`, and skips `Absent`, while Phase 6 only uploads fixed sampler integers; unit 15 resolves `NOISE` `Present(handle)` to that handle and each closed absence value to `Missing`; no dynamic allocation | Phase 7 composition; Phase 6 sampler participant; Phase 13 overlay |
 | `BufferResizeNotice`, `BufferResizeReason`, `BufferResizeConsumer`, `ResizeConsumerResult`, `BufferResizeRegistrationResult`, `BufferResizeRegistration`, `BufferResizeRegistrationRejection` | notice exposes old/new structural sizing, new generation, and one closed rebuild reason; `BufferResizeReason` is ordered `DISPLAY_EXTENT`, `RENDER_QUALITY`, `MAIN_DEPTH_EXTENT`, `SHADOW_RESOLUTION`, `SHADOW_QUALITY`, `PACK_CONFIGURATION`, `REGISTRY_PLAN`, `COLOR_INVENTORY_OR_FORMAT`, and that listed declaration order is the priority for simultaneous changes; registration returns `Registered` or a stable rejected reason for blank ID, duplicate live ID, future generation, unknown generation, or sizing mismatch; ready generation→sizing facts remain known for the publisher lifetime, off/never-installed generations are unknown, and supplied sizing must exactly equal the known fact; rejection installs nothing and changes no acknowledgement/publication state; accepted identity is retained unchanged and returned by `ConsumerFailed`; render-thread removal, per-consumer acknowledged sizing/generation, and ordered synchronous delivery after install and before drawing; retry `oldSizing` is each consumer's truthful acknowledged baseline; first failure stops dispatch, disposes the unopened estate, and returns the consequent off publication | Phases 13 and 14; G8/S2 |
 | `MainDepthSource`, `MainDepthPreparation`, `MainDepthSnapshot` | Phase-5-owned engine-side SPI implemented by `mod.glue`; safe-point platform-FBO preparation plus opaque depth identity/version/format/extent, no GL name. `MainDepthSnapshot.Available` embeds Phase 1's verified `BorrowedDepthAttachmentHandle`; Phase 5 does not redeclare or mint that type | Phase 7 installs/prepares; Phase 5 consumes |
@@ -1737,7 +1849,7 @@ Phase 4 type.
    `borrowDepthAttachment(platformTexture)` issuance route, the ordinary-versus-borrowed
    permission matrix, `attachDepthStencil`, and
    `initializeDepthTextureFromFramebuffer`, with distinct recorder/replay operations
-   (`docs/phase1/v14/PHASE_1_DOC.md:4107`–`:4123`). The whole document retains the detailed
+   (`docs/phase1/v14/PHASE_1_DOC.md:4131`–`:4147`). The whole document retains the detailed
    owned/borrowed validation, forged/wrong-origin rejection, combined depth/stencil behavior, and
    first-versus-steady copy semantics while assigning Phase 5 the downstream format, freshness,
    cadence, tier, restoration-policy, and Minecraft-lifetime decisions. The literal PASS in
@@ -1767,6 +1879,9 @@ the non-blocking supersampling authority clarification recorded in §11.5.
 | one depthtex1/2 copy fails | bind current depthtex0 as non-stale fallback for that unit, disable copied-depth feature view, warn | 2a |
 | combined stencil has no legal copy tier | copied-depth feature unavailable; pack requiring the split may gate off, otherwise bind depthtex0 fallback | 2a/4 |
 | sfb creation fails while dfb is healthy | disable shadow estate only; Phase 8 skips; bind neutral shadow objects | 2a |
+| one requested shadow mipmap generation fails | return `Degraded` for that logical buffer after restoring its base min filter; continue later buffers and keep the shadow pass active | 2a |
+| shadow bind/clear/copy or pass-wide backend failure is containable | Phase 8 aborts if still open, then calls generation-checked `degradeToNeutral`; atomically invalidate old snapshots, expose neutral units 4/5/13/14, and keep the main estate/pipeline active | 2a |
+| stale caller attempts shadow neutralization | `Rejected(STALE_GENERATION)` before GL or mutation; never let an old slot disable a newer estate | protocol |
 | clear call fails | abort shader frame, mark full clear; recurring or unrecoverable failure publishes off | 2a→4 |
 | missing Phase 13 overlay/noise/companion texture | explicit missing binding; affected sampler/program degrades, never steals a unit | 2a/3 |
 | missing vanilla `texture`/`lightmap` foreign handle | affected draw is skipped/fixed-fallback through Phase 4/7; no null/raw handle | 3 |
@@ -1789,6 +1904,8 @@ texture.
 - `MainDepthSource.current()` is render-thread-only.
 - Published views are immutable references, but their mutating operations enforce the render thread;
   thread-safe publication does not make GL methods cross-thread.
+- Shadow binding/mipmap/neutralization operations are render-thread-only; their borrowed snapshots
+  never outlive the associated open shadow pass.
 - No chunk-build worker state enters this phase.
 
 ### 7.2 Allocation posture
@@ -1841,6 +1958,9 @@ No 2^N FBO variant cache exists.
    `PASS_ALREADY_OPEN` on a second begin: exact validation rejection is pre-GL and mutation-free;
    scripted bind/clear/copy backend failure keeps the token open for abort; only completion flips;
    abort closes and requires full clear.
+9. Table-test `shadowBindings`, `generateShadowMipmaps`, and `degradeToNeutral`: generation wins
+   over frame/snapshot rejection, frame wins over snapshot rejection, every rejected call is
+   mutation-free, and neutralization invalidates all old pass/binding snapshots without a flip.
 
 ### 8.2 Contract-table tests
 
@@ -1901,7 +2021,12 @@ Using Phase 1 `RecordingGLDevice` and serialized profiles:
     ascending rows, total fixed-unit lookup, and the exact `Bindable`/`Missing`/`Absent` outcome
     from the table, with binds only for `Bindable`, degradation only for `Missing`, no bind for
     `Absent`, and unchanged sampler-unit identity; and
-15. create/destroy the full classic estate for the implementation gate with
+15. for every shadow binding snapshot assert exactly units 4/5/13/14 in ascending order, correct
+    real/neutral sides, no close operation, and expiry on complete/abort/invalidate; script a
+    mipmap failure at every requested position and prove base-filter restoration plus continuation;
+    neutralize with and without an open snapshot and prove idempotence, stable diagnostic identity,
+    coherent later main/shadow bindings, and no premature deletion; and
+16. create/destroy the full classic estate for the implementation gate with
     `ReplayAssertions.noLeakedObjects()` and `noUseAfterDelete()`.
 
 The tier selector receives scripted function-pointer/blit/combined-stencil booleans. The actual
@@ -1933,6 +2058,7 @@ hash/provenance manifests under Phase 2 policy.
 | fixed App B.3 object map | v0.1 | implement core/P5 objects; Phase 13 slots remain explicit |
 | resize/publication/generation/full-clear lifecycle | v0.1 | implement |
 | sfb structure, policies, and real shadowcolor flips | v0.1 | architect and allocate when required |
+| checked shadow bindings, post-pass mipmap outcomes, coherent runtime neutralization | v0.2 | Phase 8 grant R8-2; preserve main pipeline on contained shadow failure |
 | shadow pass bind/copy use | v0.2 | Phase 8 |
 | Phase 13 overlays/noise/companions | v0.5 | consume stable slots/notices |
 | sampler objects, DSA, async copies | v0.5 | Phase 14 implementation behind unchanged policy |
@@ -1968,6 +2094,7 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
 | D-P5-13 | Use the observed G6 null-allocation transfer layout for all 37 formats: non-integer `BGRA`, integer `RGBA_INTEGER`, and `UNSIGNED_INT_8_8_8_8_REV` with null data. The full pack-facing pixel vocabulary remains available for Phase 13 raw uploads. |
 | D-P5-14 | Adopt the deployed resize/version invalidation checklist for Phase-5-owned color/depth/FBO state, including full clear, and publish resize notices to later object owners. This satisfies RESEARCH §4.1/§4.3 without letting Phase 5 seize Phase 13/14 resources. |
 | D-P5-15 | Require Phase 7 to prepare Minecraft's shader framebuffer so the borrowed depth texture exactly matches the render-quality-scaled dfb extent before candidate creation. A mismatch returns an awaiting/rebuild result and attaches nothing. This reconciles §4.3 sizing with App B.2's real depth attachment where Pintonium's fixed-1.0 render quality supplies no answer. |
+| D-P5-16 | Accept Phase 8 R8-2 as one Phase-5-owned shadow runtime protocol: checked four-unit binding snapshots, typed per-buffer mipmap outcomes, and atomic idempotent neutralization. Keeping all handle/filter/flip mutation here preserves D-6 and prevents a shadow-only backend failure from poisoning the main estate. |
 
 ### 11.2 D-1…D-10 disposition
 
@@ -2016,6 +2143,10 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
     replacement is proven only with its global render quality fixed at 1.0, while RESEARCH §4.3
     requires display × render quality. **Ruling: D-P5-15 safe-point preparation**; a mismatch is
     never attached or stretched.
+12. **RESOLVED DOWNSTREAM — Phase 8 required shadow bindings, post-pass mipmaps, and runtime
+    neutralization not present in the converged pre-§0.32 API.** **Ruling: D-P5-16.** The accepted
+    surface is exact in §§4.10 and 5.1; Phase 8 owns request timing and failure branching, while
+    Phase 5 retains every physical handle, current side, filter, flip, abort, and neutral object.
 
 ### 11.4 Hand-offs
 
@@ -2024,7 +2155,11 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
 - **Phase 7:** own frame/copy/clear moments, final-to-Minecraft bind, SSAA execution, try/finally
   commit/abort, runtime quality input, safe-point `MainDepthSource.prepare(plan.mainExtent())`, and
   registry→estate publication ordering. Never build or draw with a mismatched depth extent.
-- **Phase 8:** use `ShadowEstateView`; own camera/traversal/pass and shadowtex1 copy moment.
+- **Phase 8:** use `ShadowEstateView`; own camera/traversal/pass and shadowtex1 copy moment. Acquire
+  the checked four-unit shadow binding snapshot before Phase 6 sampler upload, submit the typed
+  canonical mipmap policy after all shadow draws and before completion, and use
+  `degradeToNeutral` only after the current snapshot is aborted or as the operation's atomic abort.
+  Never retain/close a binding snapshot or touch a filter/flip/handle directly.
 - **Phase 13:** supply typed overlay objects for units 2/3, 7–10, and 15; consume resize notices.
 - **Phase 14:** modernize facade/backend mechanics without changing this policy.
 - **G8/S1/S2:** lift v0.1 population gates and wire dormant stages; retain identities and flip
@@ -2050,6 +2185,9 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
    non-owning, generationless pre-publication `CompiledRegistryCandidate.view()` required by
    §5.5 while preserving opaque-candidate ownership and provenance. The literal PASS at
    `docs/phase4/reviews/PHASE_4_REVIEW_15.md:59`–`:72` closes that dependency change.
+5. **GRANTED DOWNSTREAM — Phase 8 R8-2.** Section 0.32 accepts the requested checked shadow
+   bindings, typed mipmap outcomes, and coherent runtime neutralization. The grant is binding but
+   remains unverified until the fresh Phase 5 round required by §0.32 returns literal PASS.
 
 ## 12. Implementation checklist
 
@@ -2084,6 +2222,7 @@ not a Phase-5 implementation spike: the fallback behavior is already designed in
 | 27 | Implement estate publisher/generation/fingerprint checks | v0.1 | stale/cross-registry rejection |
 | 28 | Implement resize classification, rebuild, notices, full clear | v0.1 | trigger matrix test |
 | 29 | Wire Phase 7 frame/clear/copy/publication orchestration | v0.1 | recorded complete classic frame |
+| 29a | Implement R8-2 checked shadow bindings, typed canonical mipmap outcomes, and atomic idempotent neutralization | v0.2 | validation-priority, lifetime, per-buffer failure, open-abort, and coherent-neutral tests |
 | 30 | Wire Phase 8 sfb use and shadowtex1 copy | v0.2 | shadow scene/T1 test |
 | 31 | Wire Phase 13 overlay slots and resize listener | v0.5 | companion/custom/noise binding tests |
 | 32 | Implement Phase 14 backend modernization behind same APIs | v0.5 | cross-backend call-log equivalence |

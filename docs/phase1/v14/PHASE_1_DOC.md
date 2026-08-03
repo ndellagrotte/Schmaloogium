@@ -7,7 +7,7 @@
 **Phase:** 1 — Foundation & project architecture
 **Milestone:** v0.1 · **Depends on:** — (Wave 0; this doc feeds every other phase)
 **Assigned OQs:** OQ-2, OQ-12, OQ-20 (seam hardness), OQ-21
-**Authored:** 2026-07-24 · **Last revised:** 2026-07-29 (§0.19)
+**Authored:** 2026-07-24 · **Last revised:** 2026-08-03 (§0.21)
 **Deliverable:** this document, per DESIGN.md §G9.
 **Verifies against:** `docs/design/v2.0-RC2/DESIGN.md` from §0.11 onward; `docs/design/v1.1/DESIGN.md`
 through §0.10. **There is no longer one governing revision for the project:** RC2 governs **this
@@ -20,9 +20,10 @@ state as of 2026-07-26; §0.1 records what was read from each revision.
 against — §4.1's template facts are read from the checkout on 2026-07-24, §4.2.6's thirteen pin rows
 are re-verified 2026-07-24, and `[V:repo]` below is defined as inspection on 2026-07-24 — so a single
 later stamp would silently re-date claims to a day on which they were not performed. The revision
-date is the most recent of the dates the fix-up addenda in §0.4–§0.19 carry, and each addendum states
+date is the most recent of the dates the fix-up addenda in §0.4–§0.21 carry, and each addendum states
 its own: §0.4–§0.5 are 2026-07-24, §0.6–§0.10 are 2026-07-25, §0.11–§0.14 are all
-2026-07-26, §0.15–§0.17 are 2026-07-28, and §0.18–§0.19 are 2026-07-29. The
+2026-07-26, §0.15–§0.17 are 2026-07-28, §0.18–§0.19 are 2026-07-29, and §0.20–§0.21 are
+2026-08-03. The
 few repository observations the round-eleven and round-twelve fix-ups made are tagged
 `[V:repo 2026-07-26]` inline for the same reason the authoring date is kept — §4.1's and §4.2.6's 2026-07-24 reads are not re-dated by a
 later session touching a different part of the tree.*
@@ -1363,9 +1364,39 @@ format, attachment/copy cadence, storage, freshness, restoration, and Minecraft 
 Issuance proves only that the receiving device recognizes the live platform texture and returns
 its own opaque, non-owned handle; it does not import RC3 policy.
 
-**Historical status:** §0.18's live status is superseded. **Current §G1.3 status:** this fix-up
-changes §5, so Phase 1 remains **not verified** and is not a valid dependency input until a fresh
-round returns literal PASS. The version remains `v14` while the loop is open.
+**Historical status:** §0.18's live status is superseded, and round twenty subsequently returned
+literal PASS on this §0.19 surface. That closed status is itself superseded by §0.20's downstream
+grant and fresh-review requirement; the version remained `v14` between the two amendments.
+
+### 0.20 Downstream-request addendum (Phase 8 package grant — 2026-08-03)
+
+Round twenty subsequently returned literal PASS with zero findings
+(`docs/phase1/reviews/PHASE_1_REVIEW_20.md`). Phase 8 then requested the three package homes its
+verified architecture requires instead of assuming placement under Phase 1's closed table
+(`docs/phase8/v1/PHASE_8_DOC.md` §5.5 R8-3).
+
+This amendment grants exactly `com.schmaloogium.engine.shadow`,
+`com.schmaloogium.mod.glue.shadow`, and `com.schmaloogium.mod.mixin.shadow`. The first contains
+only loader-neutral shadow policy, math, traversal, lifecycle, and result types; the second owns
+all Minecraft/Forge/LWJGL shadow adapters; the third owns the dumb SRG-targeted shadow Mixins and
+accessors. The existing C-1 through C-4 seam constraints and `.internal` privacy rule apply
+unchanged. The grant assigns placement only and does not import Phase 8 policy into Phase 1.
+
+**Historical status (superseded by §0.21):** round twenty's PASS applies to the pre-§0.20 bytes.
+This amendment changes binding §5, so Phase 1 is **not verified** and is not a valid dependency
+input until a fresh round twenty-one returns literal PASS (or any corrections are fixed and the
+changed interface is re-verified). The version and manifest remain at `v14` while the loop is open.
+
+### 0.21 Fix-up addendum (round twenty-one — 2026-08-03)
+
+Round twenty-one returned PASS-WITH-CORRECTIONS with one correction and no blocking findings or
+notes (`docs/phase1/reviews/PHASE_1_REVIEW_21.md`). Section 1.2 now assigns the shadow subsystem
+concerns introduced by §0.20 to Phase 8 and limits Phase 1's role to package placement and seam
+constraints. Binding §5 is unchanged.
+
+**Current §G1.3 status:** the correction is applied, but Phase 1 remains **not verified** and is not
+a valid dependency input until a subsequent fresh review returns literal PASS. The version and
+manifest remain at `v14` while the loop is open.
 
 ---
 
@@ -1406,6 +1437,7 @@ Every concern this document touches but does not own — the §G9 anti-sprawl de
 | All GL *policy*: texture formats, the fixed texture-unit map, ping-pong/flip rules, clear colors, buffer sizing, resize | **Phase 5** (buffers) and **Phase 6** (uniforms/samplers). The unit map's own split, because four other sites delegate to this row: **Phase 5** owns *which texture object backs each unit per stage* (`DESIGN.md` l. 1488), **Phase 6** owns *pointing the sampler uniforms at the units* (l. 1563) |
 | The Mixin **hook catalog** — which classes, which methods, which `@At` targets (App E) | **Phase 7** (with additions from **Phase 10** and **Phase 13**) |
 | GL context creation mechanics, HiDPI, resize (OQ-3); CleanMix divergences on hot injections (OQ-4) | **Phase 7** |
+| Shadow policy, camera/celestial math, traversal and pass lifecycle; Minecraft/Forge/LWJGL adapters; shadow Mixins and accessors | **Phase 8**. Phase 1 grants only package placement and seam constraints |
 | Coexistence **policy**: which mod ids bail, detection mechanics, the user-visible message text (OQ-5) | **Phase 10** |
 | GUI framework evaluation — whether ModularUI is fit for generated screens (OQ-9) | **Phase 12** |
 | Texture systems: the noise texture's generation, `_n`/`_s` companion atlases, custom-texture loading and their unit assignment — this doc supplies only the transfer verbs (§4.7.4) | **Phase 13** |
@@ -1457,6 +1489,7 @@ LWJGL. Testable headless with JUnit alone.
 | `com.schmaloogium.engine.registry` | stage registry (modern-superset shape), program slots, backup chains, per-program state | Phase 4 |
 | `com.schmaloogium.engine.buffers` | framebuffer/color-buffer *policy* — ping-pong, flips, clears, formats, sizing | Phase 5 |
 | `com.schmaloogium.engine.uniforms` | built-in uniform model, cadences, smoothing math, value-provider interfaces | Phase 6 |
+| `com.schmaloogium.engine.shadow` | shadow policy, camera/celestial math, traversal, pass lifecycle, and closed results | Phase 8 |
 | `com.schmaloogium.engine.expr` | custom-uniform expression language | Phase 11 |
 | `com.schmaloogium.engine.gl` | **the GL facade** — interfaces, `GLCapabilityProfile`, recording/replay impl | **Phase 1** |
 | `com.schmaloogium.engine.log` | the zero-dependency `Log`/`LogSink` SPI and channel constants | **Phase 1** |
@@ -1467,8 +1500,10 @@ LWJGL. Testable headless with JUnit alone.
 | Package | Contents | Filled by |
 |---|---|---|
 | `com.schmaloogium.mod.core` | `@Mod` entry, lifecycle, config, engine bootstrapping | Phase 1 (skeleton) / Phase 7 |
-| `com.schmaloogium.mod.glue` | adapters: world-state sampling, Forge registries, resources, **the LWJGL3 implementation of `engine.gl`** | Phases 1 (facade impl shape), 6, 7, 9 |
-| `com.schmaloogium.mod.mixin` | all Mixin classes, SRG-targeted, declared via the `MixinConfigs` manifest attribute | Phases 7, 10, 13 |
+| `com.schmaloogium.mod.glue` | adapters: world-state sampling, Forge registries, resources, **the LWJGL3 implementation of `engine.gl`** | Phases 1 (facade impl shape), 6, 7, 8, 9 |
+| `com.schmaloogium.mod.glue.shadow` | Minecraft traversal/draw/state, Forge render-pass, and facade-backed shadow adapters; no engine policy | Phase 8 |
+| `com.schmaloogium.mod.mixin` | all Mixin classes, SRG-targeted, declared via the `MixinConfigs` manifest attribute | Phases 7, 8, 10, 13 |
+| `com.schmaloogium.mod.mixin.shadow` | dumb Phase 8 shadow redirects and accessors; no policy or retained frame state | Phase 8 |
 | `com.schmaloogium.mod.gui` | pack selection + options screens | Phase 12 |
 | `com.schmaloogium.mod.compat` | coexistence detection, **bail registry** | Phase 1 (mechanism) / Phase 10 (policy) |
 
@@ -4099,6 +4134,7 @@ is a reader this section has to survive.
 | **Module layout** | `:engine`, `:mod`, `:conformance` with the §2.1 package table | all phases |
 | **The seam constraints C-1 … C-4** | §4.3, stated mechanically and enforced by tests | all phases |
 | **Package placement rule** | a phase's code goes in the package §2.1 assigns it; `.internal` sub-packages are private to `:engine` | all phases |
+| **Phase 8 package grant** | §2.1 assigns `engine.shadow`, `mod.glue.shadow`, and `mod.mixin.shadow` exactly; C-1 through C-4 and the `.internal` rule apply without exception | **8** |
 | **Version pin table + re-pin procedure** | §4.2.6 — every row carries the coordinate its value is re-verified against, and step 3 terminates in one of three rulings (record only / extra verification / block the bump) | all phases; operationally, whoever tags a milestone |
 | **Naming** | `mod_id = schmaloogium`, root package `com.schmaloogium`, `Reference` at `com.schmaloogium.Reference` | all phases |
 | **The engine bring-up sequence** | §4.13, `[D-P1-37]`. Three stages, adopted from a proven 1.12.2 reference (PD §16) with one deviation: **(1)** loader-facing setup on the FML lifecycle — log sink at `preInit` (§4.9.1), bail point 1 post-`FMLLoadCompleteEvent` (§4.10) — **not** a `GameSettings` mixin; **(2)** `OpenGlHelper.initializeTextures` at `RETURN` is the **capability-probe moment**, the earliest point at which a GL context exists and vanilla's texture setup has completed; **(3)** `GuiMainMenu.initGui` at `RETURN` is the "loading complete" signal, **recommended and not wired** — Phase 1 has no consumer for it. Exposed here because a dependent placing its own bring-up work relative to ours has to know where ours sits, and because **stage 2 is a requirement on Phase 7's hook catalog while stage 3 is a recommendation Phase 1 does not wire** — neither is a mixin this phase authors (§4.5). The two strengths are not interchangeable: the requirement obliges an App E row at Phase 7's v0.1, the recommendation is Phase 7's to place when its frame driver has a use for it (§9, §11.4, V12-2) | **7** (owns the stage-2 catalog entry, and stage 3's if it chooses to place it), 5, 6, 13 (anything gated on "caps are ready"), 10 |
@@ -4414,6 +4450,7 @@ Per §G4.3, every designed component carries exactly one tag meaning "implemente
 | `SchmaloogiumMixinPlugin` slot | `v0.3` | Reserved in this document at v0.1; the class **and** the `plugin` key in `schmaloogium.mod.mixin.json` both land at v0.3, in the same change (§4.5.2) |
 | Mixin dev flags (`mixin.debug.export`, `mixin.checks.interfaces`) | `v0.1` | |
 | Mixin config ↔ package agreement test | `v0.1` | §4.5.2a, `[D-P1-38]` — the drift insurance taken **instead of** Pintonium's class-scan plugin; ships empty-but-passing at v0.1, since the arrays are empty and so are the packages |
+| Phase 8 package homes (`engine.shadow`, `mod.glue.shadow`, `mod.mixin.shadow`) | `v0.2` | Placement grant only; Phase 8 fills them and the existing seam/config-agreement tests enforce them |
 | `CompatCheck`/`CompatVerdict`/`CompatContext`/`BailRegistry` mechanism | `v0.1` | |
 | Registered compat checks (the policy) | `v0.3` | Phase 10 / OQ-5 |
 | `BailRegistry` evaluation point 1 (bootstrap) | `v0.1` | |
@@ -4867,6 +4904,13 @@ building the hook catalog on top (§11.3 item 9). `compatibilityLevel` is worth 
 (item 8). The `BailRegistry` bail hook is wired at bootstrap and awaits your frame-driver
 integration.
 
+**To Phase 8** — R8-3 is granted exactly. Put pure policy, camera math, traversal, and the shadow
+transaction in `com.schmaloogium.engine.shadow`; put Minecraft/Forge/LWJGL adapters in
+`com.schmaloogium.mod.glue.shadow`; and put the SRG-targeted redirects/accessors in
+`com.schmaloogium.mod.mixin.shadow`. The subpackages narrow ownership; they do not weaken C-1,
+C-2, C-3, the `.internal` rule, or the mixin-config agreement test. Do not consume this grant until
+the fresh Phase 1 review required by §0.20 returns literal PASS.
+
 **One of the three bring-up stages is a requirement on your hook catalog, one is a recommendation, and
 one was deviated from** (§4.13, `[D-P1-37]`; through the §0.11 revision this sentence said *two*
 requirements and then enumerated one — V12-2). Phase 1 authors no mixin, so what follows is an assignment
@@ -5214,12 +5258,13 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 
 ---
 
-*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Nineteen** verify sessions have
+*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Twenty-one** verify sessions have
 since run — `PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_14.md` returned
 PASS-WITH-CORRECTIONS, and `PHASE_1_REVIEW_15.md` returned the literal PASS that closed that loop —
 then `PHASE_1_REVIEW_16.md` and `PHASE_1_REVIEW_17.md` returned PASS-WITH-CORRECTIONS — and
-`PHASE_1_REVIEW_18.md` returned literal PASS, and round nineteen returned PASS-WITH-CORRECTIONS —
-and **sixteen** fix-up/maintenance sessions: the first applied round one's F-1 … F-12 (§0.4); the second applied
+`PHASE_1_REVIEW_18.md` returned literal PASS, round nineteen returned PASS-WITH-CORRECTIONS, and
+round twenty returned literal PASS, and round twenty-one returned PASS-WITH-CORRECTIONS — and **eighteen** fix-up/maintenance sessions: the first applied
+round one's F-1 … F-12 (§0.4); the second applied
 rounds two, three and four together, as round four dispositioned them (§0.5); the third applied
 rounds **five and six** together (§0.6), round five's fix-up having never run — which is round six's
 own headline finding (V6-1) and the reason two rounds are closed in one session; the fourth applied
@@ -5257,13 +5302,15 @@ applied round sixteen's two corrections (§0.16), splitting absent-`final` passt
 fixed-function terminals and publishing Phase 2's derived-artifact workflow constraints in §5; and
 the **fourteenth** applied round seventeen's sole closing-history correction (§0.17); and the
 **fifteenth** accepted Phase 5's three downstream framebuffer/depth requests as `[D-P1-40]`
-(§0.18), after round eighteen's literal PASS and without manufacturing a review finding; and the
-**sixteenth** applied round nineteen's three corrections (§0.19).
+(§0.18), after round eighteen's literal PASS and without manufacturing a review finding; the
+**sixteenth** applied round nineteen's three corrections (§0.19); and the **seventeenth** accepted
+Phase 8's three package-home request after round twenty's literal PASS (§0.20); and the **eighteenth**
+applied round twenty-one's adjacent-ownership correction (§0.21).
 Every finding's disposition is recorded in the review files under `## Resolutions`, including the four
 of round three's proposed fixes and the items of rounds five and six that were deliberately narrowed
 rather than applied as written, and why.
 
-**Current §G1.3 status.** Round nineteen returned PASS-WITH-CORRECTIONS; §0.19 applies all three and
-changes §5. `PHASE_1_DOC.md` is therefore **not verified** and is not a valid dependency input until
-a fresh review returns literal PASS. The version stays
-`v14` while that loop is open.*
+**Current §G1.3 status.** Round twenty-one returned PASS-WITH-CORRECTIONS on the §0.20 surface, and
+§0.21 applies its sole correction without changing §5. `PHASE_1_DOC.md` remains **not verified** and
+is not a valid dependency input until a subsequent fresh review returns literal PASS. The version
+stays `v14` while that loop is open.*
