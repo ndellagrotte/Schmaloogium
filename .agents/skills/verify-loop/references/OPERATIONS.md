@@ -33,6 +33,7 @@ From a shell:
 
 ```bash
 scripts/verify --target phase-3 --dry-run
+scripts/verify --target phase-3 --design-version v3 --dry-run
 scripts/verify --target phase-3 --preset lean --review-only --max-rounds 1
 scripts/verify --target phase-3 --fixup-review latest --dry-run
 scripts/verify --target phase-3 --fixup-review latest
@@ -47,6 +48,7 @@ scripts/verify --target phase-3 --preset thorough --max-rounds 6
 | Argument | Meaning |
 |---|---|
 | `--target <id\|path>` | Required target ID or repo-relative manifest path |
+| `--design-version VERSION` | Verification-only design directory override; otherwise use the target document's §0 declaration |
 | `--preset lean\|thorough` | `lean`: 3 finders, 2 refuters, no steelman; `thorough`: 5, 3, steelman |
 | `--start-round N` | Optional assertion; must equal the unique next discovered round |
 | `--max-rounds N` | Cap, default 6; `0` resolves with zero agents |
@@ -82,6 +84,7 @@ stage barrier.
 A manifest owns every target-specific value:
 
 - target artifacts;
+- for design-governed targets, the §0 bounds/declaration matcher and a design-path template;
 - authoritative sources and supporting evidence;
 - dependency artifacts and binding-contract selectors;
 - prior-review directory, filename regex, numeric round group, gap policy, and read order;
@@ -94,9 +97,19 @@ A manifest owns every target-specific value:
 - verdict/convergence policy reference;
 - optional target context and fix-up conventions.
 
+For a design-governed target, `design_revision.target_index` identifies the reviewed artifact,
+`section_zero` bounds its §0, and `declaration_pattern` must match once inside that range and capture
+the canonical design path in a named `path` group. Exactly one authoritative source uses
+`docs/design/{design_version}/DESIGN.md`; the engine materializes that template before validating
+its ordinary content selectors.
+
 Paths must be repository-relative. Existing paths and symlink targets must remain inside the Git
 root. Missing, ambiguous, colliding, gapped, or conflicting configuration fails before any agent
-runs. Selector starts are unique. Ends default to `unique-after-start`; a manifest must explicitly
+runs. A design-governed profile extracts exactly one canonical `docs/design/<version>/DESIGN.md`
+path from its target's §0 unless `--design-version` supplies a safe directory label. The selected
+revision is re-resolved at every round boundary for the §0 default and remains fixed for an explicit
+override. A generic profile with no design source is unchanged by default and rejects the override.
+Selector starts are unique. Ends default to `unique-after-start`; a manifest must explicitly
 choose `first-after-start` when a repeated terminator is intentional. The engine reports current
 coordinates rather than trusting permanent line numbers. It revalidates every target, authority,
 supporting-evidence, dependency binding-contract, and interface selector from the current
@@ -109,7 +122,7 @@ overlap, and empty immutable globs fail unless they intentionally match the next
 Verdict, stop, and refuter policies declare fixed preserved semantics; contradictory policy data
 is rejected.
 
-Current production profiles are `phase-1`, `phase-2`, `phase-3`, and `phase-4`. The
+Current production profiles are `phase-1` through `phase-8`. The
 `non-phase-fixture` profile is intentionally tiny and proves the core has no phase number,
 document basename, version-directory, review-directory, or section-number dependency.
 
@@ -135,6 +148,7 @@ scripts/verify --target phase-1 --dry-run
 scripts/verify --target phase-2 --dry-run
 scripts/verify --target phase-3 --dry-run
 scripts/verify --target phase-4 --dry-run
+scripts/verify --target phase-7 --design-version v3 --dry-run
 scripts/verify --target non-phase-fixture --dry-run
 git diff --check
 ```

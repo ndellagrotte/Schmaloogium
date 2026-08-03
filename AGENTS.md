@@ -70,25 +70,26 @@ Everything in `docs/` is governed. Read this before editing, and before citing.
 Supporting files: `docs/MOVES.md` (the path manifest), `docs/tooling/VERIFY_LOOP_BRIEFS.md`,
 `docs/decisions/`, and `docs/phase<N>/briefs/` (the per-session briefs that commissioned a round).
 
-### Five different files are named `DESIGN.md`
+### Six different files are named `DESIGN.md`
 
 `docs/design/v1.1/`, `docs/design/v2.0-RC1/`, `docs/design/v2.0-RC2/`,
-`docs/design/v2.0-RC3/`, and `docs/design/v2.0-RC4/` each hold a `DESIGN.md`.
+`docs/design/v2.0-RC3/`, `docs/design/v2.0-RC4/`, and `docs/design/v3/` each hold a `DESIGN.md`.
 They are **different documents**, they do not share line numbers, and phase docs are anchored to
 different ones. Every phase doc and review cites its revision *by line number*.
 
 **Reading the wrong revision does not error — it yields plausible-looking wrong text at
 coordinates that appear to resolve.** So:
 
-- Which revision a phase is anchored to is declared data, not a guess: the phase's manifest under
-  `verification/targets/`, whose content selectors resolve and validate that revision at startup.
-  The phase doc's own §0 header states it too.
+- Which revision a phase is anchored to is declared data, not a guess: the phase doc's own §0
+  states it, and its manifest under `verification/targets/` declares how to extract that path plus
+  the content selectors used to validate it. `--design-version` is an explicit verification-only
+  override; it does not adopt that revision or rewrite §0.
 - Adding or moving a revision means **deriving a whole new pin set from that file's own headings**
   (`grep -n '^#'`, then print each range and confirm its first and last line). Never shift another
   revision's numbers by an offset.
 - Adopting a candidate revision is a four-step maintainer procedure — see `§G0.4` in
-  `docs/design/v2.0-RC2/DESIGN.md`. A `-RC` suffix means exactly "no downstream doc has adopted
-  it".
+  `docs/design/v2.0-RC2/DESIGN.md`. Historical `-RC` labels remain stable under partial adoption;
+  `v3` was an explicit identity promotion and remains unadopted by default.
 - If a coordinate you were given disagrees with what is at that line: **stop and report**, do not
   guess which is right.
 

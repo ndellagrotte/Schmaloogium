@@ -432,6 +432,94 @@ function validateArtifact(root, manifest, artifact, resolvedSelectors, prefix) {
   }
 }
 
+const DESIGN_PATH_TEMPLATE = "docs/design/{design_version}/DESIGN.md";
+const DESIGN_VERSION_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+const DESIGN_PATH_PATTERN = /^docs\/design\/([A-Za-z0-9][A-Za-z0-9._-]*)\/DESIGN\.md$/;
+
+function resolveDesignManifest(root, baseManifest, designVersionOverride) {
+  if (!baseManifest.design_revision) {
+    if (designVersionOverride !== undefined) {
+      throw new VerificationError(
+        `Target ${baseManifest.id} does not declare a design source; --design-version is unsupported`,
+      );
+    }
+    return { manifest: baseManifest, designRevision: null };
+  }
+
+  const configured = baseManifest.design_revision;
+  const target = baseManifest.targets[configured.target_index];
+  if (!target) {
+    throw new VerificationError(
+      `design_revision.target_index ${configured.target_index} does not identify a target artifact`,
+    );
+  }
+  const templateIndexes = baseManifest.authoritative_sources
+    .map((artifact, index) => artifact.path === DESIGN_PATH_TEMPLATE ? index : -1)
+    .filter((index) => index >= 0);
+  if (templateIndexes.length !== 1) {
+    throw new VerificationError(
+      `A design-governed manifest must contain exactly one ${DESIGN_PATH_TEMPLATE} authoritative source; found ${templateIndexes.length}`,
+    );
+  }
+
+  let version;
+  let selectionSource;
+  let declarationLine;
+  if (designVersionOverride !== undefined) {
+    if (!DESIGN_VERSION_PATTERN.test(designVersionOverride)) {
+      throw new VerificationError(
+        `--design-version must be a design directory label, got ${designVersionOverride}`,
+      );
+    }
+    version = designVersionOverride;
+    selectionSource = "override";
+  } else {
+    const sectionZero = resolveSelector(
+      root,
+      target.path,
+      configured.section_zero,
+      "design_revision:section_zero",
+    );
+    let declarationRegex;
+    try {
+      declarationRegex = new RegExp(configured.declaration_pattern, "gm");
+    } catch (error) {
+      throw new VerificationError(`Invalid design_revision.declaration_pattern: ${error.message}`);
+    }
+    const matches = [...sectionZero.text.matchAll(declarationRegex)];
+    if (matches.length !== 1) {
+      throw new VerificationError(
+        `design_revision.declaration_pattern in ${target.path} §0 matched ${matches.length} declarations; expected exactly one`,
+      );
+    }
+    const declaredPath = matches[0].groups?.path;
+    const declaredMatch = DESIGN_PATH_PATTERN.exec(declaredPath || "");
+    if (!declaredMatch) {
+      throw new VerificationError(
+        "design_revision.declaration_pattern must capture a canonical docs/design/<version>/DESIGN.md path in the named group 'path'",
+      );
+    }
+    version = declaredMatch[1];
+    selectionSource = "section-zero";
+    declarationLine = sectionZero.start_line
+      + sectionZero.text.slice(0, matches[0].index).split("\n").length - 1;
+  }
+
+  const path = `docs/design/${version}/DESIGN.md`;
+  resolveRepoPath(root, path, { kind: "governing design revision" });
+  const manifest = structuredClone(baseManifest);
+  manifest.authoritative_sources[templateIndexes[0]].path = path;
+  return {
+    manifest,
+    designRevision: {
+      version,
+      path,
+      selection_source: selectionSource,
+      ...(declarationLine === undefined ? {} : { declaration_line: declarationLine }),
+    },
+  };
+}
+
 function resolveManifestContent(root, manifest) {
   const interfaceIds = manifest.interface_regions.map((region) => region.id);
   if (new Set(interfaceIds).size !== interfaceIds.length) {
@@ -525,8 +613,13 @@ function renderAllowedPaths(root, manifest, role, reviewOutput) {
 
 export function resolveContract(root, manifestSpec, options = {}) {
   const manifestPath = resolveManifestPath(root, manifestSpec);
-  const manifest = loadJson(manifestPath);
-  assertSchema(manifest, join(SCHEMA_ROOT, "manifest.schema.json"), "target manifest");
+  const baseManifest = loadJson(manifestPath);
+  assertSchema(baseManifest, join(SCHEMA_ROOT, "manifest.schema.json"), "target manifest");
+  const { manifest, designRevision } = resolveDesignManifest(
+    root,
+    baseManifest,
+    options.designVersion,
+  );
 
   const policyPath = resolveRepoPath(root, manifest.policy, { kind: "verification policy" });
   const policy = loadJson(policyPath);
@@ -726,7 +819,10 @@ export function resolveContract(root, manifestSpec, options = {}) {
     manifestPath: relative(root, manifestPath),
     policyPath: relative(root, policyPath),
     lensSetPath: relative(root, lensSetPath),
+    baseManifest,
     manifest,
+    designVersionOverride: options.designVersion,
+    designRevision,
     policy,
     attackLenses: lensSet.lenses,
     presetName,
@@ -1022,6 +1118,7 @@ function contractContext(contract) {
     selectors: (artifact.selectors || []).map((item) => item.id),
   });
   return {
+    ...(contract.designRevision ? { design_revision: contract.designRevision } : {}),
     targets: contract.manifest.targets.map(artifactView),
     authoritative_sources: contract.manifest.authoritative_sources.map(artifactView),
     supporting_evidence: contract.manifest.supporting_evidence.map(artifactView),
@@ -1283,15 +1380,20 @@ function authoritativeInterfaceRegions(contract, hashesBefore, hashesAfter) {
 }
 
 function resolveRoundContext(contract, round) {
-  const resolvedSelectors = resolveManifestContent(contract.root, contract.manifest);
-  const priorReviews = discoverPriorReviews(contract.root, contract.manifest);
+  const { manifest, designRevision } = resolveDesignManifest(
+    contract.root,
+    contract.baseManifest,
+    contract.designVersionOverride,
+  );
+  const resolvedSelectors = resolveManifestContent(contract.root, manifest);
+  const priorReviews = discoverPriorReviews(contract.root, manifest);
   const nextRound = priorReviews.length ? priorReviews.at(-1).round + 1 : 1;
   if (nextRound !== round) {
     throw new VerificationError(
       `Prior-review state changed before round ${round}; current filesystem resolves next round ${nextRound}`,
     );
   }
-  const immutablePaths = expandPatterns(contract.root, contract.manifest.immutable_paths);
+  const immutablePaths = expandPatterns(contract.root, manifest.immutable_paths);
   for (const prior of priorReviews) {
     if (!immutablePaths.includes(prior.path)) {
       throw new VerificationError(
@@ -1299,7 +1401,7 @@ function resolveRoundContext(contract, round) {
       );
     }
   }
-  return { resolvedSelectors, priorReviews, immutablePaths };
+  return { manifest, designRevision, resolvedSelectors, priorReviews, immutablePaths };
 }
 
 function extendImmutableBaseline(root, baseline, immutablePaths, manifest) {
@@ -1564,6 +1666,7 @@ export function dryRunPlan(contract, options = {}) {
     outcome: "DRY-RUN",
     target_id: contract.manifest.id,
     manifest: contract.manifestPath,
+    ...(contract.designRevision ? { design_revision: contract.designRevision } : {}),
     repo_root: contract.root,
     preset: contract.presetName,
     first_review: contract.firstReview,
@@ -1642,6 +1745,7 @@ export function dryRunFixupPlan(contract, fixupReview) {
     outcome: "DRY-RUN-FIXUP",
     target_id: contract.manifest.id,
     manifest: contract.manifestPath,
+    ...(contract.designRevision ? { design_revision: contract.designRevision } : {}),
     review: pending.path,
     round: pending.round,
     allowed_writes: pending.allowedWrites,
@@ -1687,6 +1791,7 @@ export async function executeFixupContinuation(contract, options = {}) {
     version: 1,
     target_id: contract.manifest.id,
     manifest: contract.manifestPath,
+    ...(contract.designRevision ? { design_revision: contract.designRevision } : {}),
     started_at: new Date().toISOString(),
     status: "running",
     stage: `R${pending.round} Fix-up continuation`,
@@ -1740,6 +1845,7 @@ export async function executeFixupContinuation(contract, options = {}) {
     return {
       outcome: "FIXUP-COMPLETE",
       target_id: contract.manifest.id,
+      ...(contract.designRevision ? { design_revision: contract.designRevision } : {}),
       review: pending.path,
       round: pending.round,
       files_modified: run.changes,
@@ -1784,6 +1890,7 @@ export async function executeVerification(contract, options = {}) {
     version: 1,
     target_id: contract.manifest.id,
     manifest: contract.manifestPath,
+    ...(contract.designRevision ? { design_revision: contract.designRevision } : {}),
     started_at: new Date().toISOString(),
     status: "running",
     stage: "startup",
@@ -1827,6 +1934,8 @@ export async function executeVerification(contract, options = {}) {
         }
         assertImmutable(contract.root, immutableBaseline, contract.manifest);
         const refreshed = resolveRoundContext(contract, round);
+        contract.manifest = refreshed.manifest;
+        contract.designRevision = refreshed.designRevision;
         contract.resolvedSelectors = refreshed.resolvedSelectors;
         contract.priorReviews = refreshed.priorReviews;
         contract.immutablePaths = refreshed.immutablePaths;
@@ -1838,6 +1947,7 @@ export async function executeVerification(contract, options = {}) {
         );
         roundJournal.context_refresh = {
           status: "complete",
+          ...(refreshed.designRevision ? { design_revision: refreshed.designRevision } : {}),
           resolved_selectors: selectorCoordinates(refreshed.resolvedSelectors),
           discovered_prior_reviews: refreshed.priorReviews,
         };
@@ -2279,6 +2389,7 @@ export async function executeVerification(contract, options = {}) {
     outcome,
     target_id: contract.manifest.id,
     manifest: contract.manifestPath,
+    ...(contract.designRevision ? { design_revision: contract.designRevision } : {}),
     last_verdict: lastVerdict,
     rounds_run: trend.length,
     last_round: Math.max(lastRound, 0),

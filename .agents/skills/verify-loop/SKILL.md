@@ -24,8 +24,12 @@ Complete only that atomic role. Do not delegate to subagents or start another Co
    scripts/verify --target <id> --preset lean --dry-run
    ```
 
+   Design-governed targets resolve their revision from the target document's §0 declaration by
+   default. Use `--design-version <label>` only for an explicit verification-only override.
+
 4. Report the resolved next round, selected lenses, write allowlists, maximum concurrency, and
-   estimated agent/input/output tokens before any paid run.
+   estimated agent/input/output tokens before any paid run. For a design-governed target, also
+   report the resolved design version, path, and whether it came from §0 or an override.
 5. Default the first paid run on a target to one review-only round unless the user explicitly
    authorizes fix-up or unattended multi-round work:
 

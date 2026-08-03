@@ -1,11 +1,11 @@
-# Schmaloogium — Design Document (**REV5:** frame-begin timeline correction, v2.0-RC5)
+# Schmaloogium — Design Document (**REV5:** frame-begin timeline correction, v3)
 
-> **REV5:** **Status:** v2.0-RC5 "FRAME-BEGIN-SPLIT", 2026-08-03. This file is
-> `docs/design/v2.0-RC5/DESIGN.md` and is the **unadopted RC5 candidate overall**. It follows
-> v2.0-RC4 (`docs/design/v2.0-RC4/DESIGN.md`) in revision history, but authoring this candidate
+> **REV5:** **Status:** v3 "FRAME-BEGIN-SPLIT", 2026-08-03. This file is
+> `docs/design/v3/DESIGN.md` and is the **unadopted v3 design revision overall**. It follows
+> v2.0-RC4 (`docs/design/v2.0-RC4/DESIGN.md`) in revision history, but promoting this revision
 > migrates no downstream governance: target manifests and phase headers retain their declared
 > revisions until §G0.4 is executed for the selected phase.
-> **REV5:** **What changed (RC4 → RC5):** the Phase 7 reference timeline no longer conflates
+> **REV5:** **What changed (RC4 → v3):** the Phase 7 reference timeline no longer conflates
 > post-first-clear buffer/frame preparation with matrix capture. Preparation remains after the
 > first clear; gbuffer matrix capture moves to after `EntityRenderer.setupCameraTransform(FI)V`,
 > where vanilla has actually installed the main camera matrices. No phase adoption is performed.
@@ -52,14 +52,14 @@
 > **Audience:** AI agent sessions building or verifying one phase each (protocols in §G1),
 > and the project owner supervising them.
 
-### **REV5:** Revision highlights (RC4 → RC5)
+### **REV5:** Revision highlights (RC4 → v3)
 
-| **REV5:** Area | RC4 | RC5 |
+| **REV5:** Area | RC4 | v3 |
 |---|---|---|
-| Candidate status | RC4 is an unadopted candidate | **REV5:** RC5 is the new unadopted candidate; authoring it repoints no phase or target |
+| Candidate status | RC4 is an unadopted candidate | **REV5:** v3 is the current unadopted design revision; promoting it repoints no phase or target |
 | Post-clear moment | Buffer/frame preparation and matrix capture share the first-clear `AFTER` row | **REV5:** first-clear `AFTER` performs buffer/frame preparation only |
 | Matrix capture | Reads matrices before `setupCameraTransform` has established the main camera transform | **REV5:** captures immediately after `setupCameraTransform(FI)V`, then publishes the snapshot to Phase 6 exactly once |
-| Closing audit | REV1–REV4 change audits | **REV5:** adds this candidate's narrow additions audit and end marker |
+| Closing audit | REV1–REV4 change audits | **REV5:** adds this revision's narrow additions audit and end marker |
 
 ### **REV4:** Revision highlights (RC3 → RC4)
 
@@ -192,32 +192,31 @@ designs the depth-copy architecture now, tagged "copies implemented at v0.5", be
 retrofitting architecture is the failure mode that kills projects (decision D-4's rationale,
 generalized).
 
-### G0.4 Adoption procedure and readiness (**REV5:** RC5 status)
+### G0.4 Adoption procedure and readiness (**REV5:** v3 status)
 
-**REV5:** This revision is the unadopted candidate overall. Per `docs/MOVES.md`'s
-version-label rule, a design revision keeps its `-RC` label until complete downstream
-adoption; adoption is a deliberate maintainer operation, never a side effect. Current
+**REV5:** This revision is the unadopted v3 design revision overall. Its explicit promotion
+from the prior candidate label changes only this document's identity and directory; adoption
+remains a deliberate maintainer operation, never a side effect. Current
 governance is declared by each phase header and `verification/targets/<id>.json`: Phase 1
-uses RC2, Phase 2 uses v1.1, and Phases 3–9 use RC3. Pointing any phase at RC5 without
+uses RC2, Phase 2 uses v1.1, and Phases 3–9 use RC3. Pointing any phase at v3 without
 re-derivation would not necessarily error; plausible text exists at the old coordinates.
-Adopting RC5 for a downstream phase means, in order:
+Adopting v3 for a downstream phase means, in order:
 
-1. **REV5:** **Re-derive the candidate's complete selector/pin set from this file's own
+1. **REV5:** **Re-derive v3's complete selector/pin set from this file's own
    headings and endpoints.** Update only the selected phase's data-only profile under
    `verification/targets/`; never shift another revision's coordinates by an offset.
 2. **REV5:** **Dry-run the selected target**, then update the operator source map only if
    engine/prompt behavior changed. Update `docs/MOVES.md`'s `DESIGN.md` collision and
    version-label records for every adoption.
-3. **REV5:** **Migrate only the phase selected for adoption.** Assess RC5's delta against
+3. **REV5:** **Migrate only the phase selected for adoption.** Assess v3's delta against
    the sections that phase actually consumed; route claim-touching deltas through a §G1.3
    fix-up session (the review-file `## Resolutions` convention), **not** a rebuild. A §5
    cross-phase-interface change owes a fresh verify session per §G1.3.
-4. **Relabel** per the sharpened `docs/MOVES.md` version-label rule: the suffix remains
-   until every downstream phase has adopted the revision. Record any directory move in
-   MOVES.md and run its dangling-reference sweep.
+4. **Record adoption without relabeling this revision.** Keep the `v3` directory stable,
+   update `docs/MOVES.md`'s per-phase governance record, and run its dangling-reference sweep.
 
 **REV5:** Until all four steps are complete for a phase, that phase keeps its declared
-governing design and this file remains the candidate overall. A session given coordinates
+governing design and this file remains unadopted overall. A session given coordinates
 that do not match its assigned document stops and reports rather than guessing.
 
 ---
@@ -286,7 +285,7 @@ has three steps, then you stop:
 - **Do not modify** RESEARCH.md, any design revision (`docs/design/v1.1/DESIGN.md`,
   `docs/design/v2.0-RC1/DESIGN.md`, `docs/design/v2.0-RC2/DESIGN.md`,
   `docs/design/v2.0-RC3/DESIGN.md`, `docs/design/v2.0-RC4/DESIGN.md`,
-  `docs/design/v2.0-RC5/DESIGN.md` — **REV5:** the list now names all six),
+  `docs/design/v3/DESIGN.md` — **REV5:** the list now names all six),
   PINTONIUM_DESIGN.md, OCULUS_DESIGN.md, or another phase's doc. Propose changes to any
   of them in your doc §11 ("requested upstream changes").
 - **Forbidden sources (REV2):** prior sessions' transcripts — any directory named
@@ -2701,16 +2700,16 @@ literal `**REV4:**` marker):
 | PD §8.1 tag expansion qualified as modern-only in this checkout; 1.12 shim and entries-before-tags rule retained | **REV4:** Phase 9 scope |
 | Closing additions audit and RC4 end marker | **REV4:** appendix close |
 
-**REV5:** additions audit (every RC4→RC5 change, verified placed; each site carries a
+**REV5:** additions audit (every RC4→v3 change, verified placed; each site carries a
 literal `**REV5:**` marker):
 
 | **REV5:** Addition/correction | Placed in |
 |---|---|
-| RC5 identity, own path, unadopted-candidate status, and narrow change statement | **REV5:** header/status block |
-| Revision highlights (RC4 → RC5) matched to the actual additions | **REV5:** top highlights table |
-| Adoption readiness updated for RC5 and the canonical target-profile/selectors workflow | **REV5:** G0.4 |
-| Do-not-modify list extended to RC5 | **REV5:** G1.1 |
+| v3 identity, own path, unadopted-revision status, and narrow change statement | **REV5:** header/status block |
+| Revision highlights (RC4 → v3) matched to the actual additions | **REV5:** top highlights table |
+| Adoption readiness updated for v3 and the canonical target-profile/selectors workflow | **REV5:** G0.4 |
+| Do-not-modify list extended to v3 | **REV5:** G1.1 |
 | Former timeline row 3 split into post-clear preparation and post-camera-transform matrix capture | **REV5:** Phase 7 verified injection timeline |
-| Closing additions audit and RC5 end marker | **REV5:** appendix close |
+| Closing additions audit and v3 end marker | **REV5:** appendix close |
 
-*End of design document (**REV5:** frame-begin timeline correction, v2.0-RC5).*
+*End of design document (**REV5:** frame-begin timeline correction, v3).*

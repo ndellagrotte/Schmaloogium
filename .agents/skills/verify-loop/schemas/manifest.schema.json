@@ -39,6 +39,16 @@
       "minItems": 1,
       "items": { "$ref": "#/$defs/artifact" }
     },
+    "design_revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_index", "section_zero", "declaration_pattern"],
+      "properties": {
+        "target_index": { "type": "integer", "minimum": 0 },
+        "section_zero": { "$ref": "#/$defs/selector" },
+        "declaration_pattern": { "type": "string", "minLength": 1 }
+      }
+    },
     "supporting_evidence": {
       "type": "array",
       "items": { "$ref": "#/$defs/artifact" }

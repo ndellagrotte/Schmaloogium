@@ -28,7 +28,7 @@ const stalePatterns = [
 ];
 
 const historicalPatterns = [
-  /^docs\/design\/(?:v1\.1|v2\.0-RC1|v2\.0-RC2|v2\.0-RC3)\/DESIGN\.md$/,
+  /^docs\/design\/[^/]+\/DESIGN\.md$/,
   /^docs\/design\/briefs\//,
   /^docs\/phase\d+\/reviews\//,
   /^docs\/phase\d+\/briefs\//,

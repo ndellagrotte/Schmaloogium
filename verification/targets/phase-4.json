@@ -18,9 +18,17 @@
       ]
     }
   ],
+  "design_revision": {
+    "target_index": 0,
+    "section_zero": {
+      "start": "^## 0\\. Header$",
+      "end": "^## 1\\. Scope & boundaries$"
+    },
+    "declaration_pattern": "^\\*\\*Governing assignment:\\*\\* `(?<path>docs/design/[A-Za-z0-9._-]+/DESIGN\\.md)"
+  },
   "authoritative_sources": [
     {
-      "path": "docs/design/v2.0-RC3/DESIGN.md",
+      "path": "docs/design/{design_version}/DESIGN.md",
       "role": "governing design revision",
       "selectors": [
         {

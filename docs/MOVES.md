@@ -22,6 +22,7 @@ warning below.
 |---|---|
 | `docs/project/DESIGN.md` | `docs/design/v1.1/DESIGN.md` |
 | `docs/pintonium/DESIGN_PINTONIUM_REV1.md` | `docs/design/v2.0-RC1/DESIGN.md` |
+| `docs/design/v2.0-RC5/DESIGN.md` | `docs/design/v3/DESIGN.md` |
 | `docs/project/RESEARCH.md` | `docs/research/v1/RESEARCH.md` |
 | `docs/pintonium/PINTONIUM_DESIGN.md` | `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md` |
 | `docs/phase1/artifacts/PHASE_1_DOC.md` | `docs/phase1/v14/PHASE_1_DOC.md` *(was `v10/` until the round-eleven roll, then `v11/` until the direct two-overdue-roll catch-up to `v13/`, then `v14/` after round fifteen's literal PASS confirmed the applied §0.14 fix-up, 2026-07-26)* |
@@ -64,39 +65,42 @@ Everything else kept its filename. These did not, each for a reason:
 
 ## ⚠️ Six files named `DESIGN.md`
 
-| | `docs/design/v1.1/DESIGN.md` | `docs/design/v2.0-RC1/DESIGN.md` | `docs/design/v2.0-RC2/DESIGN.md` | `docs/design/v2.0-RC3/DESIGN.md` | `docs/design/v2.0-RC4/DESIGN.md` | `docs/design/v2.0-RC5/DESIGN.md` |
+| | `docs/design/v1.1/DESIGN.md` | `docs/design/v2.0-RC1/DESIGN.md` | `docs/design/v2.0-RC2/DESIGN.md` | `docs/design/v2.0-RC3/DESIGN.md` | `docs/design/v2.0-RC4/DESIGN.md` | `docs/design/v3/DESIGN.md` |
 |---|---|---|---|---|---|---|
-| Lines | 1,586 | 2,304 | 2,478 | 2,656 | 2,683 | 2,716 |
-| Status | **governs Phase 2**; anchors Phase 1 reviews through round 11 | superseded; read by nothing | **governs Phase 1** from its §0.11 onward | **governs Phases 3–9** from their initial builds; partial adoption retains `-RC` | unadopted historical candidate | **unadopted current candidate**; no phase or target points to it |
-| Phase 1 spec at | l. 585 | l. 829 | l. 957 | l. 1,120 | l. 1,130 | l. 1,148 |
-| Phase 2 spec at | l. 662 | l. 933 | l. 1,071 | l. 1,234 | l. 1,244 | l. 1,262 |
-| §G1.2 at | l. 118 | l. 174 | l. 257 | l. 276 | l. 286 | l. 304 |
+| Lines | 1,586 | 2,304 | 2,478 | 2,656 | 2,683 | 2,715 |
+| Status | **governs Phase 2**; anchors Phase 1 reviews through round 11 | superseded; read by nothing | **governs Phase 1** from its §0.11 onward | **governs Phases 3–9** from their initial builds; partial adoption retains `-RC` | unadopted historical candidate | **unadopted current design revision**; no phase defaults to it |
+| Phase 1 spec at | l. 585 | l. 829 | l. 957 | l. 1,120 | l. 1,130 | l. 1,147 |
+| Phase 2 spec at | l. 662 | l. 933 | l. 1,071 | l. 1,234 | l. 1,244 | l. 1,261 |
+| §G1.2 at | l. 118 | l. 174 | l. 257 | l. 276 | l. 286 | l. 303 |
 
 *(2026-07-26: the RC1 column previously read 2,300 / 825 / 929 / 170 — off by four against the file
 on disk since it was recorded; corrected while adding the RC2 column.)*
 
 **There is no longer one governing revision, and no longer one set of line numbers** (changed
-2026-07-26, §G0.4 steps 1–2 and 4; Phase 3 adoption recorded 2026-07-27; RC4 and RC5 candidates recorded
+2026-07-26, §G0.4 steps 1–2 and 4; Phase 3 adoption recorded 2026-07-27; RC4 and v3 revisions recorded
 2026-08-03). Phase docs cite `DESIGN.md` **by line number**, and the nine current phase docs are
 anchored per phase:
 `PHASE_1_DOC.md` l. 12 declares
 `docs/design/v2.0-RC2/DESIGN.md` from its §0.11 onward, adopted at the round-eleven fix-up as §G0.4
 step 3; `PHASE_2_DOC.md` §0.1 still cites v1.1 (the Phase 2 spec at ll. 662–720) because step 3 has
 not been run for it; and Phases 3–9 deliberately adopt RC3 from their initial builds. Every Phase 1
-review through round 11 is in v1.1's coordinates. RC4 and RC5 are not adopted by any phase.
+review through round 11 is in v1.1's coordinates. RC4 and v3 are not adopted by any phase.
 
 The `$verify-loop` harness therefore resolves the revision **per target** rather than globally.
-Each profile in `verification/targets/` names its governing design and unique content selectors for
-Part I, the target specification, the document gate, and the mandatory template. The engine resolves
-those selectors against current content at startup and reports current coordinates. Phase 3's
-profile selects RC3, OQ-7, and the Phase 1 dependency; the Phase 4–8 profiles also select RC3;
-Phase 1 selects RC2; Phase 2 selects v1.1. Phase 9 declares RC3 in its document header and has no
-target profile yet. No profile selects RC4 or RC5. There is no executable line-pin table to synchronize.
+Each phase profile in `verification/targets/` declares how to identify its governing-design path
+inside the target document's §0 plus unique content selectors for Part I, the target specification,
+the document gate, and the mandatory template. Unless `--design-version` is supplied, the engine
+extracts that §0 path, resolves the selectors against its current content at startup and every round
+boundary, and reports the version, path, selection source, and current coordinates. Phase 1's §0
+selects RC2; Phase 2's selects v1.1; Phases 3–8 select RC3. Phase 9 declares RC3 in its document
+header and has no target profile yet. No profile defaults to RC4 or v3; either may be selected
+explicitly for a compatible target with `--design-version`. There is no executable line-pin table
+to synchronize.
 
-**Pointing a phase at the wrong revision would not raise an error — it would silently feed every
-agent the wrong text.** The old pins make the point: at v2.0-RC1 ll. 649–652 the doc-gate lens read
-§G9's template, which looks entirely plausible; at v2.0-RC2 the same range lands in §G6's
-conformance-tier text, equally plausible. So adopting a new or moved revision means
+**A syntactically valid but unintended `--design-version` can still feed every agent the wrong
+revision when its selectors also resolve.** The old pins make the point: at v2.0-RC1 ll. 649–652
+the doc-gate lens read §G9's template, which looks entirely plausible; at v2.0-RC2 the same range
+lands in §G6's conformance-tier text, equally plausible. So adopting a new or moved revision means
 **re-deriving its whole pin set from its own headings** — never shifting another revision's numbers
 by an offset. The procedure is v2.0-RC2 §G0.4, and its step 1 is exactly this.
 
@@ -111,7 +115,7 @@ Directory names come from each document's own header, not from the folder it use
 | REV2 | `v2.0-RC2` | header states v2.0-RC2 (created 2026-07-26, not a move); supersedes RC1, which stays for history. **`-RC` retained after partial adoption — see the ruling below** |
 | REV3 | `v2.0-RC3` | header states v2.0-RC3 (created 2026-07-26, not a move); **governs Phases 3–9** — RC2 still governs Phase 1 and v1.1 still governs Phase 2; partial adoption retains `-RC` |
 | REV4 | `v2.0-RC4` | header states v2.0-RC4 (created 2026-08-03, not a move); unadopted candidate implementing PHASE_9_DOC §11.4's tag-evidence qualification; no phase or target points to it |
-| REV5 | `v2.0-RC5` | header states v2.0-RC5 (created 2026-08-03, not a move); current unadopted candidate implementing PHASE_7_DOC §11.5's split frame-begin/matrix-capture timeline; no phase or target points to it |
+| REV5 | `v3` | header states v3; promoted together with its directory on 2026-08-03 from the former candidate label. It is the current unadopted design revision implementing PHASE_7_DOC §11.5's split frame-begin/matrix-capture timeline; no phase defaults to it |
 | `RESEARCH.md` | `v1` | "first complete draft"; no version stated |
 | `PINTONIUM_DESIGN.md` | `v1.0` | header states v1.0 |
 | `PHASE_1_DOC.md` | `v14` | fix-up addenda §0.4–**§0.14**; `PHASE_1_REVIEW_14.md` has complete `## Resolutions`, and round fifteen returned a literal PASS with no further fix-up. Rolled from `v13` on 2026-07-26 after that loop exited |
@@ -140,7 +144,7 @@ already-applied §0.12 and §0.13 addenda and costs one additional dangling refe
 after round fifteen's literal PASS confirmed the round-fourteen fix-up. It catches the directory up
 to the already-applied §0.14 addendum and costs one additional dangling reference, recorded below.*
 
-### The `-RC` suffix after a partial adoption — ruling, 2026-07-26
+### Historical `-RC` suffixes after partial adoption — ruling, 2026-07-26
 
 The rule above is that `-RC` means exactly *"no downstream doc has adopted it"*. That condition is now
 **literally false**: `PHASE_1_DOC.md` l. 12 declares RC2 as its anchor. The suffix is nonetheless
@@ -158,11 +162,12 @@ The rule above is that `-RC` means exactly *"no downstream doc has adopted it"*.
    `DESIGN.md`, which is evidence (§G1.1/§G1.2). **The label cannot move ahead of a design-document
    revision**, whatever the adoption state.
 
-The same reasoning applies to RC1, RC3, RC4, and RC5. RC1 remains unread historical evidence; RC3 is
+The same reasoning applies to RC1, RC3, and RC4. RC1 remains unread historical evidence; RC3 is
 adopted by Phases 3–9 while Phase 1 stays on RC2 and Phase 2 stays on v1.1. RC3 therefore remains
 `v2.0-RC3`: partial adoption cannot move the label ahead of the design document's own header. RC4
-and RC5 remain `v2.0-RC4` and `v2.0-RC5` because both are unadopted and their own headers declare
-those candidate labels.
+remains `v2.0-RC4` because it is unadopted and its own header declares that candidate label. REV5
+is now `v3` by an explicit maintainer-directed promotion that changed its header and directory
+together; that identity change did not adopt it for any phase.
 
 ## What was deliberately left stale
 
@@ -207,7 +212,7 @@ grep -rhoE 'docs/[A-Za-z0-9._/-]+\.md' docs --include='*.md' --exclude=MOVES.md 
   [ -f "$p" ] || echo "DANGLING: $p"; done
 ```
 
-**As re-audited while adding RC5 on 2026-08-03, "clean" means exactly five lines, not zero:**
+**As re-audited while promoting v3 on 2026-08-03, "clean" means exactly five lines, not zero:**
 
 ```
 DANGLING: docs/decisions/OQ-3_GL_CONTEXT.md

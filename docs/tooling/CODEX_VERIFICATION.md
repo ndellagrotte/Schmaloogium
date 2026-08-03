@@ -10,12 +10,16 @@ Or run its programmatic entry point:
 
 ```bash
 scripts/verify --target phase-3 --dry-run
+scripts/verify --target phase-3 --design-version v3 --dry-run
 scripts/verify --target phase-3 --preset lean --review-only --max-rounds 1
 scripts/verify --target phase-3 --fixup-review latest --dry-run
 scripts/verify --target phase-3 --fixup-review latest
 ```
 
-The first command is zero-agent validation. It discovers the Git root and prior reviews, resolves
+The first command is zero-agent validation. For a design-governed target it derives the governing
+design from the target document's §0 declaration; `--design-version <label>` is a
+verification-only override and does not adopt the revision or edit §0. The dry-run reports the
+selected version, path, and selection source, discovers the Git root and prior reviews, resolves
 content selectors, rejects missing/ambiguous/conflicting/outside-repository inputs and existing
 outputs, prints role write allowlists, and estimates calls/tokens. Run it before every paid round.
 
@@ -29,8 +33,8 @@ session; concurrency is bounded inside each stage and never crosses a stage barr
 costly multi-round run until its dry-run estimate has been surfaced and authorized.
 
 The generic manifest is documented in
-`.agents/skills/verify-loop/references/OPERATIONS.md`. Current targets are `phase-1`, `phase-2`,
-`phase-3`, `phase-4`, and the test-only `non-phase-fixture`. New targets require
+`.agents/skills/verify-loop/references/OPERATIONS.md`. Current targets are `phase-1` through
+`phase-8` and the test-only `non-phase-fixture`. New targets require
 data/configuration, not engine or prompt changes.
 
 Real runs checkpoint below `.verification-runs/` (gitignored), and failures report the exact

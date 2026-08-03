@@ -16,6 +16,7 @@ const HELP = `Usage:
 
 Options:
   --target <id|path>       Target ID under verification/targets or a repo-relative manifest path.
+  --design-version <name>  Override a design-governed target's §0 version (for example: v3).
   --preset <name>          Policy preset (default: lean).
   --start-round <n>        Must equal the next round discovered from prior reviews.
   --max-rounds <n>         Maximum rounds (default: 6; 0 performs resolution without agents).
@@ -53,6 +54,9 @@ function parseArgs(argv) {
     switch (arg) {
       case "--target":
         options.target = argv[++index];
+        break;
+      case "--design-version":
+        options.designVersion = argv[++index];
         break;
       case "--preset":
         options.preset = argv[++index];
@@ -96,6 +100,12 @@ function parseArgs(argv) {
   }
   if (options.model !== undefined && (!options.model || options.model.startsWith("--"))) {
     throw new VerificationError("--model requires a value");
+  }
+  if (
+    options.designVersion !== undefined
+    && (!options.designVersion || options.designVersion.startsWith("--"))
+  ) {
+    throw new VerificationError("--design-version requires a design directory label");
   }
   if (options.fixupReview !== undefined && (!options.fixupReview || options.fixupReview.startsWith("--"))) {
     throw new VerificationError("--fixup-review requires latest or a repo-relative review path");

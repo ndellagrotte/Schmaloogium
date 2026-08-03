@@ -140,6 +140,45 @@ function makeMiniRepo() {
   return { root, manifest };
 }
 
+function configureMiniDesignSource(root, manifest, version = "v1") {
+  writeFileSync(
+    join(root, "target.md"),
+    [
+      "# Target",
+      "## 0. Header",
+      `**Governing design:** \`docs/design/${version}/DESIGN.md\``,
+      "## Public",
+      "alpha",
+      "## Internal",
+      "private",
+      "",
+    ].join("\n"),
+  );
+  for (const designVersion of ["v1", "v2"]) {
+    mkdirSync(join(root, "docs", "design", designVersion), { recursive: true });
+    writeFileSync(
+      join(root, "docs", "design", designVersion, "DESIGN.md"),
+      `# Design ${designVersion}\n\n## Required\n\nalpha\n\n## Gate\n\ncomplete\n`,
+    );
+  }
+  manifest.targets[0].selectors[0].selector = {
+    start: "^## Public$",
+    end: "^## Internal$",
+  };
+  manifest.interface_regions[0].selector = {
+    start: "^## Public$",
+    end: "^## Internal$",
+  };
+  manifest.design_revision = {
+    target_index: 0,
+    section_zero: { start: "^## 0\\. Header$", end: "^## Public$" },
+    declaration_pattern: "^\\*\\*Governing design:\\*\\* `(?<path>docs/design/[A-Za-z0-9._-]+/DESIGN\\.md)`$",
+  };
+  manifest.authoritative_sources[0].path = "docs/design/{design_version}/DESIGN.md";
+  manifest.immutable_paths.push("docs/design/**");
+  writeJson(join(root, "verification", "targets", "mini.json"), manifest);
+}
+
 function fixtureEvidence() {
   return {
     path: "target.md",
@@ -180,6 +219,7 @@ function makeFakeRunner(root, calls, {
   secondRoundPass = false,
   fixupTargetAppend = "",
   fixupInterfaceValue = "",
+  fixupDesignVersion = "",
   reportedInterfaceRegions,
 } = {}) {
   return async ({ label, prompt, sandbox }) => {
@@ -263,6 +303,12 @@ function makeFakeRunner(root, calls, {
         targetAfter = targetAfter.replace(
           currentRegion,
           `## Public\n\n${fixupInterfaceValue}\n\n## Internal`,
+        );
+      }
+      if (fixupDesignVersion) {
+        targetAfter = targetAfter.replace(
+          /docs\/design\/[A-Za-z0-9._-]+\/DESIGN\.md/,
+          `docs/design/${fixupDesignVersion}/DESIGN.md`,
         );
       }
       targetAfter += fixupTargetAppend;
@@ -361,7 +407,11 @@ test("contract resolution validates selectors, state, and first-review behavior"
   const phase3 = resolveContract(ROOT, "phase-3", { preset: "lean", maxRounds: 0 });
   assert.equal(phase3.startRound, phase3.priorReviews.length + 1);
   assert.equal(phase3.firstReview, false);
-  const phase4 = resolveContract(ROOT, "phase-4", { preset: "lean", maxRounds: 0 });
+  const phase4 = resolveContract(ROOT, "phase-4", {
+    preset: "lean",
+    maxRounds: 0,
+    fixupReview: "latest",
+  });
   assert.equal(phase4.startRound, phase4.priorReviews.length + 1);
   assert.equal(phase4.firstReview, false);
   const firstReview = resolveContract(ROOT, "non-phase-fixture", { preset: "lean", maxRounds: 0 });
@@ -374,6 +424,109 @@ test("contract resolution validates selectors, state, and first-review behavior"
   assert.throws(
     () => resolveContract(ROOT, "phase-2", { preset: "lean", startRound: 1, maxRounds: 0 }),
     /conflicts with discovered review state/,
+  );
+});
+
+test("design revision defaults to §0 and supports a fixed explicit override", () => {
+  const { root, manifest } = makeMiniRepo();
+  configureMiniDesignSource(root, manifest);
+
+  const fromSectionZero = resolveContract(root, "mini", { maxRounds: 0 });
+  assert.deepEqual(fromSectionZero.designRevision, {
+    version: "v1",
+    path: "docs/design/v1/DESIGN.md",
+    selection_source: "section-zero",
+    declaration_line: 3,
+  });
+  assert.equal(
+    fromSectionZero.resolvedSelectors["authority[0]:required"].path,
+    "docs/design/v1/DESIGN.md",
+  );
+
+  const overridden = resolveContract(root, "mini", { maxRounds: 0, designVersion: "v2" });
+  assert.deepEqual(overridden.designRevision, {
+    version: "v2",
+    path: "docs/design/v2/DESIGN.md",
+    selection_source: "override",
+  });
+  assert.equal(
+    overridden.resolvedSelectors["authority[0]:required"].path,
+    "docs/design/v2/DESIGN.md",
+  );
+
+  assert.throws(
+    () => resolveContract(root, "mini", { maxRounds: 0, designVersion: "../v2" }),
+    /design directory label/,
+  );
+  assert.throws(
+    () => resolveContract(root, "mini", { maxRounds: 0, designVersion: "v9" }),
+    /Missing governing design revision/,
+  );
+
+  writeFileSync(
+    join(root, "target.md"),
+    readFileSync(join(root, "target.md"), "utf8").replace(
+      "**Governing design:** `docs/design/v1/DESIGN.md`",
+      "**Governing design:** `docs/design/v1/DESIGN.md`\n**Governing design:** `docs/design/v2/DESIGN.md`",
+    ),
+  );
+  assert.throws(
+    () => resolveContract(root, "mini", { maxRounds: 0 }),
+    /matched 2 declarations/,
+  );
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("round refresh re-resolves the §0 design while an explicit override stays fixed", async () => {
+  const first = makeMiniRepo();
+  configureMiniDesignSource(first.root, first.manifest);
+  const defaultContract = resolveContract(first.root, "mini", { preset: "lean", maxRounds: 2 });
+  const defaultCalls = [];
+  const defaultResult = await executeVerification(defaultContract, {
+    agentRunner: makeFakeRunner(first.root, defaultCalls, {
+      secondRoundPass: true,
+      fixupDesignVersion: "v2",
+    }),
+    logger: () => {},
+  });
+  assert.equal(defaultResult.outcome, "PASS");
+  assert.equal(defaultContract.designRevision.version, "v2");
+  assert.match(
+    defaultCalls.find((call) => call.label === "attack:consistency:R2").prompt,
+    /"path": "docs\/design\/v2\/DESIGN\.md"/,
+  );
+  rmSync(first.root, { recursive: true, force: true });
+
+  const second = makeMiniRepo();
+  configureMiniDesignSource(second.root, second.manifest);
+  const overrideContract = resolveContract(second.root, "mini", {
+    preset: "lean",
+    maxRounds: 2,
+    designVersion: "v1",
+  });
+  const overrideCalls = [];
+  const overrideResult = await executeVerification(overrideContract, {
+    agentRunner: makeFakeRunner(second.root, overrideCalls, {
+      secondRoundPass: true,
+      fixupDesignVersion: "v2",
+    }),
+    logger: () => {},
+  });
+  assert.equal(overrideResult.outcome, "PASS");
+  assert.equal(overrideContract.designRevision.version, "v1");
+  assert.match(
+    overrideCalls.find((call) => call.label === "attack:consistency:R2").prompt,
+    /"path": "docs\/design\/v1\/DESIGN\.md"/,
+  );
+  rmSync(second.root, { recursive: true, force: true });
+});
+
+test("generic targets reject --design-version without changing default behavior", () => {
+  const generic = resolveContract(ROOT, "non-phase-fixture", { maxRounds: 0 });
+  assert.equal(generic.designRevision, null);
+  assert.throws(
+    () => resolveContract(ROOT, "non-phase-fixture", { maxRounds: 0, designVersion: "v3" }),
+    /does not declare a design source/,
   );
 });
 
