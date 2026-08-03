@@ -100,6 +100,25 @@ run; this is the build session.
 - All new implementation remains GPL-3.0-or-later. Any later incorporation of LGPL code must retain
   notices and mark modifications.
 
+### 0.4 Verification round 1 corrections
+
+The round-1 fix-up defines the previously named public value/callable shapes, makes the requested
+Phase 7 execution credential and Phase 5 shadow-operation extensions implementable, and completes
+the conformance-map force-shadow and provenance coverage. The §5 interface changes require a fresh
+verification round before Phase 8 can close.
+
+### 0.5 Verification round 2 corrections
+
+The round-2 fix-up aligns execution-view and borrowed-binding ownership with R8-1/R8-2 and defines
+the complete effective `ShadowPolicy` as the configuration-derived portion of plan identity. The
+§5 clarification requires a fresh verification round before Phase 8 can close.
+
+### 0.6 Verification round 3 corrections
+
+The round-3 fix-up adds an explicit generation-scoped publication owner for slot teardown and
+restricts hardware-PCF policy to shadow depth buffers. Both §5 changes require a fresh verification
+round before Phase 8 can close.
+
 ---
 
 ## 1. Scope & boundaries
@@ -239,11 +258,24 @@ public interface ShadowPassFactory {
 }
 
 public sealed interface ShadowPassBuildResult {
-    record Ready(ShadowInvocationSlot slot) implements ShadowPassBuildResult {}
+    record Ready(ShadowPassPublication publication) implements ShadowPassBuildResult {}
     record Disabled(ShadowDisableReason reason, String diagnosticId)
         implements ShadowPassBuildResult {}
     record Invalid(String diagnosticId) implements ShadowPassBuildResult {}
 }
+
+public interface ShadowPassPublication {
+    ShadowInvocationSlot slot();
+    ShadowPublicationCloseResult close();
+}
+
+public sealed interface ShadowPublicationCloseResult {
+    record Closed() implements ShadowPublicationCloseResult {}
+    record AlreadyClosed() implements ShadowPublicationCloseResult {}
+    record Rejected(ShadowPublicationCloseRejection reason) implements ShadowPublicationCloseResult {}
+}
+
+public enum ShadowPublicationCloseRejection { WRONG_THREAD, CLOSE_WHILE_INVOKING }
 
 public interface ShadowWorldPort {
     ShadowWorldSample sample(ShadowFrameView frame);
@@ -301,7 +333,52 @@ public sealed interface ShadowDisableReason {
     record EstateUnavailable(BufferFailure failure) implements ShadowDisableReason {}
     record RuntimeFailure(String operation) implements ShadowDisableReason {}
 }
+
+public record ShadowPlan(
+    RegistryFingerprint registry,
+    ShadowPolicy policy,
+    ShadowCelestialPolicy celestialPolicy,
+    ShadowHookHealth hookHealth,
+    ShadowPlanFingerprint fingerprint) {}
+
+public record ShadowPlanFingerprint(String canonicalSha256) {}
+public record ShadowMipmapPolicy(Set<LogicalBuffer> buffers) {}
+public record ShadowPcfPolicy(Set<LogicalBuffer> compareDepthBuffers) {}
+
+public interface ShadowCelestialPolicy {
+    CelestialSample sample(float sunAngle);
+}
+
+public interface ShadowCameraMath {
+    ShadowCamera compute(ShadowFrameView frame, ShadowPolicy policy, Extent2i shadowExtent);
+    ShadowFrustum frustum(ShadowCamera camera);
+}
+
+public interface ShadowFrustum {
+    boolean intersects(AabbValue bounds);
+    List<PlaneValue> planes();
+}
+
+public record AabbValue(double minX, double minY, double minZ,
+                        double maxX, double maxY, double maxZ) {}
+public record PlaneValue(double x, double y, double z, double distance) {}
+
+public record ShadowHookRow(String hookId, int expected, int actual, HookDisposition disposition) {}
+public record ShadowHookHealth(List<ShadowHookRow> rows, boolean shadowEnabled,
+                               ShadowHookFingerprint fingerprint) {}
+public record ShadowHookFingerprint(String canonicalSha256) {}
+public enum HookDisposition { HEALTHY, FEATURE_DISABLED }
 ```
+
+All collections above are immutable, reject nulls/duplicates, and iterate in canonical logical-buffer
+or hook-ID order. `ShadowPolicy` is the complete effective configuration-derived projection for plan
+identity. `ShadowPlanFingerprint` hashes the registry fingerprint plus every policy value and the
+hook fingerprint using their canonical encodings; structural equality is by record value, while
+publication reuse and stale checks use that fingerprint. `ShadowHookHealth` is owned by the
+application health audit and borrowed immutably by plans. `ShadowCameraMath` implements exactly
+§4.5–§4.6; `planes()` returns an immutable normalized ordered fixture view and `intersects` is the
+total finite-AABB predicate. `ShadowCelestialPolicy.sample` implements §4.5.1/§4.5.4 and returns the
+same sample consumed by Phase 6 and `ShadowCamera`.
 
 `ShadowFrameView` and `ShadowExecutionView` are requested Phase 7 grants, not current interfaces.
 The world port contains no Minecraft object in `:engine`; its glue implementation is construction-
@@ -386,24 +463,25 @@ until the enclosing Phase 7 pipeline publication closes.
 | hardware PCF | Phase 5 construction applies compare policy; Phase 8 gates/diagnoses it | `[V:doc]` `docs/research/v1/RESEARCH.md:1173`; verified dependency at `docs/phase5/v1/PHASE_5_DOC.md:1334`–`:1343` |
 | blob-shadow suppression | H8-BLOB-01 redirects only the blob call, retaining fire | `[V:observed]` `docs/research/v1/RESEARCH.md:578`–`:580`; §4.13 |
 | clouds only per shadow config | §4.8.1 pre-split optional cloud draw | `[V:observed]` `docs/research/v1/RESEARCH.md:579`–`:580` |
+| force root `shadow` program for the shadow draw interval | §4.10: begin immediately before the first shadow draw; end before fixed-function/state restoration | `[V:doc]` assignment `docs/design/v2.0-RC3/DESIGN.md:2000`–`:2001`; Phase 4 barrier `docs/phase4/v1/PHASE_4_DOC.md:1373`–`:1375` |
 
 ### 3.2 Appendix A.3 shadow-directive coverage
 
 | A.3 row | Phase 8 disposition | Provenance |
 |---|---|---|
-| `shadow`/`shadowtex0`/`shadowtex1`/`watershadow` declarations | plan is executable only when Phase 5 reports a requested shadow estate; no rescan | `docs/research/v1/RESEARCH.md:1161`; `docs/phase5/v1/PHASE_5_DOC.md:1334`–`:1360` |
-| `shadowcolor`/`shadowcolor0/1` declarations | Phase 5 snapshot owns zero-to-two v0.2 color attachments; Phase 8 draws and completes their flips | `docs/research/v1/RESEARCH.md:1162`; `docs/phase5/v1/PHASE_5_DOC.md:1349`–`:1352` |
-| `shadowMapResolution` / `SHADOWRES` | Phase 5 extent is authoritative; Phase 8 uses it as viewport and rejects non-positive mismatch | `docs/research/v1/RESEARCH.md:1167` |
-| `shadowMapFov` / `SHADOWFOV` | optional perspective branch in §4.5.3 | `docs/research/v1/RESEARCH.md:1168` |
-| `shadowDistance` / `SHADOWHPL` | orthographic half-plane and traversal basis | `docs/research/v1/RESEARCH.md:1169` |
-| `shadowDistanceRenderMul` | positive values enable §4.7 optimization; non-positive values select full-view traversal | `docs/research/v1/RESEARCH.md:1170` |
-| `shadowIntervalSize` | §4.5.5, default 2.0 | `docs/research/v1/RESEARCH.md:1171` |
-| `generateShadowMipmap` / `generateShadowColorMipmap` | unioned with per-texture requests in immutable `ShadowMipmapPolicy` | `docs/research/v1/RESEARCH.md:1172` |
-| `shadowHardwareFiltering`, `0`, `1` | preserved per depth texture; Phase 5 applies compare mode at creation | `docs/research/v1/RESEARCH.md:1173`; `docs/phase5/v1/PHASE_5_DOC.md:1339`–`:1342` |
-| per-texture shadow mipmap aliases | canonical per-logical-buffer set; generated only after draws/copy | `docs/research/v1/RESEARCH.md:1174` |
-| per-texture nearest aliases | immutable Phase 5 texture policy; Phase 8 never mutates ordinary min/mag choice | `docs/research/v1/RESEARCH.md:1175` |
-| `sunPathRotation` | model-view and celestial-vector rotation in §4.5 | `docs/research/v1/RESEARCH.md:1178` |
-| shadow program `DRAWBUFFERS` | consumed through Phase 4 `ProgramStateBundle` and Phase 5 `ShadowPassSnapshot`; order and duplicates retained | generic row `docs/research/v1/RESEARCH.md:1187`; dependency `docs/phase4/v1/PHASE_4_DOC.md:1370` |
+| `shadow`/`shadowtex0`/`shadowtex1`/`watershadow` declarations | plan is executable only when Phase 5 reports a requested shadow estate; no rescan | `[V:doc]` `docs/research/v1/RESEARCH.md:1161`; `docs/phase5/v1/PHASE_5_DOC.md:1334`–`:1360` |
+| `shadowcolor`/`shadowcolor0/1` declarations | Phase 5 snapshot owns zero-to-two v0.2 color attachments; Phase 8 draws and completes their flips | `[V:doc]` `docs/research/v1/RESEARCH.md:1162`; `docs/phase5/v1/PHASE_5_DOC.md:1349`–`:1352` |
+| `shadowMapResolution` / `SHADOWRES` | Phase 5 extent is authoritative; Phase 8 uses it as viewport and rejects non-positive mismatch | `[V:doc]` `docs/research/v1/RESEARCH.md:1167` |
+| `shadowMapFov` / `SHADOWFOV` | optional perspective branch in §4.5.3 | `[V:doc]` `docs/research/v1/RESEARCH.md:1168` |
+| `shadowDistance` / `SHADOWHPL` | orthographic half-plane and traversal basis | `[V:doc]` `docs/research/v1/RESEARCH.md:1169` |
+| `shadowDistanceRenderMul` | positive values enable §4.7 optimization; non-positive values select full-view traversal | `[V:doc]` `docs/research/v1/RESEARCH.md:1170` |
+| `shadowIntervalSize` | §4.5.5, default 2.0 | `[V:doc]` `docs/research/v1/RESEARCH.md:1171` |
+| `generateShadowMipmap` / `generateShadowColorMipmap` | unioned with per-texture requests in immutable `ShadowMipmapPolicy` | `[V:doc]` `docs/research/v1/RESEARCH.md:1172` |
+| `shadowHardwareFiltering`, `0`, `1` | preserved per depth texture; Phase 5 applies compare mode at creation | `[V:doc]` `docs/research/v1/RESEARCH.md:1173`; `docs/phase5/v1/PHASE_5_DOC.md:1339`–`:1342` |
+| per-texture shadow mipmap aliases | canonical per-logical-buffer set; generated only after draws/copy | `[V:doc]` `docs/research/v1/RESEARCH.md:1174` |
+| per-texture nearest aliases | immutable Phase 5 texture policy; Phase 8 never mutates ordinary min/mag choice | `[V:doc]` `docs/research/v1/RESEARCH.md:1175` |
+| `sunPathRotation` | model-view and celestial-vector rotation in §4.5 | `[V:doc]` `docs/research/v1/RESEARCH.md:1178` |
+| shadow program `DRAWBUFFERS` | consumed through Phase 4 `ProgramStateBundle` and Phase 5 `ShadowPassSnapshot`; order and duplicates retained | `[V:doc]` generic row `docs/research/v1/RESEARCH.md:1187`; dependency `docs/phase4/v1/PHASE_4_DOC.md:1370` |
 
 The Phase 3 front end remains responsible for recognizing both const and comment forms, including
 capitalization aliases. Phase 8 consumes only the resolved result.
@@ -412,13 +490,13 @@ capitalization aliases. Phase 8 consumes only the resolved result.
 
 | Contract row | Design element | Provenance |
 |---|---|---|
-| shadowtex0 = everything | real Phase 5 depth attachment; clear then all shadow draws | `docs/research/v1/RESEARCH.md:1223`; `docs/phase5/v1/PHASE_5_DOC.md:1334`–`:1343` |
-| shadowtex1 excludes shadow translucents | exact split point in §4.8.3 | `docs/research/v1/RESEARCH.md:1224` |
-| shadowcolor0/1 | Phase 5 typed color attachments and generic completion flip | `docs/research/v1/RESEARCH.md:1225`; `docs/phase5/v1/PHASE_5_DOC.md:1384`–`:1393` |
-| unit 4 = shadowtex0/watershadow/conditional shadow | Phase 6 fixed sampler plan + requested Phase 5 shadow binding snapshot | `docs/research/v1/RESEARCH.md:1235`; `docs/phase6/v1/PHASE_6_DOC.md:855`–`:913`; R8-2 |
-| unit 5 = shadowtex1/conditional shadow | same | `docs/research/v1/RESEARCH.md:1236` |
-| unit 13 = shadowcolor0/shadowcolor | same | `docs/research/v1/RESEARCH.md:1244` |
-| unit 14 = shadowcolor1 | same | `docs/research/v1/RESEARCH.md:1245` |
+| shadowtex0 = everything | real Phase 5 depth attachment; clear then all shadow draws | `[V:doc]` `docs/research/v1/RESEARCH.md:1223`; `docs/phase5/v1/PHASE_5_DOC.md:1334`–`:1343` |
+| shadowtex1 excludes shadow translucents | exact split point in §4.8.3 | `[V:doc]` `docs/research/v1/RESEARCH.md:1224` |
+| shadowcolor0/1 | Phase 5 typed color attachments and generic completion flip | `[V:doc]` `docs/research/v1/RESEARCH.md:1225`; `docs/phase5/v1/PHASE_5_DOC.md:1384`–`:1393` |
+| unit 4 = shadowtex0/watershadow/conditional shadow | Phase 6 fixed sampler plan + requested Phase 5 shadow binding snapshot | `[V:doc]` `docs/research/v1/RESEARCH.md:1235`; `docs/phase6/v1/PHASE_6_DOC.md:855`–`:913`; R8-2 |
+| unit 5 = shadowtex1/conditional shadow | same | `[V:doc]` `docs/research/v1/RESEARCH.md:1236` |
+| unit 13 = shadowcolor0/shadowcolor | same | `[V:doc]` `docs/research/v1/RESEARCH.md:1244` |
+| unit 14 = shadowcolor1 | same | `[V:doc]` `docs/research/v1/RESEARCH.md:1245` |
 
 No unit is dynamically allocated. `shadow` selects unit 5 only when the effective program layout
 declares compatible `watershadow`; Phase 6 already owns that exact rule.
@@ -427,10 +505,10 @@ declares compatible `watershadow`; Phase 6 already owns that exact rule.
 
 | Uniform(s) | Producer and timing | Provenance |
 |---|---|---|
-| `shadowAngle` | `ShadowCelestialPolicy` supplies Phase 6's frame provider; same value drives the camera | `docs/research/v1/RESEARCH.md:1348`; dependency semantics `docs/phase6/v1/PHASE_6_DOC.md:607`–`:610` |
-| `sunPosition`, `moonPosition`, `shadowLightPosition`, `upPosition` | one `CelestialSample` immediately after camera math and before shadow activation | `docs/research/v1/RESEARCH.md:1360`; Phase 6 event at `docs/phase6/v1/PHASE_6_DOC.md:478`–`:482` |
-| `shadowProjection`, `shadowModelView` | one `ShadowMatrixSample` after FF camera installation and before activation | `docs/research/v1/RESEARCH.md:1364`; Phase 6 event at `docs/phase6/v1/PHASE_6_DOC.md:280`–`:284` |
-| `shadowProjectionInverse`, `shadowModelViewInverse` | Phase 6 deterministic inversion of the same two primary matrices | `docs/phase6/v1/PHASE_6_DOC.md:785`–`:810` |
+| `shadowAngle` | `ShadowCelestialPolicy` supplies Phase 6's frame provider; same value drives the camera | `[V:doc]` `docs/research/v1/RESEARCH.md:1348`; dependency semantics `docs/phase6/v1/PHASE_6_DOC.md:607`–`:610` |
+| `sunPosition`, `moonPosition`, `shadowLightPosition`, `upPosition` | one `CelestialSample` immediately after camera math and before shadow activation | `[V:doc]` `docs/research/v1/RESEARCH.md:1360`; Phase 6 event at `docs/phase6/v1/PHASE_6_DOC.md:478`–`:482` |
+| `shadowProjection`, `shadowModelView` | one `ShadowMatrixSample` after FF camera installation and before activation | `[V:doc]` `docs/research/v1/RESEARCH.md:1364`; Phase 6 event at `docs/phase6/v1/PHASE_6_DOC.md:280`–`:284` |
+| `shadowProjectionInverse`, `shadowModelViewInverse` | Phase 6 deterministic inversion of the same two primary matrices | `[V:doc]` `docs/phase6/v1/PHASE_6_DOC.md:785`–`:810` |
 
 All matrices use Phase 6's column-major `Matrix4Value` upload order. A singular inverse disables
 only that inverse; it does not suppress the original matrix or the pass.
@@ -450,8 +528,8 @@ Validation is closed and deterministic:
 - present `shadowMapFov` must be finite and strictly between 0 and 180 degrees;
 - `shadowDistance` must be finite and positive;
 - `shadowDistanceRenderMul`, `shadowIntervalSize`, and `sunPathRotationDegrees` must be finite;
-- every mipmap/PCF buffer index must be in the v0.2 shadow inventory `{depth 0, depth 1,
-  color 0, color 1}`;
+- every mipmap buffer index must be in the v0.2 shadow inventory `{depth 0, depth 1, color 0,
+  color 1}`; every PCF member must be `{depth 0, depth 1}` and color membership is invalid policy;
 - H8-TRAVERSE-01, H8-RESTORE-01, and H8-BLOB-01 must have their expected application count before
   a real plan is enabled.
 
@@ -470,8 +548,14 @@ PLANNED -> READY -> INVOKING -> READY
 
 Only the render thread enters `INVOKING`. A second or re-entrant invocation returns
 `Rejected(WRONG_FRAME)` before mutation. `CLOSED` never becomes ready again. Plan identity includes
-the resolved configuration fingerprint, registry fingerprint, hook-health fingerprint, and all
-policy fields; reload creates a new plan rather than mutating one in place.
+the registry fingerprint, hook-health fingerprint, and every field of the complete effective
+`ShadowPolicy`; reload creates a new plan rather than mutating one in place.
+
+The generation-scoped `ShadowPassPublication` owns the slot. `close()` first rejects a non-render
+thread with `WRONG_THREAD`, then accepts `READY` or `DISABLED_RUNTIME`. First success invalidates
+the slot epoch, releases every retained service reference, and returns `Closed`; later calls return
+`AlreadyClosed`. A call during `INVOKING` returns `Rejected(CLOSE_WHILE_INVOKING)` without mutation;
+Phase 7 must first finish or abort that frame, so no close races an invocation.
 
 ### 4.2 Invocation transaction
 
@@ -493,9 +577,10 @@ With R8-1/R8-2 granted, `invoke` performs this exact sequence:
 5. Sample one `ShadowWorldSample`; validate its echoed identities and camera presence, then derive
    the camera, celestial sample, culling frustum, and traversal plan. An absent/stale camera rejects
    before GL mutation.
-6. Open the `ShadowStateLease` with that camera. It snapshots every state listed in §4.4, installs
-   the shadow camera, and establishes the Phase-7-granted `ShadowExecutionView` before vanilla
-   shadow setup can re-enter a main hook.
+6. Open the `ShadowStateLease` with that camera and the already borrowed active
+   `ShadowExecutionView`. The lease validates and uses that view while snapshotting every state in
+   §4.4 and installing the shadow camera. Phase 7 remains the sole bridge opener and closer around
+   `invoke`.
 7. Bind and clear the Phase 5 snapshot. Any backend failure leaves the snapshot open; call
    `abortPass` immediately, then follow §6.
 8. Call `setupTerrain` with the derived traversal/frustum. Then send `updateCelestial` and
@@ -512,8 +597,10 @@ With R8-1/R8-2 granted, `invoke` performs this exact sequence:
     pass-wide backend failure follows §6.
 12. Call `completePass`. Only `Completed(frameId)` commits shadowcolor flips. A rejection is not
     coerced into success.
-13. Close texture binding, traversal, Forge-pass, and shadow-state leases in reverse order. Verify
-    the borrowed Phase 7 execution is still current and return `Completed`.
+13. Close Phase-8-owned traversal, Forge-pass, and shadow-state leases in reverse order. The
+    borrowed Phase 5 binding snapshot simply ceases to be usable when its shadow snapshot completes,
+    aborts, or invalidates. Verify the borrowed Phase 7 execution is still current and return
+    `Completed`.
 
 Every exit after step 4 runs one cleanup path. A throwable from vanilla is preserved only after
 Phase 8 has restored state and reported a closed result to Phase 7; engine exceptions are contained
@@ -839,6 +926,8 @@ legacy depth swizzle during candidate creation
 (`docs/phase5/v1/PHASE_5_DOC.md:1334`–`:1347`). Phase 8 checks the resulting estate disposition:
 creation failure yields `ShadowEstateUnavailable` plus neutral compare-compatible bindings and
 does not abort the main pipeline. Phase 8 performs no duplicate texture-parameter call.
+`ShadowPcfPolicy.compareDepthBuffers` admits only shadow depth 0 and shadow depth 1; any shadowcolor
+member produces the same deterministic invalid-policy result as any other out-of-domain member.
 
 ### 4.10 Uniform wiring and barrier protocol
 
@@ -880,16 +969,17 @@ active. This avoids double shadows without turning an optional Mixin failure int
 
 ### 4.12 Cleanup and reload
 
-The Phase 7 pipeline publication owns the `ShadowInvocationSlot`. Reload/shutdown ordering is:
+The Phase 7 pipeline publication owns the returned `ShadowPassPublication` and accesses its slot.
+Reload/shutdown ordering is:
 
 1. stop admitting new world frames;
 2. finish or abort the current Phase 7 frame;
-3. close the Phase 8 slot, which invalidates its execution epoch and releases retained service
+3. close the Phase 8 publication, which invalidates its slot epoch and releases retained service
    references but owns no GL object;
 4. close Phase 6 and Phase 5/4 publications in their existing coordinated order;
 5. restore blob-shadow behavior and remove Phase-8 hook-state publication.
 
-Closing during `INVOKING` is a wrong-thread/order failure; Phase 7 first aborts the frame. A stale
+Closing during `INVOKING` is rejected without mutation; Phase 7 first aborts the frame. A stale
 slot cannot neutralize or mutate a newer Phase 5 estate. Dimension change builds a new plan from
 the new resolved configuration; camera/traversal state never crosses world epochs.
 
@@ -922,9 +1012,9 @@ borrowed views only for the duration of `invoke`; no vanilla collection is retai
 
 | Exposed contract | Exact content | Consumer(s) |
 |---|---|---|
-| `ShadowPlanFactory`, `ShadowPlanInput`, `ShadowPlanResult`, `ShadowPlan`, `ShadowPolicy` | pure resolved-policy validation; exact camera/traversal/flag/mipmap/PCF fields; registry/hook fingerprint; no parser, MC, GL, or handle | Phase 7 pipeline construction; Phase 2 headless tests |
+| `ShadowPlanFactory`, `ShadowPlanInput`, `ShadowPlanResult`, `ShadowPlan`, `ShadowPolicy` | pure resolved-policy validation; complete effective configuration-derived identity projection with exact camera/traversal/flag/mipmap/PCF fields; registry/hook fingerprint; no parser, MC, GL, or handle | Phase 7 pipeline construction; Phase 2 headless tests |
 | `ShadowCelestialPolicy` | pure total `sunAngle -> day/shadowAngle/celestial rotation` function shared by Phase 6 provider and Phase 8 camera | Phase 6 `mod.glue` provider via Phase 7 composition |
-| `ShadowPassFactory`, `ShadowPassBuildResult` | construction of exactly one generation-scoped Phase 7 `ShadowInvocationSlot` from a ready plan, Phase 6 runtime, glue port, and diagnostics | Phase 7 |
+| `ShadowPassFactory`, `ShadowPassBuildResult`, `ShadowPassPublication` | construction of exactly one generation-scoped owner exposing Phase 7's `ShadowInvocationSlot` plus idempotent render-thread close; close from `READY`/`DISABLED_RUNTIME` invalidates the slot epoch and releases retained references, while `INVOKING` rejects without mutation | Phase 7 |
 | `ShadowWorldPort` and closed world/state/terrain/draw results | loader-neutral primitive/value interface; Minecraft implementation owns setup/draw/state restoration and Forge pass adapter; every borrowed execution validated | `mod.glue.shadow`; recorded tests |
 | `ShadowCameraMath`, `ShadowCamera`, `ShadowFrustum`, `ShadowTraversalPlan` | deterministic column-major camera/celestial math, finite plane set, total AABB predicate, full/prism traversal strategies | Phase 8 runtime; Phase 2 fixtures |
 | `ShadowHookHealth`, Phase-8 hook rows | immutable expected/actual counts and enabled/disabled outcome for §4.13 | diagnostics; Phase 2 manifest integration |
@@ -993,8 +1083,51 @@ are `:1436`–`:1447`.
 | R8-1 | Phase 7 | Extend `ShadowInvocationContext` with immutable `ShadowFrameView` (`worldEpoch`, driver `frameId`, `partialTicks`, exact token passed to the main `setupTerrain`, unshifted camera position, sampled sky/sun angles) and a borrowed authenticated `ShadowExecutionView`; have the frame driver open/close its `ShadowExecutionBridge` around `invoke`, and make existing terrain/entity/cloud/frustum hooks bypass main-snapshot policy while that view is active | current equality-only `FrameToken` exposes none of the `frameId`/sample values Phase 5 and Phase 6 require; Phase 7 mentions `ShadowExecutionBridge` only in detail, not binding §5 |
 | R8-2 | Phase 5 | Add generation/frame/snapshot-checked shadow fixed-texture bindings, typed post-shadow mipmap generation, and a runtime `degradeToNeutral` transition that aborts an open snapshot, invalidates it, and makes subsequent `shadow()`/unit 4/5/13/14 views coherently unavailable/neutral | current shadow API has bind/clear/copy/complete/abort only; generic texture bindings require a main `PassBufferSnapshot`; no mipmap or safe runtime feature-disable operation exists |
 | R8-3 | Phase 1 | Grant `com.schmaloogium.engine.shadow`, `mod.glue.shadow`, and `mod.mixin.shadow` (or exact owner-selected equivalents) in the closed package table | module placement is binding; Phase 8 does not squat in another phase's package |
-| R8-4 | Phase 7 pipeline composition | From the existing immutable Phase 3 configuration/dimension view, project exactly one typed `ShadowPolicy` without reparsing; invoke `ShadowPlanFactory` before construction of the Phase 6 platform provider, pass `ShadowCelestialPolicy` into that provider, and construct/own the `ShadowInvocationSlot` after Phase 6 runtime creation; include it in reverse-order rollback/close | current transaction constructs Phase 6 first and has no Phase 8 projection/factory/ownership step; `shadowAngle` must share the camera's policy rather than be sampled by unrelated logic |
+| R8-4 | Phase 7 pipeline composition | From the existing immutable Phase 3 configuration/dimension view, project exactly one typed `ShadowPolicy` without reparsing; invoke `ShadowPlanFactory` before construction of the Phase 6 platform provider, pass `ShadowCelestialPolicy` into that provider, and construct/own the `ShadowPassPublication` after Phase 6 runtime creation; use its slot for invocation and include the publication in reverse-order rollback/close | current transaction constructs Phase 6 first and has no Phase 8 projection/factory/ownership step; `shadowAngle` must share the camera's policy rather than be sampled by unrelated logic |
 | R8-5 | Phase 7/Phase 2 hook reporting | Merge or nest Phase 8's §4.13 immutable hook-health rows in the application report without changing Phase 7 row identities | capture/diagnostics must prove blob/traversal hook health rather than claim shadow capability from configuration alone |
+
+R8-1's requested representation-neutral authentication contract is exact: Phase 7 is the sole
+issuer and owner of `ShadowExecutionBridge`; `open(activeExecutionIdentity, slotEpoch)` returns
+`Opened(borrowed ShadowExecutionView)` or `Rejected(WRONG_THREAD | ALREADY_ACTIVE)` and issues a
+view only for the dynamic extent of that slot invocation. The bridge
+exposes `validate(view, activeExecutionIdentity, slotEpoch)` with the closed result `Valid` or
+`Rejected(WRONG_ISSUER | INACTIVE | WRONG_EXECUTION | STALE_SLOT_EPOCH | WRONG_THREAD)`, checked in
+that order before any hook/glue operation. `Valid` proves both supplied identities equal the
+currently open invocation. `close(view)` returns `Closed` or
+`Rejected(WRONG_ISSUER | INACTIVE | WRONG_EXECUTION)` and invalidates a valid view before returning
+from `invoke`. Opening while active returns `ALREADY_ACTIVE`; no nested/re-entered invocation gets a
+second credential. Existing §4.3 rules remain authoritative for thread, retention, re-entry, and
+close invalidation.
+
+R8-2 requests these Phase-5-owned public shapes (names illustrative, semantics binding):
+
+```java
+ShadowBindingResult shadowBindings(long generation, long frameId, ShadowPassSnapshot snapshot);
+ShadowMipmapResult generateShadowMipmaps(long generation, long frameId,
+    ShadowPassSnapshot snapshot, ShadowMipmapPolicy policy);
+ShadowNeutralizationResult degradeToNeutral(long generation, ShadowNeutralReason reason);
+```
+
+All three validate `generation`, then open `frameId` where applicable, then snapshot identity/epoch;
+the first rejection wins and is pre-GL/mutation-free. `shadowBindings` returns
+`Bound(ShadowBindingSnapshot)` or `Rejected(ShadowProtocolRejection)`. The immutable borrowed
+snapshot is Phase-5-owned, valid until the shadow snapshot completes/aborts/invalidates, and contains
+exactly units 4, 5, 13, and 14 in ascending order with `Bindable(TextureHandle)` or
+`Neutral(TextureHandle)`; Phase 8 neither closes it nor retains it.
+
+`generateShadowMipmaps` returns `Generated(List<ShadowMipmapOutcome>)` or
+`Rejected(ShadowProtocolRejection)`. Outcomes are in canonical requested-buffer order and are
+exactly `Generated(LogicalBuffer)`, `NotAllocated(LogicalBuffer)`, or
+`Degraded(LogicalBuffer,BufferFailure,diagnosticId)`; a degraded buffer has its base non-mipmap min
+filter restored before return, while other buffers continue. Aggregate backend failure is therefore
+represented only by per-buffer `Degraded` outcomes.
+
+`degradeToNeutral` returns `Neutralized(generation, diagnosticId, boolean openSnapshotAborted)`,
+`AlreadyNeutral(generation, diagnosticId)`, or `Rejected(STALE_GENERATION)`. Success atomically
+aborts and invalidates any open shadow snapshot without flips, restores safe framebuffer/texture
+state, and makes all later `shadow()` calls return `ShadowEstateUnavailable` and all fixed-unit
+views return Phase-5-owned neutral objects for that generation. It is idempotent, and no old binding
+or pass snapshot remains valid after success.
 
 R8-1, R8-2, and R8-4 alter binding §5 surfaces and therefore require their owners' governed fix-up
 and fresh verification before Phase 8 implementation or a dependent integration may consume them.
