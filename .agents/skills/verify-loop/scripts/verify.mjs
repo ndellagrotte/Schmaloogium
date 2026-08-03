@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import {
+  assertTargetAvailable,
   discoverRepoRoot,
   dryRunFixupPlan,
   dryRunPlan,
@@ -32,7 +33,8 @@ Options:
 The orchestrator always resolves the Git root dynamically, validates every configured path and
 content selector, rejects ambiguous/missing prior-review state and output collisions, and runs
 read-only roles with codex exec --sandbox read-only. Writer stages use workspace-write plus
-deterministic post-stage allowlist and immutable-evidence checks.
+deterministic post-stage allowlist and immutable-evidence checks. Different targets may run in
+parallel; their mutation windows queue, and duplicate runs of one target fail with RUN_CONFLICT.
 `;
 
 function parseInteger(flag, value) {
@@ -129,6 +131,7 @@ async function main() {
     return;
   }
   const root = discoverRepoRoot();
+  assertTargetAvailable(root, options.target);
   const contract = resolveContract(root, options.target, options);
   let result;
   if (options.fixupReview) {

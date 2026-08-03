@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   chmodSync,
   cpSync,
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -16,11 +17,13 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { Worker } from "node:worker_threads";
 import {
   STAGE_ORDER,
   applyGateEvidenceCorrection,
   adjudicationStop,
   aggregateRefutations,
+  assertTargetAvailable,
   changedPaths,
   dedupeCandidates,
   discoverPriorReviews,
@@ -138,6 +141,48 @@ function makeMiniRepo() {
   };
   writeJson(join(root, "verification", "targets", "mini.json"), manifest);
   return { root, manifest };
+}
+
+function addSecondMiniTarget(root, sourceManifest, id = "mini-b") {
+  const manifest = structuredClone(sourceManifest);
+  manifest.id = id;
+  manifest.title = "Second mini target";
+  manifest.targets[0].path = "target-b.md";
+  manifest.prior_reviews.directory = "reviews-b";
+  manifest.immutable_paths = ["spec.md", "dep.md", "evidence.md", "reviews-b/*.md"];
+  manifest.write_permissions = {
+    adjudicator: ["{review_output}"],
+    fixup: ["target-b.md", "{review_output}"],
+  };
+  manifest.output = {
+    directory: "reviews-b",
+    review_template: "review_{round}.md",
+    journal_directory: `.runs/${id}`,
+  };
+  manifest.interface_regions[0].path = "target-b.md";
+  mkdirSync(join(root, "reviews-b"));
+  writeFileSync(join(root, "target-b.md"), readFileSync(join(root, "target.md"), "utf8"));
+  writeJson(join(root, "verification", "targets", `${id}.json`), manifest);
+  return manifest;
+}
+
+function runConcurrencyWorker(root, target, rendezvous) {
+  const worker = join(ROOT, "tests", "verify-concurrency-worker.mjs");
+  return new Promise((resolvePromise, rejectPromise) => {
+    const child = new Worker(worker, {
+      workerData: { root, target, rendezvous },
+    });
+    let result;
+    child.on("message", (message) => { result = message; });
+    child.on("error", rejectPromise);
+    child.on("exit", (code) => {
+      if (code !== 0 || !result) {
+        rejectPromise(new Error(`Concurrency worker ${target} exited ${code} without a result`));
+        return;
+      }
+      resolvePromise(result);
+    });
+  });
 }
 
 function configureMiniDesignSource(root, manifest, version = "v1") {
@@ -561,6 +606,7 @@ test("stage ordering and zero-agent dry-run are deterministic", () => {
   assert.equal(plan.target_id, "non-phase-fixture");
   assert.deepEqual(plan.stage_order, STAGE_ORDER);
   assert.equal(plan.barriers, true);
+  assert.deepEqual(plan.coordination, { status: "available" });
   assert.equal(plan.resolved_selectors["interface:public-contract"].path, "verification/fixtures/non-phase/TARGET.md");
 });
 
@@ -665,6 +711,152 @@ test("permitted-write check distinguishes allowed, unauthorized, added, and dele
   assert.deepEqual(changedPaths(before, after), ["immutable.md", "new.md", "target.md"]);
   const checked = verifyPermittedWrites(before, after, ["target.md"]);
   assert.deepEqual(checked.unauthorized, ["immutable.md", "new.md"]);
+});
+
+test("parallel target workers overlap read stages and serialize writer snapshots", async () => {
+  const { root, manifest } = makeMiniRepo();
+  addSecondMiniTarget(root, manifest);
+  const rendezvous = mkdtempSync(join(tmpdir(), "verify-concurrency-"));
+  try {
+    const settled = await Promise.allSettled([
+      runConcurrencyWorker(root, "mini", rendezvous),
+      runConcurrencyWorker(root, "mini-b", rendezvous),
+    ]);
+    for (const result of settled) {
+      if (result.status === "rejected") throw result.reason;
+    }
+    const [first, second] = settled.map((result) => result.value);
+    assert.equal(first.outcome, "PASS");
+    assert.equal(second.outcome, "PASS");
+    assert.match(readFileSync(join(root, "reviews", "review_1.md"), "utf8"), /^# PASS$/m);
+    assert.match(readFileSync(join(root, "reviews-b", "review_1.md"), "utf8"), /^# PASS$/m);
+  } finally {
+    rmSync(rendezvous, { recursive: true, force: true });
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("duplicate target runs and dry runs fail fast with owner diagnostics", async () => {
+  const { root } = makeMiniRepo();
+  const firstContract = resolveContract(root, "mini", { preset: "lean", maxRounds: 1 });
+  const duplicateContract = resolveContract(root, "mini", { preset: "lean", maxRounds: 1 });
+  const calls = [];
+  const baseRunner = makeFakeRunner(root, calls);
+  let releaseAttack;
+  const attackRelease = new Promise((resolvePromise) => { releaseAttack = resolvePromise; });
+  let signalAttack;
+  const attackStarted = new Promise((resolvePromise) => { signalAttack = resolvePromise; });
+  const blockingRunner = async (args) => {
+    const result = await baseRunner(args);
+    if (args.label.startsWith("attack:")) {
+      signalAttack();
+      await attackRelease;
+    }
+    return result;
+  };
+
+  const firstRun = executeVerification(firstContract, {
+    reviewOnly: true,
+    agentRunner: blockingRunner,
+    logger: () => {},
+    coordinationPollMs: 5,
+    coordinationTimeoutMs: 1000,
+  });
+  await attackStarted;
+  await assert.rejects(
+    executeVerification(duplicateContract, {
+      reviewOnly: true,
+      agentRunner: baseRunner,
+      logger: () => {},
+      coordinationPollMs: 5,
+      coordinationTimeoutMs: 1000,
+    }),
+    (error) => {
+      assert.equal(error.code, "RUN_CONFLICT");
+      assert.equal(error.details.owner.pid, process.pid);
+      assert.equal(error.details.owner.target_id, "mini");
+      assert.match(error.details.owner.journal, /^\.runs\//);
+      return true;
+    },
+  );
+  assert.throws(
+    () => dryRunPlan(duplicateContract, { reviewOnly: true }),
+    (error) => error.code === "RUN_CONFLICT" && error.details.owner.target_id === "mini",
+  );
+  assert.throws(
+    () => assertTargetAvailable(root, "mini"),
+    (error) => error.code === "RUN_CONFLICT" && error.details.owner.target_id === "mini",
+  );
+  releaseAttack();
+  assert.equal((await firstRun).outcome, "REVIEW-ONLY");
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("dead leases are reclaimed and live workspace leases time out without dispatch", async () => {
+  const first = makeMiniRepo();
+  const staleTarget = join(first.root, ".verification-runs", ".locks", "targets", "mini");
+  mkdirSync(staleTarget, { recursive: true });
+  writeJson(join(staleTarget, "owner.json"), {
+    version: 1,
+    pid: 2147483647,
+    nonce: "dead-owner",
+    kind: "target-run",
+    target_id: "mini",
+    stage: "run",
+    journal: ".runs/dead.json",
+    acquired_at: new Date(0).toISOString(),
+    deadline_at: new Date(1).toISOString(),
+  });
+  const staleCalls = [];
+  const recovered = await executeVerification(
+    resolveContract(first.root, "mini", { preset: "lean", maxRounds: 1 }),
+    {
+      reviewOnly: true,
+      agentRunner: makeFakeRunner(first.root, staleCalls),
+      logger: () => {},
+      coordinationPollMs: 5,
+      coordinationTimeoutMs: 1000,
+    },
+  );
+  assert.equal(recovered.outcome, "REVIEW-ONLY");
+  assert.ok(staleCalls.length > 0);
+  rmSync(first.root, { recursive: true, force: true });
+
+  const second = makeMiniRepo();
+  const liveWorkspace = join(second.root, ".verification-runs", ".locks", "workspace-mutation");
+  mkdirSync(liveWorkspace, { recursive: true });
+  writeJson(join(liveWorkspace, "owner.json"), {
+    version: 1,
+    pid: process.pid,
+    nonce: "live-owner",
+    kind: "workspace-mutation",
+    target_id: "other-target",
+    stage: "Adjudicator",
+    journal: ".runs/other.json",
+    acquired_at: new Date().toISOString(),
+    deadline_at: new Date(Date.now() + 1000).toISOString(),
+  });
+  const blockedCalls = [];
+  await assert.rejects(
+    executeVerification(
+      resolveContract(second.root, "mini", { preset: "lean", maxRounds: 1 }),
+      {
+        reviewOnly: true,
+        agentRunner: makeFakeRunner(second.root, blockedCalls),
+        logger: () => {},
+        coordinationPollMs: 5,
+        coordinationTimeoutMs: 25,
+      },
+    ),
+    (error) => {
+      assert.equal(error.code, "LOCK_TIMEOUT");
+      assert.equal(error.details.owner.pid, process.pid);
+      assert.equal(error.details.owner.target_id, "other-target");
+      return true;
+    },
+  );
+  assert.deepEqual(blockedCalls, []);
+  rmSync(second.root, { recursive: true, force: true });
 });
 
 test("literal PASS, verdict consistency, and stop conditions are enforced", () => {
@@ -1154,6 +1346,14 @@ test("writer failures still enforce ignored-file and mode changes and report the
       assert.equal(error.details.agent_error.message, "writer failed after mutation");
       return true;
     },
+  );
+  assert.equal(
+    existsSync(join(root, ".verification-runs", ".locks", "targets", "mini")),
+    false,
+  );
+  assert.equal(
+    existsSync(join(root, ".verification-runs", ".locks", "workspace-mutation")),
+    false,
   );
   rmSync(root, { recursive: true, force: true });
 });

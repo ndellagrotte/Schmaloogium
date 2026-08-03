@@ -32,6 +32,13 @@ conditional fix-up. Thorough uses 5 finders, 3 refuters, and steelmen. Every age
 session; concurrency is bounded inside each stage and never crosses a stage barrier. Do not start a
 costly multi-round run until its dry-run estimate has been surfaced and authorized.
 
+Runs for different targets may execute concurrently. Read-only stages overlap, while journal
+commits and Adjudicator/Fix-up worktree-snapshot windows queue through the repository-local lease at
+`.verification-runs/.locks/`. This preserves detection of unrelated tracked, untracked, ignored,
+and IDE writes. A duplicate run or dry run for the same target fails immediately with
+`RUN_CONFLICT` and owner/journal diagnostics; retry it only after the first run finishes and rerun
+preflight so the round is rediscovered from disk.
+
 The generic manifest is documented in
 `.agents/skills/verify-loop/references/OPERATIONS.md`. Current targets are `phase-1` through
 `phase-8` and the test-only `non-phase-fixture`. New targets require
@@ -42,3 +49,6 @@ journal path/stage. If a role fails, inspect the journal,
 `git status --short`, and the diff before retrying: a partial writer may have changed its allowed
 files before returning an error. Existing review evidence is immutable; the one pending review may
 receive only an append-only `## Resolutions` section through `--fixup-review`.
+
+Dead-owner leases are reclaimed automatically. Live mutation owners are never stolen; a bounded
+wait ends with `LOCK_TIMEOUT` and reports the current holder when available.

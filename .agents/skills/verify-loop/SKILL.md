@@ -49,6 +49,11 @@ Complete only that atomic role. Do not delegate to subagents or start another Co
 
 The CLI discovers the Git root dynamically. Never embed an absolute checkout path.
 
+Independent targets may run concurrently. Their read-only stages overlap; journal commits and
+Adjudicator/Fix-up snapshot windows queue briefly behind the repository-local mutation lease. Do
+not start two paid runs for the same target: the second invocation fails with `RUN_CONFLICT` and
+identifies the owning PID and journal rather than operating on stale round state.
+
 ## Contract that must not be bypassed
 
 - Stage order is Attack → Refute → optional Steelman → Gate → Adjudicate → Fix-up.
@@ -56,6 +61,8 @@ The CLI discovers the Git root dynamically. Never embed an absolute checkout pat
 - Finder, refuter, steelman, and Gate calls run through `codex exec --sandbox read-only`.
 - Adjudicator and fix-up calls use `workspace-write`, then the engine compares worktree hashes
   against the role allowlist and rechecks immutable evidence.
+- Target and mutation leases under `.verification-runs/.locks/` coordinate parallel processes
+  without excluding journals or other ignored files from the writer snapshot.
 - Gate coverage is total and fail-closed. The engine also resolves every admitted citation
   deterministically from repo-relative path + inclusive lines + verbatim quote.
 - PASS is literal: verdict `PASS`, zero blocking findings, and zero corrections. Notes do not block.

@@ -6,6 +6,7 @@ import {
   readdirSync,
   realpathSync,
   renameSync,
+  rmSync,
   statSync,
   writeFileSync,
 } from "node:fs";
@@ -26,6 +27,14 @@ export const STAGE_ORDER = [
 const SKILL_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SCHEMA_ROOT = join(SKILL_ROOT, "schemas");
 const PROMPT_ROOT = join(SKILL_ROOT, "prompts");
+const COORDINATION_DIRECTORY = ".verification-runs/.locks";
+const WORKSPACE_MUTATION_LOCK = "workspace-mutation";
+const DEFAULT_AGENT_TIMEOUT_MS = 30 * 60 * 1000;
+const DEFAULT_COORDINATION_GRACE_MS = 15 * 1000;
+const DEFAULT_COORDINATION_POLL_MS = 100;
+const DEFAULT_COORDINATION_LOG_INTERVAL_MS = 30 * 1000;
+const OWNER_METADATA_GRACE_MS = 1000;
+const TARGET_ID_PATTERN = /^[a-z0-9][a-z0-9._-]*$/;
 
 export class VerificationError extends Error {
   constructor(message, code = "VALIDATION_ERROR", details = undefined) {
@@ -62,6 +71,233 @@ function pathEntryExists(path) {
     if (error?.code === "ENOENT") return false;
     throw error;
   }
+}
+
+function delay(ms) {
+  return new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
+}
+
+function leaseNonce() {
+  return `${process.pid}-${process.hrtime.bigint()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function processIsAlive(pid) {
+  if (!Number.isSafeInteger(pid) || pid < 1) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return error?.code === "EPERM";
+  }
+}
+
+function coordinationRoot(root, { create = false } = {}) {
+  const absolute = resolveRepoPath(root, COORDINATION_DIRECTORY, {
+    mustExist: false,
+    kind: "verification coordination directory",
+  });
+  if (create) mkdirSync(absolute, { recursive: true });
+  return absolute;
+}
+
+function lockOwnerPath(lockPath) {
+  return join(lockPath, "owner.json");
+}
+
+function readLeaseOwner(lockPath) {
+  try {
+    return JSON.parse(readFileSync(lockOwnerPath(lockPath), "utf8"));
+  } catch (error) {
+    if (error?.code === "ENOENT" || error instanceof SyntaxError) return null;
+    throw error;
+  }
+}
+
+function publicLeaseOwner(owner) {
+  if (!owner) return null;
+  return {
+    pid: owner.pid,
+    target_id: owner.target_id,
+    kind: owner.kind,
+    stage: owner.stage,
+    journal: owner.journal,
+    acquired_at: owner.acquired_at,
+    deadline_at: owner.deadline_at,
+  };
+}
+
+function leasePath(root, name, { target = false, createParent = false } = {}) {
+  const base = coordinationRoot(root, { create: createParent });
+  const parent = target ? join(base, "targets") : base;
+  if (createParent) mkdirSync(parent, { recursive: true });
+  return join(parent, name);
+}
+
+function renameAndRemoveStaleLease(lockPath) {
+  const tombstone = `${lockPath}.stale-${process.pid}-${process.hrtime.bigint()}`;
+  try {
+    renameSync(lockPath, tombstone);
+  } catch (error) {
+    if (error?.code === "ENOENT") return false;
+    throw error;
+  }
+  rmSync(tombstone, { recursive: true, force: true });
+  return true;
+}
+
+function staleOwnerlessLease(lockPath) {
+  try {
+    return Date.now() - statSync(lockPath).mtimeMs >= OWNER_METADATA_GRACE_MS;
+  } catch (error) {
+    if (error?.code === "ENOENT") return false;
+    throw error;
+  }
+}
+
+async function acquireLease(root, name, ownerFields, {
+  target = false,
+  wait = true,
+  waitTimeoutMs = DEFAULT_AGENT_TIMEOUT_MS + DEFAULT_COORDINATION_GRACE_MS,
+  leaseTimeoutMs = DEFAULT_AGENT_TIMEOUT_MS + DEFAULT_COORDINATION_GRACE_MS,
+  pollMs = DEFAULT_COORDINATION_POLL_MS,
+  logIntervalMs = DEFAULT_COORDINATION_LOG_INTERVAL_MS,
+  logger = () => {},
+} = {}) {
+  const lockPath = leasePath(root, name, { target, createParent: true });
+  const nonce = leaseNonce();
+  const startedWaitingAt = Date.now();
+  let lastLogAt = 0;
+
+  while (true) {
+    const acquiredAt = new Date().toISOString();
+    const owner = {
+      version: 1,
+      pid: process.pid,
+      nonce,
+      ...ownerFields,
+      acquired_at: acquiredAt,
+      deadline_at: new Date(Date.now() + leaseTimeoutMs).toISOString(),
+    };
+    let created = false;
+    try {
+      mkdirSync(lockPath);
+      created = true;
+      writeFileSync(lockOwnerPath(lockPath), `${JSON.stringify(owner, null, 2)}\n`);
+      return { path: lockPath, nonce, owner };
+    } catch (error) {
+      if (error?.code !== "EEXIST") {
+        if (created) rmSync(lockPath, { recursive: true, force: true });
+        throw error;
+      }
+    }
+
+    const current = readLeaseOwner(lockPath);
+    if (
+      (current && !processIsAlive(current.pid))
+      || (!current && staleOwnerlessLease(lockPath))
+    ) {
+      renameAndRemoveStaleLease(lockPath);
+      continue;
+    }
+
+    const details = {
+      lock: relative(root, lockPath),
+      owner: publicLeaseOwner(current),
+    };
+    if (!wait) {
+      throw new VerificationError(
+        `Verification target ${ownerFields.target_id} already has an active run`,
+        "RUN_CONFLICT",
+        details,
+      );
+    }
+    const now = Date.now();
+    if (now - startedWaitingAt >= waitTimeoutMs) {
+      throw new VerificationError(
+        `Timed out waiting for verification workspace mutation lease after ${waitTimeoutMs}ms`,
+        "LOCK_TIMEOUT",
+        details,
+      );
+    }
+    if (now - lastLogAt >= logIntervalMs) {
+      const holder = current?.target_id ? ` held by ${current.target_id}` : "";
+      logger(`Waiting for verification workspace mutation lease${holder}`);
+      lastLogAt = now;
+    }
+    await delay(pollMs);
+  }
+}
+
+function releaseLease(lease) {
+  const current = readLeaseOwner(lease.path);
+  if (!current || current.nonce !== lease.nonce) {
+    throw new VerificationError(
+      `Cannot release verification lease not owned by this process: ${lease.path}`,
+      "LOCK_OWNERSHIP_ERROR",
+      { owner: publicLeaseOwner(current) },
+    );
+  }
+  rmSync(lease.path, { recursive: true, force: true });
+}
+
+function coordinationOptions(options = {}, logger = () => {}) {
+  const agentTimeoutMs = options.agentTimeoutMs ?? DEFAULT_AGENT_TIMEOUT_MS;
+  return {
+    waitTimeoutMs: options.coordinationTimeoutMs
+      ?? agentTimeoutMs + DEFAULT_COORDINATION_GRACE_MS,
+    leaseTimeoutMs: agentTimeoutMs + DEFAULT_COORDINATION_GRACE_MS,
+    pollMs: options.coordinationPollMs ?? DEFAULT_COORDINATION_POLL_MS,
+    logIntervalMs: options.coordinationLogIntervalMs
+      ?? DEFAULT_COORDINATION_LOG_INTERVAL_MS,
+    logger,
+  };
+}
+
+async function withWorkspaceMutationLease(contract, coordination, stage, callback) {
+  const lease = await acquireLease(
+    contract.root,
+    WORKSPACE_MUTATION_LOCK,
+    {
+      kind: "workspace-mutation",
+      target_id: contract.manifest.id,
+      stage,
+      journal: coordination.journal,
+    },
+    coordination,
+  );
+  try {
+    return await callback();
+  } finally {
+    releaseLease(lease);
+  }
+}
+
+async function acquireTargetRunLease(contract, coordination) {
+  return await withWorkspaceMutationLease(
+    contract,
+    coordination,
+    "target-lease-acquire",
+    () => acquireLease(
+      contract.root,
+      contract.manifest.id,
+      {
+        kind: "target-run",
+        target_id: contract.manifest.id,
+        stage: "run",
+        journal: coordination.journal,
+      },
+      { ...coordination, target: true, wait: false },
+    ),
+  );
+}
+
+async function releaseTargetRunLease(contract, coordination, lease) {
+  await withWorkspaceMutationLease(
+    contract,
+    coordination,
+    "target-lease-release",
+    () => releaseLease(lease),
+  );
 }
 
 function nearestExisting(path) {
@@ -1175,7 +1411,7 @@ export async function runCodexAgent({
   schema,
   sandbox = "read-only",
   model,
-  timeoutMs = 30 * 60 * 1000,
+  timeoutMs = DEFAULT_AGENT_TIMEOUT_MS,
   label = "agent",
 }) {
   const args = [
@@ -1411,11 +1647,13 @@ function extendImmutableBaseline(root, baseline, immutablePaths, manifest) {
   }
 }
 
-function writeJournal(path, journal) {
-  mkdirSync(dirname(path), { recursive: true });
-  const temporary = `${path}.tmp`;
-  writeFileSync(temporary, `${JSON.stringify(journal, null, 2)}\n`);
-  renameSync(temporary, path);
+async function writeJournal(contract, coordination, path, journal) {
+  await withWorkspaceMutationLease(contract, coordination, "journal", () => {
+    mkdirSync(dirname(path), { recursive: true });
+    const temporary = `${path}.tmp`;
+    writeFileSync(temporary, `${JSON.stringify(journal, null, 2)}\n`);
+    renameSync(temporary, path);
+  });
 }
 
 function makeJournalPath(contract) {
@@ -1446,34 +1684,37 @@ async function runCheckedWriter({
   allowed,
   immutableBaseline,
   invoke,
+  coordination,
 }) {
-  const before = snapshotWorkspace(contract.root, { manifest: contract.manifest });
-  let result;
-  let agentError;
-  try {
-    result = await invoke();
-  } catch (error) {
-    agentError = error;
-  }
+  return await withWorkspaceMutationLease(contract, coordination, role, async () => {
+    const before = snapshotWorkspace(contract.root, { manifest: contract.manifest });
+    let result;
+    let agentError;
+    try {
+      result = await invoke();
+    } catch (error) {
+      agentError = error;
+    }
 
-  let changes;
-  let enforcementError;
-  try {
-    changes = assertWriterChanges(contract, before, immutableBaseline, allowed, role);
-  } catch (error) {
-    enforcementError = error;
-  }
-  if (enforcementError) {
-    enforcementError.details = {
-      ...(enforcementError.details || {}),
-      agent_error: agentError
-        ? { message: agentError.message, code: agentError.code || "AGENT_ERROR" }
-        : undefined,
-    };
-    throw enforcementError;
-  }
-  if (agentError) throw agentError;
-  return { result, changes };
+    let changes;
+    let enforcementError;
+    try {
+      changes = assertWriterChanges(contract, before, immutableBaseline, allowed, role);
+    } catch (error) {
+      enforcementError = error;
+    }
+    if (enforcementError) {
+      enforcementError.details = {
+        ...(enforcementError.details || {}),
+        agent_error: agentError
+          ? { message: agentError.message, code: agentError.code || "AGENT_ERROR" }
+          : undefined,
+      };
+      throw enforcementError;
+    }
+    if (agentError) throw agentError;
+    return { result, changes };
+  });
 }
 
 function validateGateCoverage(candidates, gate) {
@@ -1654,12 +1895,54 @@ function convergenceWarning(trend, policy) {
   return "";
 }
 
+function targetLeaseStatus(root, targetId) {
+  const path = leasePath(root, targetId, { target: true });
+  if (!pathEntryExists(path)) return { status: "available" };
+  const owner = readLeaseOwner(path);
+  if (owner && processIsAlive(owner.pid)) {
+    return {
+      status: "active",
+      lock: relative(root, path),
+      owner: publicLeaseOwner(owner),
+    };
+  }
+  return {
+    status: "stale",
+    lock: relative(root, path),
+    owner: publicLeaseOwner(owner),
+  };
+}
+
+function assertTargetIdAvailable(root, targetId) {
+  const coordination = targetLeaseStatus(root, targetId);
+  if (coordination.status === "active") {
+    throw new VerificationError(
+      `Verification target ${targetId} already has an active run`,
+      "RUN_CONFLICT",
+      coordination,
+    );
+  }
+  return coordination;
+}
+
+export function assertTargetAvailable(root, manifestSpec) {
+  const manifestPath = resolveManifestPath(root, manifestSpec);
+  const manifest = loadJson(manifestPath);
+  if (!TARGET_ID_PATTERN.test(manifest.id || "")) return { status: "unresolved" };
+  return assertTargetIdAvailable(root, manifest.id);
+}
+
+function assertDryRunTargetAvailable(contract) {
+  return assertTargetIdAvailable(contract.root, contract.manifest.id);
+}
+
 export function dryRunPlan(contract, options = {}) {
   if (contract.pendingFixup) {
     throw new VerificationError(
       `Latest review ${contract.pendingFixup.path} requires dryRunFixupPlan/--fixup-review latest`,
     );
   }
+  const coordination = assertDryRunTargetAvailable(contract);
   const reviewOnly = Boolean(options.reviewOnly);
   const estimates = estimateRun(contract, { reviewOnly });
   return {
@@ -1677,6 +1960,7 @@ export function dryRunPlan(contract, options = {}) {
     next_review: contract.reviewOutput,
     stage_order: STAGE_ORDER,
     barriers: true,
+    coordination,
     selected_lenses: selectedLenses(contract).map((lens) => lens.id),
     resolved_selectors: selectorCoordinates(contract.resolvedSelectors),
     immutable_paths: contract.immutablePaths,
@@ -1740,6 +2024,7 @@ export function resolveFixupReview(contract, spec = "latest") {
 }
 
 export function dryRunFixupPlan(contract, fixupReview) {
+  const coordination = assertDryRunTargetAvailable(contract);
   const pending = resolveFixupReview(contract, fixupReview);
   return {
     outcome: "DRY-RUN-FIXUP",
@@ -1751,6 +2036,7 @@ export function dryRunFixupPlan(contract, fixupReview) {
     allowed_writes: pending.allowedWrites,
     immutable_paths: contract.immutablePaths.filter((path) => path !== pending.path),
     next_review: contract.reviewOutput,
+    coordination,
     estimates: {
       maximum_agent_calls: 1,
       estimated_input_tokens: contract.policy.cost_estimate.input_tokens_per_agent,
@@ -1777,7 +2063,12 @@ function assertFixupResult(contract, pending, fixup, changes) {
   }
 }
 
-export async function executeFixupContinuation(contract, options = {}) {
+async function executeFixupContinuationWithLease(
+  contract,
+  options,
+  journalPath,
+  coordination,
+) {
   const pending = resolveFixupReview(contract, options.fixupReview);
   const agentRunner = options.agentRunner || runCodexAgent;
   const immutableBaseline = snapshotImmutable(
@@ -1785,7 +2076,6 @@ export async function executeFixupContinuation(contract, options = {}) {
     contract.immutablePaths.filter((path) => path !== pending.path),
     contract.manifest,
   );
-  const journalPath = makeJournalPath(contract);
   const journalRepoPath = relative(contract.root, journalPath);
   const journal = {
     version: 1,
@@ -1798,7 +2088,7 @@ export async function executeFixupContinuation(contract, options = {}) {
     rounds: [{ round: pending.round, review: pending.path, completed_stages: [] }],
     pending_work: "",
   };
-  writeJournal(journalPath, journal);
+  await writeJournal(contract, coordination, journalPath, journal);
   const hashesBefore = interfaceHashes(contract);
   const prompt = renderTemplate(loadPrompt("fixup.md"), {
     REPO_ROOT: contract.root,
@@ -1820,6 +2110,7 @@ export async function executeFixupContinuation(contract, options = {}) {
       role: "Fix-up continuation",
       allowed: pending.allowedWrites,
       immutableBaseline,
+      coordination,
       invoke: () => agentRunner({
         root: contract.root,
         prompt,
@@ -1841,7 +2132,7 @@ export async function executeFixupContinuation(contract, options = {}) {
     journal.rounds[0].fixup = resolutionRecord;
     journal.pending_work = `Round ${pending.round} fix-up is unreviewed until ${contract.reviewOutput}.`;
     journal.completed_at = new Date().toISOString();
-    writeJournal(journalPath, journal);
+    await writeJournal(contract, coordination, journalPath, journal);
     return {
       outcome: "FIXUP-COMPLETE",
       target_id: contract.manifest.id,
@@ -1859,7 +2150,7 @@ export async function executeFixupContinuation(contract, options = {}) {
     journal.status = "error";
     journal.error = { message: error.message, code: error.code || "ERROR", details: error.details };
     journal.pending_work = `Recover from ${journal.stage}; inspect all worktree changes before retrying.`;
-    writeJournal(journalPath, journal);
+    await writeJournal(contract, coordination, journalPath, journal);
     error.details = {
       ...(error.details || {}),
       journal: journalRepoPath,
@@ -1870,7 +2161,28 @@ export async function executeFixupContinuation(contract, options = {}) {
   }
 }
 
-export async function executeVerification(contract, options = {}) {
+export async function executeFixupContinuation(contract, options = {}) {
+  const journalPath = makeJournalPath(contract);
+  const journalRepoPath = relative(contract.root, journalPath);
+  const logger = options.logger || ((message) => process.stderr.write(`${message}\n`));
+  const coordination = {
+    ...coordinationOptions(options, logger),
+    journal: journalRepoPath,
+  };
+  const targetLease = await acquireTargetRunLease(contract, coordination);
+  try {
+    return await executeFixupContinuationWithLease(
+      contract,
+      options,
+      journalPath,
+      coordination,
+    );
+  } finally {
+    await releaseTargetRunLease(contract, coordination, targetLease);
+  }
+}
+
+async function executeVerificationWithLease(contract, options, journalPath, coordination) {
   if (contract.pendingFixup) {
     throw new VerificationError(
       `Latest review ${contract.pendingFixup.path} requires executeFixupContinuation/--fixup-review latest`,
@@ -1884,7 +2196,6 @@ export async function executeVerification(contract, options = {}) {
     contract.immutablePaths,
     contract.manifest,
   );
-  const journalPath = makeJournalPath(contract);
   const journalRepoPath = relative(contract.root, journalPath);
   const journal = {
     version: 1,
@@ -1897,7 +2208,7 @@ export async function executeVerification(contract, options = {}) {
     rounds: [],
     pending_work: "",
   };
-  writeJournal(journalPath, journal);
+  await writeJournal(contract, coordination, journalPath, journal);
 
   let outcome = "CAP";
   let lastVerdict = null;
@@ -1927,7 +2238,7 @@ export async function executeVerification(contract, options = {}) {
       const stageDispositions = [];
 
       journal.stage = `R${round} Context refresh`;
-      writeJournal(journalPath, journal);
+      await writeJournal(contract, coordination, journalPath, journal);
       try {
         if (pathEntryExists(join(contract.root, reviewOutput))) {
           throw new VerificationError(`Review output collision before round ${round}: ${reviewOutput}`);
@@ -1951,7 +2262,7 @@ export async function executeVerification(contract, options = {}) {
           resolved_selectors: selectorCoordinates(refreshed.resolvedSelectors),
           discovered_prior_reviews: refreshed.priorReviews,
         };
-        writeJournal(journalPath, journal);
+        await writeJournal(contract, coordination, journalPath, journal);
       } catch (error) {
         roundJournal.context_refresh = {
           status: "error",
@@ -1960,7 +2271,7 @@ export async function executeVerification(contract, options = {}) {
           expected_prior_reviews: contract.priorReviews,
         };
         journal.pending_work = `Round ${round} filesystem context failed revalidation before Attack; inspect the named source and current review state before retrying.`;
-        writeJournal(journalPath, journal);
+        await writeJournal(contract, coordination, journalPath, journal);
         throw error;
       }
 
@@ -1970,7 +2281,7 @@ export async function executeVerification(contract, options = {}) {
       };
       logger(`Round ${round} Attack`);
       journal.stage = `R${round} Attack`;
-      writeJournal(journalPath, journal);
+      await writeJournal(contract, coordination, journalPath, journal);
       const lenses = selectedLenses(contract, firstReviewRound);
       const common = commonPrompt(contract, round, firstReviewRound);
       const attacks = await mapLimit(lenses, contract.preset.max_concurrency, async (lens) => {
@@ -1999,7 +2310,7 @@ export async function executeVerification(contract, options = {}) {
 
       logger(`Round ${round} Refute (${candidates.length} candidate(s))`);
       journal.stage = `R${round} Refute`;
-      writeJournal(journalPath, journal);
+      await writeJournal(contract, coordination, journalPath, journal);
       const refuteJobs = [];
       for (const candidate of candidates) {
         for (let index = 0; index < contract.preset.refuters; index += 1) {
@@ -2115,7 +2426,7 @@ export async function executeVerification(contract, options = {}) {
 
       logger(`Round ${round} Steelman (${contract.preset.steelman ? "enabled" : "disabled"})`);
       journal.stage = `R${round} Steelman`;
-      writeJournal(journalPath, journal);
+      await writeJournal(contract, coordination, journalPath, journal);
       if (contract.preset.steelman) {
         const eligible = candidates.filter(
           (candidate) => contract.policy.severity_rank[candidate.severity] >= contract.policy.severity_rank.correction
@@ -2180,7 +2491,7 @@ export async function executeVerification(contract, options = {}) {
 
       logger(`Round ${round} Gate`);
       journal.stage = `R${round} Gate`;
-      writeJournal(journalPath, journal);
+      await writeJournal(contract, coordination, journalPath, journal);
       const deterministicallyResolved = [];
       for (const candidate of candidates) {
         const resolvedEvidence = resolveCandidateEvidence(contract.root, contract.manifest, candidate);
@@ -2227,7 +2538,7 @@ export async function executeVerification(contract, options = {}) {
 
       logger(`Round ${round} Adjudicate`);
       journal.stage = `R${round} Adjudicate`;
-      writeJournal(journalPath, journal);
+      await writeJournal(contract, coordination, journalPath, journal);
       const adjudicatePrompt = renderTemplate(loadPrompt("adjudicate.md"), {
         REPO_ROOT: contract.root,
         TARGET_TITLE: contract.manifest.title,
@@ -2252,6 +2563,7 @@ export async function executeVerification(contract, options = {}) {
         role: "Adjudicator",
         immutableBaseline,
         allowed: allowedWrites.adjudicator,
+        coordination,
         invoke: () => runAgent(
           `adjudicate:R${round}`,
           adjudicatePrompt,
@@ -2298,7 +2610,7 @@ export async function executeVerification(contract, options = {}) {
 
       logger(`Round ${round} Fix-up`);
       journal.stage = `R${round} Fix-up`;
-      writeJournal(journalPath, journal);
+      await writeJournal(contract, coordination, journalPath, journal);
       const hashesBefore = interfaceHashes(contract);
       const reviewBeforeFixup = readFileSync(join(contract.root, reviewOutput), "utf8");
       const fixupPrompt = renderTemplate(loadPrompt("fixup.md"), {
@@ -2318,6 +2630,7 @@ export async function executeVerification(contract, options = {}) {
         role: "Fix-up",
         immutableBaseline,
         allowed: allowedWrites.fixup,
+        coordination,
         invoke: () => runAgent(
           `fixup:R${round}`,
           fixupPrompt,
@@ -2362,7 +2675,7 @@ export async function executeVerification(contract, options = {}) {
     journal.status = "error";
     journal.error = { message: error.message, code: error.code || "ERROR", details: error.details };
     journal.pending_work = journal.pending_work || `Recover from stage ${journal.stage}; inspect worktree changes before resuming.`;
-    writeJournal(journalPath, journal);
+    await writeJournal(contract, coordination, journalPath, journal);
     error.details = {
       ...(error.details || {}),
       journal: journalRepoPath,
@@ -2383,7 +2696,7 @@ export async function executeVerification(contract, options = {}) {
   journal.stage = "complete";
   journal.outcome = outcome;
   journal.completed_at = new Date().toISOString();
-  writeJournal(journalPath, journal);
+  await writeJournal(contract, coordination, journalPath, journal);
 
   return {
     outcome,
@@ -2400,4 +2713,25 @@ export async function executeVerification(contract, options = {}) {
     pending_work: journal.pending_work,
     journal: journalRepoPath,
   };
+}
+
+export async function executeVerification(contract, options = {}) {
+  const journalPath = makeJournalPath(contract);
+  const journalRepoPath = relative(contract.root, journalPath);
+  const logger = options.logger || ((message) => process.stderr.write(`${message}\n`));
+  const coordination = {
+    ...coordinationOptions(options, logger),
+    journal: journalRepoPath,
+  };
+  const targetLease = await acquireTargetRunLease(contract, coordination);
+  try {
+    return await executeVerificationWithLease(
+      contract,
+      options,
+      journalPath,
+      coordination,
+    );
+  } finally {
+    await releaseTargetRunLease(contract, coordination, targetLease);
+  }
 }

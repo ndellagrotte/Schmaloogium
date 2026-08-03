@@ -79,6 +79,14 @@ Gate has no survivors, PASS/FAIL stops, or review-only omits fix-up. Each role i
 session and therefore consumes its own tokens. Parallelism is capped per preset and never crosses a
 stage barrier.
 
+Different targets may also run in parallel, as permitted by the governing execution waves. Attack,
+Refute, Steelman, and Gate remain concurrent across those runs. Repository mutations are narrower:
+atomic leases below `.verification-runs/.locks/` serialize journal commits and each complete writer
+snapshot → agent → enforcement window. This prevents one loop's journal or review from being
+misattributed to another writer without removing ignored files from write-scope enforcement. A
+second paid run or dry run for the same target fails with `RUN_CONFLICT`; it must be retried after
+the owning run exits and current review state is resolved again.
+
 ## Generic target contract
 
 A manifest owns every target-specific value:
@@ -157,7 +165,8 @@ The tests cover schema/config parsing, target selection, missing/ambiguous/confl
 containment, prior-review/output state, selectors, stage order and stops, refuter aggregation,
 citation rejection/relocation, recursive Gate evidence, write allowlists, ignored-file/mode checks,
 literal PASS, fake-agent full orchestration, first-to-mature transitions, review-only continuation,
-round-boundary selector/prior-review refresh, failure journaling, and the non-phase fixture.
+round-boundary selector/prior-review refresh, parallel-target coordination, duplicate-target
+rejection, stale/live lease handling, failure journaling, and the non-phase fixture.
 
 ## Partial failure
 
@@ -176,3 +185,8 @@ section, excludes only that review from the immutable baseline, and permits appe
 A final-round fix-up is intentionally reported as unreviewed if the cap is reached. Raising the cap
 is not recovery by itself; first inspect whether correction counts converge and whether the fix-up
 is generating excessive new prose.
+
+Leases owned by a dead PID are reclaimed automatically. A live workspace-mutation owner is never
+preempted; waiters report the holder periodically and fail with `LOCK_TIMEOUT` if their bounded wait
+expires. A conflict or timeout includes the lock, target, PID, stage, and journal metadata available
+for diagnosis.
