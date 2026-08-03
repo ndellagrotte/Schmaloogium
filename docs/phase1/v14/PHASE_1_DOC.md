@@ -7,7 +7,7 @@
 **Phase:** 1 — Foundation & project architecture
 **Milestone:** v0.1 · **Depends on:** — (Wave 0; this doc feeds every other phase)
 **Assigned OQs:** OQ-2, OQ-12, OQ-20 (seam hardness), OQ-21
-**Authored:** 2026-07-24 · **Last revised:** 2026-08-03 (§0.22)
+**Authored:** 2026-07-24 · **Last revised:** 2026-08-03 (§0.23)
 **Deliverable:** this document, per DESIGN.md §G9.
 **Verifies against:** `docs/design/v2.0-RC2/DESIGN.md` from §0.11 onward; `docs/design/v1.1/DESIGN.md`
 through §0.10. **There is no longer one governing revision for the project:** RC2 governs **this
@@ -21,9 +21,9 @@ defaults. §0.12 states the adoption state as of 2026-07-26; §0.1 records what 
 against — §4.1's template facts are read from the checkout on 2026-07-24, §4.2.6's thirteen pin rows
 are re-verified 2026-07-24, and `[V:repo]` below is defined as inspection on 2026-07-24 — so a single
 later stamp would silently re-date claims to a day on which they were not performed. The revision
-date is the most recent of the dates the fix-up addenda in §0.4–§0.22 carry, and each addendum states
+date is the most recent of the dates the fix-up addenda in §0.4–§0.23 carry, and each addendum states
 its own: §0.4–§0.5 are 2026-07-24, §0.6–§0.10 are 2026-07-25, §0.11–§0.14 are all
-2026-07-26, §0.15–§0.17 are 2026-07-28, §0.18–§0.19 are 2026-07-29, and §0.20–§0.22 are
+2026-07-26, §0.15–§0.17 are 2026-07-28, §0.18–§0.19 are 2026-07-29, and §0.20–§0.23 are
 2026-08-03. The
 few repository observations the round-eleven and round-twelve fix-ups made are tagged
 `[V:repo 2026-07-26]` inline for the same reason the authoring date is kept — §4.1's and §4.2.6's 2026-07-24 reads are not re-dated by a
@@ -1425,10 +1425,24 @@ or Phase 6's uniform-disable policy into Phase 1.
 The detailed package tables, illustrative declaration, binding §5 rows, milestones, decisions
 `[D-P1-41]`/`[D-P1-42]`, tests, and checklist are updated together.
 
-**Current §G1.3 status:** this amendment changes binding §5. Round twenty-two's PASS is historical;
+**Historical status (superseded by §0.23):** this amendment changes binding §5. Round twenty-two's PASS is historical;
 Phase 1 is **not verified** and is not a valid dependency input until a fresh whole-document review
 returns literal PASS, or any correction-bearing review is fixed up and the changed §5 surface is
 then re-verified. The version directory and target remain at `v14` while the loop is open.
+
+### 0.23 Fix-up addendum (round twenty-four — 2026-08-03)
+
+Round twenty-four returned PASS-WITH-CORRECTIONS with two corrections and no blocking findings or
+notes (`docs/phase1/reviews/PHASE_1_REVIEW_24.md`). The closing history now records round
+twenty-three's literal PASS and this round. Section 5's preamble no longer claims that incorporated
+facade declarations are reproduced there; it instead makes every change to an incorporated public
+contract incomplete unless the corresponding binding §5 row changes in the same revision. The
+facade declarations and semantics themselves are unchanged.
+
+**Current §G1.3 status:** both corrections are applied, but the §5 synchronization rule is a binding
+interface change. Phase 1 is **not verified** and is not a valid dependency input until a fresh
+whole-document review returns literal PASS. The version directory and target remain at `v14` while
+the loop is open.
 
 ---
 
@@ -4170,9 +4184,12 @@ you build against."* Read the document; build against §5. A dependent that need
 flags the request in its own §5 rather than inventing it (§G1.1), and §5.2's escape hatch below says
 how.
 
-This section is nevertheless written to be **sufficient on its own** — every obligation this
-document places on another phase appears here, not only in §4 or §11 — because a reader who skims
-is a reader this section has to survive.
+This section is self-contained as an **index of every cross-phase obligation**, but detailed public
+declarations and exact semantics incorporated from §4.7.2–§4.7.5 remain part of the binding
+contract and must be read there. An edit to any incorporated declaration or semantic contract is
+incomplete unless the same revision also updates its corresponding §5 row (including an explicit
+"unchanged" entry when the row's incorporation remains exact). Thus every valid change to that
+surface changes the declared interface region and fires its fresh-review trigger.
 
 ### 5.1 Structural contracts
 
@@ -5320,13 +5337,14 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 
 ---
 
-*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Twenty-two** verify sessions have
+*End of PHASE_1_DOC.md. Per §G1.1 the build session stopped here. **Twenty-four** verify sessions have
 since run — `PHASE_1_REVIEW_1.md` through `PHASE_1_REVIEW_14.md` returned
 PASS-WITH-CORRECTIONS, and `PHASE_1_REVIEW_15.md` returned the literal PASS that closed that loop —
 then `PHASE_1_REVIEW_16.md` and `PHASE_1_REVIEW_17.md` returned PASS-WITH-CORRECTIONS — and
 `PHASE_1_REVIEW_18.md` returned literal PASS, round nineteen returned PASS-WITH-CORRECTIONS, and
-round twenty returned literal PASS, round twenty-one returned PASS-WITH-CORRECTIONS, and round
-twenty-two returned literal PASS — and **nineteen** fix-up/maintenance sessions: the first applied
+round twenty returned literal PASS, round twenty-one returned PASS-WITH-CORRECTIONS, round
+twenty-two returned literal PASS, round twenty-three returned literal PASS, and round twenty-four
+returned PASS-WITH-CORRECTIONS — and **twenty** fix-up/maintenance sessions: the first applied
 round one's F-1 … F-12 (§0.4); the second applied
 rounds two, three and four together, as round four dispositioned them (§0.5); the third applied
 rounds **five and six** together (§0.6), round five's fix-up having never run — which is round six's
@@ -5368,12 +5386,14 @@ the **fourteenth** applied round seventeen's sole closing-history correction (§
 (§0.18), after round eighteen's literal PASS and without manufacturing a review finding; the
 **sixteenth** applied round nineteen's three corrections (§0.19); and the **seventeenth** accepted
 Phase 8's three package-home request after round twenty's literal PASS (§0.20); the **eighteenth**
-applied round twenty-one's adjacent-ownership correction (§0.21); and the **nineteenth** accepted
-Phase 7's frame-package and replay-evidence requests after round twenty-two's literal PASS (§0.22).
+applied round twenty-one's adjacent-ownership correction (§0.21); the **nineteenth** accepted
+Phase 7's frame-package and replay-evidence requests after round twenty-two's literal PASS (§0.22);
+and the **twentieth** applied round twenty-four's history and interface-coverage corrections (§0.23).
 Every finding's disposition is recorded in the review files under `## Resolutions`, including the four
 of round three's proposed fixes and the items of rounds five and six that were deliberately narrowed
 rather than applied as written, and why.
 
-**Current §G1.3 status.** Round twenty-two's literal PASS is historical because §0.22 subsequently
-changes binding §5. `PHASE_1_DOC.md` is **not verified** and is not a valid dependency input until a
-subsequent fresh review returns literal PASS. The version stays `v14` while that loop is open.*
+**Current §G1.3 status.** Round twenty-three's literal PASS verified §0.22 and is now historical
+because §0.23 changes binding §5. Round twenty-four's corrections are applied; `PHASE_1_DOC.md` is
+**not verified** and is not a valid dependency input until a subsequent fresh review returns literal
+PASS. The version stays `v14` while that loop is open.*
