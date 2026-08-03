@@ -1386,17 +1386,19 @@ custom uniforms on every program switch after built-ins.
 ## Appendix E — Hooks catalog `[V:mcp mappings DB, 2026-07-24]`
 
 *Behavioral hook needs (§7.1) → candidate 1.12.2 classes → resolved names (MCP stable_39 /
-SRG / notch). Injection-style column is a candidate, not a design commitment. Every class
-below also appears in OF's `files.txt` replacement list — independent confirmation that each
-is load-bearing. Obfuscated method names are heavily overloaded single letters; Mixin targets
-must use SRG name + descriptor.*
+SRG / notch). Injection-style column is a candidate, not a design commitment. Seventeen of the
+eighteen classes below also appear in OF's `files.txt` replacement list — independent confirmation
+for those rows; `net.minecraft.client.shader.Framebuffer` does not appear in the complete list, so
+its hook candidacy rests on the resolved vanilla call sites rather than that corroboration.
+Obfuscated method names are heavily overloaded single letters; Mixin targets must use SRG name +
+descriptor.*
 
 ### E.1 Class and method resolution table
 
 | # | Class (readable) | Obf | Key methods (readable → SRG, descriptor) | Serves hook needs (§7.1) |
 |---|---|---|---|---|
 | 1 | `net.minecraft.client.renderer.EntityRenderer` | `buq` | `renderWorldPass(IFJ)V` → `func_175068_a`; `updateCameraAndRender(FJ)V` → `func_181560_a`; `setupCameraTransform(FI)V` → `func_78479_a`; `renderHand(FI)V` → `func_78476_b` | 1, 2, 3 (invocation site), 4 (hand), 5 |
-| 2 | `net.minecraft.client.renderer.RenderGlobal` | `buy` | `renderBlockLayer(BlockRenderLayer)V` → `func_174982_a`; `renderEntities(Entity,ICamera,F)V` → `func_180446_a`; `renderSky(FI)V` → `func_174976_a`; `renderClouds(FIDDD)V` → `func_180447_b`; `setupTerrain(Entity,D,ICamera,I,Z)V` → `func_174970_a` | 4 (sky/terrain/entities/clouds), 6, shadow-pass traversal (3) |
+| 2 | `net.minecraft.client.renderer.RenderGlobal` | `buy` | `renderBlockLayer(BlockRenderLayer,D,I,Entity)I` → `func_174977_a` (**world-loop entry**); `renderBlockLayer(BlockRenderLayer)V` → `func_174982_a` (private per-layer draw helper, not the world-loop entry); `renderEntities(Entity,ICamera,F)V` → `func_180446_a`; `renderSky(FI)V` → `func_174976_a`; `renderClouds(FIDDD)V` → `func_180447_b`; `setupTerrain(Entity,D,ICamera,I,Z)V` → `func_174970_a` | 4 (sky/terrain/entities/clouds), 6, shadow-pass traversal (3) |
 | 3 | `net.minecraft.client.renderer.chunk.RenderChunk` | `bxr` | `rebuildChunk(FFF,ChunkCompileTaskGenerator)V` → `func_178581_b` | 8 |
 | 4 | `net.minecraft.client.renderer.chunk.ChunkRenderDispatcher` | `bxm` | — (class-level; async build coordination) | 8 |
 | 5 | `net.minecraft.client.renderer.BufferBuilder` | `buk` | `begin(I,VertexFormat)V` → `func_181668_a`; `endVertex()V` → `func_181675_d`; `addVertexData([I)V` → `func_178981_a` | 7 (vertex stamping + per-quad attributes) |

@@ -2,7 +2,7 @@
 
 > **Phase:** 2 — Conformance harness · **Milestone:** v0.1 (design; implementation starts week one)
 > **Depends on:** Phase 1 · **OQs assigned:** OQ-10
-> **Date:** 2026-07-25 · **Last revised:** 2026-08-03 (§0.16)
+> **Date:** 2026-07-25 · **Last revised:** 2026-08-03 (§0.17)
 > **Session type:** `DESIGN.md` §G1.1 build session. No source was written, no build or test was run,
 > no review agent was launched, and this document was not self-reviewed. Verification is the separate
 > §G1.2 session.
@@ -144,6 +144,21 @@ report, including nested Phase 8 health rows, by direct field-for-field projecti
 forbids deriving health or capability from rendered behavior. Because §§4.5.4 and 5 change, Phase 2
 v1 is unverified pending fresh review round 16; the version directory is unchanged while that loop
 is open.
+
+**Historical status:** review round 16 subsequently returned literal **PASS** with zero findings
+(`docs/phase2/reviews/PHASE_2_REVIEW_16.md`). The amendment below supersedes that verified surface.
+
+### 0.17 Downstream-request addendum (Phase 7 runner-owned pack provenance — 2026-08-03)
+
+Phase 7 R7-7 identifies a process-boundary hole: the agent could previously fill the manifest's
+pack provenance without a specified authoritative transport. This amendment makes the runner's
+resolved `PackFixture` facts immutable capture-plan inputs: acquisition mode, verified archive
+SHA-512, and licence reach the agent through the plan and return verbatim in its temporary manifest.
+The runner validates all three before publication and never trusts a pack, scene, or agent-side
+rediscovery to self-report them. `[D-P2-23]` records the decision.
+
+This amendment changes §§4.5.1–4.5.4 and binding §5. Phase 2 v1 is therefore **not verified** after
+round 16's historical PASS; the directory remains `v1` pending a fresh whole-document review.
 
 ---
 
@@ -689,10 +704,13 @@ points, which are Phase 7's.
 
 #### 4.5.1 The run lifecycle
 
-1. `:conformance` resolves the pack fixture (§4.10) and the scene, and validates both.
+1. `:conformance` resolves the pack fixture (§4.10) and the scene, validates both, and freezes the
+   registry-owned acquisition mode and licence plus the SHA-512 of the verified archive. These
+   three values are runner facts; neither scene nor pack content can supply them.
 2. It resolves the world save for `(seed, mcVersion, modSetHash)` from the cache, generating it once
    if absent (§4.5.5), then **copies** it into the run directory. A run never mutates its input.
-3. It writes a `CapturePlan` (§4.5.2) and a run directory into the cache.
+3. It writes a `CapturePlan` (§4.5.2), including those three immutable runner facts, and a run
+   directory into the cache.
 4. It launches the client as a **separate process** — the dev-run configuration the module already
    has — with `-Dschmaloogium.conformance.plan=<plan>`, `-Dschmaloogium.conformance.out=<runDir>`,
    `-Dschmaloogium.debug.recordGL` (`[D-P2-2]`), and a hard wall-clock timeout.
@@ -702,12 +720,17 @@ points, which are Phase 7's.
    and its pinned options, and waits `prepTicks`.
 7. Per shot, in file order: apply `pos`/`look`/held items, run `warmupFrames` frames, then capture
    `captureFrames` consecutive frames (§4.5.3).
-8. The agent writes the `RunManifest` (§4.5.4), then quits the client cleanly.
-9. `:conformance` reads the manifest and the images, evaluates the tiers the run was asked for, and
+8. The agent copies the three plan facts verbatim into its temporary `RunManifest` (§4.5.4), then
+   quits the client cleanly. It never reads provenance from the installed pack or accepts a
+   pack-provided claim.
+9. `:conformance` reads the temporary manifest and first compares all three values byte-for-byte
+   with the authoritative plan. Missing or unequal values reject the agent artifact; only an exact
+   match may be atomically published. It then reads the images, evaluates the requested tiers, and
    writes the report (§4.13).
-10. On any failure before the agent atomically publishes a complete manifest, `CaptureRunner`
-    writes the canonical failure manifest defined in §4.5.4. Thus every attempted run is `FAILED`
-    or `SKIPPED` with a serialized reason — never absent, and never silently green (§6).
+10. On any failure before the runner atomically publishes a complete manifest, `CaptureRunner`
+    writes the canonical failure manifest defined in §4.5.4 using the plan's authoritative pack
+    facts. Thus every attempted run is `FAILED` or `SKIPPED` with a serialized reason — never absent,
+    never silently green, and never populated by an untrusted self-report (§6).
 
 #### 4.5.2 The capture plan — a deliberately dumb format
 
@@ -723,6 +746,7 @@ splits on `=`, it has no defaults, and an unknown key aborts the run rather than
 lexicographically by key. Keys are ASCII dotted identifiers. Strings use JSON string escaping;
 booleans are `true|false`, integers are base-10, and finite doubles use §4.1's fixed decimal form.
 Required scalar keys are `run.id`, `scene.id`, `scene.hash`, `pack.id`, `pack.version`,
+`pack.acquisitionMode`, `pack.archiveSha512`, `pack.licence`,
 `world.path`, every non-repeated resolved `[world]`, `[client]`, and `[pack]` field from §4.3.2,
 and `shots.count`. Repeated entries use a required count and dense zero-based indices:
 `world.gamerules.<n>.{name,value}`, `world.entities.<n>.{type,pos,nbt}`,
@@ -730,6 +754,11 @@ and `shots.count`. Repeated entries use a required count and dense zero-based in
 `shots.<n>.{id,pos.x,pos.y,pos.z,look.yaw,look.pitch,heldMain,heldOff,warmupFrames,captureFrames,note}`.
 `heldMain`, `heldOff`, and `note` are required JSON strings (empty means absent); every other listed
 field is required.
+`pack.acquisitionMode` is exactly `MODRINTH|MANUAL`; `pack.archiveSha512` is exactly 128 lowercase
+hexadecimal digits; and `pack.licence` is a non-empty JSON string. `CaptureRunner` derives these
+values from the resolved `PackFixture` and verified archive, and the plan hash covers their exact
+serialized bytes. `CapturePlanWriter` accepts them only from the runner-owned fixture resolution;
+the scene model, pack options, archive contents, and agent expose no alternate write path.
 Indices must cover `0..count-1` without gaps, and shot index is execution order. Duplicate,
 missing, malformed, unknown, or out-of-version keys abort before world load; schema major versions
 other than `1` are unsupported. A canonical fixture in
@@ -794,6 +823,10 @@ shadersActiveThroughout,hangCeilingMillis,timedOut}`,
 The required pack scalars are JSON strings `pack.{id,version,acquisitionMode,archiveSha512,licence}`.
 `pack.id`, `pack.version`, and `pack.licence` are non-empty; `pack.acquisitionMode` is exactly
 `MODRINTH|MANUAL`; and `pack.archiveSha512` is exactly 128 lowercase hexadecimal digits.
+The last three are a direct projection of the capture plan's runner-owned facts. Before atomic
+publication, `CaptureRunner` requires exact equality for all three; absent or mismatched values
+produce a runner-synthesized failure manifest carrying the plan values. Agent or pack self-report
+never overrides them (`[D-P2-23]`).
 `run.exitStatus` is exactly `COMPLETE|FAILED|SKIPPED`; `failureReason` and `uncaughtException` are
 required strings (empty means none), `compatVerdict` is exactly `Continue|Bail|NOT_REACHED`, and
 the completion/availability fields are booleans while `hangCeilingMillis` is a non-negative
@@ -1480,7 +1513,8 @@ is inert without its system property.
 | **The `[sizing]` golden section** — the concrete list of resource-sizing decisions the headless harness validates | §4.11.3 | **3**, **4**, **5** |
 | **The `GLCapabilityProfile` fixture set + `profiles.index`** | §4.12. Phase 1 owns the type and format; this is the *set* your "recorded-GL run" impl gates run against | **4**, **5**, **6**, 14 |
 | **The run manifest wire schema** | §4.5.4, schema `schmaloogium.run-manifest/1`, canonically stored at `<cache>/runs/<runId>/manifest.manifest`, including the complete canonical `resources.*` and `hooks.*` key/type/cardinality/absence grammars. Its required pack scalars fix identity, `MODRINTH|MANUAL` acquisition, SHA-512, and licence; its world identity admits only directories/regular files and rejects links and other entries before copy/hash. It carries every T0 predicate and baseline identity; the per-slot `programs` block makes T3 decidable; hook rows are a complete direct copy of Phase 7's frozen primary/nested report with no capability inference; consumers derive the reported unattributable-error count by counting `gl_errors` records whose required boolean `attributed=false`, sourced only from R4A's replay-aware result | **3** (front-end and pack configuration), **4** (per-slot program resolution), **5** (immutable live resource snapshot), **7** (capture, frozen hook report, and serialization, gated on R4A) |
-| **The capture-agent contract + capture-plan wire schema** — what `:mod` must implement and what Phase 7 must hook | §4.5, schema `schmaloogium.capture-plan/1`, §5.4 R11–R14 and R17–R18 | **7** |
+| **The capture-agent contract + capture-plan wire schema** — what `:mod` must implement and what Phase 7 must hook | §4.5, schema `schmaloogium.capture-plan/1`, §5.4 R11–R14 and R17–R18. The runner freezes `pack.{acquisitionMode,archiveSha512,licence}` from `PackFixture`/verified-archive facts into the plan; the agent transports them verbatim; the runner validates exact equality before atomic manifest publication (`[D-P2-23]`) | **7** |
+| **Runner-owned pack-provenance bridge** | Acquisition mode and licence originate in the fixture registry; archive SHA-512 originates in post-resolution verification. They cross the client process only through the immutable capture plan and return only as verbatim manifest values. Pack content, scene text, agent rediscovery, and rendered behavior are not evidence for any of the three | **7**, CI/reporting |
 | **The fixture registry, cache API and never-rehost rules** | §4.10 | anyone adding a pack; CI |
 | **Tolerance profiles** | §4.6.3, calibrated by §4.6.5 | anyone reading a diff verdict |
 | **The CI task split** — hermetic `test` vs fixture-dependent `conformanceTest`, and the tag policy | §4.14 | anyone adding a test to `:conformance` |
@@ -1504,13 +1538,15 @@ document names Phase 2 explicitly for the first four.
 | `CapabilityProbe` as the fixture-production mechanism | §4.7.5, §5.2's note to Phase 2 (*"Do not design a capture path; drive these"*) | §4.12 — and this document does not design one |
 | The `schmaloogium.conformance` log channel | §4.9.2 (owner column: 2) | §4.5.6 |
 | `EngineDiagnostic` / `DiagnosticSeverity` / `UserChannel` | §4.9.4 | the manifest's `diagnostics` block |
+| `ReplayAwareGLError(GLError, attributed)` | §2.4/§4.7.4/§5.2, `[D-P1-42]` | the manifest's total `gl_errors.*.attributed` boolean; Phase 2 copies the producer result and never infers from `op` or `subjectLabel` |
 | CI job/step layout and the `conformance` extension point | §4.11; §5.3's last row names Phase 2 as its consumer | §4.14 |
 | The version pin table and its re-pin procedure | §4.2.6 | §4.10's refusal to add a dependency coordinate without one |
 
-Phase 1's present four-field `GLError` does **not** supply the manifest's `attributed` boolean.
-The sole admissible source is requested below as R4A: a replay-aware additive result that carries
-the `GLError` and its total attribution classification. Until Phase 1 accepts that request, Phase 7
-cannot produce a conforming run manifest; `op` and `subjectLabel` are never inference substitutes.
+Phase 1's four-field `GLError` alone does **not** supply the manifest's `attributed` boolean. Phase 1
+has now applied the R4A grant as `[D-P1-42]`; its `ReplayAwareGLError` is the sole admissible source.
+That amended Phase 1 surface remains implementation-gated until its required fresh review returns
+literal PASS. Phase 6 performs the replay and Phase 7 copies the result. `op` and `subjectLabel`
+remain non-evidence.
 
 **What Phase 1 explicitly does not give this phase**, and this document therefore supplies: the
 fixture set, any golden-file format other than `GLCallLog.render()`, and any answer to OQ-10
@@ -1540,18 +1576,19 @@ those three.
 
 ### 5.4 Requests — flagged, never assumed
 
-Per §G1.1, what this phase needs and does not own is stated as a request. None of it is treated as
-existing anywhere in this document.
+Per §G1.1, what this phase needs and does not own is stated as a request. Accepted requests are
+marked fulfilled and consumed only from the owning document's binding §5; the rest are not treated
+as existing.
 
 **To Phase 1** (a dependency; these are requested changes to `PHASE_1_DOC.md`):
 
 | # | Request | Why |
 |---|---|---|
-| R1 | A `com.schmaloogium.mod.conformance` package in §2.1's `:mod` table, owner "Phase 2 (design) / Phase 7 (hooks)" | §5.1 makes package placement a rule and the table has no slot for the capture agent (`[D-P2-1]`). Without this the agent has nowhere legal to live |
+| R1 — **grant applied by Phase 1 `[D-P1-41]`; fresh owner review pending** | A `com.schmaloogium.mod.conformance` package in §2.1's `:mod` table, owner "Phase 2 (design) / Phase 7 (hooks)" | §5.1 makes package placement a rule; the new exact slot gives the capture agent a legal home without weakening C-4 (`[D-P2-1]`) |
 | R2 | Two client-read system properties admitted to the `-Dschmaloogium.*` namespace: `schmaloogium.conformance.plan` and `schmaloogium.conformance.out` | §4.9.3 fixes the debug-flag namespace and its table has an owner column; §4.9.2 already establishes the "a later phase adds via requested change" mechanism for channels. These two are read by `:mod`, so they are Phase 1's namespace; `cacheDir` and `offline` are read only by `:conformance` and are ours |
 | R3 | Acknowledgement that `conformance/build.gradle` gains a second test task and JUnit tag configuration (§4.14) | §4.2.4a says "Phase 1 stands the module up; Phase 2 fills it", which most likely already covers this; flagged because the file is Phase 1's artifact and the change is additive rather than internal |
 | R4 | In `mod/build.gradle`: the default `test` task **excludes `@Tag("gl")`**, and a separate `glTest` task (opt-in, `-PglTests`) includes it | Not cosmetic. `PHASE_1_DOC.md` §4.11 step 1 runs `:mod:test` as CI's named "Seam architecture test" step on a headless runner; a GL test inside that task fails the seam step for a non-seam reason on every push (§4.14, §10.2). `:mod/build.gradle` is Phase 1's file, so the change is requested rather than assumed |
-| R4A | An additive replay-aware GL-error result carrying `GLError error` and `boolean attributed`: `true` only when replay reproduces and isolates the error to the named facade operation; `false` when replay is clean or the window remains batched/foreign. The producer returns one result for every drained error, covering single-call, batched, replay-clean, and foreign-error windows without changing `GLError` | The run manifest requires a total boolean for every record, while the current four-field `GLError` cannot supply it (§4.5.4). This classification must come from the owner of the drain/replay protocol, never from Phase 7 guessing from `op` or `subjectLabel` |
+| R4A — **grant applied by Phase 1 `[D-P1-42]`; fresh owner review pending** | An additive replay-aware GL-error result carrying `GLError error` and `boolean attributed`: `true` only when replay reproduces and isolates the error to the named facade operation; `false` when replay is clean or the window remains batched/foreign. The producer returns one result for every drained error, covering single-call, batched, replay-clean, and foreign-error windows without changing `GLError` | The run manifest requires a total boolean for every record, while the four-field `GLError` cannot supply it (§4.5.4). This classification comes from the owner of the drain/replay protocol, never from Phase 7 guessing from `op` or `subjectLabel` |
 
 No facade verb is requested. R4A is an additive diagnostic result from the existing drain/replay
 protocol; §4.7.4's absent-verbs table is not touched.
@@ -1682,7 +1719,7 @@ All in `:conformance` unless noted; all in the hermetic `test` task (§4.14) unl
 | `SceneParserRejectionTest` | each §4.3.3 rule fails with a message naming the rule — unknown key, missing required key, id ≠ filename, duplicate shot, shot without pose, warm-up below floor, missing mandatory gamerule |
 | `SceneRoundTripTest` | parse → write → parse is identity, and the written form is sorted and byte-stable (§4.1) |
 | `SceneCorpusTest` | **every committed `conformance/scenes/*.scene` parses and validates** — the guard that keeps the authored corpus honest as the format evolves |
-| `CapturePlanTest` | a scene resolves to the §4.5.2 schema with all defaults applied; the canonical fixture round-trips byte-identically; duplicate, missing, gapped-index, malformed, unknown-key, and unsupported-version inputs abort |
+| `CapturePlanTest` | a scene and resolved `PackFixture` produce the §4.5.2 schema with all defaults applied and exact runner-owned acquisition mode/archive SHA-512/licence; the canonical fixture round-trips byte-identically; duplicate, missing, gapped-index, malformed, unknown-key, unsupported-version, and malformed provenance inputs abort; changing any provenance byte changes the plan hash |
 | `ImageDifferTest` | identical images → zero differing pixels; a single altered pixel is found at the right coordinate; a diffuse ±1 noise field passes `SAME_MACHINE` and fails `IDENTICAL`; a 40×40 solid block **fails** `SAME_MACHINE` on L3 while passing L2 — the case `[D-P2-7]` exists for; dimension mismatch throws rather than scoring |
 | `ClusterAnalysisTest` | 4-connectivity, largest-area and count on hand-built masks, including a diagonal chain that must *not* merge |
 | `TolerancePolicyTest` | profiles load from the committed file; an unknown profile name fails; `ADVISORY` produces a report and refuses to yield a verdict |
@@ -1695,7 +1732,7 @@ All in `:conformance` unless noted; all in the hermetic `test` task (§4.14) unl
 | `GoldenCorpusTest` | **every committed golden parses into the document model and re-renders byte-identically.** This is the structural proof of `[D-P2-5]`: a golden that contained free source text could not round-trip through a model that has no field to hold it |
 | `RunManifestReaderTest` | the canonical §4.5.4 full-block fixture at `conformance/src/test/resources/wire/run-manifest-v1.manifest`, including T0 state, both baseline hashes, attributed plus unattributable GL errors, all primary hook rows, and a nested eight-row Phase 8 report, round-trips byte-identically; duplicate/missing/gapped hook rows, duplicate catalog/owner IDs, bad class order, illegal deferred-owner presence, bad fingerprint/disposition, filtering/reordering, malformed input, unknown core keys, unsupported versions, and non-boolean fields abort; `x.<producer>.*` fields are preserved-and-reported |
 | `TierEvaluatorTest` | reconstructs each T0 failure independently from serialized evidence (front-end failure, diagnostic, attributed and unattributable GL errors, program failure, exception, bail, shaders-off, timeout, frame-count mismatch, over-ceiling frame, and unavailable hook evidence); derives unattributable diagnostic counts solely from `attributed=false`; covers T1's `NO_BASELINE`, T2's dual-spec refusal, and T3's sourced/unsourced `CHAIN` cases without inferring capabilities from hook or image behavior |
-| `RunManifestFailureTest` | launch failure, timeout, crash, truncated agent output, and missing hook report each produce a canonical runner-synthesized manifest with all three availability flags false where evidence is unknown, round-trip, and deterministically fail T0 |
+| `RunManifestFailureTest` | launch failure, timeout, crash, truncated agent output, missing hook report, missing provenance, and each of three agent/plan provenance mismatches produce a canonical runner-synthesized manifest with authoritative plan provenance and all three availability flags false where evidence is unknown, round-trip, and deterministically fail T0; a pack-authored provenance claim is ignored |
 | `HookManifestEvidenceTest` | serialization is a field-for-field copy of a frozen Phase 7 report; Phase 7 primary IDs/order never change; an owner-phase-8 subreport preserves exactly eight IDs/counts/dispositions and its fingerprint/enabled bit; absence stays absent; successful frames and images cannot synthesize health |
 | `BaselineIdentityTest` | world and mod-set hashes are invariant to traversal/record order, change with any input byte or identity, flow unchanged into approval manifests, and a mismatch yields `NO_BASELINE`; world copy/hash rejects an internal link, an escaping link, FIFO, socket, and representative device entry without following it |
 | `TierLedgerTest` | scene-set identity and exact constituent coverage; missing/hash-mismatched/stale evidence → effective `NOT_ATTEMPTED`; artifact directories reject absolute paths, traversal, and symlinked components; the canonical evidence index and run manifests resolve beneath the established run-output root, and missing, escaping, hash-mismatched, linked-component, replaced-root, or non-regular cases invalidate the row; manual attestations obey the same traversal rule at their content-addressed paths; inconsistent same-scene-set ledgers flagged; both renderings expose all pointers and are sorted and stable |
@@ -1739,7 +1776,7 @@ here is `v0.1` even though the behaviour it will eventually measure is not.
 | Scene `night-shadows` | authored `v0.1`, first gated `v0.2` | §9's v0.2 row is the shadow pass |
 | Scene `entities-blocks` | authored `v0.1`, first gated `v0.3` | per-entity/TE id uniforms are v0.3 |
 | Scene `weather-rain` | authored `v0.1`, first gated `v0.5` | `gbuffers_weather` itself is a v0.1 gbuffers program, but the behaviour this scene exists to check — the `depthtex2` copy taken *before* weather so composites get a weather-free depth view (§4.3 of RESEARCH.md) — arrives with §9's v0.5 depth-copy row |
-| Capture plan format + `CapturePlanWriter` (§4.5.2) | `v0.1` | |
+| Capture plan format + `CapturePlanWriter` (§4.5.2), including runner-owned pack provenance | `v0.1` | Acquisition mode, verified archive SHA-512, and licence are frozen before client launch (`[D-P2-23]`) |
 | `CaptureAgent`, `SceneApplier`, `FrameGrabber`, `RunManifestWriter` (§4.5) | `v0.1` | designed now, runnable the moment v0.1 renders — the spec's own phrasing |
 | Run manifest format + reader (§4.5.4), including complete primary/nested hook evidence | `v0.1` | T0 and T3 both decide from it; owner-phase-8 rows activate at v0.2 without a schema change |
 | World generation cache (§4.5.5) | `v0.1` | |
@@ -1967,6 +2004,7 @@ framebuffer size.
 | `D-P2-20` | Registry version IDs and hashes are **left unfilled** here and populated by the implementation effort; an empty pin is a hard failure, never "latest" | App G gives version names, not pins; a fabricated pin is one CI would trust (§4.10.1) |
 | `D-P2-21` | OQ-10's fallback is designed now and costs no milestone gate | §10.3(4) |
 | `D-P2-22` | Hook evidence is serialized only as a complete direct projection of Phase 7's frozen primary/nested application report | application facts have stable owners and IDs; rendered behavior cannot authenticate whether an injection applied |
+| `D-P2-23` | Pack acquisition mode, verified archive SHA-512, and licence are immutable runner facts transported through the capture plan and validated before manifest publication | The runner owns fixture resolution and integrity. Letting the pack or agent rediscover or self-report provenance would make the manifest attest to untrusted input rather than to the artifact actually executed (§0.17, §4.5). |
 
 ### 11.2 Disposition of `D-1` … `D-10`
 
@@ -2114,7 +2152,7 @@ Every item names its milestone tag and its test hook.
 | 2 | Add the JUnit tag configuration and the `conformanceTest` task to `conformance/build.gradle`; default `test` excludes `fixtures` and `gl` (`[D-P2-8]`, request R3) | `v0.1` | a `@Tag("fixtures")` test is absent from `test` and present in `conformanceTest` |
 | 3 | `SceneSpec` model + `SceneParser` + `SceneValidator` (§4.3) | `v0.1` | `SceneParserTest`, `SceneParserRejectionTest`, `SceneRoundTripTest` |
 | 4 | Author the six scene files of §3.4 | `v0.1` | `SceneCorpusTest` |
-| 5 | `CapturePlan` + writer, with defaults resolved at plan time (§4.5.2) | `v0.1` | `CapturePlanTest` |
+| 5 | `CapturePlan` + writer, with defaults and runner-owned acquisition mode/archive SHA-512/licence resolved at plan time (§4.5.2) | `v0.1` | `CapturePlanTest` |
 | 6 | `packs.registry` format + `PackFixtureRegistry`; **populate every App G row except the pins** | `v0.1` | `RegistryTest` |
 | 7 | **Verify Sildur's Vibrant is on Modrinth** and fix its mode if not (§11.3 item 1) | `v0.1` | `RegistryTest` asserts mode/URL consistency |
 | 8 | **Read Modrinth's rate-limit and User-Agent documentation** and record the figures in the transport's javadoc (§11.3 item 8) | `v0.1` | — (a documentation step, deliberately listed) |
@@ -2143,8 +2181,8 @@ Every item names its milestone tag and its test hook.
 
 | # | Item | Tag | Test hook |
 |---|---|---|---|
-| 24 | `CaptureAgent`, `CapturePlanReader`, `SceneApplier`, `FrameGrabber`, `RunManifestWriter` in the requested `mod.conformance` package (R1, R2), including R18's complete direct primary/nested hook-report serialization | `v0.1` | `RUN-SCENE-SELFCHECK` plus `HookManifestEvidenceTest` |
-| 25 | `CaptureRunner` + world cache + timeout handling (§4.5.1, §4.5.5) | `v0.1` | a complete run directory with a manifest |
+| 24 | `CaptureAgent`, `CapturePlanReader`, `SceneApplier`, `FrameGrabber`, `RunManifestWriter` in the requested `mod.conformance` package (R1, R2), including R18's complete direct primary/nested hook-report serialization and verbatim plan-provenance transport | `v0.1` | `RUN-SCENE-SELFCHECK` plus `HookManifestEvidenceTest`; agent has no pack-self-report path |
+| 25 | `CaptureRunner` + world cache + timeout handling + byte-exact manifest/plan provenance validation before atomic publication (§4.5.1, §4.5.5, `[D-P2-23]`) | `v0.1` | a complete run directory with a manifest; all missing/mismatch cases yield runner-authored failure manifests |
 | 26 | `RUN-SCENE-SELFCHECK` across all six scenes with `captureFrames = 3` — **the determinism ledger's acceptance test** | `v0.1` | all shots `IDENTICAL`; any failure is a §4.4 leak, not a pack defect |
 | 27 | Calibrate `SAME_MACHINE` and `CROSS_DRIVER` (§4.6.5) and write `calibratedOn` | `v0.1` | the profile file stops carrying placeholder numbers |
 | 28 | `RUN-T0` across the classic matrix — **v0.1's second exit criterion** | `v0.1` | §4.2.1's predicates |
@@ -2165,5 +2203,6 @@ Every item names its milestone tag and its test hook.
 
 ---
 
-*Review round 15 ended in PASS before §0.16. This maintenance addendum changes binding §5 and leaves
-Phase 2 v1 unverified pending fresh review round 16; no version roll occurs while the loop is open.*
+*Review round 16 returned literal PASS on the §0.16 surface. The §0.17 maintenance amendment then
+changed binding §5, so Phase 2 v1 is **not verified** pending a fresh whole-document review; no
+version roll occurs while the loop is open.*

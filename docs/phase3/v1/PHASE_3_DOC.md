@@ -3,7 +3,7 @@
 ## 0. Header
 
 **Phase:** 3 — Pack front-end: ingestion, preprocessing, and configuration model
-**Date:** 2026-08-03
+**Date:** 2026-08-03 · **Last revised:** 2026-08-03 (§0.25)
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 3
 specification only. RC3 governs this phase only; this document does not change the Phase 1 or
 Phase 2 governance pins.
@@ -175,6 +175,22 @@ their canonical property name and ordered accepted values, while origins disting
 pack from an ordered Phase-9 mod contribution and carry stable attribution identity. Matching,
 validation, equality, and construction semantics are fixed in §§2.2, 4.9, 5.1, and 8.
 
+**Historical status:** review round 22 subsequently returned literal **PASS** with zero findings
+(`docs/phase3/reviews/PHASE_3_REVIEW_22.md`). The amendment below supersedes that verified surface.
+
+### 0.25 Downstream-request addendum (canonical normalized-pack-path projection — 2026-08-03)
+
+Phase 7 R7-9 requires a stable, slash-separated string for internal-pack hashing and serialization.
+The previously named but undeclared `NormalizedPackPath` now exposes exactly
+`canonicalString()`: an NFC, root-relative, non-empty path using `/` separators and no ambiguous
+segments. Consumers hash that projection's UTF-8 bytes and never `toString()` or a host `Path`.
+`[D-P3-24]` records the decision.
+
+This closes an existing value type rather than adding or changing a `PackConfiguration` record
+component, so `PackFrontEnd.CURRENT_SCHEMA_VERSION` remains 2. Because binding §5 changes, however,
+Phase 3 v1 is **not verified** after round 22's historical PASS; the directory remains `v1` pending
+a fresh whole-document review.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 3 owns
@@ -275,6 +291,13 @@ public record PackCandidate(
 public interface InternalPackSource {
     PackIdentity identity();
     InternalPackSnapshot snapshot(PackInputLimits limits) throws InternalPackReadException;
+}
+
+public record NormalizedPackPath(String canonicalString) {
+    public NormalizedPackPath {
+        // Validate the canonical grammar below; never normalize a rejected value implicitly.
+        Objects.requireNonNull(canonicalString, "canonicalString");
+    }
 }
 
 public record InternalPackSnapshot(List<InternalPackEntry> entries) {}
@@ -391,12 +414,20 @@ public enum MappingEra { CLASSIC, MODERN }
 public enum RequestedRenderLayer { SOLID, CUTOUT, CUTOUT_MIPPED, TRANSLUCENT }
 ```
 
+`NormalizedPackPath.canonicalString()` is the sole public path projection. Its value is non-empty,
+Unicode NFC, root-relative, and slash-separated. It contains no leading/trailing `/`, empty segment,
+`.` or `..` segment, backslash, NUL, URI/drive prefix, or host-dependent separator. Construction
+validates this grammar and rejects a non-NFC spelling rather than silently rewriting caller data.
+Canonical path order is unsigned lexicographic order of the UTF-8 bytes of `canonicalString()`;
+identity hashes and wire formats consume those exact bytes. `toString()`, `Path.toString()`, display
+names, and platform path objects are not stable projections (`[D-P3-24]`).
+
 `DimensionKey` is an engine value containing the numeric legacy dimension ID, not a Minecraft
 dimension type. An `OFF` request returns `PackLoadResult.Off` without opening an input, publishing a
 configuration, or reporting failure; Phase 7/12 replace any prior configuration with their owned
 shaders-off state. `InternalPackSource.snapshot` returns one finite, immutable manifest in
-normalized-path order, including empty directories. Phase 3 revalidates every slash-normalized,
-root-relative path, rejects duplicate normalized paths or file/directory collisions, and applies
+canonical-path order, including empty directories. Phase 3 revalidates every `canonicalString()`,
+rejects duplicate canonical paths or file/directory collisions, and applies
 the same entry-count, byte-count, path-length, and nesting limits used for archives. A provider
 limit/read violation becomes an attributed pack-level failure. `ImmutableBytes` exposes size plus
 a fresh copy on every `copy()` call; Phase 3 owns that copy, and neither the manifest nor the
@@ -1272,7 +1303,7 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 | `CustomTextureSpec`, `NoiseTextureSpec` | lossless specs only | Phase 13 |
 | `CustomExpressionDecl` | typed name + raw expression | Phase 11, then Phase 6 |
 | `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, closed `MappingOrigin` variants | schema-v2 per-kind `ABSENT`/`PRESENT_EMPTY`/`PRESENT_RULES`; ordered entry/tag rules and predicates; pack or ordered mod-contribution origin; ordinary and isolated forced-11300 entity results; canonical parser environment and fingerprints. The same pure bounded-byte operation parses Phase-9-provided mod sources without reopening the pack or reconstructing macros | Phase 9; resolved layer result later Phase 7 |
-| `InternalPackSource` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; defensive byte copies and attributed failure | Phase 7 supplies content |
+| `InternalPackSource` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; defensive byte copies and attributed failure. `NormalizedPackPath.canonicalString()` is the only stable projection: non-empty NFC root-relative `/` grammar, ordered and hashed by its exact UTF-8 bytes; consumers never serialize `toString()` or a host path (`[D-P3-24]`) | Phase 7 supplies content and consumes the projection |
 
 `discover` requires a non-null `shaderpacksDirectory` and `DiagnosticReporter`. It and a
 `Filesystem` load derive the directory identity by calling `toAbsolutePath().normalize()`, then
@@ -1364,7 +1395,10 @@ is never a silently executable state. Closed executable enums reject unknown val
 `GeometryInputPrimitive` and `GeometryOutputPrimitive` contain only their declared primitive sets.
 `IdMappingInput.schemaVersion` must equal its containing `PackConfiguration.schemaVersion`; Phase 9
 rejects a mismatch before parsing mod bytes or building aliases. Version 1 configurations are
-incompatible with the R9-1 surface and are never upgraded by inference.
+incompatible with the R9-1 surface and are never upgraded by inference. Closing the already-named
+`NormalizedPackPath` value with its canonical string projection does not add or reinterpret a
+`PackConfiguration` component and therefore does not increment schema version 2. Any future change
+to that path grammar is still an interface-breaking change.
 
 ### 5.4 Requested changes to the dependency contract
 
@@ -1443,6 +1477,9 @@ or Minecraft type is needed.
   `discovery_staleAndUnknownSelectionInvalid`
   (stale and unknown filesystem IDs return `INVALID_SELECTION`),
   `internalSnapshot_orderDuplicatesLimitsAndEmptyDirectories`,
+  `normalizedPackPath_canonicalStringStableUtf8`
+  (round-trip canonical strings, NFC rejection, slash grammar, unsigned UTF-8 ordering, and proof
+  that `toString()`/host separators never enter identity or serialization),
   `pathRejectsTraversalAbsoluteAndSymlink`, `archiveLeaseClosesOnEveryExit`,
   `archiveBombLimitsFailGracefully`.
 - Dimensions: `dimension_overrideNoMergeAndEmptyDisables`,
@@ -1554,7 +1591,7 @@ milestone.
 | ID | Component | Milestone |
 |---|---|---|
 | P3-C01 | deterministic pack discovery and sentinels | `v0.1` |
-| P3-C02 | safe folder/zip input snapshot, root/path guards, lease lifecycle | `v0.1` |
+| P3-C02 | safe folder/zip input snapshot, canonical normalized-path projection, root/path guards, lease lifecycle | `v0.1` |
 | P3-C03 | OF base/dimension source-set model | `v0.1` |
 | P3-C04 | source IDs, include graph, WCC, depth/cycle handling | `v0.1` |
 | P3-C05 | include expansion and `#line`/source-map attribution | `v0.1` |
@@ -1573,7 +1610,7 @@ milestone.
 | P3-C18 | logging/loader-neutral diagnostics and degradation adapter | `v0.1` |
 | P3-C19 | global `.csh` source recognition/materialization reserved for G8/S2 | `post-v0.5` |
 | P3-C20 | headless manifests, fuzz fixtures, and seven-pack front-end harness adapter | `v0.1` |
-| P3-C21 | `(internal)` in-memory source-provider bridge (content remains Phase 7) | `v0.1` |
+| P3-C21 | `(internal)` in-memory source-provider bridge with canonical UTF-8 path identities (content remains Phase 7) | `v0.1` |
 | P3-C22 | modern `RENDERTARGETS` recognition and source-order precedence | `post-v0.5` |
 
 Later consumers may initially ignore fields, but Phase 3's v0.1 model already preserves all
@@ -1655,6 +1692,7 @@ not a decision (PD §7.6).
 | D-P3-21 | Keep modern `.csh` recognition as post-v0.5 P3-C19 and `RENDERTARGETS` recognition/precedence as post-v0.5 P3-C22; the v0.1 routing model remains growth-shaped without implementing either modern parser path. |
 | D-P3-22 | Capture complete default-block declaration metadata from the final materialized token stream and bind it to that materialization's fingerprint; load-time resource recognition is too early to describe contribution/rewrite results, while post-link introspection cannot supply source attribution or declared-but-optimized-out entries. |
 | D-P3-23 | Publish file presence, entry/tag classification, per-rule era, and both isolated entity parses instead of making Phase 9 reopen bytes or infer preprocessing history; this grants R9-1 while keeping registry resolution and branch selection outside Phase 3. |
+| D-P3-24 | Make `NormalizedPackPath.canonicalString()` the sole path projection and define it as validated NFC, root-relative, slash-separated grammar ordered/hashed by exact UTF-8 bytes; `toString()` and host paths are never protocol data. |
 
 ### 11.2 Binding-decision disposition
 
@@ -1691,8 +1729,10 @@ Phase 2 adapter.
   linked-program layout, reject same-name/different-type conflicts with both source locations, and
   expose only that handle-free layout to Phase 6. Phase 6 must not reopen source or reinterpret
   the Phase 3 type algebra.
-- Phase 7 must supply the bounded `InternalPackSource` snapshot, combine its owned engine flags with higher-priority game
-  settings, and publish new configurations on pack/dimension/reload transitions.
+- Phase 7 must supply the bounded `InternalPackSource` snapshot, consume only
+  `NormalizedPackPath.canonicalString()` for hashing/serialization, combine its owned engine flags
+  with higher-priority game settings, and publish new configurations on pack/dimension/reload
+  transitions.
 - Phase 9 consumes `IdMappingInput`, selects an entity ordinary/forced result under its documented
   present-empty rule, parses bounded mod bytes only through the published operation/environment,
   and owns mod precedence, tag expansion, registry resolution, and aliases.
@@ -1710,10 +1750,12 @@ Phase 2 adapter.
 
 Each item is independently actionable and names its test hook.
 
-1. `[v0.1]` Implement P3-C01/P3-C02 discovery, safe root selection, archive limits, and snapshot
+1. `[v0.1]` Implement P3-C01/P3-C02 discovery, safe root selection, canonical
+   `NormalizedPackPath.canonicalString()` validation/projection, archive limits, and snapshot
    lifecycle; run `discovery_generationSupersessionAndDirectoryIndependence`,
    `discovery_directoryIdentityCaseAndFailures`, `discovery_staleAndUnknownSelectionInvalid`, all
-   other `discovery_*`, `pathRejects*`, and `archiveLease*`.
+   other `discovery_*`, `normalizedPackPath_canonicalStringStableUtf8`, `pathRejects*`, and
+   `archiveLease*`.
 2. `[v0.1]` Implement P3-C03 source-set/dimension indexing with the full −128…128 scan; run all
    `dimension_*`.
 3. `[v0.1]` Implement P3-C04 source IDs/include graph/WCC/depth/cycle diagnostics; run
@@ -1753,10 +1795,16 @@ Each item is independently actionable and names its test hook.
 16. `[v0.1]` Implement P3-C17 validation/fingerprint/atomic publication and prove
     `PackConfiguration` is the only success output.
 17. `[v0.1]` Implement P3-C21's in-memory `(internal)` bridge with a synthetic engine-only pack;
-    leave actual content to Phase 7.
+    hash/order/serialize only canonical-string UTF-8 bytes and leave actual content to Phase 7.
 18. `[v0.1]` Implement P3-C20 manifest/fuzz/harness adapter, then run the seven downloaded pack
     front-ends and the classic resource-sizing check under Phase 2's rules.
 19. `[post-v0.5]` Run §10's OQ-7 spike and record the result before implementing P3-C09's final
     policy.
 20. `[post-v0.5]` Implement P3-C19 global `.csh` recognition only when G8/S2 defines its execution
     contract; retain the OF dimension restrictions and existing schema compatibility.
+
+---
+
+*Review round 22 returned literal PASS on the §0.24 surface. The §0.25 maintenance amendment then
+changed binding §5, so Phase 3 v1 is **not verified** pending a fresh whole-document review; no
+version roll occurs while the loop is open.*
