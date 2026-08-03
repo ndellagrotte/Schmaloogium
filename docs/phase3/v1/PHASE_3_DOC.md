@@ -3,7 +3,7 @@
 ## 0. Header
 
 **Phase:** 3 — Pack front-end: ingestion, preprocessing, and configuration model
-**Date:** 2026-08-03 · **Last revised:** 2026-08-03 (§0.25)
+**Date:** 2026-08-03 · **Last revised:** 2026-08-03 (§0.29)
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 3
 specification only. RC3 governs this phase only; this document does not change the Phase 1 or
 Phase 2 governance pins.
@@ -190,6 +190,25 @@ This closes an existing value type rather than adding or changing a `PackConfigu
 component, so `PackFrontEnd.CURRENT_SCHEMA_VERSION` remains 2. Because binding §5 changes, however,
 Phase 3 v1 is **not verified** after round 22's historical PASS; the directory remains `v1` pending
 a fresh whole-document review.
+
+### 0.26 Round 23 fix-up
+
+Section 5 now owns the complete binding `ProgramStateModel` and `ResourceRequirements` shapes and
+consumer-visible semantics; their detailed-design counterparts are non-competing elaboration.
+
+### 0.27 Round 24 fix-up
+
+Section 5 now closes the evaluated program-state views and every resource-requirement baseline.
+Round 23 produced §0.26; round 24 reviewed that surface and required this correction.
+
+### 0.28 Round 25 fix-up
+
+Shadow FOV now has one projection-safe producer and consumer domain, and optional absence wording
+covers both orthographic shadow projection and absent legacy geometry.
+
+### 0.29 Round 26 fix-up
+
+The closing verification status now records the Round 25 review and resulting §0.28 surface.
 
 ## 1. Scope & boundaries
 
@@ -690,7 +709,7 @@ identifiers. A malformed occurrence warns and is ignored without clearing a prev
 | `uniform … gdepth` | format request for colortex1 `RGBA32F` if still default RGBA | `directive_gdepthUpgradeOnlyDefault` |
 | `uniform … centerDepthSmooth` | `centerDepthSmoothRequired=true` | `directive_centerDepthSmoothReadback` |
 | `shadowMapResolution` / `SHADOWRES` | `ShadowConfig.resolution` | `directive_shadowResolutionAllForms` |
-| `shadowMapFov` / `SHADOWFOV` | `ShadowConfig.fov` | `directive_shadowFovAllForms` |
+| `shadowMapFov` / `SHADOWFOV` | `ShadowConfig.fov`; finite degrees strictly between 0 and 180, otherwise malformed | `directive_shadowFovAllForms`, `directive_shadowFovDomain` |
 | `shadowDistance` / `SHADOWHPL` | `ShadowConfig.distance` | `directive_shadowDistanceAllForms` |
 | `shadowDistanceRenderMul` | `ShadowConfig.distanceRenderMultiplier` | `directive_shadowDistanceRenderMul` |
 | `shadowIntervalSize` | `ShadowConfig.intervalSize` | `directive_shadowIntervalSize` |
@@ -1037,7 +1056,7 @@ public record ProgramRequirementKey(DimensionKey dimension, String programName) 
 public record ProgramRequirements(DrawRouting routing,
     Set<ColorAttachmentKey> mipmappedAfterPass, VertexRequirements vertices,
     int instanceCount, Optional<LegacyGeometryConfig> legacyGeometry) {}
-public record ShadowRequirements(int resolution, float fov, float distance,
+public record ShadowRequirements(int resolution, Optional<Float> fov, float distance,
     float distanceRenderMultiplier, float intervalSize,
     Set<ShadowTextureKey> mipmapped, Set<ShadowTextureKey> nearest,
     Set<ShadowDepthKey> hardwarePcf) {}
@@ -1061,13 +1080,12 @@ non-empty pack-facing program name and the dimension disambiguates overrides. Bo
 ascending dimension ID, then program name, or ascending attachment index; sets iterate in enum or
 attachment-index order. All maps, sets, and routing lists are immutable and reject duplicate keys.
 Every aggregate/default-valued top-level record is present. Absence is represented only by an
-empty collection, `Optional.empty()` for no legacy geometry pair, or an explicit typed baseline
-value; no `null` or sentinel key/value is public. The baseline is zero minima, no attachment or
-program entries, all feature bit sets empty, center-depth and noise disabled, noise resolution
-256, shadow interval 2.0, instance count 1 when a program entry is created, and otherwise the
-directive-family defaults fixed by the corresponding §3.3 row. Directive bounds, units, aliases,
-and winning-occurrence rules are normative at §3.3 and §4.7; malformed occurrences retain the
-baseline/prior value as stated there. Builders and mutable accumulators remain private.
+empty collection, `Optional.empty()` for orthographic shadow FOV or no legacy geometry pair, or an
+explicit typed baseline value; no `null` or sentinel key/value is public. The complete baselines
+are fixed in §5; this construction applies them before scanning directives. A shadow-FOV producer
+accepts only finite degree values strictly between 0 and 180; all other values are malformed and
+retain the prior/baseline value. Other directive bounds, units, aliases, and winning-occurrence
+rules are normative at §3.3 and §4.7. Builders and mutable accumulators remain private.
 
 The load-time declaration recognizer above answers only resource-requirement questions. Every
 successful `materialize` also runs a distinct token-grammar declaration pass over the final
@@ -1298,12 +1316,57 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 | `OptionConfiguration` (`OptionCatalog`, immutable `OptionState`, profiles/screens/sliders/lang) | source options and organization model; absent screen columns resolve to 2 and widen only above 18 actual options, excluding navigation/layout entries and including options produced when Phase 12 expands deferred `*` | Phase 4 enable/source inputs; Phase 12 GUI/reload |
 | `OptionPersistenceCodec`, `GlobalShaderOptionsCodec` | ISO-8859-1 changed-only and global formats | Phase 12 |
 | `ShaderPropertiesModel.engineFlags` | all Appendix F.1 raw requested states | behavior owners in §3.1 |
-| `ProgramStateModel`, `ProgramKey`, `ProgramState`, `EvaluatedProgramStates` | closed immutable §4.8 aggregate keyed by dimension/program; typed alpha/blend/scale/flip/property-enabled declarations; last-valid-wins parsing; selected-profile disablement combines with property enablement by logical AND. Phase 4 receives the ordered full evaluated view and treats final-disabled programs as absent to its backup chain; Phase 5 receives only the ordered explicit flip map, where absence means no override | Phase 4; Phase 5 flip estate |
-| `ResourceRequirements` and the closed §4.7 algebra | immutable typed minima, indexed attachment requirements, shadow/center-depth/noise records, smoothing/world constants, and dimension/program-keyed routing, mipmaps, attributes, instances, and optional legacy geometry; §4.7 defines defaults, absence, and deterministic order | Phase 4: program routing/geometry/instances; Phase 5: minima/attachments/pass mipmaps; Phase 6: center depth/smoothing; Phase 7: routing/instances/world constants; Phase 8: shadow; Phase 10: vertex attributes; Phase 13: noise enablement/resolution |
+| `ProgramStateModel`, `ProgramKey`, `ProgramState`, `EvaluatedProgramStates` | closed immutable aggregate keyed by `(dimensionId, exact non-empty programName)`. `ProgramState` is `(Optional<AlphaTestSpec>, Optional<BlendSpec>, Optional<ViewportScale>, Map<FlipBufferKey,FlipOverride>, Optional<ProgramEnabledExpression>)`; the closed variants/enums and value domains are those declared below. Exact-key properties are processed in file order: last valid wins, malformed retains prior, and absence is empty optionals/map with property-enabled `true`. Evaluation unions explicit and profile-only keys and sets final-enabled to property-enabled AND NOT profile-disabled. Phase 4 receives the ordered full evaluated view and treats final-disabled programs as absent to its backup chain; Phase 5 receives only ordered explicit flips, where absence means no override | Phase 4; Phase 5 flip state |
+| `ResourceRequirements` | the closed immutable record graph declared below. Last active valid scalar wins, malformed retains prior/baseline, and minima aggregate monotonically. Absence is only empty collections, `Optional.empty()`, or the typed baselines declared below—never null/sentinel. Maps/sets/lists are immutable, unique-keyed, and ordered as declared below | Phase 4: routing/geometry/instances; Phase 5: minima/attachments/pass mipmaps; Phase 6: center depth/smoothing; Phase 7: routing/instances/world constants; Phase 8: shadow; Phase 10: vertex attributes; Phase 13: noise enablement/resolution |
 | `CustomTextureSpec`, `NoiseTextureSpec` | lossless specs only | Phase 13 |
 | `CustomExpressionDecl` | typed name + raw expression | Phase 11, then Phase 6 |
 | `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, closed `MappingOrigin` variants | schema-v2 per-kind `ABSENT`/`PRESENT_EMPTY`/`PRESENT_RULES`; ordered entry/tag rules and predicates; pack or ordered mod-contribution origin; ordinary and isolated forced-11300 entity results; canonical parser environment and fingerprints. The same pure bounded-byte operation parses Phase-9-provided mod sources without reopening the pack or reconstructing macros | Phase 9; resolved layer result later Phase 7 |
 | `InternalPackSource` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; defensive byte copies and attributed failure. `NormalizedPackPath.canonicalString()` is the only stable projection: non-empty NFC root-relative `/` grammar, ordered and hashed by its exact UTF-8 bytes; consumers never serialize `toString()` or a host path (`[D-P3-24]`) | Phase 7 supplies content and consumes the projection |
+
+For `ProgramStateModel`, `ProgramKey` iteration is ascending dimension then program name.
+`AlphaTestSpec` is `Off|Enabled(AlphaFunction, finiteRef)` with `NEVER|LESS|EQUAL|LEQUAL|GREATER|NOTEQUAL|GEQUAL|ALWAYS`.
+`BlendSpec` is `Off|Enabled(srcColor,dstColor,Optional<(srcAlpha,dstAlpha)>)`; absent alpha factors reuse the color pair, and each factor is `ZERO|ONE|SRC_COLOR|ONE_MINUS_SRC_COLOR|DST_COLOR|ONE_MINUS_DST_COLOR|SRC_ALPHA|ONE_MINUS_SRC_ALPHA|DST_ALPHA|ONE_MINUS_DST_ALPHA|CONSTANT_COLOR|ONE_MINUS_CONSTANT_COLOR|CONSTANT_ALPHA|ONE_MINUS_CONSTANT_ALPHA|SRC_ALPHA_SATURATE`.
+`FlipBufferKey` is a `ColorAttachmentKey` or validated exact virtual `*_pre` name, attachment keys first by index then virtual names lexically; `FlipOverride` is `TRUE|FALSE`. The `Off` variants differ from absence.
+
+`ViewportScale` is exactly `(float scale,float offsetX,float offsetY)`, each finite in 0…1.
+`ProgramEnabledExpression` is an immutable opaque value: consumers neither inspect nor evaluate
+its private Boolean AST. `ProgramStateModel.evaluate(OptionState,Optional<ProfileName>)` is the
+complete evaluation operation. It returns `EvaluatedProgramStates(List<EvaluatedProgramState>
+programs,Map<ProgramKey,Map<FlipBufferKey,FlipOverride>> explicitFlips)`, where each list record is
+`EvaluatedProgramState(ProgramKey key,Optional<AlphaTestSpec> alphaTest,
+Optional<BlendSpec> blend,Optional<ViewportScale> scale,boolean propertyEnabled,
+boolean profileDisabled,boolean finalEnabled)`. The list and map use ascending `ProgramKey` order;
+the nested flip maps use `FlipBufferKey` order. The key set is the union of explicit-property and
+expanded profile-disabled keys. An otherwise absent state has empty optionals/flips and
+`propertyEnabled=true`; no selected profile means no profile disables. `finalEnabled` is
+`propertyEnabled && !profileDisabled`. Both inputs are immutable snapshots; expression failure or
+an unknown switch warns and yields `propertyEnabled=false`, while unknown profile/program
+references warn and have no effect.
+
+The binding `ResourceRequirements` shape is
+`(BufferMinima minima, Map<ColorAttachmentKey,ColorAttachmentRequirement> colorAttachments, ShadowRequirements shadow, CenterDepthRequirements centerDepth, Map<ProgramRequirementKey,ProgramRequirements> programs, SmoothingConstants smoothing, WorldRenderConstants world, NoiseRequirement noise)`.
+Its nested records are exactly: `BufferMinima(int colorBuffers,int mainDepthTextures,int shadowDepthBuffers,int shadowColorBuffers)`; `ColorAttachmentKey(int colortexIndex)` (0…15); `ColorAttachmentRequirement(ColorInternalFormat format,boolean clear,Vec4f clearColor)` (four finite floats); `ProgramRequirementKey(DimensionKey dimension,String programName)`; `ProgramRequirements(DrawRouting routing,Set<ColorAttachmentKey> mipmappedAfterPass,VertexRequirements vertices,int instanceCount,Optional<LegacyGeometryConfig> legacyGeometry)`; `ShadowRequirements(int resolution,Optional<Float> fov,float distance,float distanceRenderMultiplier,float intervalSize,Set<ShadowTextureKey> mipmapped,Set<ShadowTextureKey> nearest,Set<ShadowDepthKey> hardwarePcf)`; `CenterDepthRequirements(boolean required)`; `SmoothingConstants(float wetnessHalfLifeTicks,float drynessHalfLifeTicks,float eyeBrightnessHalfLifeTicks,float centerDepthHalfLifeTicks)`; `WorldRenderConstants(float sunPathRotation,float ambientOcclusionLevel,int superSamplingLevel)`; and `NoiseRequirement(boolean enabled,int resolution)`.
+`ShadowTextureKey` is closed over depth/color 0/1, `ShadowDepthKey` over depth 0/1, and `VertexRequirements` over `MC_ENTITY|MC_MID_TEX_COORD|AT_TANGENT`; `DrawRouting` is the winning occurrence's ordered attachment-or-`NONE` sequence. Program maps order by ascending dimension then name, attachment maps/sets by index, and enum sets by enum order.
+Published resolutions, instance counts, and supersampling levels are positive integers; routing
+indices are 0…7 at v0.1; ambient occlusion and viewport scale/offset values are 0…1. A present
+`ShadowRequirements.fov` selects perspective projection and is finite degrees strictly between 0
+and 180; either endpoint is invalid. All other published floats are finite. Smoothing values are ticks. `ColorInternalFormat` is the closed
+37-token Appendix-B.4 domain. These are the complete consumer-visible scalar bounds and units;
+directive spellings and aliases in §3.3 are producer grammar, not downstream contract.
+
+The complete absent-directive baseline is: all minima zero; attachment and program maps and all
+feature sets empty; center depth and noise disabled; noise resolution 256; shadow resolution 1024,
+`fov=Optional.empty()` (orthographic projection), distance 160, distance-render multiplier -1, and
+interval 2;
+smoothing half-lives 600, 200, 10, and 1 ticks; and world constants 0-degree sun-path rotation,
+ambient-occlusion level 1, and supersampling level 1. When an attachment entry is first created,
+its baseline is `RGBA`, clear enabled, and `Vec4f(0,0,0,0)`; when a program entry is first created,
+its routing and sets are empty, instance count is 1, and geometry is `Optional.empty()`.
+
+This §5 text is the sole binding consumer contract for those two aggregates. Sections 3.3, 4.7,
+and 4.8 explain producer parsing and construction without adding consumer-visible shapes, values,
+defaults, absence, or ordering semantics. Any change there that would alter a published value or
+consumer interpretation is an interface change and must update this §5 contract in the same edit.
 
 `discover` requires a non-null `shaderpacksDirectory` and `DiagnosticReporter`. It and a
 `Filesystem` load derive the directory identity by calling `toAbsolutePath().normalize()`, then
@@ -1494,6 +1557,9 @@ or Minecraft type is needed.
   `preprocess_apiMacrosDoNotShiftLines`, `macro_onDemandExtensionOnly`,
   `macro_mcVersion11202Format`, `macro_vendorRendererOther`,
   `macro_phase6CenterDepthSlot`, `geometryRewrite_deterministicAttributedOrUnavailable`,
+  `directive_shadowFovDomain`
+  (accepts finite values immediately above 0 and below 180 in every form; rejects 0, 180,
+  out-of-range, NaN, and infinities while retaining the prior/baseline value),
   `materialize_noGeometryPairAcceptsNone`, `materialize_geometryPairRejectsNone`,
   `geometryRewrite_allPrimitivePairsAndCanonicalFingerprint`,
   `geometryRewrite_rejectsRootSiteVertexAndRangeMismatch`,
@@ -1805,6 +1871,6 @@ Each item is independently actionable and names its test hook.
 
 ---
 
-*Review round 22 returned literal PASS on the §0.24 surface. The §0.25 maintenance amendment then
-changed binding §5, so Phase 3 v1 is **not verified** pending a fresh whole-document review; no
-version roll occurs while the loop is open.*
+*Review round 22 returned literal PASS on the §0.24 surface. Round 25 reviewed §0.27 and produced
+§0.28; round 26 reviewed §0.28 and required the §0.29 status correction above. Phase 3 v1 is **not
+verified** pending a fresh whole-document review; no version roll occurs while the loop is open.*
