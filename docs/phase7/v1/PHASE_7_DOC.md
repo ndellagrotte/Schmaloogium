@@ -4,7 +4,7 @@
 
 **Phase:** 7, both mandated parts: (a) engine-side frame driver and (b) Mixin hook catalog.  
 **Document version:** v1, initial build.  
-**Date:** 2026-08-03 · **Last revised:** 2026-08-03 (§0.25).
+**Date:** 2026-08-03 · **Last revised:** 2026-08-03 (§0.27).
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`; its Phase 7 assignment begins at
 `docs/design/v2.0-RC3/DESIGN.md:1805` and names dependencies 2–6 at
 `docs/design/v2.0-RC3/DESIGN.md:1807`. The heading and ranges were derived from this
@@ -236,6 +236,18 @@ changes binding §5, so Phase 7 is **not verified** and is not a valid dependenc
 fresh round twenty-two returns literal PASS (or any corrections are fixed and the changed
 interface is re-verified). The version directory and manifest remain at `v1` while the loop is
 open.
+
+### 0.26 Round-22 fix-up
+
+Round 22 corrects the compact `QUIESCING` diagram to match the binding teardown order: close
+Phase 8, reset and deactivate Phase 9, release/publish Phase 5/4 off, then close Phase 6. The §5
+interface region is unchanged.
+
+### 0.27 Round-23 fix-up
+
+Round 23 adds Phase 5's consumed resize registration, synchronous delivery, and closed-result
+contract to §5.2 and corrects that inventory's binding citation. The §5 interface region changed
+and requires fresh verification.
 
 ---
 
@@ -599,8 +611,8 @@ ACTIVE
   ├─ safe reload/dimension/resize/remap/ID-source request -> QUIESCING
   ├─ runtime fatal/backend failure -> OFF_PUBLICATION_PENDING
   └─ world render -> frame state machine §4.2
-QUIESCING -> finish/abort -> close Phase 8 publication -> reset Phase 9 dynamics
-          -> release fixed function -> deactivate Phase 9 then publish Phase 5/4 off
+QUIESCING -> finish/abort -> close Phase 8 publication -> reset and deactivate Phase 9
+          -> release fixed function and publish Phase 5/4 off
           -> close Phase 6 runtime -> PREPARING/OFF
 ```
 
@@ -1907,8 +1919,9 @@ Phase 7 obeys Phase 4's explicit prohibition on re-resolving fallback or overlay
 | `copyDepth` / `DepthCopyResult` | v0.5 PRE_WEATHER and PRE_TRANSLUCENT points, after R7-1 |
 | `PassDrawTarget`, including payload-free `PassDrawTarget.Screen.INSTANCE` | unchanged snapshot draw target and anaglyph-aware final handoff |
 | texture overlay leases/bindings | Phase 13 composition without dynamic units |
+| `BufferResizeNotice`, `BufferResizeConsumer`, registration/delivery/result contracts | coordinated publication step 11: ordered synchronous resize delivery and closed-result handling before drawing |
 
-These are the current binding rows at `docs/phase5/v1/PHASE_5_DOC.md:1777`–`:1796`.
+These are the current binding rows at `docs/phase5/v1/PHASE_5_DOC.md:1819`–`:1833`.
 
 #### Phase 6
 
@@ -2366,6 +2379,6 @@ This session does not edit `docs/research/v1/RESEARCH.md`, any `docs/design/*/DE
 
 ---
 
-*End of PHASE_7_DOC.md. Twenty-one review rounds ended in PASS before §0.25. This maintenance
-addendum changes binding §5 and leaves v1 unverified pending fresh review round 22; no version roll
-occurs until that loop exits.*
+*End of PHASE_7_DOC.md. Twenty-one review rounds ended in PASS before §0.25. The §0.25 maintenance
+addendum changed binding §5; rounds 22–23's corrections are applied, and v1 remains unverified
+pending a fresh whole-document review. No version roll occurs until that loop exits.*
