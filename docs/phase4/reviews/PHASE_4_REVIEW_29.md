@@ -115,3 +115,34 @@ The next required action is a scoped Phase 4 fix-up resolving candidate-001 and 
 appending this review's `## Resolutions`, and adding the required correction addendum. Because the
 fix-up must change §5 for candidate-002, a fresh whole-document verification round is mandatory
 afterward before Phase 4 can close.
+
+## Resolutions
+
+### candidate-001 — resolved
+
+Re-derived the publication boundary from the detailed state machine and preserved its stronger
+unchanged-old-publication guarantee. Compact §4.11 now completes the full publisher-side
+candidate, provenance, composition, identity, state, ownership, render-thread, and context
+validation set before activity-token invalidation or old-barrier release. Any validation failure
+returns rejection with generation/current and the usable old publication unchanged. Only after
+that validation succeeds may release begin; an absent authenticated old barrier still performs
+zero old-barrier GL work.
+
+### candidate-002 — resolved; interface changed
+
+Re-derived candidate-build and publication semantics as disjoint failure domains.
+`RegistryBuildFailure` remains the closed aggregate meaning that no complete candidate registry is
+publishable and the pack-wide disposition is `ShadersOff`. New `PublicationFailure` and closed
+`PublicationFailureKind` instead cover every declared pre-release validation cause and every
+declared post-release recovery cause. `PublicationResult.Rejected` and `RecoveredOff` now carry
+that publication-specific value. Sections 4.12 and binding §5.1 specify exact cause mapping,
+sanitization, caller reporting/close/recovery duties, and the rule that publication failures never
+alter candidate-build disposition or resolution projections. The publication result API, binding
+interface table, diagnostics row, and exhaustive tests were updated consistently.
+
+This intentionally changes the manifest-declared `cross-phase-interfaces` region. A fresh
+whole-document verification round is therefore required before Phase 4 can close.
+
+### Notes deferred
+
+None. The adjudication admitted no notes.
