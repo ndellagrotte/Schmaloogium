@@ -4,7 +4,7 @@
 
 **Phase:** 4 — Stage/program registry & compilation
 
-**Date:** 2026-07-29 · **Last revised:** 2026-08-03 (§0.30)
+**Date:** 2026-07-29 · **Last revised:** 2026-08-03 (§0.32)
 
 **Milestone:** v0.1, with the full modern-superset shape present but later families dormant
 
@@ -285,6 +285,15 @@ Sections 4, 5, 11, and 12 retain the assigned behavior while requesting the depe
 ### 0.30 Review 26 correction addendum
 
 Review 26 corrects the closing verification status to include §0.29's binding-§5 change.
+
+### 0.31 Review 27 correction addendum
+
+Review 27 defines publication when the authenticated old off publication has no barrier. The
+correction is integrated into §§4–5 and §8 and changes binding §5; a fresh review is owed.
+
+### 0.32 Review 28 correction addendum
+
+Review 28 aligns §4's compact publication algorithm with its detailed absent-barrier branch.
 
 ## 1. Scope & boundaries
 
@@ -1392,8 +1401,9 @@ that resolve to the same effective provider/layout intentionally share the key.
 Publication is:
 
 1. build a complete candidate;
-2. if caller accepts it, invalidate the old activity token, supply the current render-thread
-   `BarrierContext`, and restore/release the old barrier;
+2. if caller accepts it, authenticate the current render-thread `BarrierContext` and invalidate
+   the old activity token; restore/release the old barrier only when present, otherwise skip it
+   with zero old-barrier GL work;
 3. atomically replace `PublishedRegistry`;
 4. increment generation once;
 5. close the old registry on the render thread; and
@@ -1408,9 +1418,11 @@ Phase 7/12 chooses old-registry retention or shaders-off; that user-facing polic
 `publish(publication, releaseContext)` requires a non-null current release-kind context issued by
 the old publication's `BarrierContextSource` for both ready and off replacement, including
 replacement outside ordinary activation. The publisher validates source identity, current private
-frame epoch, and release kind, then passes the context unchanged to the old barrier's
-`releaseToFixedFunction`; a missing, foreign, retired, or activation-kind context is a pre-release
-validation failure.
+frame epoch, and release kind. If the old publication has a barrier, it then passes the context
+unchanged to that barrier's `releaseToFixedFunction`. If the authenticated old publication is
+accepted shaders-off or `RecoveredOff`, its barrier is absent: the publisher skips
+`releaseToFixedFunction` and performs zero old-barrier GL work. A missing, foreign, retired, or
+activation-kind context is a pre-release validation failure in either branch.
 
 `RegistryPublication.Ready` transfers its compiler-issued registry product and factory-issued
 barrier candidate to the publisher
@@ -1426,10 +1438,13 @@ arbitrary `ProgramStateBarrier` implementation has no conversion to
 leaves generation/current and the provably usable old publication unchanged, and leaves the
 candidate with the caller for idempotent close.
 
-Once old-barrier release begins, only `FixedFunction` permits the requested atomic replacement.
-Acceptance installs ready or empty state, increments once, transfers ready-candidate ownership,
-then idempotently closes the old registry. `ShadersOff`, `FailedSafe`, an exception, or any
-protocol-invalid release result instead installs an empty publication and increments once as
+When an old barrier exists and its release begins, only `FixedFunction` permits the requested
+atomic replacement. When no old barrier exists, successful authentication and pre-release
+candidate validation permit that replacement directly; barrier absence alone cannot produce
+`RecoveredOff`. Acceptance in either branch installs ready or empty state, increments once,
+transfers ready-candidate ownership, and idempotently closes any old registry (none exists for an
+old off publication). `ShadersOff`, `FailedSafe`, an exception, or any protocol-invalid result
+after old-barrier release begins instead installs an empty publication and increments once as
 `RecoveredOff`; the old barrier and registry are quarantined from all shader-path use, the old
 registry is idempotently closed, and the ready candidate remains caller-owned for idempotent close.
 The caller must report the returned aggregate failure and immediately continue through the vanilla
@@ -1511,7 +1526,7 @@ local artifact and never enter this diagnostic.
 | `ProgramRegistryView.resolutions()` / `ProgramResolutionProjection` / `ProgramResolutionStatus` | complete immutable catalog-ordered `SOURCED|CHAIN|ABSENT|FAILED` rows with independent `sourcePresent`, effective `from` only for `CHAIN`, and deterministic non-empty sanitized candidate-build failure detail in `driverLog` only for `FAILED`. A projection-eligible build failure propagates to each requesting row whose completed walk has no successful provider; a later successful ancestor masks it to `CHAIN`, while each catalog slot's own row is independently evaluated. Runtime barrier/publication failures use their closed results and never alter this projection. Candidate and accepted runtime views expose the same handle-free value list. Phase 2's golden adapter and Phase 7's manifest serializer copy it directly (`[D-P4-16]`) | **2**, **7** |
 | `PublishedRegistry.barrier` / `PublishedProgramStateBarrier`, `BarrierContextSource`, `FrameBarrierContexts`, `BarrierContext`, `UseProgramRequest`, `BarrierResult`, `ProgramUniformCacheKey` | generation-checked, non-owning, render-thread-only activation/release route. The context types are public views, but caller implementations are never accepted: Phase 7 begins one Phase-4-issued private epoch per frame, and only its current issuer can mint accepted activation contexts from published `StageStep`s or the canonical release context used even outside ordinary activation. Activation requires current source/epoch, activation kind, exact slot stage/band membership, and `shadowPass == (stage == SHADOW && band == SHADOW)`; release/publication require current source/epoch and release kind, and release `shadowPass()` is always false even when it copies a prior shadow stage/band. Every mismatch is rejected before GL/state/publication work. Replacement returns stale without GL work; ready alone exposes a view, while shaders-off/`RecoveredOff` expose none; ordered prior-token invalidation → shadow override → resolve → restore → bind → Phase 6 participants → alpha/blend lock; `Activated` means the ordered participant sequence completed with isolated degradations recorded, plus the other closed outcomes and caller duties. The cache key is exactly generation + effective provider + linked-layout fingerprint and is shared by fallback children of that provider | Phases 6, 7, 8 |
 | `ProductionBarrierComposer.compose`, `ProgramStateBarrierFactory`, opaque `ProductionBarrierParticipants`, `BarrierConstructionResult`, `ProgramBindingParticipant`, `BoundProgramUniformAccess`, `BoundProgramActivityToken`, `BarrierParticipantResult` | Phase 7 calls the public Phase-4 facade with one compiler product and exactly the Phase-6 sampler/built-in/custom implementations; package-private assembly mints the credentialed bundle and factory candidate without exposing either credential; one success per registry product, while null/closed/repeated/provenance failure has no GL or retention. Each shader callback receives invocation-only `locate` over the private bound program and one retainable non-operational epoch token; locations cache only within the generation, and the token invalidates before every later activation/release/off/replacement/teardown. No handle or program operation is exposed. Phase 11 feeds Phase 6's custom participant rather than installing separately | Phase 6 supplies/consumes participants, Phase 11 feeds customs through Phase 6, Phase 7 composes |
-| `ProgramRegistryPublisher.current` / `publish`; `RegistryBuildResult.Ready` / opaque `CompiledRegistryCandidate`; `RegistryPublication`, `BarrierPublicationCandidate`, `PublicationResult` | render-thread-only publisher entry points return the current non-owning snapshot or accept a publication plus mandatory caller-supplied release context. Compiler alone mints the registry product; ready publication accepts it only with the factory product paired to that exact product/registry identity; publisher independently checks compiler origin plus factory and complete-production-composition provenance before release. External registry implementations, arbitrary barriers, and bootstrap candidates cannot enter; caller owns both candidates until accepted and must close rejected/recovered-off products, accepted transfer makes caller close harmless, publisher owns accepted teardown, and empty `RecoveredOff` applies | Phases 7, 12 |
+| `ProgramRegistryPublisher.current` / `publish`; `RegistryBuildResult.Ready` / opaque `CompiledRegistryCandidate`; `RegistryPublication`, `BarrierPublicationCandidate`, `PublicationResult` | render-thread-only publisher entry points return the current non-owning snapshot or accept a publication plus mandatory caller-supplied release context. Compiler alone mints the registry product; ready publication accepts it only with the factory product paired to that exact product/registry identity; publisher independently checks compiler origin plus factory and complete-production-composition provenance before release. The context is authenticated against the old publication even when it is off; an absent old barrier skips release with zero old-barrier GL work, then ready/off acceptance increments once under the ordinary ownership rules. External registry implementations, arbitrary barriers, and bootstrap candidates cannot enter; caller owns both candidates until accepted and must close rejected/recovered-off products, accepted transfer makes caller close harmless, publisher owns accepted teardown, and empty `RecoveredOff` applies | Phases 7, 12 |
 | `PublishedRegistry.generation` | changes once per accepted registry/off publication or forced `RecoveredOff`; pre-release rejection does not change it; consumers compare for inequality | Phase 12 reload paths and every derived program/uniform cache |
 | `RegistryFingerprint` / `ProgramUniformLayoutFingerprint` | deterministic registry derivation and exact linked-declaration identities, both distinct from generation and GL activity | Phases 5, 6, 7, 12 |
 | `ProgramBuildFailure`, `RegistryBuildFailure` | sanitized candidate-build per-program fallback disposition plus deterministic registry-wide aggregate whose final disposition is shaders-off; barrier/publication failures are excluded from resolution projection | Phase 7 activation/reload; Phase 12 shader GUI |
@@ -1781,6 +1796,7 @@ Against Phase 1 `RecordingGLDevice` and recorded `GLCapabilityProfile`s:
 - `barrier_activatedRecordsIsolatedDegradationAfterSequenceCompletes`
 - `barrier_fixedTerminalRestoresThenCallsUseFixedFunction`
 - `publication_releaseReceivesCurrentContext_forReadyAndOff`
+- `publication_offToReadyAuthenticatesContextSkipsReleaseAndTransfersOnce`
 - `publication_preReleaseValidationRejectsWithoutGenerationOrOwnershipChange`
 - `publication_rejectionPreservesCandidateGoldenAndRuntimeResolutionRows`
 - `publication_releaseFixedFunctionPermitsRequestedReplacement`
@@ -2049,6 +2065,6 @@ publication semantics.
 ---
 
 *Review round 18 returned literal PASS on the §0.21 surface. The §0.22 maintenance amendment,
-§0.23–§0.24, §0.26, and latest §0.29 corrections changed binding §5, so Phase 4 v1 is **not
-verified** pending fresh whole-document verification of the post-§0.29 surface; no version roll
+§0.23–§0.24, §0.26, §0.29, and latest §0.31 corrections changed binding §5, so Phase 4 v1 is **not
+verified** pending fresh whole-document verification of the post-§0.31 surface; no version roll
 occurs while the loop is open.*
