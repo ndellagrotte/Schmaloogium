@@ -145,6 +145,159 @@
         "end": "^## 6\\. Failure modes & degradation$"
       },
       "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "initial-scene-set",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 3\\.4 The initial scene set → behavioral families → the contract rows they exercise$",
+        "end": "^### 3\\.5 RESEARCH\\.md §9 exit criteria → harness runs \\(the doc-gate table\\)$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "text-artifact-canonicalization",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.1 Vocabulary, identifiers, paths, and one determinism rule$",
+        "end": "^### 4\\.2 Tier machinery$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "tier-definitions-and-evidence",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.2 Tier machinery$",
+        "end": "^### 4\\.3 The scene specification$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "scene-wire-format",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.3 The scene specification$",
+        "end": "^### 4\\.4 The determinism ledger$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "determinism-ledger",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.4 The determinism ledger$",
+        "end": "^### 4\\.5 Capture automation$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "capture-agent-plan-and-frame-grab",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.5 Capture automation$",
+        "end": "^#### 4\\.5\\.4 The run manifest$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "run-manifest-wire-schema",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^#### 4\\.5\\.4 The run manifest$",
+        "end": "^#### 4\\.5\\.5 Worlds$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "capture-world-and-failure-contracts",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^#### 4\\.5\\.5 Worlds$",
+        "end": "^### 4\\.6 Image diff$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "image-diff-verdict-rules",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.6 Image diff$",
+        "end": "^### 4\\.7 Baselines: storage, versioning, approval$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "baseline-storage-versioning-and-approval",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.7 Baselines: storage, versioning, approval$",
+        "end": "^### 4\\.8 The T2 protocol — capturing OptiFine G6 oracle renders$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "t2-oracle-capture-protocol",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.8 The T2 protocol — capturing OptiFine G6 oracle renders$",
+        "end": "^### 4\\.9 The named harness runs$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "named-run-catalogue",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.9 The named harness runs$",
+        "end": "^### 4\\.10 The fixture system$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "fixture-registry-cache-and-never-rehost",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.10 The fixture system$",
+        "end": "^### 4\\.11 The headless-core golden harness$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "golden-format-sizing-and-adapter",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.11 The headless-core golden harness$",
+        "end": "^#### 4\\.11\\.5 Update workflow$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "micro-pack-corpus",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^#### 4\\.11\\.6 The hermetic corpus — packs we own$",
+        "end": "^### 4\\.12 The `GLCapabilityProfile` fixture set$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "gl-capability-profile-fixtures",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.12 The `GLCapabilityProfile` fixture set$",
+        "end": "^### 4\\.13 Reporting$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
+      "id": "ci-task-split-and-tag-policy",
+      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.14 CI wiring$",
+        "end": "^## 5\\. Cross-phase interfaces$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
     }
   ],
   "policy": "verification/policy.json",

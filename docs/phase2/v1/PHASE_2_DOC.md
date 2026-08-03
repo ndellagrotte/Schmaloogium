@@ -2,7 +2,7 @@
 
 > **Phase:** 2 — Conformance harness · **Milestone:** v0.1 (design; implementation starts week one)
 > **Depends on:** Phase 1 · **OQs assigned:** OQ-10
-> **Date:** 2026-07-25 · **Last revised:** 2026-08-03 (§0.17)
+> **Date:** 2026-07-25 · **Last revised:** 2026-08-03 (§0.35)
 > **Session type:** `DESIGN.md` §G1.1 build session. No source was written, no build or test was run,
 > no review agent was launched, and this document was not self-reviewed. Verification is the separate
 > §G1.2 session.
@@ -159,6 +159,80 @@ rediscovery to self-report them. `[D-P2-23]` records the decision.
 
 This amendment changes §§4.5.1–4.5.4 and binding §5. Phase 2 v1 is therefore **not verified** after
 round 16's historical PASS; the directory remains `v1` pending a fresh whole-document review.
+
+### 0.18 Round-17 fix-up
+
+Removed obsolete owner-review gates from the accepted Phase 1 v14 package and replay-aware
+GL-error grants. Binding §5 changed and requires a fresh whole-document review.
+
+### 0.19 Round-18 fix-up
+
+Corrected the closing verification history and replaced an ungranted Phase 1 diagnostic-type
+consumption with an explicit upstream request. Binding §5 changed.
+
+### 0.20 Round-19 fix-up
+
+Removed the remaining ungranted diagnostic-domain-type claim from the run-manifest definition.
+
+### 0.21 Round-20 fix-up
+
+Completed the Phase-2-owned diagnostic wire grammar and corrected the closing review history.
+
+### 0.22 Round-21 fix-up
+
+Corrected the closing verification history after the round-20 fix-up.
+
+### 0.23 Round-22 fix-up
+
+Corrected the closing verification history after the round-21 fix-up.
+
+### 0.24 Round-23 fix-up
+
+Corrected the closing verification history after the round-22 fix-up.
+
+### 0.25 Round-24 fix-up
+
+Corrected the closing verification history after the round-23 fix-up.
+
+### 0.26 Round-25 fix-up
+
+Corrected the v0.3 terrain-scene gate and advanced the closing verification history.
+
+### 0.27 Round-26 fix-up
+
+Corrected the closing verification history after the round-25 fix-up.
+
+### 0.28 Round-27 fix-up
+
+Corrected the closing verification history after the round-26 fix-up.
+
+### 0.29 Round-28 fix-up
+
+Corrected the closing verification history after the round-27 fix-up.
+
+### 0.30 Round-29 fix-up
+
+Advanced the closing verification history for the round-29 review surface.
+
+### 0.31 Round-30 fix-up
+
+Advanced the closing verification history after the round-29 fix-up.
+
+### 0.32 Round-31 fix-up
+
+Corrected the closing verification history as required by round 31.
+
+### 0.33 Round-32 fix-up
+
+Corrected the §0.32 provenance and advanced the closing verification history.
+
+### 0.34 Round-33 fix-up
+
+Advanced the closing verification history after the round-32 fix-up.
+
+### 0.35 Round-34 fix-up
+
+Restricted client capture to registry-backed shader-pack selections so its provenance schemas remain total.
 
 ---
 
@@ -417,8 +491,9 @@ path and every run name.
 
 `entities-blocks` exceeds the five families the spec names. It is included because Phase 9's and
 Phase 10's impl gates need a scene where per-draw identity is visible, and because a scene set that
-cannot see an entity cannot detect the most common class of `mc_Entity` regression. It is tagged
-`v0.3` in §9 — authored in week one, first *gated on* at v0.3.
+cannot see an entity cannot detect the most common class of `mc_Entity` regression. It is authored
+in week one and reported separately as Phase 9/10 implementation and regression coverage; it is not
+part of the mandatory v0.3 terrain-scene exit criterion.
 
 **Deliberately not in the initial set**, with reasons: a modern-pass scene (`shadowcomp`/`prepare`
 have no v0.1–v0.5 implementation, §G8), a compute scene (same), and a per-pack "showcase" scene
@@ -435,7 +510,7 @@ Run definitions — inputs, procedure, pass condition, artifacts, where they exe
 | **v0.1** | "T0 across the classic matrix" | `RUN-T0[classic × all scenes]` |
 | **v0.2** | "Classic packs with shadows at T1" | `RUN-T1-REGRESS[classic, incl. `night-shadows`]` |
 | **v0.2** | "first T2 runs" | `RUN-T2-PILOT[one classic pack, `terrain-day`]` |
-| **v0.3** | "Classic packs at T2 within tolerance on terrain scenes" | `RUN-T2[classic, `terrain-day` + `entities-blocks`]` |
+| **v0.3** | "Classic packs at T2 within tolerance on terrain scenes" | `RUN-T2[classic, `terrain-day`]` |
 | **v0.4** | "Classic matrix at T2/T3" | `RUN-T2[classic × all scenes]`, `RUN-T3[classic]` |
 | **v0.4** | "options round-trip persistence" | `RUN-OPTIONS-ROUNDTRIP` (headless, no renderer needed) |
 | **v0.5** | "Full classic matrix at T3" | `RUN-T3[classic × all scenes]` |
@@ -658,6 +733,9 @@ warning** (a scene that silently ignores `wheather = rain` is worse than one tha
 `gamerule` that §4.4's ledger marks mandatory and the file leaves unset; a duplicate shot name; a
 `[pack] engine.*` key that Phase 12's validation hook rejects (until that hook exists, unknown
 `engine.*` keys are collected and reported as **unvalidated**, not accepted silently — §5.4).
+`internal` and `OFF` remain valid for headless scene consumers, but `CaptureRunner`'s client-capture
+preflight rejects either selection before cache or client-process work; client capture accepts only
+an id + version that resolves to exactly one registry `PackFixture` and verified archive.
 
 #### 4.3.4 On "camera paths"
 
@@ -704,7 +782,8 @@ points, which are Phase 7's.
 
 #### 4.5.1 The run lifecycle
 
-1. `:conformance` resolves the pack fixture (§4.10) and the scene, validates both, and freezes the
+1. `:conformance` resolves the pack fixture (§4.10) and the scene, applies §4.3.3's client-capture
+   restriction, and freezes the
    registry-owned acquisition mode and licence plus the SHA-512 of the verified archive. These
    three values are runner facts; neither scene nor pack content can supply them.
 2. It resolves the world save for `(seed, mcVersion, modSetHash)` from the cache, generating it once
@@ -759,6 +838,8 @@ hexadecimal digits; and `pack.licence` is a non-empty JSON string. `CaptureRunne
 values from the resolved `PackFixture` and verified archive, and the plan hash covers their exact
 serialized bytes. `CapturePlanWriter` accepts them only from the runner-owned fixture resolution;
 the scene model, pack options, archive contents, and agent expose no alternate write path.
+Consequently schema `/1` has no `internal`/`OFF` sentinel form: preflight rejects those scene
+selections before a plan is written.
 Indices must cover `0..count-1` without gaps, and shot index is execution order. Duplicate,
 missing, malformed, unknown, or out-of-version keys abort before world load; schema major versions
 other than `1` are unsupported. A canonical fixture in
@@ -807,7 +888,7 @@ makes a tier claim defensible months later (§4.2.5), and what makes a flaky dif
 | `frames` | per shot: planned/actual frame count, world tick, `partialTicks`, `frameCounter`, entity count in frame, wall-clock duration |
 | `gl_errors` | all `GLError` records (op, subject, kind, detail, attributed); the reported unattributable count is the number whose `attributed=false` (§4.2.1) |
 | `images` | per shot: path, dimensions, pixel-raster SHA-256 |
-| `diagnostics` | every `EngineDiagnostic` emitted during the run, by severity and channel |
+| `diagnostics` | Phase-2-owned wire records with `code`, `severity`, `channel`, `file`, and `line` |
 
 **Canonical schema `schmaloogium.run-manifest/1`.** It uses the same line, scalar, escaping, sorting,
 duplicate-key, and major-version rules as the capture plan. The first line is
@@ -827,6 +908,8 @@ The last three are a direct projection of the capture plan's runner-owned facts.
 publication, `CaptureRunner` requires exact equality for all three; absent or mismatched values
 produce a runner-synthesized failure manifest carrying the plan values. Agent or pack self-report
 never overrides them (`[D-P2-23]`).
+The schema describes client-capture attempts only; because preflight admits only registry-backed
+packs, no manifest encodes `internal` or `OFF` and no sentinel provenance values exist.
 `run.exitStatus` is exactly `COMPLETE|FAILED|SKIPPED`; `failureReason` and `uncaughtException` are
 required strings (empty means none), `compatVerdict` is exactly `Continue|Bail|NOT_REACHED`, and
 the completion/availability fields are booleans while `hangCeilingMillis` is a non-negative
@@ -840,6 +923,12 @@ integer. Repeated records use a required
 only for `FAILED`; otherwise both are required empty strings. When `gl.available=true`, the `gl`
 prefix embeds exactly the canonical Phase 1 `GLCapabilityProfile` fields; when false, those fields
 must be absent.
+
+Every diagnostic field is required. `code`, `severity`, `channel`, and `file` are JSON strings:
+`code` is non-empty; `severity` is exactly `INFO|WARN|ERROR|FATAL`; and `channel` is exactly
+`CHAT|SHADER_GUI|LOG_ONLY`. `file` is empty when unavailable and otherwise non-empty. `line` is a
+non-negative decimal integer, with `0` meaning unavailable; a positive line requires a non-empty
+`file`. These are Phase-2 wire domains, not consumption of Phase 1's diagnostic domain types.
 
 When `resources.available=true`, these keys are required and are the complete resource wire block.
 Counts and resolutions are non-negative decimal integers; booleans are `true|false`; formats and
@@ -1512,8 +1601,8 @@ is inert without its system property.
 | **The golden document format + adapter input requirements** | §4.11.1–§4.11.4. Phase 3 owns the `:engine` snapshot API, Phase 4 supplies its per-slot resolution enrichment, and complete real goldens wait for both; Phase 2 maps it in `:conformance` | **3**, **4**, 5 |
 | **The `[sizing]` golden section** — the concrete list of resource-sizing decisions the headless harness validates | §4.11.3 | **3**, **4**, **5** |
 | **The `GLCapabilityProfile` fixture set + `profiles.index`** | §4.12. Phase 1 owns the type and format; this is the *set* your "recorded-GL run" impl gates run against | **4**, **5**, **6**, 14 |
-| **The run manifest wire schema** | §4.5.4, schema `schmaloogium.run-manifest/1`, canonically stored at `<cache>/runs/<runId>/manifest.manifest`, including the complete canonical `resources.*` and `hooks.*` key/type/cardinality/absence grammars. Its required pack scalars fix identity, `MODRINTH|MANUAL` acquisition, SHA-512, and licence; its world identity admits only directories/regular files and rejects links and other entries before copy/hash. It carries every T0 predicate and baseline identity; the per-slot `programs` block makes T3 decidable; hook rows are a complete direct copy of Phase 7's frozen primary/nested report with no capability inference; consumers derive the reported unattributable-error count by counting `gl_errors` records whose required boolean `attributed=false`, sourced only from R4A's replay-aware result | **3** (front-end and pack configuration), **4** (per-slot program resolution), **5** (immutable live resource snapshot), **7** (capture, frozen hook report, and serialization, gated on R4A) |
-| **The capture-agent contract + capture-plan wire schema** — what `:mod` must implement and what Phase 7 must hook | §4.5, schema `schmaloogium.capture-plan/1`, §5.4 R11–R14 and R17–R18. The runner freezes `pack.{acquisitionMode,archiveSha512,licence}` from `PackFixture`/verified-archive facts into the plan; the agent transports them verbatim; the runner validates exact equality before atomic manifest publication (`[D-P2-23]`) | **7** |
+| **The run manifest wire schema** | §4.5.4, schema `schmaloogium.run-manifest/1`, canonically stored at `<cache>/runs/<runId>/manifest.manifest`, including the complete canonical `resources.*` and `hooks.*` key/type/cardinality/absence grammars. Client-capture preflight admits only registry-backed pack ids + versions, never `internal` or `OFF`; its required pack scalars therefore fix identity, `MODRINTH|MANUAL` acquisition, SHA-512, and licence without sentinels. Its world identity admits only directories/regular files and rejects links and other entries before copy/hash. It carries every T0 predicate and baseline identity; the per-slot `programs` block makes T3 decidable; hook rows are a complete direct copy of Phase 7's frozen primary/nested report with no capability inference; consumers derive the reported unattributable-error count by counting `gl_errors` records whose required boolean `attributed=false`, sourced only from the accepted R4A replay-aware result | **3** (front-end and pack configuration), **4** (per-slot program resolution), **5** (immutable live resource snapshot), **7** (capture, frozen hook report, and serialization using R4A) |
+| **The capture-agent contract + capture-plan wire schema** — what `:mod` must implement and what Phase 7 must hook | §4.5, schema `schmaloogium.capture-plan/1`, §5.4 R11–R14 and R17–R18. Client-capture preflight rejects `internal` and `OFF`; for the admitted registry-backed selection, the runner freezes `pack.{acquisitionMode,archiveSha512,licence}` from `PackFixture`/verified-archive facts into the plan, the agent transports them verbatim, and the runner validates exact equality before atomic manifest publication (`[D-P2-23]`) | **7** |
 | **Runner-owned pack-provenance bridge** | Acquisition mode and licence originate in the fixture registry; archive SHA-512 originates in post-resolution verification. They cross the client process only through the immutable capture plan and return only as verbatim manifest values. Pack content, scene text, agent rediscovery, and rendered behavior are not evidence for any of the three | **7**, CI/reporting |
 | **The fixture registry, cache API and never-rehost rules** | §4.10 | anyone adding a pack; CI |
 | **Tolerance profiles** | §4.6.3, calibrated by §4.6.5 | anyone reading a diff verdict |
@@ -1537,16 +1626,14 @@ document names Phase 2 explicitly for the first four.
 | `-Dschmaloogium.debug.recordGL` (per-call `glGetError` cadence, bounded ring) and `-Dschmaloogium.debug.dumpCapabilities` | §4.9.3; §5.3 names both for "**2** … the fixture and call-log capture path your harness drives" | `[D-P2-2]`, §4.12's refresh workflow |
 | `CapabilityProbe` as the fixture-production mechanism | §4.7.5, §5.2's note to Phase 2 (*"Do not design a capture path; drive these"*) | §4.12 — and this document does not design one |
 | The `schmaloogium.conformance` log channel | §4.9.2 (owner column: 2) | §4.5.6 |
-| `EngineDiagnostic` / `DiagnosticSeverity` / `UserChannel` | §4.9.4 | the manifest's `diagnostics` block |
 | `ReplayAwareGLError(GLError, attributed)` | §2.4/§4.7.4/§5.2, `[D-P1-42]` | the manifest's total `gl_errors.*.attributed` boolean; Phase 2 copies the producer result and never infers from `op` or `subjectLabel` |
 | CI job/step layout and the `conformance` extension point | §4.11; §5.3's last row names Phase 2 as its consumer | §4.14 |
 | The version pin table and its re-pin procedure | §4.2.6 | §4.10's refusal to add a dependency coordinate without one |
 
 Phase 1's four-field `GLError` alone does **not** supply the manifest's `attributed` boolean. Phase 1
-has now applied the R4A grant as `[D-P1-42]`; its `ReplayAwareGLError` is the sole admissible source.
-That amended Phase 1 surface remains implementation-gated until its required fresh review returns
-literal PASS. Phase 6 performs the replay and Phase 7 copies the result. `op` and `subjectLabel`
-remain non-evidence.
+has accepted and exposed the R4A grant as `[D-P1-42]`; its `ReplayAwareGLError` is consumable and
+is the sole admissible source. Phase 6 performs the replay and Phase 7 copies the result. `op` and
+`subjectLabel` remain non-evidence.
 
 **What Phase 1 explicitly does not give this phase**, and this document therefore supplies: the
 fixture set, any golden-file format other than `GLCallLog.render()`, and any answer to OQ-10
@@ -1584,11 +1671,12 @@ as existing.
 
 | # | Request | Why |
 |---|---|---|
-| R1 — **grant applied by Phase 1 `[D-P1-41]`; fresh owner review pending** | A `com.schmaloogium.mod.conformance` package in §2.1's `:mod` table, owner "Phase 2 (design) / Phase 7 (hooks)" | §5.1 makes package placement a rule; the new exact slot gives the capture agent a legal home without weakening C-4 (`[D-P2-1]`) |
+| R1 — **accepted and consumable from Phase 1 v14 `[D-P1-41]`** | A `com.schmaloogium.mod.conformance` package in §2.1's `:mod` table, owner "Phase 2 (design) / Phase 7 (hooks)" | §5.1 makes package placement a rule; the new exact slot gives the capture agent a legal home without weakening C-4 (`[D-P2-1]`) |
 | R2 | Two client-read system properties admitted to the `-Dschmaloogium.*` namespace: `schmaloogium.conformance.plan` and `schmaloogium.conformance.out` | §4.9.3 fixes the debug-flag namespace and its table has an owner column; §4.9.2 already establishes the "a later phase adds via requested change" mechanism for channels. These two are read by `:mod`, so they are Phase 1's namespace; `cacheDir` and `offline` are read only by `:conformance` and are ours |
 | R3 | Acknowledgement that `conformance/build.gradle` gains a second test task and JUnit tag configuration (§4.14) | §4.2.4a says "Phase 1 stands the module up; Phase 2 fills it", which most likely already covers this; flagged because the file is Phase 1's artifact and the change is additive rather than internal |
 | R4 | In `mod/build.gradle`: the default `test` task **excludes `@Tag("gl")`**, and a separate `glTest` task (opt-in, `-PglTests`) includes it | Not cosmetic. `PHASE_1_DOC.md` §4.11 step 1 runs `:mod:test` as CI's named "Seam architecture test" step on a headless runner; a GL test inside that task fails the seam step for a non-seam reason on every push (§4.14, §10.2). `:mod/build.gradle` is Phase 1's file, so the change is requested rather than assumed |
-| R4A — **grant applied by Phase 1 `[D-P1-42]`; fresh owner review pending** | An additive replay-aware GL-error result carrying `GLError error` and `boolean attributed`: `true` only when replay reproduces and isolates the error to the named facade operation; `false` when replay is clean or the window remains batched/foreign. The producer returns one result for every drained error, covering single-call, batched, replay-clean, and foreign-error windows without changing `GLError` | The run manifest requires a total boolean for every record, while the four-field `GLError` cannot supply it (§4.5.4). This classification comes from the owner of the drain/replay protocol, never from Phase 7 guessing from `op` or `subjectLabel` |
+| R4A — **accepted and consumable from Phase 1 v14 `[D-P1-42]`** | An additive replay-aware GL-error result carrying `GLError error` and `boolean attributed`: `true` only when replay reproduces and isolates the error to the named facade operation; `false` when replay is clean or the window remains batched/foreign. The producer returns one result for every drained error, covering single-call, batched, replay-clean, and foreign-error windows without changing `GLError` | The run manifest requires a total boolean for every record, while the four-field `GLError` cannot supply it (§4.5.4). This classification comes from the owner of the drain/replay protocol, never from Phase 7 guessing from `op` or `subjectLabel` |
+| R4B | Grant Phase 2 consumption of `EngineDiagnostic`, `DiagnosticSeverity`, and `UserChannel` | Phase 1 v14 grants these types to selected phases but not Phase 2. Until this request is accepted in Phase 1's binding §5, Phase 2 does not consume those domain types or treat them as the implementation source of the Phase-2-owned `diagnostics{code,severity,channel,file,line}` wire records |
 
 No facade verb is requested. R4A is an additive diagnostic result from the existing drain/replay
 protocol; §4.7.4's absent-verbs table is not touched.
@@ -1621,7 +1709,7 @@ serializes the snapshot.
 | R12 | A readiness signal — "engine active, pack loaded, N frames rendered without error" — so the agent can distinguish "warming up" from "wedged" |
 | R13 | *Conditional:* a fixed-`partialTicks` override, **only if** §4.4's residual risk on animated textures materialises in practice. Not requested now; recorded so it is a known additive route rather than a surprise |
 | R14 | A clean programmatic shutdown after the last shot, so a capture run terminates without a timeout kill |
-| R17 | Capture and serialize every replay-aware result requested by R4A, copying its boolean verbatim to `gl_errors.<n>.attributed`; preserve single-call, batched, replay-clean, and foreign-error records, and never derive attribution from `GLError.op` or `subjectLabel`. This work is gated until Phase 1 accepts R4A |
+| R17 | Capture and serialize every accepted R4A replay-aware result, copying its boolean verbatim to `gl_errors.<n>.attributed`; preserve single-call, batched, replay-clean, and foreign-error records, and never derive attribution from `GLError.op` or `subjectLabel` |
 | R18 | Capture and serialize the complete frozen `HookApplicationReport` defined by Phase 7: preserve every primary catalog ID/target/order/count/class/deferred-owner/fallback and every nested owner-phase/fingerprint/enabled/row field exactly. Include Phase 8's eight-row nested report when present; represent absence as absence; never infer hook health or capability from runtime behavior |
 
 **To Phase 12:** R15 — programmatic get/set of pack options and engine options, for the scene format's
@@ -1774,7 +1862,7 @@ here is `v0.1` even though the behaviour it will eventually measure is not.
 | Determinism ledger as enforced defaults + validation (§4.4) | `v0.1` | |
 | Scene `terrain-day`, `water-translucent`, `hand-item` | `v0.1` | authored and gated at v0.1 |
 | Scene `night-shadows` | authored `v0.1`, first gated `v0.2` | §9's v0.2 row is the shadow pass |
-| Scene `entities-blocks` | authored `v0.1`, first gated `v0.3` | per-entity/TE id uniforms are v0.3 |
+| Scene `entities-blocks` | authored `v0.1`, separately reported with the `v0.3` Phase 9/10 implementation gates | per-entity/TE id uniforms are v0.3; not part of the terrain-scene exit criterion |
 | Scene `weather-rain` | authored `v0.1`, first gated `v0.5` | `gbuffers_weather` itself is a v0.1 gbuffers program, but the behaviour this scene exists to check — the `depthtex2` copy taken *before* weather so composites get a weather-free depth view (§4.3 of RESEARCH.md) — arrives with §9's v0.5 depth-copy row |
 | Capture plan format + `CapturePlanWriter` (§4.5.2), including runner-owned pack provenance | `v0.1` | Acquisition mode, verified archive SHA-512, and licence are frozen before client launch (`[D-P2-23]`) |
 | `CaptureAgent`, `SceneApplier`, `FrameGrabber`, `RunManifestWriter` (§4.5) | `v0.1` | designed now, runnable the moment v0.1 renders — the spec's own phrasing |
@@ -1999,7 +2087,7 @@ framebuffer size.
 | `D-P2-15` | GL-context tests live in `:mod`'s **test** source set | C-1 and C-3 scan `main`; `:conformance` has no LWJGL at all (§10.2) |
 | `D-P2-16` | Image identity is a hash of the **pixel raster**, not of the file bytes | an encoder change must never look like a rendering change (§4.5.3) |
 | `D-P2-17` | Warm-up floor: `max(60, 8 × the largest declared halflife in ticks)` | the smoothed uniforms (§3.2's `wetnessHalflife` family) are the slowest-converging inputs in the frame (§4.4) |
-| `D-P2-18` | A sixth scene, `entities-blocks`, beyond the five families the spec names | Phases 9 and 10 need a scene where per-draw identity is visible; tagged first-gated `v0.3` (§3.4) |
+| `D-P2-18` | A sixth scene, `entities-blocks`, beyond the five families the spec names | Phases 9 and 10 need a scene where per-draw identity is visible; separately reported with their implementation gates, not the v0.3 terrain-scene exit criterion (§3.4) |
 | `D-P2-19` | The evidence rule: a tier is recorded only with a run id and a manifest hash | a remembered pass is not a pass (§4.2.5) |
 | `D-P2-20` | Registry version IDs and hashes are **left unfilled** here and populated by the implementation effort; an empty pin is a hard failure, never "latest" | App G gives version names, not pins; a fabricated pin is one CI would trust (§4.10.1) |
 | `D-P2-21` | OQ-10's fallback is designed now and costs no milestone gate | §10.3(4) |
@@ -2089,7 +2177,7 @@ the canonical `resources.*` wire block in §4.5.4.
 **To Phase 7** — R11–R14, R17, and R18. R11 is the one that gates every image tier: without a defined moment after
 `final` and before present, the capture agent has no correct place to grab a frame. Capture and
 serialize Phase 3's front-end/pack evidence, Phase 4's program-resolution evidence, and Phase 5's
-R10A snapshot; R17's error attribution is gated on Phase 1's R4A. R18 requires a complete direct
+R10A snapshot; R17 consumes Phase 1's accepted R4A result. R18 requires a complete direct
 copy of the frozen primary/nested application report, including Phase 8 when present, with no
 renamed IDs or inferred capability. R13 is conditional and is recorded so it is a known route
 rather than a surprise.
@@ -2203,6 +2291,6 @@ Every item names its milestone tag and its test hook.
 
 ---
 
-*Review round 16 returned literal PASS on the §0.16 surface. The §0.17 maintenance amendment then
-changed binding §5, so Phase 2 v1 is **not verified** pending a fresh whole-document review; no
-version roll occurs while the loop is open.*
+*Review round 34 reviewed the §0.34 surface and required the now-applied interface §0.35
+correction. Round 35 is the required fresh whole-document review; Phase 2 v1 remains **not
+verified**, and no version roll occurs while the loop is open.*

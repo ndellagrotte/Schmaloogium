@@ -179,9 +179,9 @@ function writeReview(root, path, verdict, counts, admitted = []) {
 function makeFakeRunner(root, calls, {
   secondRoundPass = false,
   fixupTargetAppend = "",
+  fixupInterfaceValue = "",
+  reportedInterfaceRegions,
 } = {}) {
-  const interfaceText = "## Public\n\nalpha\n";
-  const interfaceHash = createHash("sha256").update(interfaceText).digest("hex");
   return async ({ label, prompt, sandbox }) => {
     calls.push({ label, prompt, sandbox });
     if (label.startsWith("attack:")) {
@@ -255,27 +255,34 @@ function makeFakeRunner(root, calls, {
       const review = label.includes("continuation") ? "reviews/review_1.md" : "reviews/review_1.md";
       const before = readFileSync(join(root, review), "utf8");
       writeFileSync(join(root, review), `${before}\n## Resolutions\n\nCorrection recorded.\n`);
-      if (fixupTargetAppend) {
-        const targetBefore = readFileSync(join(root, "target.md"), "utf8");
-        writeFileSync(join(root, "target.md"), `${targetBefore}${fixupTargetAppend}`);
+      const targetBefore = readFileSync(join(root, "target.md"), "utf8");
+      let targetAfter = targetBefore;
+      if (fixupInterfaceValue) {
+        const currentRegion = "## Public\n\nalpha\n\n## Internal";
+        assert.ok(targetAfter.includes(currentRegion));
+        targetAfter = targetAfter.replace(
+          currentRegion,
+          `## Public\n\n${fixupInterfaceValue}\n\n## Internal`,
+        );
       }
-      return {
-        sites_edited: fixupTargetAppend
+      targetAfter += fixupTargetAppend;
+      const targetChanged = targetAfter !== targetBefore;
+      if (targetChanged) writeFileSync(join(root, "target.md"), targetAfter);
+      const result = {
+        sites_edited: targetChanged
           ? ["review resolution", "target append"]
           : ["review resolution"],
-        interface_regions: [{
-          id: "public",
-          hash_before: interfaceHash,
-          hash_after: interfaceHash,
-          unchanged: true,
-        }],
         addendum_lines: 3,
         new_prose_lines: 3,
         weakest_points: ["wording"],
         do_not_refight: ["resolved wording"],
-        files_modified: fixupTargetAppend ? [review, "target.md"] : [review],
+        files_modified: targetChanged ? [review, "target.md"] : [review],
         refused_with_cause: "",
       };
+      if (reportedInterfaceRegions !== undefined) {
+        result.interface_regions = reportedInterfaceRegions;
+      }
+      return result;
     }
     if (label.startsWith("adjudicate:R2") && secondRoundPass) {
       writeReview(root, "reviews/review_2.md", "PASS", {
@@ -880,6 +887,93 @@ test("review-only has a validated fix-up continuation and leaves the next review
   assert.deepEqual(fixed.resolution_record.sites_edited, ["review resolution"]);
   assert.equal(fixed.next_review, "reviews/review_2.md");
   assert.match(readFileSync(join(root, "reviews", "review_1.md"), "utf8"), /^## Resolutions$/m);
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("fix-up records engine-derived hashes for an unchanged interface despite legacy agent mismatch", async () => {
+  const { root } = makeMiniRepo();
+  const reviewContract = resolveContract(root, "mini", { preset: "lean", maxRounds: 1 });
+  await executeVerification(reviewContract, {
+    reviewOnly: true,
+    agentRunner: makeFakeRunner(root, []),
+    logger: () => {},
+  });
+
+  const continuationContract = resolveContract(root, "mini", {
+    preset: "lean",
+    maxRounds: 1,
+    fixupReview: "latest",
+  });
+  const bogusHash = "0".repeat(64);
+  const calls = [];
+  const fixed = await executeFixupContinuation(continuationContract, {
+    fixupReview: "latest",
+    agentRunner: makeFakeRunner(root, calls, {
+      reportedInterfaceRegions: [{
+        id: "public",
+        hash_before: bogusHash,
+        hash_after: "f".repeat(64),
+        unchanged: false,
+      }],
+    }),
+  });
+
+  const expectedHash = createHash("sha256").update("## Public\n\nalpha\n").digest("hex");
+  const expected = [{
+    id: "public",
+    hash_before: expectedHash,
+    hash_after: expectedHash,
+    unchanged: true,
+    change_trigger: "",
+  }];
+  assert.deepEqual(fixed.interface_regions, expected);
+  assert.deepEqual(fixed.resolution_record.interface_regions, expected);
+  const journal = JSON.parse(readFileSync(join(root, fixed.journal), "utf8"));
+  assert.deepEqual(journal.rounds[0].fixup.interface_regions, expected);
+  const prompt = calls.find((call) => call.label === "fixup-continuation:R1").prompt;
+  assert.match(prompt, /Do not calculate or return\s+cryptographic hashes/);
+  assert.doesNotMatch(prompt, /report the provided before hashes|compute the after hashes/);
+
+  const schema = JSON.parse(readFileSync(
+    join(ROOT, ".agents/skills/verify-loop/schemas/fixup.schema.json"),
+    "utf8",
+  ));
+  assert.equal(schema.required.includes("interface_regions"), false);
+  assert.equal(Object.hasOwn(schema.properties, "interface_regions"), false);
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("fix-up fires the manifest change trigger from an engine-detected interface change", async () => {
+  const { root } = makeMiniRepo();
+  const reviewContract = resolveContract(root, "mini", { preset: "lean", maxRounds: 1 });
+  await executeVerification(reviewContract, {
+    reviewOnly: true,
+    agentRunner: makeFakeRunner(root, []),
+    logger: () => {},
+  });
+
+  const continuationContract = resolveContract(root, "mini", {
+    preset: "lean",
+    maxRounds: 1,
+    fixupReview: "latest",
+  });
+  const fixed = await executeFixupContinuation(continuationContract, {
+    fixupReview: "latest",
+    agentRunner: makeFakeRunner(root, [], { fixupInterfaceValue: "beta" }),
+  });
+
+  const expected = [{
+    id: "public",
+    hash_before: createHash("sha256").update("## Public\n\nalpha\n").digest("hex"),
+    hash_after: createHash("sha256").update("## Public\n\nbeta\n").digest("hex"),
+    unchanged: false,
+    change_trigger: "re-review",
+  }];
+  assert.deepEqual(fixed.interface_regions, expected);
+  assert.deepEqual(fixed.resolution_record.interface_regions, expected);
+  const journal = JSON.parse(readFileSync(join(root, fixed.journal), "utf8"));
+  assert.deepEqual(journal.rounds[0].fixup.interface_regions, expected);
+  assert.match(readFileSync(join(root, "target.md"), "utf8"), /^beta$/m);
   rmSync(root, { recursive: true, force: true });
 });
 

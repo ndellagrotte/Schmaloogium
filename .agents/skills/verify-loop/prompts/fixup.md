@@ -37,13 +37,10 @@ Target-specific fix-up contract:
 
 The addendum/reporting cap is {{ADDENDUM_LINE_CAP}} lines. Full reasoning belongs in the review's
 Resolutions, not in a target changelog. The orchestrator independently snapshots every declared
-interface/change-trigger region by content selector; report the provided before hashes and compute
-the after hashes from the finished file. A changed region is legitimate but fires the manifest's
-declared change trigger and must be reported honestly.
-
-```json
-{{INTERFACE_HASHES_BEFORE}}
-```
+interface/change-trigger region by manifest content selector, computes its before/after hashes,
+and records the authoritative interface metadata after your writes. Do not calculate or return
+cryptographic hashes. A changed region is legitimate but fires the manifest's declared change
+trigger, so describe any intentional interface edit honestly in the appended Resolutions.
 
 Correction trend through the current adjudication:
 
@@ -52,7 +49,7 @@ Correction trend through the current adjudication:
 ```
 
 Do not read session transcripts by path pattern or provenance. Return the exact modified paths,
-sites edited, new-prose/addendum counts, interface hashes, weakest judgment calls for the next
-round, settled points that should not be re-fought without contrary evidence, and any refusal.
-Preserve the current review byte-for-byte and append exactly one new `## Resolutions` section; never
-rewrite or delete its existing evidence.
+sites edited, new-prose/addendum counts, weakest judgment calls for the next round, settled points
+that should not be re-fought without contrary evidence, and any refusal. Preserve the current
+review byte-for-byte and append exactly one new `## Resolutions` section; never rewrite or delete
+its existing evidence.

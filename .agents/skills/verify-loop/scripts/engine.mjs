@@ -1257,6 +1257,31 @@ function interfaceHashes(contract) {
   });
 }
 
+function authoritativeInterfaceRegions(contract, hashesBefore, hashesAfter) {
+  const afterById = new Map(hashesAfter.map((item) => [item.id, item]));
+  if (afterById.size !== hashesAfter.length) {
+    throw new VerificationError("Engine resolved duplicate post-fix-up interface region IDs");
+  }
+  if (hashesBefore.length !== hashesAfter.length) {
+    throw new VerificationError("Engine resolved a different interface region count after fix-up");
+  }
+  return hashesBefore.map((before) => {
+    const after = afterById.get(before.id);
+    const region = contract.manifest.interface_regions.find((item) => item.id === before.id);
+    if (!after || !region) {
+      throw new VerificationError(`Engine could not reconcile interface region ${before.id} after fix-up`);
+    }
+    const unchanged = before.hash === after.hash;
+    return {
+      id: before.id,
+      hash_before: before.hash,
+      hash_after: after.hash,
+      unchanged,
+      change_trigger: unchanged ? "" : region.change_trigger,
+    };
+  });
+}
+
 function resolveRoundContext(contract, round) {
   const resolvedSelectors = resolveManifestContent(contract.root, contract.manifest);
   const priorReviews = discoverPriorReviews(contract.root, contract.manifest);
@@ -1631,7 +1656,7 @@ export function dryRunFixupPlan(contract, fixupReview) {
   };
 }
 
-function assertFixupResult(contract, pending, fixup, changes, hashesBefore, hashesAfter) {
+function assertFixupResult(contract, pending, fixup, changes) {
   if (!changes.includes(pending.path)) {
     throw new VerificationError(`Fix-up did not append Resolutions to ${pending.path}`, "AGENT_ERROR");
   }
@@ -1645,26 +1670,6 @@ function assertFixupResult(contract, pending, fixup, changes, hashesBefore, hash
     || JSON.stringify(reportedFiles) !== JSON.stringify([...changes].sort())
   ) {
     throw new VerificationError("Fix-up files_modified does not match actual changes", "AGENT_ERROR");
-  }
-  const reportedById = new Map(fixup.interface_regions.map((item) => [item.id, item]));
-  if (reportedById.size !== fixup.interface_regions.length) {
-    throw new VerificationError("Fix-up returned duplicate interface region IDs", "AGENT_ERROR");
-  }
-  for (const before of hashesBefore) {
-    const after = hashesAfter.find((item) => item.id === before.id);
-    const reported = reportedById.get(before.id);
-    if (!reported) throw new VerificationError(`Fix-up omitted interface region ${before.id}`, "AGENT_ERROR");
-    const unchanged = before.hash === after.hash;
-    if (
-      reported.hash_before !== before.hash
-      || reported.hash_after !== after.hash
-      || reported.unchanged !== unchanged
-    ) {
-      throw new VerificationError(`Fix-up misreported interface region ${before.id}`, "AGENT_ERROR");
-    }
-  }
-  if (reportedById.size !== hashesBefore.length) {
-    throw new VerificationError("Fix-up returned unknown interface region IDs", "AGENT_ERROR");
   }
 }
 
@@ -1700,7 +1705,6 @@ export async function executeFixupContinuation(contract, options = {}) {
     FIXUP_ALLOWED_PATHS: pending.allowedWrites.map((path) => `- \`${path}\``).join("\n"),
     FIXUP_INSTRUCTIONS: contract.manifest.fixup_instructions || "Record minimal resolutions; no target-specific changelog convention is required.",
     ADDENDUM_LINE_CAP: contract.policy.convergence.addendum_line_cap,
-    INTERFACE_HASHES_BEFORE: JSON.stringify(hashesBefore, null, 2),
     TREND_WITH_CURRENT: JSON.stringify([
       { round: pending.round, verdict: "PASS-WITH-CORRECTIONS", corrections: pending.corrections },
     ], null, 2),
@@ -1722,21 +1726,14 @@ export async function executeFixupContinuation(contract, options = {}) {
       }),
     });
     const hashesAfter = interfaceHashes(contract);
-    assertFixupResult(contract, pending, run.result, run.changes, hashesBefore, hashesAfter);
-    const interfaceRegions = hashesBefore.map((before) => {
-      const after = hashesAfter.find((item) => item.id === before.id);
-      const region = contract.manifest.interface_regions.find((item) => item.id === before.id);
-      return {
-        id: before.id,
-        unchanged: before.hash === after.hash,
-        change_trigger: before.hash === after.hash ? "" : region.change_trigger,
-      };
-    });
+    assertFixupResult(contract, pending, run.result, run.changes);
+    const interfaceRegions = authoritativeInterfaceRegions(contract, hashesBefore, hashesAfter);
+    const resolutionRecord = { ...run.result, interface_regions: interfaceRegions };
     journal.status = "complete";
     journal.stage = "complete";
     journal.outcome = "FIXUP-COMPLETE";
     journal.rounds[0].completed_stages.push("Fix-up");
-    journal.rounds[0].fixup = run.result;
+    journal.rounds[0].fixup = resolutionRecord;
     journal.pending_work = `Round ${pending.round} fix-up is unreviewed until ${contract.reviewOutput}.`;
     journal.completed_at = new Date().toISOString();
     writeJournal(journalPath, journal);
@@ -1746,7 +1743,7 @@ export async function executeFixupContinuation(contract, options = {}) {
       review: pending.path,
       round: pending.round,
       files_modified: run.changes,
-      resolution_record: run.result,
+      resolution_record: resolutionRecord,
       interface_regions: interfaceRegions,
       pending_work: journal.pending_work,
       next_review: contract.reviewOutput,
@@ -2204,7 +2201,6 @@ export async function executeVerification(contract, options = {}) {
         FIXUP_ALLOWED_PATHS: allowedWrites.fixup.map((path) => `- \`${path}\``).join("\n"),
         FIXUP_INSTRUCTIONS: contract.manifest.fixup_instructions || "Record minimal resolutions; no target-specific changelog convention is required.",
         ADDENDUM_LINE_CAP: contract.policy.convergence.addendum_line_cap,
-        INTERFACE_HASHES_BEFORE: JSON.stringify(hashesBefore, null, 2),
         TREND_WITH_CURRENT: JSON.stringify(trend, null, 2),
       });
       const fixupRun = await runCheckedWriter({
@@ -2219,32 +2215,28 @@ export async function executeVerification(contract, options = {}) {
           "workspace-write",
         ),
       });
-      const fixup = fixupRun.result;
+      const agentFixup = fixupRun.result;
       const fixupChanges = fixupRun.changes;
       const hashesAfter = interfaceHashes(contract);
       assertFixupResult(
         contract,
         { path: reviewOutput, reviewText: reviewBeforeFixup },
-        fixup,
+        agentFixup,
         fixupChanges,
-        hashesBefore,
-        hashesAfter,
       );
+      const interfaceRegions = authoritativeInterfaceRegions(contract, hashesBefore, hashesAfter);
+      const fixup = { ...agentFixup, interface_regions: interfaceRegions };
       priorFix = fixup;
       const resolutionRecord = { round, review: reviewOutput, ...fixup };
       resolutionRecords.push(resolutionRecord);
       roundJournal.fixup = fixup;
       trendEntry.new_prose_lines = fixup.new_prose_lines;
       trendEntry.addendum_lines = fixup.addendum_lines;
-      trendEntry.interface_regions = hashesBefore.map((before) => {
-        const after = hashesAfter.find((item) => item.id === before.id);
-        const region = contract.manifest.interface_regions.find((item) => item.id === before.id);
-        return {
-          id: before.id,
-          unchanged: before.hash === after.hash,
-          change_trigger: before.hash === after.hash ? "" : region.change_trigger,
-        };
-      });
+      trendEntry.interface_regions = interfaceRegions.map(({ id, unchanged, change_trigger }) => ({
+        id,
+        unchanged,
+        change_trigger,
+      }));
       trendEntry.convergence_warning = convergenceWarning(trend, contract.policy);
       roundJournal.completed_stages.push("Fix-up");
       if (fixup.addendum_lines > contract.policy.convergence.addendum_line_cap) {

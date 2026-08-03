@@ -4,7 +4,6 @@
   "additionalProperties": false,
   "required": [
     "sites_edited",
-    "interface_regions",
     "addendum_lines",
     "new_prose_lines",
     "weakest_points",
@@ -16,20 +15,6 @@
     "sites_edited": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 }
-    },
-    "interface_regions": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["id", "hash_before", "hash_after", "unchanged"],
-        "properties": {
-          "id": { "type": "string", "minLength": 1 },
-          "hash_before": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-          "hash_after": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-          "unchanged": { "type": "boolean" }
-        }
-      }
     },
     "addendum_lines": { "type": "integer", "minimum": 0 },
     "new_prose_lines": { "type": "integer", "minimum": 0 },
