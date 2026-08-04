@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Phase | 6 — Uniform & sampler system |
-| Document revision | v1, maintained architecture through §0.21 |
+| Document revision | v1, maintained architecture through §0.22 |
 | Date | 2026-07-29 |
 | Governing design | `docs/design/v2.0-RC3/DESIGN.md` |
 | Milestone | v0.1; shadow/celestial values v0.2 |
@@ -14,7 +14,7 @@
 
 This document originated as the Phase 6 build-session deliverable and still designs architecture
 only. The original fresh build session did not implement source code, change a dependency
-document, create a verification profile, or perform an adversarial review; §§0.3–0.21 record later
+document, create a verification profile, or perform an adversarial review; §§0.3–0.22 record later
 governed maintenance. The governing assignment says the deliverable is `PHASE_6_DOC.md`
 (`docs/design/v2.0-RC3/DESIGN.md:1702`, “**Deliverable.** `PHASE_6_DOC.md` per §G9”), and the
 mandatory skeleton is the thirteen sections reproduced at
@@ -135,10 +135,10 @@ four. The RESEARCH custom-expression discrepancy and future-DESIGN Candidate-B c
 remain pending authority-maintainer items. Neither blocks this architecture: §4.13 keeps the
 conservative union exclusion and D-P6-1 keeps the verified Candidate A.
 
-**Current §G1.3 status:** Reviews 19–20 corrected the §0.18 maintenance, and §0.20 changed §5 by
-requesting Phase 1's missing `ivec3` upload verb. Review 21 required this §0.21 fix-up, which also
-changes §5; the current bytes remain **not verified** until a fresh review returns literal PASS
-with zero blocking findings and zero corrections. The version directory remains `v1` meanwhile.
+**Current §G1.3 status:** Reviews 19–23 continued correction of the §0.18 maintenance. Review 23
+required the §0.22 fix-up, which changes §5; the current bytes remain **not verified** until a
+fresh review returns literal PASS with zero blocking findings and zero corrections. The version
+directory remains `v1` meanwhile.
 
 ### 0.7 Review-5 correction
 
@@ -223,13 +223,17 @@ conformance-map coordinates now cite their current binding-contract rows.
 
 ### 0.20 Review-20 corrections
 
-Compact maintenance provenance now includes §§0.19–0.20. The retained `Int3` custom command now
-requests and consumes the missing additive Phase 1 `ivec3` upload verb; implementation waits for
-that dependency grant and its required fresh verification.
+Compact maintenance provenance was synchronized. Its former additive Phase 1 upload request is
+superseded and removed by §0.22.
 
 ### 0.21 Review-21 corrections
 
 Current status, §5 synchronization coverage, and two Pintonium row-local mappings are corrected.
+
+### 0.22 Review-23 corrections
+
+Custom upload outputs now match the authoritative six-type declaration grammar. Section 5 now
+incorporates §2.2's complete consumer-visible runtime signatures and synchronizes their changes.
 
 ---
 
@@ -1231,10 +1235,6 @@ public sealed interface CustomUploadCommand {
     record Float3(String uniformName, float x, float y, float z) implements CustomUploadCommand {}
     record Float4(String uniformName, float x, float y, float z, float w)
         implements CustomUploadCommand {}
-    record Int2(String uniformName, int x, int y) implements CustomUploadCommand {}
-    record Int3(String uniformName, int x, int y, int z) implements CustomUploadCommand {}
-    record Int4(String uniformName, int x, int y, int z, int w) implements CustomUploadCommand {}
-    record Mat4(String uniformName, Matrix4Value value) implements CustomUploadCommand {}
 }
 public sealed interface CustomSubmitResult {
     record Accepted() implements CustomSubmitResult {}
@@ -1291,7 +1291,7 @@ contains current values regardless of whether their GL upload was skipped as red
 Lookup uses the exact pack-facing built-in name; unknown, excluded, disabled, or not-yet-valid
 runtime values return `Absent`, never null or a neutral invention. Values and commands are
 immutable, finite where numeric, by-value records; each command contains one custom-uniform name
-and exactly the scalar, vector, boolean, or 4×4 matrix payload named by its variant.
+and exactly the float, int, bool, vec2, vec3, or vec4 payload named by its variant.
 
 Phase 11 calls `submit` in validated definition order. Phase 6 processes each call synchronously
 in that same order. A name is valid only when it is non-null, non-empty, and already in the exact
@@ -1379,8 +1379,8 @@ turn a future producer into optional work.
 
 | Exposed contract | Exact content | Consumer(s) |
 |---|---|---|
-| `UniformRuntimeFactory` / `UniformBuildResult` | creation installs the current `PublishedRegistry.generation`; closed `Success(runtime)` / `Failure(non-empty diagnostic ID)` result; success transfers the sole runtime lifecycle, failure has no runtime or GL work | Phase 7 composition/reload |
-| `UniformRuntime` / `UniformResetReason` / `RegistryGenerationAdoptionResult` | closed reasons are `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`, `WORLD_EPOCH`, `CLOSE`; adoption accepts exactly the first three and direct reset exactly the last two; after accepted publication and reacquisition, atomically adopt the replacement's authoritative generation plus reason before its first `beginFrame`, event, or participant activation; unseen inequality adopts and retires prior, equality is idempotent, retired input rejects without mutation, with equality-only comparison and §4.14 state scopes; `WORLD_EPOCH` reset follows final old-world use and precedes next-world use; teardown-only terminal `CLOSE` follows final use of all three Phase 6 participants, after which Phase 7 permits no later participant call and initiates Phase 4's atomic teardown operation; ordinary publication replacement never invokes `CLOSE` and remains exclusively on `adoptRegistryGeneration(..., PACK_REPLACEMENT)`; also immutable construction-time `fixedExpressionInputSchema`, frame begin, typed events, three fixed barrier participants, empty center-depth macro contribution, reset; custom bridge install is non-null, composition-thread/pre-use, first-install wins, same-instance idempotent, different/late fail-fast, retained through non-close resets and released on close | Phases 7, 8, 9, 11, 13 |
+| `UniformRuntimeFactory` / `UniformBuildResult` | exact §2.2 callable shape: `create(long initialRegistryGeneration, UniformConfiguration, UniformPlatformProvider, CenterDepthSource, GLDevice, DiagnosticReporter) -> UniformBuildResult`; closed `Success(UniformRuntime runtime)` / `Failure(String diagnosticId)`. Creation installs the current `PublishedRegistry.generation`; success transfers the sole runtime lifecycle, failure has no runtime or GL work | Phase 7 composition/reload |
+| `UniformRuntime` / `UniformResetReason` / `RegistryGenerationAdoptionResult` | exact §2.2 callable shape: `adoptRegistryGeneration(long, UniformResetReason) -> RegistryGenerationAdoptionResult`; `fixedExpressionInputSchema() -> FixedExpressionInputSchema`; `beginFrame(FrameBeginInput) -> FrameBeginResult`; `events() -> UniformEventSink`; `samplerParticipant()`, `builtInParticipant()`, and `customParticipant() -> ProgramBindingParticipant`; `centerDepthMacroContributor() -> MacroContributor`; `installCustomUniformBridge(CustomUniformBridge) -> void`; `reset(UniformResetReason) -> void`. Closed adoption results are `ADOPTED`, `ALREADY_CURRENT`, `REJECTED_RETIRED_GENERATION`; closed reasons are `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`, `WORLD_EPOCH`, `CLOSE`; adoption accepts exactly the first three and direct reset exactly the last two; after accepted publication and reacquisition, atomically adopt the replacement's authoritative generation plus reason before its first `beginFrame`, event, or participant activation; unseen inequality adopts and retires prior, equality is idempotent, retired input rejects without mutation, with equality-only comparison and §4.14 state scopes; `WORLD_EPOCH` reset follows final old-world use and precedes next-world use; teardown-only terminal `CLOSE` follows final use of all three Phase 6 participants, after which Phase 7 permits no later participant call and initiates Phase 4's atomic teardown operation; ordinary publication replacement never invokes `CLOSE`; custom bridge install is non-null, composition-thread/pre-use, first-install wins, same-instance idempotent, different/late fail-fast, retained through non-close resets and released on close | Phases 7, 8, 9, 11, 13 |
 | `FrameBeginInput` / `FrameBeginResult` | input schema plus `ACCEPTED`, `DUPLICATE`, `REJECTED_STALE_FRAME`, `REJECTED_GENERATION`; only accepted mutates, duplicate is a safe no-op, rejection forbids shader draw | Phase 7 |
 | **Frame-begin ordering contract** | `beginFrame` completes world/tick sampling, previous snapshots, and center-depth read **before any Phase 5 resize or clear**; then first-clear matrix capture occurs after camera setup | Phase 7; integration review |
 | `UniformEventSink` and immutable sample records | exact §4.2 schemas; world/frame/tick identity; finite/range validation; copy/absence/fallback rules; held-light old-mode mapping; next-activation vs immediate-if-active policy | Phases 7, 8, 9, 13 |
@@ -1388,15 +1388,15 @@ turn a future producer into optional work.
 | `BuiltInUniformRefreshParticipant` | Appendix D plan, every-activation visit, cached-value skip, matrices always upload, error isolation | Phase 4 composition via Phase 7 |
 | `CustomUniformRefreshParticipant` / `CustomUniformBridge` | ordered third participant; closed `NoCustoms`, `Completed(accepted, skippedAbsent, rejected)`, or `Aborted(diagnosticId, accepted, skippedAbsent, rejected)` result; both counted results must be non-negative and equal the authoritative sink ledger (an aborted result counts only its submitted prefix); typed immutable commands are submitted in definition order; skipped/rejected calls occupy no batch slot; a valid aborted refresh commits only its accepted prefix in original order with no carry-over; any negative or mismatched counter discards the whole accepted batch without GL, returns `BarrierParticipantResult.Degraded(diagnosticId, "custom uniforms for this activation")`, carries nothing over, and permits a fresh refresh only at the next activation; Phase 6 validates, deduplicates, counts, diagnoses, encodes bools, and isolates uploads | Phase 11; Phase 4 composition via Phase 7 |
 | `FixedExpressionInputSchema` / `FixedExpressionInputType` | deeply immutable construction-time schema, versioned exactly with the fixed Phase 6 catalog; exact-name `Present(closed type)`/`Absent`; positive types are `FLOAT`, `INT`, `VEC2/3/4`, `IVEC2/3/4`, `MAT4`; every Appendix D name except all five D.4 dynamics plus `fogMode`/`fogColor`; independent of active program/runtime validity | Phase 11 load-time compiler |
-| `BuiltInExpressionView` / `CustomUniformUploadSink` | view carries the matching catalog version and exact-name `Present(typed value)`/`Absent`; every present value conforms bidirectionally to the fixed schema's exact name/type mapping; commands add `Bool1(name,boolean)` to the closed scalar/vector/mat4 algebra, including `Int3` for `ivec3`; sink returns closed `Accepted`, normal no-warning/no-GL `SkippedAbsent`, or `Rejected(stable diagnostic ID)`; active layout or location absence skips, while actual type mismatch, invalid name, and duplicate submission reject; `Bool1` matches GLSL `bool` and Phase 6 owns 0/1 GL encoding; a type-correct located `Int3` executes through the requested Phase 1 three-integer upload verb; outcomes preserve call order and feed the three refresh counts per §4.13 | Phase 11 |
+| `BuiltInExpressionView` / `CustomUniformUploadSink` | view carries the matching catalog version and exact-name `Present(typed value)`/`Absent`; every present value conforms bidirectionally to the fixed schema's exact name/type mapping; upload commands are closed to `Float1`, `Int1`, `Bool1`, `Float2`, `Float3`, and `Float4`, matching `float`, `int`, `bool`, `vec2`, `vec3`, and `vec4`; sink returns closed `Accepted`, normal no-warning/no-GL `SkippedAbsent`, or `Rejected(stable diagnostic ID)`; active layout or location absence skips, while actual type mismatch, invalid name, and duplicate submission reject; `Bool1` matches GLSL `bool` and Phase 6 owns 0/1 GL encoding; outcomes preserve call order and feed the three refresh counts per §4.13 | Phase 11 |
 | `UniformPlatformProvider` / `CenterDepthSource` | exact §4.2 request/result schemas and validation; loader-neutral sampling SPI with no Minecraft or GL-name types | `mod.glue`, Phase 7 |
 | `centerDepthMacroContributor` | always `MacroContribution.Empty` under D-P6-1 | Phase 3/4 materialization |
 | Fixed sampler maps | immutable canonical name→unit maps in §4.9, including unit-11 ruling | Phase 5 integration cross-check, Phase 7 |
 
-The exact external schemas and semantics incorporated above from §§4.2, 4.9, and 4.13 are binding
-parts of §5. Every schema or semantic change to those incorporated declarations must update the
-corresponding §5 row in the same document revision; a reference that remains textually unchanged
-does not waive that synchronization requirement.
+The exact external schemas and semantics incorporated above from §§2.2, 4.2, 4.9, and 4.13 are
+binding parts of §5. Every consumer-visible API, schema, or semantic change to those incorporated
+declarations must update the corresponding §5 row in the same document revision; a reference that
+remains textually unchanged does not waive that synchronization requirement.
 
 ### 5.2 Dependency contracts consumed
 
@@ -1405,18 +1405,13 @@ does not waive that synchronization requirement.
 | Phase 1 §5 contract | Use |
 |---|---|
 | module layout, C-1…C-4, package placement | pure engine/runtime plus mod.glue providers |
-| `GLDevice.uniforms()` overloads and `UniformLocation.isAbsent()` | all typed uploads and absent-location cache; the requested three-integer overload serves `Int3`/`ivec3` |
+| `GLDevice.uniforms()` overloads and `UniformLocation.isAbsent()` | all contract-authorized typed uploads and absent-location cache |
 | `FramebufferService.readDepthPixel` | synchronous v0.1 center-depth sample |
 | `GLDevice.drainErrors` and `GLError` | §4.11 attributed replay |
 | `RecordingGLDevice`, `ScriptedResponses.depthPixel/glError`, profiles | §8 headless tests |
 | diagnostics/log channel | isolated warnings and escalation |
 
-**Additive Phase 1 request:** publish
-`UniformService.upload(UniformLocation loc, int x, int y, int z)` for `ivec3`. Phase 6 consumes
-that exact verb for a type-correct, present-location `CustomUploadCommand.Int3`; it performs no raw
-GL fallback and cannot implement that command until the Phase 1 grant completes its required fresh
-verification. Existing Phase 1 overloads and the readback verb remain sufficient for every other
-Phase 6 operation.
+Existing Phase 1 overloads and the readback verb are sufficient for every Phase 6 operation.
 
 #### Phase 3
 
@@ -1697,7 +1692,6 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
 | D-P6-15 | publish one immutable exact-name fixed-input schema at the Phase 6 catalog version, excluding all D.4 names plus `fogMode`/`fogColor` | gives Phase 11 load-time types without depending on a first activation and preserves the conservative authoritative-source union |
 | D-P6-16 | distinguish custom submission as accepted, skipped-absent, or rejected and count all three without reordering accepted commands | per-program declaration absence is normal; only admitted commands may enter the GL batch, while invalid/type/duplicate errors stay visible |
 | D-P6-17 | make `Bool1` distinct from `Int1` and encode boolean 0/1 only inside Phase 6 after linked-GLSL validation | keeps expression typing in Phase 11 and GL representation/location ownership in Phase 6 |
-| D-P6-18 | retain `Int3`/`ivec3` and request the matching additive Phase 1 three-integer upload verb | preserves the published closed custom type algebra without inventing raw GL or rejecting a type-correct declaration |
 
 ### 11.2 Contradictions and contract gaps found
 
@@ -1732,10 +1726,6 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
    immutable versioned schema and closed types, schema/view conformance, `Bool1` with Phase-6-owned
    encoding, and ordered accepted/skipped/rejected outcomes and counts. Because this is a §5
    change, it is not a verified grant until the fresh loop returns literal PASS.
-10. **REQUESTED UPSTREAM — Phase 1 `ivec3` upload.** The custom command algebra retains `Int3`,
-    while the verified Phase 1 facade has no three-integer upload. Section 5.2 requests the exact
-    additive verb; Phase 6 implementation of `Int3` waits for that grant and its fresh verification.
-
 No contradiction with RESEARCH.md's authority was silently resolved.
 
 ### 11.3 Items handed onward
@@ -1784,9 +1774,6 @@ directly. Do not replace them with source strings, a parallel declaration parser
   on this future wording.
 - **GRANTED AND VERIFIED — Phase 3 and Phase 4 dependency contracts:** §5.3 records their exact
   adopted surfaces and literal-PASS reviews.
-- **PENDING — additive Phase 1 `ivec3` upload:** add
-  `UniformService.upload(UniformLocation,int,int,int)` so Phase 6 can execute its retained `Int3`
-  custom command. Phase 6 consumes no undeclared or raw-GL substitute while this request is open.
 - **GRANTED IN CURRENT BYTES, FRESH VERIFICATION OWED — Phase 11 dependency closure:** §§4.13
   and 5.1 publish the immutable versioned fixed-input schema, closed exact-name types, runtime-view
   conformance, `Bool1` with Phase-6-owned GL encoding, and ordered accepted/skipped/rejected
@@ -1838,5 +1825,5 @@ Ordered so each item has one outcome and one test hook.
 ---
 
 *End of PHASE_6_DOC.md. The original §G1.1 build session stopped after this architecture
-document; §§0.3–0.21 record the later governed review, fix-up, and dependency-adoption maintenance.
+document; §§0.3–0.22 record the later governed review, fix-up, and dependency-adoption maintenance.
 Implementation and any post-loop version roll remain separate work.*
