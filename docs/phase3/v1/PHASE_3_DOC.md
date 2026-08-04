@@ -3,7 +3,7 @@
 ## 0. Header
 
 **Phase:** 3 — Pack front-end: ingestion, preprocessing, and configuration model
-**Date:** 2026-08-03 · **Last revised:** 2026-08-03 (§0.32)
+**Date:** 2026-08-03 · **Last revised:** 2026-08-03 (§0.35)
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 3
 specification only. RC3 governs this phase only; this document does not change the Phase 1 or
 Phase 2 governance pins.
@@ -222,6 +222,35 @@ Texture coexistence now preserves the published key algebra, and the configurati
 
 The jcpp request now distinguishes missing build/seam work from the existing notice mechanism.
 
+### 0.33 Maintenance addendum (Phase 11 custom-expression publication contract — 2026-08-03)
+
+RESEARCH defines the two declaration families and their upload/intermediate distinction at
+`docs/research/v1/RESEARCH.md:1492-1496` ("`uniform.<float|int|bool|vec2|vec3|vec4>.<name>=<expr>`
+uploads on program change" and "`variable.<type>.<name>=<expr>` defines reusable intermediates").
+Phase 11 then requests the missing dependency boundary at
+`docs/phase11/v1/PHASE_11_DOC.md:853-870`: "Before implementation, request a Phase 3 fix-up to
+publish" the closed enums/record/accessor, and "The list must be immutable, source ordered,
+lossless after Properties unescaping, retain duplicates" and participate in fingerprinting.
+Sections 1–5, 8–9, 11, and 12 now publish that boundary as closed `CustomExpressionKind` and
+`CustomExpressionType` enums, a source-attributed `CustomExpressionDecl`, and the immutable
+source-ordered `PackConfiguration.customExpressions()` projection. Every valid occurrence,
+including an exact-key or same-name duplicate, remains present for Phase 11 diagnostics, and the
+ordered collection has an explicit canonical configuration-fingerprint encoding.
+
+Round 31 recorded "# PASS" with "Counts: blocking=0; corrections=0; notes=0" for the §0.32
+surface (`docs/phase3/reviews/PHASE_3_REVIEW_31.md:48-56`). This addendum changes binding §5, so
+Phase 3 is again **not verified** until a fresh review returns literal PASS. The version directory
+remains `v1` while that review loop is open.
+
+### 0.34 Round 32 fix-up
+
+Every successful materialization now exposes its exact final transformed GLSL text as a `String`
+paired with the published source map.
+
+### 0.35 Round 33 fix-up
+
+The closing verification ledger now records the Round 32-created §0.34 surface and this fix-up.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 3 owns
@@ -241,6 +270,8 @@ Phase 3 owns the complete pure-JVM path from a selected pack location to one imm
 - complete default-block uniform declaration capture from each final materialized shader, with a
   closed structural GLSL type, declaring source stage, attributed source location, and the exact
   materialization fingerprint;
+- closed, immutable custom-expression declarations from the preprocessed Properties stream, in
+  source order with exact unescaped text, source ordinal, attribution, and retained duplicates;
 - all Appendix A.3 directive recognition and aggregation into requirements/configuration data;
 - the complete Appendix F `shaders.properties` model;
 - schema-versioned unresolved ID-mapping inputs, per-file presence, entry/tag and era provenance,
@@ -372,6 +403,25 @@ public record PackConfiguration(
     IdMappingInput idMappings,
     List<EngineDiagnostic> diagnostics,
     ConfigurationFingerprint fingerprint) {}
+
+// Named immutable projection of ShaderPropertiesModel data; not a record component.
+List<CustomExpressionDecl> PackConfiguration.customExpressions();
+
+public enum CustomExpressionKind { UNIFORM, VARIABLE }
+public enum CustomExpressionType { FLOAT, INT, BOOL, VEC2, VEC3, VEC4 }
+
+public record CustomExpressionDecl(
+    CustomExpressionKind kind,
+    CustomExpressionType type,
+    String name,
+    String rawExpression,
+    int sourceOrdinal,
+    SourceAttribution attribution) {}
+
+public record SourceAttribution(
+    NormalizedPackPath source,
+    int physicalLine,
+    int physicalColumn) {}
 
 public record IdMappingInput(
     int schemaVersion,
@@ -564,6 +614,10 @@ produces `Unavailable` with an attributed diagnostic. Application is determinist
 location and no other contributed name or operation is accepted. Materialization catches
 include/preprocessor/validation failures and returns `Unavailable` with the root and all stable,
 source-attributed diagnostics; it never throws for unavailable or malformed pack source.
+`MaterializedSource.transformedText()` returns the exact final transformed GLSL text as an
+immutable Java `String`; it is the text Phase 4 passes to shader compilation.
+`MaterializedSource.sourceMap()` is the map for that exact string and resolves every generated
+numeric `#line` file identifier it contains. No byte encoding is part of this public projection.
 `MaterializedSource.declaredUniforms()` returns the catalog above. Phase 3 first constructs the
 `CanonicalDeclaredUniformPayload` from the catalog schema version and immutable declaration list;
 that payload has no `materialization` field. It hashes the payload's deterministic canonical
@@ -687,9 +741,9 @@ No Appendix F item is left to an implicit “miscellaneous” parser.
 | stage mapping | `GBUFFERS` applies to gbuffers+shadow, `DEFERRED` to deferred, `COMPOSITE` to composite+final | Phases 4/13 | App F.5; `texture_stageExpansion` |
 | multiple texture types on one unit | preserve `(stage,sampler,duplicateDiscriminator)` keys; Phases 4/13 derive sampler type from program declarations and later validate one type per unit per program | Phases 4/13 | App F.5; `texture_sharedUnitSamplerTypeDerivedLater` |
 | `texture.noise=<pack path>` | `NoiseTextureSpec.Override`; otherwise generated-noise requirement remains | Phase 13 | App F.5; `texture_noiseOverride` |
-| `uniform.<float\|int\|bool\|vec2\|vec3\|vec4>.<name>` | `CustomExpressionDecl(UNIFORM,type,name,rawExpression)`; no evaluation here | Phase 11 evaluates, Phase 6 uploads | App F.6; `customDecl_allUniformTypesRawExpression` |
-| `variable.<type>.<name>` | `CustomExpressionDecl(VARIABLE,...)`; duplicate/type/name validation only | Phase 11 | App F.6; `customDecl_allVariableTypesAndDuplicates` |
-| F.6 constants/parameters/operators/functions/exclusions | Expression text and declaration order are lossless; the vocabulary is not pre-validated or evaluated by Phase 3 | Phase 11 | App F.6; `customDecl_expressionTextLossless` |
+| `uniform.<float\|int\|bool\|vec2\|vec3\|vec4>.<name>` | source-ordered `CustomExpressionDecl(UNIFORM,type,exactName,unescapedRawExpression,ordinal,attribution)`; all six closed types are accepted and no expression evaluation occurs here | Phase 11 evaluates, Phase 6 uploads | App F.6; `customDecl_allUniformTypesRawExpressionAndAttribution` |
+| `variable.<type>.<name>` | the same record with `VARIABLE`; every valid occurrence remains in the immutable list, including exact-key and same-name duplicates | Phase 11 | App F.6; `customDecl_allVariableTypesAndDuplicatesRetained` |
+| F.6 constants/parameters/operators/functions/exclusions | expression text after Java-Properties unescaping and declaration occurrence order are lossless; the vocabulary is not pre-validated or evaluated by Phase 3 | Phase 11 | App F.6; `customDecl_expressionTextLosslessAfterUnescape`, `customDecl_orderOrdinalAndFingerprint` |
 | F.6 precipitation rule | Preserve the behavior handoff: render precipitation iff `biome_precipitation != PPT_NONE`; classify rain at `temperature >= 0.15`, otherwise snow; this row has no Phase 3 parser/model assertion | Phase 7 | App F.6; Phase 7 test `precipitation_noneAndTemperatureBoundary` |
 | `alphaTest.<prog>` | parsed `AlphaTestSpec(OFF or func/ref)` with all documented funcs | Phase 4 | App F.7; `programState_alphaTestAllFuncs` |
 | `blend.<prog>` | parsed `BlendSpec(OFF or color pair plus optional alpha pair)` with the 15 documented factors | Phase 4 | App F.7; `programState_blendArityAndFactors` |
@@ -1004,9 +1058,12 @@ paths, no `trim()` or `replace("#","")` is allowed
 
 The complete preprocessed property stream—not an original unpreprocessed copy—is the semantic
 input for flags, profiles, screens, sliders, textures, expressions, and program state. Original
-source spans remain alongside parsed fields solely for diagnostics. Duplicate keys follow Java
-Properties last-value behavior but produce a location-rich warning; texture `.0`–`.9`
-discriminators avoid accidental duplicates.
+source spans remain alongside parsed fields solely for diagnostics. Scalar/map properties follow
+Java-Properties last-valid-value behavior and produce a location-rich duplicate warning; texture
+`.0`–`.9` discriminators avoid accidental duplicates. Custom-expression declarations are the
+explicit collection-valued exception: dispatch observes every logical property occurrence before
+key collapse, validates it independently, and retains every valid exact-key or same-name duplicate
+in source order for Phase 11 diagnostics.
 
 ### 4.7 Directive scanning and requirement aggregation
 
@@ -1142,9 +1199,26 @@ forms; pixel types are `BYTE`, `SHORT`, `INT`, `HALF_FLOAT`, `FLOAT`, `UNSIGNED_
 `UNSIGNED_INT_2_10_10_10_REV`. An integer internal format requires the corresponding
 `*_INTEGER` pixel format; either mismatch is diagnosed and that texture line is ignored.
 Unknown format/type tokens receive the same disposition. Colortex format directives accept the
-same 37-value internal-format enum. They never open, decode, or realize a texture. Custom uniform/variable
-declarations validate key structure/type/name and preserve the expression after Java-Properties
-unescaping; they never invoke Phase 11 grammar.
+same 37-value internal-format enum. They never open, decode, or realize a texture.
+
+Custom uniform/variable declaration dispatch is collection-valued. The decoded key must have
+exactly `uniform|variable`, one of `float|int|bool|vec2|vec3|vec4`, and one valid non-empty name
+segment; those tokens map only to the closed `CustomExpressionKind` and `CustomExpressionType`
+variants in §2.2. `name` is the exact case-sensitive decoded name segment, with no case folding,
+aliasing, or normalization. `rawExpression` is exactly the Java-Properties-unescaped value supplied
+by the lossless adapter: Phase 3 performs no trim, re-escaping, token normalization, grammar check,
+or evaluation.
+
+For every valid occurrence, `sourceOrdinal` is its zero-based index in the published valid-
+declaration sequence, so it is contiguous, unique within one configuration, and equal to list
+position. `SourceAttribution` contains the declaration file's validated `NormalizedPackPath` and
+the one-based physical line/column of the property key's first code point. All components are
+non-null; ordinals are non-negative and attribution coordinates are positive. An invalid key,
+type, or name warns and omits only that occurrence. An empty decoded value remains a non-null empty
+`rawExpression` so Phase 11 can issue the expression diagnostic. Duplicate exact keys, names, kinds,
+or types are not invalid here and are never collapsed or reordered; Phase 11 owns duplicate
+diagnostics and winner/disable policy. `ShaderPropertiesModel` freezes the resulting list, and
+`PackConfiguration.customExpressions()` returns that same immutable source-ordered projection.
 
 Profile includes use a recursion stack and return a partial valid profile with the cyclic edge
 ignored and diagnosed. Screen models preserve entry order and validate references without
@@ -1289,7 +1363,15 @@ Validation has three levels:
 Only level 3 may fail the pack load. Levels 1–2 produce defaults/partial models and diagnostics.
 The immutable configuration fingerprint hashes pack bytes, normalized paths, active options,
 load-time macro policy, capability identity fields, parser schema version, and the canonical
-schema-v3 `IdMappingInput` including every file state and ordinary/forced rule-list fingerprint. It excludes
+schema-v3 `IdMappingInput` including every file state and ordinary/forced rule-list fingerprint. It
+also hashes `PackConfiguration.customExpressions()` as one canonical list in source order: fixed
+payload domain tag `customExpressions`, configuration schema version, list count, then for each
+declaration its `kind` and `type` enum tags, exact `name`, exact unescaped `rawExpression`, canonical
+base-10 `sourceOrdinal`, attribution path
+`canonicalString()` UTF-8 bytes, and canonical positive line/column. No map conversion, duplicate
+collapse, or name/type sort is permitted, so changing declaration order, multiplicity, text, type,
+kind, ordinal, or attribution deterministically changes the configuration fingerprint. This payload
+uses the same length-prefixed canonical scalar/string/list framing defined below. It excludes
 downstream macro contributions and geometry plans; each `MaterializedSource` fingerprint includes
 the contribution and canonical plan actually used. It also includes the deterministic canonical
 encoding of `CanonicalDeclaredUniformPayload(schemaVersion, declarations)`: fixed field order,
@@ -1322,7 +1404,7 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 | `PackFrontEnd` / `PackLoadRequest` / `PackLoadResult` | atomic entry point; `OFF` is an explicit successful no-configuration result | Phase 7 bootstrap/reload; Phase 12 selection |
 | `PackConfiguration` | single validated downstream truth, immutable and fingerprinted | Phases 4–13 as listed below |
 | `PackIdentity`, `CompatibilityStatus`, `DimensionConfiguration` | selected source, `OFF`/`(internal)`, base/override/disabled dimension state | Phases 7, 12 |
-| `SourceCatalog`, `SourceKey`, `MaterializedSource`, `SourceMap`, `SourceMaterializer`, `MaterializationResult`, `LegacyGeometryRewriteSite`, `GeometryTranslationRequest`, `GeometryTranslationPlan` | load-time analysis records attributed legacy pairs without translation or a request; after publication Phase 4 selects `None` for a root without a pair or `Translate(plan)` for one with a pair. A plan is `(root, closed input primitive, closed output primitive, positive maxVertices)` and must match that pair; `None` succeeds only without a pair, while a pair without `Translate` is `Unavailable`. Phase 3 validates the request, emits only the fixed core layout rewrite, and fingerprints the contribution, plan, and sites in the materialized source rather than the configuration | Phase 4; Phase 2 harness |
+| `SourceCatalog`, `SourceKey`, `MaterializedSource`, `SourceMap`, `SourceMaterializer`, `MaterializationResult`, `LegacyGeometryRewriteSite`, `GeometryTranslationRequest`, `GeometryTranslationPlan` | load-time analysis records attributed legacy pairs without translation or a request; after publication Phase 4 selects `None` for a root without a pair or `Translate(plan)` for one with a pair. A plan is `(root, closed input primitive, closed output primitive, positive maxVertices)` and must match that pair; `None` succeeds only without a pair, while a pair without `Translate` is `Unavailable`. Phase 3 validates the request, emits only the fixed core layout rewrite, and fingerprints the contribution, plan, and sites in the materialized source rather than the configuration. On success, `MaterializedSource.transformedText()` is the exact final GLSL `String` Phase 4 compiles, and `sourceMap()` is the map for that same string | Phase 4; Phase 2 harness |
 | `DeclaredUniformCatalog`, `CanonicalDeclaredUniformPayload`, `DeclaredUniform`, `DeclaredGlslType`, `ShaderSourceStage`, attributed locations | every successful `MaterializedSource` carries every final active default-block declarator in token order: exact name, closed structural GLSL type, declaring source stage, identifier location, and a catalog fingerprint exactly equal to the materialized-source fingerprint. Phase 3 deterministically encodes the schema-versioned ordered declaration payload without the catalog's `materialization` field, hashes it with the other materialization inputs, then embeds the completed result in both places. Repeated declarations remain represented; uniform blocks are excluded; optimized-out activity is not claimed. An unrepresentable active declaration makes materialization unavailable rather than publishing a partial catalog | Phase 4 merges linked stages; Phase 6 consumes the resulting Phase 4 layout |
 | `MacroConfiguration`, `MacroContributor`, `MacroContribution`, reserved `phase6.centerDepthSmoothRedirect` slot | Phase 6 returns `Empty` or one validated `DefineCenterDepthSmooth(replacementTokens)`; Phase 4 passes that singular value to materialization | Phase 6 contributor; Phase 4 materialization; G8/S3 |
 | `OptionConfiguration` (`OptionCatalog`, immutable `OptionState`, profiles/screens/sliders/lang) | source options and organization model; absent screen columns resolve to 2 and widen only above 18 actual options, excluding navigation/layout entries and including options produced when Phase 12 expands deferred `*` | Phase 4 enable/source inputs; Phase 12 GUI/reload |
@@ -1331,9 +1413,32 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 | `ProgramStateModel`, `ProgramKey`, `ProgramState`, `EvaluatedProgramStates` | closed immutable aggregate keyed by `(dimensionId, exact non-empty programName)`. `ProgramState` is `(Optional<AlphaTestSpec>, Optional<BlendSpec>, Optional<ViewportScale>, Map<FlipBufferKey,FlipOverride>, Optional<ProgramEnabledExpression>)`; the closed variants/enums and value domains are those declared below. Exact-key properties are processed in file order: last valid wins, malformed retains prior, and absence is empty optionals/map with property-enabled `true`. Evaluation unions explicit and profile-only keys and sets final-enabled to property-enabled AND NOT profile-disabled. Phase 4 receives the ordered full evaluated view and treats final-disabled programs as absent to its backup chain; Phase 5 receives only ordered explicit flips, where absence means no override | Phase 4; Phase 5 flip state |
 | `ResourceRequirements` | the closed immutable record graph declared below. Last active valid scalar wins, malformed retains prior/baseline, and minima aggregate monotonically. Absence is only empty collections, `Optional.empty()`, or the typed baselines declared below—never null/sentinel. Maps/sets/lists are immutable, unique-keyed, and ordered as declared below | Phase 4: routing/geometry/instances; Phase 5: minima/attachments/pass mipmaps; Phase 6: center depth/smoothing; Phase 7: routing/instances/world constants; Phase 8: shadow; Phase 10: vertex attributes; Phase 13: noise enablement/resolution |
 | `CustomTextureSpec`, `NoiseTextureSpec`, `TextureBindingKey`, `TextureSidecarRef` | closed lossless parsed texture algebra below; no opened image or realized GL object | Phase 13 |
-| `CustomExpressionDecl` | typed name + raw expression | Phase 11, then Phase 6 |
+| `PackConfiguration.customExpressions()`, `CustomExpressionDecl`, `CustomExpressionKind`, `CustomExpressionType`, `SourceAttribution` | immutable collection-valued projection in logical Properties source order. Kind is closed to `UNIFORM|VARIABLE`; type to `FLOAT|INT|BOOL|VEC2|VEC3|VEC4`. Each record carries the exact case-sensitive decoded name, exact raw value after Java-Properties unescaping, zero-based contiguous source ordinal equal to list position, and validated source path plus one-based physical line/column. Every valid occurrence is retained, including exact-key and same-name duplicates; absence is an immutable empty list. Phase 3 validates only key/type/name structure and never expression grammar. The ordered list and every field participate in the configuration fingerprint exactly as declared below | Phase 11, then Phase 6 |
 | `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, closed `MappingOrigin` variants | schema-v3 per-kind `ABSENT`/`PRESENT_EMPTY`/`PRESENT_RULES`; ordered entry/tag rules and predicates; pack or ordered mod-contribution origin; ordinary and isolated forced-11300 entity results; canonical parser environment and fingerprints. The same pure bounded-byte operation parses Phase-9-provided mod sources without reopening the pack or reconstructing macros | Phase 9; resolved layer result later Phase 7 |
 | `InternalPackSource` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; defensive byte copies and attributed failure. `NormalizedPackPath.canonicalString()` is the only stable projection: non-empty NFC root-relative `/` grammar, ordered and hashed by its exact UTF-8 bytes; consumers never serialize `toString()` or a host path (`[D-P3-24]`) | Phase 7 supplies content and consumes the projection |
+
+The binding custom-expression algebra is:
+
+```java
+enum CustomExpressionKind { UNIFORM, VARIABLE }
+enum CustomExpressionType { FLOAT, INT, BOOL, VEC2, VEC3, VEC4 }
+record SourceAttribution(NormalizedPackPath source, int physicalLine, int physicalColumn) {}
+record CustomExpressionDecl(CustomExpressionKind kind, CustomExpressionType type,
+    String name, String rawExpression, int sourceOrdinal, SourceAttribution attribution) {}
+List<CustomExpressionDecl> PackConfiguration.customExpressions();
+```
+
+The accessor is a named immutable projection of the expression collection already owned by
+`ShaderPropertiesModel`, not an additional `PackConfiguration` record component. Its list order is
+the valid declaration-occurrence order after properties preprocessing and Java-Properties
+unescaping; list index and `sourceOrdinal` are equal. Neither an exact duplicate property key nor a
+repeated name is collapsed. `name` and `rawExpression` preserve decoded text exactly, and the
+attribution coordinate anchors the declaration key; expression-relative spans are Phase 11 data.
+The canonical fingerprint payload is the fixed `customExpressions` domain tag, configuration schema
+version, list count, and then every record in that order, with the fields and scalar/string encoding
+fixed in §4.10. No declarations yields an immutable empty list and the canonical zero-count payload.
+Consumers may neither sort/deduplicate the list nor infer a new kind/type. Unknown kinds/types are
+rejected during configuration construction because both enums are closed executable domains.
 
 `TextureBindingKey` is `(TexturePropertyStage stage, String sampler, OptionalInt duplicateDiscriminator)`.
 The closed stage domain is `GBUFFERS|DEFERRED|COMPOSITE`; `sampler` is the exact non-empty key
@@ -1502,7 +1607,13 @@ are incompatible with the current surface and are never upgraded by inference. C
 already-named
 `NormalizedPackPath` value with its canonical string projection does not add or reinterpret a
 `PackConfiguration` component and therefore did not itself increment the schema. Any future change
-to that path grammar is still an interface-breaking change.
+to that path grammar is still an interface-breaking change. Likewise, publishing
+`customExpressions()` does not add or reinterpret a record component: it closes a named immutable
+projection of declaration data already retained by `ShaderPropertiesModel`, while the existing pack
+bytes already made those declarations configuration-fingerprint inputs. The schema therefore
+remains 3; the canonical typed-list encoding in §4.10 makes that existing fingerprint dependency
+independently executable. Adding the collection as a new record component or changing its decoded
+meaning, order, duplicate policy, attribution, or absence semantics would require the next schema.
 
 ### 5.4 Requested changes to the dependency contract
 
@@ -1607,7 +1718,8 @@ or Minecraft type is needed.
   `materialize_noGeometryPairAcceptsNone`, `materialize_geometryPairRejectsNone`,
   `geometryRewrite_allPrimitivePairsAndCanonicalFingerprint`,
   `geometryRewrite_rejectsRootSiteVertexAndRangeMismatch`,
-  `load_legacyGeometryPublishesBeforePhase4PlanSelection`.
+  `load_legacyGeometryPublishesBeforePhase4PlanSelection`,
+  `materializedSource_transformedTextAndSourceMapAreExactPair`.
 - Declared uniforms: `declaredUniformCatalog_deadBranchAndCommentsAbsent`,
   `declaredUniformCatalog_defaultBlockOnlyAndCommaDeclaratorsComplete`,
   `declaredUniformCatalog_arraysStructsAndSamplerKindsAreClosed`,
@@ -1630,6 +1742,17 @@ or Minecraft type is needed.
 - Properties safety: `propertyHashRoundTrip`, `properties_whitespaceAndHash`,
   `properties_continuationsEscapesAndComments`, `properties_conditionalScreenLayout`,
   `properties_malformedDirectiveWarns`, `properties_standardMacrosButNoOptionMacros`.
+- Custom expressions: `customDecl_allUniformTypesRawExpressionAndAttribution` and
+  `customDecl_allVariableTypesAndDuplicatesRetained` cover both kinds, all six types, exact
+  case-sensitive names, same-name/different-kind/type declarations, repeated exact keys, and
+  positive source coordinates; `customDecl_expressionTextLosslessAfterUnescape` covers escapes,
+  continuations, whitespace, `#`, backslashes, and proves no post-unescape trim/normalization;
+  `customDecl_orderOrdinalAndFingerprint` proves immutable list order, contiguous ordinals equal to
+  list positions, empty-list semantics, deterministic equality, and a fingerprint change when any
+  ordered field, attribution coordinate, occurrence order, or duplicate multiplicity changes; and
+  `customDecl_invalidOccurrenceIsLocal` proves invalid key/type/name input omits only that
+  occurrence while an empty decoded expression remains published, without evaluating expression
+  grammar.
 - ID mapping input: `idMap_fileStateAbsentEmptyRulesPerKind` distinguishes missing, blank,
   conditional-empty, all-invalid, and nonempty block/item/entity/layer inputs;
   `idMap_entityForced11300Isolated` proves identical bytes/environment except `MC_VERSION`, no
@@ -1714,10 +1837,10 @@ milestone.
 | P3-C11 | properties-safe jcpp adapter and lossless property parser | `v0.1` |
 | P3-C12 | legacy Appendix A.3 directive scanner, excluding `RENDERTARGETS` | `v0.1` |
 | P3-C13 | immutable resource-requirement aggregator | `v0.1` |
-| P3-C14 | complete Appendix F `ShaderPropertiesModel` | `v0.1` |
+| P3-C14 | complete Appendix F `ShaderPropertiesModel`, including closed source-ordered custom-expression publication | `v0.1` |
 | P3-C15 | schema-v3 ID-mapping/layer parser, file-state/selector/era provenance, and forced-11300 entity parse | `v0.1` |
 | P3-C16 | source materializer and local processed-source debug dump | `v0.1` |
-| P3-C17 | validation, fingerprint, and atomic `PackConfiguration` publication | `v0.1` |
+| P3-C17 | validation, ordered custom-expression fingerprint payload, and atomic `PackConfiguration` publication | `v0.1` |
 | P3-C18 | logging/loader-neutral diagnostics and degradation adapter | `v0.1` |
 | P3-C19 | global `.csh` source recognition/materialization reserved for G8/S2 | `post-v0.5` |
 | P3-C20 | headless manifests, fuzz fixtures, and seven-pack front-end harness adapter | `v0.1` |
@@ -1804,6 +1927,7 @@ not a decision (PD §7.6).
 | D-P3-22 | Capture complete default-block declaration metadata from the final materialized token stream and bind it to that materialization's fingerprint; load-time resource recognition is too early to describe contribution/rewrite results, while post-link introspection cannot supply source attribution or declared-but-optimized-out entries. |
 | D-P3-23 | Publish file presence, entry/tag classification, per-rule era, and both isolated entity parses instead of making Phase 9 reopen bytes or infer preprocessing history; this grants R9-1 while keeping registry resolution and branch selection outside Phase 3. |
 | D-P3-24 | Make `NormalizedPackPath.canonicalString()` the sole path projection and define it as validated NFC, root-relative, slash-separated grammar ordered/hashed by exact UTF-8 bytes; `toString()` and host paths are never protocol data. |
+| D-P3-25 | Publish every valid custom-expression property occurrence as a closed, source-attributed, immutable ordered projection and hash that exact sequence, because RESEARCH App F.6 assigns capture to Phase 3 while Phase 11 requires duplicates and order to produce deterministic diagnostics/evaluation without reopening Properties input. |
 
 ### 11.2 Binding-decision disposition
 
@@ -1847,6 +1971,9 @@ Phase 2 adapter.
 - Phase 9 consumes `IdMappingInput`, selects an entity ordinary/forced result under its documented
   present-empty rule, parses bounded mod bytes only through the published operation/environment,
   and owns mod precedence, tag expansion, registry resolution, and aliases.
+- Phase 11 consumes `PackConfiguration.customExpressions()` only after this §0.33 interface has a
+  fresh literal-PASS review; it owns expression grammar/evaluation, duplicate diagnostics and
+  first-valid policy, and expression-relative spans, and must not reopen or reparse Properties bytes.
 - Phase 12 must define apply/discard timing and global setting UX without changing the codecs.
 - G8/S3 owns OQ-7's final policy after §10's spike.
 - G8/S2 consumes P3-C19; it must not alter legacy dimension-file rules silently.
@@ -1888,9 +2015,11 @@ Each item is independently actionable and names its test hook.
 9. `[v0.1]` Implement P3-C11 protected-token property preprocessing, including `#`/backslash/
    whitespace preservation and narrow hash-comment handling; run `propertyHashRoundTrip` and all
    `properties_*`.
-10. `[v0.1]` Implement P3-C14's complete Appendix F dispatcher/model; make the manifest fail on
-    any Phase-3-owned parser/model row missing from §3.1/§3.2, while retaining downstream-only
-    behavior rows as handoff-test obligations.
+10. `[v0.1]` Implement P3-C14's complete Appendix F dispatcher/model, including the closed
+    collection-valued custom-expression dispatch and immutable source-ordered
+    `PackConfiguration.customExpressions()` projection; run every `customDecl_*` test and make the
+    manifest fail on any Phase-3-owned parser/model row missing from §3.1/§3.2, while retaining
+    downstream-only behavior rows as handoff-test obligations.
 11. `[v0.1]` Implement P3-C12's table-driven declaration/const/block-comment/line-comment and
     legacy `DRAWBUFFERS` routing scanner; make the v0.1 manifest fail on any missing v0.1 §3.3
     row, including B1/B2 tests. `[post-v0.5]` Implement P3-C22 and enable
@@ -1901,12 +2030,13 @@ Each item is independently actionable and names its test hook.
     byte parser, entry/tag classification, per-rule era, and isolated forced-11300 entity result;
     run all `idMap_*` tests, including long/short/property/legacy/layer and malformed-line cases.
 14. `[v0.1]` Implement P3-C16 materialization cache, the complete fingerprint-bound
-    `DeclaredUniformCatalog`, and local-only sanitized debug dump; run every
-    `declaredUniformCatalog_*` test and assert dumps never enter golden manifests.
+    `DeclaredUniformCatalog`, exact transformed-text/source-map projections, and local-only
+    sanitized debug dump; run `materializedSource_transformedTextAndSourceMapAreExactPair`, every
+    `declaredUniformCatalog_*` test, and assert dumps never enter golden manifests.
 15. `[v0.1]` Implement P3-C18 fixed-channel logging and loader-neutral diagnostics; inject failures
     for every §6 row.
-16. `[v0.1]` Implement P3-C17 validation/fingerprint/atomic publication and prove
-    `PackConfiguration` is the only success output.
+16. `[v0.1]` Implement P3-C17 validation/fingerprint/atomic publication, including the exact ordered
+    custom-expression payload from §4.10, and prove `PackConfiguration` is the only success output.
 17. `[v0.1]` Implement P3-C21's in-memory `(internal)` bridge with a synthetic engine-only pack;
     hash/order/serialize only canonical-string UTF-8 bytes and leave actual content to Phase 7.
 18. `[v0.1]` Implement P3-C20 manifest/fuzz/harness adapter, then run the seven downloaded pack
@@ -1918,6 +2048,6 @@ Each item is independently actionable and names its test hook.
 
 ---
 
-*Review round 22 returned literal PASS on the §0.24 surface. Round 25 reviewed §0.27 and produced
-§0.28; round 26 reviewed §0.28 and required the §0.29 status correction above. Phase 3 v1 is **not
-verified** pending a fresh whole-document review; no version roll occurs while the loop is open.*
+*Review round 31 returned literal PASS on §0.32. Round 32 reviewed §0.33 and produced §0.34;
+round 33 reviewed §0.34 and produced this §0.35 status correction. Phase 3 v1 is **not verified**
+pending a fresh whole-document review; no version roll occurs while the loop is open.*

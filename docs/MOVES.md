@@ -69,7 +69,7 @@ Everything else kept its filename. These did not, each for a reason:
 | | `docs/design/v1.1/DESIGN.md` | `docs/design/v2.0-RC1/DESIGN.md` | `docs/design/v2.0-RC2/DESIGN.md` | `docs/design/v2.0-RC3/DESIGN.md` | `docs/design/v2.0-RC4/DESIGN.md` | `docs/design/v3/DESIGN.md` |
 |---|---|---|---|---|---|---|
 | Lines | 1,586 | 2,304 | 2,478 | 2,656 | 2,683 | 2,715 |
-| Status | historical; governed Phase 2 v1 through Review 36 and anchors Phase 1 reviews through round 11 | superseded; read by nothing | **governs Phase 1** from its §0.11 onward | **governs Phases 3–9** from their initial builds; partial adoption retains `-RC` | unadopted historical candidate | **governs Phase 2 v2**; adopted for that phase only, not globally |
+| Status | historical; governed Phase 2 v1 through Review 36 and anchors Phase 1 reviews through round 11 | superseded; read by nothing | **governs Phase 1** from its §0.11 onward | **governs Phases 3–9** from their initial builds; partial adoption retains `-RC` | unadopted historical candidate | **governs Phase 2 v2 and Phase 11 v1**; adopted for those phases only, not globally |
 | Phase 1 spec at | l. 585 | l. 829 | l. 957 | l. 1,120 | l. 1,130 | l. 1,147 |
 | Phase 2 spec at | l. 662 | l. 933 | l. 1,071 | l. 1,234 | l. 1,244 | l. 1,261 |
 | §G1.2 at | l. 118 | l. 174 | l. 257 | l. 276 | l. 286 | l. 303 |
@@ -79,15 +79,17 @@ on disk since it was recorded; corrected while adding the RC2 column.)*
 
 **There is no longer one governing revision, and no longer one set of line numbers** (changed
 2026-07-26, §G0.4 steps 1–2 and 4; Phase 3 adoption recorded 2026-07-27; RC4 and v3 revisions recorded
-2026-08-03). Phase docs cite `DESIGN.md` **by line number**, and the nine current phase docs are
+2026-08-03; Phase 11 adoption recorded 2026-08-03). Phase docs cite `DESIGN.md` **by line number**,
+and the ten current phase docs are
 anchored per phase:
 `PHASE_1_DOC.md` l. 12 declares
 `docs/design/v2.0-RC2/DESIGN.md` from its §0.11 onward, adopted at the round-eleven fix-up as §G0.4
 step 3; `docs/phase2/v2/PHASE_2_DOC.md` §0.1 declares v3 after the maintainer-authorized Review-36
 rebuild, while `docs/phase2/v1/PHASE_2_DOC.md` retains its historical v1.1 declaration unchanged;
-and Phases 3–9 deliberately adopt RC3 from their initial builds. Every Phase 1 review through round
-11 is in v1.1's coordinates. RC4 remains unadopted; v3 is adopted by Phase 2 only and is not the
-global default.
+and Phases 3–9 deliberately adopt RC3 from their initial builds. Phase 11 v1 §0 explicitly declares
+v3, and `verification/targets/phase-11.json` derives its selectors from v3's own headings. Every
+Phase 1 review through round 11 is in v1.1's coordinates. RC4 remains unadopted; v3 is adopted by
+Phase 2 and Phase 11 only and is not the global default.
 
 The `$verify-loop` harness therefore resolves the revision **per target** rather than globally.
 Each phase profile in `verification/targets/` declares how to identify its governing-design path
@@ -96,9 +98,10 @@ the document gate, and the mandatory template. Unless `--design-version` is supp
 extracts that §0 path, resolves the selectors against its current content at startup and every round
 boundary, and reports the version, path, selection source, and current coordinates. Phase 1's §0
 selects RC2; the current Phase 2 v2 target selects v3 normally from §0; Phases 3–8 select RC3. Phase
-9 declares RC3 in its document header and has no target profile yet. No `--design-version` override
-is involved in Phase 2's adoption. RC4 remains unselected; v3 is selected only by Phase 2 until
-other phases execute §G0.4 independently. There is no executable line-pin table to synchronize.
+9 declares RC3 in its document header and has no target profile yet; Phase 11's target selects v3
+normally from §0. No `--design-version` override is involved in either v3 adoption. RC4 remains
+unselected; v3 is selected only by Phase 2 and Phase 11 until other phases execute §G0.4
+independently. There is no executable line-pin table to synchronize.
 
 **A syntactically valid but unintended `--design-version` can still feed every agent the wrong
 revision when its selectors also resolve.** The old pins make the point: at v2.0-RC1 ll. 649–652
@@ -116,15 +119,16 @@ Directory names come from each document's own header, not from the folder it use
 | `DESIGN.md` | `v1.1` | header states v1.1; REV1 names "v1.1" as what it supersedes |
 | REV1 | `v2.0-RC1` | header states v2.0; recorded as RC because no downstream doc has adopted it |
 | REV2 | `v2.0-RC2` | header states v2.0-RC2 (created 2026-07-26, not a move); supersedes RC1, which stays for history. **`-RC` retained after partial adoption — see the ruling below** |
-| REV3 | `v2.0-RC3` | header states v2.0-RC3 (created 2026-07-26, not a move); **governs Phases 3–9** — RC2 governs Phase 1 and v3 governs current Phase 2 v2; partial adoption retains `-RC` |
+| REV3 | `v2.0-RC3` | header states v2.0-RC3 (created 2026-07-26, not a move); **governs Phases 3–9** — RC2 governs Phase 1 and v3 governs current Phase 2 v2 and Phase 11 v1; partial adoption retains `-RC` |
 | REV4 | `v2.0-RC4` | header states v2.0-RC4 (created 2026-08-03, not a move); unadopted candidate implementing PHASE_9_DOC §11.4's tag-evidence qualification; no phase or target points to it |
-| REV5 | `v3` | header states v3; promoted together with its directory on 2026-08-03 from the former candidate label. It implements PHASE_7_DOC §11.5's split frame-begin/matrix-capture timeline and is now **adopted by Phase 2 v2 only**; it remains unadopted overall and is no global default |
+| REV5 | `v3` | header states v3; promoted together with its directory on 2026-08-03 from the former candidate label. It implements PHASE_7_DOC §11.5's split frame-begin/matrix-capture timeline and is now **adopted by Phase 2 v2 and Phase 11 v1 only**; it remains unadopted overall and is no global default |
 | `RESEARCH.md` | `v1` | "first complete draft"; no version stated |
 | `PINTONIUM_DESIGN.md` | `v1.0` | header states v1.0 |
 | `PHASE_1_DOC.md` | `v14` | fix-up addenda §0.4–**§0.14**; `PHASE_1_REVIEW_14.md` has complete `## Resolutions`, and round fifteen returned a literal PASS with no further fix-up. Rolled from `v13` on 2026-07-26 after that loop exited |
 | `PHASE_2_DOC.md` (historical) | `v1` | initial build/fix-up lineage through §0.35; retained byte-for-byte as the artifact Review 36 assessed under the explicit v3 override. Review 36 returned FAIL and remains without Resolutions |
 | `PHASE_2_DOC.md` (current) | `v2` | maintainer-authorized major rebuild exception after Review 36's FAIL; §0.36 formally adopts v3, and the Phase 2 target points here. The next review is Round 37 |
 | `PHASE_3_DOC.md` | `v1` | initial build under RC3; rolls only after a fix-up addendum and a later literal PASS |
+| `PHASE_11_DOC.md` | `v1` | initial build explicitly adopts v3; `verification/targets/phase-11.json` derives every design selector from that revision's own headings |
 
 **Rolling a phase doc's version** (`v14` → `v15` only once a future §0.15 fix-up lands) is two steps,
 run together and only **after** that `$verify-loop` run exits:
@@ -177,12 +181,12 @@ The rule above is that `-RC` means exactly *"no downstream doc has adopted it"*.
    revision**, whatever the adoption state.
 
 The same reasoning applies to RC1, RC3, and RC4. RC1 remains unread historical evidence; RC3 is
-adopted by Phases 3–9 while Phase 1 stays on RC2 and current Phase 2 v2 uses v3. RC3 therefore
+adopted by Phases 3–9 while Phase 1 stays on RC2 and current Phase 2 v2 plus Phase 11 v1 use v3. RC3 therefore
 remains `v2.0-RC3`: partial adoption cannot move the label ahead of the design document's own
 header. RC4 remains `v2.0-RC4` because it is unadopted and its own header declares that candidate
 label. REV5 became `v3` through an explicit identity promotion that initially adopted no phase;
-Phase 2's later §0.36 adoption is separately recorded above and still does not create a global
-default.
+Phase 2's later §0.36 adoption and Phase 11 v1's initial adoption are separately recorded above and
+still do not create a global default.
 
 ## What was deliberately left stale
 

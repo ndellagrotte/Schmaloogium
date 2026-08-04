@@ -1,0 +1,285 @@
+{
+  "$schema": "../../.agents/skills/verify-loop/schemas/manifest.schema.json",
+  "version": 1,
+  "id": "phase-11",
+  "title": "Phase 11 — Custom-uniform expression engine",
+  "description": "Adversarial verification profile for the current Phase 11 architecture document.",
+  "targets": [
+    {
+      "path": "docs/phase11/v1/PHASE_11_DOC.md",
+      "role": "document under review",
+      "selectors": [
+        {
+          "id": "whole_document",
+          "selector": {
+            "start": "^# Schmaloogium — Phase 11:"
+          }
+        }
+      ]
+    }
+  ],
+  "design_revision": {
+    "target_index": 0,
+    "section_zero": {
+      "start": "^## 0\\. Header$",
+      "end": "^## 1\\. Scope & boundaries$"
+    },
+    "declaration_pattern": "^- \\*\\*Governing design:\\*\\* `(?<path>docs/design/[A-Za-z0-9._-]+/DESIGN\\.md)`$"
+  },
+  "authoritative_sources": [
+    {
+      "path": "docs/design/{design_version}/DESIGN.md",
+      "role": "governing design revision",
+      "selectors": [
+        {
+          "id": "part_i",
+          "selector": {
+            "start": "^## Part I — Global sections$",
+            "end": "^## Part II — Phase specifications$"
+          }
+        },
+        {
+          "id": "target_spec",
+          "selector": {
+            "start": "^### Phase 11 — Custom-uniform expression engine$",
+            "end": "^### Phase 12 — Options GUI, persistence & reload$"
+          }
+        },
+        {
+          "id": "doc_gate",
+          "selector": {
+            "start": "^\\*\\*Doc gate:\\*\\* every App F\\.6 token/function/operator in the conformance map; `smooth\\(\\)`$",
+            "end": "^\\*\\*Impl gate:\\*\\*",
+            "end_mode": "first-after-start"
+          }
+        },
+        {
+          "id": "mandatory_template",
+          "selector": {
+            "start": "^## G9\\. PHASE_X_DOC\\.md — mandatory template$",
+            "end": "^## G10\\. Open-question assignments$"
+          }
+        }
+      ]
+    },
+    {
+      "path": "docs/research/v1/RESEARCH.md",
+      "role": "contract ground truth",
+      "selectors": [
+        {
+          "id": "front_matter_and_mission",
+          "selector": {
+            "start": "^## 0\\. Front matter$",
+            "end": "^## 2\\. Prior art and niche analysis$"
+          }
+        },
+        {
+          "id": "uniform_contract",
+          "selector": {
+            "start": "^### 3\\.4 Uniform, sampler, and attribute contract$",
+            "end": "^### 3\\.5 GLSL environment contract$"
+          }
+        },
+        {
+          "id": "jvm_expression_opportunity",
+          "selector": {
+            "start": "^### 6\\.3 JVM opportunities$",
+            "end": "^## 7\\. Architectural direction \\(research-level\\)$"
+          }
+        },
+        {
+          "id": "open_question_ledger",
+          "selector": {
+            "start": "^## 11\\. Open questions and risk register$",
+            "end": "^## 12\\. Annotated index of reference material$"
+          }
+        },
+        {
+          "id": "built_in_input_inventory",
+          "selector": {
+            "start": "^## Appendix D — Built-in uniform inventory `\\[V:doc\\]`$",
+            "end": "^## Appendix E — Hooks catalog"
+          }
+        },
+        {
+          "id": "custom_expression_language",
+          "selector": {
+            "start": "^### F\\.6 Custom uniforms / variables \\(expression language\\)$",
+            "end": "^### F\\.7 Per-program render state$"
+          }
+        }
+      ]
+    }
+  ],
+  "supporting_evidence": [
+    {
+      "path": "docs/phase3/reviews/PHASE_3_REVIEW_34.md",
+      "role": "latest literal-PASS verification state for the Phase 3 dependency contract"
+    },
+    {
+      "path": "docs/phase6/reviews/PHASE_6_REVIEW_22.md",
+      "role": "latest literal-PASS verification state for the Phase 6 dependency contract"
+    },
+    {
+      "path": "docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md",
+      "role": "Pintonium expression-architecture evidence map",
+      "selectors": [
+        {
+          "id": "phase_11_expression_evidence",
+          "selector": {
+            "start": "^## 14\\. GUI, persistence, expressions \\(Phases 11/12\\)$",
+            "end": "^## 15\\. GL modernization"
+          }
+        }
+      ]
+    },
+    {
+      "path": "reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties",
+      "role": "OptiFine custom-uniform expression-language documentation"
+    },
+    {
+      "path": "reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md",
+      "role": "OptiFine behavioral-observation digest for smooth-expression timing"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/uniforms/custom/CustomUniforms.java",
+      "role": "Pintonium parser, dependency-ordering, evaluation, and optimization evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/pipeline/CommonIrisRenderingPipeline.java",
+      "role": "Pintonium custom-expression cadence and lifecycle evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/parsing/IrisFunctions.java",
+      "role": "Pintonium function-registry evidence, never contract"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/parsing/SmoothFloat.java",
+      "role": "Pintonium smoothing-state architecture evidence, never contract"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/parsing/IrisOptions.java",
+      "role": "Pintonium operator and precedence evidence, never contract"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/COPYING",
+      "role": "Pintonium root GPL license material"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/COPYING.LESSER",
+      "role": "Pintonium root LGPL license material"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/LICENSE",
+      "role": "Pintonium root license notice"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "docs/phase3/v1/PHASE_3_DOC.md",
+      "role": "dependency architecture and binding interface",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    },
+    {
+      "path": "docs/phase6/v1/PHASE_6_DOC.md",
+      "role": "dependency architecture and binding interface",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    }
+  ],
+  "prior_reviews": {
+    "directory": "docs/phase11/reviews",
+    "filename_regex": "^PHASE_11_REVIEW_(?<round>\\d+)\\.md$",
+    "round_group": "round",
+    "read_order": "adjudicator-last",
+    "allow_gaps": false
+  },
+  "forbidden_sources": {
+    "path_patterns": [
+      "docs/**/chatlogs/**",
+      "*.txt"
+    ],
+    "provenance_patterns": [
+      "any prior agent or session transcript, regardless of path or extension"
+    ]
+  },
+  "immutable_paths": [
+    "docs/research/**",
+    "docs/design/**",
+    "docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md",
+    "docs/phase3/v1/PHASE_3_DOC.md",
+    "docs/phase3/reviews/**",
+    "docs/phase6/v1/PHASE_6_DOC.md",
+    "docs/phase6/reviews/**",
+    "docs/phase11/reviews/*.md",
+    "reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties",
+    "reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/uniforms/custom/CustomUniforms.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/pipeline/CommonIrisRenderingPipeline.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/parsing/IrisFunctions.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/parsing/SmoothFloat.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/parsing/IrisOptions.java",
+    "reference-src/pintonium-9c2fcc1/COPYING",
+    "reference-src/pintonium-9c2fcc1/COPYING.LESSER",
+    "reference-src/pintonium-9c2fcc1/LICENSE"
+  ],
+  "write_permissions": {
+    "adjudicator": [
+      "{review_output}"
+    ],
+    "fixup": [
+      "docs/phase11/v1/PHASE_11_DOC.md",
+      "{review_output}"
+    ]
+  },
+  "output": {
+    "directory": "docs/phase11/reviews",
+    "review_template": "PHASE_11_REVIEW_{round}.md",
+    "journal_directory": ".verification-runs/phase-11"
+  },
+  "attack_lenses": "verification/lenses/phase-document.json",
+  "lens_order": {
+    "first_review": [
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions",
+      "new-surface"
+    ],
+    "mature": [
+      "new-surface",
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions"
+    ]
+  },
+  "citation": {
+    "format": "repo-relative-line-quote",
+    "resolver": "line-quote",
+    "allow_unique_relocation": true
+  },
+  "interface_regions": [
+    {
+      "id": "cross-phase-interfaces",
+      "path": "docs/phase11/v1/PHASE_11_DOC.md",
+      "selector": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 11 can close."
+    }
+  ],
+  "policy": "verification/policy.json",
+  "target_context": {
+    "assigned_open_questions": "none",
+    "phase_name": "Custom-uniform expression engine",
+    "mandatory_section_count": 13
+  },
+  "fixup_instructions": "This is a first-version document with no mature fix-up-addendum convention. If a correction changes the target, add only a compact next-numbered §0 subsection using its existing header style; do not import Phase 1's supersession sentences, dated-claim ranges, or session-count bookkeeping. Keep full reasoning in the current review's Resolutions and do not roll the v1 directory during a loop."
+}
