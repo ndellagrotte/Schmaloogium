@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Phase | 6 — Uniform & sampler system |
-| Document revision | v1, maintained architecture through §0.8 |
+| Document revision | v1, maintained architecture through §0.17 |
 | Date | 2026-07-29 |
 | Governing design | `docs/design/v2.0-RC3/DESIGN.md` |
 | Milestone | v0.1; shadow/celestial values v0.2 |
@@ -14,7 +14,7 @@
 
 This document originated as the Phase 6 build-session deliverable and still designs architecture
 only. The original fresh build session did not implement source code, change a dependency
-document, create a verification profile, or perform an adversarial review; §§0.3–0.8 record later
+document, create a verification profile, or perform an adversarial review; §§0.3–0.17 record later
 governed maintenance. The governing assignment says the deliverable is `PHASE_6_DOC.md`
 (`docs/design/v2.0-RC3/DESIGN.md:1702`, “**Deliverable.** `PHASE_6_DOC.md` per §G9”), and the
 mandatory skeleton is the thirteen sections reproduced at
@@ -135,10 +135,10 @@ four. The RESEARCH custom-expression discrepancy and future-DESIGN Candidate-B c
 remain pending authority-maintainer items. Neither blocks this architecture: §4.13 keeps the
 conservative union exclusion and D-P6-1 keeps the verified Candidate A.
 
-**Current §G1.3 status:** Review 5 produced the resolved §0.7 interface correction, whose bytes
-awaited Round 6 verification. Round 6 admitted only stale maintenance metadata; §0.8 resolves it.
-The current bytes remain **not verified** until a fresh review returns literal PASS, and the
-version directory remains `v1` while that loop is open.
+**Current §G1.3 status:** Review 17 produced one correction, resolved in §0.17: compact maintenance
+provenance now includes §0.16 and this fix-up addendum. The current bytes remain **not verified**
+until a fresh review returns literal PASS, and the version directory remains `v1` while that loop
+is open.
 
 ### 0.7 Review-5 correction
 
@@ -149,6 +149,47 @@ The conditional `shadow` sampler now derives from the effective program's publis
 
 Maintenance provenance and §G1.3 status now include the resolved Review-5 correction and the
 current verification state.
+
+### 0.9 Review-9 correction
+
+Construction now installs the initial Phase 4 publication generation, and the runtime exports an
+atomic replacement-generation adoption handshake before frame begin or activation.
+
+### 0.10 Review-10 corrections
+
+Shaders-off retains borrowed providers until terminal close, GL-context loss is included in the
+lifecycle reset inventory, and maintenance provenance now includes §0.9.
+
+### 0.11 Review-11 correction
+
+All compact maintenance-provenance markers now include the Review-10 and Review-11 addenda.
+
+### 0.12 Review-12 corrections
+
+The current verification status is synchronized, and the public reset-reason domain and operation
+partition are now closed in §§2.2, 4.14, and 5.1.
+
+### 0.13 Review-13 correction
+
+The threading table now names generation adoption separately from direct reset.
+
+### 0.14 Review-14 corrections
+
+Replacement adoption and direct resets now state their observable lifecycle ordering.
+
+### 0.15 Review-15 correction
+
+Terminal close now occurs after final Phase 6 participant use and before Phase 7 initiates the
+existing atomic Phase 4 teardown operation.
+
+### 0.16 Review-16 corrections
+
+Terminal close is teardown-only; ordinary publication replacement remains exclusively a generation
+adoption. The `blendFunc` conformance row now cites the matching Appendix E hook row.
+
+### 0.17 Review-17 correction
+
+All compact maintenance-provenance markers now include §0.16 and this fix-up addendum.
 
 ---
 
@@ -238,6 +279,7 @@ The public shape is:
 ```java
 public interface UniformRuntimeFactory {
     UniformBuildResult create(
+        long initialRegistryGeneration,
         UniformConfiguration configuration,
         UniformPlatformProvider platform,
         CenterDepthSource centerDepth,
@@ -251,6 +293,8 @@ public sealed interface UniformBuildResult {
 }
 
 public interface UniformRuntime {
+    RegistryGenerationAdoptionResult adoptRegistryGeneration(
+        long registryGeneration, UniformResetReason reason);
     FrameBeginResult beginFrame(FrameBeginInput input);
     UniformEventSink events();
     ProgramBindingParticipant samplerParticipant();
@@ -259,6 +303,14 @@ public interface UniformRuntime {
     MacroContributor centerDepthMacroContributor();
     void installCustomUniformBridge(CustomUniformBridge bridge);
     void reset(UniformResetReason reason);
+}
+
+public enum RegistryGenerationAdoptionResult {
+    ADOPTED, ALREADY_CURRENT, REJECTED_RETIRED_GENERATION
+}
+
+public enum UniformResetReason {
+    PACK_REPLACEMENT, SHADERS_OFF, GL_CONTEXT_LOSS, WORLD_EPOCH, CLOSE
 }
 
 public enum FrameBeginResult {
@@ -362,7 +414,7 @@ means participate in the activation sweep; it does not mean resample Minecraft o
 | Synchronous center-depth readback when declared | CPU candidate selected in §4.8 | `[V:observed]`; `docs/research/v1/RESEARCH.md:558`, “synchronous center-depth readback” |
 | Exact tick-domain smoothing | `TickEma` / `AsymmetricTickEma`, §4.5 | contract interpretation; RC3 requires “per-tick exponential decay” at `docs/design/v2.0-RC3/DESIGN.md:1733` |
 | Fixed-function matrix capture and inverses | §4.7 | `[V:observed — Pintonium]`; verified source copies vanilla buffers at `reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/org/taumc/celeritas/mixin/shaders/MixinEntityRenderer_Shaders.java:38` |
-| `blendFunc` observation through GlStateManager cooperation | typed producer plus mandatory audit row, §4.12 | `[V:doc]`; App E class row at `docs/research/v1/RESEARCH.md:1413` |
+| `blendFunc` observation through GlStateManager cooperation | typed producer plus mandatory audit row, §4.12 | `[V:doc]`; App E class row at `docs/research/v1/RESEARCH.md:1415` |
 | Every value behind a pure provider/event seam | `UniformPlatformProvider`, `CenterDepthSource`, immutable event records | D-6; assignment at `docs/design/v2.0-RC3/DESIGN.md:1771` |
 | Per-uniform GL upload isolation | immutable upload batch + attributed replay, §4.11 | Phase 1 binding contract at `docs/phase1/v14/PHASE_1_DOC.md:4119` |
 | PD cadence buckets and cache mechanics | acquisition buckets plus activation sweep | **Adopted as non-contract-visible mechanics**; PD says ONCE/PER_TICK/PER_FRAME/dynamic at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:288`; source confirms dynamic first at `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/program/ProgramUniforms.java:200` |
@@ -401,9 +453,21 @@ Construction validates every half-life as finite and non-negative. A malformed d
 Phase 3 diagnostic/default matter; an invariant breach arriving here rejects the uniform candidate
 without GL work. Phase 3 already publishes distinct tick fields—for example
 `SmoothingConstants.drynessHalfLifeTicks` (`docs/phase3/v1/PHASE_3_DOC.md:918`)—so Phase 6 performs
-no parser-side unit conversion. A new published registry generation creates a new program-cache namespace. Old
-locations and disabled scopes are discarded; temporal world values survive only when
-`worldEpoch` is unchanged.
+no parser-side unit conversion. `create` installs the generation from the current Phase 4
+`PublishedRegistry` as the runtime's initial current generation. A new published registry
+generation creates a new program-cache namespace. Old locations and disabled scopes are discarded;
+temporal world values survive only when `worldEpoch` is unchanged.
+
+After Phase 4 accepts a replacement, Phase 7 calls
+`adoptRegistryGeneration(replacement.generation(), reason)` on the render thread before any
+`beginFrame`, event, or participant activation against that replacement. Adoption is atomic: a
+different, never-retired generation becomes current and the prior generation becomes retired; the
+current value is an idempotent `ALREADY_CURRENT`; a retired value is rejected without mutation.
+Generation values are compared only for equality, never ordered or subtracted, matching Phase 4's
+wrap-safe protocol. Phase 7 must pass the generation from the newly reacquired authoritative
+publication, not a candidate view or delayed snapshot. `ADOPTED` applies §4.14's reset scope for
+the supplied semantic reason before returning. A rejection forbids shader drawing and requires
+reacquiring Phase 4's current publication.
 
 Lifecycle:
 
@@ -412,7 +476,7 @@ NEW
   → CONFIGURED(configuration, providers)
   → FRAME_READY after first beginFrame
   → ACTIVE through any number of barrier activations/events
-  → RESET on world epoch, pack replacement, shaders-off, or close
+  → RESET on world epoch, pack replacement, shaders-off, GL-context loss, or close
 ```
 
 No GL work occurs in `reset`. Program-location objects belong to a registry generation and are
@@ -738,7 +802,7 @@ materialized program declares `centerDepthSmooth`.
 
 ### 4.6 Frame-begin ordering and temporal snapshots
 
-`beginFrame` returns `ACCEPTED` only for a new current-generation frame and then performs this exact
+`beginFrame` returns `ACCEPTED` only for a new adopted-current-generation frame and then performs this exact
 sequence:
 
 1. validate registry generation and world epoch;
@@ -1160,13 +1224,31 @@ whether an evaluation failure omits a command or aborts the remaining refresh.
 
 ### 4.14 Reset, missing producers, and neutral values
 
-Reset reasons are pack replacement, shaders-off, world epoch, GL-context loss, and close.
+`UniformResetReason` is the closed domain `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`,
+`WORLD_EPOCH`, and `CLOSE`.
+
+Registry replacement, shaders-off, and GL-context-loss transitions use atomic generation adoption
+before the replacement's first frame or activation. Pack replacement and shaders-off discard all
+program caches and disabled scopes; GL-context loss additionally discards every location. All three
+retire the prior generation. Pack replacement retains temporal values only when configuration
+semantics and world epoch are unchanged; shaders-off retains borrowed provider references until
+close; GL-context loss retains pure temporal values but requires the newly adopted publication
+before activation.
+World-epoch reset does not change the generation and resets smoothers and previous snapshots. Close
+retires the runtime permanently and cannot be followed by adoption. `adoptRegistryGeneration`
+accepts exactly `PACK_REPLACEMENT`, `SHADERS_OFF`, and `GL_CONTEXT_LOSS`. Direct `reset` accepts
+exactly `WORLD_EPOCH` and `CLOSE`; any other reason fails fast without mutation.
+`WORLD_EPOCH` reset follows final old-world use and precedes the next world's `beginFrame`, event,
+or participant activation. Terminal `CLOSE` follows final use of all three Phase 6 participants;
+Phase 7 then permits no later participant call and initiates Phase 4's atomic publication
+teardown operation. Ordinary publication replacement never invokes `CLOSE` and remains exclusively
+on `adoptRegistryGeneration(..., PACK_REPLACEMENT)`.
 
 - Pack/registry replacement drops program caches and disabled scopes; it retains temporal values
   only when world epoch and pack semantics are unchanged.
 - World epoch resets smoothers and previous snapshots.
 - GL-context loss drops every location and requires a new registry publication before activation.
-- Shaders-off makes every participant a no-op and releases provider references on close.
+- Shaders-off makes every participant a no-op; terminal close releases provider references.
 
 Neutral values are deliberately few and visible: later-milestone IDs and integer metrics use 0;
 `entityColor`/blend use zeros; pending shadow matrices use identity; pending celestial vectors use
@@ -1182,8 +1264,8 @@ turn a future producer into optional work.
 
 | Exposed contract | Exact content | Consumer(s) |
 |---|---|---|
-| `UniformRuntimeFactory` / `UniformBuildResult` | closed `Success(runtime)` / `Failure(non-empty diagnostic ID)` result; success transfers the sole runtime lifecycle, failure has no runtime or GL work | Phase 7 composition/reload |
-| `UniformRuntime` | frame begin, typed events, three fixed barrier participants, empty center-depth macro contribution, reset; custom bridge install is non-null, composition-thread/pre-use, first-install wins, same-instance idempotent, different/late fail-fast, retained through non-close resets and released on close | Phases 7, 8, 9, 11, 13 |
+| `UniformRuntimeFactory` / `UniformBuildResult` | creation installs the current `PublishedRegistry.generation`; closed `Success(runtime)` / `Failure(non-empty diagnostic ID)` result; success transfers the sole runtime lifecycle, failure has no runtime or GL work | Phase 7 composition/reload |
+| `UniformRuntime` / `UniformResetReason` / `RegistryGenerationAdoptionResult` | closed reasons are `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`, `WORLD_EPOCH`, `CLOSE`; adoption accepts exactly the first three and direct reset exactly the last two; after accepted publication and reacquisition, atomically adopt the replacement's authoritative generation plus reason before its first `beginFrame`, event, or participant activation; unseen inequality adopts and retires prior, equality is idempotent, retired input rejects without mutation, with equality-only comparison and §4.14 state scopes; `WORLD_EPOCH` reset follows final old-world use and precedes next-world use; teardown-only terminal `CLOSE` follows final use of all three Phase 6 participants, after which Phase 7 permits no later participant call and initiates Phase 4's atomic teardown operation; ordinary publication replacement never invokes `CLOSE` and remains exclusively on `adoptRegistryGeneration(..., PACK_REPLACEMENT)`; also frame begin, typed events, three fixed barrier participants, empty center-depth macro contribution, reset; custom bridge install is non-null, composition-thread/pre-use, first-install wins, same-instance idempotent, different/late fail-fast, retained through non-close resets and released on close | Phases 7, 8, 9, 11, 13 |
 | `FrameBeginInput` / `FrameBeginResult` | input schema plus `ACCEPTED`, `DUPLICATE`, `REJECTED_STALE_FRAME`, `REJECTED_GENERATION`; only accepted mutates, duplicate is a safe no-op, rejection forbids shader draw | Phase 7 |
 | **Frame-begin ordering contract** | `beginFrame` completes world/tick sampling, previous snapshots, and center-depth read **before any Phase 5 resize or clear**; then first-clear matrix capture occurs after camera setup | Phase 7; integration review |
 | `UniformEventSink` and immutable sample records | exact §4.2 schemas; world/frame/tick identity; finite/range validation; copy/absence/fallback rules; held-light old-mode mapping; next-activation vs immediate-if-active policy | Phases 7, 8, 9, 13 |
@@ -1313,7 +1395,8 @@ state itself. Those would violate Phase 4 and §G4.6 ownership.
 | `UniformPlatformProvider` / `CenterDepthSource` production implementation | render thread only |
 | smoothing, inverse, catalog planning in headless tests | test thread; no affinity |
 | custom bridge evaluation | Phase 11 may prepare pure expression plans elsewhere, but activation/evaluation and upload occur on render thread at v0.4 |
-| reset after registry replacement/context loss | render thread before old GL registry teardown |
+| generation adoption for pack/registry replacement or GL-context loss | render thread after accepted publication and authoritative-generation reacquisition, before replacement use |
+| direct reset for `WORLD_EPOCH` or `CLOSE` | render thread; world reset is between final old-world and first new-world use; teardown-only close follows final Phase 6 participant use and precedes Phase 7 initiating Phase 4 teardown; ordinary publication replacement never invokes `CLOSE` |
 
 No event is queued asynchronously. A hook observes a value and writes it synchronously before the
 draw activation that consumes it. This prevents an entity ID or blend state from crossing draw
@@ -1382,7 +1465,7 @@ Minecraft, LWJGL, display, pack source, or image is needed.
 | `CustomBridgeOrderTest` | default no-op; stable permitted view; dynamics excluded; custom upload follows built-ins |
 | `CustomBridgeLifecycleTest` | null, late, and different-instance installs fail without mutation; same-instance repeat is a no-op; non-close reset retains and close releases |
 | `CustomAbortPrefixTest` | accepted-prefix-then-abort uploads that prefix in order in the current activation, omits the suffix, and carries nothing forward |
-| `ResetLifecycleTest` | generation/context/world reset scopes match §4.14; no stale location use |
+| `ResetLifecycleTest` | initial generation installed; replacement adoption precedes frame/activation and does not invoke `CLOSE`; equality is idempotent; retired input rejects; generation/context/world reset scopes match §4.14; no stale location use |
 
 `RecordingGLDevice` is the assigned mechanism
 (`docs/phase1/v14/PHASE_1_DOC.md:4146`, “recorded-GL run”). Scripted depth answers and GL errors
@@ -1571,7 +1654,7 @@ Ordered so each item has one outcome and one test hook.
 | 10 | implement immutable matrix copy/inversion and singular isolation | v0.1 | known-matrix/inverse/singular tests |
 | 11 | implement conditional synchronous center-depth source and exact center coordinate | v0.1 | `ScriptedResponses.depthPixel`, ordering and undeclared tests |
 | 12 | implement empty Phase 3 macro contributor per D-P6-1 | v0.1 | materialization test has no `centerDepthSmooth` define |
-| 13 | implement `ProgramCache` keyed by effective provider/generation, including absent locations | v0.1 | lookup/fallback/generation tests |
+| 13 | implement initial/replacement generation adoption and `ProgramCache` keyed by effective provider/generation, including absent locations | v0.1 | adoption/lookup/fallback/generation tests |
 | 14 | implement sampler plans and deterministic integer upload order | v0.1 | recorded GL calls match §4.9 for every stage |
 | 15 | implement built-in upload plans, exact skip, and matrix-always rule | v0.1 | recorded GL redundant/matrix tests |
 | 16 | implement immutable activation/dynamic attempted batches and Phase 1 attributed replay | v0.1 | reproduced/unattributable/provider-once/token-invalidated tests |
@@ -1592,5 +1675,5 @@ Ordered so each item has one outcome and one test hook.
 ---
 
 *End of PHASE_6_DOC.md. The original §G1.1 build session stopped after this architecture
-document; §§0.3–0.8 record the later governed review, fix-up, and dependency-adoption maintenance.
+document; §§0.3–0.17 record the later governed review, fix-up, and dependency-adoption maintenance.
 Implementation and any post-loop version roll remain separate work.*
