@@ -6,7 +6,7 @@
   "description": "Adversarial verification profile for the current Phase 2 architecture document.",
   "targets": [
     {
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "role": "document under review",
       "selectors": [
         {
@@ -69,6 +69,10 @@
   ],
   "supporting_evidence": [
     {
+      "path": "docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md",
+      "role": "Pintonium reference evidence for motion, hook gaps, and parse calibration"
+    },
+    {
       "path": ".github/workflows",
       "role": "CI ground truth"
     }
@@ -105,6 +109,7 @@
     "docs/reference/**",
     "docs/phase1/v14/PHASE_1_DOC.md",
     "docs/phase1/reviews/**",
+    "docs/phase2/v1/PHASE_2_DOC.md",
     "docs/phase2/reviews/*.md",
     ".github/workflows/**"
   ],
@@ -113,7 +118,7 @@
       "{review_output}"
     ],
     "fixup": [
-      "docs/phase2/v1/PHASE_2_DOC.md",
+      "docs/phase2/v2/PHASE_2_DOC.md",
       "{review_output}"
     ]
   },
@@ -147,7 +152,7 @@
   "interface_regions": [
     {
       "id": "cross-phase-interfaces",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^## 5\\. Cross-phase interfaces$",
         "end": "^## 6\\. Failure modes & degradation$"
@@ -156,7 +161,7 @@
     },
     {
       "id": "initial-scene-set",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 3\\.4 The initial scene set → behavioral families → the contract rows they exercise$",
         "end": "^### 3\\.5 RESEARCH\\.md §9 exit criteria → harness runs \\(the doc-gate table\\)$"
@@ -165,7 +170,7 @@
     },
     {
       "id": "text-artifact-canonicalization",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.1 Vocabulary, identifiers, paths, and one determinism rule$",
         "end": "^### 4\\.2 Tier machinery$"
@@ -174,7 +179,7 @@
     },
     {
       "id": "tier-definitions-and-evidence",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.2 Tier machinery$",
         "end": "^### 4\\.3 The scene specification$"
@@ -183,7 +188,7 @@
     },
     {
       "id": "scene-wire-format",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.3 The scene specification$",
         "end": "^### 4\\.4 The determinism ledger$"
@@ -192,7 +197,7 @@
     },
     {
       "id": "determinism-ledger",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.4 The determinism ledger$",
         "end": "^### 4\\.5 Capture automation$"
@@ -201,7 +206,7 @@
     },
     {
       "id": "capture-agent-plan-and-frame-grab",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.5 Capture automation$",
         "end": "^#### 4\\.5\\.4 The run manifest$"
@@ -210,7 +215,7 @@
     },
     {
       "id": "run-manifest-wire-schema",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^#### 4\\.5\\.4 The run manifest$",
         "end": "^#### 4\\.5\\.5 Worlds$"
@@ -219,7 +224,7 @@
     },
     {
       "id": "capture-world-and-failure-contracts",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^#### 4\\.5\\.5 Worlds$",
         "end": "^### 4\\.6 Image diff$"
@@ -228,7 +233,7 @@
     },
     {
       "id": "image-diff-verdict-rules",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.6 Image diff$",
         "end": "^### 4\\.7 Baselines: storage, versioning, approval$"
@@ -237,7 +242,7 @@
     },
     {
       "id": "baseline-storage-versioning-and-approval",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.7 Baselines: storage, versioning, approval$",
         "end": "^### 4\\.8 The T2 protocol — capturing OptiFine G6 oracle renders$"
@@ -246,7 +251,7 @@
     },
     {
       "id": "t2-oracle-capture-protocol",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.8 The T2 protocol — capturing OptiFine G6 oracle renders$",
         "end": "^### 4\\.9 The named harness runs$"
@@ -255,7 +260,7 @@
     },
     {
       "id": "named-run-catalogue",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.9 The named harness runs$",
         "end": "^### 4\\.10 The fixture system$"
@@ -264,7 +269,7 @@
     },
     {
       "id": "fixture-registry-cache-and-never-rehost",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.10 The fixture system$",
         "end": "^### 4\\.11 The headless-core golden harness$"
@@ -273,7 +278,7 @@
     },
     {
       "id": "golden-format-sizing-and-adapter",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.11 The headless-core golden harness$",
         "end": "^#### 4\\.11\\.5 Update workflow$"
@@ -281,8 +286,17 @@
       "change_trigger": "A fresh verify round is required before Phase 2 can close."
     },
     {
+      "id": "golden-update-workflow",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^#### 4\\.11\\.5 Update workflow$",
+        "end": "^#### 4\\.11\\.6 The hermetic corpus — packs we own$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
       "id": "micro-pack-corpus",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^#### 4\\.11\\.6 The hermetic corpus — packs we own$",
         "end": "^### 4\\.12 The `GLCapabilityProfile` fixture set$"
@@ -291,7 +305,7 @@
     },
     {
       "id": "gl-capability-profile-fixtures",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.12 The `GLCapabilityProfile` fixture set$",
         "end": "^### 4\\.13 Reporting$"
@@ -299,8 +313,17 @@
       "change_trigger": "A fresh verify round is required before Phase 2 can close."
     },
     {
+      "id": "reporting-contract",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
+      "selector": {
+        "start": "^### 4\\.13 Reporting$",
+        "end": "^### 4\\.14 CI wiring$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 2 can close."
+    },
+    {
       "id": "ci-task-split-and-tag-policy",
-      "path": "docs/phase2/v1/PHASE_2_DOC.md",
+      "path": "docs/phase2/v2/PHASE_2_DOC.md",
       "selector": {
         "start": "^### 4\\.14 CI wiring$",
         "end": "^## 5\\. Cross-phase interfaces$"
@@ -314,5 +337,5 @@
     "phase_name": "Conformance harness",
     "mandatory_section_count": 13
   },
-  "fixup_instructions": "This document has no mature multi-addendum convention. If a correction changes the target, add only a compact next-numbered §0 subsection using the document's existing header style; do not import Phase 1's supersession sentences, dated-claim ranges, or session-count bookkeeping. Keep full reasoning in the current review's Resolutions and do not roll the v1 directory during a loop."
+  "fixup_instructions": "This maintainer-authorized v2 rebuild inherits Phase 2's compact addendum style through §0.36. If a correction changes the target, add only a compact next-numbered §0 subsection using that style; do not import Phase 1's supersession sentences, dated-claim ranges, or session-count bookkeeping. Keep full reasoning in the current review's Resolutions and do not roll the v2 directory during a loop."
 }
