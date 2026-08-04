@@ -298,8 +298,9 @@ value // comment [allowed values]` variables, plus a whitelist of `const` option
    parameters (`biome`, `temperature`, `rainfall`, `BIOME_*` constants), and view-entity
    booleans (`is_burning`, `is_hurt`, `is_in_water`, …), with ~40 functions incl. `if()`,
    `smooth(id, val, fadeIn, fadeOut)`, vector constructors. Updated on program change.
-   Dynamic per-draw uniforms (`entityColor`, `entityId`, `blockEntityId`, `fogMode`,
-   `fogColor`) are excluded as expression inputs `[V:doc]`.
+   Expression inputs exclude every per-draw dynamic in Appendix D.4 (`entityColor`, `entityId`,
+   `blockEntityId`, `blendFunc`, `instanceId`), plus `fogMode` and `fogColor`, because these values
+   may change at a cadence unsuitable for custom expressions `[V:doc]`.
 
 ### 3.5 GLSL environment contract
 
@@ -1497,8 +1498,11 @@ is macro-preprocessed before parsing. Modern/Iris-only keys: §3.6.4. 2026-07-24
   rainfall` (camera biome), every fixed scalar uniform (vector members `.x/.y/.z`, colors
   `.r/.g/.b`, matrix `name.<row>.<col>`), view-entity booleans `is_alive is_burning is_child
   is_glowing is_hurt is_in_lava is_in_water is_invisible is_on_ground is_ridden is_riding
-  is_sneaking is_sprinting is_wet`. Excluded (change mid-program): `entityColor entityId
-  blockEntityId fogMode fogColor`.
+  is_sneaking is_sprinting is_wet`. Excluded from expression inputs because they may change at a
+  cadence unsuitable for custom expressions: every per-draw dynamic in Appendix D.4
+  (`entityColor`, `entityId`, `blockEntityId`, `blendFunc`, `instanceId`), plus `fogMode` and
+  `fogColor`. This is the union of Appendix D.4's complete five-entry table and those two fog
+  inputs; Appendix F.6 does not override or narrow Appendix D.4.
 - Operators: `+ - * / %`, `! && ||`, `> >= < <= == !=`.
 - Functions: `sin cos asin acos tan atan atan2 torad todeg min max clamp abs floor ceil exp
   frac log pow random round signum sqrt fmod`, conditional `if(cond,val,…,val_else)`,
