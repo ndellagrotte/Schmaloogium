@@ -4,7 +4,7 @@
 
 **Phase:** 7, both mandated parts: (a) engine-side frame driver and (b) Mixin hook catalog.  
 **Document version:** v1, initial build.  
-**Date:** 2026-08-03 · **Last revised:** 2026-08-08 (§0.35).
+**Date:** 2026-08-03 · **Last revised:** 2026-08-08 (§0.36).
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`; its Phase 7 assignment begins at
 `docs/design/v2.0-RC3/DESIGN.md:1805` and names dependencies 2–6 at
 `docs/design/v2.0-RC3/DESIGN.md:1807`. The heading and ranges were derived from this
@@ -80,7 +80,7 @@ Three narrow additions were necessary and are recorded rather than hidden:
 2. `docs/research/v1/RESEARCH.md` Appendix F.1 was read because the assignment makes Phase 7 the
    behavior owner for eleven engine flags while the listed inputs otherwise provide only their
    field names. The source says the corresponding video setting wins where one exists
-   (`docs/research/v1/RESEARCH.md:1439`–`:1445`).
+   (`docs/research/v1/RESEARCH.md:1442`–`:1448`).
 3. The exact OQ-3/OQ-4 rows at `docs/research/v1/RESEARCH.md:1009`–`:1010` were read to satisfy
    §G4.4's verbatim-question rule.
 
@@ -297,6 +297,16 @@ accounting. It declares `AnaglyphEye` and `BlendStateValue` in §5.1, reshapes t
 `UniformSignal` variants to Phase 6's binding sample shapes with explicit identity/value sources,
 and restates the `UniformSignalBridge` mapping row. The §5 interface region changed and requires
 fresh verification.
+
+### 0.36 Round-32 notes fix-up
+
+Round 32's three recorded notes are now applied. §0.3 item 2 and the §3.5 `clouds` row cite
+RESEARCH Appendix F.1 as `docs/research/v1/RESEARCH.md:1442`–`:1448`, so the operative
+video-setting-precedence sentence at `:1448` falls inside the range. §3.2's Phase 4 provenance
+points at the actual prohibition (`docs/phase4/v1/PHASE_4_DOC.md:1579`–`:1580`) instead of the
+alpha/blend-lock prose. §4.12's bare "§4.13" is qualified as Phase 8's §4.13 ledger, where the
+eight hook-health rows live. All four are citation and wording repairs outside §5; this round does
+not change the interface region, and the fresh verification owed by §0.35 remains outstanding.
 
 ---
 
@@ -546,7 +556,7 @@ the Phase 5 snapshot, and branches on every closed result.
 
 The names and fallbacks are not re-resolved here. Phase 4 publishes the entire mapping and warns
 Phase 7 not to overlay requested-slot state on the effective provider
-(`docs/phase4/v1/PHASE_4_DOC.md:1383`–`:1385`).
+(`docs/phase4/v1/PHASE_4_DOC.md:1579`–`:1580`).
 
 ### 3.3 RESEARCH §7.1 hook-needs 1–11
 
@@ -586,7 +596,7 @@ high-risk and are front-loaded in v0.1 assembly.
 
 | Phase 3 field | Exact owner behavior | Provenance |
 |---|---|---|
-| `clouds` | resolve `DEFAULT/FAST/FANCY/OFF` once per publication; a corresponding explicit video setting wins; OFF cancels, FAST/FANCY is returned to vanilla's cloud-mode query | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:688` and precedence at `docs/research/v1/RESEARCH.md:1439`–`:1445`; runtime mapping `[D-P7-11]` |
+| `clouds` | resolve `DEFAULT/FAST/FANCY/OFF` once per publication; a corresponding explicit video setting wins; OFF cancels, FAST/FANCY is returned to vanilla's cloud-mode query | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:688` and precedence at `docs/research/v1/RESEARCH.md:1442`–`:1448`; runtime mapping `[D-P7-11]` |
 | `backFaceSolid/CutoutMipped/Cutout/Translucent` | TRUE temporarily disables culling for exactly that terrain-layer scope; FALSE/DEFAULT preserves vanilla state; scope exit restores | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:697`–`:700`; runtime mapping `[D-P7-11]` |
 | `underwaterOverlay` | FALSE cancels only the WATER `RenderBlockOverlayEvent`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:693`; runtime mapping `[D-P7-11]` |
 | `sun`, `moon` | FALSE suppresses only the corresponding textured sky draw; TRUE/DEFAULT preserves vanilla | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:694`–`:695`; runtime mapping `[D-P7-11]` |
@@ -1293,9 +1303,9 @@ because its milestone is dormant.
 
 Phase 8 health is nested rather than flattened into the primary row list. A verified Phase 8
 contributor supplies exactly one owner-phase-8 `HookApplicationSubreport` copied from its immutable
-`ShadowHookHealth`: the canonical fingerprint, aggregate `shadowEnabled` value, and all eight §4.13
-rows in hook-ID order with their exact expected/actual counts and `HEALTHY|FEATURE_DISABLED`
-disposition. The primary Phase 7 row list—including H-FRAME-05 and every H9 row—retains its existing
+`ShadowHookHealth`: the canonical fingerprint, aggregate `shadowEnabled` value, and all eight rows
+of Phase 8's §4.13 ledger in hook-ID order with their exact expected/actual counts and
+`HEALTHY|FEATURE_DISABLED` disposition. The primary Phase 7 row list—including H-FRAME-05 and every H9 row—retains its existing
 catalog IDs, target strings, order, counts, and failure classes. Before Phase 8 is installed there
 is no owner-phase-8 subreport; that absence is explicit and cannot be interpreted as healthy shadow
 capability. A Phase 8 plan/publication may enable only when its hook fingerprint equals the nested
@@ -2471,5 +2481,6 @@ This session does not edit `docs/research/v1/RESEARCH.md`, any `docs/design/*/DE
 
 *End of PHASE_7_DOC.md. Twenty-one review rounds preceded §0.25; only rounds nineteen and
 twenty-one returned literal PASS among them, corrections being applied for rounds 1–18 and 20.
-Corrections through Round 32 are applied; Round 32 most recently changed binding §5, and v1 remains
-unverified pending a fresh whole-document review. No version roll occurs until that loop exits.*
+Corrections and recorded notes through Round 32 are applied; Round 32 most recently changed binding
+§5, and v1 remains unverified pending a fresh whole-document review. No version roll occurs until
+that loop exits.*

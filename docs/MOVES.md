@@ -69,7 +69,7 @@ Everything else kept its filename. These did not, each for a reason:
 | | `docs/design/v1.1/DESIGN.md` | `docs/design/v2.0-RC1/DESIGN.md` | `docs/design/v2.0-RC2/DESIGN.md` | `docs/design/v2.0-RC3/DESIGN.md` | `docs/design/v2.0-RC4/DESIGN.md` | `docs/design/v3/DESIGN.md` |
 |---|---|---|---|---|---|---|
 | Lines | 1,586 | 2,304 | 2,478 | 2,656 | 2,683 | 2,715 |
-| Status | historical; governed Phase 2 v1 through Review 36 and anchors Phase 1 reviews through round 11 | superseded; read by nothing | **governs Phase 1** from its §0.11 onward | **governs Phases 3–9** from their initial builds; partial adoption retains `-RC` | unadopted historical candidate | **governs Phase 2 v2 and Phase 11 v1**; adopted for those phases only, not globally |
+| Status | historical; governed Phase 2 v1 through Review 36 and anchors Phase 1 reviews through round 11 | superseded; read by nothing | **governs Phase 1** from its §0.11 onward | **governs Phases 3–9** from their initial builds; partial adoption retains `-RC` | unadopted historical candidate | **governs Phase 2 v2, Phase 11 v1, and Phase 13 v1**; adopted for those phases only, not globally |
 | Phase 1 spec at | l. 585 | l. 829 | l. 957 | l. 1,120 | l. 1,130 | l. 1,147 |
 | Phase 2 spec at | l. 662 | l. 933 | l. 1,071 | l. 1,234 | l. 1,244 | l. 1,261 |
 | §G1.2 at | l. 118 | l. 174 | l. 257 | l. 276 | l. 286 | l. 303 |
@@ -79,17 +79,18 @@ on disk since it was recorded; corrected while adding the RC2 column.)*
 
 **There is no longer one governing revision, and no longer one set of line numbers** (changed
 2026-07-26, §G0.4 steps 1–2 and 4; Phase 3 adoption recorded 2026-07-27; RC4 and v3 revisions recorded
-2026-08-03; Phase 11 adoption recorded 2026-08-03). Phase docs cite `DESIGN.md` **by line number**,
-and the ten current phase docs are
+2026-08-03; Phase 11 adoption recorded 2026-08-03; Phase 13 adoption recorded 2026-08-08). Phase docs
+cite `DESIGN.md` **by line number**, and the eleven current phase docs are
 anchored per phase:
 `PHASE_1_DOC.md` l. 12 declares
 `docs/design/v2.0-RC2/DESIGN.md` from its §0.11 onward, adopted at the round-eleven fix-up as §G0.4
 step 3; `docs/phase2/v2/PHASE_2_DOC.md` §0.1 declares v3 after the maintainer-authorized Review-36
 rebuild, while `docs/phase2/v1/PHASE_2_DOC.md` retains its historical v1.1 declaration unchanged;
-and Phases 3–9 deliberately adopt RC3 from their initial builds. Phase 11 v1 §0 explicitly declares
-v3, quoted at `docs/design/v3/DESIGN.md` and recorded in the Version-labels table below. Every
+and Phases 3–9 deliberately adopt RC3 from their initial builds. Phase 11 v1 §0 and Phase 13 v1 §0
+each explicitly declare v3, quoted at `docs/design/v3/DESIGN.md` and recorded in the Version-labels
+table below. Every
 Phase 1 review through round 11 is in v1.1's coordinates. RC4 remains unadopted; v3 is adopted by
-Phase 2 and Phase 11 only and is not the global default.
+Phases 2, 11, and 13 only and is not the global default.
 
 **The `$verify-loop` harness is retired (2026-08-08).** It used to resolve the revision **per
 target** from profiles under `verification/targets/`, with content selectors for Part I, the target
@@ -98,7 +99,7 @@ That machinery — `scripts/verify`, the `$verify-loop` skill, the profiles, and
 is gone; §0's per-doc declaration is the single source of truth. The governing revision is declared
 in each phase document's own §0, exactly as the rules below say: Phase 1's §0 selects RC2; current
 Phase 2 v2 §0 selects v3; Phases 3–8 §0 select RC3. Phase 9 declares RC3 in its document header.
-RC4 remains unselected; v3 is selected only by Phase 2 and Phase 11 until other phases execute §G0.4
+RC4 remains unselected; v3 is selected only by Phases 2, 11, and 13 until other phases execute §G0.4
 independently. There is no executable pin table to synchronize.
 
 **Reading a phase against the wrong revision still yields plausible-looking wrong text that does
@@ -127,6 +128,7 @@ Directory names come from each document's own header, not from the folder it use
 | `PHASE_2_DOC.md` (current) | `v2` | maintainer-authorized major rebuild exception after Review 36's FAIL; §0.36 formally adopts v3. The next review is Round 37 |
 | `PHASE_3_DOC.md` | `v1` | initial build under RC3; rolls only after a fix-up addendum and a later literal PASS |
 | `PHASE_11_DOC.md` | `v1` | initial build explicitly adopts v3 in §0 |
+| `PHASE_13_DOC.md` | `v1` | initial build explicitly adopts v3 in §0 (2026-08-08); §0.2 records the maintainer-authorized §G5.3 deviation for the still-unverified `PHASE_7_DOC.md` |
 
 **Rolling a phase doc's version** (`v14` → `v15` only once a future §0.15 fix-up lands) is two steps,
 run together and only **after** the fix-up session that adds the addendum has actually landed:

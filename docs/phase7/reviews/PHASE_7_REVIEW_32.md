@@ -393,18 +393,50 @@ mirroring `BlendSample`'s non-identity fields exactly, with glue translating the
 (`docs/phase6/v1/PHASE_6_DOC.md:614`–`:615`). The now-unused `ColorValue` declaration was removed;
 no phase document references it.
 
-### Notes deferred
+### Notes applied
 
-- **F8 (candidate-007), §4.12's unqualified "§4.13" pointer** — not applied: the adjudication
-  records the three notes "but not ordered for fix-up". The pointer's intended target (Phase 8's
-  own ledger) is recoverable from context and no content or count is wrong, so the doc change is
-  left to a future ordered round.
-- **F9 (candidate-011), §3.2's Phase 4 provenance parenthetical** — not applied: same ordering
-  reason; the same contract is already consumed correctly at the binding §5.2 citation
-  (`docs/phase4/v1/PHASE_4_DOC.md:1576`–`:1580`), so the §3.2 pointer is redundant provenance.
-- **F10 (candidate-020), RESEARCH `:1439`–`:1445` vs the `:1448` sentence** — not applied: same
-  ordering reason; both citations (§0.3 item 2 and the §3.5 `clouds` row) abut the F.1 block, and
-  the operative sentence sits one element past the cited range.
+Follow-on fix-up session, 2026-08-08, recorded under `§0.36`. §3's adjudication ordered only the
+seven corrections and recorded the three notes "but not ordered for fix-up"; this session elected
+to apply them anyway rather than leave known-real defects for a later round to re-find. That was a
+fix-up decision, not an adjudication order — the verdict, its counts, and the ordered-action list
+in §3 stand unchanged. Each note's coordinates were re-derived against the current files before
+the edit, and all three edits lie outside the manifest-declared interface region, so this round
+does not re-engage the change trigger.
+
+- **F8 (candidate-007), §4.12's unqualified "§4.13" pointer** — applied. The sentence now reads
+  "all eight rows of Phase 8's §4.13 ledger", matching the wording Phase 8's R8-5 already uses at
+  `docs/phase8/v1/PHASE_8_DOC.md:1087`. No content or count changed. Swept the document's other
+  §4.1x references: §5.4 and §11.5's "4.12–4.13" name Phase 7's own granting sections and are
+  correct unqualified, so neither was touched.
+- **F9 (candidate-011), §3.2's Phase 4 provenance parenthetical** — applied. Re-pointed to
+  `docs/phase4/v1/PHASE_4_DOC.md:1579`–`:1580`, the exact prohibition sentence, rather than
+  deleted; §3.2 keeps its own provenance and the binding §5.2 citation's broader
+  `:1576`–`:1580` is unchanged.
+- **F10 (candidate-020), RESEARCH `:1439`–`:1445` vs the `:1448` sentence** — applied. Both
+  citations (§0.3 item 2 and the §3.5 `clouds` row) now read
+  `docs/research/v1/RESEARCH.md:1442`–`:1448`, spanning the `### F.1` header at `:1442`, the flag
+  list at `:1444`–`:1447`, and the operative sentence at `:1448`.
+
+**Downstream coordinate drift caused by this round.** Inserting `§0.36` at `:301` shifts every
+line below it in `PHASE_7_DOC.md` by **+10**. Documents that cite Phase 7 by line number are
+therefore off by ten from `:301` down. Those citations are not edited here — `AGENTS.md:155`
+forbids this session from modifying another phase's doc — so they are recorded for their owners:
+`docs/phase13/v1/PHASE_13_DOC.md` (`:53`, `:127`, `:357`–`:358`, `:909`, `:916`, `:929`, `:937`,
+`:944`, `:956`, `:1059`, `:1292`) was built 2026-08-08 against post-§0.35 coordinates and was
+accurate until this round; its `:78` cite of `PHASE_7_DOC.md:19` is above the insertion and stays
+correct. `docs/phase8/v1/PHASE_8_DOC.md` (`:183`, `:449`, `:1076`) and
+`docs/phase9/v1/PHASE_9_DOC.md` (`:796`–`:798`) were **already stale before this round** — spot-
+checked at HEAD, `PHASE_9_DOC.md:796`'s "explicit Phase 9 hand-off" at `:1619`–`:1625` resolves to
+`ActiveWorldIdentityPublication`, and `PHASE_8_DOC.md:1076`'s shadow-invocation context at
+`:1178`–`:1190` resolves to the particle hook table — so earlier fix-up rounds drifted them and
+this round is not their cause. Line-cited references into a doc under active fix-up go stale on
+every addendum; they are re-derived by the citing phase's own session, not by this one.
+
+The seven corrections above (F1–F7) were confirmed still applied and byte-correct against the
+current sources before this session began; none required re-work. Phase 7 v1 remains unverified,
+for the reason §0.35 and the closing status already state: Round 32's F6/F7 changed binding §5, so
+a fresh whole-document verification round is owed before the phase can close. This notes fix-up
+does not discharge it.
 
 ### Interface/change-trigger disclosure
 
