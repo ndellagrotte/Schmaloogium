@@ -4,7 +4,7 @@
 
 **Phase:** 7, both mandated parts: (a) engine-side frame driver and (b) Mixin hook catalog.  
 **Document version:** v1, initial build.  
-**Date:** 2026-08-03 · **Last revised:** 2026-08-03 (§0.27).
+**Date:** 2026-08-03 · **Last revised:** 2026-08-08 (§0.35).
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`; its Phase 7 assignment begins at
 `docs/design/v2.0-RC3/DESIGN.md:1805` and names dependencies 2–6 at
 `docs/design/v2.0-RC3/DESIGN.md:1807`. The heading and ranges were derived from this
@@ -81,7 +81,7 @@ Three narrow additions were necessary and are recorded rather than hidden:
    behavior owner for eleven engine flags while the listed inputs otherwise provide only their
    field names. The source says the corresponding video setting wins where one exists
    (`docs/research/v1/RESEARCH.md:1439`–`:1445`).
-3. The exact OQ-3/OQ-4 rows at `docs/research/v1/RESEARCH.md:1008`–`:1009` were read to satisfy
+3. The exact OQ-3/OQ-4 rows at `docs/research/v1/RESEARCH.md:1009`–`:1010` were read to satisfy
    §G4.4's verbatim-question rule.
 
 There was no network use. No `docs/**/chatlogs/**`, root-level `*.txt`, Oculus material, unlisted
@@ -249,6 +249,55 @@ Round 23 adds Phase 5's consumed resize registration, synchronous delivery, and 
 contract to §5.2 and corrects that inventory's binding citation. The §5 interface region changed
 and requires fresh verification.
 
+### 0.28 Round-25 fix-up
+
+Round 25 corrects the Phase 2–6 dependency inventories to cite their current binding §5 rows.
+The §5 interface region changed and requires fresh verification.
+
+### 0.29 Round-26 fix-up
+
+Round 26 aligns Phase 3 ID-mapping consumption with schema v3 and corrects two metadata citations.
+The §5 interface region changed and requires fresh verification.
+
+### 0.30 Round-27 fix-up
+
+Round 27 recognizes Phase 3's R7-9 grant while retaining its pending-reverification production
+gate, and corrects three §3.1 provenance coordinates. The §5 interface region changed and requires
+fresh verification.
+
+### 0.31 Round-28 fix-up
+
+Round 28 adds the required Phase 6 registry-generation adoption to coordinated publication and
+synchronizes the closing status. The §5 interface region changed and requires fresh verification.
+
+### 0.32 Round-29 fix-up
+
+Round 29 synchronizes the header and closing status with the Round-28 correction. The §5 interface
+region is unchanged.
+
+### 0.33 Round-30 fix-up
+
+Round 30 synchronizes the frame, overlay, and capture paths with the granted Phase 2/4/5 contracts.
+The §5 interface region changed and requires fresh verification.
+
+### 0.34 Round-31 fix-up
+
+Round 31 corrects the §1.1 scope qualifier for the Phase 2 capture point to name the actual
+outstanding gates (R7-8 package placement and the Phase 3/R7-9 reverification condition) instead of
+the granted §5.4 projections, and adds the public resize-observation row
+(`ResizeObservationPort` / `ResizeObservation` / `ResizeObservationResult` /
+`ResizeLifecycleRejection`, consumed by `mod.glue.frame`) to the §5.1 exact exposed-contract table.
+The §5 interface region changed and requires fresh verification.
+
+### 0.35 Round-32 fix-up
+
+Round 32 re-points stale provenance coordinates against RESEARCH and the Phase 2–6 docs in §0.3,
+§3.5–§3.7, §4.1–§4.2, §4.10, §8.3, §10, and §11.5, and corrects the closing status's literal-PASS
+accounting. It declares `AnaglyphEye` and `BlendStateValue` in §5.1, reshapes the three
+`UniformSignal` variants to Phase 6's binding sample shapes with explicit identity/value sources,
+and restates the `UniformSignalBridge` mapping row. The §5 interface region changed and requires
+fresh verification.
+
 ---
 
 ## 1. Scope & boundaries
@@ -269,8 +318,9 @@ Phase 7 owns:
 6. the dumb-hook bridge and the complete 1.12.2 hook catalog, including explicit deferrals for every
    Appendix-E row outside this phase;
 7. display/Framebuffer observation, world/dimension transition detection, and reload safe points;
-8. the Phase 2 capture point, readiness signal, capture-agent host, and clean-shutdown bridge, subject
-   to the ungranted manifest projections in §5.4; and
+8. the Phase 2 capture point, readiness signal, capture-agent host, and clean-shutdown bridge: granted
+   §5.4 history that imposes no feature/COMPLETE/T3 gate, with R7-8 package placement and the Phase
+   3/R7-9 reverification condition the only outstanding gates; and
 9. invocation/registration seams consumed by Phases 8–14 so the later subsystem can join without
    changing vanilla hook coordinates.
 
@@ -451,8 +501,8 @@ the Phase 5 snapshot, and branches on every closed result.
 
 | Contract item | Design element | Provenance |
 |---|---|---|
-| frame world-state sampling | §4.3 `open` calls Phase 6 first | `[V:observed]` `docs/research/v1/RESEARCH.md:533`–`:536` — “sample world state” and previous snapshots |
-| fixed gbuffers texture set | Phase 5 snapshot/fixed table binding in §4.6 | `[V:doc]` `docs/research/v1/RESEARCH.md:537` — “fixed unit map” |
+| frame world-state sampling | §4.3 `open` calls Phase 6 first | `[V:observed]` `docs/research/v1/RESEARCH.md:533`–`:537` — “sample world state” and previous snapshots |
+| fixed gbuffers texture set | Phase 5 snapshot/fixed table binding in §4.6 | `[V:doc]` `docs/research/v1/RESEARCH.md:538` — “fixed unit map” |
 | shadow before main gbuffers | §4.3 shadow slot, then main clear/bind | `[V:observed]` `docs/research/v1/RESEARCH.md:538`–`:540` |
 | complete gbuffers phase order | §3.2 + §4.4 dispatch table and hook rows | `[V:observed]` `docs/research/v1/RESEARCH.md:540`–`:542` |
 | depthtex1 then deferred before translucents | §4.5 `beforeTranslucent` | `[V:observed]` `docs/research/v1/RESEARCH.md:543`–`:544` |
@@ -461,15 +511,15 @@ the Phase 5 snapshot, and branches on every closed result.
 | push/pop around leash/glint | `NestedRenderScopeStack` in §4.4 | `[V:observed]` `docs/research/v1/RESEARCH.md:551`–`:552` |
 | precise depth copies and center depth | §4.3/§4.5; Phase 6 samples prior center depth at frame begin | `[V:observed]` `docs/research/v1/RESEARCH.md:557`–`:559` |
 | identity fullscreen state, mipmaps, scale, instances | `FullscreenPassExecutor` §4.6 | `[V:observed]` `docs/research/v1/RESEARCH.md:562`–`:564` |
-| composite guarantee | outer render wrapper + idempotent `finish` | `[V:observed]` `docs/research/v1/RESEARCH.md:565` — “guarantees composites run even on early exits” |
+| composite guarantee | outer render wrapper + idempotent `finish` | `[V:observed]` `docs/research/v1/RESEARCH.md:566` — “guarantees composites run even on early exits” |
 | `(internal)` is a real pack and `Off` is no shaders | §4.7 separates `PackSelection.Internal` from `PackSelection.Off` | `[V:doc]` `docs/research/v1/RESEARCH.md:478`–`:481` |
-| dimension cache and all uninit/reinit triggers | §4.8 per-`DimensionKey` cache plus pack-, option-, resource-, dimension-, resolution-, registry-remap-, and ID-source/catalog/policy-triggered safe-point rebuild | `[V:doc]` `docs/research/v1/RESEARCH.md:483`–`:489`; assigned Pintonium mechanism, not contract, at `docs/design/v2.0-RC3/DESIGN.md:1853`–`:1855`; Phase 9 R9-2 adds the identity triggers |
+| dimension cache and all uninit/reinit triggers | §4.8 per-`DimensionKey` cache plus pack-, option-, resource-, dimension-, resolution-, registry-remap-, and ID-source/catalog/policy-triggered safe-point rebuild | `[V:doc]` `docs/research/v1/RESEARCH.md:483`–`:490`; assigned Pintonium mechanism, not contract, at `docs/design/v2.0-RC3/DESIGN.md:1853`–`:1855`; Phase 9 R9-2 adds the identity triggers |
 
 ### 3.2 Appendix A.1: every program row
 
 | Appendix-A.1 slot/family | Phase-7 execution route | Provenance |
 |---|---|---|
-| `<none>` | GUI/menu stays fixed-function; `FIRST_PERSON_OVERLAY` uses draw-buffers-none, pending R7-3 | `[V:doc]` `docs/research/v1/RESEARCH.md:1101`–`:1141` |
+| `<none>` | GUI/menu stays fixed-function; `FIRST_PERSON_OVERLAY` uses Phase 5's draw-buffers-none lease | `[V:doc]` `docs/research/v1/RESEARCH.md:1101`–`:1141` |
 | `shadow`, `shadow_solid`, `shadow_cutout` | Phase 8 slot; Phase 4's `shadowPass=true` force-selection remains authoritative | `[V:doc]` `docs/research/v1/RESEARCH.md:1101`–`:1141` |
 | `gbuffers_basic` | leash and selection box | `[V:doc]` `docs/research/v1/RESEARCH.md:1101`–`:1141` |
 | `gbuffers_textured` | unlit particles | `[V:doc]` `docs/research/v1/RESEARCH.md:1101`–`:1141` |
@@ -505,7 +555,7 @@ Phase 7 not to overlay requested-slot state on the effective provider
 | 1 frame begin/end | H-FRAME-01…07 plus outer-finally H-FRAME-00; v0.3 H9-HELD-01 follows accepted begin and `IdDynamicsFrameSlot.resetFrame` precedes terminal release | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
 | 2 camera matrices | H-FRAME-04 after `setupCameraTransform`, once | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
 | 3 shadow invocation | H-FRAME-05; content deferred to Phase 8/v0.2 | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
-| 4 all per-phase switches | H-SKY, H-TERRAIN, H-DAMAGE, H-LINE, H-ENTITY, H-LEASH, H-GLINT, H-EYES, H-BEAM, H-PARTICLE, H-CLOUD, H-WEATHER, H-BORDER, H-HAND, and R7-3-gated H-OVERLAY-01 | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
+| 4 all per-phase switches | H-SKY, H-TERRAIN, H-DAMAGE, H-LINE, H-ENTITY, H-LEASH, H-GLINT, H-EYES, H-BEAM, H-PARTICLE, H-CLOUD, H-WEATHER, H-BORDER, H-HAND, and H-OVERLAY-01 | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
 | 5 depth copies + center depth | H-WEATHER and H-TERRAIN-02; center depth is Phase 6 frame-begin sampling | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
 | 6 deferred + composite/final | H-TERRAIN-02 and `finish`/H-FRAME-06/00 | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
 | 7 vertex interception | explicit Phase 10 deferrals E5–E8 in §4.10.8 | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
@@ -536,18 +586,18 @@ high-risk and are front-loaded in v0.1 assembly.
 
 | Phase 3 field | Exact owner behavior | Provenance |
 |---|---|---|
-| `clouds` | resolve `DEFAULT/FAST/FANCY/OFF` once per publication; a corresponding explicit video setting wins; OFF cancels, FAST/FANCY is returned to vanilla's cloud-mode query | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:477` and precedence at `docs/research/v1/RESEARCH.md:1439`–`:1445`; runtime mapping `[D-P7-11]` |
-| `backFaceSolid/CutoutMipped/Cutout/Translucent` | TRUE temporarily disables culling for exactly that terrain-layer scope; FALSE/DEFAULT preserves vanilla state; scope exit restores | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:486`–`:489`; runtime mapping `[D-P7-11]` |
-| `underwaterOverlay` | FALSE cancels only the WATER `RenderBlockOverlayEvent`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:482`; runtime mapping `[D-P7-11]` |
-| `sun`, `moon` | FALSE suppresses only the corresponding textured sky draw; TRUE/DEFAULT preserves vanilla | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:483`–`:484`; runtime mapping `[D-P7-11]` |
-| `vignette` | FALSE cancels only `RenderGameOverlayEvent.Pre(VIGNETTE)`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:485`; runtime mapping `[D-P7-11]` |
-| `rainDepth` | FALSE disables depth test only for the weather scope and restores it; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:490`; runtime mapping `[D-P7-11]` |
-| `beaconBeamDepth` | FALSE disables depth test only for beacon/crystal beam scopes and restores it; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:491`; runtime mapping `[D-P7-11]` |
-| `frustumCulling` | FALSE makes only the catalogued world-render frustum queries return visible; TRUE/DEFAULT delegates unchanged | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:493`; runtime mapping `[D-P7-11]` |
+| `clouds` | resolve `DEFAULT/FAST/FANCY/OFF` once per publication; a corresponding explicit video setting wins; OFF cancels, FAST/FANCY is returned to vanilla's cloud-mode query | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:688` and precedence at `docs/research/v1/RESEARCH.md:1439`–`:1445`; runtime mapping `[D-P7-11]` |
+| `backFaceSolid/CutoutMipped/Cutout/Translucent` | TRUE temporarily disables culling for exactly that terrain-layer scope; FALSE/DEFAULT preserves vanilla state; scope exit restores | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:697`–`:700`; runtime mapping `[D-P7-11]` |
+| `underwaterOverlay` | FALSE cancels only the WATER `RenderBlockOverlayEvent`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:693`; runtime mapping `[D-P7-11]` |
+| `sun`, `moon` | FALSE suppresses only the corresponding textured sky draw; TRUE/DEFAULT preserves vanilla | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:694`–`:695`; runtime mapping `[D-P7-11]` |
+| `vignette` | FALSE cancels only `RenderGameOverlayEvent.Pre(VIGNETTE)`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:696`; runtime mapping `[D-P7-11]` |
+| `rainDepth` | FALSE disables depth test only for the weather scope and restores it; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:701`; runtime mapping `[D-P7-11]` |
+| `beaconBeamDepth` | FALSE disables depth test only for beacon/crystal beam scopes and restores it; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:702`; runtime mapping `[D-P7-11]` |
+| `frustumCulling` | FALSE makes only the catalogued world-render frustum queries return visible; TRUE/DEFAULT delegates unchanged | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:704`; runtime mapping `[D-P7-11]` |
 
 All are tri-state-preserving; unset never silently becomes TRUE. The precipitation helper retains the
 Phase 3 handoff exactly: none for `PPT_NONE`, rain at temperature `>= 0.15`, snow below
-(`docs/phase3/v1/PHASE_3_DOC.md:536`).
+(`docs/phase3/v1/PHASE_3_DOC.md:747`).
 
 ### 3.6 Input contradictions and binding rulings
 
@@ -555,19 +605,20 @@ Phase 3 handoff exactly: none for `PPT_NONE`, rain at temperature `>= 0.15`, sno
 |---|---|
 | Appendix E lists the one-argument `func_174982_a` overload, while the actual world loop calls the four-argument overload (`reference-src/cleanroom-0.6.6-alpha/patches/minecraft/net/minecraft/client/renderer/EntityRenderer.java.patch:200`–`:206`). MCP confirms `func_174977_a (...;DILnet/minecraft/entity/Entity;)I`. | H-TERRAIN targets `func_174977_a`; the one-argument method remains a validated but non-world-loop overload. Requested upstream correction U7-1. |
 | RC3/Pintonium row 3 calls the ordinal-zero-clear site a matrix-capture moment, but the Cleanroom patch orders that clear before camera setup (`reference-src/cleanroom-0.6.6-alpha/patches/minecraft/net/minecraft/client/renderer/EntityRenderer.java.patch:175`–`:179`). | RESEARCH and Phase 6 win: split the hook and capture after `setupCameraTransform`. |
-| Phase 5 orders `PRE_TRANSLUCENT` before `PRE_WEATHER` (`docs/phase5/v1/PHASE_5_DOC.md:1314`–`:1318`), while RESEARCH's world order renders weather first and requires copies before weather and before translucent (`docs/research/v1/RESEARCH.md:542`–`:559`). | Driver calls the contract moments in vanilla order; R7-1 requests a Phase 5 fix-up. No reversed call is assumed. |
-| Phase 4 makes `*_pre` virtual with no program (`docs/phase4/v1/PHASE_4_DOC.md:663`–`:666`), but Phase 5's only snapshot operation requires a `ResolvedProgramDescriptor` (`docs/phase5/v1/PHASE_5_DOC.md:579`–`:587`). | R7-2 requests a typed virtual-transition operation. Phase 7 never fabricates a program descriptor. |
-| Phase 2 requests program/resource/GL-error manifest projections not present in current dependency §5 contracts. | Capture remains schema-aware but cannot publish a conforming COMPLETE manifest until R7-4…R7-6 are granted. Runner failure manifests remain Phase 2-owned. |
+| Phase 5's depth protocol must follow RESEARCH's world order: weather before translucent (`docs/research/v1/RESEARCH.md:542`–`:559`). | The granted contract now orders `FRAME_BEGUN -> PRE_WEATHER -> PRE_TRANSLUCENT -> FRAME_COMMITTED`; the driver calls those moments in that order. |
+| Phase 4 makes `*_pre` virtual with no program (`docs/phase4/v1/PHASE_4_DOC.md:456`–`:459`). | Phase 5's granted `applyVirtualTransition` consumes the exact planned descriptor without a program; Phase 7 never fabricates one. |
+| Manifest facts have distinct owners. | Phase 7 copies Phase 4 `resolutions()`, Phase 5 `resources()`, Phase 2's replay-aware GL result, and the capture-plan provenance fields verbatim; it performs no parallel introspection. |
 
 ### 3.7 OptiFine replacement-list cross-check
 
 An exhaustive read of `reference-src/schlorbium-HD_U_G6_pre1/files.txt` produced this result rather
-than the blanket corroboration asserted by Appendix E:
+than the blanket corroboration asserted by RESEARCH §7.1
+(`docs/research/v1/RESEARCH.md:823`–`:825`):
 
 | Set | Result |
 |---|---|
 | App E rows 1–16 and 18 | all 17 classes are present; representative coordinates are `reference-src/schlorbium-HD_U_G6_pre1/files.txt:20`, `reference-src/schlorbium-HD_U_G6_pre1/files.txt:25`, `reference-src/schlorbium-HD_U_G6_pre1/files.txt:27`, and `reference-src/schlorbium-HD_U_G6_pre1/files.txt:32` for `WorldClient`, `BufferBuilder`, `EntityRenderer`, and `RenderGlobal` |
-| App E row 17, `net.minecraft.client.shader.Framebuffer` | **absent** from the complete 112-line list; this contradicts `docs/research/v1/RESEARCH.md:1390`'s “every class” claim |
+| App E row 17, `net.minecraft.client.shader.Framebuffer` | **absent** from the complete 112-line list; this contradicts the “every class” claim at `docs/research/v1/RESEARCH.md:823`–`:825` |
 | added supporting hook targets | `GuiMainMenu`, `OpenGlHelper`, `GameSettings`, `RenderLiving`, `RenderLivingBase`, armor/eye layers, and `TileEntityBeaconRenderer` are present; representative coordinates are `reference-src/schlorbium-HD_U_G6_pre1/files.txt:11`, `reference-src/schlorbium-HD_U_G6_pre1/files.txt:31`, `reference-src/schlorbium-HD_U_G6_pre1/files.txt:57`–`:69`, `reference-src/schlorbium-HD_U_G6_pre1/files.txt:82`, and `reference-src/schlorbium-HD_U_G6_pre1/files.txt:93` |
 | added `Minecraft` resize and `RenderDragon` beam targets | **absent**; H-RESIZE and H-BEAM-02 therefore have MCP/Cleanroom/Pintonium evidence but no `files.txt` corroboration |
 
@@ -666,7 +717,7 @@ Preparation follows dependency ownership exactly:
 18. permit shader drawing only after the complete composition and successful invalidation are
     visible together.
 
-The Phase 5 ordering is binding at `docs/phase5/v1/PHASE_5_DOC.md:1781`–`:1785`. A buffer consumer
+The Phase 5 ordering is binding at `docs/phase5/v1/PHASE_5_DOC.md:1517`–`:1524`. A buffer consumer
 failure after Phase 4 acceptance publishes both systems off before returning to vanilla. If Phase 9
 rejects after Phase 4/5 accept, Phase 7 immediately recovers Phase 4/5 off and deactivates the old ID
 publication after reset; it never opens a frame that combines new programs/buffers with old ordinals.
@@ -736,7 +787,7 @@ Any state from BUFFER_OPEN onward
 `open` rejects a second frame, a wrong thread, a stale active Phase 4/5/9 publication, a non-world
 pass, or a missing world/camera without GL work. A duplicate Phase 6 begin is a safe no-op and may continue;
 `REJECTED_STALE_FRAME` or `REJECTED_GENERATION` forbids shader drawing and reacquires the current
-publication as required by `docs/phase6/v1/PHASE_6_DOC.md:754`–`:759`.
+publication as required by `docs/phase6/v1/PHASE_6_DOC.md:869`–`:873`.
 
 H-FRAME-06 calls `finish(NORMAL)` on ordinary TAIL. H-FRAME-00 wraps the containing
 `renderWorld` invocation and calls `finish(EARLY_RETURN|THROWN)` from `finally`. Both use the
@@ -846,14 +897,14 @@ product, and §5.3's invalidation gate prevents an old classification from reach
 H-WEATHER calls `beforeWeather` immediately before weather draws. At v0.5 this requests
 `copyDepth(PRE_WEATHER, frameId)` and handles all four Phase 5 outcomes: `Copied` continues,
 `DuplicateIgnored` continues with the diagnostic, `BackendDegraded` continues with Phase 5's
-depthtex0 fallback, and `Rejected` aborts. Because the current Phase 5 order is contradictory,
-R7-1 must land before this call is enabled.
+depthtex0 fallback, and `Rejected` aborts. The granted Phase 5 protocol accepts this as the first
+ordered copy point.
 
 At the **four-argument** `RenderGlobal.renderBlockLayer` HEAD for `TRANSLUCENT`, H-TERRAIN-02:
 
 1. closes any opaque gbuffers scope;
 2. at v0.5 requests `copyDepth(PRE_TRANSLUCENT, frameId)` and handles its closed result;
-3. executes Phase 5's virtual `deferred_pre` transition through requested R7-2;
+3. executes Phase 5's granted `applyVirtualTransition(frameId, deferredPreDescriptor)`;
 4. traverses every populated Phase-4 `DEFERRED/BETWEEN_GBUFFERS` raster descriptor in ascending
    sparse order via §4.6;
 5. restores the blocks atlas and vanilla blend posture through `FrameRenderPort`; and
@@ -894,8 +945,8 @@ completed image in step 1 of §4.3.
 11. restore viewport/matrix/fog/depth/blend/alpha state in `finally`; and
 12. call Phase 5 `completePass`; advance only on `Completed`, otherwise abort the frame.
 
-Virtual `deferred_pre`/`composite_pre` descriptors execute no barrier or draw. They request only the
-Phase-5-owned transition in R7-2. An absent sparse raster descriptor is never visited. A Phase-4
+Virtual `deferred_pre`/`composite_pre` descriptors execute no barrier or draw. They request only
+Phase 5's `applyVirtualTransition` operation. An absent sparse raster descriptor is never visited. A Phase-4
 `Skipped` result does not complete a never-drawn flip transition; if a snapshot was already acquired,
 the driver aborts it rather than commit.
 
@@ -1054,7 +1105,7 @@ depending on Mixin's default fatal-injection behavior.
 | H-BOOT-02 `OpenGlHelper` | `func_77474_a()V` (`initializeTextures`) RETURN | `BootstrapHooks.onGlReady()` | `CORE`; no GL work is attempted before it |
 | H-BOOT-03 `GuiMainMenu` | `func_73866_w_()V` (`initGui`) RETURN, once | `BootstrapHooks.onClientLoadingComplete()` | `FEATURE`; shader startup may remain deferred |
 | H-FRAME-00 `EntityRenderer` | `func_181560_a(FJ)V`, AROUND its `func_78471_a(FJ)V` (`renderWorld`) invocation | `WorldRenderBoundary.invoke(original, partialTicks, finishTimeNano)` | `CORE`; the outer `finally` is the early-exit guarantee |
-| H-FRAME-01 `EntityRenderer` | `func_175068_a(IFJ)V` HEAD | `FrameHooks.open(pass, partialTicks, finishTimeNano)` | `CORE`; Pintonium row 1 and App E row 1 (`docs/research/v1/RESEARCH.md:1398`) |
+| H-FRAME-01 `EntityRenderer` | `func_175068_a(IFJ)V` HEAD | `FrameHooks.open(pass, partialTicks, finishTimeNano)` | `CORE`; Pintonium row 1 and App E row 1 (`docs/research/v1/RESEARCH.md:1401`) |
 | H9-HELD-01 accepted H-FRAME-01 boundary | no additional Mixin; immediately after Phase 6 accepts the copied frame identity | call current Phase 9 held sampler/resolver once and complete `updateHeldItems` before any program activation | `DEFERRED(P9,v0.3)` until installed, then `FEATURE`; zero tuple on provider failure, stale generation aborts the shader frame |
 | H-FRAME-02 `EntityRenderer` | `func_175068_a(IFJ)V`, BEFORE `GlStateManager.clear(I)V`, ordinal 0 | `FrameHooks.normalizeVanillaState(frameToken)` | `CORE`; validated Pintonium row 2 |
 | H-FRAME-03 `EntityRenderer` | same invocation, shift AFTER | `FrameHooks.afterFirstClear(frameToken)` | `CORE`; creates/refreshes Phase 5 frame resources but does not claim matrices |
@@ -1073,8 +1124,8 @@ at H-FRAME-01, before H-FRAME-03 can resize or clear, preserving the Phase 6 ord
 
 | ID / class | SRG target and injection | Engine action | Health / evidence |
 |---|---|---|---|
-| H-SKY-01 `RenderGlobal` | `func_174976_a(FI)V` HEAD/RETURN | enter/exit `gbuffers_skybasic` | `FEATURE`; **no working reference**; App E row 2 (`docs/research/v1/RESEARCH.md:1399`) |
-| H-SKY-02 `RenderGlobal` | same method, REDIRECT `World.func_72826_c(F)F` | call original, publish the returned celestial angle, return it unchanged | `OBSERVER`; concrete celestial-rotation sub-site; **no working reference** |
+| H-SKY-01 `RenderGlobal` | `func_174976_a(FI)V` HEAD/RETURN | enter/exit `gbuffers_skybasic` | `FEATURE`; **no working reference**; App E row 2 (`docs/research/v1/RESEARCH.md:1402`) |
+| H-SKY-02 `RenderGlobal` | same method, REDIRECT `World.func_72826_c(F)F` | call original, invoke the §5.1 `Celestial` update at this rotation moment, return the angle unchanged | `OBSERVER`; concrete celestial-rotation sub-site; **no working reference** |
 | H-SKY-03 `RenderGlobal` | same method, slice-bounded redirects of the sun and moon `Tessellator.func_78381_a()V` draws | enter `gbuffers_skytextured`, honor `sun`/`moon`, call or suppress draw, restore sky-basic | `FEATURE`; ordinals must be fixed by OQ-4; **no working reference** |
 | H-TERRAIN-01 `RenderGlobal` | `func_174977_a(BlockRenderLayer,D,I,Entity)I` HEAD/RETURN, only for SOLID/CUTOUT_MIPPED/CUTOUT | while an authenticated Phase 8 execution is active, bypass main-snapshot policy and preserve the vanilla call; otherwise select `gbuffers_terrain_solid`, `gbuffers_terrain_cutout_mip`, or `gbuffers_terrain_cutout` and apply scoped `backFace.*` | `CORE`; actual world-loop overload at `reference-src/cleanroom-0.6.6-alpha/patches/minecraft/net/minecraft/client/renderer/EntityRenderer.java.patch:200`–`:206` |
 | H-TERRAIN-02 `RenderGlobal` | the same exact method HEAD/RETURN, only for `TRANSLUCENT` | while authenticated shadow execution is active, bypass main copy/deferred/water policy; otherwise at HEAD perform PRE_TRANSLUCENT copy/virtual/deferred sequence then enter `gbuffers_water`, and at RETURN close/restore | `CORE`; Pintonium row 5; copy remains disabled until Phase 5 order is corrected |
@@ -1090,8 +1141,8 @@ explicit U7-1 correction request, not an unreported substitution.
 | ID / class | SRG target and injection | Engine action | Health / evidence |
 |---|---|---|---|
 | H-ENTITY-01 `RenderGlobal` | `func_180446_a(Entity,ICamera,F)V` HEAD/RETURN; REDIRECT its `RenderManager.func_178632_c(Z)V` calls | while authenticated shadow execution is active, bypass the main entity/glowing program policy and preserve vanilla calls; otherwise enter/exit `gbuffers_entities`, call the original outline toggle, and push/pop `gbuffers_entities_glowing` | `FEATURE`; App E row 2 |
-| H-ENTITY-02 / H9-ENTITY-ID-01 `RenderManager` | `func_188388_a(Entity,F,Z)V` and `func_188391_a(Entity,D,D,D,F,F,Z)V` HEAD/RETURN | within the already-selected entity program: HEAD maps the exact entity ordinal, pushes prior `entityId`, and publishes mapped-or-zero; RETURN validates/restores the Phase 9 LIFO token. Nested calls of one overload from the other remain nested ID scopes | `DEFERRED(P9,v0.3)` until installed, then `FEATURE`; App E row 13 (`docs/research/v1/RESEARCH.md:1410`); mismatch disables ID delivery and writes zero, not the surrounding entity program |
-| H-ENTITY-03 / H9-BLOCK-ENTITY-ID-01 `TileEntityRendererDispatcher` | `func_147549_a(TileEntity,D,D,D,F)V` HEAD/RETURN | HEAD first opens `gbuffers_block`; only an accepted program scope may obtain the TE state ordinal, push prior `blockEntityId`, and publish mapped-or-zero. RETURN restores the ID token **before** closing the Phase 7 program scope | `FEATURE` for program scope; ID augmentation is `DEFERRED(P9,v0.3)` until installed then `FEATURE`; App E row 14 (`docs/research/v1/RESEARCH.md:1411`); detached/unknown TE publishes zero |
+| H-ENTITY-02 / H9-ENTITY-ID-01 `RenderManager` | `func_188388_a(Entity,F,Z)V` and `func_188391_a(Entity,D,D,D,F,F,Z)V` HEAD/RETURN | within the already-selected entity program: HEAD maps the exact entity ordinal, pushes prior `entityId`, and publishes mapped-or-zero; RETURN validates/restores the Phase 9 LIFO token. Nested calls of one overload from the other remain nested ID scopes | `DEFERRED(P9,v0.3)` until installed, then `FEATURE`; App E row 13 (`docs/research/v1/RESEARCH.md:1413`); mismatch disables ID delivery and writes zero, not the surrounding entity program |
+| H-ENTITY-03 / H9-BLOCK-ENTITY-ID-01 `TileEntityRendererDispatcher` | `func_147549_a(TileEntity,D,D,D,F)V` HEAD/RETURN | HEAD first opens `gbuffers_block`; only an accepted program scope may obtain the TE state ordinal, push prior `blockEntityId`, and publish mapped-or-zero. RETURN restores the ID token **before** closing the Phase 7 program scope | `FEATURE` for program scope; ID augmentation is `DEFERRED(P9,v0.3)` until installed then `FEATURE`; App E row 14 (`docs/research/v1/RESEARCH.md:1414`); detached/unknown TE publishes zero |
 | H-LEASH-01 `RenderLiving` | `func_110827_b(EntityLiving,D,D,D,F,F)V` HEAD/RETURN | suspend parent snapshot, push `gbuffers_basic`, then reacquire parent | `FEATURE`; required push/pop semantics |
 | H-GLINT-01 `LayerArmorBase` | `func_188364_a(RenderLivingBase,EntityLivingBase,ModelBase,F,F,F,F,F,F,F)V` HEAD/RETURN | suspend parent, push `gbuffers_armor_glint`, then reacquire parent | `FEATURE`; required push/pop semantics |
 | H-EYES-01 `LayerSpiderEyes`, `LayerEndermanEyes`, `LayerEnderDragonEyes` | each `func_177141_a(<concrete entity>;FFFFFFF)V` HEAD/RETURN: `EntitySpider`, `EntityEnderman`, or `EntityDragon` descriptor respectively | suspend parent, push `gbuffers_spidereyes`, then reacquire parent | `FEATURE`; bridge overloads taking `EntityLivingBase` are excluded by descriptor |
@@ -1125,7 +1176,7 @@ by R9-2; the former RETURN-only H-COLOR description is superseded.
 
 | ID / class | SRG target and injection | Engine action | Health / evidence |
 |---|---|---|---|
-| H-PARTICLE-01 `ParticleManager` | `func_78874_a(Entity,F)V` HEAD/RETURN | enter/exit `gbuffers_textured` | `FEATURE`; App E row 15 (`docs/research/v1/RESEARCH.md:1412`) |
+| H-PARTICLE-01 `ParticleManager` | `func_78874_a(Entity,F)V` HEAD/RETURN | enter/exit `gbuffers_textured` | `FEATURE`; App E row 15 (`docs/research/v1/RESEARCH.md:1415`) |
 | H-PARTICLE-02 `ParticleManager` | `func_78872_b(Entity,F)V` HEAD/RETURN | enter/exit `gbuffers_textured_lit` | `FEATURE`; MCP-validated companion method |
 | H-CLOUD-01 `RenderGlobal` | `func_180447_b(F,I,D,D,D)V` HEAD/RETURN | while authenticated shadow execution is active, bypass the main cloud flag/program policy; otherwise honor resolved `clouds` and enter/exit `gbuffers_clouds` | `FEATURE`; **no working reference** |
 | H-CLOUD-02 `GameSettings` | `func_181147_e()I` RETURN modifier, active only during H-CLOUD-01 | return the Phase 3-resolved FAST/FANCY mode; OFF is handled before draw | `FEATURE`; vanilla mode query otherwise unchanged |
@@ -1133,7 +1184,7 @@ by R9-2; the former RETURN-only H-COLOR description is superseded.
 | H-BORDER-01 `RenderGlobal` | `func_180449_a(Entity,F)V` HEAD/RETURN | enter/exit `gbuffers_textured_lit` | `FEATURE`; App A.1 world-border mapping |
 | H-HAND-01 `EntityRenderer` | `func_78476_b(F,I)V`, AROUND `ItemRenderer.func_78440_a(F)V` | invoke the original through `HandSubpassBridge` once with SOLID mask and once with TRANSLUCENT mask; apply depth-scale only to the latter | `CORE`; Pintonium row 6 moment, with reference depth timing rejected |
 | H-HAND-02 `ItemRenderer` | inside `func_78440_a(F)V`, REDIRECT calls to `func_187462_a(EntityLivingBase,ItemStack,TransformType,Z)V`, `func_187456_a(F,F,EnumHandSide)V`, `func_187463_a(F,F,F)V`, `func_187461_a(ItemStack)V`, and `func_187465_a(F,EnumHandSide,F,ItemStack)V` | `HandContentClassifier` supplies a copied SOLID/TRANSLUCENT category; call each original only in its matching mask, with bare arms/maps classified SOLID | `FEATURE`; every target/descriptor MCP-validated; no policy in mixin |
-| H-OVERLAY-01 `ItemRenderer` | `func_78447_b(F)V` HEAD/RETURN | acquire/release draw-buffers-none route around first-person overlays | `FEATURE`, **gated by R7-3**; until granted, vanilla overlay path remains |
+| H-OVERLAY-01 `ItemRenderer` | `func_78447_b(F)V` HEAD/RETURN | acquire/release Phase 5's `openDrawBuffersNone` lease around first-person overlays | `FEATURE`; closed rejection/failure degrades the overlay locally and preserves vanilla routing |
 | H-OVERLAY-02 Forge event bus | cancelable `RenderBlockOverlayEvent` only for `WATER` when `underwaterOverlay == FALSE` | no program switch | `FEATURE`; event preferred over a mixin |
 | H-OVERLAY-03 Forge event bus | cancelable `RenderGameOverlayEvent.Pre` only for `VIGNETTE` when `vignette == FALSE` | no program switch | `FEATURE`; event preferred over a mixin |
 
@@ -1145,7 +1196,7 @@ sampled Phase 6 value and the two balanced hand routes, preserving the authorita
 
 | ID / class | SRG target and injection | Engine action | Health |
 |---|---|---|---|
-| H-BLEND-01 `GlStateManager` | `func_179147_l()V`, `func_179084_k()V`, `func_187401_a(SourceFactor,DestFactor)V`, `func_179112_b(I,I)V`, `func_187428_a(SourceFactor,DestFactor,SourceFactor,DestFactor)V`, `func_179120_a(I,I,I,I)V` RETURN | publish exact blend enabled/function state to Phase 6 | `OBSERVER`; App E row 16 (`docs/research/v1/RESEARCH.md:1413`) |
+| H-BLEND-01 `GlStateManager` | `func_179147_l()V`, `func_179084_k()V`, `func_187401_a(SourceFactor,DestFactor)V`, `func_179112_b(I,I)V`, `func_187428_a(SourceFactor,DestFactor,SourceFactor,DestFactor)V`, `func_179120_a(I,I,I,I)V` RETURN | publish exact blend enabled/function state to Phase 6 | `OBSERVER`; App E row 16 (`docs/research/v1/RESEARCH.md:1416`) |
 | H-FOG-01 `GlStateManager` | `func_179127_m()V`, `func_179106_n()V`, `func_187430_a(FogMode)V`, `func_179093_d(I)V`, `func_179095_a(F)V`, `func_179102_b(F)V`, `func_179153_c(F)V` RETURN | publish exact fog state | `OBSERVER` |
 | H-FOG-02 Forge event bus | `EntityViewRenderEvent.FogColors`, `FogDensity`, and `RenderFogEvent` | publish fog color/mode/density at event fidelity | `OBSERVER`; event preferred |
 | H-STATE-01 `GlStateManager` | `func_179135_a(Z,Z,Z,Z)V`, `func_179089_o()V`, `func_179129_p()V` RETURN | update the bridge's restoration ledger only | `OBSERVER`; driver policy remains engine-side |
@@ -1161,7 +1212,7 @@ observers report the effective state once rather than recursively re-entering po
 |---|---|---|---|
 | H-RESIZE-01 `Minecraft` | `func_147119_ah()V` (`updateFramebufferSize`) RETURN | offer actual framebuffer width/height to `ResolutionCoordinator` | `FEATURE`; fallback OQ-3 path |
 | H-RESIZE-02 `Minecraft` | `func_71370_a(I,I)V` (`resize`) RETURN | mark window/display extent changed; actual FBO size still comes from H-RESIZE-01 | `FEATURE`; keeps HiDPI dimensions distinct |
-| H-FBO-01 `Framebuffer` | `func_147613_a(I,I)V` (`createBindFramebuffer`) RETURN | increment vanilla-FBO attachment epoch and schedule next safe-boundary rebuild | `CORE`; App E row 17 (`docs/research/v1/RESEARCH.md:1414`) |
+| H-FBO-01 `Framebuffer` | `func_147613_a(I,I)V` (`createBindFramebuffer`) RETURN | increment vanilla-FBO attachment epoch and schedule next safe-boundary rebuild | `CORE`; App E row 17 (`docs/research/v1/RESEARCH.md:1417`) |
 | H-FBO-02 `Framebuffer` | `func_147610_a(Z)V` (`bindFramebuffer`) RETURN and `func_147615_c(I,I)V` (`framebufferRender`) HEAD/RETURN | observe final target/presentation boundaries; never retain the vanilla handle beyond its epoch | `OBSERVER`; capture occurs before presentation |
 | H-WORLD-01 Forge event bus | `WorldEvent.Unload` for the client world | abort open frame, demote the dimension pipeline to plan-only, clear temporal world state | `CORE`; event preferred over `WorldClient` mixin (App E row 18) |
 | H-CAPTURE-01 frame bridge | after `final` completes and before H-FBO-02 presentation | invoke the optional installed `FrameCaptureListener` once with the borrowed view | `FEATURE`; Phase 2 R11; absent listener disables capture |
@@ -1175,7 +1226,7 @@ that degraded frame.
 #### 4.10.8 Appendix E owner/deferral ledger (all 18 rows)
 
 This ledger is the completeness proof for Appendix E's class catalog
-(`docs/research/v1/RESEARCH.md:1396`–`:1415`). A deferred row is intentionally **not** a Phase 7
+(`docs/research/v1/RESEARCH.md:1396`–`:1418`). A deferred row is intentionally **not** a Phase 7
 injection specification; it records the exact owner and milestone so later work cannot mistake
 absence for omission.
 
@@ -1278,12 +1329,11 @@ Readiness is `pipeline publication active && N configured frames finalized && no
 merely “main menu loaded.” A warming pipeline is reported as `WAITING`; timeout/wedge handling and
 failure-manifest production remain Phase 2 runner policy.
 
-The current dependencies do not expose all manifest projections. Phase 7 therefore defines no
-parallel introspection and may emit only a schema-valid **failure** manifest until R7-4…R7-7 are
-granted. In particular, GL attribution is copied only from Phase 2 R4A's replay-aware boolean; it is
-never guessed from an operation label. Acquisition method, archive SHA-512, and licence are runner
-fixture facts, so the runner must place them in an authenticated plan extension or merge them after
-capture (R7-7).
+Phase 7 defines no parallel introspection. It serializes Phase 4's immutable
+`ProgramRegistryView.resolutions()`, Phase 5's immutable `BufferResourceProjection`, Phase 2's
+accepted replay-aware GL-error result, and the capture plan's authenticated acquisition mode,
+archive SHA-512, and licence verbatim. It never guesses attribution or provenance from operation
+labels, pack content, scene text, or rendered behavior.
 
 ---
 
@@ -1314,6 +1364,7 @@ public record FrameBeginSignal(
     long worldEpoch, long logicalTick, double smoothingTimeTicks, float frameTimeSeconds,
     DimensionKey dimension, int vanillaPass, float partialTicks,
     Extent2i targetView, Extent2i priorCompletedFramebuffer, AnaglyphEye eye) {}
+public enum AnaglyphEye { LEFT, RIGHT }
 
 public record CameraSnapshot(
     Matrix4Value modelView, Matrix4Value projection) {}
@@ -1681,17 +1732,38 @@ public interface UniformSignalBridge {
     SignalResult event(FrameToken frame, UniformSignal signal);
 }
 public sealed interface UniformSignal {
-    record Celestial(float sunAngle, float shadowAngle, float rainStrength) implements UniformSignal {}
-    record Fog(float start, float end, ColorValue color) implements UniformSignal {}
+    record Celestial(Float3 sunPosition, Float3 moonPosition, Float3 shadowLightPosition,
+        Float3 upPosition) implements UniformSignal {}
+    record Fog(int fogMode, float density, Float3 color) implements UniformSignal {}
     record Blend(BlendStateValue state) implements UniformSignal {}
 }
-public record ColorValue(float red, float green, float blue, float alpha) {}
+public record BlendStateValue(
+    boolean enabled, int srcRgb, int dstRgb, int srcAlpha, int dstAlpha) {}
 public sealed interface SignalResult {
     record Accepted() implements SignalResult {}
     record Rejected(HookRejection reason) implements SignalResult {}
     record Failed(FailureId failure) implements SignalResult {}
 }
 ```
+
+`AnaglyphEye` is a closed `:engine` enum over the two vanilla anaglyph eyes: glue derives the
+active eye from vanilla's per-pass state and `FrameRenderPort.bind` applies that eye's color mask
+through the Phase 1 facade; the single non-anaglyph pass carries `LEFT`. Each `UniformSignal`
+variant carries exactly the non-identity fields of its Phase 6 binding sample
+(`docs/phase6/v1/PHASE_6_DOC.md:593`–`:602`): the bridge copies `worldEpoch`/`frameId` from the
+frame's accepted `FrameBeginSignal` and forwards every payload field verbatim —
+`Celestial`→`updateCelestial`, `Fog`→`updateFog`, `Blend`→`updateBlend`
+(`docs/phase6/v1/PHASE_6_DOC.md:378`–`:383`) — with no resampling. `Float3` is Phase 6's verified
+engine record (`docs/phase6/v1/PHASE_6_DOC.md:607`). The four celestial vectors are the active
+Phase 8 publication's values, invoked at the H-SKY-02 rotation moment
+(`docs/phase6/v1/PHASE_6_DOC.md:1153`); with no authenticated Phase 8 publication (v0.1) no
+`Celestial` event is emitted and Phase 6's pending-neutral defaults stand.
+`sunAngle`/`shadowAngle`/`rainStrength` are frame/tick-provider values Phase 6 samples itself
+(`docs/phase6/v1/PHASE_6_DOC.md:561`–`:562`, `:566`–`:570`), not signal fields, and H-FOG-01's
+observed fog start/end are not forwarded because `FogSample` carries no start/end
+(`docs/phase6/v1/PHASE_6_DOC.md:598`–`:599`). `BlendStateValue` mirrors `BlendSample`'s
+non-identity fields exactly; glue translates the observed `SourceFactor`/`DestFactor` enums into
+Phase 6's full-int-domain factor encoding (`docs/phase6/v1/PHASE_6_DOC.md:614`–`:615`).
 
 `Coalesced.token()` is an already-issued controller token and is polled exactly like an
 `Accepted.token()`. `status` returns `Unknown` for any token the controller did not issue; that
@@ -1708,8 +1780,8 @@ Active; rejection/failure follows §5.3 compensation and never leaks a Minecraft
 seam.
 
 `BuiltInPassthroughPack` is always constructible and loadable through Phase 3 without a manifest.
-`InternalPackManifestProducer` is a separate post-R7-9 capability and must not be implemented,
-constructed, or queried until R7-9 is granted and Phase 3 reverified. `ContentDigest` is immutable
+`InternalPackManifestProducer` is a separate R7-9-granted capability and must not be implemented,
+constructed, or queried until Phase 3 is reverified. `ContentDigest` is immutable
 and record equality is its value equality. `SHA_256_V1` requires
 exactly 64 lowercase ASCII hexadecimal characters and hashes this canonical byte stream: ASCII
 `schmaloogium-internal-pack\0sha256-v1\0` (each `\0` is one zero byte), then every snapshot entry
@@ -1718,10 +1790,10 @@ sequence is a prefix of another, the shorter sequence sorts first. Snapshot prod
 `manifest().paths()`, and digest traversal use this same total comparator.
 Each entry is one byte (`0` directory, `1` file), its path's UTF-8 byte length as an unsigned
 64-bit big-endian integer, those UTF-8 bytes, and, for a file only, its content length in the same
-integer encoding followed by its exact bytes. Subject to R7-9, each manifest String is exactly the
-requested Phase 3 canonical slash-separated String projection of `NormalizedPackPath`, and the path
+integer encoding followed by its exact bytes. Each manifest String is exactly Phase 3's granted
+`NormalizedPackPath.canonicalString()` projection, and the path
 bytes are exactly that String encoded as UTF-8; implicit `toString()` use is forbidden. Until R7-9
-is granted and reverified, internal-pack manifest/digest production is gated, not inferred.
+is available through a reverified Phase 3, internal-pack manifest/digest production is gated, not inferred.
 `manifest().identity()` equals the associated source's `identity()`, and the manifest and digest describe exactly the corpus
 returned by every successful `snapshot(limits)`. Insufficient
 caller limits reject the snapshot through Phase 3's checked protocol; they never select or hash a
@@ -1847,15 +1919,16 @@ configuration, and ID-snapshot provenance cannot be paired by a caller.
 | `DimensionPipelineCache` / `DimensionPipelineRecord` / `PipelineVersion` | map by Phase 3 `DimensionKey`; immutable PlanOnly/ReadyUnpublished/Active metadata; equality-only version counter | Phase 12 diagnostics; driver |
 | `FullscreenPassExecutor` / `FullscreenDraw` | typed execution of deferred/composite/final descriptors, mipmap set, viewport scale, instance index/count, QUADS-or-triangle-strip primitive choice | driver; recorded-GL tests |
 | `BuiltInPassthroughPack` / `InternalPackSource` | always-available Phase 3 source protocol: stable identity and limit-bounded snapshot throwing `InternalPackReadException` for Phase 3 to map to `INTERNAL_SOURCE_INVALID` | bootstrap; Phase 3 loader |
-| `InternalPackManifestProducer` | separate R7-9-gated deterministic GPL manifest/digest capability; unavailable before grant and reverification | Phase 2 headless golden input |
+| `InternalPackManifestProducer` | separate deterministic GPL manifest/digest capability using granted `NormalizedPackPath.canonicalString()`; unavailable pending Phase 3 reverification | Phase 2 headless golden input |
 | `ShaderReloadController` / `ReloadRequest` / `ReloadIntent` / `ReloadResult` / `ReloadToken` / `ReloadStatus` | main-thread asynchronous closed selection-change or validated active-rebuild intent, including resource/remap/mod-source/tag-alias/hand-policy reasons, whose render-thread commit uses `PipelineCoordinator`; accepted/coalesced tokens remain queryable; never accepts caller-paired selection/configuration/ID snapshots or publishes a partial pipeline | Phase 12 GUI/F3+R/command; Forge/resource/Phase 9 glue producers |
 | `IdDependentGeometryInvalidator` / `IdPublicationChange` / closed result | synchronous safe-boundary gate after an accepted Phase 9 generation change; schedules alias/layer-dependent vanilla and Phase 10 chunk products before another shader frame, with no registry object crossing the seam | Phase 10 and `mod.glue` chunk scheduler |
 | `FrameReadiness` | active pipeline identity, independent accepted Phase 4 registry, Phase 5 estate, and Phase 9 ID-runtime generations, consecutive finalized-frame count, and optional failure ID | Phase 2 capture agent |
 | `FinalizedFrame` / `FrameCaptureListener` | construction-installed optional listener; exactly-once render-thread notification after final/pass completion and before presentation; borrowed view, dimensions, eye, frame ID, identities, no retained framebuffer handle | Phase 2 `:mod` capture agent |
 | `HookApplicationReport` / `HookApplicationSubreport` | immutable primary catalog ID/target/expected/actual/class-set/deferred-owner/fallback rows, including all five Phase 9 rows, plus owner-phase/fingerprint/enabled nested rows copied from downstream audits. Primary Phase 7 row identities never change; a missing subreport is explicit absence. Frozen before first frame and serialized without capability inference | diagnostics, Phase 2 manifest diagnostics, Phase 8 hook audit, Phase 10 coexistence policy |
-| `UniformSignalBridge` | maps frame/camera/celestial/fog/blend signals to Phase 6's `UniformEventSink` without resampling; Phase 9 delivers held/entity/TE/color through authenticated `PerDrawDynamics` | Phase 6 integration; Phase 9 remains value owner |
+| `UniformSignalBridge` | maps frame/camera signals and the `Celestial`/`Fog`/`Blend` variants one-to-one onto Phase 6's `UniformEventSink` (`updateCelestial`/`updateFog`/`updateBlend`), copying world/frame identity from the accepted `FrameBeginSignal` and forwarding payload fields verbatim without resampling; Phase 9 delivers held/entity/TE/color through authenticated `PerDrawDynamics` | Phase 6 integration; Phase 9 remains value owner |
 | `ShadowInvocationSlot` / `ShadowInvocationContext` / `ShadowInvocationResult` | synchronous borrowed `ShadowFrameView`, main-camera, publication/barrier, and authenticated execution credentials; opaque slot epoch; closed `NotInstalled`, `Completed`, `Rejected`, `Failed` outcomes and the cleanup rules above | Phase 8 |
 | `ShadowExecutionBridge`, `ShadowExecutionIdentity`, `ShadowExecutionView`, and closed open/validate/close results | Phase 7 is sole issuer/owner; one non-nestable dynamic-extent view per installed-slot invocation; exact validation order and `finally` invalidation before main clear; terrain/entity/cloud/frustum main-policy bypass requires `Valid` for the current execution and slot epoch | Phase 8 `mod.glue.shadow` and guarded existing hook adapters |
+| `ResizeObservationPort` / `ResizeObservation` / `ResizeObservationResult` / `ResizeLifecycleRejection` | authenticated render-thread display/attachment observations with closed `Recorded`/`Duplicate`/`Rejected`/`Failed` results; duplicate/rejection/failure are mutation-free, `Recorded(true)` aborts the open shader frame, and accepted changes coalesce into one frame-boundary rebuild/publication | `mod.glue.frame` |
 
 No exposed contract contains a `ProgramHandle`, framebuffer GL name, physical ping-pong side, parsed
 source, or Minecraft object. `RenderSection` selects a requested Phase 4 slot; Phase 4 alone resolves
@@ -1869,13 +1942,15 @@ its effective provider.
 |---|---|
 | T0–T3 definitions and named-run catalog | §8/§9 implementation and milestone gates |
 | scene/capture-plan wire contract | capture-agent input and deterministic shot boundary |
-| run-manifest wire schema, including complete `hooks.*` primary/nested grammar | serialization target; copy the frozen `HookApplicationReport` directly under Phase 2 R18, subject to the remaining §5.4 requests |
+| run-manifest wire schema, including complete `programs.*`, `resources.*`, `gl_errors.*`, and `hooks.*` grammars | serialization target; copy each owner projection directly |
+| capture-plan provenance bridge | transport acquisition mode, archive SHA-512, and licence verbatim into the manifest |
+| accepted `ReplayAwareGLError` flow | copy Phase 6's replay result; never infer attribution |
 | determinism ledger | every new clock/frame/world input is recorded rather than hidden |
 
 Phase 7 does not redefine a pass condition, baseline, scene, timeout, or fixture-acquisition rule.
 It accepts R18 by exposing and serializing only the frozen report described in §5.1; successful
 frames, images, programs, and diagnostics never synthesize hook health.
-The binding Phase 2 surfaces are at `docs/phase2/v1/PHASE_2_DOC.md:1471`–`:1487`.
+The consumed Phase 2 surfaces are at `docs/phase2/v1/PHASE_2_DOC.md:1597`–`:1606`.
 
 #### Phase 3
 
@@ -1883,14 +1958,14 @@ The binding Phase 2 surfaces are at `docs/phase2/v1/PHASE_2_DOC.md:1471`–`:148
 |---|---|
 | `PackFrontEnd`, discovery/load requests/results | bootstrap, selection, reload |
 | `PackConfiguration`, `PackIdentity`, `DimensionConfiguration`, fingerprint/version discipline | sole configuration and per-dimension cache truth |
-| schema-v2 `IdMappingInput` and nested schema/version discipline | handed unchanged into the Phase 9 candidate request; Phase 7 validates equality but never parses or resolves a rule |
+| schema-v3 `IdMappingInput` and nested schema/version discipline | handed unchanged into the Phase 9 candidate request; Phase 7 validates equality but never parses or resolves a rule |
 | `ProgramStateModel`, `ProgramState`, `EvaluatedProgramStates` | typed engine flags and evaluated property state; no properties reparse |
 | `ResourceRequirements` | Phase 4/5/6 build inputs and Phase 7 world constants/routing |
 | `InternalPackSource` / `InternalPackSnapshot` | Phase 7 supplies the built-in bytes through the Phase 3-owned protocol |
 | `centerDepthMacroContributor` slot | pass Phase 6's empty contribution into materialization |
 
-The complete Phase 3 exposure is binding at
-`docs/phase3/v1/PHASE_3_DOC.md:1251`–`:1337` and is freshly verified by
+The consumed Phase 3 exposure is binding at
+`docs/phase3/v1/PHASE_3_DOC.md:1403`–`:1418` and is freshly verified by
 `docs/phase3/reviews/PHASE_3_REVIEW_22.md`.
 
 #### Phase 4
@@ -1900,13 +1975,15 @@ The complete Phase 3 exposure is binding at
 | `ProgramRegistryCompiler`, `RegistryBuildRequest`, opaque `CompiledRegistryCandidate` and detached `view()` | candidate compilation and prepublication Phase 5 planning |
 | `StageRegistry`, `StageStep`, `PassDescriptor`, `ProgramSlotDescriptor`, `ResolvedProgramDescriptor` | data-driven schedule traversal and requested/effective program separation |
 | `ProgramStateBundle` | effective per-slot state, scale, flips, and instance projection; Phase 7 never overlays requested state or re-resolves it |
+| `ProgramRegistryView.resolutions()` | immutable complete `programs.*` manifest projection copied directly |
 | `ProductionBarrierComposer` and exactly the three Phase 6 participants | authenticated barrier candidate composition |
 | `ProgramRegistryPublisher.publish/current` | publish/off transaction, generation checks |
 | `PublishedProgramStateBarrier` and Phase-4-issued `FrameBarrierContexts` | every activation/release; no direct program bind |
 | per-slot scale/mipmap/instance metadata | fullscreen executor inputs |
 
 Phase 7 obeys Phase 4's explicit prohibition on re-resolving fallback or overlaying requested state
-(`docs/phase4/v1/PHASE_4_DOC.md:1383`–`:1385`).
+(`docs/phase4/v1/PHASE_4_DOC.md:1576`–`:1580`); the consumed Phase 4 contracts are the exact rows at
+`docs/phase4/v1/PHASE_4_DOC.md:1560`–`:1574`.
 
 #### Phase 5
 
@@ -1916,25 +1993,30 @@ Phase 7 obeys Phase 4's explicit prohibition on re-resolving fallback or overlay
 | `BufferEstatePublisher` / `PublishedBufferEstate` | second half of the coordinated publication |
 | `beginFrame`, `snapshot`, `bind`, `executeClear`, `completePass`, `commitFrame`, `abortFrame` | exact frame/pass transaction; closed outcomes always handled |
 | `refreshMainDepth` / `MainDepthSource` | framebuffer epoch/resize coordination after Phase 6 begin |
-| `copyDepth` / `DepthCopyResult` | v0.5 PRE_WEATHER and PRE_TRANSLUCENT points, after R7-1 |
+| `copyDepth` / `DepthCopyResult` | v0.5 PRE_WEATHER then PRE_TRANSLUCENT points |
+| `applyVirtualTransition` / `VirtualTransitionResult` | programless `deferred_pre` and `composite_pre` flips |
+| `openDrawBuffersNone` / balanced lease results | first-person overlay routing |
+| `BufferResourceProjection` / `resources()` | immutable complete `resources.*` manifest projection copied directly |
 | `PassDrawTarget`, including payload-free `PassDrawTarget.Screen.INSTANCE` | unchanged snapshot draw target and anaglyph-aware final handoff |
 | texture overlay leases/bindings | Phase 13 composition without dynamic units |
-| `BufferResizeNotice`, `BufferResizeConsumer`, registration/delivery/result contracts | coordinated publication step 11: ordered synchronous resize delivery and closed-result handling before drawing |
+| `BufferResizeNotice`, `BufferResizeConsumer`, registration/delivery/result contracts | coordinated publication step 12: ordered synchronous resize delivery and closed-result handling before drawing |
 
-These are the current binding rows at `docs/phase5/v1/PHASE_5_DOC.md:1819`–`:1833`.
+The general Phase 5 frame/buffer rows consumed above are at
+`docs/phase5/v1/PHASE_5_DOC.md:2002`–`:2017`; the resize family is binding at
+`docs/phase5/v1/PHASE_5_DOC.md:2018`.
 
 #### Phase 6
 
 | Consumed contract | Use |
 |---|---|
-| `UniformRuntimeFactory` / `UniformRuntime` | one runtime per pipeline publication |
+| `UniformRuntimeFactory` / `UniformRuntime` | one runtime per pipeline publication, created with the current `PublishedRegistry.generation`, then advanced to an accepted replacement generation through `adoptRegistryGeneration` before use |
 | `beginFrame(FrameBeginInput)` | first mutation at H-FRAME-01, before resize/clear |
 | `UniformEventSink` | camera, celestial, fog, blend, color, instance and future owned signals |
 | sampler/built-in/custom participants | exact Phase 4 composition positions |
 | `UniformPlatformProvider` / `CenterDepthSource` | `mod.glue` implementations installed after GL-ready |
 
-The ordering and public surface are binding at
-`docs/phase6/v1/PHASE_6_DOC.md:1181`–`:1196`.
+The consumed Phase 6 runtime, frame-begin, event, and participant rows are binding at
+`docs/phase6/v1/PHASE_6_DOC.md:1382`–`:1390`.
 
 ### 5.3 Candidate composition/publication protocol
 
@@ -1942,12 +2024,13 @@ One `PipelineBuildTransaction` owns all unaccepted candidates. It executes on th
 only the pure Phase 9 build in step 4 may complete off-thread after glue freezes all inputs, and its
 result rejoins the same transaction before publication:
 
-1. load one immutable Phase 3 configuration/dimension view and validate its schema-v2 ID input;
+1. load one immutable Phase 3 configuration/dimension view and validate its schema-v3 ID input;
 2. project exactly one typed `ShadowPolicy` from that existing view, without reparsing or reopening
    pack resources, and call `ShadowPlanFactory.plan` before constructing the Phase 6 platform
    provider;
 3. give the ready plan's `ShadowCelestialPolicy` (or explicit absence) to that provider and create
-   the Phase 6 runtime, preserving the provider's accepted sample for `ShadowFrameView`;
+   the Phase 6 runtime with the current `ProgramRegistryPublisher.current().generation`, preserving
+   the provider's accepted sample for `ShadowFrameView`;
 4. snapshot the Phase 9 registry/tag/mod-source/alias-catalog/hand-policy inputs through D-6 glue,
    build the opaque Phase 9 candidate, and validate its configuration/registry identities;
 5. compile the Phase 4 candidate with Phase 6's macro contribution;
@@ -1962,13 +2045,18 @@ result rejoins the same transaction before publication:
 10. at a no-frame/no-draw/no-active-shadow-execution boundary, close the old Phase 8 publication,
     reset the old Phase 9 per-draw stacks, then publish Phase 4 first with a Phase-4-issued release
     context;
-11. publish Phase 5 second, synchronously delivering its resize notice;
-12. publish Phase 9 third with the exact configuration/registry/world context;
-13. if the Phase 9 generation changed, complete `IdDependentGeometryInvalidator.invalidate` for
+11. after Phase 4 accepts, reacquire `ProgramRegistryPublisher.current().generation` and call
+    `UniformRuntime.adoptRegistryGeneration` with that authoritative generation and
+    `PACK_REPLACEMENT`; `ADOPTED` and `ALREADY_CURRENT` proceed, while
+    `REJECTED_RETIRED_GENERATION` enters the existing publication recovery/off path before any
+    new-runtime event, participant activation, shadow use, or `beginFrame`;
+12. publish Phase 5 second, synchronously delivering its resize notice;
+13. publish Phase 9 third with the exact configuration/registry/world context;
+14. if the Phase 9 generation changed, complete `IdDependentGeometryInvalidator.invalidate` for
     alias/layer-dependent vanilla and Phase 10 chunk products; and
-14. atomically mark the pipeline Active with the new Phase 8 slot (or `NotInstalled`) only after all
+15. atomically mark the pipeline Active with the new Phase 8 slot (or `NotInstalled`) only after all
     publications and invalidation accept. No shader draw or shadow invocation is legal during
-    steps 10–14.
+    steps 10–15.
 
 Any failure before step 10 closes every still-owned object in exact reverse-construction order:
 Phase 8 publication first when present, then barrier/buffer/registry/ID candidates as applicable,
@@ -1996,25 +2084,24 @@ The plan/publication steps remain `NotInstalled` until a Phase 8 artifact with a
 available; once installed, Phase 7 consumes only its `ShadowPlanFactory`, immutable plan and
 celestial policy, `ShadowPassPublication`, invocation slot, health projection, and closed outcomes.
 
-### 5.4 Requested changes to dependency contracts — flagged, never assumed
+### 5.4 Dependency request status — ungranted changes are never assumed
 
-| ID | Owner | Requested binding change | Why it blocks/limits Phase 7 |
+| ID | Owner | Binding outcome | Phase 7 disposition |
 |---|---|---|---|
-| R7-1 | Phase 5 | change depth-copy protocol order to `FRAME_BEGUN -> PRE_WEATHER -> PRE_TRANSLUCENT -> FRAME_COMMITTED`, matching authoritative world order | current contract rejects the correct second call as out-of-order; copied depth remains disabled until fixed and reverified |
-| R7-2 | Phase 5 (coordinated with Phase 4) | typed `applyVirtualTransition(frameId, PassDescriptor)` for `deferred_pre`/`composite_pre`, applying flips without requiring a `ResolvedProgramDescriptor` or shader draw | current snapshot API cannot represent a virtual no-program stage; Phase 7 will not fabricate one |
-| R7-3 | Phase 5 | a balanced generation/frame-checked draw-buffers-none lease for first-person overlays | current public snapshot requires a resolved program; overlay routing cannot be implemented faithfully |
-| R7-4 | Phase 4 | grant Phase 2 R10: per-slot `SOURCED/CHAIN/ABSENT/FAILED` plus `sourcePresent`, as immutable runtime and golden projections | required `programs.*` manifest/T3 evidence is unavailable |
-| R7-5 | Phase 5 | grant Phase 2 R10A: immutable canonical `resources.*` projection with exact absence/capability-shortfall grammar | capture must not infer live allocation facts |
-| R7-6 | Phase 1 | grant Phase 2 R4A: total replay-aware `GLError + attributed` result | capture must not guess attribution; COMPLETE manifest is gated |
-| R7-7 | Phase 2 | define how immutable runner facts—acquisition mode, archive SHA-512, licence—reach or merge with the client capture without trusting pack self-report | current capture plan supplies pack selection/options but not all required manifest pack scalars |
+| R7-1 (granted) | Phase 5 | ordered `FRAME_BEGUN -> PRE_WEATHER -> PRE_TRANSLUCENT -> FRAME_COMMITTED` depth-copy protocol | consumed by §4.5 and §5.2 |
+| R7-2 (granted) | Phase 5 | programless `applyVirtualTransition(frameId, PassDescriptor)` | consumed by §4.5–§4.6 and §5.2 |
+| R7-3 (granted) | Phase 5 | balanced generation/epoch/frame-checked `openDrawBuffersNone` lease | consumed by H-OVERLAY-01 and §5.2 |
+| R7-4 (granted) | Phase 4 | immutable complete `ProgramRegistryView.resolutions()` projection | copied directly into `programs.*` |
+| R7-5 (granted) | Phase 5 | immutable canonical `resources.*` projection | copied directly without live-allocation inference |
+| R7-6 (granted) | Phase 1/2/6 | total replay-aware `GLError + attributed` flow | Phase 7 copies Phase 6's accepted replay result |
+| R7-7 (granted) | Phase 2 | authenticated capture-plan provenance bridge | acquisition mode, archive SHA-512, and licence are transported verbatim |
 | R7-8 | Phase 1 | add package slots for `com.schmaloogium.engine.frame`, `mod.glue.frame`, `mod.mixin.frame`, and `mod.conformance` to the binding package table | Phase 1 makes package placement closed; this document does not assume undeclared slots |
-| R7-9 | Phase 3 | expose a canonical slash-separated String projection of `NormalizedPackPath`, stable for every valid path and suitable for exact UTF-8 encoding | canonical manifest strings, ordering, and digest bytes must not be inferred from `toString()` |
+| R7-9 (granted) | Phase 3 | `NormalizedPackPath.canonicalString()` is the sole stable NFC root-relative slash projection, ordered and hashed by exact UTF-8 bytes | grant is unavailable to implementation until Phase 3's pending whole-document review returns literal PASS; `toString()` remains forbidden |
 
-R7-1 through R7-3 block their named feature claims, not v0.1's fixed/pass-through end-to-end frame.
-R7-4 through R7-7 block a COMPLETE Phase 2 manifest, not ordinary rendering. R7-8 blocks code
-placement; R7-9 blocks internal-pack manifest/digest production until the dependency fix-up. Every
-request needs its owner's §G1.3 fix-up and any review owed by a changed §5; this build session edits
-none of those documents.
+R7-1 through R7-7 are satisfied dependency history and impose no feature, COMPLETE, or T3 gate.
+R7-8 blocks code placement; granted R7-9 blocks internal-pack manifest/digest production only until
+Phase 3 reverification. Every still-pending request needs its owner's §G1.3 fix-up and any review
+owed by a changed §5; this document assumes no ungranted contract.
 
 Phase 8's downstream requests R8-1, R8-4, and the Phase-7 half of R8-5 are accepted by §§4.1,
 4.3–4.4, 4.12–4.13, and 5.1–5.3. They are not new dependency requests: they fill this owner's
@@ -2118,7 +2205,7 @@ unsafe.”
 | per-draw dynamics | accepted Phase 6 frame → held sample before activation; nested entity overloads; TE ID strictly inside block program; color operand copy; normal/throw reset ordering |
 | dimension cache | base/override/disabled switches, version equality, failed build retention, demotion to plan-only |
 | fullscreen plan | mipmap-before-pass, identity projection, exact scale viewport, instances `0..N-1`, restore `0`, final/passthrough |
-| internal pack source/golden | pre-R7-9 Phase 3 load and limit rejection require no manifest; post-R7-9 exact manifest identity/path list and SHA-256-v1 digest cover every accepting limit; rejecting limits cannot yield a subset |
+| internal pack source/golden | ordinary Phase 3 load and limit rejection require no manifest; after Phase 3 reverification, the granted projection drives exact manifest identity/path list and SHA-256-v1 digest for every accepting limit; rejecting limits cannot yield a subset |
 | engine flags | tri-state/default behavior and `finally` restoration for every §3.5 row |
 | hook-coverage model | exactly one disposition for §7.1 needs 1–11, Appendix A.1 rows, App E rows 1–18, and Pintonium rows 1–7; owner-phase-8 subreport rows copy without primary-ID drift and absence is never healthy |
 
@@ -2146,9 +2233,10 @@ injected throw. OQ-4 is a separate spike gate, not replaced by unit tests.
 - During development: `RUN-SCENE-SELFCHECK` on all fixed scenes, with repeated frames identical.
 - Phase 7 implementation gate: `RUN-T1-APPROVE` then `RUN-T1-REGRESS[one classic pack, all scenes]`,
   plus `RUN-T0[classic × all scenes]` exactly as Phase 2 maps v0.1
-  (`docs/phase2/v1/PHASE_2_DOC.md:417`–`:422`).
+  (`docs/phase2/v1/PHASE_2_DOC.md:509`–`:510`).
 - `RUN-CAPS-GATE` and `RUN-GOLDEN-CORE` remain green for the internal pack and minimum profile.
-- R7-4…R7-7 must be granted before any run manifest may claim the COMPLETE/T3 predicates.
+- COMPLETE/T3 claims consume the granted R7-4…R7-7 projections and remain subject to Phase 2's
+  ordinary predicate validation.
 
 No OptiFine image/source is committed. Oracle images remain local fixture artifacts under Phase 2's
 licensing and cache rules.
@@ -2161,15 +2249,15 @@ licensing and cache rules.
 
 | Order | Assembly increment | Observable gate |
 |---:|---|---|
-| 1 | dependency grant R7-8; grant and Phase 3 owner reverification of R7-9 before row 3 manifest/digest production; R7-1…R7-3 remain gates only for their named features | package/seam compile tests; dependency reviews literal PASS where §5 changed |
+| 1 | dependency grant R7-8; Phase 3 owner reverification before row 3 consumes granted R7-9 for manifest/digest production | package/seam compile tests; dependency reviews literal PASS where §5 changed |
 | 2 | install Phase 1 bootstrap/GL-ready providers and the Phase 2 capture-plan skeleton required by D-10 | startup reaches `Off` and exits cleanly without renderer |
-| 3 | supply/load Phase 7's internal pack through Phase 3; after R7-9 grant and Phase 3 owner reverification, produce its canonical manifest/digest and run the headless golden; build Phase 6 runtime | headless internal golden and uniform-runtime tests |
+| 3 | supply/load Phase 7's internal pack through Phase 3; after Phase 3 owner reverification, consume granted `canonicalString()` to produce its canonical manifest/digest and run the headless golden; build Phase 6 runtime | headless internal golden and uniform-runtime tests |
 | 4 | project the dormant typed shadow policy and plan before the Phase 6 provider, then compile Phase 4, derive Phase 5, compose participants, and perform the v0.1 dual publication; Phase 8 publication activates after the runtime at v0.2 and the third Phase 9 publication at v0.3 | recorded ownership/publication tests |
 | 5 | wire H-FRAME core transaction and fixed/final passthrough | empty world renders and early-return test finalizes once |
 | 6 | prove reference-free H-SKY, H-CLOUD, H-WEATHER first | dev hook report plus one fixed scene per family |
 | 7 | add terrain/damage/entity/effect/particle/border balanced routes | phase-dispatch coverage and recorded activations |
 | 8 | execute deferred/composite families and anaglyph-aware final; actual copied-depth remains v0.5-gated | fullscreen order/viewport/state tests |
-| 9 | add split hand/overlay routing where R7-3 permits and wire engine flags | water/hand/overlay fixed scenes |
+| 9 | add split hand/overlay routing through the granted lease and wire engine flags | water/hand/overlay fixed scenes |
 | 10 | add dimension/reload/resize rebuild transaction, hook audit, capture readiness/shutdown | resize/dimension fault matrix and `RUN-SCENE-SELFCHECK` |
 | 11 | run the binding v0.1 Phase 2 gates | ≥1 classic pack T1; classic matrix T0 |
 
@@ -2183,7 +2271,7 @@ path could hide them. It also yields a valid fixed/passthrough frame before opti
 | v0.2 | Phase 7 projects one typed shadow policy without reparsing, plans before the Phase 6 provider, passes its celestial policy into that provider, constructs/owns the Phase 8 publication after the runtime, installs its slot, invokes it with the same-sample frame view and authenticated bridge, and nests its health report; rollback/teardown closes it first |
 | v0.3 | Phase 9 candidate/publication, held/reset, entity/TE/color hooks, remap/source reasons, report rows, and Phase 10 alias/layer chunk invalidation activate coherently; Appendix E rows 3–9 and coexistence policy land |
 | v0.4 | Phase 11 custom bridge and Phase 12 reload/GUI consume existing contracts |
-| v0.5 | enable actual PRE_WEATHER/PRE_TRANSLUCENT copies after R7-1, render-scale viewports, instance loops, Phase 13 atlas/overlay bindings |
+| v0.5 | enable actual PRE_WEATHER/PRE_TRANSLUCENT copies, render-scale viewports, instance loops, Phase 13 atlas/overlay bindings |
 | post-v0.5 | schedule new Phase 4 families data-first; no new catch-all render hook |
 
 ---
@@ -2194,7 +2282,7 @@ path could hide them. It also yields a valid fixed/passthrough frame before opti
 
 **Question, verbatim from RESEARCH.md §11:** “GL context creation mechanics under Cleanroom
 (compat request, GLFW hints, lwjglx runtime role, HiDPI)”
-(`docs/research/v1/RESEARCH.md:1008`).
+(`docs/research/v1/RESEARCH.md:1009`).
 
 **Current evidence.** Pintonium does not alter context creation; PD records no implementation there
 (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:756`–`:779`). This supports the conservative
@@ -2227,7 +2315,7 @@ until the spike positively proves more.
 ### 10.2 OQ-4 — CleanMix hot-path injection viability and overhead
 
 **Question, verbatim from RESEARCH.md §11:** “CleanMix divergences relevant to hot render-path
-injections” (`docs/research/v1/RESEARCH.md:1009`). Pintonium proves HEAD/INVOKE/TAIL moments on a
+injections” (`docs/research/v1/RESEARCH.md:1010`). Pintonium proves HEAD/INVOKE/TAIL moments on a
 MixinBooter-family 1.12.2 loader; this spike isolates CleanMix specifically.
 
 **Procedure.** With production mappings/refmap and the pinned loader, enable a counter-only spike
@@ -2296,11 +2384,10 @@ slice, or continue partially. Any selected alternative is recorded by a Phase 7 
 ### 11.3 Open items and dependency blockers
 
 - OQ-3 and OQ-4 remain open until their §10 artifacts and acceptance criteria are complete.
-- R7-1 blocks actual copied-depth enablement; R7-2 blocks virtual pre flips; R7-3 blocks faithful
-  draw-buffers-none overlays.
-- R7-4…R7-7 block COMPLETE run-manifest claims and T3 evidence, not ordinary v0.1 rendering.
+- R7-1…R7-7 are granted and consumed; they impose no remaining feature, COMPLETE, or T3 gate.
 - R7-8 blocks implementation package placement under Phase 1's closed table.
-- R7-9 blocks internal-pack manifest/digest production pending its Phase 3 grant and reverification.
+- R7-9 is granted by Phase 3; internal-pack manifest/digest production remains unavailable pending
+  Phase 3's fresh whole-document literal PASS.
 - Phase 8's v0.2 integration is fully specified by the accepted R8-1/R8-4/R8-5 requests but remains
   dormant until this changed §5 and Phase 8's own §5 are verified. Phase 10/13-owned deferrals remain
   dormant at their stated milestones. Phase 9's v0.3 integration is fully ordered but remains
@@ -2322,12 +2409,15 @@ site; Phase 4/5 interface gaps become requests; Pintonium remains evidence only.
 - **U7-2 — next DESIGN candidate:** split timeline row 3 into post-clear buffer preparation and
   post-`setupCameraTransform` matrix capture. Current RC3 remains immutable; D-P7-4 is the local
   ruling required by higher authority.
-- **U7-3 — RESEARCH Appendix E:** narrow the claim at
-  `docs/research/v1/RESEARCH.md:1390`–`:1391`; 17 of 18 Appendix-E classes occur in the assigned
-  replacement list, but `net.minecraft.client.shader.Framebuffer` does not. Section 3.7 records the
-  exhaustive result and separately flags supporting hook targets without that corroboration.
-- **Dependency requests R7-1…R7-9:** apply only through the owners' governed fix-up/reverification
-  process described in §5.4.
+- **U7-3 — RESEARCH §7.1:** narrow the “every class” claim at
+  `docs/research/v1/RESEARCH.md:823`–`:825`; 17 of 18 Appendix-E classes occur in the assigned
+  replacement list, but `net.minecraft.client.shader.Framebuffer` does not. Appendix E's own
+  preamble (`docs/research/v1/RESEARCH.md:1390`–`:1392`) already states that qualification, so no
+  narrowing is owed there. Section 3.7 records the exhaustive result and separately flags
+  supporting hook targets without that corroboration.
+- **Dependency request R7-8:** applies only through its owner's governed fix-up/reverification
+  process described in §5.4. **Granted R7-1…R7-7** are consumed as recorded there; **granted R7-9**
+  becomes implementable only after Phase 3 reverification.
 - **Accepted Phase 8 requests R8-1/R8-4/R8-5:** §§4.1, 4.3–4.4, 4.12–4.13, and 5.1–5.3 now grant
   the authenticated execution bridge, exact shadow frame, one-policy composition order, owned
   publication slot, reverse close, and nested immutable hook report. The grant becomes consumable
@@ -2342,11 +2432,11 @@ This session does not edit `docs/research/v1/RESEARCH.md`, any `docs/design/*/DE
 
 | # | Work item | Tag | Test hook |
 |---:|---|---:|---|
-| 1 | land/reverify R7-8 before package placement and Phase 3's R7-9 before item 5 manifest/digest production; gate copied-depth, virtual-pre-flip, and overlay work only on R7-1, R7-2, and R7-3 respectively | v0.1 prereq | binding §5 diff + literal-PASS review |
+| 1 | land/reverify R7-8 before package placement and reverify Phase 3 before item 5 consumes granted R7-9 for manifest/digest production | v0.1 prereq | binding §5 diff + literal-PASS review |
 | 2 | create declared engine/glue/mixin/conformance packages and seam rules | v0.1 | forbidden-dependency/package architecture tests |
 | 3 | implement immutable frame/scope/result algebra and state machine | v0.1 | transition/property tests |
 | 4 | implement `DimensionPipelineCache` and equality-only versions | v0.1 | dimension/base/override/failure matrix |
-| 5 | implement project-owned `BuiltInPassthroughPack` as Phase 3 `InternalPackSource` with stable identity and whole-corpus bounded snapshot/checked provider failure; only after R7-9 add the separate `InternalPackManifestProducer` | v0.1 | pre-grant Phase 3 load/limit/provider-failure; post-grant manifest/digest golden |
+| 5 | implement project-owned `BuiltInPassthroughPack` as Phase 3 `InternalPackSource` with stable identity and whole-corpus bounded snapshot/checked provider failure; only after Phase 3 reverification add the separate `InternalPackManifestProducer` using granted `canonicalString()` | v0.1 | ordinary Phase 3 load/limit/provider-failure; post-reverification manifest/digest golden |
 | 6 | implement pipeline build ownership ledger and reverse close | v0.1 | fault at every build step |
 | 7 | compose Phase 6 participants and paired Phase 4/5 publication at v0.1; at v0.2 add the one-policy Phase 8 plan/provider/publication order and reverse close; at v0.3 add Phase 9 publication and geometry invalidation exactly as §5.3 | v0.1/v0.2/v0.3 | recorded publication order, reverse compensation, no-draw/no-shadow assertion |
 | 8 | implement `FrameRenderPort` through Phase 1 facade only | v0.1 | seam + recorded-GL tests |
@@ -2357,11 +2447,11 @@ This session does not edit `docs/research/v1/RESEARCH.md`, any `docs/design/*/DE
 | 13 | prove H-SKY reference-free family, including celestial redirect | v0.1 | dev application report + sky scene |
 | 14 | prove H-CLOUD reference-free family and cloud flag precedence | v0.1 | fast/fancy/off scene matrix |
 | 15 | prove H-WEATHER reference-free family; keep actual copy v0.5-gated | v0.1 | rain/snow/depth restoration scenes |
-| 16 | implement terrain/deferred trigger and virtual transition after R7-2 | v0.1 | solid→deferred→water activation log |
+| 16 | implement terrain/deferred trigger and granted virtual transition | v0.1 | solid→deferred→water activation log |
 | 17 | implement damaged block/line/entity/block-entity subsection routing; at v0.3 add H9 entity and inside-TE ID augmentation | v0.1/v0.3 | scoped activation, nested overload, and reverse-close tests |
 | 18 | implement leash/glint/eyes/beam nested scope stack | v0.1 | injected exception restores parent |
 | 19 | implement lit/unlit particle and world-border scopes | v0.1 | recorded slot selection |
-| 20 | implement split hand/depth-scale and overlay lease after R7-3 | v0.1 | solid/translucent/overlay scene |
+| 20 | implement split hand/depth-scale and granted overlay lease | v0.1 | solid/translucent/overlay scene |
 | 21 | implement flag/event wiring and state observers with recursion guard; at v0.3 replace legacy H-COLOR with exact H9 TexEnv operand/current-scope capture | v0.1/v0.3 | all §3.5 tests plus buffer-position/nested-color/throw-reset tests |
 | 22 | implement fullscreen executor: mipmaps, identity ortho, scale plumbing, strip fallback, final passthrough | v0.1 | two recorded capability profiles |
 | 23 | implement resize/FBO epochs and safe-boundary rebuild | v0.1 | resize/HiDPI/fullscreen fault matrix |
@@ -2379,6 +2469,7 @@ This session does not edit `docs/research/v1/RESEARCH.md`, any `docs/design/*/DE
 
 ---
 
-*End of PHASE_7_DOC.md. Twenty-one review rounds ended in PASS before §0.25. The §0.25 maintenance
-addendum changed binding §5; rounds 22–23's corrections are applied, and v1 remains unverified
-pending a fresh whole-document review. No version roll occurs until that loop exits.*
+*End of PHASE_7_DOC.md. Twenty-one review rounds preceded §0.25; only rounds nineteen and
+twenty-one returned literal PASS among them, corrections being applied for rounds 1–18 and 20.
+Corrections through Round 32 are applied; Round 32 most recently changed binding §5, and v1 remains
+unverified pending a fresh whole-document review. No version roll occurs until that loop exits.*

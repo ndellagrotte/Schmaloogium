@@ -17,10 +17,10 @@ expression language to pure `:engine` code (`docs/design/v3/DESIGN.md:2281`–`:
 module map puts that code in `engine.expr` and requires `:engine` to have zero Minecraft, Forge,
 Cleanroom, Mixin, or LWJGL dependencies (`docs/design/v3/DESIGN.md:468`–`:500`).
 
-The dependency gate is open. Phase 3 Review 31 is literal `PASS` with zero blocking findings and
-zero corrections (`docs/phase3/reviews/PHASE_3_REVIEW_31.md:48`–`:57`). Phase 6 Review 18 is also
+The dependency gate is open. Phase 3 Review 34 is literal `PASS` with zero blocking findings and
+zero corrections (`docs/phase3/reviews/PHASE_3_REVIEW_34.md:44`–`:56`). Phase 6 Review 22 is also
 literal `PASS` with zero blocking findings and zero corrections
-(`docs/phase6/reviews/PHASE_6_REVIEW_18.md:47`–`:61`). Those reviews verify the current dependency
+(`docs/phase6/reviews/PHASE_6_REVIEW_22.md:48`–`:63`). Those reviews verify the current dependency
 documents read below.
 
 ### 0.1 Inputs actually read
@@ -33,9 +33,9 @@ documents read below.
 | `docs/research/v1/RESEARCH.md` | §0, §1, §3.4 item 4, §6.3 expression row, Appendix D, Appendix F.6 | authority, inputs, cadence, built-in types/exclusions, expression contract |
 | `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties` | custom-uniform section, lines 326–425 | shipped pack-author expression specification |
 | `docs/phase3/v1/PHASE_3_DOC.md` | complete | declaration-capture dependency contract |
-| `docs/phase3/reviews/PHASE_3_REVIEW_31.md` | complete | dependency verification state |
+| `docs/phase3/reviews/PHASE_3_REVIEW_34.md` | complete | dependency verification state |
 | `docs/phase6/v1/PHASE_6_DOC.md` | complete | built-in value model, cadence, upload sink, lifecycle |
-| `docs/phase6/reviews/PHASE_6_REVIEW_18.md` | complete | dependency verification state |
+| `docs/phase6/reviews/PHASE_6_REVIEW_22.md` | complete | dependency verification state |
 | `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md` | §14, lines 707–728 | required expression-architecture evidence and license warning |
 | `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/uniforms/custom/CustomUniforms.java` | load, dependency ordering, update/push, optimization portions | verify PD's load-bearing architecture claims |
 | `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/pipeline/CommonIrisRenderingPipeline.java` | custom update/push/optimization call sites | verify cadence and lifecycle claims |
@@ -64,12 +64,10 @@ No source under a `docs/**/chatlogs/` directory, no repository-root `*.txt`, no
 this phase has no vanilla-symbol question. No code, build, test, or verification command is part of
 this build session.
 
-The v3 adoption records are not yet prepared for Phase 11: `docs/MOVES.md:67`–`:90` records v3 as
-adopted only by Phase 2, and there is no `verification/targets/phase-11.json`. The v3 adoption
-procedure requires a newly derived target profile, dry run, and manifest record
-(`docs/design/v3/DESIGN.md:195`–`:220`). The build-session hard rule permits only this v1 phase
-document (`docs/design/v3/DESIGN.md:256`–`:270`), so §11 requests those maintainer actions before
-the first verification run; this document does not silently perform them.
+Phase 11's v3 adoption is complete: `verification/targets/phase-11.json` derives its selectors from
+v3, its dry-run preflight has succeeded, and `docs/MOVES.md:89`–`:92` records the adoption. Rounds
+1 and 2 have completed; the Round-2 fix-up made the latest §5 change, and Round 3 is the fresh
+verification it triggered.
 
 ### 0.3 Legal and provenance posture
 
@@ -95,6 +93,34 @@ MIT-credited but must be clean-room implemented if independent verification fail
 vector may be copied into Schmaloogium. The clean-room implementation described here is based on
 the published expression surface in `docs/research/v1/RESEARCH.md:1492`–`:1508` and
 `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:326`–`:425`.
+
+### 0.4 Round-1 contract corrections
+
+Round 1 aligned the Phase 3 and Phase 6 dependency descriptions with their verified §5 grants,
+corrected bridge result accounting, and made §5 precisely incorporate and synchronize Phase 11's
+detailed public declarations. The §5 changes require a fresh verification round before closure.
+
+### 0.5 Round-2 contract corrections
+
+Round 2 corrected stale authority/status prose and closed the consumer-visible compile, plan,
+activation, context, random, and metrics contracts. Because §5 changed, another fresh verification
+round is required before closure.
+
+### 0.6 Round-3 contract corrections
+
+Round 3 synchronized verification and dependency provenance, corrected `pi`'s documented binary32
+value, and closed the public backend selector's interpreter-ID and unsupported-ID behavior. Its §5
+change requires another fresh verification round before closure.
+
+### 0.7 Round-4 contract corrections
+
+Round 4 reconciled diagnostic identity, refresh ordering, reset-owned random state, and conformance
+provenance. Its §5 lifecycle clarifications require another fresh verification round before closure.
+
+### 0.8 Round-5 contract corrections
+
+Round 5 synchronized current verification state and fixed the binding event-to-reset lifecycle map.
+Its §5 change requires another fresh verification round before closure.
 
 ---
 
@@ -268,23 +294,25 @@ members as `FLOAT` because Appendix F.6 provides only `vec2/vec3/vec4`, not `ive
 
 Appendix F.6 declares both forms and says variables are reusable but not uploaded
 (`docs/research/v1/RESEARCH.md:1492`–`:1495`).
+In the provenance cells below, Appendix F.6 establishes the named surface and documented shapes;
+§§4.2 and 4.6 plus D-P11-13 establish Phase 11's additional exact grammar and operator semantics.
 
 | Contract surface | Design disposition | Provenance | Primary tests |
 |---|---|---|---|
 | `uniform.<float\|int\|bool\|vec2\|vec3\|vec4>.<name>=<expr>` | consume Phase 3 declaration; evaluate and submit only successful uniforms | RESEARCH App F.6 `[V:doc]` | `allUniformDeclarationTypes` |
 | `variable.<type>.<name>=<expr>` | typed memoized intermediate; never submitted | RESEARCH App F.6 `[V:doc]` | `variablesOncePerRefreshNeverUploaded` |
 | numeric literals | decimal syntax in §4.2; finite float value | RESEARCH App F.6 `[V:doc]` | `numericLiteralGrammarAndRange` |
-| `pi` | immutable float constant equal to `Math.PI` rounded once to binary32 | RESEARCH App F.6 `[V:doc]` | `piConstantBinary32` |
+| `pi` | immutable float constant produced by converting documented decimal `3.1415926` to binary32, bits `0x40490fda` | `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:332`–`:336` `[V:doc]` | `piConstantBinary32` |
 | `true`, `false` | boolean literals | RESEARCH App F.6 `[V:doc]` | `booleanLiterals` |
 | grouping `(` `)`, argument comma | grammar only; no implicit tuple | shipped pack-author docs `[V:doc]` | `groupingAndCallArity` |
 | member `.x .y .z .r .g .b` | checked vector/color alias access | RESEARCH App F.6 `[V:doc]` | `vectorMemberAliasesAndBounds` |
 | matrix `name.<row>.<col>` | two literal indices, each 0–3; produces float | RESEARCH App F.6 `[V:doc]` | `matrixAllSixteenCellsAndBounds` |
-| unary `+ -` | finite numeric scalar; `-` checked after evaluation | RESEARCH App F.6 `[V:doc]` | `unaryNumeric` |
-| unary `!` | bool only | RESEARCH App F.6 `[V:doc]` | `logicalNotType` |
-| `+ - * / %` | numeric scalars; `/` and `%` zero are runtime errors; §4.6 semantics | RESEARCH App F.6 `[V:doc]` | `arithmeticTruthTable` |
-| `> >= < <=` | numeric scalars, boolean result | RESEARCH App F.6 `[V:doc]` | `orderedComparison` |
-| `== !=` | same primitive type or numeric promotion; exact finite equality | RESEARCH App F.6 `[V:doc]` | `equalityTypeMatrix` |
-| `&& \|\|` | booleans, left-to-right short circuit | RESEARCH App F.6 `[V:doc]` | `booleanShortCircuit` |
+| unary `+ -` | finite numeric scalar; `-` checked after evaluation | RESEARCH App F.6 surface `[V:doc]`; §§4.2, 4.6; D-P11-13 | `unaryNumeric` |
+| unary `!` | bool only | RESEARCH App F.6 surface `[V:doc]`; §§4.2, 4.6; D-P11-13 | `logicalNotType` |
+| `+ - * / %` | numeric scalars; `/` and `%` zero are runtime errors; §4.6 semantics | RESEARCH App F.6 surface `[V:doc]`; §4.6; D-P11-13 | `arithmeticTruthTable` |
+| `> >= < <=` | numeric scalars, boolean result | RESEARCH App F.6 surface `[V:doc]`; §4.6; D-P11-13 | `orderedComparison` |
+| `== !=` | same primitive type or numeric promotion; exact finite equality | RESEARCH App F.6 surface `[V:doc]`; §4.6; D-P11-13 | `equalityTypeMatrix` |
+| `&& \|\|` | booleans, left-to-right short circuit | RESEARCH App F.6 surface `[V:doc]`; §4.6; D-P11-13 | `booleanShortCircuit` |
 
 Precedence from tightest to loosest is member access/call, unary, multiplicative, additive,
 relational, equality, `&&`, then `||`; binary operators associate left. This is conventional and
@@ -294,8 +322,11 @@ contains no Pintonium-only Unicode aliases.
 
 The published function list is exact at `docs/research/v1/RESEARCH.md:1503`–`:1506`; no extra
 function becomes pack-visible merely because a reference engine contains it.
+Except for `smooth`'s separately cited behavioral evidence, Appendix F.6 establishes each function
+name and documented signature shape; §4.6 and D-P11-13 establish the additional exact semantics in
+the rows below.
 
-| Function | Accepted signature and exact behavior | Provenance | Primary test |
+| Function | Accepted signature and exact behavior | Surface provenance (exact semantics: §4.6; D-P11-13) | Primary test |
 |---|---|---|---|
 | `sin(x)` | radians; finite float → finite float | RESEARCH App F.6 `[V:doc]` | `trigGoldenAngles` |
 | `cos(x)` | radians; finite float → finite float | RESEARCH App F.6 `[V:doc]` | `trigGoldenAngles` |
@@ -362,14 +393,11 @@ No sampler is an expression input. No vector object is usable without a document
 matrix object is usable without both indices. Unknown, absent, or not-yet-valid Phase 6 values are
 runtime errors for the one uniform that reaches them; Phase 11 never invents zero.
 
-There is an authority-chain inconsistency. Appendix F.6 names five exclusions—`entityColor`,
-`entityId`, `blockEntityId`, `fogMode`, `fogColor`
-(`docs/research/v1/RESEARCH.md:1496`–`:1501`)—while Appendix D.4 labels its whole table “excluded”
-and additionally contains `blendFunc` and `instanceId`
-(`docs/research/v1/RESEARCH.md:1369`–`:1377`). Phase 6's verified interface follows the conservative
-union and exposes none of D.4 plus neither fog value (`docs/phase6/v1/PHASE_6_DOC.md:1197`–`:1200`).
-Phase 11 therefore cannot and does not expose `blendFunc` or `instanceId`; §11 requests an
-authoritative clarification. This is not a silent change to Appendix F.6.
+Appendix F.6 authoritatively excludes every D.4 per-draw dynamic—`entityColor`, `entityId`,
+`blockEntityId`, `blendFunc`, and `instanceId`—plus `fogMode` and `fogColor`, and expressly says it
+does not narrow D.4 (`docs/research/v1/RESEARCH.md:1501`–`:1505`). Phase 6's verified schema matches
+that seven-name rule (`docs/phase6/v1/PHASE_6_DOC.md:1197`–`:1200`). The stale five-name restatement
+in the Phase 11 design row (`docs/design/v3/DESIGN.md:2300`–`:2303`) is reported in §11.
 
 ### 3.4 Pintonium do-not-inherit disposition
 
@@ -398,7 +426,7 @@ record CustomExpressionCompileRequest(
     List<CustomExpressionSource> declarations,
     FixedExpressionInputSchema fixedInputs,
     ExpressionContextSchema context,
-    EvaluatorBackend backend) {}
+    String backendSemanticId) {}
 
 record CustomExpressionSource(
     int sourceOrdinal,
@@ -407,7 +435,39 @@ record CustomExpressionSource(
     String name,
     String rawExpression,
     SourceAttribution attribution) {}
+
+public interface CustomExpressionCompiler {
+    PlanBuildResult compile(CustomExpressionCompileRequest request);
+    PlanBuildResult compilePhase3(String packConfigurationFingerprint,
+        List<CustomExpressionDecl> declarations, FixedExpressionInputSchema fixedInputs,
+        ExpressionContextSchema context, String backendSemanticId);
+}
+
+sealed interface PlanBuildResult {
+    record Success(CustomExpressionPlan plan, List<ExpressionDiagnostic> diagnostics) implements PlanBuildResult {}
+    record Partial(CustomExpressionPlan plan, List<ExpressionDiagnostic> diagnostics) implements PlanBuildResult {}
+    record Failure(List<ExpressionDiagnostic> diagnostics) implements PlanBuildResult {}
+}
+
+public interface CustomExpressionPlan {
+    String fingerprint();
+    String fixedSchemaVersion();
+    String contextSchemaVersion();
+    String backendSemanticId();
+    List<CompiledUniform> uniforms();
+    List<ExpressionDiagnostic> diagnostics();
+}
+
+record CompiledUniform(int sourceOrdinal, ExpressionType type, String name) {}
 ```
+
+`compilePhase3(...)` is the sole public adapter: it maps each ordered
+`CustomExpressionDecl` field-for-field to `CustomExpressionSource`, converts the two closed enums
+by equal-named variant, preserves duplicates and ordinals, and fails with a diagnostic if an
+unknown future variant appears. Inputs and returned lists are non-null immutable copies; `Failure`
+has a non-empty diagnostic list and no plan, while success may have none and partial has at least
+one diagnostic. Plans expose metadata only, own their backend executable graph privately, and are
+thread-safe immutable values.
 
 `sourceOrdinal` is Phase 3 property order and is stable within the configuration fingerprint.
 Declaration names use the already validated Phase 3 grammar. Phase 11 additionally rejects a
@@ -631,21 +691,26 @@ On `refresh(program, values, uploads)`:
 
 1. return `NoCustoms` when no plan is active or no uniform is valid;
 2. verify plan/configuration/schema generations;
-3. fetch one `ExpressionContextSnapshot` and validate its epoch;
-4. resolve `frameCounter`/`frameTime`, establish `dt`, and open a memo epoch;
+3. resolve `frameCounter`/`frameTime` from `values` and open the controller's next refresh/memo
+   epoch;
+4. issue one `ExpressionContextRequest` carrying that epoch and `frameCounter`; accept its
+   synchronous result only while that controller-issued epoch remains current, then establish `dt`;
 5. evaluate every reachable variable once in precomputed topological order;
 6. visit valid uniform roots in original declaration order, convert each result, and submit one
    typed command;
 7. on expression failure, permanently disable only that uniform until the next plan/reset, warn
    once, omit its command, and continue;
-8. on sink `Rejected`, count the rejection and continue because Phase 6 owns that diagnostic;
-9. on normal active-program absence, count a skip rather than an error;
-10. return `Completed(submitted,rejected)` using Phase 6's existing count meaning.
+8. on sink `Accepted`, `SkippedAbsent`, or `Rejected`, increment the matching authoritative
+   `accepted`, `skippedAbsent`, or `rejected` counter and continue;
+9. return `Completed(accepted,skippedAbsent,rejected)` with all three counters equal to the sink
+   ledger.
 
 Expression-local errors never produce `Aborted`. `Aborted` is reserved for a corrupt plan,
 generation mismatch, provider protocol failure, or backend invariant that makes the remainder
 unsafe. Phase 6 commits any already accepted prefix exactly as its contract states
 (`docs/phase6/v1/PHASE_6_DOC.md:1217`–`:1223`).
+Every `Aborted(diagnosticId,accepted,skippedAbsent,rejected)` reports those same three counters for
+the submitted prefix before the structural failure; Phase 11 never estimates or resets the ledger.
 
 Every valid custom uniform is offered on every activation. Phase 6 decides whether its exact name
 and type exist in the active linked program; program absence must be a non-error no-op. No plan is
@@ -657,7 +722,7 @@ Upload mapping is:
 |---|---|
 | `float` | `Float1` |
 | `int` | `Int1` |
-| `bool` | `Bool1` (requested dependency addition; Phase 6 performs GL integer encoding) |
+| `bool` | `Bool1` (Phase 6 performs GL integer encoding) |
 | `vec2` | `Float2` |
 | `vec3` | `Float3` |
 | `vec4` | `Float4` |
@@ -670,7 +735,7 @@ Phase 11 never uses `Int1` as an undocumented bool convention.
 enum ExpressionDiagnosticKind {
     LEX, PARSE, LIMIT, UNKNOWN_NAME, DUPLICATE_NAME, DUPLICATE_SMOOTH_ID,
     TYPE, ARITY, CYCLE, INVALID_DEPENDENCY, INPUT_ABSENT, INPUT_SCHEMA_MISMATCH,
-    DIVIDE_BY_ZERO, DOMAIN, NON_FINITE, INT_RANGE, PROVIDER, BACKEND_INVARIANT
+    DIVIDE_BY_ZERO, DOMAIN, NON_FINITE, INT_RANGE, PROVIDER, UNSUPPORTED_BACKEND, BACKEND_INVARIANT
 }
 
 record ExpressionDiagnostic(
@@ -684,9 +749,11 @@ record ExpressionDiagnostic(
     String summary) {}
 ```
 
-Stable IDs derive from diagnostic kind, plan fingerprint, declaration ordinal, and source span;
-message prose is not hashed. Raw expressions and paths are sanitized before chat. Load diagnostics
-are aggregated so one bad line does not hide later errors.
+Diagnostics created with plan/declaration context derive stable IDs from diagnostic kind, plan
+fingerprint, declaration ordinal, and source span; message prose is not hashed. The pre-plan
+`UNSUPPORTED_BACKEND` diagnostic instead uses the pack fingerprint and requested backend ID exactly
+as §4.11 specifies. Raw expressions and paths are sanitized before chat. Load diagnostics are
+aggregated so one bad line does not hide later errors.
 
 - A uniform lex/parse/type/name/arity error disables that uniform at load and emits one chat-visible
   warning plus a detailed log record.
@@ -733,7 +800,15 @@ record ViewEntityFlags(
     boolean isHurt, boolean isInLava, boolean isInWater, boolean isInvisible,
     boolean isOnGround, boolean isRidden, boolean isRiding, boolean isSneaking,
     boolean isSprinting, boolean isWet) {}
+
+record ExpressionContextSchema(String version, Map<String, Integer> biomeConstants) {}
+
+public interface RandomSource { float nextFloat(); }
 ```
+
+Schema fields are non-null immutable copies; `version` is non-empty, biome names are unique
+`BIOME_*` identifiers, and IDs are exactly representable as float. `nextFloat()` must return a
+finite value in `[0,1)`; violation is a provider protocol failure and aborts only that refresh.
 
 The provider is invoked once per refresh, on the render thread, and returns values by copy. It does
 not expose an entity, world, biome object, registry, or nullable value. Temperature/rainfall must be
@@ -752,19 +827,20 @@ non-finite weather values, all boolean combinations, and biome-catalog replaceme
 ### 4.11 Evaluator backend and v0.4 decision
 
 ```java
-public interface EvaluatorBackend {
+interface EvaluatorBackend {
     String semanticId();
     BackendBuildResult build(TypedExpressionGraph graph);
 }
 
-public interface ExecutableExpressionGraph {
+interface ExecutableExpressionGraph {
     EvaluationResult evaluate(DefinitionId root, EvaluationFrame frame, MemoTable memo);
 }
 ```
 
-The graph, value algebra, frame, memo API, state transaction, error algebra, and semantic ID are
-backend-neutral. Backends may not add functions, change rounding, reorder lazy effects, cache
-across refreshes, or expose implementation exceptions.
+`EvaluatorBackend`, `ExecutableExpressionGraph`, the typed graph, value/frame/memo/state/error
+algebras, and their build results are implementation-private Phase 11 SPI; consumers select a
+backend only by the request's stable backend semantic ID. Backends may not add functions, change
+rounding, reorder lazy effects, cache across refreshes, or expose implementation exceptions.
 
 **v0.4 selects a typed-AST interpreter.** It minimizes license and verifier risk, keeps source spans
 for diagnostics, and follows the global “clean code first, optimize with evidence” direction
@@ -772,10 +848,27 @@ for diagnostics, and follows the global “clean code first, optimize with evide
 only as unverified opportunity (`docs/research/v1/RESEARCH.md:781`–`:787`). No bytecode library or
 JIT-specific plan is a Phase 11 dependency.
 
+The canonical v0.4 interpreter semantic ID is `schmaloogium:typed-ast-interpreter-v1`. Both compiler
+entry points accept exactly that ID in v0.4. Any other ID deterministically returns
+`PlanBuildResult.Failure` with one `UNSUPPORTED_BACKEND` error diagnostic whose stable ID derives
+from the diagnostic kind, pack fingerprint, and requested backend ID; it uses compile-request
+attribution and an empty source span. No declarations are parsed and no plan is produced.
+
 The interpreter has dense node arrays, pre-resolved symbol/function ordinals, primitive memo
 storage, and no steady-state allocation after plan activation. Every refresh records aggregate
 node evaluations, uniforms attempted, variables memoized, and elapsed nanoseconds through an
 optional no-op-by-default metrics sink.
+
+```java
+public interface ExpressionMetricsSink { void record(ExpressionMetrics metrics); }
+record ExpressionMetrics(String planFingerprint, long refreshCount, long nodeEvaluations,
+    long variableMemoHits, long variableMemoMisses, long uniformSuccesses,
+    long uniformErrors, long uniformSkips, long elapsedNanos, String profilerCorrelationId) {}
+```
+
+The controller accepts a non-null sink at construction; the no-op sink is the default. Calls are
+render-thread synchronous, receive non-null immutable aggregates, and sink failure is caught,
+reported once, and disables metrics without affecting evaluation.
 
 The implementation performance budget is measured, not asserted:
 
@@ -799,22 +892,55 @@ public interface CustomExpressionController extends CustomUniformBridge, AutoClo
     void reset(ExpressionResetReason reason);
 }
 
+public interface CustomExpressionControllerFactory {
+    CustomExpressionController create(ExpressionMetricsSink metricsSink);
+}
+
+sealed interface PlanActivationResult {
+    record Activated(String planFingerprint) implements PlanActivationResult {}
+    record Rejected(String diagnosticId) implements PlanActivationResult {}
+}
+
 enum ExpressionResetReason {
     PACK_REPLACEMENT, SHADERS_OFF, WORLD_EPOCH, FRAMEBUFFER_RESIZE,
     GL_CONTEXT_LOSS, CLOSE
 }
 ```
 
-The composition thread installs exactly one controller before first use. `activate` validates all
-fingerprints and swaps the complete plan/provider/random tuple atomically before the next refresh.
+The factory and controller arguments are non-null; `create` transfers sole controller lifecycle to
+the caller and performs no evaluation. The composition thread installs exactly one controller
+before first use. `activate` arguments are non-null;
+`activate` validates schema/backend fingerprints and either atomically installs the complete tuple
+and returns `Activated`, or returns `Rejected` without changing the prior tuple before the next
+refresh.
 The render thread owns refresh and mutable evaluation state. A plan may be compiled off-thread,
 consistent with v3's explicit permission for expression compilation
 (`docs/design/v3/DESIGN.md:410`–`:415`).
 
-Every reset invalidates memo generations, random state, runtime-disabled-uniform flags, clock
-tracking, and smooth cells. `PACK_REPLACEMENT` permits later activation; `CLOSE` is terminal.
-Repeated same-reason reset is idempotent. Reset never calls Phase 6 or GL and never retains a
-provider beyond close.
+Every reset atomically deactivates the complete plan/provider/random tuple and invalidates memo
+generations, runtime-disabled-uniform flags, clock tracking, and smooth cells; dropping the sole
+tuple reference discards the old random stream. Until a later successful `activate` supplies a new
+`RandomSource`, `refresh` returns `NoCustoms`. `PACK_REPLACEMENT` and every nonterminal reason permit
+later activation; `CLOSE` is terminal. Repeated same-reason reset is idempotent. Reset never calls
+Phase 6 or GL and retains neither provider nor random source after deactivation.
+
+Composition forwards lifecycle events at these binding boundaries:
+
+- for Phase 6 `PACK_REPLACEMENT`, `SHADERS_OFF`, or `GL_CONTEXT_LOSS` generation adoption, final
+  old-state use completes, Phase 11 receives the equal-named reset, then Phase 6 adopts the new
+  generation; customs may join first new-state use only after a successful fresh activation;
+- for Phase 6 direct `WORLD_EPOCH` reset, final old-world use completes, Phase 11 receives
+  `WORLD_EPOCH`, then Phase 6 resets, and successful fresh activation precedes custom participation
+  in next-world use;
+- after final pre-resize custom use and before any custom use against resized framebuffer state,
+  Phase 11 receives `FRAMEBUFFER_RESIZE`; this has no Phase 6 reset counterpart, and successful
+  fresh activation precedes renewed custom participation; and
+- after final use of all Phase 6 participants, Phase 11 receives terminal `CLOSE`, then Phase 6
+  receives terminal `CLOSE`; neither controller nor participant may be used afterward.
+
+Failed or absent fresh activation leaves customs at `NoCustoms`; it never delays Phase 6's required
+adoption/reset or unrelated rendering. These sequences constrain only the two published lifecycles,
+not the internal ordering of unrelated Phase 7 work.
 
 ---
 
@@ -824,34 +950,29 @@ provider beyond close.
 
 | Exposed contract | Exact content | Consumer |
 |---|---|---|
-| `CustomExpressionCompiler` / `CustomExpressionCompileRequest` | deterministic partial-success plan build; ordered declarations, exact schemas, backend; no pack I/O | Phase 7 composition/reload, Phase 2 harness |
+| `CustomExpressionCompiler` / `CustomExpressionCompileRequest` | exact `compile(request)` and `compilePhase3(...)`; deterministic partial-success build; ordered declarations, exact schemas, backend semantic ID; no pack I/O | Phase 7 composition/reload, Phase 2 harness |
 | `PlanBuildResult` | closed `Success(plan,diagnostics)`, `Partial(plan,diagnostics)`, `Failure(diagnostics)`; diagnostics never null/empty on failure | Phase 7, Phase 12 display, Phase 2 |
-| `CustomExpressionPlan` | immutable fingerprinted graph, valid-uniform declaration order, schema/backend semantic IDs, load diagnostics; no runtime state | controller, Phase 2 |
-| `CustomExpressionController` | the single Phase 6 `CustomUniformBridge`; atomic activation, reset reasons, close; rung-1 isolation | Phase 6 installation, Phase 7 lifecycle |
+| `CustomExpressionPlan` | immutable fingerprint and metadata accessors, valid-uniform declaration order, schema/backend semantic IDs, load diagnostics; private executable graph; no runtime state | controller, Phase 2 |
+| `CustomExpressionControllerFactory` / `CustomExpressionController` | non-null metrics sink at construction, sole lifecycle; single Phase 6 bridge; closed atomic activation result; every reset deactivates the tuple, discards its random stream, and yields `NoCustoms` until fresh activation; §4.12 maps every reason to Phase 6 adoption/reset or framebuffer boundary, orders final-old/reset/adoption/activation/first-new use, and makes close terminal; rung-1 isolation | Phase 6 installation, Phase 7 lifecycle |
 | `ExpressionContextSchema` | immutable `BIOME_*` name→id map and fixed fourteen view-boolean names | `mod.glue`, compiler |
 | `ExpressionContextProvider` / request/result/snapshot | one loader-neutral biome/weather/view snapshot per refresh; closed available/unavailable result | `mod.glue`, scripted tests |
-| `EvaluatorBackend` / `ExecutableExpressionGraph` | backend-neutral typed graph boundary with fixed semantics and error algebra | v0.4 interpreter; Phase 14 compiled candidate |
-| `RandomSource` | `nextFloat()` in `[0,1)`; injectable, plan-lifetime stream | `mod.glue`, tests |
-| `ExpressionMetricsSink` | optional aggregate counters/timing, no pack data or node callbacks | Phase 14 OQ-22 ledger |
+| backend selection | compile request carries `schmaloogium:typed-ast-interpreter-v1`; any other ID returns `Failure` with one pre-plan `UNSUPPORTED_BACKEND` error whose stable ID uses kind, pack fingerprint, and requested ID as specified in §4.11; backend graph/build/value/frame/memo types remain implementation-private | v0.4 interpreter; Phase 14 candidate implemented inside Phase 11 SPI |
+| `RandomSource` | `nextFloat()` in `[0,1)`; injectable, activation-tuple-lifetime stream discarded on every reset and freshly supplied by later activation | `mod.glue`, tests |
+| `ExpressionMetricsSink` / `ExpressionMetrics` | synchronous non-null immutable aggregates; no-op default; sink failure disables metrics only; no pack data or node callbacks | Phase 14 OQ-22 ledger |
 | `ExpressionDiagnostic` | stable ID, kind, severity/channel, declaration attribution and source span | Phase 7 diagnostics, Phase 12 display |
 
 All types above are pure Java. A consumer may retain plans and schemas because they are immutable;
 it may not retain snapshots or mutable controller internals.
 
-### 5.2 Phase 3 contract consumed and requested closure
+The exact consumer-visible declarations and semantics in §§2.3, 4.1, and 4.9–4.12 are incorporated
+into this §5 publication and are binding, including record fields, closed variants/enums, callable
+shapes, lifecycle, ownership, and error semantics. Every consumer-visible change to an incorporated
+API, schema, variant, lifecycle, ownership rule, or semantic must update the corresponding §5 row
+in the same document revision; an unchanged cross-reference does not waive synchronization.
 
-Phase 3 presently exposes only `CustomExpressionDecl | typed name + raw expression`
-(`docs/phase3/v1/PHASE_3_DOC.md:1314`–`:1335`). Its conformance map proves that it preserves kind,
-type, name, raw text, and order (`docs/phase3/v1/PHASE_3_DOC.md:690`–`:692`), but §5 does not close:
+### 5.2 Phase 3 contract consumed
 
-- declaration kind/type enum variants;
-- the ordered collection accessor on `PackConfiguration`;
-- source ordinal and source attribution;
-- duplicate retention semantics at the published boundary; or
-- inclusion of the collection in the configuration fingerprint.
-
-Phase 11 does **not** assume those missing members. Before implementation, request a Phase 3 fix-up
-to publish:
+Phase 11 consumes Phase 3's published binding algebra:
 
 ```java
 enum CustomExpressionKind { UNIFORM, VARIABLE }
@@ -866,9 +987,10 @@ List<CustomExpressionDecl> PackConfiguration.customExpressions();
 ```
 
 The list must be immutable, source ordered, lossless after Properties unescaping, retain duplicates
-for Phase 11 diagnostics, and participate in `PackConfiguration` fingerprinting. This is a requested
-dependency-interface change and requires Phase 3 fix-up plus fresh verification before Phase 11
-code consumes it.
+for Phase 11 diagnostics, and every record field and the ordered list participate in
+`PackConfiguration` fingerprinting. Phase 3 owns key/type/name validation; Phase 11 consumes this
+projection without reopening pack files or reinterpreting Properties syntax
+(`docs/phase3/v1/PHASE_3_DOC.md:1415`–`:1428`).
 
 ### 5.3 Phase 6 contract consumed
 
@@ -887,31 +1009,16 @@ Phase 11 consumes exactly the verified Phase 6 contracts:
 Phase 11 does not retain `ResolvedProgramDescriptor`, inspect a linked layout, resolve a location,
 install a fourth participant, or invoke a Phase 6 provider.
 
-### 5.4 Requested Phase 6 interface closures — flagged, never assumed
+### 5.4 Phase 6 schema, boolean, and absence contracts consumed
 
-Three required semantics are absent from Phase 6 §5:
-
-1. **Compile-time input schema.** `BuiltInExpressionView` reveals a type only when a value is
-   present during refresh. A typed load-time compiler needs an immutable exact-name schema even
-   when the first active program has not run. Request `FixedExpressionInputSchema.lookup(name) ->
-   Present(FixedExpressionInputType)|Absent`, versioned with the Phase 6 inventory and guaranteed
-   to match every runtime `ExpressionValue` variant.
-2. **Boolean upload.** Appendix F.6 requires `uniform.bool`, but Phase 6's command algebra has
-   `Int1` and no `Bool1` (`docs/phase6/v1/PHASE_6_DOC.md:1166`–`:1178`). Request
-   `CustomUploadCommand.Bool1(name,boolean)` and an explicit Phase 6 rule that it validates against
-   linked GLSL `bool` and performs the GL integer encoding. Phase 11 will not infer that `Int1`
-   means bool.
-3. **Normal active-program absence.** A pack-level custom uniform may be declared only in some
-   linked programs. The behavioral contract says evaluation/upload occurs only when the uniform is
-   defined in the active program
-   (`reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md:618`–`:622`). Phase 6 currently has
-   only `Accepted` and `Rejected` (`docs/phase6/v1/PHASE_6_DOC.md:1179`–`:1182`). Request
-   `SkippedAbsent`, or an equally explicit contract that active-layout absence is an accepted
-   no-GL no-op and not a diagnostic. Type mismatch and duplicate submission remain `Rejected`.
-
-These changes belong to Phase 6 because its sink alone owns active linked declarations and GL type
-mapping. They require a Phase 6 fix-up and fresh verification before implementation. The signatures
-in §4 describe the needed boundary; they do not claim it already exists.
+Phase 11 consumes Phase 6's immutable versioned `FixedExpressionInputSchema`, whose exact-name
+lookup returns `Present(FixedExpressionInputType)|Absent` and matches the runtime value view. It
+also consumes `CustomUploadCommand.Bool1(name,boolean)`, with Phase 6 owning linked-GLSL-`bool`
+validation and 0/1 GL encoding. The sink's closed outcomes are `Accepted`, normal no-warning/no-GL
+`SkippedAbsent`, and `Rejected(stableDiagnosticId)`; only actual invalid names, type mismatches, and
+duplicates reject. These grants and their three authoritative refresh counters are binding in
+Phase 6 §5 (`docs/phase6/v1/PHASE_6_DOC.md:1389`–`:1391`). Phase 6 retains ownership of active-layout
+validation, GL encoding, diagnostics, and upload isolation.
 
 ### 5.5 Composition handoff without a Phase 7 dependency
 
@@ -919,9 +1026,11 @@ Later composition must:
 
 1. create one controller and install it into Phase 6 before first activation;
 2. compile a plan from the exact accepted Phase 3 configuration and Phase 6 schema;
-3. construct the `mod.glue` context provider and random source;
+3. construct the `mod.glue` context provider and a fresh random source for each activation;
 4. activate the complete tuple before the corresponding registry/uniform runtime is used;
-5. forward lifecycle resets in the order specified by §4.12;
+5. forward every lifecycle event through §4.12's binding map and ordering; successful fresh
+   activation must precede custom participation in new-state use, while failed/absent activation
+   leaves `NoCustoms` and does not block Phase 6 lifecycle progress;
 6. route Phase 11 chat/log diagnostics through Phase 1's diagnostic channels.
 
 These are Phase 11's published requirements, not assumptions about Phase 7 internals.
@@ -1134,17 +1243,17 @@ session does not run the spike or update RESEARCH.md.
 | D-P11-6 | isolate all expression-local load/runtime errors; reserve `Aborted` for structural refresh failure | exact rung-1 requirement and Phase 6 prefix contract |
 | D-P11-7 | use the documented behavioral smooth correction, keyed plan-wide and advanced once per frame | Appendix F.6 requires persistent time correction; behavioral digest supplies exact formula; §4.7 |
 | D-P11-8 | select interpreter unless measured real-pack cost misses the written budget | G2.5 and Phase 11's explicit interpreter-first direction |
-| D-P11-9 | treat all D.4 inputs plus fogMode/fogColor as unavailable | verified Phase 6 contract cannot expose the narrower F.6 list; contradiction remains requested upstream |
-| D-P11-10 | require an explicit Phase 6 bool command and active-program absence result | prevents undocumented encoding and turns normal shader-layout variation into a no-op rather than an error |
+| D-P11-9 | exclude all five D.4 inputs plus fogMode/fogColor | Appendix F.6 directly requires the seven-name union; Phase 6 matches it; DESIGN's five-name restatement is stale |
+| D-P11-10 | consume Phase 6's explicit bool command and active-program absence result | preserves Phase 6-owned encoding and makes normal shader-layout variation a no-op rather than an error |
 | D-P11-11 | make smooth writes transactional per definition; keep random consumption left-to-right and non-rewinding | prevents partial smooth state while giving the injected random source a precise, implementable order |
 | D-P11-12 | automatic smooth keys derive from source/AST identity, never execution order | stable across program switches and backend implementations |
+| D-P11-13 | Appendix F.6 fixes the named operator/function surface; §§4.2 and 4.6 fix otherwise undocumented exact typing, domains, coercion, evaluation order, and finite-result behavior | distinguishes authoritative surface provenance from Phase 11's testable semantic choices |
 
 ### 11.2 Contradictions, gaps, and rulings
 
-1. **Appendix F.6 versus Appendix D.4 exclusions.** F.6 names five; D.4 adds `blendFunc` and
-   `instanceId` under an all-excluded heading. The verified Phase 6 view exposes the conservative
-   union. D-P11-9 follows the dependency contract and requests an upstream clarification rather
-   than inventing inaccessible inputs.
+1. **DESIGN versus RESEARCH exclusion restatement.** RESEARCH Appendix F.6 directly requires the
+   seven-name union, while the Phase 11 DESIGN row lists only five. D-P11-9 follows RESEARCH and
+   the matching verified Phase 6 contract; §11.4 requests correction of DESIGN's stale summary.
 2. **PD checklist claim versus Pintonium source.** PD §14 says `IrisFunctions` supplies the full
    checklist (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:719`–`:725`), but the load-bearing
    source leaves `round` unregistered and admits vararg TODOs. Appendix F.6 wins; §3 maps the full
@@ -1152,23 +1261,12 @@ session does not run the spike or update RESEARCH.md.
 3. **stareval historical credit versus verifiable license.** Neither the missing upstream nor the
    current repository evidence establishes a reusable component-specific grant. The binding rule
    says clean-room when unverifiable; D-P11-1 applies it.
-4. **Phase 3 conformance prose versus §5 publication.** Phase 3 demonstrates preserved kind/type/
-   order but publishes only “typed name + raw expression.” §5.2 requests the closed record/list/
-   fingerprint contract and assumes none of it before verification.
-5. **Phase 6 command algebra versus `uniform.bool`.** The dependency has no bool command. §5.4
-   requests one rather than relying on an implementation convention.
-6. **Phase 6 rejection algebra versus program-local declarations.** Normal absence needs a no-op
-   outcome. §5.4 requests the distinction from an actual invalid name/type.
-7. **v3 commission versus repository adoption records.** The user explicitly commissioned Phase 11
-   from v3, but the target/MOVES adoption steps do not yet exist. This document uses v3 coordinates;
-   the maintainer work below is required before verification.
+4. **Verification state.** The v3 target, successful preflight, MOVES adoption, and Rounds 1–4
+   existed before this review. The Round-4 fix-up made the latest prior §5 change, so Round 5 was
+   the fresh verification it required; this Round-5 fix-up changes §5 again.
 
 ### 11.3 Open handoffs
 
-- **To Phase 3:** publish and verify the closed ordered custom-expression declaration contract in
-  §5.2.
-- **To Phase 6:** publish and verify the input schema, bool command, and absent-program no-op in
-  §5.4.
 - **To `mod.glue`/later composition:** implement the exact biome/view snapshot and biome catalog;
   create one runtime random source; forward all reset reasons.
 - **To Phase 2:** add the scripted-provider, matrix-pack, error, and function/smooth golden runs.
@@ -1177,16 +1275,8 @@ session does not run the spike or update RESEARCH.md.
 
 ### 11.4 Requested upstream and maintainer changes
 
-1. Clarify RESEARCH Appendix F.6/D.4 so the exclusion list unambiguously says whether all per-draw
-   dynamics (`blendFunc`, `instanceId` included) are excluded. Until then the verified Phase 6 union
-   is the only implementable interface.
-2. Apply the Phase 3 §5 contract closure requested in §5.2, append resolutions through the normal
-   fix-up protocol, and freshly verify the interface.
-3. Apply the Phase 6 §5 closures requested in §5.4, append resolutions through the normal fix-up
-   protocol, and freshly verify the interface.
-4. Create `verification/targets/phase-11.json` by deriving all selectors from
-   `docs/design/v3/DESIGN.md`, dry-run it, and update `docs/MOVES.md` to record Phase 11's v3
-   adoption before the first paid review. Do not reuse another revision's line offsets.
+1. Correct the Phase 11 DESIGN row's five-name exclusion restatement to match RESEARCH Appendix
+   F.6's authoritative seven-name rule. Phase 11 already implements the authoritative behavior.
 
 No change to RESEARCH.md, any DESIGN.md, PD, or a dependency document is performed by this session.
 
@@ -1194,11 +1284,10 @@ No change to RESEARCH.md, any DESIGN.md, PD, or a dependency document is perform
 
 ## 12. Implementation checklist
 
-- [ ] **v0.4 — dependency gate:** complete and freshly verify the requested Phase 3 and Phase 6
-  contracts. **Hook:** their newest reviews are literal PASS with `Interface changed: no` after the
-  grants.
-- [ ] **v0.4 — verification setup:** add the Phase 11 v3 target profile and adoption record.
-  **Hook:** `scripts/verify --target phase-11 --dry-run` validates v3-derived selectors.
+- [ ] **v0.4 — dependency gate:** consume the verified Phase 3 and Phase 6 §5 contracts. **Hook:**
+  their newest reviews remain literal PASS for the binding documents read by implementation.
+- [x] **v0.4 — verification setup:** Phase 11's v3 target profile, successful dry-run preflight,
+  and MOVES adoption record exist. **Hook:** each fresh round revalidates the v3 selectors.
 - [ ] **v0.4 — language core:** implement the clean-room lexer/parser, spans, limits, typed AST,
   and semantic version. **Test:** §8.1 grammar/span/limit vectors.
 - [ ] **v0.4 — operations:** implement exact precedence, all operators, and every §3.2 function—no
