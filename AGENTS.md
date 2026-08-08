@@ -1,7 +1,8 @@
 # AGENTS.md
 
-This file provides durable repository guidance to Codex. Read it before changing files or reviewing
-any governed document.
+This file provides durable repository guidance to coding-agent sessions (Oh My Pi / omp by
+default; historical naming says "Codex" in a few places). Read it before changing files or
+reviewing any governed document.
 
 ## What this repository is
 
@@ -67,8 +68,8 @@ Everything in `docs/` is governed. Read this before editing, and before citing.
 | `docs/phase<N>/reviews/PHASE_<N>_REVIEW_<R>.md` | One adversarial review round: findings + exactly one verdict (PASS / PASS-WITH-CORRECTIONS / FAIL), with a `## Resolutions` section appended later by the fix-up session. |
 | `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md` (`PD`) | A mining report on the Pintonium codebase: **evidence, never contract** (§G0.1a). Rules of engagement at §G11 — both §G0.1a and §G11 exist only in the v2.0 revisions; v1.1 predates the reference entirely. |
 
-Supporting files: `docs/MOVES.md` (the path manifest), `docs/tooling/VERIFY_LOOP_BRIEFS.md`,
-`docs/decisions/`, and `docs/phase<N>/briefs/` (the per-session briefs that commissioned a round).
+Supporting files: `docs/MOVES.md` (the path manifest), `docs/decisions/`, and
+`docs/phase<N>/briefs/` (the per-session briefs that commissioned a round).
 
 ### Six different files are named `DESIGN.md`
 
@@ -81,9 +82,8 @@ different ones. Every phase doc and review cites its revision *by line number*.
 coordinates that appear to resolve.** So:
 
 - Which revision a phase is anchored to is declared data, not a guess: the phase doc's own §0
-  states it, and its manifest under `verification/targets/` declares how to extract that path plus
-  the content selectors used to validate it. `--design-version` is an explicit verification-only
-  override; it does not adopt that revision or rewrite §0.
+  states it, and `docs/MOVES.md` records the per-phase adoptions. Adopting or verifying against a
+  candidate revision is a deliberate maintainer operation (§G0.4), never a side effect.
 - Adding or moving a revision means **deriving a whole new pin set from that file's own headings**
   (`grep -n '^#'`, then print each range and confirm its first and last line). Never shift another
   revision's numbers by an offset.
@@ -102,21 +102,20 @@ old→new manifest, the `DESIGN.md` collision warning, and the rule for what eac
 means. It also carries the dangling-reference sweep used as the acceptance check after any move.
 
 A phase doc's `v<K>` = the highest `§0.K` fix-up addendum in it. **Rolling it is two steps run
-together** — `git mv docs/phase<N>/v<K> v<K+1>`, then update that phase's paths in its verification
-manifest — and
-only ever **after** a verify loop exits. Rolling mid-loop points every later round at a directory
-that no longer exists, silently.
+together** — `git mv docs/phase<N>/v<K> v<K+1>`, then update that phase's rows in `docs/MOVES.md`
+— and only ever **after** the fix-up that adds the addendum has actually landed. Rolling mid-review
+points a later session at a directory that no longer exists, silently.
 
 ### Session types
 
 Each phase passes through fresh, separate sessions, always in this order (`DESIGN.md` §G1):
 
-1. **Build** (§G1.1) — one fresh Codex session, one phase spec, writes
+1. **Build** (§G1.1) — one fresh agent session, one phase spec, writes
    `docs/phase<N>/v1/PHASE_<N>_DOC.md`,
    then stops.
-2. **Verify** (§G1.2) — a *different fresh Codex session*, without the author's context, adversarially
+2. **Verify** (§G1.2) — a *different fresh agent session*, without the author's context, adversarially
    attacks the doc and writes one numbered review with one verdict, then stops.
-3. **Fix-up** (§G1.3) — another fresh Codex writing role applies corrections, records each under
+3. **Fix-up** (§G1.3) — another fresh agent writing role applies corrections, records each under
    `## Resolutions` in the review,
    adds a `§0.<K>` addendum to the doc.
 
@@ -124,37 +123,29 @@ A phase is **verified** only per §G1.3's definition, and §G5.3's gating invari
 dependent build session may not read an unverified doc. If a fix-up changed the doc's §5, a fresh
 verify session is owed before the phase closes.
 
-### The `$verify-loop` harness
+### Running §G1.2/§G1.3
 
-§G1.2/§G1.3 run mechanized as a multi-agent workflow (Attack → Refute → Steelman → Gate →
-Adjudicate → Fix up), looping until a review returns a literal PASS (zero blocking, zero
-corrections). The Codex implementation has one canonical engine and one canonical prompt/schema set:
+Verify and fix-up are **hand-run fresh agent sessions** — the former mechanized loop is retired
+(2026-08-08). One session per role, following `DESIGN.md` §G1.2/§G1.3:
 
-| File | Role |
-|---|---|
-| `.agents/skills/verify-loop/SKILL.md` | Fresh-session Codex entry point and safety procedure. Invoke with `$verify-loop`. |
-| `.agents/skills/verify-loop/scripts/` | Generic `codex exec` orchestrator, deterministic barriers, aggregation, path/write checks, and CLI. |
-| `.agents/skills/verify-loop/prompts/` and `schemas/` | The only active role prompts and structured-return schemas. |
-| `verification/targets/` | Data-only target profiles; adding a phase or non-document target requires configuration, not prompt edits. |
-| `docs/tooling/VERIFY_LOOP_BRIEFS.md` | Readable source map pointing to the canonical files; it is not a synchronized prompt copy. |
+1. **Verify session** — one fresh session, blind to the author's context, reads the build
+   session's mandatory inputs then attacks the doc (doc gate, conformance map, interface honesty,
+   scope discipline, template completeness, binding decisions — §G1.2's priority order). It writes
+   exactly one review file `docs/phase<N>/reviews/PHASE_<N>_REVIEW_<R>.md` (R = highest in that
+   directory + 1) with findings + exactly one verdict, then stops without fixing anything.
+2. **Fix-up session** — on PASS-WITH-CORRECTIONS, a fresh writing session applies the corrections,
+   records each under `## Resolutions` in the review, and adds a `§0.<K>` addendum to the doc.
+   On FAIL, rerun the build session with the review added to its Required inputs.
 
-Run `scripts/verify --target <id> --dry-run` before any paid run. It validates inputs, prior-review
-state, content selectors, output collisions, write scopes, and reports agent/token estimates.
-Default to the `lean` preset and start with `--review-only --max-rounds 1`.
-If that review has corrections, run `scripts/verify --target <id> --fixup-review latest --dry-run`
-and then the same command without `--dry-run` before beginning the next review.
-
-Load-bearing properties: finders/refuters/steelmen/Gate run in Codex read-only sandboxes;
-the Gate re-resolves every citation at the line and drops anything that does not match verbatim;
-stage boundaries are deliberate barriers (do not convert to a pipeline); `startRound=1` inverts
-the prompts because a never-reviewed document is unreviewed *surface*, not a mature loop. Default
-state is discovered from prior reviews rather than inferred from an argument. Literal PASS requires
-the `PASS` verdict plus zero blocking and zero corrections. See
-`docs/tooling/CODEX_VERIFICATION.md` for invocation, costs, recovery, and the generic manifest.
+The evidence rules bind these sessions exactly as they bound the loop: repo-relative citations
+quoted **at the line**, the forbidden-sources pattern (any `chatlogs/` below `docs/`, any root
+`*.txt`), one verdict, single round per review directory, and literal-PASS means verdict PASS plus
+zero blocking and zero corrections. Do not recreate the loop's internal stage decomposition (Attack
+→ Refute → Steelman → Gate → Adjudicate) — that was engine machinery, not design text.
 
 The provider-era wording in the immutable governing design revisions is interpreted through
 `docs/tooling/CODEX_MIGRATION_OVERLAY.md`. It preserves their cited bytes and coordinates while
-superseding only the retired execution surface.
+superseding the retired execution surface — including the retired verification loop.
 
 ## Rules binding every session here
 
@@ -171,8 +162,8 @@ to, and these glosses must not be treated as the rule:
   gitignored / untracked; the ignore rule is about repo size, not the source rule.)
 - **No code in a build session** — no source files, stubs, or build changes; the deliverable is
   the architecture document. Illustrative signatures *inside* the doc are encouraged. §G1.1.
-- **Cite repo-relative paths, and quote at the line.** A bare filename does not resolve, and the
-  Gate drops findings whose citations do not.
+- **Cite repo-relative paths, and quote at the line.** A bare filename does not resolve, and a
+  review drops findings whose citations do not.
 - **Licensing (§G7, plus §G11.2 for Pintonium — v2.0 revisions only).** This project is GPL-3.0-or-later (`LICENSE` is
   the full GPLv3 text). Iris/Angelica/Pintonium are LGPL-3.0 and may be incorporated with
   compliance; **never copy from glsl-transformer / `glsl-transformation-lib` (AGPL)**; the
@@ -183,8 +174,9 @@ to, and these glosses must not be treated as the rule:
   `reference-src/cleanroom-0.6.6-alpha/`, `schlorbium-project/` →
   `reference-src/schlorbium-HD_U_G6_pre1/`, `Pintonium/` → `reference-src/pintonium-9c2fcc1/`.
   Read `§G11.3` (v2.0 revisions) before searching Pintonium — it lists real traps.
-- **Use the `cleanroom` MCP server for vanilla symbols** (configured for Codex in
-  `.codex/config.toml`). Vanilla render classes exist in `cleanroom-src/` only as
+- **Use the `cleanroom` MCP server for vanilla symbols** (configured in
+  `.codex/config.toml`; omp translates `[mcp_servers.*]` natively). Vanilla render classes exist in
+  `cleanroom-src/` only as
   `.java.patch` files, so grepping it for a method body will mislead you; full sources are
   present only for Forge and loader internals.
 
@@ -196,11 +188,11 @@ here would be worse than none. To learn it:
 1. Read the **highest-numbered** file in `docs/phase<N>/reviews/`: its verdict, whether it has a
    `## Resolutions` section, and its closing `§G1.3 status` — that is where a phase says plainly
    whether it is verified and what the next session owes.
-2. Run `git status --short`. A version roll or a harness re-point may be mid-flight, in which
+2. Run `git status --short`. A version roll or a fix-up may be mid-flight, in which
    case the tree and the last commit disagree on purpose.
-3. Resolve any path you find through `docs/MOVES.md`, and run the appropriate
-   `verification/targets/<id>.json` profile with `--dry-run` to validate the current artifact,
-   governing revision, selectors, and next review number.
+3. Resolve any path you find through `docs/MOVES.md`. For the next review number, look in
+   `docs/phase<N>/reviews/` for the highest round and add one; the governing revision comes from
+   the phase doc's own §0.
 
 ## Planned mod architecture
 

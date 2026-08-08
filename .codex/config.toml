@@ -5,3 +5,6 @@ args = ["/home/nick/IdeaProjects/mcmodding-mcp/dist/index.js"]
 [mcp_servers.cleanroom.env]
 CLEANROOM_MCP_DATA_DIR = "/home/nick/IdeaProjects/mcmodding-mcp/data"
 CLEANROOM_MCP_SKIP_AUTO_UPDATE = "1"
+
+[mcp_servers.cleanroom.tools.get_method_signature]
+approval_mode = "approve"

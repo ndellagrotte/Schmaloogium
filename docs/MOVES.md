@@ -34,7 +34,7 @@ warning below.
 | `docs/phase2/artifacts/PHASE_2_DOC.md` | `docs/phase2/v1/PHASE_2_DOC.md` |
 | — *(new maintainer-authorized rebuild after Review 36 FAIL, 2026-08-03)* | `docs/phase2/v2/PHASE_2_DOC.md` *(v1 retained unchanged as historical review evidence)* |
 | `docs/misc/recommendation_doc.md` | `docs/decisions/TEMPLATE_BRANCH_RECOMMENDATION.md` |
-| `docs/project/VERIFY_LOOP_BRIEFS.md` | `docs/tooling/VERIFY_LOOP_BRIEFS.md` |
+| `docs/project/VERIFY_LOOP_BRIEFS.md` | `docs/tooling/VERIFY_LOOP_BRIEFS.md` *(deleted 2026-08-08 with the retired verification loop; narrative preserved at `docs/tooling/history/CLAUDE_VERIFY_LOOP_BRIEFS.md`)* |
 | `docs/pintonium/pintonium_design_doc_creation_chatlog.md` | `docs/reference/pintonium/chatlogs/` |
 | `phase2chat.txt` *(repo root)* | `docs/phase2/chatlogs/phase2chat.txt` |
 | `2026-07-25-175142-…txt` *(repo root)* | `docs/phase2/chatlogs/` |
@@ -87,26 +87,24 @@ anchored per phase:
 step 3; `docs/phase2/v2/PHASE_2_DOC.md` §0.1 declares v3 after the maintainer-authorized Review-36
 rebuild, while `docs/phase2/v1/PHASE_2_DOC.md` retains its historical v1.1 declaration unchanged;
 and Phases 3–9 deliberately adopt RC3 from their initial builds. Phase 11 v1 §0 explicitly declares
-v3, and `verification/targets/phase-11.json` derives its selectors from v3's own headings. Every
+v3, quoted at `docs/design/v3/DESIGN.md` and recorded in the Version-labels table below. Every
 Phase 1 review through round 11 is in v1.1's coordinates. RC4 remains unadopted; v3 is adopted by
 Phase 2 and Phase 11 only and is not the global default.
 
-The `$verify-loop` harness therefore resolves the revision **per target** rather than globally.
-Each phase profile in `verification/targets/` declares how to identify its governing-design path
-inside the target document's §0 plus unique content selectors for Part I, the target specification,
-the document gate, and the mandatory template. Unless `--design-version` is supplied, the engine
-extracts that §0 path, resolves the selectors against its current content at startup and every round
-boundary, and reports the version, path, selection source, and current coordinates. Phase 1's §0
-selects RC2; the current Phase 2 v2 target selects v3 normally from §0; Phases 3–8 select RC3. Phase
-9 declares RC3 in its document header and has no target profile yet; Phase 11's target selects v3
-normally from §0. No `--design-version` override is involved in either v3 adoption. RC4 remains
-unselected; v3 is selected only by Phase 2 and Phase 11 until other phases execute §G0.4
-independently. There is no executable line-pin table to synchronize.
+**The `$verify-loop` harness is retired (2026-08-08).** It used to resolve the revision **per
+target** from profiles under `verification/targets/`, with content selectors for Part I, the target
+specification, the document gate, and the mandatory template, plus a `--design-version` override.
+That machinery — `scripts/verify`, the `$verify-loop` skill, the profiles, and the operator docs —
+is gone; §0's per-doc declaration is the single source of truth. The governing revision is declared
+in each phase document's own §0, exactly as the rules below say: Phase 1's §0 selects RC2; current
+Phase 2 v2 §0 selects v3; Phases 3–8 §0 select RC3. Phase 9 declares RC3 in its document header.
+RC4 remains unselected; v3 is selected only by Phase 2 and Phase 11 until other phases execute §G0.4
+independently. There is no executable pin table to synchronize.
 
-**A syntactically valid but unintended `--design-version` can still feed every agent the wrong
-revision when its selectors also resolve.** The old pins make the point: at v2.0-RC1 ll. 649–652
-the doc-gate lens read §G9's template, which looks entirely plausible; at v2.0-RC2 the same range
-lands in §G6's conformance-tier text, equally plausible. So adopting a new or moved revision means
+**Reading a phase against the wrong revision still yields plausible-looking wrong text that does
+not error.** The old pins make the point: at v2.0-RC1 ll. 649–652 the doc-gate lens read §G9's
+template, which looks entirely plausible; at v2.0-RC2 the same range lands in §G6's conformance-tier
+text, equally plausible. So adopting a new or moved revision means
 **re-deriving its whole pin set from its own headings** — never shifting another revision's numbers
 by an offset. The procedure is v2.0-RC2 §G0.4, and its step 1 is exactly this.
 
@@ -120,35 +118,35 @@ Directory names come from each document's own header, not from the folder it use
 | REV1 | `v2.0-RC1` | header states v2.0; recorded as RC because no downstream doc has adopted it |
 | REV2 | `v2.0-RC2` | header states v2.0-RC2 (created 2026-07-26, not a move); supersedes RC1, which stays for history. **`-RC` retained after partial adoption — see the ruling below** |
 | REV3 | `v2.0-RC3` | header states v2.0-RC3 (created 2026-07-26, not a move); **governs Phases 3–9** — RC2 governs Phase 1 and v3 governs current Phase 2 v2 and Phase 11 v1; partial adoption retains `-RC` |
-| REV4 | `v2.0-RC4` | header states v2.0-RC4 (created 2026-08-03, not a move); unadopted candidate implementing PHASE_9_DOC §11.4's tag-evidence qualification; no phase or target points to it |
+| REV4 | `v2.0-RC4` | header states v2.0-RC4 (created 2026-08-03, not a move); unadopted candidate implementing PHASE_9_DOC §11.4's tag-evidence qualification; no phase §0 cites it |
 | REV5 | `v3` | header states v3; promoted together with its directory on 2026-08-03 from the former candidate label. It implements PHASE_7_DOC §11.5's split frame-begin/matrix-capture timeline and is now **adopted by Phase 2 v2 and Phase 11 v1 only**; it remains unadopted overall and is no global default |
 | `RESEARCH.md` | `v1` | "first complete draft"; no version stated |
 | `PINTONIUM_DESIGN.md` | `v1.0` | header states v1.0 |
-| `PHASE_1_DOC.md` | `v14` | fix-up addenda §0.4–**§0.14**; `PHASE_1_REVIEW_14.md` has complete `## Resolutions`, and round fifteen returned a literal PASS with no further fix-up. Rolled from `v13` on 2026-07-26 after that loop exited |
+| `PHASE_1_DOC.md` | `v14` | fix-up addenda §0.4–**§0.14**; `PHASE_1_REVIEW_14.md` has complete `## Resolutions`, and round fifteen returned a literal PASS with no further fix-up. Rolled from `v13` on 2026-07-26 after that round |
 | `PHASE_2_DOC.md` (historical) | `v1` | initial build/fix-up lineage through §0.35; retained byte-for-byte as the artifact Review 36 assessed under the explicit v3 override. Review 36 returned FAIL and remains without Resolutions |
-| `PHASE_2_DOC.md` (current) | `v2` | maintainer-authorized major rebuild exception after Review 36's FAIL; §0.36 formally adopts v3, and the Phase 2 target points here. The next review is Round 37 |
+| `PHASE_2_DOC.md` (current) | `v2` | maintainer-authorized major rebuild exception after Review 36's FAIL; §0.36 formally adopts v3. The next review is Round 37 |
 | `PHASE_3_DOC.md` | `v1` | initial build under RC3; rolls only after a fix-up addendum and a later literal PASS |
-| `PHASE_11_DOC.md` | `v1` | initial build explicitly adopts v3; `verification/targets/phase-11.json` derives every design selector from that revision's own headings |
+| `PHASE_11_DOC.md` | `v1` | initial build explicitly adopts v3 in §0 |
 
 **Rolling a phase doc's version** (`v14` → `v15` only once a future §0.15 fix-up lands) is two steps,
-run together and only **after** that `$verify-loop` run exits:
+run together and only **after** the fix-up session that adds the addendum has actually landed:
 
 ```bash
 git mv docs/phase1/v14 docs/phase1/v15
-# then update the target, interface, and fix-up paths in verification/targets/phase-1.json
+# then update the version-labels row and any review/brief path above in this file
 ```
 
-`v<K>` = the highest `§0.K` fix-up addendum in the doc. Never roll mid-loop: the doc path is
-resolved once at startup, so a rename between rounds invalidates every later stage.
+`v<K>` = the highest `§0.K` fix-up addendum in the doc. Never roll while any session is mid-review
+against the old path: the rename points every later session at a directory that no longer exists,
+silently.
 
 **Phase 2 v2 is one maintainer-authorized exception to that naming rule.** Review 36 returned
 literal FAIL against the v1 artifact under a v3 verification override and identified a structural
 camera-motion rebuild, not an ordinary correction. The maintainer directed a new
 `docs/phase2/v2/PHASE_2_DOC.md` that preserves v1 and Review 36 as immutable evidence, formally
 adopts v3 from its own §0, and records the rebuild at §0.36. This is a major-artifact label, not a
-claim that the highest addendum is §0.2 and not a mid-loop roll: Review 36's loop stopped at FAIL,
-its file receives no `## Resolutions`, the target/fix-up/interface paths now point only at v2, and
-Round 37 is the next fresh whole-document review.
+claim that the highest addendum is §0.2. Review 36 stopped at FAIL, its file receives no
+`## Resolutions`, and Round 37 is the next fresh whole-document review.
 
 *The `v10` → `v11` roll was performed 2026-07-26, both steps together, with no loop running. It cost
 one dangling reference, recorded below.*
@@ -221,6 +219,12 @@ still do not create a global default.
   606, and `PHASE_1_REVIEW_15.md` at ll. 3, 19 and 281. **None was repointed, deliberately.** Both
   reviews are immutable §G1.1/§G1.2 evidence, and those paths record the artifact each session
   actually reviewed.
+- **`docs/tooling/VERIFY_LOOP_BRIEFS.md` and `docs/tooling/CODEX_VERIFICATION.md`, deleted with the
+  retired verification loop (2026-08-08).** Cited by the immutable DESIGN revisions (*operator
+  runbook, readable prompt copy*) and by the retirement record in
+  `docs/tooling/CODEX_MIGRATION_OVERLAY.md`. **None was recreated, deliberately.** The provider-era
+  prompt narrative survives quarantined in `docs/tooling/history/CLAUDE_VERIFY_LOOP_BRIEFS.md`; the
+  operation notes were harness instructions for a mechanism that no longer exists.
 
 The acceptance check (`--exclude=MOVES.md` because this manifest's old-path column dangles by
 definition — exclusion added 2026-07-26, after confirming the unexcluded form's 13 self-hits were
@@ -231,7 +235,8 @@ grep -rhoE 'docs/[A-Za-z0-9._/-]+\.md' docs --include='*.md' --exclude=MOVES.md 
   [ -f "$p" ] || echo "DANGLING: $p"; done
 ```
 
-**As re-audited while promoting v3 on 2026-08-03, "clean" means exactly five lines, not zero:**
+**As re-audited after retiring the verification loop on 2026-08-08, "clean" means exactly seven
+lines, not zero:**
 
 ```
 DANGLING: docs/decisions/OQ-3_GL_CONTEXT.md
@@ -239,15 +244,19 @@ DANGLING: docs/decisions/OQ-4_CLEANMIX_HOOKS.md
 DANGLING: docs/phase1/v10/PHASE_1_DOC.md
 DANGLING: docs/phase1/v11/PHASE_1_DOC.md
 DANGLING: docs/phase1/v13/PHASE_1_DOC.md
+DANGLING: docs/tooling/VERIFY_LOOP_BRIEFS.md
+DANGLING: docs/tooling/CODEX_VERIFICATION.md
 ```
 
-The two pending decision artifacts plus the three historical citation sets — 15 citations for
-`v10`, 15 for `v11` and 7 for `v13` — dedup to those five entries through `sort -u`, so the recorded
-expectation stays a five-liner however many immutable records cite them, and **any sixth line is a
+The two pending decision artifacts, the three historical citation sets, and the two verification-loop
+docs deleted 2026-08-08 — the latter cited by the immutable DESIGN revisions and by the retirement
+record in CODEX_MIGRATION_OVERLAY.md — dedup to those seven entries through `sort -u`, so the
+recorded expectation stays a seven-liner however many records cite them, and **any eighth line is a
 real regression.** The sweep command is deliberately left unchanged: adding exclusions for reviews,
-briefs, or planned outputs would make the result look empty, but an exclusion list that grows each
-time something is legitimately absent is how genuine dangling references stop being noticed.
+briefs, planned outputs, or retired tooling would make the result look empty, but an exclusion list
+that grows each time something is legitimately absent is how genuine dangling references stop being
+noticed.
 
-Only after a future §0.15 fix-up lands and its loop exits is the next illustrative roll `v14` →
-`v15`. If that roll strands a sixth path, extend the expected list rather than the exclusions, and
+Only after a future §0.15 fix-up lands is the next illustrative roll `v14` →
+`v15`. If that roll strands an eighth path, extend the expected list rather than the exclusions, and
 say which roll each entry came from.
