@@ -1,0 +1,189 @@
+{
+  "$schema": "../../.agents/skills/verify-loop/schemas/manifest.schema.json",
+  "version": 1,
+  "id": "phase-1",
+  "title": "Phase 1 — Foundation & project architecture",
+  "description": "Adversarial verification profile for the current Phase 1 architecture document.",
+  "targets": [
+    {
+      "path": "docs/phase1/v14/PHASE_1_DOC.md",
+      "role": "document under review",
+      "selectors": [
+        {
+          "id": "whole_document",
+          "selector": {
+            "start": "^# Schmaloogium — Phase 1:"
+          }
+        }
+      ]
+    }
+  ],
+  "design_revision": {
+    "target_index": 0,
+    "section_zero": {
+      "start": "^## 0\\. Header$",
+      "end": "^## 1\\. Scope & boundaries$"
+    },
+    "declaration_pattern": "^\\*\\*Verifies against:\\*\\* `(?<path>docs/design/[A-Za-z0-9._-]+/DESIGN\\.md)` from"
+  },
+  "authoritative_sources": [
+    {
+      "path": "docs/design/{design_version}/DESIGN.md",
+      "role": "governing design revision",
+      "selectors": [
+        {
+          "id": "part_i",
+          "selector": {
+            "start": "^## Part I — Global sections$",
+            "end": "^## Part II — Phase specifications$"
+          }
+        },
+        {
+          "id": "target_spec",
+          "selector": {
+            "start": "^### Phase 1 — Foundation & project architecture$",
+            "end": "^### Phase 2 — Conformance harness$"
+          }
+        },
+        {
+          "id": "doc_gate",
+          "selector": {
+            "start": "^\\*\\*Doc gate:\\*\\* module/package layout finalized",
+            "end": "^\\*\\*Impl gate:\\*\\*",
+            "end_mode": "first-after-start"
+          }
+        },
+        {
+          "id": "mandatory_template",
+          "selector": {
+            "start": "^## G9\\. PHASE_X_DOC\\.md — mandatory template$",
+            "end": "^## G10\\. Open-question assignments$"
+          }
+        }
+      ]
+    },
+    {
+      "path": "docs/research/v1/RESEARCH.md",
+      "role": "contract ground truth"
+    }
+  ],
+  "supporting_evidence": [
+    {
+      "path": "docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md",
+      "role": "reference evidence"
+    },
+    {
+      "path": "build.gradle",
+      "role": "template ground truth"
+    },
+    {
+      "path": "settings.gradle",
+      "role": "template ground truth"
+    },
+    {
+      "path": "gradle.properties",
+      "role": "template ground truth"
+    },
+    {
+      "path": "gradle/scripts",
+      "role": "template ground truth"
+    },
+    {
+      "path": "src",
+      "role": "template ground truth"
+    },
+    {
+      "path": ".github/workflows",
+      "role": "template ground truth"
+    },
+    {
+      "path": "README.md",
+      "role": "template ground truth"
+    }
+  ],
+  "dependencies": [],
+  "prior_reviews": {
+    "directory": "docs/phase1/reviews",
+    "filename_regex": "^PHASE_1_REVIEW_(?<round>\\d+)\\.md$",
+    "round_group": "round",
+    "read_order": "adjudicator-last",
+    "allow_gaps": false
+  },
+  "forbidden_sources": {
+    "path_patterns": [
+      "docs/**/chatlogs/**",
+      "*.txt"
+    ],
+    "provenance_patterns": [
+      "any prior agent or session transcript, regardless of path or extension"
+    ]
+  },
+  "immutable_paths": [
+    "docs/research/**",
+    "docs/design/**",
+    "docs/reference/**",
+    "docs/phase1/reviews/*.md",
+    "docs/phase1/briefs/**",
+    "build.gradle",
+    "settings.gradle",
+    "gradle.properties",
+    "gradle/scripts/**",
+    "src/**",
+    ".github/workflows/**",
+    "README.md"
+  ],
+  "write_permissions": {
+    "adjudicator": [
+      "{review_output}"
+    ],
+    "fixup": [
+      "docs/phase1/v14/PHASE_1_DOC.md",
+      "{review_output}"
+    ]
+  },
+  "output": {
+    "directory": "docs/phase1/reviews",
+    "review_template": "PHASE_1_REVIEW_{round}.md",
+    "journal_directory": ".verification-runs/phase-1"
+  },
+  "attack_lenses": "verification/lenses/phase-document.json",
+  "lens_order": {
+    "first_review": [
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions",
+      "new-surface"
+    ],
+    "mature": [
+      "new-surface",
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions"
+    ]
+  },
+  "citation": {
+    "format": "repo-relative-line-quote",
+    "resolver": "line-quote",
+    "allow_unique_relocation": true
+  },
+  "interface_regions": [
+    {
+      "id": "cross-phase-interfaces",
+      "path": "docs/phase1/v14/PHASE_1_DOC.md",
+      "selector": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 1 can close."
+    }
+  ],
+  "policy": "verification/policy.json",
+  "target_context": {
+    "assigned_open_questions": "OQ-2, OQ-12, OQ-20, OQ-21",
+    "phase_name": "Foundation & project architecture",
+    "mandatory_section_count": 13
+  },
+  "fixup_instructions": "This mature document uses compact §0.N fix-up addenda. Add at most one next-numbered addendum, restamp the immediately previous live §G1.3 status as historical/superseded when applicable, update the existing revision metadata and closing session counts consistently, and keep the full reasoning in the current review's Resolutions. Do not roll the v14 directory during a loop."
+}

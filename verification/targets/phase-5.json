@@ -1,0 +1,251 @@
+{
+  "$schema": "../../.agents/skills/verify-loop/schemas/manifest.schema.json",
+  "version": 1,
+  "id": "phase-5",
+  "title": "Phase 5 — Framebuffer & buffer architecture",
+  "description": "Adversarial verification profile for the current Phase 5 architecture document.",
+  "targets": [
+    {
+      "path": "docs/phase5/v1/PHASE_5_DOC.md",
+      "role": "document under review",
+      "selectors": [
+        {
+          "id": "whole_document",
+          "selector": {
+            "start": "^# Schmaloogium — Phase 5:"
+          }
+        }
+      ]
+    }
+  ],
+  "design_revision": {
+    "target_index": 0,
+    "section_zero": {
+      "start": "^## 0\\. Header$",
+      "end": "^## 1\\. Scope & boundaries$"
+    },
+    "declaration_pattern": "^\\*\\*Governing design revision:\\*\\* `(?<path>docs/design/[A-Za-z0-9._-]+/DESIGN\\.md)`"
+  },
+  "authoritative_sources": [
+    {
+      "path": "docs/design/{design_version}/DESIGN.md",
+      "role": "governing design revision",
+      "selectors": [
+        {
+          "id": "part_i",
+          "selector": {
+            "start": "^## Part I — Global sections$",
+            "end": "^## Part II — Phase specifications$"
+          }
+        },
+        {
+          "id": "target_spec",
+          "selector": {
+            "start": "^### Phase 5 — Framebuffer & buffer architecture$",
+            "end": "^### Phase 6 — Uniform & sampler system$"
+          }
+        },
+        {
+          "id": "doc_gate",
+          "selector": {
+            "start": "^\\*\\*Doc gate:\\*\\* App B\\.3 reproduced exactly incl\\. the unit-11 ruling;",
+            "end": "^\\*\\*Impl gate:\\*\\*",
+            "end_mode": "first-after-start"
+          }
+        },
+        {
+          "id": "mandatory_template",
+          "selector": {
+            "start": "^## G9\\. PHASE_X_DOC\\.md — mandatory template$",
+            "end": "^## G10\\. Open-question assignments$"
+          }
+        }
+      ]
+    },
+    {
+      "path": "docs/research/v1/RESEARCH.md",
+      "role": "contract ground truth"
+    }
+  ],
+  "supporting_evidence": [
+    {
+      "path": "docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md",
+      "role": "Pintonium reference evidence"
+    },
+    {
+      "path": "reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt",
+      "role": "OptiFine shader-pack contract evidence"
+    },
+    {
+      "path": "reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md",
+      "role": "behavioral-observation digest evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/org/taumc/celeritas/mixin/shaders/MixinFramebuffer_Shaders.java",
+      "role": "Pintonium 1.12.2 sampleable-depth bridge evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets",
+      "role": "Pintonium render-target, flip, clear, copy, and resize evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/shadows/ShadowRenderTargets.java",
+      "role": "Pintonium shadow-target structure and flip-stub evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/pipeline/CommonIrisRenderingPipeline.java",
+      "role": "Pintonium fog-alpha compatibility evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/InternalTextureFormat.java",
+      "role": "Pintonium internal texture-format mechanism evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/PixelFormat.java",
+      "role": "Pintonium pixel-format mechanism evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/PixelType.java",
+      "role": "Pintonium pixel-type mechanism evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/DepthBufferFormat.java",
+      "role": "Pintonium depth-buffer-format mechanism evidence"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/DepthCopyStrategy.java",
+      "role": "Pintonium tiered depth-copy mechanism evidence"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "docs/phase1/v14/PHASE_1_DOC.md",
+      "role": "dependency architecture and binding interface",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    },
+    {
+      "path": "docs/phase3/v1/PHASE_3_DOC.md",
+      "role": "dependency architecture and binding interface",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    },
+    {
+      "path": "docs/phase4/v1/PHASE_4_DOC.md",
+      "role": "dependency architecture and binding interface",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    }
+  ],
+  "prior_reviews": {
+    "directory": "docs/phase5/reviews",
+    "filename_regex": "^PHASE_5_REVIEW_(?<round>\\d+)\\.md$",
+    "round_group": "round",
+    "read_order": "adjudicator-last",
+    "allow_gaps": false
+  },
+  "forbidden_sources": {
+    "path_patterns": [
+      "docs/**/chatlogs/**",
+      "*.txt"
+    ],
+    "provenance_patterns": [
+      "any prior agent or session transcript, regardless of path or extension"
+    ]
+  },
+  "immutable_paths": [
+    "docs/research/**",
+    "docs/design/**",
+    "docs/reference/**",
+    "docs/phase1/v14/PHASE_1_DOC.md",
+    "docs/phase1/reviews/**",
+    "docs/phase3/v1/PHASE_3_DOC.md",
+    "docs/phase3/reviews/**",
+    "docs/phase4/v1/PHASE_4_DOC.md",
+    "docs/phase4/reviews/**",
+    "docs/phase5/reviews/*.md",
+    "reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt",
+    "reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md",
+    "reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/org/taumc/celeritas/mixin/shaders/MixinFramebuffer_Shaders.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/BufferFlipper.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/ClearPass.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/ClearPassCreator.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/ClearPassInformation.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/DepthTexture.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTarget.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTargetStateListener.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTargets.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/backed/NativeImageBackedCustomTexture.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/backed/NativeImageBackedNoiseTexture.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/backed/NativeImageBackedSingleColorTexture.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/backed/NoiseTexture.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/backed/SingleColorTexture.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/shadows/ShadowRenderTargets.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/pipeline/CommonIrisRenderingPipeline.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/InternalTextureFormat.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/PixelFormat.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/PixelType.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/DepthBufferFormat.java",
+    "reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/texture/DepthCopyStrategy.java"
+  ],
+  "write_permissions": {
+    "adjudicator": [
+      "{review_output}"
+    ],
+    "fixup": [
+      "docs/phase5/v1/PHASE_5_DOC.md",
+      "{review_output}"
+    ]
+  },
+  "output": {
+    "directory": "docs/phase5/reviews",
+    "review_template": "PHASE_5_REVIEW_{round}.md",
+    "journal_directory": ".verification-runs/phase-5"
+  },
+  "attack_lenses": "verification/lenses/phase-document.json",
+  "lens_order": {
+    "first_review": [
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions",
+      "new-surface"
+    ],
+    "mature": [
+      "new-surface",
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions"
+    ]
+  },
+  "citation": {
+    "format": "repo-relative-line-quote",
+    "resolver": "line-quote",
+    "allow_unique_relocation": true
+  },
+  "interface_regions": [
+    {
+      "id": "cross-phase-interfaces",
+      "path": "docs/phase5/v1/PHASE_5_DOC.md",
+      "selector": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 5 can close."
+    }
+  ],
+  "policy": "verification/policy.json",
+  "target_context": {
+    "assigned_open_questions": "none",
+    "phase_name": "Framebuffer & buffer architecture",
+    "mandatory_section_count": 13
+  },
+  "fixup_instructions": "This is a first-version document with no mature fix-up-addendum convention. If a correction changes the target, add only a compact next-numbered §0 subsection using its existing header style; do not import Phase 1's supersession sentences, dated-claim ranges, or session-count bookkeeping. Keep full reasoning in the current review's Resolutions and do not roll the v1 directory during a loop."
+}

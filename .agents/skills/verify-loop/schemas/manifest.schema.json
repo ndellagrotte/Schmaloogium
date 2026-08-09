@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schmaloogium.local/schemas/verification-target.schema.json",
+  "title": "Generic verification target",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "id",
+    "title",
+    "targets",
+    "authoritative_sources",
+    "supporting_evidence",
+    "dependencies",
+    "prior_reviews",
+    "forbidden_sources",
+    "immutable_paths",
+    "write_permissions",
+    "output",
+    "attack_lenses",
+    "lens_order",
+    "citation",
+    "interface_regions",
+    "policy"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "authoritative_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "design_revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_index", "section_zero", "declaration_pattern"],
+      "properties": {
+        "target_index": { "type": "integer", "minimum": 0 },
+        "section_zero": { "$ref": "#/$defs/selector" },
+        "declaration_pattern": { "type": "string", "minLength": 1 }
+      }
+    },
+    "supporting_evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "allOf": [
+          { "$ref": "#/$defs/artifact" },
+          {
+            "type": "object",
+            "required": ["binding_contract"],
+            "properties": {
+              "binding_contract": { "$ref": "#/$defs/selector" }
+            }
+          }
+        ]
+      }
+    },
+    "prior_reviews": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["directory", "filename_regex", "round_group", "read_order"],
+      "properties": {
+        "directory": { "$ref": "#/$defs/relativePath" },
+        "filename_regex": { "type": "string", "minLength": 1 },
+        "round_group": { "type": "string", "minLength": 1 },
+        "read_order": { "enum": ["adjudicator-last"] },
+        "allow_gaps": { "type": "boolean" }
+      }
+    },
+    "forbidden_sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path_patterns", "provenance_patterns"],
+      "properties": {
+        "path_patterns": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "provenance_patterns": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "immutable_paths": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "write_permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adjudicator", "fixup"],
+      "properties": {
+        "adjudicator": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "fixup": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["directory", "review_template", "journal_directory"],
+      "properties": {
+        "directory": { "$ref": "#/$defs/relativePath" },
+        "review_template": { "type": "string", "pattern": "\\{round\\}" },
+        "journal_directory": { "$ref": "#/$defs/relativePath" }
+      }
+    },
+    "attack_lenses": { "$ref": "#/$defs/relativePath" },
+    "lens_order": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["first_review", "mature"],
+      "properties": {
+        "first_review": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "mature": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "resolver", "allow_unique_relocation"],
+      "properties": {
+        "format": { "const": "repo-relative-line-quote" },
+        "resolver": { "const": "line-quote" },
+        "allow_unique_relocation": { "type": "boolean" }
+      }
+    },
+    "interface_regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path", "selector", "change_trigger"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "path": { "$ref": "#/$defs/relativePath" },
+          "selector": { "$ref": "#/$defs/selector" },
+          "change_trigger": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "policy": { "$ref": "#/$defs/relativePath" },
+    "target_context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "fixup_instructions": { "type": "string" }
+  },
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "not": { "pattern": "^(?:/|[A-Za-z]:[\\\\/])" }
+    },
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start"],
+      "properties": {
+        "start": { "type": "string", "minLength": 1 },
+        "end": { "type": "string", "minLength": 1 },
+        "end_mode": { "enum": ["unique-after-start", "first-after-start"] },
+        "include_end": { "type": "boolean" },
+        "expected_start_line": { "type": "integer", "minimum": 1 },
+        "expected_end_line": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "role"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "role": { "type": "string", "minLength": 1 },
+        "selectors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "selector"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "selector": { "$ref": "#/$defs/selector" }
+            }
+          }
+        },
+        "binding_contract": { "$ref": "#/$defs/selector" }
+      }
+    }
+  }
+}

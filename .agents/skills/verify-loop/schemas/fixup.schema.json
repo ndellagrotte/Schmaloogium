@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sites_edited",
+    "addendum_lines",
+    "new_prose_lines",
+    "weakest_points",
+    "do_not_refight",
+    "files_modified",
+    "refused_with_cause"
+  ],
+  "properties": {
+    "sites_edited": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "addendum_lines": { "type": "integer", "minimum": 0 },
+    "new_prose_lines": { "type": "integer", "minimum": 0 },
+    "weakest_points": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "do_not_refight": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "files_modified": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "refused_with_cause": { "type": "string" }
+  }
+}

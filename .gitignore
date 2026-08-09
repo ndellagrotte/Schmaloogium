@@ -32,5 +32,14 @@ reference-src
 # The ignore rule is about repo size, not about the forbidden-source rule.
 docs/**/chatlogs/
 
-# retired verification-loop run state (2026-08-08; harmless if stale artifacts remain)
+# verification-loop run state: leases and recovery journals (local run state, not review evidence)
 .verification-runs/
+2026-08-08-150218-execute-phase-12.txt
+2026-08-08-140601-phase-13-doc-first-draft.txt
+2026-08-08-141110-phase-7-is-unverified.txt
+legacy_verification_loop_summary.txt
+loop_v2_prompt.md
+omp-session-2026-08-08T15-06-04-587Z_019fe1e8-e5ab-7000-844c-60c53d336119.html
+omp-session-2026-08-08T17-26-38-109Z_019fe269-951d-7000-b3d0-78b1e0e63615.html
+omp-session-2026-08-08T18-43-37-480Z_019fe2b0-1188-7000-bdf5-2095c6d0c8df.html
+omp-session-2026-08-08T20-16-44-809Z_019fe305-5309-7000-8bd2-c2fd0e0f8285.html

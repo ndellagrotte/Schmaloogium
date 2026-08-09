@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_id",
+    "best_defence",
+    "defence_holds",
+    "residual_defect",
+    "final_severity",
+    "touches_interface",
+    "evidence",
+    "disagreement_with_refuters"
+  ],
+  "properties": {
+    "candidate_id": { "type": "string", "minLength": 1 },
+    "best_defence": { "type": "string", "minLength": 1 },
+    "defence_holds": { "type": "boolean" },
+    "residual_defect": { "type": "string" },
+    "final_severity": { "enum": ["blocking", "correction", "note", "none"] },
+    "touches_interface": { "type": "boolean" },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" }
+    },
+    "disagreement_with_refuters": { "type": "string" }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "line_start", "line_end", "quote", "shows"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "line_start": { "type": "integer", "minimum": 1 },
+        "line_end": { "type": "integer", "minimum": 1 },
+        "quote": { "type": "string", "minLength": 1 },
+        "shows": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

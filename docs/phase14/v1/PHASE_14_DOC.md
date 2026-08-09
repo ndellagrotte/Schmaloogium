@@ -114,10 +114,11 @@ to be verified per the §G1.3 definition before a dependent build session reads 
    as unbuilt (`docs/phase14/briefs/PHASE_14_BUILD_BRIEF.md:50`–`:51`). **That premise was falsified
    during this session** and the correction is recorded here rather than smoothed over:
    `docs/phase13/v1/PHASE_13_DOC.md` exists (1 435 lines, thirteen `##` sections, mtime
-   2026-08-08 14:04), is **untracked in git**, and `docs/phase13/reviews/` is **empty — zero review
-   rounds**. `docs/MOVES.md` carries uncommitted modifications recording a Phase 13 v3 adoption
-   (`docs/MOVES.md:82`, `:89`, `:91`). The file is therefore the in-flight product of a concurrent
-   Wave-5 build session (`docs/design/v3/DESIGN.md:647`), not a verified dependency.
+   2026-08-08 14:04). It was untracked when first observed and was **committed during this session**
+   (`9ff94a5`), and `docs/MOVES.md` records a Phase 13 v3 adoption (`docs/MOVES.md:82`, `:89`,
+   `:91`). **`docs/phase13/reviews/` contains only `.gitkeep` — zero review rounds.** The file is
+   therefore the freshly landed product of a concurrent Wave-5 build session
+   (`docs/design/v3/DESIGN.md:647`) and is **unverified per §G1.3**, not a valid dependency input.
    **Ruling:** §G5.3 invariant 1 bars it, and the brief's authorization was scoped precisely to
    proceeding *without* it while forbidding invention of its interfaces
    (`docs/phase14/briefs/PHASE_14_BUILD_BRIEF.md:64`–`:68`) — it did not authorize consuming an
@@ -1440,3 +1441,970 @@ nothing**. It never produces partial or estimated counts. An audit that cannot m
 gate is an invalid audit, and saying so is the whole point of gate 3.
 
 ---
+
+## 5. Cross-phase interfaces
+
+### 5.1 What Phase 14 exposes
+
+Phase 14 is a leaf: no phase in the §G5.1 graph depends on it (`docs/design/v3/DESIGN.md:611`–`:626`).
+Its exposed surface is therefore small, and is aimed at the implementation effort and at G8, not at
+another phase's design.
+
+| Exposed contract | Exact content | Consumer(s) |
+|---|---|---|
+| `GlModernizationPlan` / `SamplerTier` / `DsaTier` / `DebugTier` / `AsyncCompileTier` / `AsyncReadbackTier` | immutable `:engine` record of the six tiers actually selected plus an immutable ordered list of rationale strings; derived by a **pure** static function of `GLCapabilityProfile` + `GlModernizationPolicy`, once, at bring-up, and never mutated for the life of the GL context | diagnostics; Phase 2's run manifest (as an environment fact, not a result); Phase 12 for display |
+| `GlModernizationPolicy` | per-row `AUTO \| FORCE_ON \| FORCE_OFF`, five rows (sampler, DSA, debug, compile, readback); sourced from the mod config owned by `mod.core`; every row defaults to `AUTO`, and `AUTO` resolves to the reference-faithful path until that row's ledger entry closes (`D-P14-17`) | `mod.core` config; Phase 12 GUI if it chooses to surface them |
+| `SamplerKey` and `SamplerKey.of(TextureParameters)` | the pure derivation function; the whole of A1's behavioral-equivalence obligation is in this one function, which is why it is exposed rather than hidden — it is the thing §8.1's equivalence test asserts over | `:engine` tests; Phase 5 and Phase 13 as the authors of the inputs |
+| `CompileExecutor` / `CompileBatchToken` / `CompileBatchStatus` | non-blocking `submit`/`poll` policy interface with two interchangeable implementations; the caller's control flow is identical under both, so `Inline` requires no separate code path | Phase 4 compilation and Phase 7's pipeline-build transaction |
+| **The `CenterDepthSource` implementation** | not a new type: `mod.glue`'s implementation of **Phase 6's** existing SPI, in either the PBO+fence or the synchronous form | Phase 6, through Phase 7's composition step 5 |
+| **The `DebugService` implementation** | not a new type: `mod.glue`'s implementation of **Phase 1's** existing interface, balance-safe per `D-P14-13` | every phase that labels an object; Phase 7's group call sites |
+| **Measurement procedures** — §4.3.6 imperceptibility comparison, §4.6.2 allocation profile, §4.7.2 redundant-state audit, §7.5 OQ-22 ledger | procedures and criteria, executed as Phase 2 harness runs; outputs are counts manifests in the local/CI cache, never repository artifacts | the implementation effort; G8/S2 for the feasibility rows |
+
+No exposed contract carries a GL name, an LWJGL type, a Minecraft type, a `ProgramHandle`, or a
+mutable value. Phase 14 exposes **no new GL entry point on `engine.gl`** (§2.3).
+
+### 5.2 Consumed from Phase 5 (verified dependency)
+
+Verified: `docs/phase5/reviews/PHASE_5_REVIEW_38.md:43`–`:45`, PASS, `Interface changed: no`.
+(Its doc's own trailer is stale — §0.3 item 4.)
+
+| Phase 5 §5 contract | Use here |
+|---|---|
+| `BufferEstateView`, `BufferSizing`, `BufferInventory`, `BufferInventoryEntry`, `ResolvedBufferFormat` — Phase 5 already names **14** among the consumers (`docs/phase5/v1/PHASE_5_DOC.md:2004`) | the generation that keys `SamplerCache`'s lifetime; the inventory that enumerates the textures whose `SamplerKey`s are interned |
+| `BufferResizeNotice`, `BufferResizeConsumer`, `BufferResizeRegistration`, `ResizeConsumerResult` — Phase 5 already names *"Phases 13 and **14**"* as the consumers (`docs/phase5/v1/PHASE_5_DOC.md:2018`) | A1 re-interns and A3 discards its ring on `DISPLAY_EXTENT`, `RENDER_QUALITY`, `MAIN_DEPTH_EXTENT`, `SHADOW_RESOLUTION` and `COLOR_INVENTORY_OR_FORMAT`. Phase 14 registers as an ordinary consumer, returns a closed result, and never fails a resize — a failing consumer *"stops dispatch, publishes next-generation off"*, which a performance row must never cause |
+| `ShadowTextureResource(boolean hardwareFiltering, boolean mipmap, boolean nearest)` (`docs/phase5/v1/PHASE_5_DOC.md:534`) | the three inputs to a shadow texture's `SamplerKey`: compare mode, mipmap min filter, nearest-vs-linear |
+| Colortex filter/wrap policy: `CLAMP_TO_EDGE` S/T, NEAREST for integer formats, LINEAR otherwise (`docs/phase5/v1/PHASE_5_DOC.md:1042`–`:1045`) | the colour estate's `SamplerKey` set; **Phase 5 remains the author**, Phase 14 only derives (`D-P14-1`) |
+| `TextureBindingSnapshot` / `TextureBindingRow` / `TextureBindingOutcome` — sixteen ascending fixed-unit rows, total lookup (`docs/phase5/v1/PHASE_5_DOC.md:2017`) | the fixed unit indices for the per-unit sampler bind cache; Phase 14 adds no unit and reorders none |
+| `BufferPlan`/estate lifecycle and generation discipline (`docs/phase5/v1/PHASE_5_DOC.md:2002`–`:2003`) | sampler objects are created and destroyed with the generation that owns their textures; none outlives it |
+
+**No change to Phase 5 is requested.** One hand-off is offered and left to Phase 5 to accept or
+decline: H-P14→P5-1 (§4.1.8, §11.5).
+
+### 5.3 Consumed from Phase 6 (verified dependency), and the one request against it
+
+Verified: `docs/phase6/reviews/PHASE_6_REVIEW_24.md:43`–`:45`, PASS, `Interface changed: no`.
+(Its §0.6 self-status is stale — §0.3 item 4.)
+
+| Phase 6 §5 contract | Use here |
+|---|---|
+| `CenterDepthSource`, `CenterDepthRequest`, `CenterDepthResult{Sample, Unavailable}` with their exact validation rules (`docs/phase6/v1/PHASE_6_DOC.md:1392`, `:547`–`:588`) | A3 implements this SPI in `mod.glue` in both tiers; the async form consumes it **as it exists** — no type change is required for the mechanism (`D-P14-8`) |
+| `D-P6-1` and the not-obviated statement (`docs/phase6/v1/PHASE_6_DOC.md:1678`, `:965`–`:968`) | resolves A3's conditional status (§3.4) |
+| The frame-begin ordering contract — center-depth read completes before any Phase 5 resize or clear (`docs/phase6/v1/PHASE_6_DOC.md:1385`, `:864`–`:876`) | A3 adds no frame moment and preserves the ordering; it is the reason no in-flight transfer can outlive its framebuffer |
+| The §6 degradation row *"center-depth dimensions/FBO unavailable | 2a | retain previous smoothed depth"* (`docs/phase6/v1/PHASE_6_DOC.md:1500`) | the designed meaning of A3's warm-up and invalidation `Unavailable` returns |
+| The fixed sampler maps, units 0–15 by stage, `depthtex1` at 11 (`docs/phase6/v1/PHASE_6_DOC.md:974`–`:991`) | the fixed indices A1's bind cache uses; the standing rejection of dynamic allocation (`D-P14-3`) |
+| `UniformConfiguration`'s exact half-lives in ticks, incl. center depth (`docs/phase6/v1/PHASE_6_DOC.md:487`) | the `h` in §4.3.6's criterion C2, so the tolerance is derived from the pack rather than invented |
+| `centerDepthMacroContributor()` always `MacroContribution.Empty` (`docs/phase6/v1/PHASE_6_DOC.md:1393`) | confirms no macro-level redirect exists; A3 is the only async path |
+
+**R-P14→P6-1 — contract the sample's age.** *Requested, not assumed.* Phase 6 states *"Phase 6 …
+does not hide the cost with an uncontracted one-frame queue"* (`docs/phase6/v1/PHASE_6_DOC.md:1558`).
+`CenterDepthResult.Sample(float depth)` carries no frame identity and Phase 6 imposes no echo
+requirement on it (`:587`–`:588`), so a `mod.glue` implementation *could* silently return a stale
+value — which is exactly what Phase 6 has ruled out. Requested, in preference order:
+
+1. **Preferred:** widen the record to `Sample(float depth, long sampledFrameId, long sampledWorldEpoch)`,
+   and state in §5 that an implementation may return a sample from an earlier accepted frame provided
+   the identities are truthful. This is the honest form and additionally lets Phase 6's
+   time-corrected EMA account for the true sample age if it ever wants to.
+2. **Minimum acceptable:** leave the type alone and add one sentence to Phase 6's §5
+   `CenterDepthSource` row stating that a `Sample` may originate from an earlier accepted frame of
+   the same `registryGeneration` and `worldEpoch`, so an implementation with bounded latency is
+   contract-conforming.
+
+**Consequence if declined or not yet landed:** `AsyncReadbackTier.PBO_FENCE` stays `FORCE_OFF` and
+the synchronous path ships (§4.3.7). A3's mechanism is unaffected; only its permission to be enabled
+is. This request is the *sole* blocker on A3.
+
+### 5.4 Consumed from Phase 7 (**unverified — provisional**), and two requests against it
+
+**Everything in this subsection is provisional.** `docs/phase7/reviews/PHASE_7_REVIEW_32.md:299`–`:301`
+is PASS-WITH-CORRECTIONS with `Interface changed: yes`, so §G1.3's re-verify clause is engaged and
+round 33 is owed; the doc says of itself that *"v1 remains unverified pending a fresh whole-document
+review."* This session read it under the maintainer authorization at
+`docs/phase14/briefs/PHASE_14_BUILD_BRIEF.md:57`–`:63`. **If round 33 changes Phase 7's §5, every row
+below is re-checkable and this document owes a §G1.3 fix-up** — not a rebuild, because no Phase 14
+decision depends on the *detail* of these rows, only on their existence.
+
+| Phase 7 §5 contract (provisional) | Use here |
+|---|---|
+| `FrameDriver` / `FrameHookSink` and the `enter`/`exit` scope pair (`docs/phase7/v1/PHASE_7_DOC.md:1363`–`:1372`) | the boundaries A5's debug groups bracket, and A7's segmentation keys |
+| `FrameExitKind { NORMAL, EARLY_RETURN, THROWN }` and `FrameAbortReason`'s six values (`docs/phase7/v1/PHASE_7_DOC.md:1383`–`:1386`) | the exhaustive exit set A1's sampler clear (`D-P14-4`) and A5's group drain must cover |
+| The `finally`-based finalization guarantee (`docs/phase7/v1/PHASE_7_DOC.md:2166`–`:2168`) | what A1's sampler clear rides so it survives a throw |
+| `ShaderReloadController` / `ReloadRequest` / `ReloadToken` / `ReloadStatus{Queued, Building, Active, Off, Failed, Unknown}` (`docs/phase7/v1/PHASE_7_DOC.md:1671`–`:1693`) | the pack-switch entry point A4 accelerates; `Building` is the state an async build would occupy |
+| The eighteen-step pipeline-build transaction, step 7 compile and step 9 buffer creation (`docs/phase7/v1/PHASE_7_DOC.md:690`–`:729`) | where `CompileExecutor` is installed and where A1/A2 first act on a new estate |
+| Composition step 5 — construct the Phase 6 platform provider and `UniformRuntime` (`docs/phase7/v1/PHASE_7_DOC.md:694`–`:697`) | where `mod.glue`'s `CenterDepthSource` (A3) is installed |
+| `BufferResizeConsumer` delivery at coordinated publication step 12 (`docs/phase7/v1/PHASE_7_DOC.md:2012`) | Phase 7 sequences the resize notices A1/A3 consume from Phase 5 |
+| Phase 7's own posture: *"Phase 7 adds no readback"* (`docs/phase7/v1/PHASE_7_DOC.md:2194`–`:2195`) | confirms A3 is the only readback path in the frame |
+| OQ-3's default plan: *"Make **no** context-flag change"* (`docs/phase7/v1/PHASE_7_DOC.md:2320`–`:2323`) | the constraint that produces finding C-3 and shapes A5's gate (`D-P14-14`) |
+
+**R-P14→P7-1 — a resumable pipeline-build transaction.** Phase 7's build is a single render-thread
+sequence at one safe point, and `ReloadStatus.Building()` carries no progress. A4 needs step 7 to be
+able to *submit* and later *poll*, with steps 8–18 running in the frame where the batch is `READY`
+and vanilla rendering continuing meanwhile. Requested: that Phase 7's §5 admit a multi-frame build in
+which the transaction holds its caller-owned candidates across frame boundaries, no shader draw
+occurs while it is pending, and any frame-boundary invalidation (world change, resize epoch, a
+superseding reload intent) aborts the pending build and closes its candidates by Phase 7's existing
+reverse-order rules. **If declined, A4 ships `Inline`** (§4.4.4, §4.4.6) and no other row is affected.
+
+**R-P14→P7-2 — debug-group call sites, and a frame-phase timing seam.** Two parts:
+
+1. **Groups.** That Phase 7 call `debug().pushGroup(label)` / `debug().popGroup()` at boundaries it
+   already owns — the frame, each `RenderSection` scope, the shadow invocation, and each
+   deferred/composite/final pass. Phase 14 adds no hook (`D-P14-18`), and the cost when inactive is
+   nil (§4.5.4).
+2. **Timing.** Phase 7's §1.2 states it *"exposes timing and resize-consumer seams"*
+   (`docs/phase7/v1/PHASE_7_DOC.md:368`–`:369`), but **its §5 exposes neither**: the resize-consumer
+   contract is Phase 5's (which Phase 7 consumes at `:2012`), and the only timing-adjacent surfaces
+   in §5 are `FrameReadiness.consecutiveFinalizedFrames` and the Phase 2 capture listener. The
+   internal *"debug hook timing … preallocated counters … off by default"* (`:2196`) is not exposed.
+   Requested: expose a read-only, off-by-default per-frame phase-timing seam (a small immutable
+   record of frame ID plus elapsed nanoseconds per `RenderSection`/pass), so §4.6.2's profile and
+   §4.7.2's ranking can attribute cost to a pass rather than to a stack trace. **This is a discovered
+   interface-honesty gap in Phase 7's own §1.2-vs-§5, reported as finding C-5 in §11.2**, not merely
+   a convenience request. **If declined, A6 and A7 fall back to JFR stack attribution and A5's debug
+   groups**, which is coarser but sufficient; nothing is blocked.
+
+### 5.5 Requests against Phase 13 — spec-derived assumptions, never assumed interfaces
+
+**Phase 13 supplies no contract to this document.** `docs/phase13/reviews/` is empty — zero review
+rounds — so §G5.3 invariant 1 bars its in-flight draft (§0.3 item 2). §G1.1's rule stands: *"If it is
+missing something you need, flag the request in your doc §5; do not invent the missing interface as
+if it existed"* (`docs/design/v3/DESIGN.md:296`–`:298`). Everything below is therefore a **request
+against an assumption derived from the v3 Phase 13 specification**, with the assumption stated so a
+verify session can check it and a future fix-up can reconcile it.
+
+**R-P14→P13-1 — a stageable companion-atlas upload seam** (needed by A4's `_n`/`_s` half).
+
+- *Spec-derived assumption.* Phase 13 will own *"`_n`/`_s` companion atlases … full companion
+  atlases with matching mip chains … stitch/load hooks on `TextureMap`/`TextureAtlasSprite`"* and a
+  *"companion-atlas lifecycle (load/stitch/reload/animate)"* (`docs/design/v3/DESIGN.md:2451`–`:2455`,
+  `:2502`–`:2503`), with *"memory posture documented (two extra full atlases is the accepted cost)"*
+  (`:2499`–`:2500`).
+- *Requested.* That the lifecycle separate **"pixel bytes are ready"** from **"the texture is
+  bindable"**, with (a) an upload submission that accepts a staged/asynchronous transfer, (b) a
+  completion signal the render thread can poll, and (c) a defined state for "atlas allocated but not
+  yet filled" in which no shader draw sampling it is permitted. Also requested: that texture
+  *storage allocation* stay on the render thread (§4.4.2 rule 6) and that sprite-animation ticking
+  (`:2482`–`:2483`) not begin until the completion signal fires, so an animation cannot race a
+  partial upload.
+- *If unavailable.* A4 covers shader compile only; the atlas upload stays synchronous. The two halves
+  are independent work items sharing one worker, so this cannot block A4.
+
+**R-P14→P13-2 — filter/wrap and `.mcmeta` blur/clamp as a derivable value** (needed by A1).
+
+- *Spec-derived assumption.* Phase 13 will own *"`.mcmeta` blur/clamp sidecars"* and, explicitly as a
+  do-not-inherit row, *"the filter/wrap suffix gap — `texture.<stage>.<sampler>` filter/wrap suffixes
+  are stripped and ignored there (PD §7.4); **ours must honor them** (conformance row)"*
+  (`docs/design/v3/DESIGN.md:2467`–`:2478`).
+- *Requested.* That the parsed filter/wrap and blur/clamp result be exposed as a value from which
+  `SamplerKey.of(...)` can derive — ideally as the same `TextureParameters` Phase 1's
+  `setParameters` takes, so no second vocabulary exists. **This is a conformance requirement, not an
+  optimization:** if a Phase 13 texture's filter/wrap is applied by a path A1 does not see, the
+  sampler bound to that unit will override it and the suffixes will silently stop working — turning
+  a contract row into a bug. §4.1.6's `SamplerEquivalenceTest` is written to **fail** in that case
+  rather than degrade silently, which is the designed safety net.
+- *If unavailable.* Phase 13's textures are excluded from sampler interning: their units bind sampler
+  0 and keep per-texture parameters, while the Phase 5 estate uses samplers. That mixed mode is
+  correct but partial, and it is the shipping behavior until this request lands.
+
+**R-P14→P13-3 — non-blocking, on request.** Phase 13's noise texture (unit 15) and custom textures
+in all three source forms (`docs/design/v3/DESIGN.md:2461`–`:2478`) are consumed by A1 through the
+same `TextureParameters` route as everything else. No separate request; listed so the reconciliation
+sweep has a complete inventory.
+
+### 5.6 Requests against Phase 1 (not a declared dependency; read narrowly per §0.2)
+
+Phase 1's §5 already names **14** among the consumers of `GLCapabilityProfile`
+(`docs/phase1/v14/PHASE_1_DOC.md:4222`) and of the GL-error surface (`:4220`), and its §1 scope-out
+table already assigns this phase *"KHR_debug labels/groups, sampler objects, async compile, GC
+posture"* (`:1490`). Four requests follow; none blocks a row outright.
+
+| ID | Request | Basis | If declined |
+|---|---|---|---|
+| **R-P14→P1-1** | Redefine `DebugService.isActive()`. Its current comment — *"false unless a debug context and the dev flag are both on"* (`docs/phase1/v14/PHASE_1_DOC.md:3064`) — makes the whole service dead under Phase 7's OQ-3 default of *"Make **no** context-flag change"* (`docs/phase7/v1/PHASE_7_DOC.md:2320`). Requested: `(KHR_debug or GL 4.3) && -Dschmaloogium.debug.glLabels`, with a debug context an enhancement. Finding C-3 | KHR_debug requires no debug context; the reference gates on extension-or-version plus a flag (`[V:observed — Pintonium .../gl/debug/GLDebug.java:291]`) | A5 is unshippable as specified. This is the one request whose refusal would make a scope row undeliverable, so it is flagged as such rather than softened |
+| **R-P14→P1-2** | A package-placement grant for Phase 14, in the shape Phase 8 already has (`docs/phase1/v14/PHASE_1_DOC.md` §5.1 *"Phase 8 package grant"*): permission to add the §2.1 pure value types to `com.schmaloogium.engine.gl`, and to place the backend in `com.schmaloogium.mod.glue.gl`. §2.1 assigns no package to Phase 14 today | Phase 1's rule is *"a phase's code goes in the package §2.1 assigns it"* | the values live in an existing `engine.gl` sub-namespace by Phase 1's direction; no design change, only placement |
+| **R-P14→P1-3** | Publish `TextureParameters`' exact field set. It appears once, in the `setParameters` signature (`docs/phase1/v14/PHASE_1_DOC.md:3016`), and is never declared. §4.1.2's split of sampler state from texture state cannot be verified against an unpublished type | A1's correctness rests entirely on that split | §4.1.2's assumed field set stands as this document's stated assumption and `SamplerStateSplitTest` pins it; a mismatch is caught by `SamplerEquivalenceTest` rather than shipped |
+| **R-P14→P1-4** | (a) Thread-safety, or a documented off-thread mode, for `RecordingGLDevice` — Phase 1 explicitly invites this: *"it is not made thread-safe to cover the Phase 14 exception. If off-thread uploads ever need recording, that is a Phase 14 request against this document"* (`docs/phase1/v14/PHASE_1_DOC.md:4322`). (b) One new flag in the §4.9.3 namespace: `schmaloogium.debug.glContext`, owner P14, milestone v0.5, gated on OQ-3. (c) Optional: an `AutoCloseable DebugService.group(String)` scoped form | (a) A4's worker issues GL through the facade; (b) §4.5.5; (c) §4.5.3 | (a) the worker bypasses the recorder and off-thread calls are simply not recorded — A4 loses recorded-log coverage of the worker, nothing else; (b) the debug-context tier is dropped and the always-available `GL_DEBUG_OUTPUT` tier stands; (c) `D-P14-13`'s backend construction already makes imbalance harmless |
+
+### 5.7 Consumed from Phase 2 (not a declared dependency; procedures only)
+
+A3's imperceptibility comparison, A6's profile and A7's audit are all Phase 2 harness runs. Phase 14
+defines **what to measure and what constitutes pass**; Phase 2 owns the scenes, the tiers, the
+diffing, the tolerances, the fixture acquisition and the run-manifest schema, and none of them is
+redefined here. The one new scene requested is `S-CD-1` (§4.3.6 family F3) — a scripted near↔far
+camera path — proposed to Phase 2 as a scene, not authored here. §G6's derived-artifact rules bind
+every output: no pack source text, no rendered images in the repository
+(`docs/design/v3/DESIGN.md:718`–`:725`).
+
+---
+
+## 6. Failure modes and degradation
+
+§G2.4's ladder (`docs/design/v3/DESIGN.md:419`–`:449`), applied case by case. Note the shape of this
+table: because Phase 14 owns no contract-visible component, **almost every row degrades to "run the
+reference-faithful path"** rather than to a reduced-function state. That is the direct consequence of
+the fallback requirement at `docs/design/v3/DESIGN.md:2574`–`:2575`, and it is the reason this phase
+cannot cause a pack-visible failure that the pre-Phase-14 pipeline would not also cause.
+
+| Failure | Detection | Required disposition | Rung |
+|---|---|---|---:|
+| GL < 3.3, or `ARB_sampler_objects` absent | `GlModernizationPlan.derive` at bring-up | `SamplerTier.NONE`; Phase 5's per-texture parameterization runs unchanged; info diagnostic | — (designed path) |
+| Sampler object creation fails, or a `glSamplerParameteri` errors at estate build | `drainErrors` after the estate's sampler interning | delete every sampler created for that generation, fall the whole estate back to `SamplerTier.NONE` for the session, warn once. **Never per-texture mixing** — a half-sampler estate is the state in which a unit's filter is ambiguous | 2a |
+| A Phase 13 texture's filter/wrap cannot be derived (R-P14→P13-2 unlanded) | `SamplerKey.of` returns absent for that texture | that unit binds sampler 0 and keeps per-texture parameters; the Phase 5 estate keeps samplers; `SamplerEquivalenceTest` records the exclusion rather than passing silently | 2a |
+| A sampler is left bound when control returns to vanilla | the backend's own `finally` at frame exit; `SamplerLeakTest` in CI | cannot occur by construction (`D-P14-4`); if the clear itself errors, force `SamplerTier.NONE`, clear again, and warn — **a leaked sampler is a vanilla-corruption hazard, so it escalates rather than degrades locally** | 5 |
+| GL 4.5 / `ARB_direct_state_access` absent | `derive` at bring-up | `DsaTier.BIND_TO_EDIT`; today's path | — (designed path) |
+| A DSA entry point errors at first use | `drainErrors` in the estate-build window | demote the strategy to `BIND_TO_EDIT` for the session, re-run the failed operation, warn once naming vendor and renderer. Demotion is safe because the tiers are behaviorally identical (`D-P14-7`) | 2a |
+| Binding neutrality violated by a backend bug | `BindingNeutralityTest` in CI; in the field, vanilla mis-rendering | a **CI-blocking** defect, not a runtime degradation: an incorrect binding cache is the §G4.6 hazard and there is no safe runtime response | 5 (prevented) |
+| GL < 3.2 (no fence sync), or PBO creation fails | `derive`, or `drainErrors` at ring construction | `AsyncReadbackTier.SYNCHRONOUS`; Phase 6's `readDepthPixel` path | — (designed path) |
+| A center-depth fence never signals | the slot stays `IN_FLIGHT` past `N` frames | discard the ring, return `Unavailable`, and after three consecutive occurrences demote to `SYNCHRONOUS` for the session. **The render thread never waits** (`D-P14-9`), so a stuck fence costs stale-then-sync, never a hang | 2a |
+| Generation, world epoch, framebuffer extent or pixel changes | step 2 of §4.3.3 | discard the whole ring; return `Unavailable`; Phase 6 *"retain[s] previous smoothed depth"* per its own row (`docs/phase6/v1/PHASE_6_DOC.md:1500`) | 2a |
+| Framebuffer dimensions ≤ 0 | step 1 of §4.3.3 | `Unavailable` with no GL call — Phase 6 requires exactly this (`docs/phase6/v1/PHASE_6_DOC.md:585`–`:587`) | normal |
+| R-P14→P6-1 not landed | design-time | `PBO_FENCE` is not enabled; `SYNCHRONOUS` ships. Shipping a silently-stale value is refused, not risked | — (policy) |
+| Shared context cannot be created, or the driver is not allowlisted | §4.4.3 stages 1–2 | `AsyncCompileTier.INLINE`; **no user-visible error** — this is a supported configuration | — (designed path) |
+| Worker probe fails, a first real batch errors, or the watchdog fires | §4.4.3 stages 3–5 | tear down the worker, `INLINE` for the session, re-run that pipeline build synchronously, diagnose naming the driver. Worst case is one late pack switch | 2a |
+| Worker thread throws an unexpected exception | the worker's own boundary | contain, tear down, `INLINE`, diagnose. **The exception never crosses to the render thread** and never reaches the client | 5 |
+| GL context loss with a worker running | Phase 6's `GL_CONTEXT_LOSS` reset reason (`docs/phase6/v1/PHASE_6_DOC.md:1383`) | worker and its context are destroyed with everything else; the plan is re-derived at the next bring-up; no handle from the old context survives | 5 |
+| KHR_debug absent, or `glLabels` unset | `derive` | `DebugTier.NONE`; a no-op `DebugService`. This is every shipping configuration | — (designed path) |
+| A debug group push/pop is unbalanced by a caller | the backend's depth counter | no-op plus one rate-limited diagnostic; the frame boundary drains to zero (`D-P14-13`). **Cannot corrupt the driver's group stack** | normal |
+| `glObjectLabel` errors (over-long or invalid name) | `drainErrors` under the per-call cadence the flag enables | clamp and retry once, then disable labelling for the session. Labels must never pollute Phase 1's error attribution, because a spurious error there disables a *uniform* (`docs/phase1/v14/PHASE_1_DOC.md:4220`) | 2a |
+| An audit run's `GLCallLog` overflows its ring, or the scene is not frame-identical | §4.7.2 gates 1 and 3 | the audit **reports nothing** and is re-taken. No partial or estimated counts are ever produced | — (procedure) |
+| A measurement shows a sibling phase allocating in the frame path | §4.6.2 attribution | a finding routed to that phase through §11.5. Phase 14 does not edit another phase's code or call sequence | — (procedure) |
+| A row's ledger entry or spike fails | §7.5, §10 | that row ships its fallback permanently; the result is written back to RESEARCH.md §11's status column by the implementation effort per §G4.4. **A failed row never blocks the milestone** | — (procedure) |
+| Any unexpected exception crosses a Phase 14 entry point | the `mod.glue` boundary Phase 1 owns | contained at Phase 1's boundary, shaders disabled, vanilla path resumes. No Phase 14 code path throws into the client | 5 |
+
+Two properties of this table are worth stating explicitly, because they are what make a performance
+phase safe:
+
+1. **Every automatic demotion is to a path that already shipped.** No row degrades into an untested
+   intermediate state. The one deliberate exception to partial degradation is the sampler estate,
+   which falls back wholesale rather than per-texture, because a half-converted estate is the only
+   configuration in which a unit's effective filter is ambiguous.
+2. **No Phase 14 failure is pack-visible.** A pack cannot observe which tier ran, so no failure here
+   reaches §G2.4 rungs 1, 3 or 4 — those rungs concern uniforms, programs and capability gates, none
+   of which this phase owns. The rows that reach rung 5 do so because they threaten *vanilla*, not
+   because they threaten a pack.
+
+---
+
+## 7. Threading and performance notes
+
+### 7.1 Thread ownership per component
+
+| Component | Thread | Note |
+|---|---|---|
+| `GlModernizationPlan.derive` | any; pure | no GL, no state; runs at bring-up from a value |
+| `SamplerCache` interning, binding, clearing | **render thread only** | inherits `Lwjgl3GLDevice`'s confinement |
+| `DsaStrategy` | **render thread only** | same |
+| `CenterDepthReadback` (submit, poll, map, ring discard) | **render thread only** | Phase 6 already requires it: *"`UniformPlatformProvider` / `CenterDepthSource` production implementation | render thread only"* (`docs/phase6/v1/PHASE_6_DOC.md:1517`). Async here means *asynchronous GPU transfer*, not another thread |
+| `KhrDebugBackend`, incl. its depth counters | **render thread only** | groups are frame-scoped; the debug-message callback may be invoked by the driver on the render thread only, because `GL_DEBUG_OUTPUT_SYNCHRONOUS` is set |
+| `CompileExecutor.submit` / `poll` | **render thread only** | the *interface* is render-thread; only the work it schedules is not |
+| `GlWorkerContext` and its queue | **the single `schmaloogium-gl-worker` thread** | the only off-render-thread GL in the project, sanctioned by §G2.3 (`docs/design/v3/DESIGN.md:412`–`:415`); its context is made current on that thread once and never elsewhere |
+| `InlineCompileExecutor` | **render thread only** | no thread at all; this is the shipping default |
+| Measurement procedures (§4.3.6, §4.6.2, §4.7.2) | Phase 2 harness | offline; no production thread |
+
+**No shared mutable state crosses the worker boundary.** `ShaderCompileUnit` is an immutable value
+(source text, stage, identity); `CompiledShader` is an immutable result (object id, status, log,
+fence). The queue is the only shared structure and it is bounded. There is no lock held across a GL
+call in either direction, and the render thread never blocks on the worker (§4.4.2 rule 4).
+
+### 7.2 Allocation posture
+
+Phase 14 must meet the same bar it measures (§4.6.1), so the per-frame paths allocate nothing in
+steady state:
+
+- **A1:** `boundPerUnit` is a preallocated `SamplerHandle[16]`; the `MULTI_BIND` path reuses one
+  preallocated `int[16]` for `glBindSamplers`; interning happens at estate build and on resize, never
+  per frame; the redundant-bind check is an array compare.
+- **A2:** the strategy is one field holding one long-lived object; every verb takes primitives.
+- **A3:** buffer objects are created once per generation; `last` is a mutable primitive pair; the
+  mapped `ByteBuffer` is read for one float and not retained; the fence handle is a `long`. The one
+  per-frame object is the mapped buffer, which LWJGL returns from a reusable internal path — if
+  profiling shows otherwise, `MemoryUtil.memGetFloat` on the mapped address avoids it entirely, which
+  is also ledger row L-9's FFM experiment.
+- **A5:** inactive is a no-op object, so there is no counter and no string. Active allocates label
+  strings, which is acceptable because the flag is dev-only and already carries the per-call
+  `glGetError` cadence (`docs/phase1/v14/PHASE_1_DOC.md:3742`).
+- **A4:** allocates per pack switch — a bounded, non-frame event — and nothing per frame.
+
+### 7.3 Known hot paths, and what this phase does to each
+
+| Hot path | Today | After |
+|---|---|---|
+| Per-pass fixed-unit binding, 16 units | 16 `glBindTexture` (Phase 5's snapshot) | + 1 `glBindSamplers` (`MULTI_BIND`) or ≤16 cached `glBindSampler` (`PER_UNIT`), **−** the per-pass `glTexParameter*` churn A1 removes |
+| Per-frame center-depth read, when declared | one synchronous `glReadPixels` — a full pipeline stall (`docs/phase6/v1/PHASE_6_DOC.md:1555`) | one non-blocking status query + one 4-byte map + one async `glReadPixels`; no stall |
+| Shadow mipmap generation, per shadow pass | filter set → generate → filter restore, with a whole containment path for restore failure | generate only; the sampling filter is in the sampler (hand-off H-P14→P5-1) |
+| Pack switch | synchronous compile of ~40 programs plus two atlas uploads, on the render thread | compile off-thread with a poll loop; the render thread keeps drawing vanilla (spike-gated) |
+| Texture and framebuffer creation | bind, edit, restore | DSA where available; fewer binding round-trips and no restore |
+
+**Timing measurement discipline.** Frame-time numbers must be taken with **no** `-Dschmaloogium.debug.*`
+flag set. Both `recordGL` and `glLabels` put the device on a per-call `glGetError` cadence
+(`docs/phase1/v14/PHASE_1_DOC.md:3741`–`:3742`), which is a synchronous driver query per facade call.
+A timing run taken under either flag is invalid, and the A7 audit — which requires both — is
+explicitly a *counts* method, never a timing method.
+
+### 7.4 The performance claim this phase is allowed to make
+
+§2.4 of RESEARCH.md permits initial performance worse than OptiFine-with-shaders, and §G2.5 forbids
+drifting into the non-goals. So the only claim Phase 14 makes is the one its impl gate states
+(§9.2): **pack-switch stall measurably reduced versus the synchronous baseline, without T1
+regressions** (`docs/design/v3/DESIGN.md:2583`–`:2584`). Everything else — frame time, allocation
+rate, state-change counts — is *measured and reported*, and acted on only through §4.6.3's four-part
+test. No row in this phase promises a frame-rate improvement.
+
+### 7.5 The OQ-22 spot-check ledger
+
+The doc gate requires *"each Adapt row → design + fallback + **ledger entry**"*
+(`docs/design/v3/DESIGN.md:2578`), and the scope row defines the ledger: *"each §6.2/§6.3 `[U]` claim
+this phase relies on gets a row (claim → cheap experiment → decision point)"* (`:2554`–`:2556`).
+OQ-22 itself is *"Catch-all for low-risk `[U]` items … the §6.2/§6.3 modernization claims without
+their own row"* (`docs/research/v1/RESEARCH.md:1028`). §10.2 is its spike specification; this is the
+ledger.
+
+Every row is **claim → cheap experiment → decision point**, with its current evidence. "Cheap" is
+the operative word: each experiment is hours, not a milestone.
+
+| ID | Claim, and its RESEARCH tag | Current evidence | Cheap experiment | Decision point |
+|---|---|---|---|---|
+| **L-1** | *"Core GL program/shader objects … Trivial; behavior-identical"* `[U]` (`docs/research/v1/RESEARCH.md:769`) | Phase 4 already targets core objects; the reference uses core `GL20C`/`GL32C` classes throughout | none needed beyond Phase 4's existing compile tests: assert programs link and packs render identically. **Owner: Phase 4**; ledgered here because A4 builds on it | If any matrix pack behaves differently on core vs ARB objects, escalate to its own OQ row. Expected: closes as confirmed at v0.1 |
+| **L-2** | *"**GL 3.3 sampler objects** … Low risk; removes per-frame state churn"* `[U]` (`docs/research/v1/RESEARCH.md:772`) | `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/sampler/GlSampler.java:10`–`:26]` — deployed and pack-exercised on the 1.12.2 compat context; per-unit cache at `.../IrisRenderSystem.java:367`–`:375` | §4.7.2's audit run **before and after** A1 on one classic pack. Count `glTexParameter*` calls per frame in each | Churn measurably removed **and** `SamplerEquivalenceTest` green ⇒ `SamplerTier` `AUTO` resolves on. Churn not measurable ⇒ the tier still ships for the shadow-mipmap simplification, or `AUTO` resolves off and the row closes as "no measurable win" |
+| **L-3** | *"**PBO + fence-sync async readback** … One-frame latency on an already-smoothed value; verify imperceptibility"* `[U]` (`docs/research/v1/RESEARCH.md:773`) | **No readback reference exists** — PD §15: *"No PBO/async readback anywhere"* (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:748`), verified: the tree's only `glReadPixels` is synchronous (`.../IrisRenderSystem.java:190`). **But fence sync itself is deployed** on this compat context: `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common/src/main/java/org/embeddedt/embeddium/impl/gl/device/GLRenderDevice.java:233]` and the non-blocking poll at `.../gl/sync/GlFence.java:23` | §4.3.6's imperceptibility comparison, in full: four scene families, criteria C1–C4 | All four criteria pass **and** R-P14→P6-1 has landed ⇒ `AUTO` resolves on. Any criterion fails, or the request is declined ⇒ `FORCE_OFF` default and the row closes with its numbers recorded. **C1 failing is a correctness defect requiring diagnosis, not a close** |
+| **L-4** | *"**GLFW shared-context async shader compile** … Driver quality for shared compat contexts varies; needs a synchronous fallback"* `[U→OQ-15]` (`docs/research/v1/RESEARCH.md:774`) | **No reference.** The tree never calls `glfwCreateWindow` or `glfwMakeContextCurrent`; PD §16 records that it never touches context creation | this is OQ-15, not a cheap spot-check. §10.1's full spike | Per-driver-family, per §10.1's criteria. Default deny until a family passes (`D-P14-12`) |
+| **L-5** | *"KHR_debug labels/groups + debug context … Dev-only; pairs with RenderBook's Nsight integration"* `[V:web]` (`docs/research/v1/RESEARCH.md:775`) | `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common/src/main/java/org/embeddedt/embeddium/impl/gl/debug/GLDebug.java:291]` — gated on extension-or-version plus a flag, **no debug context** | capture one frame in RenderDoc or Nsight with `glLabels` set; confirm named groups and labelled objects appear. One session, no code | Groups and labels visible ⇒ closes confirmed. The **debug-context** half is separately gated on OQ-3 (Phase 7) and is ledgered as dependent, not as ours to close |
+| **L-6** | DSA tiering is available and behavior-invisible on this platform. *No RESEARCH §6.2 row exists* — a REV1 addition from PD §15, so it has no `[U]` tag and would otherwise have no ledger row at all | `[V:observed — Pintonium .../IrisRenderSystem.java:33`–`:43]` — three tiers selected at init, deployed on the 1.12.2 compat context | `BindingNeutralityTest` across all three tiers on the same call script, plus one T1 run per tier on one classic pack | Identical recorded logs **and** no T1 delta ⇒ `AUTO` resolves to the highest available tier. Any delta ⇒ `BIND_TO_EDIT` default, and the delta is a defect to diagnose. **Requested upstream (§11.4): a §6.2 row for DSA, since the design now relies on it** |
+| **L-7** | *"Guaranteed `glGenerateMipmap` (GL 3.0 baseline) … None"* `[U]` (`docs/research/v1/RESEARCH.md:770`) | Phase 1 already derives `supportsMipmapGeneration()` as `atLeast(3,0)` and obliges callers to check (`docs/phase1/v14/PHASE_1_DOC.md:1647`) | none: covered by Phase 1's `GLCapabilityProfileDerivationTest` and Phase 7/8's existing mipmap paths | Ledgered as **closed by Phase 1's design**; listed for completeness because A1's mipmap-filter reasoning depends on it |
+| **L-8** | *"**Delete the allocation-discipline design constraint** … generational ZGC on Java 25 makes straightforward code acceptable. Write clean code first, optimize with evidence"* `[U]` (`docs/research/v1/RESEARCH.md:784`) | none — this is the highest-value unverified claim in the phase, because the whole §G2.5 posture rests on it | §4.6.2's allocation profile, on the Phase 2 scenes, at v0.5 | Zero steady-state allocation in `com.schmaloogium.*` **and** GC pauses indistinguishable from the shaders-off baseline ⇒ the posture holds and the row closes confirmed. Any violation ⇒ a finding against the owning phase (§11.5), **not** a reintroduction of OF's array-cache machinery, which §4.8 marks **Skip** (`docs/research/v1/RESEARCH.md:645`) |
+| **L-9** | *"FFM API for native buffer work … Replaces reflection-into-direct-buffer hacks; useful for **pixel-transfer paths**"* `[U]` (`docs/research/v1/RESEARCH.md:785`) | none; directly relevant because A3's PBO map and A4's atlas staging are exactly pixel-transfer paths | microbenchmark: read one float from a mapped PBO via `ByteBuffer` vs `MemorySegment`/`memGetFloat`, 10⁶ iterations; and stage one atlas both ways | ≥1% of frame time or ≥1 MB/s saved, per §4.6.3 test 2 ⇒ adopt in `mod.glue` only (`:engine` is C-1-constrained). Otherwise ⇒ closes as "no measurable win"; the straightforward `ByteBuffer` path ships |
+| **L-10** | *"Vector API for CPU-side math … measure first (incubator churn risk)"* `[U]` (`docs/research/v1/RESEARCH.md:786`) | none | **not relied on by Phase 14.** Its cited uses — per-quad tangent math, frustum plane tests — are Phase 10's | Ledgered as **out of scope, owner Phase 10**. Recorded so the OQ-22 sweep is complete and nobody assumes Phase 14 closed it |
+| **L-11** | *"Modern language features … `MethodHandle`/bytecode-compiled expressions for per-frame custom-uniform evaluation"* `[U]` (`docs/research/v1/RESEARCH.md:787`) | none | **not relied on by Phase 14**; owner Phase 11 | Ledgered as out of scope, owner Phase 11. OQ-22's own text names *"expression-engine compilation"* (`:1028`), so it is listed with its true owner rather than silently dropped |
+| **L-12** | Compute / SSBO / image load-store / indirect dispatch are feasible on the 1.12.2 compat context | `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/IrisRenderSystem.java]` per PD §15 (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:741`–`:744`): *"present and pack-exercised, on the 1.12.2 compat context. **This is the strongest available evidence that G8/S2 is feasible on Cleanroom.**"* | none in Phase 14 | Ledgered as **feasibility evidence for G8/S2 only** (`docs/design/v3/DESIGN.md:788`–`:793`). Not a Phase 14 work item and not a Phase 14 close |
+| **L-13** | *"§2.4 effort estimates"*, the other half of OQ-22's catch-all (`docs/research/v1/RESEARCH.md:1028`) | none | not a GL claim; effort estimates are validated by the implementation effort's own tracking, not by a Phase 14 experiment | Ledgered as **out of scope for this phase**, recorded so OQ-22's full text is accounted for and the verify session can see nothing was quietly dropped |
+
+**Coverage check.** RESEARCH.md §6.2 has ten rows (`:769`–`:778`); §6.3 has five (`:784`–`:788`).
+Ledgered above: §6.2 rows at `:769` (L-1), `:770` (L-7), `:772` (L-2), `:773` (L-3), `:774` (L-4),
+`:775` (L-5), `:778` (L-12). Not ledgered, with reason: `:771` core geometry shaders — Phase 3/4's
+preprocessor concern, no Phase 14 reliance; `:776` explicit GLFW context hints and `:777` HiDPI —
+both `[Q:OQ-3]`, owned by Phase 7, and A5's debug-context half is ledgered as *dependent* on that
+outcome in L-5. §6.3 rows: `:784` (L-8), `:785` (L-9), `:786` (L-10), `:787` (L-11); `:788` JUnit 6 +
+headless GL testing is `[Q:OQ-10]`, owned by Phase 2. Plus L-6 for DSA, which has no RESEARCH row and
+is flagged upstream in §11.4.
+
+---
+
+## 8. Testability plan
+
+§G6 requires *"per-phase headless tests — every phase doc's §8 specifies JUnit tests of its subsystem
+against the `engine.gl` facade / recorded `GLCapabilityProfile`s"* (`docs/design/v3/DESIGN.md:705`–`:708`).
+Phase 14 has an unusual testability profile and it is stated plainly rather than glossed: **its
+policy is fully headless-testable, and its mechanism is not.** Tier *selection*, `SamplerKey`
+*derivation*, group *balance* and audit *classification* are pure functions of values and are tested
+with JUnit alone. Whether a given driver's DSA path or shared context actually works is only
+answerable on a driver, and §8.3's harness runs are where that is settled.
+
+### 8.1 Headless unit tests (`:engine`, JUnit only, no GL context)
+
+| Test | Assertions |
+|---|---|
+| `ModernizationPlanDerivationTest` | Over a matrix of `GLCapabilityProfile` fixtures — GL 2.1, 3.0, 3.2, 3.3, 4.3, 4.5, and 3.3-with-`ARB_direct_state_access` — each of the five tiers resolves to the documented value; every `FORCE_OFF` yields the reference-faithful tier regardless of capability; every `FORCE_ON` on an incapable profile still yields the fallback (**policy may not overrule capability**); the rationale list is non-empty and names the deciding capability for each row |
+| `SamplerKeyDerivationTest` | `SamplerKey.of` maps Phase 5's colour policy exactly: `CLAMP_TO_EDGE` S/T for every colour texture, NEAREST min **and** mag for integer formats, LINEAR otherwise (`docs/phase5/v1/PHASE_5_DOC.md:1042`–`:1045`); shadow textures map `hardwareFiltering → COMPARE_REF_TO_TEXTURE`, `mipmap → *_MIPMAP_*` min filter, `nearest → NEAREST` (`docs/phase5/v1/PHASE_5_DOC.md:534`); equal parameters yield equal keys (structural equality, so interning is deterministic) |
+| `SamplerStateSplitTest` | Every field of `TextureParameters` is classified exactly once as sampler state or texture state, with **no field unclassified** — this is the test that fails loudly if R-P14→P1-3 lands a field this design did not anticipate, rather than letting it silently fall through |
+| `SamplerEquivalenceTest` | Over a recorded estate: for every texture and every unit it binds to, the sampler state applied through that unit equals the sampler state its `TextureParameters` specify. A texture whose parameters cannot be derived (the R-P14→P13-2 gap) is asserted **excluded and reported**, never silently defaulted. This is A1's whole behavioral-no-op obligation, discharged as a property over the estate |
+| `SamplerCacheLifecycleTest` | Interning is per estate generation; a `BufferResizeNotice` re-interns and deletes the prior generation's samplers; no sampler outlives its generation; the resize consumer returns a success result on every path, because a failing consumer would publish shaders off (`docs/phase5/v1/PHASE_5_DOC.md:2018`) |
+| `SamplerLeakTest` | Over arbitrary bounded sequences of scope push/pop/throw and all three `FrameExitKind`s plus all six `FrameAbortReason`s, the recorded log ends every frame with all sixteen units at sampler 0 (`D-P14-4`) |
+| `FixedUnitDisciplineTest` | The bind cache is indexed by App B.3 unit; no code path allocates, reassigns or reorders a unit; `depthtex1` resolves to 11. A regression here would reintroduce the pre-decided divergence at `docs/design/v3/DESIGN.md:954`–`:955` |
+| `BindingNeutralityTest` | Against `RecordingGLDevice`, the same call script under all three `DsaTier`s produces (a) an identical facade-verb log, and (b) an identical observable binding state after every non-binding verb (`D-P14-7`). This is the proof that the tiers are substitutable |
+| `CenterDepthRingTest` | Warm-up returns `Unavailable`; a signalled fence yields `Sample`; an unsignalled fence yields the previous value; ≤0 dimensions return `Unavailable` **with no GL call** (`docs/phase6/v1/PHASE_6_DOC.md:585`–`:587`); the render thread issues no blocking wait on any path — asserted by the absence of a `clientWaitSync`/`finish` record in the log (`D-P14-9`) |
+| `CenterDepthInvalidationTest` | Each of `registryGeneration`, `worldEpoch`, width, height, `pixelX`, `pixelY` changing independently discards the whole ring and returns `Unavailable`; **no value from a prior world, generation or extent is ever returned** (`D-P14-10`) |
+| `CenterDepthTraceComparisonTest` | Given two recorded traces from a scripted depth sequence, the analytic criteria C1 and C2 of §4.3.6 are computed and asserted headlessly. The *judgement* is thereby testable without a GPU; only the *capture* needs one |
+| `CompileExecutorContractTest` | `Inline` and a scripted `Worker` double satisfy the same contract: `submit` never blocks, `poll` is total over `PENDING`/`READY`/`FAILED`, results preserve submission order, a `FAILED` batch leaves no partial program state. **The caller's control flow is asserted identical under both**, which is what makes the fallback free |
+| `CompileFallbackLadderTest` | Each of §4.4.3's six stages, injected in turn, degrades to `INLINE`, tears down the worker, emits exactly one diagnostic, and completes the pipeline build synchronously. The watchdog fires at `T_watchdog` and never earlier |
+| `DriverPolicyTest` | An unknown vendor/renderer resolves to `INLINE` (**default deny**, `D-P14-12`); an allowlisted family resolves to `SHARED_CONTEXT`; `FORCE_OFF` overrides an allowlist entry; a denylist entry overrides `FORCE_ON` |
+| `DebugGroupBalanceTest` | Over arbitrary bounded push/pop/throw sequences across `NORMAL`, `EARLY_RETURN` and `THROWN` exits: recorded pops never exceed recorded pushes; an underflow is a no-op plus exactly one diagnostic; an overflow past `GL_MAX_DEBUG_GROUP_STACK_DEPTH` issues nothing and its matching pop issues nothing; depth is zero at every frame boundary (`D-P14-13`). **This is PD B7's bug shape, asserted impossible** |
+| `DebugLabelCoverageTest` | Every handle created in a recorded estate carries a distinct, non-blank label taken from its `create(String debugLabel)` argument; labels are clamped to `GL_MAX_LABEL_LENGTH`; over-long labels never reach GL (PD B9's handling) |
+| `DebugInactiveIsFreeTest` | Under `DebugTier.NONE`, the recorded log contains **zero** debug records for a full frame of pushes, pops and labels |
+| `AuditClassifierTest` | Given a synthetic `GLCallLog`: redundant-identical, redundant-restore, necessary and contract-mandated are classified per §4.7.2 step 4; matrix uploads and the program-switch sweep always land in contract-mandated and never in a ranking; a log with a non-zero discard count is **rejected as invalid** (gate 1); two non-identical steady frames **fail** the determinism gate (gate 3) |
+| `AuditScopeFilterTest` | A synthetic log containing foreign-handle records has them dropped by the ownership filter; the classifier's output cannot contain a non-Schmaloogium subject (`D-P14-16`) |
+
+### 8.2 Recorded-GL and profile-fixture tests
+
+`RecordingGLDevice` plus serialized `GLCapabilityProfile` fixtures (`docs/phase1/v14/PHASE_1_DOC.md:1516`,
+`:3741`) carry the integration-shaped assertions that still need no driver:
+
+- The **same recorded log** is produced under every `DsaTier`, and under `SamplerTier.NONE` the log is
+  byte-identical to the pre-Phase-14 estate build. This is the single strongest available evidence
+  that A1's fallback and A2 as a whole are true no-ops.
+- A full frame under `SamplerTier.MULTI_BIND` shows exactly one sampler-range bind per pass and one
+  clear per frame; under `PER_UNIT`, at most sixteen binds per pass with the redundant-bind cache
+  suppressing repeats.
+- Scripted GL errors (`ScriptedResponses.glError`) drive every §6 demotion row: a sampler-creation
+  error falls the whole estate back to `NONE`; a DSA error demotes to `BIND_TO_EDIT` and re-runs the
+  operation; a `glObjectLabel` error clamps once then disables labelling.
+- At least two profiles are used throughout, per Phase 6's own gate shape: a minimum GL 2.1 profile
+  (every tier falls back) and a GL 4.5 profile (every tier engages). A 3.3 profile without
+  `ARB_direct_state_access` exercises the mixed case that is easiest to get wrong.
+
+### 8.3 What only a driver can settle, and where it is settled
+
+| Question | Where |
+|---|---|
+| Does this driver's DSA path behave identically? | §9.2's implementation gate: one T1 run per tier on one classic pack; L-6's decision point |
+| Does a shared compat context work on this driver family? | **OQ-15's spike, §10.1** — the only way this is answerable |
+| Is the async center-depth latency imperceptible? | **§4.3.6's comparison**, criteria C1–C4; L-3's decision point |
+| Does the clean-code allocation posture actually hold? | **§4.6.2's profile**; L-8's decision point |
+| Where is the real redundant-state churn? | **§4.7.2's audit**; L-2's decision point |
+| Do labels and groups show up in Nsight/RenderDoc? | L-5's one-session experiment |
+
+### 8.4 Conformance-tier coverage
+
+- **T0** — every tier combination must load every classic matrix pack. A tier that changes *whether*
+  a pack loads is a defect, not a trade-off.
+- **T1** — the binding gate. Every enabled row must show **no regression** against the approved T1
+  baseline. This is the criterion the impl gate names (`docs/design/v3/DESIGN.md:2583`–`:2584`) and
+  it is the reason every row has a runtime `FORCE_OFF`.
+- **T1 camera-path motion** — mandatory for A3, per §G6 REV1 (`docs/design/v3/DESIGN.md:696`–`:699`).
+  A one-frame input delay is a temporal effect; a static-only comparison would be worthless.
+- **T2** — A3 is the only row that could perturb a pixel-parity comparison, through DOF focal
+  distance. Criterion C3 runs against T1 tolerance; if T2 is available for the classic packs at v0.5,
+  the same comparison is repeated at T2 tolerance and the stricter result governs.
+- **T3** — the joint v0.5 gate with Phase 13 (§9.2).
+
+No pack source text and no rendered image enters the repository; every artifact here is a counts or
+hash manifest in the local/CI cache, per §G6 (`docs/design/v3/DESIGN.md:718`–`:725`).
+
+---
+
+## 9. Milestone staging
+
+### 9.1 Component → milestone
+
+Per §G4.3 every designed component carries exactly one tag (`docs/design/v3/DESIGN.md:567`–`:571`).
+Phase 14's spec milestone is *"v0.5 + quality-of-life"* (`docs/design/v3/DESIGN.md:2516`), and §G0.3's
+principle applies: the whole subsystem is architected now, tagged by when it is implemented
+(`:185`–`:193`).
+
+| Component | Architected | Implemented | Note |
+|---|---:|---:|---|
+| `GlModernizationPlan` / tiers / `GlModernizationPolicy` | now | **v0.5** | pure values; the first thing built, because every other row reads its tier |
+| `SamplerKey` + derivation (A1) | now | **v0.5** | derived from Phase 5's parameters; Phase 13's inputs arrive at the same milestone |
+| `SamplerCache`, per-unit bind cache, `MULTI_BIND` batching (A1) | now | **v0.5** | |
+| Sampler clear on every vanilla-return path (A1, `D-P14-4`) | now | **v0.5** | ships with the tier, never after it — it is a rung-5 guard, not a polish item |
+| `DsaStrategy` three tiers (A2) | now | **v0.5** | facade-internal; no dependent phase is affected |
+| `CenterDepthReadback` PBO+fence ring (A3) | now | **v0.5** | gated on R-P14→P6-1 **and** §4.3.6's criteria; ships `FORCE_OFF` otherwise |
+| Synchronous `CenterDepthSource` (A3 fallback) | — | **v0.1, by Phase 6** | already designed and staged by Phase 6 (`docs/phase6/v1/PHASE_6_DOC.md:1643`); Phase 14 adds nothing at v0.1 |
+| `CompileExecutor` + `InlineCompileExecutor` (A4 fallback) | now | **v0.5** | the interface and the synchronous implementation ship together, so `Worker` is a pure addition later |
+| `GlWorkerContext` + `WorkerCompileExecutor` (A4) | now | **post-v0.5** | gated on OQ-15's spike and R-P14→P7-1. `AUTO` resolves to `INLINE` at v0.5 |
+| Async `_n`/`_s` atlas upload (A4) | now | **post-v0.5** | additionally gated on R-P14→P13-1 |
+| `KhrDebugBackend` — labels and groups (A5) | now | **v0.5** | Phase 1 already stages `schmaloogium.debug.glLabels` at *"`v0.5` | Phase 14"* (`docs/phase1/v14/PHASE_1_DOC.md:4508`); gated on R-P14→P1-1 |
+| `GL_DEBUG_OUTPUT` message callback (A5) | now | **v0.5** | no context change needed |
+| `GLFW_OPENGL_DEBUG_CONTEXT` request (A5) | now | **post-v0.5** | gated on OQ-3's outcome, which is Phase 7's, not ours |
+| Allocation/GC measurement procedure (A6) | now | **v0.5** | runs at v0.5 because that is when the pipeline is feature-complete enough for the numbers to mean anything |
+| §4.6.3's four-part justification test (A6) | now | **v0.5, standing** | a standing rule for the implementation effort, not a one-off |
+| OQ-22 ledger execution (A6, §7.5) | now | **v0.5**, rows L-4/L-9 **post-v0.5** | each row closes at the milestone that touches it, exactly as OQ-22's verification path says (`docs/research/v1/RESEARCH.md:1028`) |
+| Redundant-state audit procedure (A7) | now | **v0.5** | requires A5's groups for segmentation, so it follows A5 in §12 |
+| §4.3.6 imperceptibility comparison | now | **v0.5** | blocking for A3's enablement |
+
+Nothing in this phase is tagged v0.1–v0.4. That is correct and deliberate: every row replaces
+something that must exist first, and RESEARCH.md §9 places *"depth copies incl. async center-depth"*
+in v0.5 (`docs/research/v1/RESEARCH.md:951`).
+
+### 9.2 The implementation gate
+
+*"**Impl gate:** RESEARCH.md §9 v0.5 (jointly with Phase 13) — full classic matrix at T3;
+pack-switch stall measurably reduced vs the synchronous baseline without T1 regressions"*
+(`docs/design/v3/DESIGN.md:2583`–`:2584`). RESEARCH.md §9's v0.5 row is *"`_n`/`_s` companion atlases
++ `MC_NORMAL_MAP`/`MC_SPECULAR_MAP`; noise texture; custom textures (all 3 source forms); depth
+copies **incl. async center-depth**; render scale; instancing"* with exit criterion *"Full classic
+matrix at T3"* (`docs/research/v1/RESEARCH.md:951`).
+
+Phase 14's half of the joint gate, stated as runnable conditions:
+
+1. **Full classic matrix at T3** — jointly with Phase 13; Phase 14's contribution is that no enabled
+   tier prevents any classic pack from reaching T3.
+2. **No T1 regression on any matrix pack, under every tier combination that ships enabled by
+   default.** This is the binding constraint. A row that cannot meet it ships `FORCE_OFF`.
+3. **Pack-switch stall measurably reduced versus the synchronous baseline.** Measured as: median
+   wall-clock time from an accepted `ShaderReloadController.request` to `ReloadStatus.Active`, and —
+   the number that actually matters to a user — the **count of frames whose frame time exceeds twice
+   the scene median** during that window. Three runs, median, one classic pack, on the pinned dev
+   environment, with no `-Dschmaloogium.debug.*` flag set (§7.3). *"Measurably reduced"* is read as:
+   the long-frame count strictly decreases and the total reload time does not increase.
+   **Honest note:** condition 3 is achievable only through A4, which is `post-v0.5` and spike-gated.
+   If OQ-15 fails or R-P14→P7-1 is declined, **this condition cannot be met at v0.5** and the gate
+   must be read as satisfied by conditions 1–2 with condition 3 deferred, its spike result recorded.
+   This is stated rather than papered over; it is also flagged in §11.4 as a requested upstream
+   clarification, because a gate that depends on an unresolved OQ should say so.
+4. **Every ledger row in §7.5 has closed** — confirmed, refuted, or explicitly out of scope with its
+   owner named — and the results are written back into RESEARCH.md §11's OQ-22 status column by the
+   implementation effort per §G4.4 (`docs/design/v3/DESIGN.md:578`–`:580`).
+5. **Every §8.1 test green against at least two recorded capability profiles**, matching the shape of
+   the sibling phases' gates.
+
+---
+
+## 10. OQ and spike specifications
+
+Two OQs are assigned to Phase 14 by §G10: OQ-15 (`docs/design/v3/DESIGN.md:878`) and OQ-22 (`:885`).
+Per §G4.4 each spec has four parts — the question verbatim from RESEARCH.md §11, a concrete
+procedure, success and failure criteria, and the fallback designed *now*
+(`docs/design/v3/DESIGN.md:575`–`:580`). **Neither OQ is resolved here.**
+
+### 10.1 OQ-15 — shared-context async compile
+
+**(1) The question, verbatim from RESEARCH.md §11** (`docs/research/v1/RESEARCH.md:1021`):
+
+> "Shared-context async compile reliability across drivers (compat contexts)"
+
+Its row records *"Why it matters: §6.2 headline feature"*, *"Blocks: quality-of-life"*, and
+*"Verification path: prototype + synchronous fallback design"*, status **open**. §G10 assigns it to
+**P14** with the handling *"Spike spec: shared-context async compile; sync fallback mandatory"*
+(`docs/design/v3/DESIGN.md:878`), and notes REV1 leaves it *"unaffected itself"*.
+
+**Current evidence: none.** Pintonium never touches context creation — a search of the tree for
+`glfwCreateWindow`, `glfwMakeContextCurrent` and share-context construction returns nothing, and PD
+§16 records the same (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:756`–`:779`), which Phase 7
+also relies on for OQ-3 (`docs/phase7/v1/PHASE_7_DOC.md:2297`–`:2299`). This spike has no reference
+implementation to lean on, which is why its fallback is mandatory rather than prudent.
+
+**(2) Procedure.** In a pinned Cleanroom dev environment, on **≥2 driver families** — NVIDIA
+proprietary and AMD (Mesa `radeonsi`) are the minimum pair, with Intel (Mesa `iris`) and Windows AMD
+strongly preferred, giving four:
+
+1. **Context creation.** From the render thread after Minecraft's window exists, create a hidden
+   shared context: `glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)` then
+   `glfwCreateWindow(1, 1, "", NULL, mainWindow)`. Record whether creation succeeds, what version and
+   profile the worker context reports, and whether it matches the main context. Requesting no
+   version hints (inheriting the main context's) and explicitly requesting compat are both tried;
+   record which the loader tolerates. **Note the interaction with OQ-3**: if Cleanroom's window layer
+   owns hint state, setting a hint here may perturb later window creation — verify and record, and
+   restore every hint after the call.
+2. **Currency.** Make the worker context current on the dedicated worker thread. Verify it is never
+   current on the render thread, and that the render thread's context is unaffected (draw one vanilla
+   frame after making the worker current and confirm it is unchanged).
+3. **Compile correctness.** Off-thread, compile the complete shader set of **each classic matrix
+   pack** — SEUS Renewed, Chocapic13 V9, projectLUMA — plus one dual-spec pack. On the render thread,
+   `glWaitSync` the worker's fence, then attach, link and validate. Compare, per program: link
+   status, the info log, the complete active-uniform list with locations and types, and the active
+   attribute list, against a fully synchronous run of the same pack. **Any difference is a failure**,
+   not a curiosity.
+4. **Rendering correctness.** Render each pack on the Phase 2 fixed scenes **and** the camera-path
+   motion scenes, and diff against the synchronous run's T1 baseline. Corruption may be
+   intermittent, so repeat each pack-switch 20 times per family and require every run to pass.
+5. **Texture upload.** Repeat 3–4 for a companion-atlas-sized upload (two full atlases with mip
+   chains) issued from the worker, checking pixel equality of the uploaded atlas against a
+   synchronously uploaded one.
+6. **Stall measurement.** Instrument the pack switch exactly as §9.2 condition 3 defines: median time
+   from accepted request to `Active`, and the count of frames exceeding twice the scene median during
+   the window. Measure synchronous and async, three runs each, no debug flags set.
+7. **Adversarial cases.** (a) Switch packs again while a compile batch is in flight. (b) Change
+   dimension mid-compile. (c) Resize the window mid-compile. (d) Kill the worker thread mid-batch.
+   (e) Exit the client mid-batch. Each must degrade per §4.4.3 and must not hang, crash, or leak a
+   GL object.
+8. **Record** driver versions, OS, GPU, and every result in `docs/decisions/OQ-15_ASYNC_COMPILE.md`,
+   in the shape Phase 7 uses for OQ-3 (`docs/phase7/v1/PHASE_7_DOC.md:2312`–`:2313`), including a
+   per-family verdict table that becomes `D-P14-12`'s allowlist data.
+
+**(3) Success and failure criteria.** Per family, and **all must hold** for that family to be
+allowlisted:
+
+| # | Criterion | Threshold |
+|---|---|---|
+| K1 | **No corruption.** Link status, info logs, active-uniform lists (name, type, location) and active-attribute lists are identical to the synchronous run for every program of every pack. | exact equality |
+| K2 | **No visual difference.** Every scene, static and motion, diffs within Phase 2's T1 tolerance against the synchronous run, with zero new outliers, across all 20 repeats. | zero failures in 20 |
+| K3 | **Stall below threshold.** The count of frames exceeding twice the scene median during the switch window is **≤ 20% of the synchronous count**, and the median request-to-`Active` time does not increase. | ≤20% long frames; no total-time regression |
+| K4 | **Adversarial safety.** All five cases in step 7 degrade per §4.4.3, with no hang, no crash, no leaked GL object and no state corruption. | zero failures |
+| K5 | **Stability.** No driver crash or reset across the full run on that family. | zero |
+
+K3 is the threshold the specification asks to be stated (*"success: no corruption + stall <
+threshold"*, `docs/design/v3/DESIGN.md:2545`–`:2546`). It is deliberately expressed as **long-frame
+count** rather than total time: a pack switch that takes the same wall-clock time but stops freezing
+the client is the actual user-visible win, and a total-time-only threshold could be met by a change
+that helps nobody. The 20% figure is a target, not a physical constant; a family that achieves K1,
+K2, K4 and K5 but only reaches, say, 50% is recorded as a **partial pass** — allowlisted only if the
+implementation effort judges the reduction worth the added surface, with the number recorded either
+way.
+
+**Failure:** any family failing any criterion is **not allowlisted**; it runs `INLINE` permanently.
+Failure on *every* family closes OQ-15 as "shared compat contexts are not reliable on our matrix",
+`WorkerCompileExecutor` is not shipped, and the result is written back to RESEARCH.md §11's status
+column. **No milestone is blocked** — see §9.2's honest note on gate condition 3.
+
+**(4) Fallback, designed now.** §4.4.4's `InlineCompileExecutor`, ships at v0.5 as the default, is
+the automatic result of every rung of §4.4.3's ladder, and is selected per driver family by
+`D-P14-12`'s default-deny allowlist. Because it satisfies the *same* `CompileExecutor` interface with
+the same submit/poll call sequence, a failed spike changes no control flow anywhere in Phase 4 or
+Phase 7 — the fallback is not a contingency plan, it is what runs unless the spike says otherwise.
+
+### 10.2 OQ-22 — the modernization-claim spot-check ledger
+
+**(1) The question, verbatim from RESEARCH.md §11** (`docs/research/v1/RESEARCH.md:1028`):
+
+> "Catch-all for low-risk `[U]` items: §2.4 effort estimates and the §6.2/§6.3 modernization claims
+> without their own row (core-GL swap, sampler objects, PBO readback latency, FFM/Vector API payoffs,
+> expression-engine compilation)"
+
+Its row records *"Why it matters: Individually small; collectively they shape effort planning"*,
+*"Blocks: implementation-time choices"*, and *"Verification path: spot-check each at the milestone
+that touches it; promote to its own OQ row if it turns out contentious"*, status **open**. §G10
+assigns it to **P14** with the handling *"Spot-check ledger for the §6.2/§6.3 modernization claims"*
+and the REV1 note that *"PD §15 supplies ledger evidence (DSA tiers, sampler objects, compute/SSBO on
+1.12.2 compat)"* (`docs/design/v3/DESIGN.md:885`).
+
+OQ-22 is not one question but thirteen, so its spike is a **sweep**, and §7.5's ledger is its
+instrument. Its verification path — *"spot-check each at the milestone that touches it"* — is why the
+rows close individually rather than together.
+
+**(2) Procedure.**
+
+- **S-22-1 — freeze the row set.** At the start of the v0.5 implementation effort, re-derive the
+  ledger from RESEARCH.md §6.2 and §6.3 as they then stand and confirm §7.5's coverage check still
+  accounts for every row, either with a ledger entry or with a named owner elsewhere. A row added to
+  §6.2/§6.3 since 2026-07-24 that this phase relies on gets a new ledger row.
+- **S-22-2 — run each row's cheap experiment**, exactly as §7.5's "cheap experiment" column
+  specifies, at the milestone its "decision point" names. Each is hours, not days; that is the design
+  constraint on the column.
+- **S-22-3 — the two expensive rows.** L-3's imperceptibility comparison (§4.3.6, four scene
+  families, criteria C1–C4) and L-8's allocation profile (§4.6.2) are the only rows requiring a full
+  harness run; both are scheduled with the v0.5 conformance runs rather than separately, so they cost
+  no extra environment setup.
+- **S-22-4 — record and write back.** Each row closes as **confirmed**, **refuted**, or **out of
+  scope (owner named)**, with its measured numbers. The implementation effort writes the results into
+  RESEARCH.md §11's status column and adds an addendum note to this phase doc, per §G4.4
+  (`docs/design/v3/DESIGN.md:578`–`:580`). **This document does not modify RESEARCH.md** (§G1.1).
+- **S-22-5 — promote what turns out contentious.** OQ-22's own verification path directs it:
+  *"promote to its own OQ row if it turns out contentious"*. A row whose experiment produces a
+  disputed or platform-dependent result is proposed as a new OQ in this doc's §11.4 rather than
+  argued to a conclusion inside the ledger.
+
+**(3) Success and failure criteria.**
+
+- **Success for the sweep** is not "every claim confirmed" — it is **every row closed with evidence**.
+  A refuted row is a successful spot-check: OQ-22's purpose is to stop unverified `[U]` claims from
+  silently shaping effort planning, not to validate them.
+- **Per-row criteria** are the "decision point" column of §7.5, which is where they belong so that a
+  row's claim, experiment and criterion are read together.
+- **Failure of the sweep** is a row left open at the v0.5 gate with no evidence and no named owner.
+  §9.2 condition 4 makes that a gate failure, which is the only enforcement OQ-22 needs.
+- **Escalation:** L-8 is the row to watch. It is the only one whose refutation would have
+  architectural consequences beyond this phase, because §G2.5's entire clean-code-first posture rests
+  on it. If L-8 is refuted, the response is **not** to reintroduce OF's allocation-discipline
+  machinery — §4.8 marks that **Skip** (`docs/research/v1/RESEARCH.md:645`) — but to raise a new OQ
+  and route specific findings to their owning phases through §11.5.
+
+**(4) Fallback, designed now.** Every ledger row's fallback is its row's fallback, already designed
+in §4: A1 → `SamplerTier.NONE`; A2 → `BIND_TO_EDIT`; A3 → `SYNCHRONOUS`; A4 → `INLINE`; A5 → `NONE`;
+A6 → the null change (do nothing, which is what §G2.5 predicts); A7 → report nothing rather than
+report estimates. Because `AUTO` resolves to the reference-faithful path until a row's ledger entry
+closes (`D-P14-17`), **an unrun ledger is not a risk** — it is simply a shipped product that behaves
+exactly as it would have without this phase. That property is what makes OQ-22 safe to leave open
+across a milestone, and it is the reason `D-P14-17` exists.
+
+---
+
+## 11. Decisions and open items
+
+### 11.1 Phase-local decision log
+
+Per §G1.1, phase-local decisions get IDs `D-P14-<k>` with a one-line rationale each
+(`docs/design/v3/DESIGN.md:277`–`:281`). None of these contradicts RESEARCH.md's `D-1`…`D-10`; §11.3
+records why. **No decision here adopts a Pintonium mechanism for a contract-visible component**, so
+none requires the §G11.4 contract check reserved for that case (`docs/design/v3/DESIGN.md:947`–`:951`)
+— §1.3 and §3.2 establish that this phase owns no contract-visible component. Each Pintonium-derived
+decision nevertheless carries its source-verified provenance in §3.2.
+
+| ID | Decision | One-line rationale |
+|---|---|---|
+| **D-P14-1** | A sampler object's state is **derived** from Phase 5's/Phase 13's `TextureParameters`, never authored independently | one source of truth for filter and wrap is what makes A1 a behavioral no-op instead of a competing policy |
+| **D-P14-2** | Sampler tiering `MULTI_BIND → PER_UNIT → NONE`, chosen once at init from `GLCapabilityProfile` | `NONE` is byte-for-byte today's path, so the fallback needs no separate design |
+| **D-P14-3** | Reject dynamic per-program texture-unit allocation; the bind cache is a fixed `SamplerHandle[16]` indexed by App B.3 unit | §G11.4 pre-decided rejection (`docs/design/v3/DESIGN.md:954`–`:955`); a fixed dense map also suits `glBindSamplers` better than a dynamic one |
+| **D-P14-4** | All sixteen sampler units are cleared on **every** path that returns control to vanilla, from the backend's own `finally` | a leftover sampler silently overrides vanilla's filtering — a §G2.4 rung-5 vanilla-corruption hazard, not a leak |
+| **D-P14-5** | DSA tiering is entirely internal to the `mod.glue` LWJGL3 backend; no `:engine` type names a tier | the spec asks for a facade-*internal* strategy (`docs/design/v3/DESIGN.md:2534`–`:2535`), and internality is what makes it behavior-invisible |
+| **D-P14-6** | `bindToUnit` is **excluded** from DSA and stays on the `GlStateManager`-cooperating path, diverging from the reference | `glBindTextureUnit` bypasses state `GlStateManager` caches, which §G4.6 forbids because the stale cache breaks vanilla rendering |
+| **D-P14-7** | Every non-binding facade verb is **binding-neutral** under all three DSA tiers, asserted by a recorded-GL test | tier substitutability requires that no caller can depend on a bind side effect; stating it as a property makes it testable |
+| **D-P14-8** | Async center-depth is implemented below Phase 6's `CenterDepthSource` seam, with its added latency **contracted** through R-P14→P6-1, never hidden | Phase 6 explicitly forbids *"an uncontracted one-frame queue"* (`docs/phase6/v1/PHASE_6_DOC.md:1558`), and the type would otherwise permit exactly that |
+| **D-P14-9** | The render thread polls the readback fence with `glGetSynci(GL_SYNC_STATUS)` and **never** blocks on it | a blocking wait would reinstate the stall the row exists to remove, on a worse schedule than the synchronous read |
+| **D-P14-10** | Any change of registry generation, world epoch, framebuffer extent or pixel coordinate discards the **entire** PBO ring and returns `Unavailable` | a depth value from another world, pack generation or framebuffer size must never enter the EMA; partial invalidation cannot express that safely |
+| **D-P14-11** | Async compile splits at **link**: shader-object compile off-thread; program creation, link, validate, uniform locations and the `Program.use()` barrier stay on the render thread | linking is where shared-context driver bugs concentrate, and every ownership rule in the project keeps its render-thread confinement untouched |
+| **D-P14-12** | Driver eligibility for the shared context **defaults to deny**; a family is enabled only by a recorded OQ-15 pass, as shipped data | an unrun or partially-run spike then costs nothing, because the safe path is the default rather than the exception |
+| **D-P14-13** | KHR_debug group balance is guaranteed **in the backend** — depth counter, no-op underflow and overflow, frame-boundary drain — not by call-site discipline | PD B7 is a call-site-discipline failure (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:793`); making imbalance harmless is the only handling a future caller cannot undo |
+| **D-P14-14** | The KHR_debug gate is `(KHR_debug or GL 4.3) && -Dschmaloogium.debug.glLabels`; a debug context is an enhancement, never a precondition | Phase 7's OQ-3 default is *"make no context-flag change"*, under which a debug-context precondition would make `DebugService` permanently dead (finding C-3) |
+| **D-P14-15** | An optimization is justified only if all four of §4.6.3's tests hold — ours, ≥1% frame time or ≥1 MB/s measured, no-op with fallback, no added contract complexity | §G2.5's *"optimize with evidence"* needs a threshold to be a rule rather than a slogan, and test 4 protects contract-visible components from being "improved" |
+| **D-P14-16** | The redundant-state audit is scoped **by construction**: its instrument only sees facade calls on Schmaloogium-owned or -borrowed subjects | vanilla's rendering never reaches the facade, so the §1.2 non-goal becomes a property of the method rather than a rule the auditor must remember |
+| **D-P14-17** | Every row is individually switchable at runtime, and `AUTO` resolves to the **reference-faithful path** until that row's ledger entry or spike closes | an unrun ledger then ships a product identical to one built without this phase, which is what makes leaving OQ-22 open across a milestone safe |
+| **D-P14-18** | Phase 14 adds **no Mixin and no vanilla hook**; every call site it needs is one an existing phase already owns | `D-5` bounds the injection budget to ~25–30 sites (`docs/research/v1/RESEARCH.md:99`), and a performance phase has no business spending from it |
+
+### 11.2 Input contradictions found, with rulings and provenance
+
+Reported, never silently resolved (`docs/design/v3/DESIGN.md:282`–`:284`, `:141`–`:143`).
+
+**C-1 — The commissioning brief states Phase 13 is unbuilt; the working tree disagrees.**
+`docs/phase14/briefs/PHASE_14_BUILD_BRIEF.md:50`–`:51` says *"`docs/phase13/` does not exist. There
+is no `PHASE_13_DOC.md` to read at all — this is an unbuilt phase, not merely an unverified one."*
+During this session `docs/phase13/v1/PHASE_13_DOC.md` was present: 1 435 lines, thirteen `##`
+sections, mtime 2026-08-08 14:04 — untracked when first observed, then committed mid-session as
+`9ff94a5` — with `docs/phase13/reviews/` containing only `.gitkeep`, i.e. **zero review rounds**.
+`docs/MOVES.md`'s Phase 13 v3 adoption record (`docs/MOVES.md:82`, `:89`, `:91`) confirms a Phase 13
+build session ran. **Ruling:** the brief's *premise* is stale but
+its *instruction* is unaffected and governs. §G5.3 invariant 1 requires a **verified** doc, and a
+draft with zero review rounds from a concurrent Wave-5 session is not one — it is exactly the
+unverified high-fan-out input the invariant exists to exclude, and a concurrent writer may still be
+changing it. This session did not read it; all Phase-13 items are §5.5 requests against the v3 spec.
+**Owed:** a §G1.3 fix-up reconciling §5.5 against Phase 13's actual §5 once Phase 13 is verified.
+
+**C-2 — Three dependencies declare RC3 while being adjudicated against v3.**
+`docs/phase5/v1/PHASE_5_DOC.md:18`, `docs/phase6/v1/PHASE_6_DOC.md:10` and
+`docs/phase7/v1/PHASE_7_DOC.md:7` each declare `docs/design/v2.0-RC3/DESIGN.md`, and
+`docs/MOVES.md:100` confirms *"Phases 3–8 §0 select RC3"*. Their latest rounds were nonetheless
+adjudicated *"against the supplied v3 design override"* (`docs/phase5/reviews/PHASE_5_REVIEW_37.md:8`;
+same at `docs/phase5/reviews/PHASE_5_REVIEW_38.md:6`) through the now-deleted `verification/targets/`
+mechanism, without §G0.4's four-step adoption ever completing. **Ruling:** the discrepancy does not
+affect this document, because every citation of those three docs here is to their *content* by
+repo-relative path and line, which is revision-independent. It **does** affect a reader: a `§G`
+coordinate quoted *inside* those documents is an RC3 coordinate and must not be resolved against v3.
+Recorded so nobody makes that substitution. Requested upstream in §11.4.
+
+**C-3 — `DebugService.isActive()` would be permanently false under Phase 7's OQ-3 default.**
+Phase 1 defines it as *"false unless a debug context and the dev flag are both on"*
+(`docs/phase1/v14/PHASE_1_DOC.md:3064`). Phase 7's OQ-3 fallback — its **default plan** — is *"Make
+**no** context-flag change"* (`docs/phase7/v1/PHASE_7_DOC.md:2320`–`:2323`). Under both, no debug
+context is ever created, so `isActive()` never returns true and the whole `DebugService` is dead in
+every shipping configuration — an affordance §G4.5 reserves *"from day one"*
+(`docs/design/v3/DESIGN.md:587`–`:589`). **Ruling:** the two documents are in genuine conflict and
+KHR_debug's capability model settles it: object labels and debug groups require the extension or GL
+4.3, **not** a debug context, as the reference's own gate proves —
+`[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common/src/main/java/org/embeddedt/embeddium/impl/gl/debug/GLDebug.java:291]`.
+This design proceeds on the corrected gate (`D-P14-14`) and raises R-P14→P1-1 (§5.6). If that request
+is declined, **A5 is undeliverable as specified**, which is stated plainly rather than worked around.
+
+**C-4 — §G5.2's Wave 5 versus §G5.1/§G5.3's literal dependency.** Full statement, ruling and
+provenance in §3.5. Summary: `docs/design/v3/DESIGN.md:647` builds P13 and P14 in parallel while
+`:626` makes P13 a hard dependency and `:628`–`:632` plus `:659`–`:663` require verified dependency
+docs; the design's only sanctioned soft dependency is Phase 12's on Phase 7 (`:668`–`:671`), and
+Phase 14 has no such clause. **Ruling: the gating invariant governs and the wave diagram yields**,
+because §G5.3 item 2 subordinates the diagram itself (*"Waves are a schedule, not a barrier"*,
+`:664`–`:667`). Requested upstream in §11.4.
+
+**C-5 — Phase 7's §1.2 claims to expose a timing seam that its §5 does not contain.**
+`docs/phase7/v1/PHASE_7_DOC.md:368`–`:369` states *"Phase 7 exposes timing and resize-consumer seams
+but defines no optimization policy."* Its §5.1 exposes neither: the resize-consumer contract is
+**Phase 5's** (`docs/phase5/v1/PHASE_5_DOC.md:2018`), which Phase 7 *consumes* (`:2012`), and the
+only timing-adjacent surfaces exposed are `FrameReadiness.consecutiveFinalizedFrames` and the Phase 2
+capture listener. The internal counters at `:2196` are explicitly *"off by default"* and not exposed.
+**Ruling:** §5 governs — §G1.1's *"Dependency docs are contracts. What a dependency's PHASE doc
+exposes in its §5 is what you build against"* (`docs/design/v3/DESIGN.md:296`–`:298`) — so this
+document assumes **no** timing seam and raises R-P14→P7-2 part 2. A6 and A7 fall back to JFR stack
+attribution plus A5's debug groups, which is coarser but blocks nothing. Flagged because a §1.2
+promise that §5 does not keep is exactly the interface-honesty gap a verify session exists to catch,
+and Phase 7's round 33 is the natural place to fix it.
+
+**C-6 — RESEARCH.md §6.2 has no DSA row, though the design now depends on DSA tiering.** The DSA
+scope row is a REV1 addition sourced from PD §15 (`docs/design/v3/DESIGN.md:2533`–`:2535`); RESEARCH
+§6.2's ten rows (`docs/research/v1/RESEARCH.md:769`–`:778`) contain nothing about direct state
+access. **Ruling:** not a conflict — RESEARCH.md is silent, not contradictory, and §G0.1's precedence
+rule is not engaged. But an evidence-bearing claim the design relies on should have a row in the
+source of truth with a confidence tag, so §7.5 gives it ledger row **L-6** with its own experiment
+and decision point, and §11.4 requests the RESEARCH addition. Recorded rather than left implicit.
+
+### 11.3 Binding decisions honored, and the resolved condition
+
+**RESEARCH.md `D-1`…`D-10` (`docs/research/v1/RESEARCH.md:95`–`:104`).** No decision in §11.1
+contradicts any of them, and three are load-bearing here:
+
+- **`D-9` — compatibility-profile GL baseline, no core-profile rewrite.** Every tier in this phase is
+  an entry point available *within* compat, which is precisely §6.1's framing: *"LWJGL3's value =
+  modern entry points/extensions/tooling within compat"* (`docs/research/v1/RESEARCH.md:758`). A5's
+  debug-context tier is the only row that could touch context flags and it is gated on OQ-3's
+  sanction, with *"preserves legacy fixed-function behavior"* already among Phase 7's own criteria.
+- **`D-6` — the engine-core/loader-glue seam.** The whole mechanism of this phase lives in
+  `mod.glue`; `:engine` receives only immutable values with no GL type, so Phase 1's C-1 holds. This
+  is also why a Kirino backend swap (OQ-20) would take Phase 14 with it rather than being blocked by
+  it.
+- **`D-2` — shaders only; the written non-goals list.** `D-P14-16` makes the first non-goal a
+  property of A7's instrument rather than a rule, and §4.6.2 step 4 makes vanilla's absolute numbers
+  inexpressible in A6's output.
+
+**The already-resolved condition, recorded with provenance and not re-litigated.** The commissioning
+brief directs that A3's conditional status is settled and must not be reopened
+(`docs/phase14/briefs/PHASE_14_BUILD_BRIEF.md:87`–`:99`). Phase 6 recorded **`D-P6-1`: select
+synchronous CPU `centerDepthSmooth`; return empty macro contribution**
+(`docs/phase6/v1/PHASE_6_DOC.md:1678`), an explicit contract-visible **rejection** of PD §6.3's
+GPU-side smoothing (`docs/phase6/v1/PHASE_6_DOC.md:468`), with the decision text stating in terms
+*"Phase 14's PBO/fence item is **not obviated** and remains the sole async-readback modernization
+ledger entry"* (`docs/phase6/v1/PHASE_6_DOC.md:966`–`:967`). All three citations were verified at the
+line by this session. **Consequence: A3 stands in full** — the one-frame latency on an
+already-smoothed value, the synchronous path retained as fallback and configuration, and the
+imperceptibility verification specified in §4.3.6. Full statement in §3.4. No `D-P14-k` reopens it;
+`D-P14-8` builds on it.
+
+### 11.4 Requested upstream changes
+
+This document may not modify RESEARCH.md, any `DESIGN.md` revision, `PINTONIUM_DESIGN.md`,
+`OCULUS_DESIGN.md`, or another phase's doc (`docs/design/v3/DESIGN.md:285`–`:290`). All of the
+following are proposals.
+
+**To `docs/design/v3/DESIGN.md` (or its successor candidate):**
+
+1. **Resolve the Wave 5 / hard-dependency contradiction (C-4).** Either add an explicit
+   soft-dependency clause to Phase 14's §G5.1 row (`:626`) bounding it to Phase 13's texture-estate
+   lifecycle, in the shape §G5.3 item 3 already uses for Phase 12 (`:668`–`:671`), or move P14 out of
+   Wave 5 (`:647`) into a wave that follows P13's verification. The parallel-wave line and the
+   literal-dependency line should not both stand unqualified.
+2. **Correct Phase 14's context budget.** *"≈ 34k tokens mandatory reading"* (`:2586`) is
+   substantially wrong: the three *existing* dependency documents alone are ~130k tokens (2 511 +
+   1 829 + 2 486 lines), before Part I (~50k), RESEARCH.md's seven required sections, PD §15/§6.3, or
+   the absent Phase 13 doc. The realistic figure is ≥200k. A budget this far off invites a session to
+   under-read its dependencies.
+3. **Qualify the impl gate's third condition** (`:2583`–`:2584`). *"Pack-switch stall measurably
+   reduced vs the synchronous baseline"* is achievable only through the async compile row, which is
+   OQ-15-gated and therefore may legitimately not exist at v0.5. Requested: state the condition as
+   contingent on OQ-15's outcome, so a passing v0.5 is not blocked by an open OQ the design itself
+   left open. §9.2 records how this document reads the gate in the meantime.
+4. **Note the `DebugService` gate in §G4.5.** §G4.5 reserves *"KHR_debug labels/groups in dev"*
+   (`:587`–`:589`) without stating whether a debug context is required. Adding "no debug context
+   required" would prevent the C-3 class of divergence recurring.
+
+**To `docs/research/v1/RESEARCH.md`:**
+
+5. **Add a §6.2 row for DSA (C-6).** Direct state access is a REV1-added design dependency with real
+   deployed evidence and no row in the source of truth. Proposed row: *"GL 4.5 / `ARB_direct_state_access`
+   object creation and editing | bind-to-edit round-trips | behavior-invisible; tiered with a
+   bind-to-edit fallback `[V:observed — Pintonium]`"*. §7.5's L-6 is its ledger entry meanwhile.
+6. **OQ-22's status column** is where §7.5's thirteen row outcomes are written back by the
+   implementation effort per §G4.4 — noted here so the write-back is not lost.
+
+**To `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md`:**
+
+7. **Refine §15's PBO bullet.** *"No PBO/async readback anywhere"* (`:748`) is correct about
+   readback but reads as though the tree has no asynchronous GPU-transfer machinery at all. It does:
+   `glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0)` at
+   `reference-src/pintonium-9c2fcc1/common/src/main/java/org/embeddedt/embeddium/impl/gl/device/GLRenderDevice.java:233`,
+   with a non-blocking `glGetSynci(GL_SYNC_STATUS)` poll at
+   `reference-src/pintonium-9c2fcc1/common/src/main/java/org/embeddedt/embeddium/impl/gl/sync/GlFence.java:23`,
+   in the chunk device on the 1.12.2 compat context. That is direct evidence that **fence sync
+   works** on this platform — the availability half of Phase 14's async-readback claim — and it is
+   currently invisible to a reader of §15.
+
+**To `docs/phase5/v1/PHASE_5_DOC.md` (its own fix-up session, not this document):**
+
+8. **Correct the stale closing trailer.** It still says Phase 5 is *"**not verified** pending a fresh
+   whole-document review"*. Reviews 37 and 38 were exactly those fresh whole-document rounds and both
+   returned literal PASS with `Interface changed: no`
+   (`docs/phase5/reviews/PHASE_5_REVIEW_38.md:43`–`:45`). Per §G1.3 the review file governs
+   (`docs/design/v3/DESIGN.md:357`–`:359`), so **Phase 5 is verified** and the trailer misleads every
+   dependent that reads it.
+9. **Optional simplification** — hand-off H-P14→P5-1, §11.5.
+
+**To `docs/phase6/v1/PHASE_6_DOC.md`:**
+
+10. **Correct the stale §0.6 status.** It still says *"the current bytes remain **not verified** until
+    a fresh review returns literal PASS"* (`docs/phase6/v1/PHASE_6_DOC.md:138`–`:141`). Review 24
+    returned exactly that: PASS, `blocking=0; corrections=0; notes=0`, `Interface changed: no`
+    (`docs/phase6/reviews/PHASE_6_REVIEW_24.md:43`–`:45`).
+11. **R-P14→P6-1** (§5.3) — contract the center-depth sample's age. The one request blocking A3.
+
+**To `docs/phase7/v1/PHASE_7_DOC.md` (naturally handled at round 33):**
+
+12. **R-P14→P7-1** and **R-P14→P7-2** (§5.4), and the §1.2-vs-§5 timing-seam gap (finding C-5).
+
+**To `docs/phase1/v14/PHASE_1_DOC.md`:**
+
+13. **R-P14→P1-1** through **R-P14→P1-4** (§5.6). R-P14→P1-1 is the one whose refusal makes a scope
+    row undeliverable.
+
+**To `docs/MOVES.md`:** no change requested by this phase; a Phase 14 row is added by whoever records
+this document's adoption, per its own rules.
+
+### 11.5 Items handed to later phases, to G8, and to the implementation effort
+
+| ID | Hand-off | To |
+|---|---|---|
+| **H-P14→P5-1** | Once `SamplerTier != NONE`, `generateShadowMipmaps` need not mutate a texture's min filter: `glGenerateMipmap` does not require a mipmap min filter, and the sampling filter now lives in the sampler. `MIPMAP_FILTER_RESTORE_FAILURE`, its `Neutralized` result variant and its containment path (`docs/phase5/v1/PHASE_5_DOC.md:1728`–`:1739`) would become unreachable in that mode. **Phase 5 owns that algorithm; this is offered, not applied**, and the `NONE` fallback leaves Phase 5's path exactly as written | Phase 5 |
+| **H-P14→P13-1** | §5.5's two requests are the input list for Phase 13's own design work, and Phase 14's §5.5 should be reconciled against Phase 13's actual §5 at a §G1.3 fix-up | Phase 13 |
+| **H-P14→ALL-1** | Any allocation site found in a frame path by §4.6.2 is a **finding against the owning phase**, routed by package attribution (`engine.buffers` → 5, `engine.uniforms` → 6, `engine.frame` → 7, …). Phase 14 measures; it does not edit another phase's code | the owning phase |
+| **H-P14→ALL-2** | Any redundant-state candidate found by §4.7.2 in a sibling's call sequence is likewise that phase's, after passing §4.6.3's four-part test | the owning phase |
+| **H-P14→G8-1** | PD §15's evidence that compute, SSBOs, image load-store and indirect dispatch all run pack-exercised on the 1.12.2 compat context (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:741`–`:744`) is carried as ledger row **L-12** — *"the strongest available evidence that G8/S2 is feasible on Cleanroom"*. Not a Phase 14 work item | G8/S2 (`docs/design/v3/DESIGN.md:788`–`:793`) |
+| **H-P14→G8-2** | The `GlModernizationPlan` shape is deliberately extensible: G8/S2's compute and SSBO capability gating is the same kind of init-time, profile-derived, per-row tier decision and should reuse it rather than inventing a parallel mechanism | G8/S2 |
+| **H-P14→IMPL-1** | `docs/decisions/OQ-15_ASYNC_COMPILE.md` is owed by the spike, in the shape Phase 7 uses for OQ-3 (`docs/phase7/v1/PHASE_7_DOC.md:2312`–`:2313`), and its per-family verdict table becomes `D-P14-12`'s shipped allowlist data | implementation effort |
+| **H-P14→IMPL-2** | §7.5's thirteen ledger outcomes are written back into RESEARCH.md §11's OQ-22 status column, with an addendum note added to this document, per §G4.4 (`docs/design/v3/DESIGN.md:578`–`:580`) | implementation effort |
+| **H-P14→P2-1** | Scene `S-CD-1` — a scripted near↔far camera path, 300 frames, for §4.3.6 family F3 — is proposed to Phase 2 as a scene. Phase 14 authors no scene | Phase 2 |
+| **H-P14→REVIEW-1** | The final integration review (§G5.3 item 4, `docs/design/v3/DESIGN.md:672`–`:684`) should check consumed-vs-exposed symmetry on the P5→P14, P6→P14, P7→P14 and P13→P14 edges, and specifically whether §5.5's spec-derived Phase 13 requests were adopted or orphaned | integration review |
+
+### 11.6 Known gaps in this document
+
+Stated so a verify session does not have to discover them:
+
+1. **`TextureParameters` is unspecified upstream**, so §4.1.2's split of sampler state from texture
+   state is this document's stated assumption rather than a derivation. R-P14→P1-3;
+   `SamplerStateSplitTest` is designed to fail rather than pass silently if the assumption is wrong.
+2. **Phase 13's interfaces do not exist**, so §5.5's two requests are written against the v3
+   specification. Every A1 and A4 claim that depends on Phase 13 is scoped accordingly, and the
+   partial modes (§6's mixed-sampler row; §4.4.5's compile-only mode) are designed rather than
+   assumed away.
+3. **Phase 7's §5 is provisional** (§0.3 item 1). Nothing here depends on the *detail* of a Phase 7
+   row, only on its existence, so a round-33 change should cost a fix-up rather than a rebuild — but
+   that is a prediction, not a guarantee.
+4. **A2's driver-behavior claim is untestable headlessly.** No test we can write proves a given
+   driver's DSA path is correct; §9.2's per-tier T1 run and the runtime `FORCE_OFF` are the whole
+   mitigation, and that is stated rather than implied.
+5. **§10.1's K3 threshold (20% of the synchronous long-frame count) is a target, not a derived
+   constant.** Unlike §4.3.6's criterion C2, which is analytic, K3 is a judgement. The partial-pass
+   provision exists so the number does not silently become a rule.
+6. **No RESEARCH.md appendix was read** (§0.2). §3's map is built from §4.8, §6.2, §6.3 and the
+   dependency docs' own conformance rows. If a verify session finds an appendix row this phase can
+   perturb that §3 does not carry, that is a real omission and not a scoping decision.
+
+---
+
+## 12. Implementation checklist
+
+Ordered and independently actionable, each with a milestone tag and a test hook. The order is a
+dependency order, not a preference: the plan value precedes every consumer; A5's groups precede A7's
+audit because they are its segmentation keys; the synchronous fallbacks precede the paths they back.
+
+| # | Work item | Milestone | Test hook |
+|---:|---|---|---|
+| 1 | Resolve R-P14→P1-2 (package grant) before any file is placed | v0.5 | Phase 1's seam-enforcement tests (C-1…C-4) |
+| 2 | Add the pure value types to `engine.gl`: `SamplerKey`, `SamplerTier`, `DsaTier`, `DebugTier`, `AsyncCompileTier`, `AsyncReadbackTier`, `GlModernizationPolicy`, `GlModernizationPlan` | v0.5 | compile-time C-1 check: zero LWJGL/Minecraft imports |
+| 3 | Implement `GlModernizationPlan.derive` as a pure function of `GLCapabilityProfile` + policy, with a rationale string per row | v0.5 | `ModernizationPlanDerivationTest` over ≥7 profile fixtures |
+| 4 | Wire `GlModernizationPolicy` into `mod.core`'s config with five `AUTO`-defaulted rows; log the derived plan once at bring-up | v0.5 | manual: the log line names every tier and why |
+| 5 | Implement `DsaStrategy` `BIND_TO_EDIT` first — the existing behavior, extracted behind the interface with no functional change | v0.5 | `BindingNeutralityTest`; the recorded log must be unchanged from before extraction |
+| 6 | Add `DsaStrategy` `ARB` and `CORE_45`; install by tier at bring-up | v0.5 | `BindingNeutralityTest` across all three tiers on one call script |
+| 7 | Resolve R-P14→P1-3 (`TextureParameters` fields); implement `SamplerKey.of` and the sampler/texture state split | v0.5 | `SamplerKeyDerivationTest`, `SamplerStateSplitTest` |
+| 8 | Implement `SamplerCache`: interning, `TextureHandle → SamplerKey`, per-generation lifecycle; register as a Phase 5 `BufferResizeConsumer` | v0.5 | `SamplerCacheLifecycleTest` |
+| 9 | Bind the interned sampler from `TextureService.bindToUnit` with a per-unit redundant-bind cache; add the `MULTI_BIND` batched path | v0.5 | `FixedUnitDisciplineTest`; recorded-log bind-count assertions |
+| 10 | **Implement the sampler clear on every vanilla-return path, in the backend's own `finally`** — ships **with** item 9, never after it | v0.5 | `SamplerLeakTest` over all exit kinds and abort reasons |
+| 11 | Implement the whole-estate fallback to `SamplerTier.NONE` on any sampler GL error | v0.5 | scripted `ScriptedResponses.glError` demotion tests (§8.2) |
+| 12 | Resolve R-P14→P1-1 (`isActive()` gate); implement `KhrDebugBackend` labels with `GL_MAX_LABEL_LENGTH` clamping | v0.5 | `DebugLabelCoverageTest` |
+| 13 | Implement balance-safe groups: depth counter, no-op underflow with one diagnostic, overflow virtual depth, frame-boundary drain | v0.5 | `DebugGroupBalanceTest` across `NORMAL`/`EARLY_RETURN`/`THROWN` |
+| 14 | Implement the no-op `DebugTier.NONE` backend and make it the default | v0.5 | `DebugInactiveIsFreeTest` |
+| 15 | Land R-P14→P7-2 part 1 (group call sites in Phase 7) | v0.5 | recorded-log frame/pass group nesting |
+| 16 | Add `GL_DEBUG_OUTPUT` + `GL_DEBUG_OUTPUT_SYNCHRONOUS` + `glDebugMessageCallback` routing to `schmaloogium.gl` | v0.5 | manual: one injected GL error appears with a usable stack |
+| 17 | Run ledger row **L-5**: one RenderDoc/Nsight capture with `glLabels` set | v0.5 | groups and labels visible; L-5 closes |
+| 18 | Implement the `CompileExecutor` interface and `InlineCompileExecutor`; route Phase 4/7's compile through it with no behavior change | v0.5 | `CompileExecutorContractTest`; recorded log unchanged |
+| 19 | Implement `CenterDepthReadback` in its `SYNCHRONOUS` form over `FramebufferService.readDepthPixel`, installed at Phase 7 composition step 5 | v0.5 | `CenterDepthRingTest` in synchronous mode; Phase 6's `CenterDepthDecisionTest` still green |
+| 20 | Land R-P14→P6-1 (contract the sample age) | v0.5 | Phase 6's fresh verify round |
+| 21 | Implement the PBO+fence ring: non-blocking poll, 4-byte map, ring discard on identity change, resize-consumer discard | v0.5 | `CenterDepthRingTest`, `CenterDepthInvalidationTest` |
+| 22 | Implement the trace-comparison judgement (criteria C1–C4) as a headless analysis over two recorded traces | v0.5 | `CenterDepthTraceComparisonTest` |
+| 23 | Propose scene `S-CD-1` to Phase 2; run §4.3.6's comparison across families F1–F4 | v0.5 | criteria C1–C4; **L-3 closes and decides A3's default** |
+| 24 | Implement §4.7.2's audit classifier and its three validity gates over a `GLCallLog` | v0.5 | `AuditClassifierTest`, `AuditScopeFilterTest` |
+| 25 | Run the audit **before and after** item 9 on one classic pack | v0.5 | **L-2 closes**; §4.7.3's predictions confirmed or refuted |
+| 26 | Run §4.6.2's allocation profile on the Phase 2 scenes across the three configurations | v0.5 | **L-8 closes**; violations become H-P14→ALL-1 hand-offs |
+| 27 | Run **L-6**'s per-tier T1 comparison; **L-1**, **L-7**, **L-9** spot-checks | v0.5 | ledger rows close; L-9 decides the FFM question |
+| 28 | Execute S-22-1 and S-22-4: freeze the row set, then write every outcome back to RESEARCH.md §11 and add the addendum note | v0.5 | §9.2 condition 4 |
+| 29 | Verify §9.2's gate: full classic matrix at T3 jointly with Phase 13; no T1 regression under any default-enabled tier | v0.5 | Phase 2 `RUN-T1-REGRESS`, `RUN-T0`, T3 runs |
+| 30 | Land R-P14→P7-1 (resumable pipeline-build transaction) | post-v0.5 | Phase 7's fresh verify round |
+| 31 | Implement `GlWorkerContext` and `WorkerCompileExecutor` per §4.4.2, with the six safety rules and the watchdog | post-v0.5 | `CompileFallbackLadderTest`, `DriverPolicyTest` |
+| 32 | Run **OQ-15**'s spike (§10.1) on ≥2 driver families; write `docs/decisions/OQ-15_ASYNC_COMPILE.md` | post-v0.5 | criteria K1–K5; **L-4 closes**; the verdict table becomes the allowlist |
+| 33 | Land R-P14→P13-1; add the async `_n`/`_s` atlas upload to the worker | post-v0.5 | atlas pixel equality vs a synchronous upload |
+| 34 | Land R-P14→P1-4(b); add `-Dschmaloogium.debug.glContext` and the `GLFW_OPENGL_DEBUG_CONTEXT` request, gated on OQ-3's outcome | post-v0.5 | manual: debug-context message volume vs the non-debug tier |
+| 35 | Reconcile §5.5 against Phase 13's verified §5 through a §G1.3 fix-up; likewise §5.4 against Phase 7 round 33 | as they land | fresh verify rounds on the affected docs |
+
+Items 1–29 constitute v0.5. Items 30–34 are the quality-of-life half of *"v0.5 + quality-of-life"*
+(`docs/design/v3/DESIGN.md:2516`) and are individually droppable: each is gated on a request or a
+spike, and each fails closed to a path that already ships.
+
+---
+
+*End of `PHASE_14_DOC.md`. This is the §G1.1 build-session deliverable: v1, initial build against
+`docs/design/v3/DESIGN.md`, **not yet verified**. A §G1.2 verify session owes
+`docs/phase14/reviews/PHASE_14_REVIEW_1.md`. Two disclosed, maintainer-authorized departures from
+§G5.3's gating invariant are recorded in §0.3 and §11.2 — Phase 7 consumed while unverified, and
+Phase 13 absent as a contract — and the six findings C-1 … C-6 in §11.2 are this session's reported
+input contradictions, none silently resolved.*

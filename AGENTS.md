@@ -125,27 +125,43 @@ verify session is owed before the phase closes.
 
 ### Running §G1.2/§G1.3
 
-Verify and fix-up are **hand-run fresh agent sessions** — the former mechanized loop is retired
-(2026-08-08). One session per role, following `DESIGN.md` §G1.2/§G1.3:
+Verify and fix-up run through the **mechanized verification loop on omp** (re-mechanized
+2026-08-08, after a same-day retirement of the Codex implementation): `scripts/verify` from the
+repo root, operator runbook `docs/tooling/OMP_VERIFICATION.md`, operator skill `$verify-loop`.
+The loop executes §G1.2/§G1.3 as one fresh, isolated omp SDK session per role under target
+manifests (`verification/targets/<id>.json`), with the adversarial stage decomposition (Attack →
+Refute → optional Steelman → Gate → Adjudicate → Fix-up), the fail-closed citation Gate, and
+post-stage write enforcement as engine machinery — not design text:
 
-1. **Verify session** — one fresh session, blind to the author's context, reads the build
-   session's mandatory inputs then attacks the doc (doc gate, conformance map, interface honesty,
-   scope discipline, template completeness, binding decisions — §G1.2's priority order). It writes
-   exactly one review file `docs/phase<N>/reviews/PHASE_<N>_REVIEW_<R>.md` (R = highest in that
-   directory + 1) with findings + exactly one verdict, then stops without fixing anything.
-2. **Fix-up session** — on PASS-WITH-CORRECTIONS, a fresh writing session applies the corrections,
-   records each under `## Resolutions` in the review, and adds a `§0.<K>` addendum to the doc.
-   On FAIL, rerun the build session with the review added to its Required inputs.
+1. **Verify round** — `scripts/verify --target phase-<N> --preset lean --review-only
+   --max-rounds 1` writes exactly one review file
+   `docs/phase<N>/reviews/PHASE_<N>_REVIEW_<R>.md` (R discovered from the directory, never
+   guessed) with findings + exactly one verdict, then stops without fixing anything. Independent
+   reader sessions never see prior reviews; the adjudicator reads them last; every citation is
+   re-resolved byte-for-byte before adjudication.
+2. **Fix-up continuation** — on PASS-WITH-CORRECTIONS, `scripts/verify --target phase-<N>
+   --fixup-review latest` applies the corrections, appends exactly one `## Resolutions` to the
+   review, and adds a `§0.<K>` addendum to the doc per the manifest's fix-up instructions.
+   On FAIL, rerun the build session with the review added to its Required inputs — the loop
+   never auto-continues a FAIL.
 
-The evidence rules bind these sessions exactly as they bound the loop: repo-relative citations
-quoted **at the line**, the forbidden-sources pattern (any `chatlogs/` below `docs/`, any root
-`*.txt`), one verdict, single round per review directory, and literal-PASS means verdict PASS plus
-zero blocking and zero corrections. Do not recreate the loop's internal stage decomposition (Attack
-→ Refute → Steelman → Gate → Adjudicate) — that was engine machinery, not design text.
+A run reports live: stage entry/exit, every role session's start and finish with its duration, and
+a heartbeat naming what is still in flight — on stderr, and in a timestamped `.log` beside the run
+journal. Start it as a supervised process (`hub start` + `hub logs follow=true`) or tail that log;
+a captured shell call shows nothing until the run ends. See `docs/tooling/OMP_VERIFICATION.md`
+§"Watching a run".
+
+**Hand-run fallback.** If the loop itself is unavailable (no Bun/SDK, no provider credentials),
+§G1.2/§G1.3 may still be run by hand as fresh agent sessions — one session per role, blind to the
+author's context — following the design text's reading list and attack checks directly. The
+evidence rules bind hand-run sessions and loop sessions equally: repo-relative citations quoted
+**at the line**, the forbidden-sources pattern (any `chatlogs/` below `docs/`, any root `*.txt`),
+one verdict per review, single round per review directory, and literal-PASS means verdict PASS
+plus zero blocking and zero corrections.
 
 The provider-era wording in the immutable governing design revisions is interpreted through
 `docs/tooling/CODEX_MIGRATION_OVERLAY.md`. It preserves their cited bytes and coordinates while
-superseding the retired execution surface — including the retired verification loop.
+superseding the retired execution surface; the omp loop is the current surface.
 
 ## Rules binding every session here
 

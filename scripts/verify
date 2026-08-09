@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+set -eu
+
+repo_root=$(git rev-parse --show-toplevel)
+# Live runs import the omp SDK, whose entry point is TypeScript — that needs
+# Bun. Dry runs and resolution-only paths also work under plain Node.
+if command -v bun >/dev/null 2>&1; then
+  exec bun "$repo_root/.agents/skills/verify-loop/scripts/verify.mjs" "$@"
+fi
+exec node "$repo_root/.agents/skills/verify-loop/scripts/verify.mjs" "$@"

@@ -308,6 +308,12 @@ alpha/blend-lock prose. §4.12's bare "§4.13" is qualified as Phase 8's §4.13 
 eight hook-health rows live. All four are citation and wording repairs outside §5; this round does
 not change the interface region, and the fresh verification owed by §0.35 remains outstanding.
 
+### 0.37 Round-33 fix-up
+
+Round 33 corrects the H-TERRAIN-02 v0.5 depth-copy gate, aligns Phase 3 ID-mapping consumption to
+schema-v4, re-points the Phase 3 §5.1 binding citation, and repairs the §3.5 Phase 3 flag and
+precipitation provenance coordinates. The §5 interface region changed and requires fresh verification.
+
 ---
 
 ## 1. Scope & boundaries
@@ -596,18 +602,18 @@ high-risk and are front-loaded in v0.1 assembly.
 
 | Phase 3 field | Exact owner behavior | Provenance |
 |---|---|---|
-| `clouds` | resolve `DEFAULT/FAST/FANCY/OFF` once per publication; a corresponding explicit video setting wins; OFF cancels, FAST/FANCY is returned to vanilla's cloud-mode query | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:688` and precedence at `docs/research/v1/RESEARCH.md:1442`–`:1448`; runtime mapping `[D-P7-11]` |
-| `backFaceSolid/CutoutMipped/Cutout/Translucent` | TRUE temporarily disables culling for exactly that terrain-layer scope; FALSE/DEFAULT preserves vanilla state; scope exit restores | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:697`–`:700`; runtime mapping `[D-P7-11]` |
-| `underwaterOverlay` | FALSE cancels only the WATER `RenderBlockOverlayEvent`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:693`; runtime mapping `[D-P7-11]` |
-| `sun`, `moon` | FALSE suppresses only the corresponding textured sky draw; TRUE/DEFAULT preserves vanilla | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:694`–`:695`; runtime mapping `[D-P7-11]` |
-| `vignette` | FALSE cancels only `RenderGameOverlayEvent.Pre(VIGNETTE)`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:696`; runtime mapping `[D-P7-11]` |
-| `rainDepth` | FALSE disables depth test only for the weather scope and restores it; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:701`; runtime mapping `[D-P7-11]` |
-| `beaconBeamDepth` | FALSE disables depth test only for beacon/crystal beam scopes and restores it; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:702`; runtime mapping `[D-P7-11]` |
-| `frustumCulling` | FALSE makes only the catalogued world-render frustum queries return visible; TRUE/DEFAULT delegates unchanged | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:704`; runtime mapping `[D-P7-11]` |
+| `clouds` | resolve `DEFAULT/FAST/FANCY/OFF` once per publication; a corresponding explicit video setting wins; OFF cancels, FAST/FANCY is returned to vanilla's cloud-mode query | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:697` and precedence at `docs/research/v1/RESEARCH.md:1442`–`:1448`; runtime mapping `[D-P7-11]` |
+| `backFaceSolid/CutoutMipped/Cutout/Translucent` | TRUE temporarily disables culling for exactly that terrain-layer scope; FALSE/DEFAULT preserves vanilla state; scope exit restores | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:706`–`:709`; runtime mapping `[D-P7-11]` |
+| `underwaterOverlay` | FALSE cancels only the WATER `RenderBlockOverlayEvent`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:702`; runtime mapping `[D-P7-11]` |
+| `sun`, `moon` | FALSE suppresses only the corresponding textured sky draw; TRUE/DEFAULT preserves vanilla | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:703`–`:704`; runtime mapping `[D-P7-11]` |
+| `vignette` | FALSE cancels only `RenderGameOverlayEvent.Pre(VIGNETTE)`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:705`; runtime mapping `[D-P7-11]` |
+| `rainDepth` | FALSE disables depth test only for the weather scope and restores it; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:710`; runtime mapping `[D-P7-11]` |
+| `beaconBeamDepth` | FALSE disables depth test only for beacon/crystal beam scopes and restores it; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:711`; runtime mapping `[D-P7-11]` |
+| `frustumCulling` | FALSE makes only the catalogued world-render frustum queries return visible; TRUE/DEFAULT delegates unchanged | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:713`; runtime mapping `[D-P7-11]` |
 
 All are tri-state-preserving; unset never silently becomes TRUE. The precipitation helper retains the
 Phase 3 handoff exactly: none for `PPT_NONE`, rain at temperature `>= 0.15`, snow below
-(`docs/phase3/v1/PHASE_3_DOC.md:747`).
+(`docs/phase3/v1/PHASE_3_DOC.md:757`).
 
 ### 3.6 Input contradictions and binding rulings
 
@@ -1138,7 +1144,7 @@ at H-FRAME-01, before H-FRAME-03 can resize or clear, preserving the Phase 6 ord
 | H-SKY-02 `RenderGlobal` | same method, REDIRECT `World.func_72826_c(F)F` | call original, invoke the §5.1 `Celestial` update at this rotation moment, return the angle unchanged | `OBSERVER`; concrete celestial-rotation sub-site; **no working reference** |
 | H-SKY-03 `RenderGlobal` | same method, slice-bounded redirects of the sun and moon `Tessellator.func_78381_a()V` draws | enter `gbuffers_skytextured`, honor `sun`/`moon`, call or suppress draw, restore sky-basic | `FEATURE`; ordinals must be fixed by OQ-4; **no working reference** |
 | H-TERRAIN-01 `RenderGlobal` | `func_174977_a(BlockRenderLayer,D,I,Entity)I` HEAD/RETURN, only for SOLID/CUTOUT_MIPPED/CUTOUT | while an authenticated Phase 8 execution is active, bypass main-snapshot policy and preserve the vanilla call; otherwise select `gbuffers_terrain_solid`, `gbuffers_terrain_cutout_mip`, or `gbuffers_terrain_cutout` and apply scoped `backFace.*` | `CORE`; actual world-loop overload at `reference-src/cleanroom-0.6.6-alpha/patches/minecraft/net/minecraft/client/renderer/EntityRenderer.java.patch:200`–`:206` |
-| H-TERRAIN-02 `RenderGlobal` | the same exact method HEAD/RETURN, only for `TRANSLUCENT` | while authenticated shadow execution is active, bypass main copy/deferred/water policy; otherwise at HEAD perform PRE_TRANSLUCENT copy/virtual/deferred sequence then enter `gbuffers_water`, and at RETURN close/restore | `CORE`; Pintonium row 5; copy remains disabled until Phase 5 order is corrected |
+| H-TERRAIN-02 `RenderGlobal` | the same exact method HEAD/RETURN, only for `TRANSLUCENT` | while authenticated shadow execution is active, bypass main copy/deferred/water policy; otherwise at HEAD perform PRE_TRANSLUCENT copy/virtual/deferred sequence then enter `gbuffers_water`, and at RETURN close/restore | `CORE`; Pintonium row 5; copy is enabled at v0.5 under Phase 5's granted `PRE_WEATHER -> PRE_TRANSLUCENT` order |
 | H-DAMAGE-01 `RenderGlobal` | `func_174981_a(Tessellator,BufferBuilder,Entity,F)V` HEAD/RETURN | enter/exit `gbuffers_damagedblock` | `FEATURE`; MCP-validated supporting hook |
 | H-LINE-01 `RenderGlobal` | `func_72731_b(EntityPlayer,RayTraceResult,I,F)V` HEAD/RETURN | enter/exit `gbuffers_basic` | `FEATURE`; no event is used because `DrawBlockHighlightEvent` has no post scope |
 
@@ -1968,14 +1974,14 @@ The consumed Phase 2 surfaces are at `docs/phase2/v1/PHASE_2_DOC.md:1597`–`:16
 |---|---|
 | `PackFrontEnd`, discovery/load requests/results | bootstrap, selection, reload |
 | `PackConfiguration`, `PackIdentity`, `DimensionConfiguration`, fingerprint/version discipline | sole configuration and per-dimension cache truth |
-| schema-v3 `IdMappingInput` and nested schema/version discipline | handed unchanged into the Phase 9 candidate request; Phase 7 validates equality but never parses or resolves a rule |
+| schema-v4 `IdMappingInput` and nested schema/version discipline | handed unchanged into the Phase 9 candidate request; Phase 7 validates equality but never parses or resolves a rule |
 | `ProgramStateModel`, `ProgramState`, `EvaluatedProgramStates` | typed engine flags and evaluated property state; no properties reparse |
 | `ResourceRequirements` | Phase 4/5/6 build inputs and Phase 7 world constants/routing |
 | `InternalPackSource` / `InternalPackSnapshot` | Phase 7 supplies the built-in bytes through the Phase 3-owned protocol |
 | `centerDepthMacroContributor` slot | pass Phase 6's empty contribution into materialization |
 
 The consumed Phase 3 exposure is binding at
-`docs/phase3/v1/PHASE_3_DOC.md:1403`–`:1418` and is freshly verified by
+`docs/phase3/v1/PHASE_3_DOC.md:1429`–`:1444` and is freshly verified by
 `docs/phase3/reviews/PHASE_3_REVIEW_22.md`.
 
 #### Phase 4
@@ -2034,7 +2040,7 @@ One `PipelineBuildTransaction` owns all unaccepted candidates. It executes on th
 only the pure Phase 9 build in step 4 may complete off-thread after glue freezes all inputs, and its
 result rejoins the same transaction before publication:
 
-1. load one immutable Phase 3 configuration/dimension view and validate its schema-v3 ID input;
+1. load one immutable Phase 3 configuration/dimension view and validate its schema-v4 ID input;
 2. project exactly one typed `ShadowPolicy` from that existing view, without reparsing or reopening
    pack resources, and call `ShadowPlanFactory.plan` before constructing the Phase 6 platform
    provider;

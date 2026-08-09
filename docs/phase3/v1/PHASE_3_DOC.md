@@ -46,8 +46,9 @@ Gate-dropped material is used or reconstructed here.
 
 `docs/phase1/v14/PHASE_1_DOC.md` is the sole dependency contract. This design consumes only what
 its §5 exposes: the three-module layout and seam constraints, `GLCapabilityProfile`, the fixed
-logging and loader-neutral diagnostic interfaces, the debug-flag namespace, the SPDX/third-party
-notice mechanism, and the `:conformance` extension point. A missing build-contract item is
+logging and loader-neutral diagnostic interfaces, the debug-flag namespace, and the SPDX/third-party
+notice mechanism. Phase 3 emits its manifests and fixtures to Phase 2's runnable-before-renderer
+harness; it does not consume Phase 1's `:conformance` extension point. A missing build-contract item is
 requested in §5.4 rather than assumed.
 
 ### 0.3 Legal and provenance posture
@@ -251,6 +252,14 @@ paired with the published source map.
 
 The closing verification ledger now records the Round 32-created §0.34 surface and this fix-up.
 
+### 0.36 Round 36 fix-up
+
+Round 36 closes the clear-color, gdepth, routing, texture-key, public-binding, and Phase 2 hand-off
+corrections. The resource algebra now distinguishes clear-color absence and all-used routing, gdepth
+has mandatory RGBA32F precedence, and filter/wrap key suffixes are stripped without sidecar conflation.
+Phase 3 emits the Phase 2 harness hand-off rather than consuming `:conformance`; the current schema is
+4. The version directory remains `v1` pending a fresh whole-document review.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 3 owns
@@ -325,11 +334,11 @@ buffer, evaluate a custom expression, or load texture pixels.
 
 ### 2.2 Public shape
 
-Illustrative signatures name the contracts; implementations remain private under `.internal`.
+The declarations below are the canonical public shapes; implementations remain private under `.internal`.
 
 ```java
 public interface PackFrontEnd {
-    int CURRENT_SCHEMA_VERSION = 3;
+    int CURRENT_SCHEMA_VERSION = 4;
     PackDiscoveryResult discover(PackDiscoveryRequest request);
     PackLoadResult load(PackLoadRequest request);
 }
@@ -623,7 +632,7 @@ numeric `#line` file identifier it contains. No byte encoding is part of this pu
 that payload has no `materialization` field. It hashes the payload's deterministic canonical
 encoding with the other §4.10 materialization inputs, then embeds the completed result in both
 `MaterializedSource.fingerprint()` and `DeclaredUniformCatalog.materialization`, which are exactly
-equal. The signatures are illustrative; the binding data contract is the closed type algebra,
+equal. The declarations above are canonical; the binding data contract is the closed type algebra,
 immutable declaration order, source attribution, canonical payload exclusion, and fingerprint
 equality. Widths, matrix dimensions, array extents, sampler combinations, and recursively frozen
 struct fields are validated against the source's effective GLSL version. `ArrayExtent` is either a
@@ -737,7 +746,8 @@ No Appendix F item is left to an implicit “miscellaneous” parser.
 | `texture.<gbuffers\|deferred\|composite>.<sampler>[.0-9]` pack path | `CustomTextureSpec.PackPath`; duplicate discriminator is separate from sampler and never discarded | Phase 13 | App F.5; `texture_packPathAndDuplicateSuffix` |
 | same key, `minecraft:` asset/live texture | `CustomTextureSpec.MinecraftResource`; keeps `_n`/`_s` and dynamic/atlas identity as text | Phase 13 | App F.5; `texture_minecraftDynamicAndCompanionSuffix` |
 | same key, raw form | `CustomTextureSpec.Raw` with type, internal format, exact dimensions, pixel format/type; malformed arity or an unknown/incompatible format token warns/ignores that line | Phase 13 | App F.5; `texture_rawAllFourTypesAndArity`, `texture_rawFormatDomainsAcceptedRejected`, `texture_rawIntegerTransferCompatibility` |
-| same texture's `.mcmeta` blur/clamp | `TextureSidecarRef` is retained without loading it; filter/wrap information is not stripped | Phase 13 | App F.5; `texture_sidecarReferencePreserved` |
+| recognized terminal filter/wrap suffix on a `texture.<stage>.<sampler>` key | strip the suffix before key construction and ignore its requested setting; retain only the base sampler and optional numeric discriminator, never a filter/wrap field | Phase 13 | REV1 gap; `texture_propertyKeyFilterSuffixStrippedAndIgnored`, `texture_propertyKeyWrapSuffixStrippedAndIgnored` |
+| same texture's `.mcmeta` blur/clamp | `TextureSidecarRef` is retained without loading it; it is independent of property-key filter/wrap suffixes, which are stripped and ignored | Phase 13 | App F.5; `texture_sidecarReferencePreserved` |
 | stage mapping | `GBUFFERS` applies to gbuffers+shadow, `DEFERRED` to deferred, `COMPOSITE` to composite+final | Phases 4/13 | App F.5; `texture_stageExpansion` |
 | multiple texture types on one unit | preserve `(stage,sampler,duplicateDiscriminator)` keys; Phases 4/13 derive sampler type from program declarations and later validate one type per unit per program | Phases 4/13 | App F.5; `texture_sharedUnitSamplerTypeDerivedLater` |
 | `texture.noise=<pack path>` | `NoiseTextureSpec.Override`; otherwise generated-noise requirement remains | Phase 13 | App F.5; `texture_noiseOverride` |
@@ -772,7 +782,7 @@ identifiers. A malformed occurrence warns and is ignored without clearing a prev
 | `uniform … shadowcolor/shadowcolor0/shadowcolor1` | `shadowColorBuffers` minimum 1/2 | `directive_shadowColorUniformSizing` |
 | `uniform … depthtex0/1/2`, `gdepthtex` | `mainDepthTextures` minimum 1/2/3 | `directive_mainDepthUniformSizing` |
 | `uniform … colortex0-7` and legacy names | `colorBuffers` highest referenced index + 1 | `directive_colortexAndLegacySizing` |
-| `uniform … gdepth` | format request for colortex1 `RGBA32F` if still default RGBA | `directive_gdepthUpgradeOnlyDefault` |
+| `uniform … gdepth` | every active declaration mandates `colortex1` format `RGBA32F`; an explicit non-RGBA format is diagnosed as a conflict and cannot override the mandatory upgrade | `directive_gdepthUpgradeAlways`, `directive_gdepthWithPriorExplicitFormat`, `directive_gdepthWithSubsequentExplicitFormat` |
 | `uniform … centerDepthSmooth` | `centerDepthSmoothRequired=true` | `directive_centerDepthSmoothReadback` |
 | `shadowMapResolution` / `SHADOWRES` | `ShadowConfig.resolution` | `directive_shadowResolutionAllForms` |
 | `shadowMapFov` / `SHADOWFOV` | `ShadowConfig.fov`; finite degrees strictly between 0 and 180, otherwise malformed | `directive_shadowFovAllForms`, `directive_shadowFovDomain` |
@@ -792,12 +802,14 @@ identifiers. A malformed occurrence warns and is ignored without clearing a prev
 | `superSamplingLevel` | `WorldRenderConstants.superSamplingLevel` positive integer | `directive_superSamplingLevel` |
 | `noiseTextureResolution` | `NoiseRequirement.resolution` and enabled flag | `directive_noiseTextureResolution` |
 | `colortexNFormat` / legacy-name format | validated per-colortex internal-format request | `directive_colortexFormatsAndAliases`, `directive_colortexFormatDomainAcceptedRejected` |
-| `colortexNClear=false` | per-colortex clear-enabled override | `directive_colortexClear` |
-| `colortexNClearColor=vec4(...)` | per-colortex clear color | `directive_colortexClearColor` |
+| `colortexNClear=false` | `clear=false`; no clear is issued, while any `clearColorOverride` remains explicit published data | `directive_colortexClear` |
+| `colortexNClearColor=vec4(...)` | `clearColorOverride=Optional.of(Vec4f(...))`; absence uses the index baseline, so an explicit transparent black remains distinguishable | `directive_colortexClearColorAndIndexBaseline`, `directive_explicitTransparentBlackRemainsExplicit` |
 | `colortexNMipmapEnabled=true` | per-program colortex mipmap requests | `directive_colortexMipmapEnabled` |
 | `GAUX4FORMAT` (`RGBA32F`/`RGB32F`/`RGB16`) | colortex7 format request | `directive_gaux4FormatAllCommentForms` |
-| `DRAWBUFFERS` | ordered routing list 0–7/`N` | `directive_drawbuffersAllCommentForms` |
-| modern `RENDERTARGETS` (`post-v0.5`) | ordered routing list 0–15 | `directive_rendertargetsAndPrecedence` (`post-v0.5`) |
+| no active `DRAWBUFFERS`/`RENDERTARGETS` | `DrawRouting.AllUsed`; the program writes all color buffers it uses, not an empty/no-output route | `directive_drawbuffersAbsentMeansAllUsed` |
+| `DRAWBUFFERS` with digits | `DrawRouting.Explicit` with the ordered 0–7 targets | `directive_drawbuffersAllCommentForms` |
+| `DRAWBUFFERS:N` | `DrawRouting.Explicit(List.of())`, a tagged explicit no-output route distinct from `AllUsed` | `directive_drawbuffersExplicitNoneDistinctFromAbsent` |
+| modern `RENDERTARGETS` (`post-v0.5`) | `DrawRouting.Explicit` with ordered 0–15 targets and the later-active routing occurrence winning | `directive_rendertargetsAndPrecedence` (`post-v0.5`) |
 
 The half-life fields are stored in **ticks** exactly as Appendix A.3 states. Phase 6 owns the
 smoothing formula; this phase does not import an alternate unit.
@@ -830,7 +842,7 @@ smoothing formula; this phase does not import an alternate unit.
 | Standard macro identity families | configurable `MacroConfiguration` emits MC/GL/GLSL, OS, vendor, renderer, on-demand extension, and option macros | RESEARCH §3.5; `macro_standardFamiliesExactIdentity` |
 | Conditional preprocessing and substitution | jcpp adapters implement define/undef/if-family/defined/substitution for shaders and properties | RESEARCH §3.5; `preprocess_completeConditionalGrammarAllInputs` |
 | ID-map macro restriction | properties-safe preprocessing supplies standard A–G macros and no option macros | RESEARCH §3.7; `idMap_standardMacrosOnly` |
-| Block/item/entity short, namespaced, property, legacy `id:meta`, and `%namespace:path` tag rules | schema-v3 `IdMappingInput` retains typed rules, selector order/kind, file state, origin, and classic/modern era for Phase 9 | RESEARCH §3.7; `idMap_allDocumentedRuleForms`, `idMap_selectorKindEntryAndTag` |
+| Block/item/entity short, namespaced, property, legacy `id:meta`, and `%namespace:path` tag rules | schema-v4 `IdMappingInput` retains typed rules, selector order/kind, file state, origin, and classic/modern era for Phase 9 | RESEARCH §3.7; `idMap_allDocumentedRuleForms`, `idMap_selectorKindEntryAndTag` |
 | Entity compatibility preprocessing | a present entity file publishes ordinary A–G results and a separate result made by replacing only `MC_VERSION` with `11300`; no selection or merge occurs here | RESEARCH §3.7 preprocessing requirement; `idMap_entityForced11300Isolated` |
 | Mod-provided ID-map contributions | public pure `IdMappingParser` accepts optional bounded bytes, mapping kind, the published parser environment, and `MappingOrigin` from Phase 9 | RESEARCH §3.7; `idMap_modContributionOriginPreserved` |
 | `layer.solid/cutout/cutout_mipped/translucent` and opaque-solid exclusion | typed `LayerRule` with the same selector/era provenance plus deferred resolution constraint | RESEARCH §3.7; `idMap_layersAndOpaqueSolidExclusion` |
@@ -1080,8 +1092,14 @@ Each recognized key maps to one typed parser, one target field, one validation r
 ID from §3.3. There are no hand-written setter chains where adjacent half-life fields can be
 cross-wired. Duplicate scalar directives use last active source occurrence and diagnose the prior
 location. Resource minima aggregate monotonically across active sources; explicit per-program
-state remains per program. Format conflicts are retained as diagnostics plus deterministic
-last-active occurrence, not silently merged.
+state remains per program. Format requests otherwise retain diagnostics plus deterministic
+last-active occurrence. An active `gdepth` declaration is the contract exception: it is a
+mandatory `colortex1=RGBA32F` request regardless of source order; any active explicit non-RGBA
+colortex1 format is retained as a conflict diagnostic and cannot override it.
+Routing starts as `DrawRouting.AllUsed` when no active valid routing directive exists. A valid
+digit list becomes `DrawRouting.Explicit` in source order, while `N` becomes
+`DrawRouting.Explicit(List.of())`; later active routing occurrences replace the earlier route.
+Malformed routing retains the prior route or the `AllUsed` baseline.
 
 Stage is part of the table key: extended attributes and `countInstances` populate requirements only
 from `.vsh`, and the legacy geometry pair only from `.gsh`. A recognized directive in any other
@@ -1120,11 +1138,15 @@ public record BufferMinima(int colorBuffers, int mainDepthTextures,
     int shadowDepthBuffers, int shadowColorBuffers) {}
 public record ColorAttachmentKey(int colortexIndex) {}
 public record ColorAttachmentRequirement(ColorInternalFormat format, boolean clear,
-    Vec4f clearColor) {}
+    Optional<Vec4f> clearColorOverride) {}
 public record ProgramRequirementKey(DimensionKey dimension, String programName) {}
 public record ProgramRequirements(DrawRouting routing,
     Set<ColorAttachmentKey> mipmappedAfterPass, VertexRequirements vertices,
     int instanceCount, Optional<LegacyGeometryConfig> legacyGeometry) {}
+public sealed interface DrawRouting permits DrawRouting.AllUsed, DrawRouting.Explicit {
+    record AllUsed() implements DrawRouting {}
+    record Explicit(List<ColorAttachmentKey> targets) implements DrawRouting {}
+}
 public record ShadowRequirements(int resolution, Optional<Float> fov, float distance,
     float distanceRenderMultiplier, float intervalSize,
     Set<ShadowTextureKey> mipmapped, Set<ShadowTextureKey> nearest,
@@ -1139,10 +1161,11 @@ public record NoiseRequirement(boolean enabled, int resolution) {}
 
 `ShadowTextureKey` is closed over depth 0/1 and color 0/1; `ShadowDepthKey` over depth 0/1.
 `VertexRequirements` is an immutable set over the closed
-`MC_ENTITY`, `MC_MID_TEX_COORD`, and `AT_TANGENT` enum. `DrawRouting` is the ordered attachment-or-
-`NONE` sequence from the winning `DRAWBUFFERS`/`RENDERTARGETS` occurrence. `ColorInternalFormat`
-is the closed accepted token domain exercised by `directive_colortexFormatDomainAcceptedRejected`;
-`Vec4f` contains four finite floats.
+`MC_ENTITY`, `MC_MID_TEX_COORD`, and `AT_TANGENT` enum. `DrawRouting.AllUsed` denotes no active
+valid routing directive and writes all color buffers used by the program; `DrawRouting.Explicit`
+preserves the ordered targets, with an empty target list meaning explicit `N`/no output.
+`ColorInternalFormat` is the closed accepted token domain exercised by
+`directive_colortexFormatDomainAcceptedRejected`; `Vec4f` contains four finite floats.
 
 `ColorAttachmentKey` accepts indices 0…15; `ProgramRequirementKey.programName` is the exact,
 non-empty pack-facing program name and the dimension disambiguates overrides. Both maps iterate in
@@ -1187,10 +1210,13 @@ The parser dispatches by exact key/prefix to immutable builders. Unknown keys ar
 parsing completes so Phase 12 can show the warning and Phase 7 can keep shaders off. Malformed
 rules warn/ignore only that rule.
 
-Custom texture specs preserve stage, sampler, duplicate suffix, source kind, typed raw format
-values, and sidecar location. The accepted internal formats are exactly the 37 names in RESEARCH
-Appendix B.4; pixel formats are `RED`, `RG`, `RGB`, `BGR`, `RGBA`, `BGRA` and their `_INTEGER`
-forms; pixel types are `BYTE`, `SHORT`, `INT`, `HALF_FLOAT`, `FLOAT`, `UNSIGNED_BYTE`,
+Custom texture specs preserve stage, the base sampler after stripping a recognized terminal
+filter/wrap property-key suffix, the optional numeric duplicate discriminator, source kind,
+typed raw format values, and sidecar location. The suffix is ignored rather than retained as
+sampler or filter/wrap state; `.mcmeta` blur/clamp remains a separate sidecar. The accepted
+internal formats are exactly the 37 names in RESEARCH
+Appendix B.4; pixel formats are `RED`, `RG`, `RGB`, `BGR`, `RGBA`, `BGRA` and their
+`_INTEGER` forms; pixel types are `BYTE`, `SHORT`, `INT`, `HALF_FLOAT`, `FLOAT`, `UNSIGNED_BYTE`,
 `UNSIGNED_BYTE_3_3_2`, `UNSIGNED_BYTE_2_3_3_REV`, `UNSIGNED_SHORT`,
 `UNSIGNED_SHORT_5_6_5`, `UNSIGNED_SHORT_5_6_5_REV`, `UNSIGNED_SHORT_4_4_4_4`,
 `UNSIGNED_SHORT_4_4_4_4_REV`, `UNSIGNED_SHORT_5_5_5_1`,
@@ -1274,7 +1300,7 @@ Neither view defaults render state beyond these stated absence results.
 
 ### 4.9 Schema-versioned ID-mapping input
 
-`PackConfiguration.idMappings()` is the schema-v3 `IdMappingInput` in §2.2, not a flattened list.
+`PackConfiguration.idMappings()` is the schema-v4 `IdMappingInput` in §2.2, not a flattened list.
 Its four `IdMappingFileInput`s have exactly matching `MappingKind`s and immutable source order.
 For pack input, paths are exactly `shaders/block.properties`, `shaders/item.properties`,
 `shaders/entity.properties`, and `shaders/block.properties`'s `layer.*` family: block rules and
@@ -1363,8 +1389,8 @@ Validation has three levels:
 Only level 3 may fail the pack load. Levels 1–2 produce defaults/partial models and diagnostics.
 The immutable configuration fingerprint hashes pack bytes, normalized paths, active options,
 load-time macro policy, capability identity fields, parser schema version, and the canonical
-schema-v3 `IdMappingInput` including every file state and ordinary/forced rule-list fingerprint. It
-also hashes `PackConfiguration.customExpressions()` as one canonical list in source order: fixed
+schema-v4 `IdMappingInput` including every file state and ordinary/forced rule-list fingerprint.
+It also hashes `PackConfiguration.customExpressions()` as one canonical list in source order: fixed
 payload domain tag `customExpressions`, configuration schema version, list count, then for each
 declaration its `kind` and `type` enum tags, exact `name`, exact unescaped `rawExpression`, canonical
 base-10 `sourceOrdinal`, attribution path
@@ -1414,8 +1440,21 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 | `ResourceRequirements` | the closed immutable record graph declared below. Last active valid scalar wins, malformed retains prior/baseline, and minima aggregate monotonically. Absence is only empty collections, `Optional.empty()`, or the typed baselines declared below—never null/sentinel. Maps/sets/lists are immutable, unique-keyed, and ordered as declared below | Phase 4: routing/geometry/instances; Phase 5: minima/attachments/pass mipmaps; Phase 6: center depth/smoothing; Phase 7: routing/instances/world constants; Phase 8: shadow; Phase 10: vertex attributes; Phase 13: noise enablement/resolution |
 | `CustomTextureSpec`, `NoiseTextureSpec`, `TextureBindingKey`, `TextureSidecarRef` | closed lossless parsed texture algebra below; no opened image or realized GL object | Phase 13 |
 | `PackConfiguration.customExpressions()`, `CustomExpressionDecl`, `CustomExpressionKind`, `CustomExpressionType`, `SourceAttribution` | immutable collection-valued projection in logical Properties source order. Kind is closed to `UNIFORM|VARIABLE`; type to `FLOAT|INT|BOOL|VEC2|VEC3|VEC4`. Each record carries the exact case-sensitive decoded name, exact raw value after Java-Properties unescaping, zero-based contiguous source ordinal equal to list position, and validated source path plus one-based physical line/column. Every valid occurrence is retained, including exact-key and same-name duplicates; absence is an immutable empty list. Phase 3 validates only key/type/name structure and never expression grammar. The ordered list and every field participate in the configuration fingerprint exactly as declared below | Phase 11, then Phase 6 |
-| `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, closed `MappingOrigin` variants | schema-v3 per-kind `ABSENT`/`PRESENT_EMPTY`/`PRESENT_RULES`; ordered entry/tag rules and predicates; pack or ordered mod-contribution origin; ordinary and isolated forced-11300 entity results; canonical parser environment and fingerprints. The same pure bounded-byte operation parses Phase-9-provided mod sources without reopening the pack or reconstructing macros | Phase 9; resolved layer result later Phase 7 |
+| `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, closed `MappingOrigin` variants | schema-v4 per-kind `ABSENT`/`PRESENT_EMPTY`/`PRESENT_RULES`; ordered entry/tag rules and predicates; pack or ordered mod-contribution origin; ordinary and isolated forced-11300 entity results; canonical parser environment and fingerprints. The same pure bounded-byte operation parses Phase-9-provided mod sources without reopening the pack or reconstructing macros | Phase 9; resolved layer result later Phase 7 |
 | `InternalPackSource` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; defensive byte copies and attributed failure. `NormalizedPackPath.canonicalString()` is the only stable projection: non-empty NFC root-relative `/` grammar, ordered and hashed by its exact UTF-8 bytes; consumers never serialize `toString()` or a host path (`[D-P3-24]`) | Phase 7 supplies content and consumes the projection |
+
+The public declarations in §2.2 are incorporated into the binding rows above, not merely illustrative. The
+`PackFrontEnd` entry-point/request/result declarations are bound by the first two rows; the
+`SourceMaterializer`/materialization and geometry declarations by the source row; the
+`MacroContributor`/`MacroContribution` declarations and reserved slot by the macro row; and the
+`InternalPackSource`/snapshot/value declarations by the internal-source row. Exact method signatures,
+record component order and types, sealed variants and enums, defaults, absence, ordering, validation,
+failure, and lifecycle semantics are part of those rows.
+
+Any edit to an incorporated declaration or consumer-visible semantic must update its §5.1 row in the
+same revision, including an explicit `unchanged` entry when the row remains exact; that edit changes
+the monitored cross-phase region and requires fresh verification. `PackConfiguration` record/schema
+changes additionally follow §5.3.
 
 The binding custom-expression algebra is:
 
@@ -1441,10 +1480,12 @@ Consumers may neither sort/deduplicate the list nor infer a new kind/type. Unkno
 rejected during configuration construction because both enums are closed executable domains.
 
 `TextureBindingKey` is `(TexturePropertyStage stage, String sampler, OptionalInt duplicateDiscriminator)`.
-The closed stage domain is `GBUFFERS|DEFERRED|COMPOSITE`; `sampler` is the exact non-empty key
-segment; the discriminator is absent or the parsed decimal `0..9` and is never folded into the
-sampler. Its expansion is fixed: `GBUFFERS` targets gbuffers and shadow programs, `DEFERRED`
-targets deferred programs, and `COMPOSITE` targets composite and final programs.
+The closed stage domain is `GBUFFERS|DEFERRED|COMPOSITE`; `sampler` is the exact non-empty base
+key segment after removing a recognized terminal filter/wrap suffix. Such a suffix is stripped and
+ignored, never included in `sampler` or retained as filter/wrap state; the discriminator is absent
+or the parsed decimal `0..9` and is never folded into the sampler. Its expansion is fixed:
+`GBUFFERS` targets gbuffers and shadow programs, `DEFERRED` targets deferred programs, and
+`COMPOSITE` targets composite and final programs.
 
 `CustomTextureSpec` is the sealed immutable sum
 `PackPath(key,NormalizedPackPath image,Optional<TextureSidecarRef> sidecar)` |
@@ -1490,8 +1531,8 @@ references warn and have no effect.
 
 The binding `ResourceRequirements` shape is
 `(BufferMinima minima, Map<ColorAttachmentKey,ColorAttachmentRequirement> colorAttachments, ShadowRequirements shadow, CenterDepthRequirements centerDepth, Map<ProgramRequirementKey,ProgramRequirements> programs, SmoothingConstants smoothing, WorldRenderConstants world, NoiseRequirement noise)`.
-Its nested records are exactly: `BufferMinima(int colorBuffers,int mainDepthTextures,int shadowDepthBuffers,int shadowColorBuffers)`; `ColorAttachmentKey(int colortexIndex)` (0…15); `ColorAttachmentRequirement(ColorInternalFormat format,boolean clear,Vec4f clearColor)` (four finite floats); `ProgramRequirementKey(DimensionKey dimension,String programName)`; `ProgramRequirements(DrawRouting routing,Set<ColorAttachmentKey> mipmappedAfterPass,VertexRequirements vertices,int instanceCount,Optional<LegacyGeometryConfig> legacyGeometry)`; `ShadowRequirements(int resolution,Optional<Float> fov,float distance,float distanceRenderMultiplier,float intervalSize,Set<ShadowTextureKey> mipmapped,Set<ShadowTextureKey> nearest,Set<ShadowDepthKey> hardwarePcf)`; `CenterDepthRequirements(boolean required)`; `SmoothingConstants(float wetnessHalfLifeTicks,float drynessHalfLifeTicks,float eyeBrightnessHalfLifeTicks,float centerDepthHalfLifeTicks)`; `WorldRenderConstants(float sunPathRotation,float ambientOcclusionLevel,int superSamplingLevel)`; and `NoiseRequirement(boolean enabled,int resolution)`.
-`ShadowTextureKey` is closed over depth/color 0/1, `ShadowDepthKey` over depth 0/1, and `VertexRequirements` over `MC_ENTITY|MC_MID_TEX_COORD|AT_TANGENT`; `DrawRouting` is the winning occurrence's ordered attachment-or-`NONE` sequence. Program maps order by ascending dimension then name, attachment maps/sets by index, and enum sets by enum order.
+Its nested records are exactly: `BufferMinima(int colorBuffers,int mainDepthTextures,int shadowDepthBuffers,int shadowColorBuffers)`; `ColorAttachmentKey(int colortexIndex)` (0…15); `ColorAttachmentRequirement(ColorInternalFormat format,boolean clear,Optional<Vec4f> clearColorOverride)`; `ProgramRequirementKey(DimensionKey dimension,String programName)`; `ProgramRequirements(DrawRouting routing,Set<ColorAttachmentKey> mipmappedAfterPass,VertexRequirements vertices,int instanceCount,Optional<LegacyGeometryConfig> legacyGeometry)`; `ShadowRequirements(int resolution,Optional<Float> fov,float distance,float distanceRenderMultiplier,float intervalSize,Set<ShadowTextureKey> mipmapped,Set<ShadowTextureKey> nearest,Set<ShadowDepthKey> hardwarePcf)`; `CenterDepthRequirements(boolean required)`; `SmoothingConstants(float wetnessHalfLifeTicks,float drynessHalfLifeTicks,float eyeBrightnessHalfLifeTicks,float centerDepthHalfLifeTicks)`; `WorldRenderConstants(float sunPathRotation,float ambientOcclusionLevel,int superSamplingLevel)`; and `NoiseRequirement(boolean enabled,int resolution)`.
+`ShadowTextureKey` is closed over depth/color 0/1, `ShadowDepthKey` over depth 0/1, and `VertexRequirements` over `MC_ENTITY|MC_MID_TEX_COORD|AT_TANGENT`; `DrawRouting` is sealed as `AllUsed` or `Explicit(List<ColorAttachmentKey> targets)`. Program maps order by ascending dimension then name, attachment maps/sets by index, and enum sets by enum order.
 Published resolutions, instance counts, and supersampling levels are positive integers; routing
 indices are 0…7 at v0.1; ambient occlusion and viewport scale/offset values are 0…1. A present
 `ShadowRequirements.fov` selects perspective projection and is finite degrees strictly between 0
@@ -1505,8 +1546,16 @@ feature sets empty; center depth and noise disabled; noise resolution 256; shado
 interval 2;
 smoothing half-lives 600, 200, 10, and 1 ticks; and world constants 0-degree sun-path rotation,
 ambient-occlusion level 1, and supersampling level 1. When an attachment entry is first created,
-its baseline is `RGBA`, clear enabled, and `Vec4f(0,0,0,0)`; when a program entry is first created,
-its routing and sets are empty, instance count is 1, and geometry is `Optional.empty()`.
+its baseline is `RGBA`, clear enabled, and `clearColorOverride=Optional.empty()`. With clear enabled,
+Phase 5 resolves that absence by index: colortex0 uses the current fog color, colortex1 uses solid
+`Vec4f(1,1,1,1)`, and every other index uses transparent black `Vec4f(0,0,0,0)`. An explicit
+`Optional.of(Vec4f(...))` override wins over that index baseline, including explicit transparent
+black; `clear=false` suppresses the clear operation without erasing the override data.
+Every active `gdepth` declaration mandates `colorAttachments[ColorAttachmentKey(1)].format == RGBA32F`.
+An explicit non-RGBA colortex1 format is diagnosed as a conflict and cannot override that result.
+When a program entry is first created, its routing is `DrawRouting.AllUsed`, its sets are empty,
+instance count is 1, and geometry is `Optional.empty()`; `DrawRouting.Explicit(List.of())` is
+reserved for explicit `DRAWBUFFERS:N`/no output and is not the absent baseline.
 
 This §5 text is the sole binding consumer contract for those two aggregates. Sections 3.3, 4.7,
 and 4.8 explain producer parsing and construction without adding consumer-visible shapes, values,
@@ -1584,25 +1633,30 @@ derived from materialized text must also match that source's materialization fin
 | `EngineDiagnostic` / `DiagnosticReporter` | loader-neutral warnings and pack-level failures |
 | `schmaloogium.debug.saveSources` | opt-in processed-source dump |
 | SPDX/`THIRD-PARTY.md` mechanism | jcpp notice and any future LGPL-incorporation accounting |
-| `:conformance` extension point | headless golden/materialization runs |
 
 No GL service or handle is consumed.
+Phase 3 consumes no Phase 1 `:conformance` module or extension. P3-C20 emits the manifest-only
+goldens, synthetic fixtures, capability profiles, and matrix-run hand-off described in §8.2;
+Phase 2 owns the adapter, CI job, and `:conformance` integration.
 
 ### 5.3 Interface/version discipline
 
-`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `3`, and every configuration produced by this revision
+`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `4`, and every configuration produced by this revision
 publishes that value. A consumer supports exactly `schemaVersion == CURRENT_SCHEMA_VERSION`; every
 other value is rejected before derived state is created or retained. The schema is separate from
 the content fingerprint. Any change to the published `PackConfiguration` record-component set,
 including an added component, requires incrementing the constant and consumer compatibility tests.
 Changing a component's meaning or executable default, or removing one, has the same requirement.
+The clear-color absence, mandatory-gdepth, and tagged-routing corrections change the published
+`resources` component semantics, so this revision increments the schema and requires the matching
+consumer compatibility assertions.
 This rule may be relaxed only after defining a shape-stable extension mechanism with exact absence
 and default semantics. Collection order is deterministic and exposed as immutable insertion order
 where pack order matters. Enums intended for forward-compatible storage include `UNKNOWN`, which
 is never a silently executable state. Closed executable enums reject unknown values; in particular,
 `GeometryInputPrimitive` and `GeometryOutputPrimitive` contain only their declared primitive sets.
 `IdMappingInput.schemaVersion` must equal its containing `PackConfiguration.schemaVersion`; Phase 9
-rejects a mismatch before parsing mod bytes or building aliases. Versions 1 and 2 configurations
+rejects a mismatch before parsing mod bytes or building aliases. Versions 1, 2, and 3 configurations
 are incompatible with the current surface and are never upgraded by inference. Closing the
 already-named
 `NormalizedPackPath` value with its canonical string projection does not add or reinterpret a
@@ -1610,10 +1664,12 @@ already-named
 to that path grammar is still an interface-breaking change. Likewise, publishing
 `customExpressions()` does not add or reinterpret a record component: it closes a named immutable
 projection of declaration data already retained by `ShaderPropertiesModel`, while the existing pack
-bytes already made those declarations configuration-fingerprint inputs. The schema therefore
-remains 3; the canonical typed-list encoding in §4.10 makes that existing fingerprint dependency
-independently executable. Adding the collection as a new record component or changing its decoded
-meaning, order, duplicate policy, attribution, or absence semantics would require the next schema.
+bytes already made those declarations configuration-fingerprint inputs. The custom-expression
+publication itself did not increment the schema; the current value is 4 because the resource
+contract correction above changes the published `resources` component semantics. The canonical
+typed-list encoding in §4.10 makes that existing fingerprint dependency independently executable.
+Adding the collection as a new record component or changing its decoded meaning, order, duplicate
+policy, attribution, or absence semantics would require the next schema.
 
 ### 5.4 Requested changes to the dependency contract
 
@@ -1673,9 +1729,10 @@ provide any usable source configuration. A malformed directive or property line 
 
 ## 8. Testability plan
 
-All tests are headless `:engine` tests unless explicitly assigned to `:conformance`. They use
-temporary directories/zip files and Phase 1 recorded `GLCapabilityProfile` fixtures; no GL context
-or Minecraft type is needed.
+All Phase 3 unit and property tests are headless `:engine` tests. Phase 3 emits manifest and fixture
+inputs to Phase 2's harness rather than assigning any test to `:conformance`; they use temporary
+directories/zip files and Phase 1 recorded `GLCapabilityProfile` fixtures, with no GL context or
+Minecraft type needed.
 
 ### 8.1 Unit and property tests
 
@@ -1765,7 +1822,7 @@ or Minecraft type is needed.
   `idMap_originVariantsIdentityValidationAndOrdering` covers pack attribution, canonical mod IDs,
   per-mod ordinals, record equality, invalid construction, and leaves precedence evaluation to Phase 9;
   `idMap_fingerprintCoversPresenceEnvironmentAndBothParses` mutates each load-bearing input; and
-  `idMap_schemaAndContainingConfigurationMustMatch` rejects v1 and mismatched nested schemas.
+  `idMap_schemaAndContainingConfigurationMustMatch` rejects unsupported v1–v3 values and mismatched nested schemas.
 - Appendix F tests: every Phase-3-owned test named in §§3.1–3.2 is required; a parameterized key
   manifest fails if a parser/model row lacks a Phase 3 assertion. Behavior-only handoff rows name
   their downstream owner's test and are excluded from the Phase 3 parser manifest.
@@ -1780,15 +1837,21 @@ or Minecraft type is needed.
   `structuralFailurePublishesNoPartialConfiguration`,
   `packConfigurationIsOnlyLoadOutput`, `fingerprintChangesOnEveryLoadSemanticInput`,
   `materializedFingerprintChangesWithContributionOrGeometryPlan`,
-  `materializedFingerprintChangesWithUniformCatalogSchemaOrContent`.
+  `materializedFingerprintChangesWithUniformCatalogSchemaOrContent`,
   `schema_currentValuePublished`, `schema_recordComponentChangeBumps`,
   `schema_incompatibleChangeBumps`, `schema_unsupportedVersionRejected`,
-  `schemaMismatchInvalidatesRetainedState`,
-  `texture_sharedUnitSamplerTypeDerivedLater`.
+  `schemaMismatchInvalidatesRetainedState`, and `texture_sharedUnitSamplerTypeDerivedLater`.
+- Resource/directive aggregation: `directive_gdepthUpgradeAlways`,
+  `directive_gdepthWithPriorExplicitFormat`, `directive_gdepthWithSubsequentExplicitFormat`,
+  `directive_colortexClearColorAndIndexBaseline`,
+  `directive_explicitTransparentBlackRemainsExplicit`,
+  `directive_drawbuffersAbsentMeansAllUsed`, and
+  `directive_drawbuffersExplicitNoneDistinctFromAbsent`.
 
 ### 8.2 Golden and matrix tests
 
-Phase 2's runnable-before-renderer harness receives:
+P3-C20 emits the following versioned hand-off to Phase 2's runnable-before-renderer harness; Phase 2
+owns the adapter and its `:conformance` integration:
 
 1. synthetic, project-authored fixtures for every directive syntax/key and every properties
    grammar edge;
@@ -1838,12 +1901,12 @@ milestone.
 | P3-C12 | legacy Appendix A.3 directive scanner, excluding `RENDERTARGETS` | `v0.1` |
 | P3-C13 | immutable resource-requirement aggregator | `v0.1` |
 | P3-C14 | complete Appendix F `ShaderPropertiesModel`, including closed source-ordered custom-expression publication | `v0.1` |
-| P3-C15 | schema-v3 ID-mapping/layer parser, file-state/selector/era provenance, and forced-11300 entity parse | `v0.1` |
+| P3-C15 | schema-v4 ID-mapping/layer parser, file-state/selector/era provenance, and forced-11300 entity parse | `v0.1` |
 | P3-C16 | source materializer and local processed-source debug dump | `v0.1` |
 | P3-C17 | validation, ordered custom-expression fingerprint payload, and atomic `PackConfiguration` publication | `v0.1` |
 | P3-C18 | logging/loader-neutral diagnostics and degradation adapter | `v0.1` |
 | P3-C19 | global `.csh` source recognition/materialization reserved for G8/S2 | `post-v0.5` |
-| P3-C20 | headless manifests, fuzz fixtures, and seven-pack front-end harness adapter | `v0.1` |
+| P3-C20 | headless manifests, fuzz fixtures, and the specified Phase 2 front-end hand-off | `v0.1` |
 | P3-C21 | `(internal)` in-memory source-provider bridge with canonical UTF-8 path identities (content remains Phase 7) | `v0.1` |
 | P3-C22 | modern `RENDERTARGETS` recognition and source-order precedence | `post-v0.5` |
 
@@ -1928,6 +1991,10 @@ not a decision (PD §7.6).
 | D-P3-23 | Publish file presence, entry/tag classification, per-rule era, and both isolated entity parses instead of making Phase 9 reopen bytes or infer preprocessing history; this grants R9-1 while keeping registry resolution and branch selection outside Phase 3. |
 | D-P3-24 | Make `NormalizedPackPath.canonicalString()` the sole path projection and define it as validated NFC, root-relative, slash-separated grammar ordered/hashed by exact UTF-8 bytes; `toString()` and host paths are never protocol data. |
 | D-P3-25 | Publish every valid custom-expression property occurrence as a closed, source-attributed, immutable ordered projection and hash that exact sequence, because RESEARCH App F.6 assigns capture to Phase 3 while Phase 11 requires duplicates and order to produce deterministic diagnostics/evaluation without reopening Properties input. |
+| D-P3-26 | Represent clear-color absence as `Optional<Vec4f>` and resolve it by attachment index so runtime fog, solid white, transparent black, and explicit overrides remain distinct. |
+| D-P3-27 | Treat active `gdepth` as a mandatory RGBA32F request for colortex1; diagnose and reject any explicit non-RGBA override to preserve the Appendix A.3 upgrade. |
+| D-P3-28 | Use tagged `DrawRouting.AllUsed` versus `DrawRouting.Explicit`, with an empty explicit list reserved for `DRAWBUFFERS:N`, so absent routing cannot mean no output. |
+| D-P3-29 | Strip and ignore recognized texture-key filter/wrap suffixes while retaining `.mcmeta` sidecars separately, because the suffix gap is a parser conformance obligation rather than texture-loading behavior. |
 
 ### 11.2 Binding-decision disposition
 
@@ -1935,8 +2002,8 @@ D-1/D-2 are preserved by the Cleanroom-exclusive, shaders-only boundary. D-3 con
 gate. D-4 is preserved by growth-shaped source/stage fields and post-v0.5 compute recognition.
 D-5 is untouched: this phase has no mixin. D-6 is enforced by pure `:engine` placement. D-7/D-8
 govern jcpp/Pintonium/Oculus notices and the transformation prohibition. D-9 supplies compatibility
-profile macro semantics without GL calls. D-10 is implemented by the row-complete manifests and
-Phase 2 adapter.
+profile macro semantics without GL calls. D-10 is implemented by Phase 3's row-complete manifests
+and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
 
 ### 11.3 Input contradictions and rulings
 
@@ -2026,7 +2093,7 @@ Each item is independently actionable and names its test hook.
     `directive_rendertargetsAndPrecedence`.
 12. `[v0.1]` Implement P3-C13 requirement folding and cross-field conflict diagnostics; test one
     hand-verified classic-pack expectation.
-13. `[v0.1]` Implement P3-C15's schema-v3 `IdMappingInput`, four per-kind file states, pure bounded-
+13. `[v0.1]` Implement P3-C15's schema-v4 `IdMappingInput`, four per-kind file states, pure bounded-
     byte parser, entry/tag classification, per-rule era, and isolated forced-11300 entity result;
     run all `idMap_*` tests, including long/short/property/legacy/layer and malformed-line cases.
 14. `[v0.1]` Implement P3-C16 materialization cache, the complete fingerprint-bound
@@ -2039,8 +2106,9 @@ Each item is independently actionable and names its test hook.
     custom-expression payload from §4.10, and prove `PackConfiguration` is the only success output.
 17. `[v0.1]` Implement P3-C21's in-memory `(internal)` bridge with a synthetic engine-only pack;
     hash/order/serialize only canonical-string UTF-8 bytes and leave actual content to Phase 7.
-18. `[v0.1]` Implement P3-C20 manifest/fuzz/harness adapter, then run the seven downloaded pack
-    front-ends and the classic resource-sizing check under Phase 2's rules.
+18. `[v0.1]` Implement P3-C20 manifest/fuzz/fixture emission and the specified Phase 2 hand-off;
+    Phase 2 runs the seven downloaded pack front-ends and the classic resource-sizing check under
+    its existing harness rules.
 19. `[post-v0.5]` Run §10's OQ-7 spike and record the result before implementing P3-C09's final
     policy.
 20. `[post-v0.5]` Implement P3-C19 global `.csh` recognition only when G8/S2 defines its execution
@@ -2049,5 +2117,5 @@ Each item is independently actionable and names its test hook.
 ---
 
 *Review round 31 returned literal PASS on §0.32. Round 32 reviewed §0.33 and produced §0.34;
-round 33 reviewed §0.34 and produced this §0.35 status correction. Phase 3 v1 is **not verified**
-pending a fresh whole-document review; no version roll occurs while the loop is open.*
+round 33 reviewed §0.34 and produced §0.35; round 36 reviewed §0.35 and produced §0.36. Phase 3 v1
+is **not verified** pending a fresh whole-document review; no version roll occurs while the loop is open.*

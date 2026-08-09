@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schmaloogium.local/schemas/verification-policy.schema.json",
+  "title": "Verification policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "presets",
+    "severity_rank",
+    "survival",
+    "verdict",
+    "convergence",
+    "stop_conditions",
+    "cost_estimate"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "presets": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finders", "refuters", "steelman", "max_concurrency"],
+        "properties": {
+          "finders": { "type": "integer", "minimum": 1 },
+          "refuters": { "type": "integer", "minimum": 1 },
+          "steelman": { "type": "boolean" },
+          "max_concurrency": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "severity_rank": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["none", "note", "correction", "blocking"],
+      "properties": {
+        "none": { "const": 0 },
+        "note": { "const": 1 },
+        "correction": { "const": 2 },
+        "blocking": { "const": 3 }
+      }
+    },
+    "survival": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["refuting_majority", "severity_aggregation", "interface_aggregation"],
+      "properties": {
+        "refuting_majority": { "const": "strict" },
+        "severity_aggregation": { "const": "upper-median-non-refuting" },
+        "interface_aggregation": { "const": "strict-majority-non-refuting" }
+      }
+    },
+    "verdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "pass_requires_literal", "pass_blocking_count", "pass_correction_count", "notes_block_pass"],
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "items": { "enum": ["PASS", "PASS-WITH-CORRECTIONS", "FAIL"] },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "pass_requires_literal": { "const": true },
+        "pass_blocking_count": { "const": 0 },
+        "pass_correction_count": { "const": 0 },
+        "notes_block_pass": { "const": false }
+      }
+    },
+    "convergence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["window", "corrections_must", "addendum_line_cap"],
+      "properties": {
+        "window": { "type": "integer", "minimum": 2 },
+        "corrections_must": { "const": "strictly-decrease" },
+        "addendum_line_cap": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "stop_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": ["PASS", "FAIL", "REVIEW_ONLY", "ROUND_CAP", "AGENT_ERROR", "VALIDATION_ERROR"]
+      }
+    },
+    "cost_estimate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assumed_candidates_per_finder", "input_tokens_per_agent", "output_tokens_per_agent"],
+      "properties": {
+        "assumed_candidates_per_finder": { "type": "integer", "minimum": 0 },
+        "input_tokens_per_agent": { "type": "integer", "minimum": 1 },
+        "output_tokens_per_agent": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}
