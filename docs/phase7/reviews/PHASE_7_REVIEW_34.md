@@ -154,3 +154,48 @@ substantive design defects. This is consistent with a converging document.
 
 Next required action: apply Findings 1 and 2 (Findings 3 and 4 are notes and are not ordered), then
 re-run verification for `phase-7` because the interface region changes.
+
+
+## Resolutions
+
+Re-derived independently before editing; the review's argument was not adopted as evidence.
+
+### Corrections applied
+
+- **Finding 1 — §5.2 Phase 3 freshness clause.** Confirmed at first hand: Phase 3's trailing status
+  (`docs/phase3/v1/PHASE_3_DOC.md:2119`–`:2121`) records the loop advanced past round 22 and that
+  Phase 3 v1 is not verified, while the target itself gates on Phase 3 reverification elsewhere. The
+  clause "and is freshly verified by `…PHASE_3_REVIEW_22.md`" was false. Replaced (now lines
+  1989–1991) with the binding range plus the actual posture and the §5.4 gate pointer. The cited
+  range `:1429`–`:1444` was re-checked and left unchanged. The §0.2 gate row (line 63) states a
+  historically true literal-PASS coordinate and was deliberately not rewritten.
+- **Finding 2 — header/closing desync.** Confirmed: line 7 pointed at §0.36 although §0.37 is a
+  later Round-33 fix-up, and the closing paragraph still attributed the most recent §5 change to
+  Round 32. Header now reads `(§0.38)` and the closing paragraph now attributes the most recent §5
+  change to Round 34, matching the document's own §0.32 synchronization convention. Both sites lie
+  outside the interface region.
+
+### Addendum
+
+Added `### 0.38 Round-34 fix-up` (5 lines of prose plus header) in the existing §0 addendum style;
+no supersession sentences, dated-claim ranges, or session bookkeeping imported. The v1 directory was
+not rolled.
+
+### Interface impact
+
+Intentional and honest: the Finding 1 edit sits at lines 1989–1991, inside the declared
+cross-phase-interfaces region. The region's content changed, so the manifest change trigger fires
+and a fresh verify round is required before Phase 7 can close. No contract semantics, type names, or
+algebra members were altered — only a false verification-status assertion was replaced by the
+document's actual gate posture.
+
+### Notes deferred
+
+- **Finding 3 — Phase 5 anchor stops at `:2018`.** Not applied: expressly unordered, and the review
+  itself records the citing sentence is scoped to "the general Phase 5 frame/buffer rows" with the
+  uncited row adjacent inside the same table. Applying it would widen the interface-region diff for
+  no consumer-hittable gain.
+- **Finding 4 — §3.1 fullscreen-executor range endpoint.** Not applied: unordered, and adjudicated
+  at note severity in two consecutive rounds on unchanged bytes.
+
+No refusal was necessary.

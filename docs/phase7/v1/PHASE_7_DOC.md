@@ -4,7 +4,7 @@
 
 **Phase:** 7, both mandated parts: (a) engine-side frame driver and (b) Mixin hook catalog.  
 **Document version:** v1, initial build.  
-**Date:** 2026-08-03 · **Last revised:** 2026-08-08 (§0.36).
+**Date:** 2026-08-03 · **Last revised:** 2026-08-08 (§0.39).
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`; its Phase 7 assignment begins at
 `docs/design/v2.0-RC3/DESIGN.md:1805` and names dependencies 2–6 at
 `docs/design/v2.0-RC3/DESIGN.md:1807`. The heading and ranges were derived from this
@@ -313,6 +313,18 @@ not change the interface region, and the fresh verification owed by §0.35 remai
 Round 33 corrects the H-TERRAIN-02 v0.5 depth-copy gate, aligns Phase 3 ID-mapping consumption to
 schema-v4, re-points the Phase 3 §5.1 binding citation, and repairs the §3.5 Phase 3 flag and
 precipitation provenance coordinates. The §5 interface region changed and requires fresh verification.
+
+### 0.38 Round-34 fix-up
+
+Round 34 removes the false freshness clause on the consumed Phase 3 exposure in §5.2 and states the
+document's actual posture, and synchronizes the header pointer and closing status with the Round-33
+fix-up. The §5 interface region changed and requires fresh verification.
+
+### 0.39 Round-35 fix-up
+
+Round 35 re-points the §5.4 and §11.5 Phase 8 grant gates from the stale §0.25 round-twenty-two
+condition to the revision-agnostic condition already used in §11.3 and the closing status. The §5
+interface region changed and requires fresh verification.
 
 ---
 
@@ -1981,8 +1993,8 @@ The consumed Phase 2 surfaces are at `docs/phase2/v1/PHASE_2_DOC.md:1597`–`:16
 | `centerDepthMacroContributor` slot | pass Phase 6's empty contribution into materialization |
 
 The consumed Phase 3 exposure is binding at
-`docs/phase3/v1/PHASE_3_DOC.md:1429`–`:1444` and is freshly verified by
-`docs/phase3/reviews/PHASE_3_REVIEW_22.md`.
+`docs/phase3/v1/PHASE_3_DOC.md:1429`–`:1444`; Phase 3 v1 is currently unverified pending a fresh
+whole-document review, so R7-9-dependent production remains gated (§5.4).
 
 #### Phase 4
 
@@ -2122,7 +2134,8 @@ owed by a changed §5; this document assumes no ungranted contract.
 Phase 8's downstream requests R8-1, R8-4, and the Phase-7 half of R8-5 are accepted by §§4.1,
 4.3–4.4, 4.12–4.13, and 5.1–5.3. They are not new dependency requests: they fill this owner's
 existing v0.2 downstream slot. Because these edits change §5, the grants remain unavailable to
-dependents until this document receives the fresh review recorded in §0.25.
+dependents until the most recently changed binding §5 — per the latest §0 fix-up entry — receives a
+whole-document review returning literal PASS.
 
 ### 5.5 Downstream hand-offs
 
@@ -2437,7 +2450,8 @@ site; Phase 4/5 interface gaps become requests; Pintonium remains evidence only.
 - **Accepted Phase 8 requests R8-1/R8-4/R8-5:** §§4.1, 4.3–4.4, 4.12–4.13, and 5.1–5.3 now grant
   the authenticated execution bridge, exact shadow frame, one-policy composition order, owned
   publication slot, reverse close, and nested immutable hook report. The grant becomes consumable
-  only after the fresh Phase 7 review required by §0.25.
+  only after the most recently changed binding §5 (per the latest §0 fix-up entry) receives a
+  literal-PASS whole-document review and Phase 8's own §5 is verified.
 
 This session does not edit `docs/research/v1/RESEARCH.md`, any `docs/design/*/DESIGN.md`,
 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md`, or another phase document.
@@ -2487,6 +2501,6 @@ This session does not edit `docs/research/v1/RESEARCH.md`, any `docs/design/*/DE
 
 *End of PHASE_7_DOC.md. Twenty-one review rounds preceded §0.25; only rounds nineteen and
 twenty-one returned literal PASS among them, corrections being applied for rounds 1–18 and 20.
-Corrections and recorded notes through Round 32 are applied; Round 32 most recently changed binding
+Corrections and recorded notes through Round 35 are applied; Round 35 most recently changed binding
 §5, and v1 remains unverified pending a fresh whole-document review. No version roll occurs until
 that loop exits.*

@@ -47,7 +47,7 @@ documents read below.
 
 Three genuine gaps required narrow reads beyond the listed inputs:
 
-1. `docs/research/v1/RESEARCH.md:999`–`:1027` was read to quote the exact OQ-22 ledger text that
+1. `docs/research/v1/RESEARCH.md:999`–`:1028` was read to quote the exact OQ-22 ledger text that
    the Phase 11 spec explicitly hands to Phase 14.
 2. `reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md:594`–`:622` was read because the
    shipped `shaders.properties` says only “time-corrected” and does not publish the correction
@@ -65,9 +65,10 @@ this phase has no vanilla-symbol question. No code, build, test, or verification
 this build session.
 
 Phase 11's v3 adoption is complete: `verification/targets/phase-11.json` derives its selectors from
-v3, its dry-run preflight has succeeded, and `docs/MOVES.md:89`–`:92` records the adoption. Rounds
-1 and 2 have completed; the Round-2 fix-up made the latest §5 change, and Round 3 is the fresh
-verification it triggered.
+v3, its dry-run preflight has succeeded, and `docs/MOVES.md:89`–`:92` records the adoption. The
+per-round verification chronology is stated in exactly one place, the §0.4-onward round addenda,
+whose newest entry always restates whether a fresh verification round is still required. It is:
+§0.9's §5 citation change has not yet been verified, so a fresh round is required before closure.
 
 ### 0.3 Legal and provenance posture
 
@@ -91,7 +92,7 @@ The stareval license gate is closed against reuse. v3 says the vendored componen
 MIT-credited but must be clean-room implemented if independent verification fails
 (`docs/design/v3/DESIGN.md:920`–`:922`). No stareval source, API, naming, parser structure, or test
 vector may be copied into Schmaloogium. The clean-room implementation described here is based on
-the published expression surface in `docs/research/v1/RESEARCH.md:1492`–`:1508` and
+the published expression surface in `docs/research/v1/RESEARCH.md:1493`–`:1512` and
 `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:326`–`:425`.
 
 ### 0.4 Round-1 contract corrections
@@ -122,6 +123,34 @@ provenance. Its §5 lifecycle clarifications require another fresh verification 
 Round 5 synchronized current verification state and fixed the binding event-to-reset lifecycle map.
 Its §5 change requires another fresh verification round before closure.
 
+### 0.9 Round-6 contract corrections
+
+Round 6 consolidated the verification chronology into the §0.4-onward addenda and repointed the
+drifted line anchors for the consumed Phase 3 and Phase 6 grants (§5.2, §5.3, §4.8, §3.3) and the
+RESEARCH Appendix F.6 surface, declaration-form, and function-list citations (§0.3, §3.1, §3.2).
+Its §5 citation changes require another fresh verification round before closure.
+
+### 0.10 Round-7 contract corrections
+
+Round 7 repointed four external line anchors: the OQ-22 ledger row (§0.2, §10), the Phase 3
+ownership rows (§1.2), the RESEARCH cadence sentence (§2.2), and the Phase 6 accepted-prefix commit
+rule with its superseding invalid-counter branch (§4.8). No §5 text changed and no contract
+substance changed.
+
+### 0.11 Round-8 contract corrections
+
+Round 8 made the verification-state pointers addendum-insertion-proof: §0.2 and §11.2 item 4 now
+rely on the newest addendum restating the outstanding requirement rather than on it having made the
+most recent §5 change. No §5 text changed and no contract substance changed. The outstanding
+requirement stands: §0.9's §5 citation change still requires a fresh verification round before
+closure.
+
+### 0.12 Round-9 contract corrections
+
+Round 9 declared the previously unpinned `DiagnosticSeverity` and `DiagnosticChannel` domains in
+§4.9. No §5 text changed and no other contract substance changed. The outstanding requirement
+stands: §0.9's §5 citation change still requires a fresh verification round before closure.
+
 ---
 
 ## 1. Scope & boundaries
@@ -147,7 +176,7 @@ This is the full Objective: “grammar, functions, input binding, evaluation cad
 
 - **Phase 3** reads `shaders.properties`, validates declaration keys/types/names, preserves raw
   expression text and source order, and never invokes this grammar
-  (`docs/phase3/v1/PHASE_3_DOC.md:1145`–`:1147`). Phase 11 never reopens pack files or reparses
+  (`docs/phase3/v1/PHASE_3_DOC.md:754`–`:756`). Phase 11 never reopens pack files or reparses
   Java Properties syntax.
 - **Phase 6** owns fixed built-in acquisition, current typed values, the post-built-in custom
   callback, active-program location/type checks, GL uploads, upload replay, and GL-error isolation.
@@ -176,7 +205,7 @@ The following are prohibited within `engine.expr`:
 
 The Appendix F.6 precipitation sentence is explicitly a Phase 7 behavior handoff, not an
 expression-engine feature; Phase 3 records the same ownership
-(`docs/phase3/v1/PHASE_3_DOC.md:690`–`:693`).
+(`docs/phase3/v1/PHASE_3_DOC.md:757`).
 
 ---
 
@@ -238,7 +267,7 @@ precomputed topological order into memo slots, evaluates valid uniforms, and sub
 values in original declaration order.
 One expression failure never aborts unrelated definitions. This matches the required cadence:
 customs refresh “on every program switch after built-ins”
-(`docs/research/v1/RESEARCH.md:1379`–`:1382`).
+(`docs/research/v1/RESEARCH.md:1380`–`:1383`).
 
 ### 2.3 Core data model
 
@@ -293,7 +322,7 @@ members as `FLOAT` because Appendix F.6 provides only `vec2/vec3/vec4`, not `ive
 ### 3.1 Declaration, token, and operator coverage
 
 Appendix F.6 declares both forms and says variables are reusable but not uploaded
-(`docs/research/v1/RESEARCH.md:1492`–`:1495`).
+(`docs/research/v1/RESEARCH.md:1495`–`:1496`).
 In the provenance cells below, Appendix F.6 establishes the named surface and documented shapes;
 §§4.2 and 4.6 plus D-P11-13 establish Phase 11's additional exact grammar and operator semantics.
 
@@ -320,7 +349,7 @@ contains no Pintonium-only Unicode aliases.
 
 ### 3.2 Function coverage
 
-The published function list is exact at `docs/research/v1/RESEARCH.md:1503`–`:1506`; no extra
+The published function list is exact at `docs/research/v1/RESEARCH.md:1507`–`:1510`; no extra
 function becomes pack-visible merely because a reference engine contains it.
 Except for `smooth`'s separately cited behavioral evidence, Appendix F.6 establishes each function
 name and documented signature shape; §4.6 and D-P11-13 establish the additional exact semantics in
@@ -396,7 +425,7 @@ runtime errors for the one uniform that reaches them; Phase 11 never invents zer
 Appendix F.6 authoritatively excludes every D.4 per-draw dynamic—`entityColor`, `entityId`,
 `blockEntityId`, `blendFunc`, and `instanceId`—plus `fogMode` and `fogColor`, and expressly says it
 does not narrow D.4 (`docs/research/v1/RESEARCH.md:1501`–`:1505`). Phase 6's verified schema matches
-that seven-name rule (`docs/phase6/v1/PHASE_6_DOC.md:1197`–`:1200`). The stale five-name restatement
+that seven-name rule (`docs/phase6/v1/PHASE_6_DOC.md:1266`–`:1267`). The stale five-name restatement
 in the Phase 11 design row (`docs/design/v3/DESIGN.md:2300`–`:2303`) is reported in §11.
 
 ### 3.4 Pintonium do-not-inherit disposition
@@ -684,7 +713,7 @@ ordinary Phase 6 redundant-upload skip.
 ### 4.8 Program-switch cadence and Phase 6 bridge
 
 One `CustomExpressionController` is installed through Phase 6 before first use and retained for the
-runtime lifetime, as Phase 6 requires (`docs/phase6/v1/PHASE_6_DOC.md:1190`–`:1196`). It holds an
+runtime lifetime, as Phase 6 requires (`docs/phase6/v1/PHASE_6_DOC.md:1253`–`:1259`). It holds an
 atomic current-plan slot changed only by composition lifecycle calls.
 
 On `refresh(program, values, uploads)`:
@@ -707,8 +736,8 @@ On `refresh(program, values, uploads)`:
 
 Expression-local errors never produce `Aborted`. `Aborted` is reserved for a corrupt plan,
 generation mismatch, provider protocol failure, or backend invariant that makes the remainder
-unsafe. Phase 6 commits any already accepted prefix exactly as its contract states
-(`docs/phase6/v1/PHASE_6_DOC.md:1217`–`:1223`).
+unsafe. Phase 6 commits any already accepted prefix exactly as its contract states, subject to the
+invalid-counter branch that supersedes it (`docs/phase6/v1/PHASE_6_DOC.md:1325`–`:1334`).
 Every `Aborted(diagnosticId,accepted,skippedAbsent,rejected)` reports those same three counters for
 the submitted prefix before the structural failure; Phase 11 never estimates or resets the ledger.
 
@@ -738,6 +767,10 @@ enum ExpressionDiagnosticKind {
     DIVIDE_BY_ZERO, DOMAIN, NON_FINITE, INT_RANGE, PROVIDER, UNSUPPORTED_BACKEND, BACKEND_INVARIANT
 }
 
+enum DiagnosticSeverity { WARNING, ERROR }
+
+enum DiagnosticChannel { CHAT_AND_LOG, LOG_ONLY }
+
 record ExpressionDiagnostic(
     String stableId,
     ExpressionDiagnosticKind kind,
@@ -748,6 +781,11 @@ record ExpressionDiagnostic(
     SourceSpan span,
     String summary) {}
 ```
+
+Both domains are Phase 11-owned and closed. `ERROR` marks a diagnostic that disabled a uniform or
+variable; `WARNING` marks one that did not. `CHAT_AND_LOG` marks a diagnostic whose sanitized
+summary is chat-visible and also logged; `LOG_ONLY` marks detail, such as a dependency path, that
+never reaches chat.
 
 Diagnostics created with plan/declaration context derive stable IDs from diagnostic kind, plan
 fingerprint, declaration ordinal, and source span; message prose is not hashed. The pre-plan
@@ -990,21 +1028,22 @@ The list must be immutable, source ordered, lossless after Properties unescaping
 for Phase 11 diagnostics, and every record field and the ordered list participate in
 `PackConfiguration` fingerprinting. Phase 3 owns key/type/name validation; Phase 11 consumes this
 projection without reopening pack files or reinterpreting Properties syntax
-(`docs/phase3/v1/PHASE_3_DOC.md:1415`–`:1428`).
+(`docs/phase3/v1/PHASE_3_DOC.md:1442` for the publication row and `:1459`–`:1480` for the binding
+algebra block).
 
 ### 5.3 Phase 6 contract consumed
 
 Phase 11 consumes exactly the verified Phase 6 contracts:
 
 - one `CustomUniformBridge.refresh(ResolvedProgramDescriptor, BuiltInExpressionView,
-  CustomUniformUploadSink)` (`docs/phase6/v1/PHASE_6_DOC.md:1135`–`:1147`);
+  CustomUniformUploadSink)` (`docs/phase6/v1/PHASE_6_DOC.md:1200`–`:1205`);
 - exact-name `Present(ExpressionValue)` / `Absent` lookup and the closed scalar/vector/mat4
-  runtime values (`:1148`–`:1162`);
-- typed immutable upload submission and closed refresh result (`:1163`–`:1187`);
+  runtime values (`:1207`–`:1225`);
+- typed immutable upload submission and closed refresh result (`:1226`–`:1250`);
 - built-ins-first execution on every successful activation, with Phase 11 owning expression errors
-  and Phase 6 owning GL uploads (`:1201`–`:1207`);
+  and Phase 6 owning GL uploads (`:1283`–`:1286`);
 - definition-order submission, finite values, type/location checks, duplicate rejection, and
-  accepted-prefix semantics (`:1209`–`:1223`).
+  accepted-prefix semantics (`:1296`–`:1329`).
 
 Phase 11 does not retain `ResolvedProgramDescriptor`, inspect a linked layout, resolve a location,
 install a fourth participant, or invoke a Phase 6 provider.
@@ -1197,7 +1236,7 @@ evidence and a language semantic-version change.
 Phase 11 is assigned no open question (`docs/design/v3/DESIGN.md:2281`). It must nevertheless emit
 one OQ-22 ledger entry for Phase 14 because the research row explicitly includes
 “expression-engine compilation” among implementation-time spot checks
-(`docs/research/v1/RESEARCH.md:1027`). This is a handoff, not a Phase 11 resolution.
+(`docs/research/v1/RESEARCH.md:1028`). This is a handoff, not a Phase 11 resolution.
 
 ### 10.1 OQ-22 expression-backend ledger handoff
 
@@ -1261,9 +1300,10 @@ session does not run the spike or update RESEARCH.md.
 3. **stareval historical credit versus verifiable license.** Neither the missing upstream nor the
    current repository evidence establishes a reusable component-specific grant. The binding rule
    says clean-room when unverifiable; D-P11-1 applies it.
-4. **Verification state.** The v3 target, successful preflight, MOVES adoption, and Rounds 1–4
-   existed before this review. The Round-4 fix-up made the latest prior §5 change, so Round 5 was
-   the fresh verification it required; this Round-5 fix-up changes §5 again.
+4. **Verification state.** The v3 target, successful preflight, and MOVES adoption preceded this
+   review; the completed rounds are recorded once in the §0.4-onward round addenda, whose newest
+   entry restates the outstanding requirement — a fresh verification round is still required for
+   §0.9's §5 citation change.
 
 ### 11.3 Open handoffs
 
