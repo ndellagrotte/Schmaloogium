@@ -1496,6 +1496,7 @@ function estimateOneRound(contract, reviewOnly) {
   const steelman = contract.preset.steelman ? candidates : 0;
   const gate = candidates > 0 ? 1 : 0;
   const adjudicate = 1;
+  const adjudicateCorrection = 1;
   const fixup = reviewOnly ? 0 : 1;
   return {
     attack,
@@ -1504,8 +1505,10 @@ function estimateOneRound(contract, reviewOnly) {
     steelman,
     gate,
     adjudicate,
+    adjudicate_correction: adjudicateCorrection,
     fixup,
-    total: attack + refute + refuteCorrection + steelman + gate + adjudicate + fixup,
+    total: attack + refute + refuteCorrection + steelman + gate
+      + adjudicate + adjudicateCorrection + fixup,
   };
 }
 
@@ -1518,6 +1521,7 @@ export function estimateRun(contract, { reviewOnly = false } = {}) {
       candidates_per_finder: contract.policy.cost_estimate.assumed_candidates_per_finder,
       full_rounds: rounds,
       maximum_refute_corrections_per_result: 1,
+      maximum_adjudicate_corrections_per_round: 1,
     },
     per_round_agent_calls: oneRound,
     maximum_agent_calls: totalAgents,
@@ -1795,7 +1799,7 @@ export function applyGateEvidenceCorrection(candidate, correctedEvidence) {
   return { ...candidate, evidence: correctedEvidence };
 }
 
-export function validateAdjudication(root, expectedReview, adjudication, candidates = []) {
+export function validateAdjudication(root, expectedReview, adjudication, candidates = [], eliminated = []) {
   if (adjudication.review_file !== expectedReview) {
     throw new VerificationError(
       `Adjudicator reported ${adjudication.review_file}; expected ${expectedReview}`,
@@ -1855,17 +1859,50 @@ export function validateAdjudication(root, expectedReview, adjudication, candida
   }
 
   const expectedIds = new Set(candidates.map((candidate) => candidate.candidate_id));
-  const dispositions = adjudication.candidate_dispositions || [];
-  const disposition = new Set(dispositions.map((item) => item.candidate_id));
-  if (
-    disposition.size !== dispositions.length
-    ||
-    disposition.size !== expectedIds.size
-    || [...disposition].some((id) => !expectedIds.has(id))
-  ) {
-    throw new VerificationError("Adjudication must disposition every surviving candidate exactly once", "AGENT_ERROR");
+  const eliminatedIds = new Set(
+    [...eliminated].map((item) => (typeof item === "string" ? item : item.candidate_id)),
+  );
+  const seen = new Set();
+  const surviving = [];
+  const echoedEliminations = [];
+  for (const item of adjudication.candidate_dispositions || []) {
+    if (seen.has(item.candidate_id)) {
+      throw new VerificationError(
+        `Adjudication dispositioned ${item.candidate_id} more than once`,
+        "AGENT_ERROR",
+      );
+    }
+    seen.add(item.candidate_id);
+    if (expectedIds.has(item.candidate_id)) {
+      surviving.push(item);
+      continue;
+    }
+    if (!eliminatedIds.has(item.candidate_id)) {
+      throw new VerificationError(
+        `Adjudication dispositioned unknown candidate ${item.candidate_id}`,
+        "AGENT_ERROR",
+      );
+    }
+    // The adjudicator is handed every candidate Refute, Steelman, or the Gate eliminated and is
+    // asked to write them up under "Checked and clean", so a redundant DROPPED echo is
+    // bookkeeping noise that must not destroy a finished review. Admitting one is not noise:
+    // that evidence never survived the stage that rejected it.
+    if (item.disposition !== "DROPPED" || item.final_severity !== "none") {
+      throw new VerificationError(
+        `Adjudication admitted ${item.candidate_id}, which was eliminated before adjudication`,
+        "AGENT_ERROR",
+      );
+    }
+    echoedEliminations.push(item.candidate_id);
   }
-  for (const item of dispositions) {
+  const missing = [...expectedIds].filter((id) => !seen.has(id));
+  if (missing.length) {
+    throw new VerificationError(
+      `Adjudication omitted surviving candidate(s): ${missing.join(", ")}`,
+      "AGENT_ERROR",
+    );
+  }
+  for (const item of surviving) {
     if (
       (item.disposition === "ADMITTED" && item.final_severity === "none")
       || (item.disposition === "DROPPED" && item.final_severity !== "none")
@@ -1876,7 +1913,7 @@ export function validateAdjudication(root, expectedReview, adjudication, candida
       );
     }
   }
-  const admitted = dispositions.filter((item) => item.disposition === "ADMITTED");
+  const admitted = surviving.filter((item) => item.disposition === "ADMITTED");
   const severityCounts = {
     blocking: admitted.filter((item) => item.final_severity === "blocking").length,
     correction: admitted.filter((item) => item.final_severity === "correction").length,
@@ -1898,6 +1935,7 @@ export function validateAdjudication(root, expectedReview, adjudication, candida
       throw new VerificationError(`Review does not identify admitted candidate ${item.candidate_id}`, "AGENT_ERROR");
     }
   }
+  return { dispositions: surviving, echoed_eliminations: echoedEliminations };
 }
 
 export function validateFixupAppend(beforeText, afterText) {
@@ -2757,7 +2795,7 @@ async function executeVerificationWithLease(contract, options, journalPath, coor
       });
       journal.stage = `R${round} Adjudicate`;
       await writeJournal(contract, coordination, journalPath, journal);
-      const adjudicatePrompt = renderTemplate(loadPrompt("adjudicate.md"), {
+      const adjudicateVariables = {
         REPO_ROOT: contract.root,
         TARGET_TITLE: contract.manifest.title,
         TARGET_ID: contract.manifest.id,
@@ -2775,8 +2813,8 @@ async function executeVerificationWithLease(contract, options, journalPath, coor
         GATE_DROPS: JSON.stringify(roundJournal.gate_drops, null, 2),
         TREND_SO_FAR: JSON.stringify(trend, null, 2),
         PRIOR_REVIEWS: JSON.stringify(contract.priorReviews, null, 2),
-      });
-      const adjudicatorRun = await runCheckedWriter({
+      };
+      const runAdjudicator = (role, correctionContext) => runCheckedWriter({
         contract,
         role: "Adjudicator",
         immutableBaseline,
@@ -2785,8 +2823,11 @@ async function executeVerificationWithLease(contract, options, journalPath, coor
         stage: adjudicateStage,
         invoke: () => runAgent({
           stage: adjudicateStage,
-          role: `adjudicate:R${round}`,
-          prompt: adjudicatePrompt,
+          role,
+          prompt: renderTemplate(loadPrompt("adjudicate.md"), {
+            ...adjudicateVariables,
+            CORRECTION_CONTEXT: correctionContext,
+          }),
           schema: "adjudicate.schema.json",
           sandbox: "workspace-write",
           enforcement: roleEnforcement(contract, {
@@ -2796,12 +2837,62 @@ async function executeVerificationWithLease(contract, options, journalPath, coor
           describe: (result) => `verdict ${result.verdict}`,
         }),
       });
-      const adjudication = adjudicatorRun.result;
-      const adjudicatorChanges = adjudicatorRun.changes;
-      if (!adjudicatorChanges.includes(reviewOutput)) {
+      const adjudicatorRun = await runAdjudicator(`adjudicate:R${round}`, "");
+      let adjudication = adjudicatorRun.result;
+      // Persist the structured payload before it can be rejected: a writer role never retries, so
+      // a validation failure here ends the run, and the payload that explains why is otherwise
+      // lost with the process.
+      roundJournal.adjudication = adjudication;
+      await writeJournal(contract, coordination, journalPath, journal);
+      if (!adjudicatorRun.changes.includes(reviewOutput)) {
         throw new VerificationError(`Adjudicator did not create the expected review: ${reviewOutput}`, "AGENT_ERROR");
       }
-      validateAdjudication(contract.root, reviewOutput, adjudication, candidates);
+      const revalidate = () => validateAdjudication(
+        contract.root,
+        reviewOutput,
+        adjudication,
+        candidates,
+        stageDispositions,
+      );
+      let adjudicated;
+      try {
+        adjudicated = revalidate();
+      } catch (error) {
+        // The payload contradicts itself or the review the same session just wrote. That is a
+        // correctable authoring mistake, not a failed session, so it gets the one bounded
+        // correction the refuters already get instead of discarding a completed writer stage.
+        if (error.code !== "AGENT_ERROR") throw error;
+        adjudicateStage.note(`payload rejected - ${error.message}; one correction attempt`);
+        roundJournal.adjudication_correction = { rejected: error.message, corrected: false };
+        await writeJournal(contract, coordination, journalPath, journal);
+        const correctionRun = await runAdjudicator(`adjudicate:R${round}:correction`, [
+          "CORRECTION PASS. You already wrote the review and returned a structured payload, and the",
+          `orchestrator rejected that payload: ${error.message}`,
+          "",
+          "The rejected payload was:",
+          "",
+          "```json",
+          JSON.stringify(adjudication, null, 2),
+          "```",
+          "",
+          "Decide which side of the contradiction is wrong and return the whole corrected payload.",
+          `You may edit \`${reviewOutput}\` so the two agree, and may edit nothing else; leave the`,
+          "review untouched when only the payload was wrong. Do not re-derive findings, change the",
+          "verdict, or add or drop a finding to satisfy the check — reconcile what you already",
+          "judged.",
+        ].join("\n"));
+        adjudication = correctionRun.result;
+        roundJournal.adjudication = adjudication;
+        roundJournal.adjudication_correction.corrected = true;
+        await writeJournal(contract, coordination, journalPath, journal);
+        adjudicated = revalidate();
+      }
+      if (adjudicated.echoed_eliminations.length) {
+        roundJournal.adjudication_echoed_eliminations = adjudicated.echoed_eliminations;
+        adjudicateStage.note(
+          `ignored redundant disposition(s) for eliminated ${adjudicated.echoed_eliminations.join(", ")}`,
+        );
+      }
       roundJournal.completed_stages.push("Adjudicate");
       lastVerdict = adjudication.verdict;
       const trendEntry = {

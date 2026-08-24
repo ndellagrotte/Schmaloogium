@@ -277,6 +277,8 @@ function makeFakeRunner(root, calls, {
   fixupDesignVersion = "",
   reportedInterfaceRegions,
   steelmanOutcome = "uphold",
+  echoEliminatedCandidate = false,
+  contradictoryInterfaceFlag = false,
 } = {}) {
   return async ({ label, prompt, sandbox }) => {
     calls.push({ label, prompt, sandbox });
@@ -344,13 +346,22 @@ function makeFakeRunner(root, calls, {
         correction_count: 0,
         note_count: 0,
         interface_changed: false,
-        candidate_dispositions: [],
+        candidate_dispositions: echoEliminatedCandidate
+          ? [{
+            candidate_id: "candidate-001",
+            disposition: "DROPPED",
+            final_severity: "none",
+            touches_interface: false,
+            rationale: "eliminated at Steelman; recorded under Checked and clean",
+          }]
+          : [],
         review_file: "reviews/review_1.md",
         rationale: "the steelman defence held",
         findings_dropped_on_derivation: "candidate-001 dropped at Steelman",
       };
     }
     if (label.startsWith("adjudicate:R1")) {
+      const corrected = label.includes(":correction");
       writeReview(root, "reviews/review_1.md", "PASS-WITH-CORRECTIONS", {
         blocking: 0,
         corrections: 1,
@@ -366,7 +377,9 @@ function makeFakeRunner(root, calls, {
           candidate_id: "candidate-001",
           disposition: "ADMITTED",
           final_severity: "correction",
-          touches_interface: false,
+          // The uncorrected payload claims an interface-touching finding while declaring the
+          // round's interface flag false - the contradiction the engine rejects.
+          touches_interface: contradictoryInterfaceFlag && !corrected,
           rationale: "confirmed on independent derivation",
         }],
         review_file: "reviews/review_1.md",
@@ -651,10 +664,11 @@ test("stage ordering and zero-agent dry-run are deterministic", () => {
   assert.equal(plan.resolved_selectors["interface:public-contract"].path, "verification/fixtures/non-phase/TARGET.md");
 });
 
-test("dry-run estimates include one conditional Refute correction per result", () => {
+test("dry-run estimates include one conditional Refute and Adjudicate correction", () => {
   const contract = resolveContract(ROOT, "non-phase-fixture", { maxRounds: 1, preset: "lean" });
   const plan = dryRunPlan(contract);
   assert.equal(plan.estimates.assumptions.maximum_refute_corrections_per_result, 1);
+  assert.equal(plan.estimates.assumptions.maximum_adjudicate_corrections_per_round, 1);
   assert.deepEqual(plan.estimates.per_round_agent_calls, {
     attack: 3,
     refute: 12,
@@ -662,12 +676,13 @@ test("dry-run estimates include one conditional Refute correction per result", (
     steelman: 0,
     gate: 1,
     adjudicate: 1,
+    adjudicate_correction: 1,
     fixup: 1,
-    total: 30,
+    total: 31,
   });
-  assert.equal(plan.estimates.maximum_agent_calls, 30);
-  assert.equal(plan.estimates.estimated_input_tokens, 1_350_000);
-  assert.equal(plan.estimates.estimated_output_tokens, 150_000);
+  assert.equal(plan.estimates.maximum_agent_calls, 31);
+  assert.equal(plan.estimates.estimated_input_tokens, 1_395_000);
+  assert.equal(plan.estimates.estimated_output_tokens, 155_000);
 });
 
 test("dedupe and refuter survival/severity policy match the legacy contract", () => {
@@ -965,6 +980,115 @@ test("literal PASS, verdict consistency, and stop conditions are enforced", () =
   assert.throws(
     () => validateAdjudication(root, "review.md", { ...pass, verdict: "FAIL", blocking_count: 1 }),
     /counts do not match/,
+  );
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("adjudication dispositions are scoped to survivors and name the offending candidate", () => {
+  const root = mkdtempSync(join(tmpdir(), "verify-dispositions-"));
+  spawnSync("git", ["init", "-q"], { cwd: root });
+  writeReview(root, "review.md", "PASS-WITH-CORRECTIONS", {
+    blocking: 0,
+    corrections: 1,
+    notes: 1,
+  }, ["candidate-001", "candidate-002"]);
+  const survivors = [
+    { candidate_id: "candidate-001", severity: "correction", touches_interface: false },
+    { candidate_id: "candidate-002", severity: "note", touches_interface: false },
+  ];
+  const eliminated = [
+    { candidate_id: "candidate-004", stage: "Refute", disposition: "dropped by strict refuting majority" },
+  ];
+  const admittedPair = [
+    {
+      candidate_id: "candidate-001",
+      disposition: "ADMITTED",
+      final_severity: "correction",
+      touches_interface: false,
+      rationale: "confirmed on re-derivation",
+    },
+    {
+      candidate_id: "candidate-002",
+      disposition: "ADMITTED",
+      final_severity: "note",
+      touches_interface: false,
+      rationale: "recorded as a note",
+    },
+  ];
+  const base = {
+    verdict: "PASS-WITH-CORRECTIONS",
+    blocking_count: 0,
+    correction_count: 1,
+    note_count: 1,
+    interface_changed: false,
+    candidate_dispositions: admittedPair,
+    review_file: "review.md",
+    rationale: "adjudicated",
+    findings_dropped_on_derivation: "",
+  };
+  const echo = (fields) => ({ candidate_id: "candidate-004", touches_interface: false, rationale: "eliminated upstream", ...fields });
+
+  // A redundant DROPPED echo of a candidate the engine itself eliminated is bookkeeping noise:
+  // the prompt shows the adjudicator that candidate and asks it to write the elimination up.
+  const tolerated = validateAdjudication(root, "review.md", {
+    ...base,
+    candidate_dispositions: [...admittedPair, echo({ disposition: "DROPPED", final_severity: "none" })],
+  }, survivors, eliminated);
+  assert.deepEqual(tolerated.echoed_eliminations, ["candidate-004"]);
+  assert.deepEqual(
+    tolerated.dispositions.map((item) => item.candidate_id),
+    ["candidate-001", "candidate-002"],
+  );
+  assert.deepEqual(
+    validateAdjudication(root, "review.md", {
+      ...base,
+      candidate_dispositions: [...admittedPair, echo({ disposition: "DROPPED", final_severity: "none" })],
+    }, survivors, ["candidate-004"]).echoed_eliminations,
+    ["candidate-004"],
+  );
+  assert.deepEqual(
+    validateAdjudication(root, "review.md", base, survivors, eliminated).echoed_eliminations,
+    [],
+  );
+
+  // Reviving an eliminated candidate as a finding is the abuse the coverage check exists to stop.
+  assert.throws(
+    () => validateAdjudication(root, "review.md", {
+      ...base,
+      candidate_dispositions: [...admittedPair, echo({ disposition: "ADMITTED", final_severity: "note" })],
+    }, survivors, eliminated),
+    /admitted candidate-004, which was eliminated before adjudication/,
+  );
+  assert.throws(
+    () => validateAdjudication(root, "review.md", {
+      ...base,
+      candidate_dispositions: [...admittedPair, echo({ disposition: "DROPPED", final_severity: "note" })],
+    }, survivors, eliminated),
+    /admitted candidate-004, which was eliminated before adjudication/,
+  );
+  assert.throws(
+    () => validateAdjudication(root, "review.md", {
+      ...base,
+      candidate_dispositions: [
+        ...admittedPair,
+        { ...echo({ disposition: "DROPPED", final_severity: "none" }), candidate_id: "candidate-009" },
+      ],
+    }, survivors, eliminated),
+    /unknown candidate candidate-009/,
+  );
+  assert.throws(
+    () => validateAdjudication(root, "review.md", {
+      ...base,
+      candidate_dispositions: [admittedPair[0]],
+    }, survivors, eliminated),
+    /omitted surviving candidate\(s\): candidate-002/,
+  );
+  assert.throws(
+    () => validateAdjudication(root, "review.md", {
+      ...base,
+      candidate_dispositions: [...admittedPair, admittedPair[1]],
+    }, survivors, eliminated),
+    /dispositioned candidate-002 more than once/,
   );
   rmSync(root, { recursive: true, force: true });
 });
@@ -1893,4 +2017,86 @@ test("a held Steelman defence drops the candidate before Gate and Adjudicate", a
   const adjudicatePrompt = calls.find((call) => call.label.startsWith("adjudicate:")).prompt;
   assert.match(adjudicatePrompt, /"stage": "Steelman"/);
   assert.match(adjudicatePrompt, /"disposition": "defence held; final severity none"/);
+});
+
+test("a redundant disposition for an eliminated candidate is ignored, journaled, and reported", async () => {
+  const { root } = makeMiniRepo();
+  const contract = resolveContract(root, "mini", { preset: "thorough", maxRounds: 1 });
+  const calls = [];
+  const log = [];
+  const result = await executeVerification(contract, {
+    reviewOnly: true,
+    agentRunner: makeFakeRunner(root, calls, {
+      steelmanOutcome: "defend",
+      echoEliminatedCandidate: true,
+    }),
+    logger: (message) => log.push(message),
+    heartbeatMs: 0,
+  });
+  assert.equal(result.outcome, "PASS");
+  assert.ok(log.some((line) => line
+    === "r1 Adjudicate: ignored redundant disposition(s) for eliminated candidate-001"));
+  const journalFiles = readdirSync(join(root, ".runs")).filter((name) => name.endsWith(".json"));
+  assert.equal(journalFiles.length, 1);
+  const journal = JSON.parse(readFileSync(join(root, ".runs", journalFiles[0]), "utf8"));
+  assert.deepEqual(journal.rounds[0].adjudication_echoed_eliminations, ["candidate-001"]);
+  // Journaled before validation runs, so a rejected writer payload stays diagnosable.
+  assert.equal(journal.rounds[0].adjudication.verdict, "PASS");
+  assert.equal(journal.rounds[0].adjudication.candidate_dispositions.length, 1);
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("a self-contradicting adjudication payload gets exactly one bounded correction", async () => {
+  const { root } = makeMiniRepo();
+  const contract = resolveContract(root, "mini", { preset: "lean", maxRounds: 1 });
+  const calls = [];
+  const log = [];
+  const result = await executeVerification(contract, {
+    reviewOnly: true,
+    agentRunner: makeFakeRunner(root, calls, { contradictoryInterfaceFlag: true }),
+    logger: (message) => log.push(message),
+    heartbeatMs: 0,
+  });
+  assert.equal(result.outcome, "REVIEW-ONLY");
+  const adjudicateCalls = calls.filter((call) => call.label.startsWith("adjudicate:"));
+  assert.deepEqual(adjudicateCalls.map((call) => call.label), [
+    "adjudicate:R1",
+    "adjudicate:R1:correction",
+  ]);
+  // The correction session is a writer window like the first, not a read-only reprimand.
+  assert.equal(adjudicateCalls[1].sandbox, "workspace-write");
+  assert.match(adjudicateCalls[1].prompt, /CORRECTION PASS\./);
+  assert.match(adjudicateCalls[1].prompt, /interface flag does not match final candidate dispositions/);
+  assert.match(adjudicateCalls[1].prompt, /"touches_interface": true/);
+  assert.ok(log.some((line) => /^r1 Adjudicate: payload rejected - .*interface flag/.test(line)));
+  const journalFiles = readdirSync(join(root, ".runs")).filter((name) => name.endsWith(".json"));
+  const journal = JSON.parse(readFileSync(join(root, ".runs", journalFiles[0]), "utf8"));
+  assert.equal(journal.rounds[0].adjudication_correction.corrected, true);
+  assert.match(journal.rounds[0].adjudication_correction.rejected, /interface flag/);
+  // The journaled payload is the corrected one the round actually accepted.
+  assert.equal(journal.rounds[0].adjudication.candidate_dispositions[0].touches_interface, false);
+  rmSync(root, { recursive: true, force: true });
+});
+
+test("a correction that stays contradictory ends the round without a second attempt", async () => {
+  const { root } = makeMiniRepo();
+  const contract = resolveContract(root, "mini", { preset: "lean", maxRounds: 1 });
+  const calls = [];
+  const runner = makeFakeRunner(root, calls, { contradictoryInterfaceFlag: true });
+  await assert.rejects(
+    executeVerification(contract, {
+      reviewOnly: true,
+      // Strip the correction marker so the fake adjudicator repeats its contradiction.
+      agentRunner: (call) => runner({ ...call, label: call.label.replace(":correction", "") }),
+      logger: () => {},
+      heartbeatMs: 0,
+    }),
+    (error) => {
+      assert.equal(error.code, "AGENT_ERROR");
+      assert.match(error.message, /interface flag does not match final candidate dispositions/);
+      return true;
+    },
+  );
+  assert.equal(calls.filter((call) => call.label.startsWith("adjudicate:")).length, 2);
+  rmSync(root, { recursive: true, force: true });
 });

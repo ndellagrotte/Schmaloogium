@@ -1,0 +1,310 @@
+{
+  "$schema": "../../.agents/skills/verify-loop/schemas/manifest.schema.json",
+  "version": 1,
+  "id": "phase-13",
+  "title": "Phase 13 — Texture systems",
+  "description": "Adversarial verification profile for the current Phase 13 architecture document.",
+  "targets": [
+    {
+      "path": "docs/phase13/v1/PHASE_13_DOC.md",
+      "role": "document under review",
+      "selectors": [
+        {
+          "id": "whole_document",
+          "selector": {
+            "start": "^# Schmaloogium — Phase 13:"
+          }
+        }
+      ]
+    }
+  ],
+  "design_revision": {
+    "target_index": 0,
+    "section_zero": {
+      "start": "^## 0\\. Header$",
+      "end": "^## 1\\. Scope & boundaries$"
+    },
+    "declaration_pattern": "^\\*\\*Governing design:\\*\\* `(?<path>docs/design/[A-Za-z0-9._-]+/DESIGN\\.md)`"
+  },
+  "authoritative_sources": [
+    {
+      "path": "docs/design/{design_version}/DESIGN.md",
+      "role": "governing design revision",
+      "selectors": [
+        {
+          "id": "part_i",
+          "selector": {
+            "start": "^## Part I — Global sections$",
+            "end": "^## Part II — Phase specifications$"
+          }
+        },
+        {
+          "id": "target_spec",
+          "selector": {
+            "start": "^### Phase 13 — Texture systems$",
+            "end": "^### Phase 14 — GL modernization & performance$"
+          }
+        },
+        {
+          "id": "doc_gate",
+          "selector": {
+            "start": "^\\*\\*Doc gate:\\*\\* all three custom-texture forms",
+            "end": "^\\*\\*Impl gate:\\*\\*",
+            "end_mode": "first-after-start"
+          }
+        },
+        {
+          "id": "mandatory_template",
+          "selector": {
+            "start": "^## G9\\. PHASE_X_DOC\\.md — mandatory template$",
+            "end": "^## G10\\. Open-question assignments$"
+          }
+        }
+      ]
+    },
+    {
+      "path": "docs/research/v1/RESEARCH.md",
+      "role": "contract ground truth",
+      "selectors": [
+        {
+          "id": "front_matter_and_mission",
+          "selector": {
+            "start": "^## 0\\. Front matter$",
+            "end": "^## 2\\. Prior art and niche analysis$"
+          }
+        },
+        {
+          "id": "texture_system_behavior",
+          "selector": {
+            "start": "^### 4\\.6 Vertex pipeline and texture system$",
+            "end": "^### 4\\.7 Options, aliases, GUI, failure handling$"
+          }
+        },
+        {
+          "id": "milestones",
+          "selector": {
+            "start": "^## 9\\. Milestones$",
+            "end": "^## 10\\. Legal and licensing$"
+          }
+        },
+        {
+          "id": "open_question_ledger",
+          "selector": {
+            "start": "^## 11\\. Open questions and risk register$",
+            "end": "^## 12\\. Annotated index of reference material$"
+          }
+        },
+        {
+          "id": "texture_unit_map_and_formats",
+          "selector": {
+            "start": "^### B\\.3 The fixed texture-unit map \\(packs rely on these numbers\\)$",
+            "end": "^### B\\.5 Draw-buffer index prefixes$"
+          }
+        },
+        {
+          "id": "camera_matrices_screen_uniforms",
+          "selector": {
+            "start": "^### D\\.3 Camera / matrices / screen$",
+            "end": "^### D\\.4 Per-draw dynamics \\(excluded from custom-uniform expressions\\)$"
+          }
+        },
+        {
+          "id": "hooks_catalog",
+          "selector": {
+            "start": "^## Appendix E — Hooks catalog",
+            "end": "^## Appendix F — `shaders\\.properties` key catalog"
+          }
+        },
+        {
+          "id": "custom_textures_and_noise",
+          "selector": {
+            "start": "^### F\\.5 Custom textures and noise$",
+            "end": "^### F\\.6 Custom uniforms / variables \\(expression language\\)$"
+          }
+        },
+        {
+          "id": "glossary",
+          "selector": {
+            "start": "^## Appendix H — Glossary"
+          }
+        }
+      ]
+    }
+  ],
+  "supporting_evidence": [
+    {
+      "path": "docs/phase3/reviews/PHASE_3_REVIEW_34.md",
+      "role": "literal-PASS verification state for the Phase 3 dependency contract"
+    },
+    {
+      "path": "docs/phase3/reviews/PHASE_3_REVIEW_36.md",
+      "role": "latest Phase 3 review round — dependency-state evidence"
+    },
+    {
+      "path": "docs/phase5/reviews/PHASE_5_REVIEW_38.md",
+      "role": "latest Phase 5 review round — dependency-state evidence"
+    },
+    {
+      "path": "docs/phase7/reviews/PHASE_7_REVIEW_36.md",
+      "role": "latest Phase 7 review round — dependency-state evidence for the provisional Phase 7 contract"
+    },
+    {
+      "path": "docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md",
+      "role": "Pintonium texture evidence map",
+      "selectors": [
+        {
+          "id": "phase_13_texture_evidence",
+          "selector": {
+            "start": "^## 11\\. Textures \\(Phase 13 relevance\\)$",
+            "end": "^## 12\\. The GLSL transformation layer — the AGPL elephant$"
+          }
+        },
+        {
+          "id": "contract_divergences",
+          "selector": {
+            "start": "^## 18\\. Contract divergences — what Pintonium does that Schmaloogium must NOT copy$",
+            "end": "^## 19\\. README's known bugs → probable root causes \\(where the hard problems actually are\\)$"
+          }
+        }
+      ]
+    },
+    {
+      "path": "reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md",
+      "role": "behavioral-observation-only texture-system section granted by the Phase 13 spec"
+    },
+    {
+      "path": "reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties",
+      "role": "OptiFine custom-texture and noise documentation (legally clean shipped pack-author doc)"
+    },
+    {
+      "path": "reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt",
+      "role": "OptiFine sampler/unit tables and noise documentation (legally clean shipped pack-author doc)"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/COPYING",
+      "role": "Pintonium root GPL license material"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/COPYING.LESSER",
+      "role": "Pintonium root LGPL license material"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/LICENSE",
+      "role": "Pintonium root license notice"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "docs/phase3/v1/PHASE_3_DOC.md",
+      "role": "dependency architecture and binding interface",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    },
+    {
+      "path": "docs/phase5/v1/PHASE_5_DOC.md",
+      "role": "dependency architecture and binding interface",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    },
+    {
+      "path": "docs/phase7/v1/PHASE_7_DOC.md",
+      "role": "dependency architecture and binding interface (provisional — Phase 7 v1 is unverified)",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    }
+  ],
+  "prior_reviews": {
+    "directory": "docs/phase13/reviews",
+    "filename_regex": "^PHASE_13_REVIEW_(?<round>\\d+)\\.md$",
+    "round_group": "round",
+    "read_order": "adjudicator-last",
+    "allow_gaps": false
+  },
+  "forbidden_sources": {
+    "path_patterns": [
+      "docs/**/chatlogs/**",
+      "*.txt"
+    ],
+    "provenance_patterns": [
+      "any prior agent or session transcript, regardless of path or extension"
+    ]
+  },
+  "immutable_paths": [
+    "docs/research/**",
+    "docs/design/**",
+    "docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md",
+    "docs/phase3/v1/PHASE_3_DOC.md",
+    "docs/phase3/reviews/**",
+    "docs/phase5/v1/PHASE_5_DOC.md",
+    "docs/phase5/reviews/**",
+    "docs/phase7/v1/PHASE_7_DOC.md",
+    "docs/phase7/reviews/**",
+    "docs/phase13/reviews/*.md",
+    "reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md",
+    "reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties",
+    "reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt",
+    "reference-src/pintonium-9c2fcc1/COPYING",
+    "reference-src/pintonium-9c2fcc1/COPYING.LESSER",
+    "reference-src/pintonium-9c2fcc1/LICENSE"
+  ],
+  "write_permissions": {
+    "adjudicator": [
+      "{review_output}"
+    ],
+    "fixup": [
+      "docs/phase13/v1/PHASE_13_DOC.md",
+      "{review_output}"
+    ]
+  },
+  "output": {
+    "directory": "docs/phase13/reviews",
+    "review_template": "PHASE_13_REVIEW_{round}.md",
+    "journal_directory": ".verification-runs/phase-13"
+  },
+  "attack_lenses": "verification/lenses/phase-document.json",
+  "lens_order": {
+    "first_review": [
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions",
+      "new-surface"
+    ],
+    "mature": [
+      "new-surface",
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions"
+    ]
+  },
+  "citation": {
+    "format": "repo-relative-line-quote",
+    "resolver": "line-quote",
+    "allow_unique_relocation": true
+  },
+  "interface_regions": [
+    {
+      "id": "cross-phase-interfaces",
+      "path": "docs/phase13/v1/PHASE_13_DOC.md",
+      "selector": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 13 can close."
+    }
+  ],
+  "policy": "verification/policy.json",
+  "target_context": {
+    "assigned_open_questions": "none",
+    "phase_name": "Texture systems",
+    "mandatory_section_count": 13
+  },
+  "fixup_instructions": "This is a first-version document with no mature fix-up-addendum convention. If a correction changes the target, add only a compact next-numbered §0 subsection using its existing header style; do not import Phase 1's supersession sentences, dated-claim ranges, or session-count bookkeeping. Keep full reasoning in the current review's Resolutions and do not roll the v1 directory during a loop."
+}

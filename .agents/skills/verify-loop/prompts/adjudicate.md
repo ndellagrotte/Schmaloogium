@@ -69,7 +69,9 @@ Write one review with this shape:
 
 1. `## 0. Method and reading order` — sources, deviations, network use, agent fan-out, Gate drops.
 2. `## 1. Findings` — each admitted finding with location, claim, evidence, severity, and explicit
-   `touches interface/change-trigger region: yes/no`.
+   `touches interface/change-trigger region: yes/no`, meaning whether the correction that finding
+   orders would change a manifest-declared interface/change-trigger region. A finding that orders
+   no edit to such a region is `no` even when the line it cites sits inside one.
 3. `## 2. Checked and clean` — finder clean areas and candidates refuted/cleared on re-derivation.
 4. `## 3. Verdict` — exactly one verdict heading on its own line:
    `# PASS`, `# PASS-WITH-CORRECTIONS`, or `# FAIL`, followed by counts, interface disposition,
@@ -86,12 +88,19 @@ that requires rebuilding rather than fix-up.
 
 Every admitted finding heading must contain its surviving candidate ID. Do not create a finding
 that is absent from the candidate set. Your independent re-derivation owns final severity and
-interface classification: return exactly one final disposition for every candidate, using
-`final_severity: none` only for a dropped candidate and a non-`none` severity only for an admitted
-candidate. Counts and the interface flag derive from those final dispositions, not the incoming
-candidate labels. Return the exact on-disk counts and review path.
+interface classification: return exactly one final disposition for every candidate in the
+surviving candidate set above and for no other candidate, using `final_severity: none` only for a
+dropped candidate and a non-`none` severity only for an admitted candidate. Candidates eliminated
+before adjudication are already settled: discuss them in `## 2. Checked and clean` prose and leave
+them out of `candidate_dispositions`. Counts and the interface flag derive from those final
+dispositions, not the incoming candidate labels: each count is the number of ADMITTED entries at
+that severity, and `interface_changed` is true exactly when some ADMITTED entry has
+`touches_interface: true`, under the same "would change the region" meaning. The review's
+`Interface changed:` line states that same value. Return the exact on-disk counts and review path.
 
 Your structured result is machine-consumed JSON matching the supplied schema. Submit it with
 exactly one terminal `yield` call whose `result.data` is that JSON object. If the object is too
 large for one call, submit each array field incrementally instead — one `yield` per element with
 `type: ["<array-field>"]` — then finalize with `type: "result"` and an empty `result` object.
+
+{{CORRECTION_CONTEXT}}

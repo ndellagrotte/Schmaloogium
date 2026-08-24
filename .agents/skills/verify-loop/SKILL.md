@@ -105,6 +105,10 @@ to one structured event per line, `--heartbeat-ms N` retunes the heartbeat (`0` 
   role's schema in strict mode; the engine re-validates the payload against the same schema file.
 - A read-only role whose session fails with `AGENT_ERROR` is retried once with a fresh session,
   and the retry is recorded in the journal's `role_retries`. Writer roles never auto-retry.
+- A schema-valid adjudication payload the engine rejects as self-contradictory gets exactly one
+  bounded correction dispatch, quoting the rejection and the rejected payload, under the same
+  write allowlist. That is a correction, not a session retry: the session succeeded, and a second
+  contradictory payload ends the round.
 - PASS is literal: verdict `PASS`, zero blocking findings, and zero corrections. Notes do not block.
 - FAIL stops for a human-authorized rebuild. Review-only stops before fix-up. A cap or partial
   failure is reported honestly and never softened to PASS.

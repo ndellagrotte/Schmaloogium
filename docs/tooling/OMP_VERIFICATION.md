@@ -132,12 +132,14 @@ For `F` finders, `R` refuters, and assumed total candidates `C`:
 
 ```text
 Attack F + Refute C×R + conditional Refute-correction C×R + optional Steelman C
-         + conditional Gate 1 + Adjudicate 1 + conditional Fix-up 1
+         + conditional Gate 1 + Adjudicate 1 + conditional Adjudicate-correction 1
+         + conditional Fix-up 1
 ```
 
 Actual calls fall when finders return fewer/deduplicated candidates, refuters eliminate candidates,
-refuters return valid citations without their one allowed correction attempt, steelman is disabled,
-Gate has no survivors, PASS/FAIL stops, or review-only omits fix-up. Each role is a fresh omp
+refuters return valid citations without their one allowed correction attempt, the adjudicator's
+first payload validates, steelman is disabled, Gate has no survivors, PASS/FAIL stops, or
+review-only omits fix-up. Each role is a fresh omp
 session and therefore consumes its own tokens. Parallelism is capped per preset and never crosses a
 stage barrier. Use `--model` with a cheaper pattern for finder/refuter-scale experiments; the
 estimate math itself is model-agnostic, so price a run from your provider's per-model rates.
@@ -249,12 +251,12 @@ git diff --check
 The tests cover schema/config parsing, target selection, missing/ambiguous/conflicting inputs, root
 containment, prior-review/output state, selectors, stage order and stops, refuter aggregation,
 citation rejection/relocation, recursive Gate evidence, write allowlists, the pre-execution hook's
-read-denial and write-allowlist decisions, ignored-file/mode checks, literal PASS, fake-agent full
-orchestration, first-to-mature transitions, review-only continuation, round-boundary
-selector/prior-review refresh, parallel-target coordination, duplicate-target rejection,
-stale/live lease handling, failure journaling, and the non-phase fixture. The suite injects a fake
-agent runner behind the engine's `agentRunner` seam; it makes no live model calls and runs under
-plain `node`.
+read-denial and write-allowlist decisions, ignored-file/mode checks, literal PASS, adjudication
+disposition scope, the bounded adjudication-payload correction, fake-agent full orchestration,
+first-to-mature transitions, review-only continuation, round-boundary selector/prior-review
+refresh, parallel-target coordination, duplicate-target rejection, stale/live lease handling,
+failure journaling, and the non-phase fixture. The suite injects a fake agent runner behind the
+engine's `agentRunner` seam; it makes no live model calls and runs under plain `node`.
 
 ## Partial failure
 
@@ -278,6 +280,39 @@ Leases owned by a dead PID are reclaimed automatically. A live workspace-mutatio
 preempted; waiters report the holder periodically and fail with `LOCK_TIMEOUT` if their bounded wait
 expires. A conflict or timeout includes the lock, target, PID, stage, and journal metadata available
 for diagnosis.
+
+### Rejected writer payloads
+
+A writer role never auto-retries. A schema-valid adjudication payload the engine rejects as
+self-contradictory is nevertheless correctable, so it gets exactly one bounded correction
+dispatch — same role, same write allowlist, prompted with the rejection text and its own rejected
+payload, and told to reconcile what it already judged rather than re-derive findings. A second
+contradictory payload ends the round. Both payloads are journaled as the round's `adjudication`
+before validation runs, with the rejection under `adjudication_correction`, so a round that does
+die is diagnosed from the journal and never reconstructed from the review prose.
+
+`candidate_dispositions` must carry exactly one entry per candidate that survived to Adjudicate.
+A redundant `DROPPED`/`none` entry for a candidate Refute, Steelman, or the Gate already
+eliminated is ignored — the adjudicator is shown those candidates and asked to write them up under
+`## 2. Checked and clean`, and such an entry feeds no count and no interface flag. It is recorded
+as the round's `adjudication_echoed_eliminations`. Everything else is fatal and names the
+candidate: an omitted survivor, a duplicate, an id from neither set, or an eliminated candidate
+revived as `ADMITTED` — the last being the abuse the coverage check exists to stop, since that
+evidence never survived the stage that rejected it.
+
+`touches_interface` is a *change* predicate at every stage, defined once in the finder prompt:
+whether the correction that finding orders would change a manifest-declared
+interface/change-trigger region. A finding that orders no edit there is `false` even when the line
+it cites sits inside the region, and `interface_changed` is the OR of `touches_interface` over the
+ADMITTED dispositions. That flag is reporting only — trend and review text. What actually decides
+whether a region changed is `authoritativeInterfaceRegions`, which hashes each region selector
+before and after the fix-up.
+
+Discarding a rejected round removes the review from the **git index**, not just the worktree: the
+engine's existing-file view is `git ls-files -co`, so a bare `rm` leaves the path colliding with
+the adjudicator's write allowlist and preflight fails with `Write permission conflicts with
+existing immutable evidence`. The discarded content stays recoverable from history whenever the
+rejected review was already committed.
 
 ### Provider failures
 
