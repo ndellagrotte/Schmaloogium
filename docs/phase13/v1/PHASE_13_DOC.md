@@ -48,16 +48,19 @@ Phase 5 (texture-overlay lease, fixed unit table, format vocabulary, resize cons
    authorization.** §G5.3 item 1 requires a dependency doc to be verified before a dependent build
    session reads it (`docs/design/v3/DESIGN.md:659`–`:663`), and the only sanctioned exception is
    Phase 12's *soft* dependency on Phase 7 (`:668`–`:671`), which does not extend to Phase 13.
-   `docs/phase7/reviews/PHASE_7_REVIEW_32.md:299`–`:301` returned
-   `PASS-WITH-CORRECTIONS` with `Interface changed: yes`, and
+   `docs/phase7/reviews/PHASE_7_REVIEW_32.md:299`–`:301` returned `PASS-WITH-CORRECTIONS` with
+   `Interface changed: yes` at the time of this build, and
    `docs/phase7/v1/PHASE_7_DOC.md:2474`–`:2475`
    states "v1 remains unverified pending a fresh whole-document review." The maintainer authorized
-   proceeding rather than blocking Phase 13 on Phase 7 round 33. Consequence, recorded here and
-   again in §5.4: every contract this document consumes from Phase 7 is **provisional**, and if
-   round 33 changes Phase 7 §5 in a way that contradicts §5.4's table, Phase 13 owes a §G1.3 fix-up
-   session, not a rebuild. The residual risk is small and bounded: round 32's §5 delta was
+   proceeding rather than blocking Phase 13 on a further Phase 7 round. Rounds 33–36 have since run;
+   `docs/phase7/reviews/PHASE_7_REVIEW_36.md:107`–`:109` returned literal `PASS` with
+   `Interface changed: no` and certifies the Phase 7 interface region
+   (`docs/phase7/v1/PHASE_7_DOC.md:1368`–`:2153`) unchanged (`:113`–`:114`), so no §G1.3 fix-up is
+   owed on that trigger and no consumed Phase 7 row needs re-verification. The rows stay marked
+   provisional only because Phase 7 v1 still self-declares unverified pending a version roll; that
+   roll is the residual trigger, and the residual risk is bounded — round 32's §5 delta was
    `AnaglyphEye`, the reshaped `UniformSignal` variants, `BlendStateValue`, and the removal of
-   `ColorValue` — Phase 6 uniform-signal plumbing that Phase 13 does not consume. `[D-P13-2]`
+   `ColorValue`, Phase 6 uniform-signal plumbing that Phase 13 does not consume. `[D-P13-2]`
 2. **PD §7.4 was read although the Required-inputs line names only §11 and §7.6.** The Phase 13
    scope body cites §7.4 directly for the filter/wrap do-not-inherit row
    (`docs/design/v3/DESIGN.md:2476`–`:2478`), so the row cannot be honored without reading it. PD
@@ -101,6 +104,16 @@ Phase 5 (texture-overlay lease, fixed unit table, format vocabulary, resize cons
 - The shipped `doc/shaders.txt` and `doc/shaders.properties` are the legally clean contract sources
   and are cited directly (§G7 item 3).
 - No Oculus material is cited; see §0.2 item 6.
+
+### 0.4 Fix-up addendum — review round 1
+
+Applied under §G1.3 from `docs/phase13/reviews/PHASE_13_REVIEW_1.md` (PASS-WITH-CORRECTIONS;
+blocking=0, corrections=3, notes=1). Three corrections applied: Phase 3's dependency state
+re-derived from `PHASE_3_REVIEW_36.md` and disclosed as provisional (§3.6 item 3, §5.2, §5.4,
+`D-P13-13`, §11 closing); Phase 7's dependency-state anchor moved to `PHASE_7_REVIEW_36.md` and the
+dead "round 33" conditional retired (§0.2 item 1, §5.2, §5.4, §11 closing); §4.1.4's byte-order
+statement reconciled with the "flat normal" label. §5 (the declared interface region) changed, so a
+fresh whole-document verify round is required. Reasoning is in that review's `## Resolutions`.
 
 ---
 
@@ -396,17 +409,17 @@ the §4 subsection that satisfies the row. Zero rows are unmapped.
    not invented (§G1.1, `docs/design/v3/DESIGN.md:296`–`:298`). §5.3 request **R2** asks Phase 5 to
    widen the key domain and the stage column; until it is granted, out-of-domain bindings are
    diagnosed once per publication and the affected sampler degrades at rung 2a. `[D-P13-11]`
-3. **The two dependency documents whose reviews returned literal PASS carry stale closing status
-   lines.** `docs/phase3/v1/PHASE_3_DOC.md:2052`–`:2053` and
-   `docs/phase5/v1/PHASE_5_DOC.md:2510`–`:2511` both end
-   "not verified pending a fresh whole-document review", yet
-   `docs/phase3/reviews/PHASE_3_REVIEW_34.md:46`–`:47` and
-   `docs/phase5/reviews/PHASE_5_REVIEW_38.md:61`–`:62` *are* those reviews and both returned literal
-   `PASS` with `blocking=0; corrections=0; notes=0`.
-   **Ruling:** §G1.3's definition governs — "A phase is **verified** when its latest review verdict is
-   PASS" (`docs/design/v3/DESIGN.md:357`–`:359`). A literal PASS commissions no fix-up session, so no
-   session was owed the footer edit. Phases 3 and 5 are verified dependencies; the footers are stale
-   prose, not a verdict. Recorded so a later reviewer does not have to re-derive it. `[D-P13-13]`
+3. **Dependency verified-state is derived from review verdicts, not from doc footers.**
+   `docs/phase3/v1/PHASE_3_DOC.md:2052`–`:2053` and `docs/phase5/v1/PHASE_5_DOC.md:2510`–`:2511`
+   both end "not verified pending a fresh whole-document review".
+   **Ruling:** §G1.3 governs — "A phase is **verified** when its latest review verdict is PASS"
+   (`docs/design/v3/DESIGN.md:357`–`:359`). Phase 5's latest review is
+   `docs/phase5/reviews/PHASE_5_REVIEW_38.md:61`–`:62`, literal `PASS`, so Phase 5 is verified and
+   its footer is stale prose. Phase 3's latest review is **not** round 34 but round 36
+   (`docs/phase3/reviews/PHASE_3_REVIEW_36.md:270`–`:272`), `PASS-WITH-CORRECTIONS` with
+   `Interface changed: yes`, which states at `:290`–`:292` that a fresh whole-document round is
+   required before Phase 3 "can close or be consumed by a dependent". Phase 3 is therefore not
+   verified and is consumed provisionally; the exposure is disclosed in §5.4. `[D-P13-13]`
 4. **PD's flat-normal default disagrees with RESEARCH's.** PD records `0x7F7FFFFF`
    (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:632`); RESEARCH §4.6 specifies `0xFF7F7FFF`
    (`docs/research/v1/RESEARCH.md:595`). This is the same divergence Part I already records as
@@ -504,12 +517,16 @@ requirements here. `[D-P13-4]`
 
 | Kind | Packed value | Meaning |
 |---|---|---|
-| `NORMALS` | `0xFF7F7FFF` | flat normal — the contract value at `docs/research/v1/RESEARCH.md:595` |
+| `NORMALS` | `0xFF7F7FFF` | the contract default for a missing normal sprite — the literal value at `docs/research/v1/RESEARCH.md:595` |
 | `SPECULAR` | `0x00000000` | zero specular — `docs/research/v1/RESEARCH.md:595` |
 
 The normal default is interpreted as a packed RGBA quadruple whose components, in the order the
 uploader writes them, are `(0xFF, 0x7F, 0x7F, 0xFF)` — i.e. the byte pattern is written most
-significant byte first. This statement exists so a conformance failure localizes: §G12.4's C-TX01
+significant byte first. `[A]` Under that literal reading the value does **not** decode to the
+(0, 0, 1) flat normal the phrase "flat normal" would imply; R=0xFF, G=0x7F, B=0x7F decodes to a
+normal along +X. That tension is left visible rather than removed by re-encoding, and it is exactly
+what `companion_missingNormalUsesContractDefault` and a C-TX01 escalation exist to resolve:
+§G12.4's C-TX01
 records that "representation/byte order remains unresolved and is never silently swapped"
 (`docs/design/v3/DESIGN.md:1088`), so the assumption is stated in exactly one place, tagged `[A]`,
 and covered by a dedicated test (`companion_missingNormalUsesContractDefault`) that a T2 run can
@@ -1025,7 +1042,7 @@ opaque handle type, minted and owned here and borrowed by Phase 5's binding snap
 
 ### 5.2 Dependency contracts consumed
 
-#### Phase 3 — verified (`docs/phase3/reviews/PHASE_3_REVIEW_34.md:46`–`:47`, literal `PASS`)
+#### Phase 3 — **not verified; consumed provisionally** (`docs/phase3/reviews/PHASE_3_REVIEW_36.md:270`–`:272`, `PASS-WITH-CORRECTIONS`, `Interface changed: yes`; see §5.4)
 
 | Consumed contract | Use |
 |---|---|
@@ -1052,7 +1069,7 @@ opaque handle type, minted and owned here and borrowed by Phase 5's binding snap
 | `BufferResizeNotice` / `BufferResizeConsumer` / `ResizeConsumerResult` (`:617`–`:621`, `:1807`, `:2018`) | §4.7.1 |
 | "Phase 13 retains registry, allocation, upload, ownership, and destruction" (`:1902`–`:1903`) | the ownership boundary this phase implements |
 
-#### Phase 7 — **not verified; consumed provisionally** (`docs/phase7/reviews/PHASE_7_REVIEW_32.md:299`–`:301`)
+#### Phase 7 — latest review literal `PASS`, `Interface changed: no` (`docs/phase7/reviews/PHASE_7_REVIEW_36.md:107`–`:109`); still consumed provisionally because Phase 7 v1 self-declares unverified pending a version roll
 
 | Consumed contract | Use |
 |---|---|
@@ -1075,20 +1092,29 @@ specified in §4, so no request is on the critical path.
 | **R3** | Phase 1 | Allocate `com.schmaloogium.engine.textures`, `com.schmaloogium.mod.glue.textures`, and `com.schmaloogium.mod.mixin.textures`, following the granted Phase 7/8 trios (`docs/phase1/v14/PHASE_1_DOC.md:1537`, `:1551`, `:1554`) | `com.schmaloogium.mod.mixin` is already allocated to Phase 13 (`:1553`), so the mixins have a home; only the engine/glue package *names* are pending, and no contract depends on them |
 | **R4** | Phase 3 | Add `CompanionMapRequirement(boolean normals, boolean specular)` to `ResourceRequirements`, derived from the declared-sampler data Phase 3 already computes (`docs/phase3/v1/PHASE_3_DOC.md:1408`) | §4.1.1's `ALWAYS_ON_FALLBACK`: build both companions whenever a pack is active. Costs memory, not correctness, and it is the cost the design already accepts (`docs/design/v3/DESIGN.md:2499`–`:2500`) |
 
-### 5.4 Phase 7 provisional-contract disclosure
+### 5.4 Provisional-contract disclosure — Phases 3 and 7
 
-Every row in §5.2's Phase 7 table is provisional, for the reason recorded in §0.2 item 1. The
-disclosure is deliberately narrow so a fix-up can be scoped rather than exploratory:
+Every row in §5.2's Phase 3 and Phase 7 tables is provisional, for the reasons recorded in §3.6
+item 3 and §0.2 item 1. The disclosure is deliberately narrow so a fix-up can be scoped rather than
+exploratory:
 
-- **What is consumed:** a table shape and health-class vocabulary (§4.6), a two-row scope assignment,
+- **Phase 7 — what is consumed:** a table shape and health-class vocabulary (§4.6), a two-row scope assignment,
   an event preference, one sentence about how the lease reaches Phase 5, and a closed reload-reason
   enum.
-- **What is not consumed:** nothing from `FrameHookSink`, `UniformSignal`, `BlendStateValue`,
+- **Phase 7 — what is not consumed:** nothing from `FrameHookSink`, `UniformSignal`, `BlendStateValue`,
   `AnaglyphEye`, or any frame-transaction type — which is precisely the surface round 32 changed.
-- **If round 33 contradicts a row:** Phase 13 owes a §G1.3 fix-up session recording the correction
-  under that review's `## Resolutions` and adding a `§0.<K>` addendum here. A rebuild is not owed,
-  because no structural decision in §4 rests on a Phase 7 type — §4.6's rows would be reformatted, and
-  §4.7's table would be re-keyed, and nothing else would move.
+- **Phase 7 residual trigger:** rounds 33–36 have run and round 36 returned literal `PASS` with
+  `Interface changed: no`, certifying `docs/phase7/v1/PHASE_7_DOC.md:1368`–`:2153` unchanged
+  (`docs/phase7/reviews/PHASE_7_REVIEW_36.md:107`–`:114`), so no §G1.3 fix-up is owed on that
+  trigger today and the consumed rows need no re-verification. Only a future Phase 7 version roll
+  that contradicts a row would owe one: a fix-up session recording the correction under that
+  review's `## Resolutions` and adding a `§0.<K>` addendum here, never a rebuild, because no
+  structural decision in §4 rests on a Phase 7 type.
+- **Phase 3 exposure:** round 36 requires a fresh whole-document round before Phase 3 may be
+  consumed by a dependent. Its narrowest live exposure here is the ordered texture-key suffix
+  disposition (`docs/phase3/reviews/PHASE_3_REVIEW_36.md:275`), which lands on the same surface
+  §4.3.1 and §3.6 item 1 consume; the round-36 fix-up may also have moved the Phase 3 line anchors
+  cited in §5.2. Either outcome owes Phase 13 a §G1.3 fix-up, not a rebuild.
 
 ### 5.5 Downstream hand-offs
 
@@ -1295,7 +1321,7 @@ Two OQs touch this subsystem without belonging to it, recorded so a reader does 
 | `D-P13-10` | Derive `MC_NORMAL_MAP`/`MC_SPECULAR_MAP` from pipeline-time `CompanionPolicy`, not from atlas build success | Breaks the circularity between preprocessing and stitching (§4.1.6); a §G11.5 "reuse structure, re-derive values" adoption of PD §7.6's macro placement |
 | `D-P13-11` | Design the full App F.5 binding space, publish what Phase 5's key domain reaches, and diagnose the rest as `UnsupportedBinding` | §G1.1 forbids inventing a dependency interface (`docs/design/v3/DESIGN.md:296`–`:298`); R2 is the route, rung 2a is the interim |
 | `D-P13-12` | Demand-driven companion construction, with unconditional construction as the specified fallback | PD §17 B13's lesson applied to companions; the fallback is the cost the governing design already accepts, so a failed request never stalls the phase (§4.1.1) |
-| `D-P13-13` | Treat Phases 3 and 5 as verified on their review verdicts, not on their stale doc footers | §G1.3 defines "verified" by the latest review verdict (`docs/design/v3/DESIGN.md:357`–`:359`); §3.6 item 3 records the provenance so no later session re-derives it |
+| `D-P13-13` | Derive each dependency's verified state from its latest review verdict, not from its doc footer: Phase 5 verified, Phase 3 consumed provisionally | §G1.3 defines "verified" by the latest review verdict (`docs/design/v3/DESIGN.md:357`–`:359`); Phase 3's latest review is round 36, `PASS-WITH-CORRECTIONS`, which bars consumption until a fresh round (§3.6 item 3, §5.4) |
 | `D-P13-14` | Do not renormalize normals during mip generation | Renormalizing would "improve" a contract-visible component, which §G4.2 forbids; tagged `[A]` and falsifiable at T2 (§4.1.3) |
 
 No decision here contradicts RESEARCH's D-1…D-10. D-6 shapes §2.1's split, D-9's compat baseline is
@@ -1428,8 +1454,8 @@ Ordered, independently actionable, each with a milestone tag and a test hook.
 
 ---
 
-*End of PHASE_13_DOC.md. Initial build under §G1.1; not verified. The next required action is a fresh
-§G1.2 verify session writing round one into `docs/phase13/reviews/`. Phases 3 and 5 were consumed
-as verified dependencies; Phase 7 was consumed provisionally under the maintainer authorization
-recorded in §0.2 item 1, and a §G1.3 fix-up is owed here if Phase 7 round 33 contradicts §5.2's
-Phase 7 table.*
+*End of PHASE_13_DOC.md. Built under §G1.1 and corrected under §G1.3 from review round 1 (§0.4); not
+verified. The next required action is a fresh whole-document §G1.2 verify round, because the round-1
+repairs changed §5. Phase 5 was consumed as a verified dependency; Phases 3 and 7 were consumed
+provisionally (§5.4), and a §G1.3 fix-up is owed here if Phase 3's required fresh round, or a future
+Phase 7 version roll, contradicts §5.2.*
