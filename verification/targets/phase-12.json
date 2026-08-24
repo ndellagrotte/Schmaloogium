@@ -1,0 +1,286 @@
+{
+  "$schema": "../../.agents/skills/verify-loop/schemas/manifest.schema.json",
+  "version": 1,
+  "id": "phase-12",
+  "title": "Phase 12 — Options GUI, persistence & reload",
+  "description": "Adversarial verification profile for the current Phase 12 architecture document.",
+  "targets": [
+    {
+      "path": "docs/phase12/v1/PHASE_12_DOC.md",
+      "role": "document under review",
+      "selectors": [
+        {
+          "id": "whole_document",
+          "selector": {
+            "start": "^# Schmaloogium — Phase 12:"
+          }
+        }
+      ]
+    }
+  ],
+  "design_revision": {
+    "target_index": 0,
+    "section_zero": {
+      "start": "^## 0\\. Header$",
+      "end": "^## 1\\. Scope & boundaries$"
+    },
+    "declaration_pattern": "^\\*\\*Governing design:\\*\\* `(?<path>docs/design/[A-Za-z0-9._-]+/DESIGN\\.md)`"
+  },
+  "authoritative_sources": [
+    {
+      "path": "docs/design/{design_version}/DESIGN.md",
+      "role": "governing design revision",
+      "selectors": [
+        {
+          "id": "part_i",
+          "selector": {
+            "start": "^## Part I — Global sections$",
+            "end": "^## Part II — Phase specifications$"
+          }
+        },
+        {
+          "id": "target_spec",
+          "selector": {
+            "start": "^### Phase 12 — Options GUI, persistence & reload$",
+            "end": "^### Phase 13 — Texture systems$"
+          }
+        },
+        {
+          "id": "doc_gate",
+          "selector": {
+            "start": "^\\*\\*Doc gate:\\*\\* every App F\\.3/F\\.4 construct in the conformance map",
+            "end": "^\\*\\*Impl gate:\\*\\*",
+            "end_mode": "first-after-start"
+          }
+        },
+        {
+          "id": "mandatory_template",
+          "selector": {
+            "start": "^## G9\\. PHASE_X_DOC\\.md — mandatory template$",
+            "end": "^## G10\\. Open-question assignments$"
+          }
+        }
+      ]
+    },
+    {
+      "path": "docs/research/v1/RESEARCH.md",
+      "role": "contract ground truth",
+      "selectors": [
+        {
+          "id": "front_matter_and_mission",
+          "selector": {
+            "start": "^## 0\\. Front matter$",
+            "end": "^## 2\\. Prior art and niche analysis$"
+          }
+        },
+        {
+          "id": "options_gui_behavior",
+          "selector": {
+            "start": "^### 4\\.7 Options, aliases, GUI, failure handling$",
+            "end": "^## 5\\. Cleanroom platform facts$"
+          }
+        },
+        {
+          "id": "options_gui_direction",
+          "selector": {
+            "start": "^### 7\\.6 Options GUI$",
+            "end": "^## 8\\. Compatibility target and conformance strategy$"
+          }
+        },
+        {
+          "id": "milestones",
+          "selector": {
+            "start": "^## 9\\. Milestones$",
+            "end": "^## 10\\. Legal and licensing$"
+          }
+        },
+        {
+          "id": "open_question_ledger",
+          "selector": {
+            "start": "^## 11\\. Open questions and risk register$",
+            "end": "^## 12\\. Annotated index of reference material$"
+          }
+        },
+        {
+          "id": "hooks_catalog",
+          "selector": {
+            "start": "^## Appendix E — Hooks catalog",
+            "end": "^## Appendix F — `shaders\\.properties` key catalog"
+          }
+        },
+        {
+          "id": "options_profiles_screens",
+          "selector": {
+            "start": "^### F\\.3 Options \\(discovered in sources; properties only organizes them\\)$",
+            "end": "^### F\\.5 Custom textures and noise$"
+          }
+        },
+        {
+          "id": "glossary",
+          "selector": {
+            "start": "^## Appendix H — Glossary"
+          }
+        }
+      ]
+    }
+  ],
+  "supporting_evidence": [
+    {
+      "path": "docs/phase1/reviews/PHASE_1_REVIEW_25.md",
+      "role": "latest literal-PASS verification state for the Phase 1 dependency contract"
+    },
+    {
+      "path": "docs/phase3/reviews/PHASE_3_REVIEW_34.md",
+      "role": "literal-PASS verification state the target cites for the Phase 3 dependency contract"
+    },
+    {
+      "path": "docs/phase3/reviews/PHASE_3_REVIEW_35.md",
+      "role": "later Phase 3 review round — dependency-state evidence"
+    },
+    {
+      "path": "docs/phase3/reviews/PHASE_3_REVIEW_36.md",
+      "role": "latest Phase 3 review round — dependency-state evidence"
+    },
+    {
+      "path": "docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md",
+      "role": "Pintonium GUI/persistence evidence map",
+      "selectors": [
+        {
+          "id": "phase_12_gui_evidence",
+          "selector": {
+            "start": "^## 14\\. GUI, persistence, expressions \\(Phases 11/12\\)$",
+            "end": "^## 15\\. GL modernization"
+          }
+        }
+      ]
+    },
+    {
+      "path": "reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties",
+      "role": "OptiFine options/profiles/screens documentation"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/net/irisshaders/iris/gui/VintageShaderPackOptionsScreen.java",
+      "role": "Pintonium generated-options-screen evidence, never contract"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/net/irisshaders/iris/gui/VintageShaderPackSelectionScreen.java",
+      "role": "Pintonium pack-selection-screen and engine-settings evidence, never contract"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/COPYING",
+      "role": "Pintonium root GPL license material"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/COPYING.LESSER",
+      "role": "Pintonium root LGPL license material"
+    },
+    {
+      "path": "reference-src/pintonium-9c2fcc1/LICENSE",
+      "role": "Pintonium root license notice"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "docs/phase1/v14/PHASE_1_DOC.md",
+      "role": "dependency architecture and binding interface",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    },
+    {
+      "path": "docs/phase3/v1/PHASE_3_DOC.md",
+      "role": "dependency architecture and binding interface",
+      "binding_contract": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      }
+    }
+  ],
+  "prior_reviews": {
+    "directory": "docs/phase12/reviews",
+    "filename_regex": "^PHASE_12_REVIEW_(?<round>\\d+)\\.md$",
+    "round_group": "round",
+    "read_order": "adjudicator-last",
+    "allow_gaps": false
+  },
+  "forbidden_sources": {
+    "path_patterns": [
+      "docs/**/chatlogs/**",
+      "*.txt"
+    ],
+    "provenance_patterns": [
+      "any prior agent or session transcript, regardless of path or extension"
+    ]
+  },
+  "immutable_paths": [
+    "docs/research/**",
+    "docs/design/**",
+    "docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md",
+    "docs/phase1/v14/PHASE_1_DOC.md",
+    "docs/phase1/reviews/**",
+    "docs/phase3/v1/PHASE_3_DOC.md",
+    "docs/phase3/reviews/**",
+    "docs/phase12/reviews/*.md",
+    "reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties",
+    "reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/net/irisshaders/iris/gui/VintageShaderPackOptionsScreen.java",
+    "reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/net/irisshaders/iris/gui/VintageShaderPackSelectionScreen.java",
+    "reference-src/pintonium-9c2fcc1/COPYING",
+    "reference-src/pintonium-9c2fcc1/COPYING.LESSER",
+    "reference-src/pintonium-9c2fcc1/LICENSE"
+  ],
+  "write_permissions": {
+    "adjudicator": [
+      "{review_output}"
+    ],
+    "fixup": [
+      "docs/phase12/v1/PHASE_12_DOC.md",
+      "{review_output}"
+    ]
+  },
+  "output": {
+    "directory": "docs/phase12/reviews",
+    "review_template": "PHASE_12_REVIEW_{round}.md",
+    "journal_directory": ".verification-runs/phase-12"
+  },
+  "attack_lenses": "verification/lenses/phase-document.json",
+  "lens_order": {
+    "first_review": [
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions",
+      "new-surface"
+    ],
+    "mature": [
+      "new-surface",
+      "interfaces",
+      "conformance",
+      "doc-gate",
+      "scope-decisions"
+    ]
+  },
+  "citation": {
+    "format": "repo-relative-line-quote",
+    "resolver": "line-quote",
+    "allow_unique_relocation": true
+  },
+  "interface_regions": [
+    {
+      "id": "cross-phase-interfaces",
+      "path": "docs/phase12/v1/PHASE_12_DOC.md",
+      "selector": {
+        "start": "^## 5\\. Cross-phase interfaces$",
+        "end": "^## 6\\. Failure modes & degradation$"
+      },
+      "change_trigger": "A fresh verify round is required before Phase 12 can close."
+    }
+  ],
+  "policy": "verification/policy.json",
+  "target_context": {
+    "assigned_open_questions": "OQ-9",
+    "phase_name": "Options GUI, persistence & reload",
+    "mandatory_section_count": 13
+  },
+  "fixup_instructions": "This is a first-version document with no mature fix-up-addendum convention. If a correction changes the target, add only a compact next-numbered §0 subsection using its existing header style; do not import Phase 1's supersession sentences, dated-claim ranges, or session-count bookkeeping. Keep full reasoning in the current review's Resolutions and do not roll the v1 directory during a loop."
+}
