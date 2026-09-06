@@ -32,7 +32,7 @@ the adoption.
 | `reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md` | §8 "Texture system" only (`:456`–`:487`) | the one section the spec grants (`docs/design/v3/DESIGN.md:2491`), under §G7 item 2 |
 | `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties` | custom-texture and noise block (`:78`–`:125`) | legally clean shipped pack-author doc, citable freely (§G7 item 3, `docs/design/v3/DESIGN.md:743`–`:745`) |
 | `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt` | sampler/unit tables (`:190`–`:207`, `:272`–`:326`), `atlasSize` row (`:177`), noise const row (`:422`), option-macro rows (`:655`–`:656`) | same shipped-doc grant |
-| `docs/phase3/v1/PHASE_3_DOC.md` | §1.2 ownership row (`:300`), §3.2 texture rows (`:737`–`:743`), §3.3 noise row (`:793`), §4.4 macros (`:945`–`:984`), §5.1 in full (`:1396`–`:1576`) | dependency contract |
+| `docs/phase3/v1/PHASE_3_DOC.md` | §1.2 ownership row (`:309`), §3.2 texture rows (`:749`–`:753`), §3.3 noise row (`:803`), §4.4 macros (`:957`–`:996`), §5.1 in full (`:1422`–`:1625`) | dependency contract |
 | `docs/phase5/v1/PHASE_5_DOC.md` | §1.2 ownership (`:382`), resize consumer types (`:617`–`:621`), `addResizeConsumer` (`:1807`), §4.12 in full (`:1869`–`:1957`), §5.1 (`:2000`–`:2020`), §6 row (`:2116`), §9 row (`:2321`) | dependency contract |
 | `docs/phase7/v1/PHASE_7_DOC.md` | §1.2 ownership (`:356`–`:357`), hook need 9 (`:563`), executor step 5 (`:931`–`:933`), §4.10.1 catalog notation (`:1075`–`:1098`), §4.10.8 rows 10–11 (`:1244`–`:1245`), §4.11 atlas event row (`:1269`), reload types (`:1564`–`:1568`), §5.5 hand-off (`:2120`) | dependency contract (provisional — §0.2) |
 | `docs/phase1/v14/PHASE_1_DOC.md` | package tables (`:1526`–`:1558`), seam constraints C-1…C-4 (`:2229`–`:2244`) | module placement and the D-6 seam |
@@ -114,6 +114,16 @@ re-derived from `PHASE_3_REVIEW_36.md` and disclosed as provisional (§3.6 item 
 dead "round 33" conditional retired (§0.2 item 1, §5.2, §5.4, §11 closing); §4.1.4's byte-order
 statement reconciled with the "flat normal" label. §5 (the declared interface region) changed, so a
 fresh whole-document verify round is required. Reasoning is in that review's `## Resolutions`.
+
+### 0.5 Fix-up addendum — review round 2
+
+Applied under §G1.3 from `docs/phase13/reviews/PHASE_13_REVIEW_2.md` (PASS-WITH-CORRECTIONS;
+blocking=0, corrections=3, notes=1). Three corrections applied: the `AtlasId.canonicalName` domain
+and a parameterless `atlasSize()` for the world block/item atlas are now stated (§2.2, §4.4, §5.1,
+§9); every stale `docs/phase3/v1/PHASE_3_DOC.md` line anchor was re-resolved against the current
+Phase 3 v1 text (§0.1, §3.1, §3.4, §4.1.1, §4.1.6, §4.2.1, §4.2.4, §4.3.1, §4.3.3, §4.3.4, §4.5.1,
+§5.2, §5.3); and §4.3.6's follow-through pointer now names §12 item 19. §5 changed again, so a fresh
+whole-document verify round is still required. Reasoning is in that review's `## Resolutions`.
 
 ---
 
@@ -206,7 +216,8 @@ public interface TextureSystem {
     TextureBuildResult     build(TextureBuildRequest request);    // render thread; allocates + uploads
     TextureOverlayLease    lease();                               // Phase 5's type; caller closes
     TextureOverlayPublicationId publicationId();                  // read with lease(), atomically
-    AtlasSizeResult        atlasSize(AtlasId atlas);              // the App D value source
+    AtlasSizeResult        atlasSize(AtlasId atlas);           // the App D value source
+    AtlasSizeResult        atlasSize();                        // the same, for the world block/item atlas
     void                   close();                               // idempotent; destroys owned objects
 }
 ```
@@ -313,22 +324,22 @@ the §4 subsection that satisfies the row. Zero rows are unmapped.
 
 | # | Contract surface | Design element | Provenance | Primary test |
 |---|---|---|---|---|
-| F5-1 | `texture.<gbuffers\|deferred\|composite>.<sampler>` key grammar | §4.3.1 consumes Phase 3's `TextureBindingKey` unchanged (`docs/phase3/v1/PHASE_3_DOC.md:1443`–`:1447`) | `[V:doc]` `docs/research/v1/RESEARCH.md:1484`; `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:81` | `custom_keyGrammarRoundTrip` |
-| F5-2 | `.0`–`.9` suffix is a duplicate-key discriminator, not part of the sampler name | §4.3.1 — the discriminator selects among several bindings for one sampler, never renames it | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:117`; Phase 3 keeps it separate at `docs/phase3/v1/PHASE_3_DOC.md:1445`–`:1446` | `custom_duplicateDiscriminatorNotFoldedIntoSampler` |
+| F5-1 | `texture.<gbuffers\|deferred\|composite>.<sampler>` key grammar | §4.3.1 consumes Phase 3's `TextureBindingKey` unchanged (`docs/phase3/v1/PHASE_3_DOC.md:1482`–`:1488`) | `[V:doc]` `docs/research/v1/RESEARCH.md:1484`; `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:81` | `custom_keyGrammarRoundTrip` |
+| F5-2 | `.0`–`.9` suffix is a duplicate-key discriminator, not part of the sampler name | §4.3.1 — the discriminator selects among several bindings for one sampler, never renames it | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:117`; Phase 3 keeps it separate at `docs/phase3/v1/PHASE_3_DOC.md:1485`–`:1486` | `custom_duplicateDiscriminatorNotFoldedIntoSampler` |
 | F5-3 | Pack-relative PNG source form | §4.3.2 `PackPath` branch | `[V:doc]` `docs/research/v1/RESEARCH.md:1485`; `…/doc/shaders.properties:91` | `custom_packPngLoads` |
 | F5-4 | `minecraft:` asset-location source form | §4.3.2 `MinecraftResource` branch | `[V:doc]` `…/doc/shaders.properties:95` | `custom_minecraftAssetLoads` |
 | F5-5 | `minecraft:dynamic/lightmap_1` live-texture form | §4.3.2 dynamic sub-branch — resolves to a live vanilla texture identity, never a copy | `[V:doc]` `docs/research/v1/RESEARCH.md:1485`; `…/doc/shaders.properties:98` | `custom_dynamicLightmapResolves` |
 | F5-6 | `minecraft:` atlas-path form | §4.3.2 dynamic sub-branch, atlas identity | `[V:doc]` `…/doc/shaders.properties:99` | `custom_atlasPathResolves` |
 | F5-7 | `_n`/`_s` suffix selects the companion variant of an asset/atlas path | §4.3.2 companion-variant resolution routes to §4.1's companion objects | `[V:doc]` `docs/research/v1/RESEARCH.md:1486`; `…/doc/shaders.properties:100`–`:101` | `custom_companionVariantSelection` |
 | F5-8 | Raw binary form `<path> <target> <internalFormat> <dims…> <pixelFormat> <pixelType>` | §4.3.3 raw uploader over Phase 5's App B.4 vocabulary (`docs/phase5/v1/PHASE_5_DOC.md:2020`) | `[V:doc]` `docs/research/v1/RESEARCH.md:1486`–`:1487`; `…/doc/shaders.properties:104` | `custom_rawUploadAllTargets` |
-| F5-9 | `TEXTURE_1D`/`2D`/`3D`/`RECTANGLE` targets with dimension arity 1/2/3/2 | §4.3.3; arity is already validated by Phase 3 (`docs/phase3/v1/PHASE_3_DOC.md:1455`–`:1456`) and re-checked against the byte length here | `[V:doc]` `…/doc/shaders.properties:106` | `custom_rawArityAndByteLength` |
+| F5-9 | `TEXTURE_1D`/`2D`/`3D`/`RECTANGLE` targets with dimension arity 1/2/3/2 | §4.3.3; arity is already validated by Phase 3 (`docs/phase3/v1/PHASE_3_DOC.md:1496`–`:1497`) and re-checked against the byte length here | `[V:doc]` `…/doc/shaders.properties:106` | `custom_rawArityAndByteLength` |
 | F5-10 | Several texture types may share one unit; **one type per unit per program** | §4.3.4 sampler-type disambiguation, using the per-program declared samplers | `[V:doc]` `docs/research/v1/RESEARCH.md:1488`–`:1489`; `…/doc/shaders.properties:114`–`:116` | `custom_oneSamplerTypePerUnitPerProgram` |
 | F5-11 | `.mcmeta` sidecar sets blur (filter) | §4.3.5 — `blur=true` → `LINEAR`, false → `NEAREST` | `[V:doc]` `docs/research/v1/RESEARCH.md:1489`; `…/doc/shaders.properties:118`–`:119` | `custom_mcmetaBlurSetsFilter` |
 | F5-12 | `.mcmeta` sidecar sets clamp (wrap) | §4.3.5 — `clamp=true` → `CLAMP_TO_EDGE`, false → `REPEAT` | `[V:doc]` same rows | `custom_mcmetaClampSetsWrap` |
-| F5-13 | Stage `gbuffers` → gbuffers **and shadow** programs | §4.3.1 stage expansion, taken verbatim from Phase 3 (`docs/phase3/v1/PHASE_3_DOC.md:1446`–`:1447`) | `[V:doc]` `docs/research/v1/RESEARCH.md:1489`–`:1490`; `…/doc/shaders.properties:83` | `custom_stageExpansionGbuffersIncludesShadow` |
+| F5-13 | Stage `gbuffers` → gbuffers **and shadow** programs | §4.3.1 stage expansion, taken verbatim from Phase 3 (`docs/phase3/v1/PHASE_3_DOC.md:1487`–`:1488`) | `[V:doc]` `docs/research/v1/RESEARCH.md:1489`–`:1490`; `…/doc/shaders.properties:83` | `custom_stageExpansionGbuffersIncludesShadow` |
 | F5-14 | Stage `deferred` → deferred programs | §4.3.1 | `[V:doc]` `…/doc/shaders.properties:84` | `custom_stageExpansionDeferred` |
 | F5-15 | Stage `composite` → composite **and final** programs | §4.3.1 | `[V:doc]` `…/doc/shaders.properties:85` | `custom_stageExpansionCompositeIncludesFinal` |
-| F5-16 | `texture.noise=<pack path>` overrides the generated noise | §4.2.4, consuming Phase 3's `NoiseTextureSpec.Override` (`docs/phase3/v1/PHASE_3_DOC.md:1461`–`:1463`) | `[V:doc]` `docs/research/v1/RESEARCH.md:1491`; `…/doc/shaders.properties:124` | `noise_packOverrideReplacesGenerated` |
+| F5-16 | `texture.noise=<pack path>` overrides the generated noise | §4.2.4, consuming Phase 3's `NoiseTextureSpec.Override` (`docs/phase3/v1/PHASE_3_DOC.md:1502`–`:1503`) | `[V:doc]` `docs/research/v1/RESEARCH.md:1491`; `…/doc/shaders.properties:124` | `noise_packOverrideReplacesGenerated` |
 | F5-17 | A custom texture may target a sampler name that is otherwise a colortex/gaux buffer | §4.3.6 — designed here in full; the Phase 5 key domain does not yet reach every such unit, so the shortfall is a flagged decision `[D-P13-11]` and §5.3 request **R2**, never a silent drop | `[V:doc]` `…/doc/shaders.properties:86`, `:91`; `[V:observed — Pintonium]` PD §11 override-of-colortex row (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:629`) | `custom_colortexOverrideDiagnosedOrBound` |
 
 ### 3.2 Appendix B.3 — the fixed texture-unit map (`docs/research/v1/RESEARCH.md:1228`–`:1256`)
@@ -359,7 +370,7 @@ the §4 subsection that satisfies the row. Zero rows are unmapped.
 | # | Contract surface | Design element | Provenance | Primary test |
 |---|---|---|---|---|
 | D-1 | `atlasSize` is an `ivec2` "set while the atlas texture is bound" | §4.4 — the value source and its validity window; Phase 6 uploads | `[V:doc]` `docs/research/v1/RESEARCH.md:1367`; `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:177`. **Reference-free** — PD's notifier is a no-op TODO (`…/PINTONIUM_DESIGN.md:638`–`:639`) | `atlasSize_valueAndValidityWindow` |
-| F3-1 | `noiseTextureResolution` is a const-whitelist option, default 256 | §4.2.1 consumes Phase 3's `NoiseRequirement(enabled, resolution)` (`docs/phase3/v1/PHASE_3_DOC.md:1493`), whose absent baseline is `noise disabled, resolution 256` (`:1503`) | `[V:doc]` `docs/research/v1/RESEARCH.md:1465`; `…/doc/shaders.txt:422` | `noise_resolutionFromRequirementsAndBaseline` |
+| F3-1 | `noiseTextureResolution` is a const-whitelist option, default 256 | §4.2.1 consumes Phase 3's `NoiseRequirement(enabled, resolution)` (`docs/phase3/v1/PHASE_3_DOC.md:1159`, bound at `:1533`), whose absent baseline is `noise disabled, resolution 256` (`:1543`–`:1544`) | `[V:doc]` `docs/research/v1/RESEARCH.md:1465`; `…/doc/shaders.txt:422` | `noise_resolutionFromRequirementsAndBaseline` |
 | M-1 | `MC_NORMAL_MAP` is defined when the normal map is enabled | §4.1.6 publishes `CompanionMacroState`; Phase 3 emits. Blocked on §5.3 request **R1**; the ungranted fallback is stated there and is honest-absent, never falsely defined | `[V:doc]` `…/doc/shaders.txt:655`; macro-wiring reference `[V:observed — Pintonium common-shaders/.../StandardMacros]` PD §7.6 (`…/PINTONIUM_DESIGN.md:474`) | `macro_normalMapStateFollowsCompanionEnablement` |
 | M-2 | `MC_SPECULAR_MAP` is defined when the specular map is enabled | §4.1.6, same mechanism | `[V:doc]` `…/doc/shaders.txt:656`; PD §7.6 | `macro_specularMapStateFollowsCompanionEnablement` |
 
@@ -453,8 +464,8 @@ public enum CompanionDemandSource { DECLARED_SAMPLERS, ALWAYS_ON_FALLBACK, CAPAB
 - `DECLARED_SAMPLERS` — the preferred source: a companion kind is enabled when some program in the
   active configuration declares the corresponding sampler (`normals` / `specular`). Phase 3 already
   computes exactly this class of fact and publishes it for other consumers as `ResourceRequirements`
-  (`docs/phase3/v1/PHASE_3_DOC.md:1491`–`:1494`), and it already carries the per-source
-  `DeclaredUniformCatalog` that the fact would be derived from (`:1408`). §5.3 request **R4** asks for
+  (`docs/phase3/v1/PHASE_3_DOC.md:1440`, shape at `:1532`–`:1534`), and it already carries the
+  per-source `DeclaredUniformCatalog` that the fact would be derived from (`:1434`). §5.3 request **R4** asks for
   a `CompanionMapRequirement(boolean normals, boolean specular)` field on `ResourceRequirements`.
 - `ALWAYS_ON_FALLBACK` — the specified behavior if R4 is not granted: build both companions whenever
   a pack is active. This is not a degradation of correctness, only of memory, and it is the cost the
@@ -563,7 +574,7 @@ public record CompanionMacroState(boolean normalMap, boolean specularMap) {}
 therefore available before preprocessing, which is what breaks the circularity described in §4.1.1.
 It is published on `TexturePlan` (§2.3) and consumed by Phase 3's `MacroConfiguration.optionMacros`,
 which already declares that it emits "normal/specular toggles"
-(`docs/phase3/v1/PHASE_3_DOC.md:979`–`:980`) without naming the input. §5.3 request **R1** asks Phase 3
+(`docs/phase3/v1/PHASE_3_DOC.md:991`–`:992`) without naming the input. §5.3 request **R1** asks Phase 3
 to name Phase 13 as that input.
 
 The macro-wiring shape has a working reference — PD §7.6's `StandardMacros` set defines
@@ -580,7 +591,7 @@ these two names belong in the option-macro family), but the decision is recorded
 
 If R1 is not granted, the fallback is that neither macro is defined. That is the honest-flags posture
 Phase 3 already applies to FXAA ("normally absent, not falsely set",
-`docs/phase3/v1/PHASE_3_DOC.md:980`): packs take their no-companion branch and render correctly
+`docs/phase3/v1/PHASE_3_DOC.md:992`): packs take their no-companion branch and render correctly
 without PBR rather than sampling an undefined path. It is a real conformance shortfall, so R1 is
 ranked first in §11.5 and the impl gate in §9 names it.
 
@@ -620,8 +631,8 @@ keeps rendering (§6).
 #### 4.2.1 Sizing and enablement
 
 Resolution and enablement come from Phase 3's `ResourceRequirements.noise`, a
-`NoiseRequirement(boolean enabled, int resolution)` (`docs/phase3/v1/PHASE_3_DOC.md:1493`) whose
-absent-directive baseline is disabled with resolution 256 (`:1503`). The texture is
+`NoiseRequirement(boolean enabled, int resolution)` (`docs/phase3/v1/PHASE_3_DOC.md:1159`, bound at
+`:1533`) whose absent-directive baseline is disabled with resolution 256 (`:1543`–`:1544`). The texture is
 `resolution × resolution`, internal format RGB, unsigned-byte transfer, wrap `REPEAT`, filter
 `LINEAR` — the contract's noise sampling is a repeating field sampled with interpolation
 (`docs/research/v1/RESEARCH.md:596`–`:597`; behavioral corroboration at
@@ -678,7 +689,7 @@ design does not take that route and does not need to: it specifies the contract 
 
 #### 4.2.4 The pack override
 
-`NoiseTextureSpec.Override(image, sidecar)` (`docs/phase3/v1/PHASE_3_DOC.md:1461`–`:1463`) replaces the
+`NoiseTextureSpec.Override(image, sidecar)` (`docs/phase3/v1/PHASE_3_DOC.md:1502`–`:1503`) replaces the
 generated texture entirely: the pack image is decoded, uploaded, and parameterized from its own
 `.mcmeta` sidecar if present (§4.3.5), otherwise with the same `REPEAT`/`LINEAR` defaults as the
 generated texture. `noiseTextureResolution` does not resize an override; the image's own dimensions
@@ -701,7 +712,7 @@ the entry is `Absent(NOT_CONFIGURED)` at every stage, which Phase 5 renders as a
 Phase 13 consumes Phase 3's parsed algebra unchanged and never reparses. `TextureBindingKey` is
 `(stage, sampler, duplicateDiscriminator)` with the stage expansion already fixed by Phase 3:
 `GBUFFERS` targets gbuffers **and shadow** programs, `DEFERRED` targets deferred, `COMPOSITE` targets
-composite **and final** (`docs/phase3/v1/PHASE_3_DOC.md:1446`–`:1447`). Rows F5-13…F5-15 are satisfied
+composite **and final** (`docs/phase3/v1/PHASE_3_DOC.md:1487`–`:1488`). Rows F5-13…F5-15 are satisfied
 by consuming that expansion rather than restating it.
 
 The `sampler` string is resolved to a `TextureOverlayKey` through the documented name tables — the
@@ -741,7 +752,7 @@ that has none samples a flat normal rather than an undefined object.
 #### 4.3.3 The raw form
 
 Phase 3 has already validated the token grammar, the closed target/format domains, dimension arity, and
-integer-transfer compatibility (`docs/phase3/v1/PHASE_3_DOC.md:1452`–`:1457`). Phase 13 adds exactly the
+integer-transfer compatibility (`docs/phase3/v1/PHASE_3_DOC.md:1493`–`:1498`). Phase 13 adds exactly the
 checks Phase 3 could not make without opening the file:
 
 1. the byte length equals the product of the dimensions and the transfer element size for the declared
@@ -762,9 +773,9 @@ one type per unit (`docs/research/v1/RESEARCH.md:1488`–`:1489`;
 
 Phase 3 states explicitly that sampler type is not part of `TextureBindingKey` and that "Phases 4/13
 derive it from each program's sampler declarations when validating shared texture units"
-(`docs/phase3/v1/PHASE_3_DOC.md:1468`–`:1469`). Phase 13 therefore builds, per program, the map
+(`docs/phase3/v1/PHASE_3_DOC.md:1509`–`:1510`). Phase 13 therefore builds, per program, the map
 `unit → SamplerType` from the declared-uniform data that Phase 3 publishes per source and Phase 4 merges
-per linked program (`docs/phase3/v1/PHASE_3_DOC.md:1408`), and selects, for each unit that program
+per linked program (`docs/phase3/v1/PHASE_3_DOC.md:1434`), and selects, for each unit that program
 samples, the candidate entry whose `TextureTarget` matches the declared sampler type:
 
 ```java
@@ -775,7 +786,7 @@ public enum SamplerType { SAMPLER_1D, SAMPLER_2D, SAMPLER_3D, SAMPLER_2D_RECT }
 - No candidate matches → the unit has no custom binding for that program; the underlying object
   (companion, colortex, or the documented default) is what Phase 5 resolves. Diagnosed once.
 - More than one candidate matches → the last valid declaration wins, matching Phase 3's uniform
-  last-valid-wins rule for exact-key properties (`docs/phase3/v1/PHASE_3_DOC.md:1413`), and diagnosed
+  last-valid-wins rule for exact-key properties (`docs/phase3/v1/PHASE_3_DOC.md:1507`–`:1508`), and diagnosed
   once.
 - Two *different* declared types for the same unit in one program is a pack error, not an engine
   choice: the program is diagnosed and the unit binds nothing for it.
@@ -827,7 +838,7 @@ sampler simply retains whatever object Phase 5's table already resolves for it �
 name is the correct buffer, so the program still renders, just without the pack's override. That is
 rung 2a: a feature disabled, the program alive (`docs/design/v3/DESIGN.md:427`–`:434`).
 
-Nothing here invents the wider interface. §5.3 request **R2** asks for it, and §12 item 12 is the
+Nothing here invents the wider interface. §5.3 request **R2** asks for it, and §12 item 19 is the
 one-line follow-through once it is granted. `[D-P13-11]`
 
 ### 4.4 `atlasSize`
@@ -846,6 +857,13 @@ public sealed interface AtlasSizeResult {
 
 - The value is the base atlas's `width`/`height` from its `AtlasDescriptor` — the same numbers the
   companion atlases are allocated at, so `atlasSize` and the companion layout can never disagree.
+- `AtlasId.canonicalName` is the Minecraft atlas resource-identity string exactly as the game reports
+  it at stitch time: the value `H13-ATLAS-01`/`H13-ATLAS-04` pass as `atlasIdentity` and the `id` of
+  the `AtlasDescriptor` delivered by `H13-ATLAS-02`. Phase 13 neither invents nor normalizes it.
+- The App D row is about the atlas bound during world rendering, so the parameterless
+  `atlasSize()` of §2.2 answers for the block/item atlas Phase 13 built companions for, and is the
+  operation Phase 6 uses through Phase 7; `atlasSize(AtlasId)` exists for any other catalogued atlas
+  and returns `Unknown` for an id absent from the current catalog. A consumer never has to guess an id.
 - It becomes `Known` at the moment the atlas catalog is captured (§4.6 row `H13-ATLAS-02`) and reverts
   to `Unknown` when the catalog is invalidated by a resource reload.
 - The **validity window** is the contract's own: the value is meaningful only for programs drawing
@@ -876,7 +894,7 @@ public record TexturePublication(
 `TextureOverlayFingerprint` is described by Phase 5 as "an opaque Phase-13 value"
 (`docs/phase5/v1/PHASE_5_DOC.md:1885`). It is computed over the canonical encoding of the whole
 `TexturePlan`: companion plans in atlas-then-kind order, the noise plan, custom entries in Phase 3's
-already-fixed ordering (`docs/phase3/v1/PHASE_3_DOC.md:1463`–`:1467`), the unsupported list, and the
+already-fixed ordering (`docs/phase3/v1/PHASE_3_DOC.md:1504`–`:1508`), the unsupported list, and the
 macro state. Two publications with equal fingerprints are interchangeable; a fingerprint never depends
 on a GL name, an insertion order, or a hash-map iteration order.
 
@@ -1031,7 +1049,7 @@ disabled companion kind allocates nothing.
 | `TextureOverlayLease` + `TextureOverlayPublicationId` | Phase 5's types, produced here; read atomically, borrowed never copied, closed by whoever Phase 5's protocol says owns them | Phase 7, which passes both to Phase 5 `textureBindings` |
 | `OverlayTable` — total `(StageId, TextureOverlayKey) → TextureOverlayEntry` | `Present(TextureHandle)` or `Absent(NOT_CONFIGURED \| NOT_APPLICABLE_TO_STAGE \| PUBLICATION_UNAVAILABLE)`; total over both domains, no null, no default-through | Phase 5's table resolution |
 | `TextureOverlayFingerprint` | the opaque Phase-13 value Phase 5's publication id carries; canonical over the whole `TexturePlan`, never over a GL name or iteration order | Phase 5 validation; Phase 7 publication pairing |
-| `AtlasSizeResult` — `Known(width, height)` \| `Unknown` | the App D `atlasSize` value source and its validity window (§4.4); the upload is Phase 6's | Phase 6 through Phase 7's composition |
+| `AtlasSizeResult` — `Known(width, height)` \| `Unknown`, read through `atlasSize()` for the world block/item atlas or `atlasSize(AtlasId)` for any other catalogued atlas | the App D `atlasSize` value source and its validity window, with the `AtlasId.canonicalName` domain fixed in §4.4; the upload is Phase 6's | Phase 6 through Phase 7's composition |
 | `CompanionMacroState(normalMap, specularMap)` | the pipeline-time booleans behind `MC_NORMAL_MAP`/`MC_SPECULAR_MAP`; known before preprocessing by construction (§4.1.6) | Phase 3's `MacroConfiguration`, pending request R1 |
 | `BufferResizeConsumer` implementation, registered under a stable consumer id | render-thread, non-throwing, closed `SUCCESS`/`FAILED` (§4.7.1) | Phase 5's resize dispatch |
 | `TexturePlan`, `TextureMemoryEstimate`, `UnsupportedBinding`, `TextureFailure` | immutable, handle-free planning and diagnostic projections | Phase 2 harness; Phase 14 profiling |
@@ -1046,15 +1064,15 @@ opaque handle type, minted and owned here and borrowed by Phase 5's binding snap
 
 | Consumed contract | Use |
 |---|---|
-| `PackConfiguration` and its fingerprint (`docs/phase3/v1/PHASE_3_DOC.md:1405`) | sole pack truth and replan identity |
-| `CustomTextureSpec` / `TextureBindingKey` / `TextureSidecarRef` (`:1443`–`:1459`) | §4.3 in full; consumed unchanged, never reparsed |
-| `NoiseTextureSpec` — `Generated` \| `Override` (`:1461`–`:1463`) | §4.2.4 |
-| `ResourceRequirements.noise` = `NoiseRequirement(enabled, resolution)` (`:1493`), absent baseline at `:1503` | §4.2.1 |
-| The custom-spec ordering rule (`:1463`–`:1467`) | canonical fingerprint input, §4.5.1 |
-| "Phases 4/13 derive [sampler type] from each program's sampler declarations" (`:1468`–`:1469`) | §4.3.4 — this is the explicit grant that makes §4.3.4 a consumption rather than an invention |
-| `DeclaredUniformCatalog` per source (`:1408`), merged per linked program by Phase 4 | §4.3.4's `unit → SamplerType` map, and R4's preferred demand source |
-| `MacroConfiguration.optionMacros` (`:947`–`:957`, `:979`–`:980`) | §4.1.6, pending R1 |
-| Phase 3 owns `.mcmeta` *retention*, Phase 13 owns its *interpretation* (`:300`, `:740`) | §4.3.5 |
+| `PackConfiguration` and its fingerprint (`docs/phase3/v1/PHASE_3_DOC.md:1431`) | sole pack truth and replan identity |
+| `CustomTextureSpec` / `TextureBindingKey` / `TextureSidecarRef` (`:1441`, declared at `:1482`–`:1500`) | §4.3 in full; consumed unchanged, never reparsed |
+| `NoiseTextureSpec` — `Generated` \| `Override` (`:1502`–`:1503`) | §4.2.4 |
+| `ResourceRequirements.noise` = `NoiseRequirement(enabled, resolution)` (`:1159`, bound at `:1533`), absent baseline at `:1543`–`:1544` | §4.2.1 |
+| The custom-spec ordering rule (`:1504`–`:1508`) | canonical fingerprint input, §4.5.1 |
+| "Phases 4/13 derive [sampler type] from each program's sampler declarations" (`:1509`–`:1510`) | §4.3.4 — this is the explicit grant that makes §4.3.4 a consumption rather than an invention |
+| `DeclaredUniformCatalog` per source (`:1434`), merged per linked program by Phase 4 | §4.3.4's `unit → SamplerType` map, and R4's preferred demand source |
+| `MacroConfiguration.optionMacros` (`:1435`; §4.4 option-macro statement at `:991`–`:992`) | §4.1.6, pending R1 |
+| Phase 3 owns `.mcmeta` *retention*, Phase 13 owns its *interpretation* (`:309`, `:750`) | §4.3.5 |
 
 #### Phase 5 — verified (`docs/phase5/reviews/PHASE_5_REVIEW_38.md:61`–`:62`, literal `PASS`)
 
@@ -1087,10 +1105,10 @@ specified in §4, so no request is on the critical path.
 
 | # | Target | Request | Ungranted fallback |
 |---|---|---|---|
-| **R1** | Phase 3 | Name Phase 13's `CompanionMacroState` as the input driving `MacroConfiguration.optionMacros`' normal/specular toggles. Phase 3 already emits the toggles (`docs/phase3/v1/PHASE_3_DOC.md:979`–`:980`) without naming their source; this is plumbing, not a new feature | Neither macro is defined — Phase 3's honest-absent posture (`:980`). Packs take their no-companion branch and render correctly without PBR. A real conformance shortfall; ranked first in §11.5 |
+| **R1** | Phase 3 | Name Phase 13's `CompanionMacroState` as the input driving `MacroConfiguration.optionMacros`' normal/specular toggles. Phase 3 already emits the toggles (`docs/phase3/v1/PHASE_3_DOC.md:991`–`:992`) without naming their source; this is plumbing, not a new feature | Neither macro is defined — Phase 3's honest-absent posture (`:992`). Packs take their no-companion branch and render correctly without PBR. A real conformance shortfall; ranked first in §11.5 |
 | **R2** | Phase 5 | Widen `TextureOverlayKey` beyond `NORMALS/SPECULAR/GAUX1…GAUX4/NOISE`, and add `Overlay` cells to the deferred/composite/final column, so App F.5's full binding space is reachable (§3.6 item 2) | §4.3.6: out-of-domain bindings become `UnsupportedBinding`, are diagnosed once, and the sampler keeps Phase 5's existing object. Rung 2a |
 | **R3** | Phase 1 | Allocate `com.schmaloogium.engine.textures`, `com.schmaloogium.mod.glue.textures`, and `com.schmaloogium.mod.mixin.textures`, following the granted Phase 7/8 trios (`docs/phase1/v14/PHASE_1_DOC.md:1537`, `:1551`, `:1554`) | `com.schmaloogium.mod.mixin` is already allocated to Phase 13 (`:1553`), so the mixins have a home; only the engine/glue package *names* are pending, and no contract depends on them |
-| **R4** | Phase 3 | Add `CompanionMapRequirement(boolean normals, boolean specular)` to `ResourceRequirements`, derived from the declared-sampler data Phase 3 already computes (`docs/phase3/v1/PHASE_3_DOC.md:1408`) | §4.1.1's `ALWAYS_ON_FALLBACK`: build both companions whenever a pack is active. Costs memory, not correctness, and it is the cost the design already accepts (`docs/design/v3/DESIGN.md:2499`–`:2500`) |
+| **R4** | Phase 3 | Add `CompanionMapRequirement(boolean normals, boolean specular)` to `ResourceRequirements`, derived from the declared-sampler data Phase 3 already computes (`docs/phase3/v1/PHASE_3_DOC.md:1434`) | §4.1.1's `ALWAYS_ON_FALLBACK`: build both companions whenever a pack is active. Costs memory, not correctness, and it is the cost the design already accepts (`docs/design/v3/DESIGN.md:2499`–`:2500`) |
 
 ### 5.4 Provisional-contract disclosure — Phases 3 and 7
 
@@ -1179,7 +1197,7 @@ The render thread owns all GL (§G2.3, `docs/design/v3/DESIGN.md:412`–`:417`).
 | `lease()` / `publicationId()` | render thread | called inside Phase 7's draw path |
 | `H13-ATLAS-01/02/03` handlers | render thread | resource reload and stitching are render-thread events on 1.12.2 |
 | `H13-ATLAS-04` animation handler | render thread | it is the vanilla animation tick |
-| `atlasSize(AtlasId)` | render thread | reads an immutable field of the current publication |
+| `atlasSize()` / `atlasSize(AtlasId)` | render thread | reads an immutable field of the current publication |
 
 Off-thread decode of companion images is deliberately **not** designed here. §G2.3 permits off-thread
 texture upload only through Phase 14's shared-context design with its mandatory synchronous fallback
@@ -1454,8 +1472,9 @@ Ordered, independently actionable, each with a milestone tag and a test hook.
 
 ---
 
-*End of PHASE_13_DOC.md. Built under §G1.1 and corrected under §G1.3 from review round 1 (§0.4); not
-verified. The next required action is a fresh whole-document §G1.2 verify round, because the round-1
+*End of PHASE_13_DOC.md. Built under §G1.1 and corrected under §G1.3 from review rounds 1 and 2
+(§0.4, §0.5); not
+verified. The next required action is a fresh whole-document §G1.2 verify round, because the round-2
 repairs changed §5. Phase 5 was consumed as a verified dependency; Phases 3 and 7 were consumed
 provisionally (§5.4), and a §G1.3 fix-up is owed here if Phase 3's required fresh round, or a future
 Phase 7 version roll, contradicts §5.2.*
