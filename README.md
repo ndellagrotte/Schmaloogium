@@ -4,20 +4,6 @@ Mod development template for Cleanroom, uses a custom [Unimined fork](https://gi
 ### WARNING: Custom Unimined Fork
 May have issues, report here or [here](https://github.com/kappa-maintainer/Unimined) when you encountered impossible field names or impossible Scala compiler errors. 
 
-## DOs and DON'Ts
-### Choose Branch
-Choose mixin branch if you want to use Mixin.
-
-Use scala and kotlin branch if you want to use those languages. 
-
-There are 4 branches available:
-- main
-- mixin
-- scala
-- kotlin
-
-If you want to use non-main branches, after clicked *Create a new repository* under *Use this template*, check the *Include all branches* checkbox.
-
 ### Running Client or Server
 If you are using IntelliJ, **DO NOT** use the `Minecraft Client` configure with a blue icon. Just use the `2. Run Client` Gradle task.
 
@@ -71,8 +57,3 @@ This template comes with three workflows.
 You need to fill in your project IDs and configure your tokens in GitHub repository first.
 
 By default, you will need to manually trigger the workflow in web page, but you can also enable tag triggering by merging the third yml into `release.yml`.
-
-### Credit
-Thanks @Karnatour for fixing shadow plugin
-
-Thanks @ghostflyby for making kotlin branch
