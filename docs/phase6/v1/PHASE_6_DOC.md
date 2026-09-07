@@ -5,16 +5,17 @@
 | Field | Value |
 |---|---|
 | Phase | 6 — Uniform & sampler system |
-| Document revision | v1, maintained architecture through §0.22 |
+| Document revision | v1, maintained architecture through §0.23 |
 | Date | 2026-07-29 |
 | Governing design | `docs/design/v2.0-RC3/DESIGN.md` |
 | Milestone | v0.1; shadow/celestial values v0.2 |
 | Declared dependencies | Phases 1, 3, and 4 |
+| Additional maintained dependency | Phase 5's pure fixed-sampler resolver, adopted under R7-10; owner verification gates in §5.2 |
 | Assigned open questions | none |
 
 This document originated as the Phase 6 build-session deliverable and still designs architecture
 only. The original fresh build session did not implement source code, change a dependency
-document, create a verification profile, or perform an adversarial review; §§0.3–0.22 record later
+document, create a verification profile, or perform an adversarial review; §§0.3–0.23 record later
 governed maintenance. The governing assignment says the deliverable is `PHASE_6_DOC.md`
 (`docs/design/v2.0-RC3/DESIGN.md:1702`, “**Deliverable.** `PHASE_6_DOC.md` per §G9”), and the
 mandatory skeleton is the thirteen sections reproduced at
@@ -235,6 +236,39 @@ Current status, §5 synchronization coverage, and two Pintonium row-local mappin
 Custom upload outputs now match the authoritative six-type declaration grammar. Section 5 now
 incorporates §2.2's complete consumer-visible runtime signatures and synchronizes their changes.
 
+### 0.23 R7-10 sole-sampler-policy adoption (2026-09-07)
+
+This maintainer-authorized architecture-only amendment adopts R7-10 from
+`docs/phase7/v1/PHASE_7_DOC.md:2309-2320`: “The unchanged Phase 6 sampler participant calls it
+using binding.samplerLayout and context”. `UniformRuntimeFactory.create` now receives Phase 5's
+`FixedSamplerResolver` immediately after configuration. Active §§1–5/7–9/11–12 consume that sole
+policy instead of publishing or implementing a second map. The `afterBind` signature, three
+participant positions, integer upload order, exact-name location/value caches, activity-token
+invalidation, and attributed error replay remain unchanged. No participant, allocator, physical
+texture binding, independent activation, or lifecycle operation is added.
+
+Additional scoped inputs actually read: `docs/MOVES.md`; RC3 Part I and the Phase 6 assignment;
+`docs/research/v1/RESEARCH.md` §§0–1.3 and Appendix B.3;
+`docs/phase7/v1/PHASE_7_DOC.md` §0 and §§5.3–5.4's R7-10/11 contracts;
+`docs/phase5/v1/PHASE_5_DOC.md` §0.39, §§2.4/4.12.1 and their incorporated §5 interfaces;
+and `docs/phase4/v1/PHASE_4_DOC.md` §0, sampler/descriptor/callback declarations and their §5
+incorporation. Phases 4, 5, 6, and 7 all retain their declared RC3 governance. These reads are the
+requested maintenance's narrow sibling/downstream-contract exception, not a dependent build or a
+claim that the newly coordinated owner bytes have passed §G5.3.
+
+The original §0.2 “Phase 5 was not read” and §0.7 uniform-layout-derived `shadow` record remain
+historical; §4.9 now delegates the conditional rule to Phase 5 using `ProgramSamplerLayout`.
+Phase 5's published resolver and Phase 4's effective sampler-layout contract are present but await
+fresh owner verification (§5.2). **R7-11 remains ungranted**: this amendment does not change
+§4.14's reset/CLOSE contract or unblock Phase 7's candidate/replacement retirement protocol.
+
+**Current §G1.3 status (superseding earlier status notes):** R7-10 is adopted in Phase 6's current
+binding bytes, not a verified grant. Changed §5, including incorporated §§2.2/4.9, requires fresh
+whole-document verification returning literal PASS with zero blocking findings and zero
+corrections before verified downstream consumption
+(`docs/design/v2.0-RC3/DESIGN.md:327-332`, “before any dependent consumes it”). No code, reviews,
+builds, tests, verification runs, other documents, or directory rolls are part of this amendment.
+
 ---
 
 ## 1. Scope & boundaries
@@ -248,7 +282,7 @@ Phase 6 owns:
 2. the pure-`:engine` cadence/value-cache machinery and the three Phase 4 barrier participants;
 3. per-effective-program uniform-location caches, value deduplication, and the matrix
    always-upload exception;
-4. fixed-map sampler-uniform re-pointing for gbuffers/shadow and
+4. sampler-uniform integer re-pointing through Phase 5's sole fixed policy for gbuffers/shadow and
    deferred/composite/final programs;
 5. frame-begin sampling, temporal snapshots, CPU smoothing, center-depth readback policy, matrix
    capture/inversion, and event-driven per-draw values;
@@ -269,9 +303,10 @@ Phase 6 owns:
 - **Owned by Phase 4:** program compilation, handles, effective-provider fallback, generation,
   program activation, participant ordering, and alpha/blend locks. Phase 6 never calls
   `ShaderService.use` or resolves a backup chain itself.
-- **Owned by Phase 5:** texture creation/lifetime, the texture object bound behind each fixed unit,
-  framebuffer estate, flip state, and depth copies. Re-pointing a sampler uniform to unit 7 is not
-  binding a texture to unit 7.
+- **Owned by Phase 5:** the sole fixed sampler-name/unit policy and pure resolver, texture
+  creation/lifetime, the texture object bound behind each fixed unit, framebuffer estate, flip
+  state, and depth copies. Phase 6 consumes the resolver; re-pointing a sampler uniform to unit 7
+  is not binding a texture to unit 7.
 - **Owned by Phase 7:** frame orchestration and every v0.1 vanilla/Mixin producer hook, including
   frame begin, first-clear matrix capture, celestial rotation, GlStateManager observation,
   `entityColor`, and the composite `instanceId` loop.
@@ -300,7 +335,7 @@ Production types split across the Phase 1 seam:
 ```text
 :engine
   com.schmaloogium.engine.uniforms
-    catalog/       Appendix D and fixed sampler maps
+    catalog/       Appendix D built-in definitions (no sampler-name/unit map)
     runtime/       value cells, cadence clock, temporal state, program caches
     smooth/        tick-domain asymmetric EMA
     matrix/        immutable 4×4 values, inverse and previous snapshots
@@ -312,8 +347,8 @@ Production types split across the Phase 1 seam:
     Minecraft/Forge/GlStateManager-backed providers and Phase 7 hook adapters
 ```
 
-`:engine` sees JDK types plus Phase 1/3/4 published `:engine` interfaces. No Minecraft, Forge,
-Cleanroom, Mixin, LWJGL, JOML, or raw GL name crosses the seam. This is a correctness constraint,
+`:engine` sees JDK types plus Phase 1/3/4/5 published `:engine` interfaces, subject to §5.2's gates.
+No Minecraft, Forge, Cleanroom, Mixin, LWJGL, JOML, or raw GL name crosses the seam. This is a correctness constraint,
 not a packaging preference: D-6 requires the core to remain headless-testable
 (`docs/research/v1/RESEARCH.md:100`, “Engine-core / loader-glue seam”).
 
@@ -326,6 +361,7 @@ public interface UniformRuntimeFactory {
     UniformBuildResult create(
         long initialRegistryGeneration,
         UniformConfiguration configuration,
+        FixedSamplerResolver samplerResolver,
         UniformPlatformProvider platform,
         CenterDepthSource centerDepth,
         GLDevice gl,
@@ -398,11 +434,22 @@ references until `close` reset; it owns only its caches, snapshots, and particip
 provider-record validation, absence, and copy rules are in §4.2. `Matrix4Value` stores exactly 16
 floats in the facade's upload order and exposes no mutable array.
 
+`samplerResolver` is the non-null borrowed pure service returned by Phase 5's
+`FixedSamplerPolicies.resolver()`, paired with the same table/schema/fingerprint as the
+`FixedSamplerPolicies.appB3()` policy supplied to Phase 4 compilation. Both factories are
+available before any runtime, registry, estate, or GL object exists
+(`docs/phase5/v1/PHASE_5_DOC.md:2116-2120`, “They share one table/schema”).
+Missing resolver input rejects construction through `UniformBuildResult.Failure` without GL;
+there is no default/local-map fallback. The runtime retains this borrowed reference under the
+existing service lifetime and releases it at terminal CLOSE; it never owns or closes Phase 5.
+The new dependency and its owner-review gates are binding in §5.2.
+
 `UniformRuntime` owns no program handle. Phase 4 owns the active linked program and calls the three
 participants in sampler → built-in → custom order
-(`docs/phase4/v1/PHASE_4_DOC.md:1162`–`:1165`). Its verified
-`BoundProgramUniformAccess` contract supplies callback-scoped location lookup without revealing
-that handle (`docs/phase4/v1/PHASE_4_DOC.md:1193`–`:1201`).
+(`docs/phase4/v1/PHASE_4_DOC.md:1467-1471`, “The three positions are”).
+`BoundProgramUniformAccess` supplies callback-scoped location lookup without revealing that handle
+(`docs/phase4/v1/PHASE_4_DOC.md:1362-1372`, “UniformLocation locate(String exactName)”).
+The current coordinated Phase 4 bytes remain subject to §5.2's fresh-owner-review gate.
 
 ### 2.3 Data flow
 
@@ -412,7 +459,7 @@ Phase 7 frame-begin hook
   → Phase 5 resize/clear may begin
   → Phase 7 first-clear hook captures current gbuffer matrices
   → Phase 4 barrier binds effective program
-      → sampler participant asserts fixed unit integers
+      → sampler participant uploads fixed integers resolved by Phase 5 from effective layout/context
       → built-in participant uploads current immutable cells
       → custom participant asks Phase 11 to evaluate from the stable built-in view
       → Phase 4 applies provider alpha/blend lock
@@ -451,9 +498,9 @@ means participate in the activation sweep; it does not mean resample Minecraft o
 | Bound lookup and between-activation proof without a program handle | callback-scoped access, generation/provider/layout cache key, and operation-free activity token in §4.10 | verified Phase 4 contract at `docs/phase4/v1/PHASE_4_DOC.md:1374`–`:1375`; D-6 |
 | Celestial, shadow, and per-draw event moments | typed `UniformEventSink`, §4.6/§4.12 | `[V:observed]`; exact cadence list at `docs/research/v1/RESEARCH.md:1380` |
 | Custom expressions consume a fixed typed input set and upload `float/int/bool/vec2/vec3/vec4` only after built-ins | versioned schema, conforming runtime view, typed command/disposition algebra, and third barrier participant in §4.13 | `[V:doc]`; declaration types at `docs/research/v1/RESEARCH.md:1494`, “`uniform.<float\|int\|bool\|vec2\|vec3\|vec4>`”; cadence at `docs/research/v1/RESEARCH.md:1382`, “custom uniforms … after built-ins” |
-| Fixed unit map, including stage variants | immutable tables in §4.9 | `[V:doc]`; `docs/research/v1/RESEARCH.md:1227`, “packs rely on these numbers” |
-| `depthtex1` is unit 11 | unit-11 table row and regression test | `[V:doc]` + ruling; `docs/research/v1/RESEARCH.md:1253`, “Treat **11 as authoritative**” |
-| P5/P6 split | Phase 6 writes sampler integers only | governing split; Phase 1 assigns the backing texture per unit to Phase 5 and sampler pointing to Phase 6 (`docs/phase1/v14/PHASE_1_DOC.md:4206`) |
+| Fixed unit map, including stage variants | Phase 5 sole resolver consumed by §4.9; no Phase 6 map | `[V:doc]`; `docs/research/v1/RESEARCH.md:1228`, “packs rely on these numbers”; owner interface at `docs/phase5/v1/PHASE_5_DOC.md:2360`, “same fingerprint, exact spellings and conditional watershadow rule” |
+| `depthtex1` is unit 11 | shared-resolver upload regression in §8.1 | `[V:doc]` + ruling; `docs/research/v1/RESEARCH.md:1254`, “Treat **11 as authoritative**” |
+| P5/P6 split | Phase 5 alone resolves fixed units and binds objects; Phase 6 locates exact names and writes sampler integers | R7-10 at `docs/phase7/v1/PHASE_7_DOC.md:2316-2320`, “No second map”; Phase 5 owner interface at `docs/phase5/v1/PHASE_5_DOC.md:2360`, “no second map or free-unit allocation” |
 | World state sampled at frame begin | stable `FrameSnapshot`, §4.6 | `[V:observed]`; `docs/research/v1/RESEARCH.md:533`, “frame start” |
 | Frame-begin sampling completes before resize/clear | ordering rule in §§4.6 and 5.1 | governing REV1 constraint; `docs/design/v2.0-RC3/DESIGN.md:1721-1725`, “before any buffer resize or clear” |
 | Previous camera/matrix snapshots | explicit rotate-before-overwrite rules, §4.6/§4.7 | `[V:observed]`; `docs/research/v1/RESEARCH.md:536`, “snapshot previous-frame camera + matrices” |
@@ -470,7 +517,7 @@ means participate in the activation sweep; it does not mean resample Minecraft o
 | PD B1 | separate wetness/dryness fields and directive-to-field tests | **Not inherited**; the source writes dryness into wetness at `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/shaderpack/properties/PackDirectives.java:254` and the next line |
 | PD B6 | notifier objects are constructed non-null; every consumer has a producer audit row | **Not inherited**; source declares but does not initialize `blendFuncNotifier` at `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/state/StateUpdateNotifiers.java:10` |
 | PD B10 | no sibling sampler overload family; one plan-record path | **Not inherited**; the landmine overload begins at `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/program/ProgramSamplers.java:320` and returns false |
-| PD §18 dynamic texture-unit allocation | immutable App B.3 maps | **Pre-decided rejection**; divergence table states fixed map at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:808` |
+| PD §18 dynamic texture-unit allocation | Phase 5's sole App B.3 policy, no Phase 6 allocation or duplicate map | **Pre-decided rejection**; divergence table states fixed map at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:808` |
 
 There is no unmapped in-scope item. The exact per-uniform provider/cadence/milestone mapping follows
 in §4.4, and the Phase 4 barrier is traced operation by operation in §4.10.
@@ -499,6 +546,9 @@ mutable provider. Phase 3 remains the single parse truth
 (`docs/phase3/v1/PHASE_3_DOC.md:1112`, “single validated downstream truth”). The effective
 `ProgramUniformLayout` is deliberately not part of this pack-global configuration; Phase 4 passes
 it with each resolved program binding, and `ProgramCache` retains that immutable per-key layout.
+Sampler routing separately consumes the same effective descriptor's `ProgramSamplerLayout` through
+the injected Phase 5 resolver (§4.9); neither configuration nor the Phase 6 catalog contains a
+sampler-name/unit table or a second conditional-alias rule.
 
 Construction validates every half-life as finite and non-negative. A malformed directive is a
 Phase 3 diagnostic/default matter; an invariant breach arriving here rejects the uniform candidate
@@ -524,7 +574,7 @@ Lifecycle:
 
 ```text
 NEW
-  → CONFIGURED(configuration, providers)
+  → CONFIGURED(configuration, samplerResolver, providers)
   → FRAME_READY after first beginFrame
   → ACTIVE through any number of barrier activations/events
   → RESET on world epoch, pack replacement, shaders-off, GL-context loss, or close
@@ -967,51 +1017,76 @@ published contracts:
 remains the sole async-readback modernization ledger entry. Reconsideration requires a verified,
 declaration-safe Phase 3 operation, an explicit sampler/unit contract extension, and T2 evidence.
 
-### 4.9 Fixed sampler maps and re-point algorithm
+### 4.9 Shared fixed-sampler policy and re-point algorithm
 
-Phase 6 publishes immutable maps, not an allocator.
+Phase 5 is the sole policy owner. Phase 6 neither publishes nor implements a sampler-name/unit
+map. It consumes `FixedSamplerPolicies.resolver()` through §2.2's required constructor argument.
+The binding policy is Phase 5 §4.12.1, incorporated by its §5.1
+(`docs/phase5/v1/PHASE_5_DOC.md:2360`, “exact complete §2.4 declarations and §4.12.1 table/schema
+incorporated”). Appendix B.3 remains the authority
+(`docs/research/v1/RESEARCH.md:1228-1255`, “packs rely on these numbers”).
 
-| Unit | GBUFFERS | SHADOW | DEFERRED / COMPOSITE / FINAL |
-|---:|---|---|---|
-| 0 | `texture` | `tex`, `texture` | `colortex0`, `gcolor` |
-| 1 | `lightmap` | `lightmap` | `colortex1`, `gdepth` |
-| 2 | `normals` | `normals` | `colortex2`, `gnormal` |
-| 3 | `specular` | `specular` | `colortex3`, `composite` |
-| 4 | `shadowtex0`, `watershadow`, conditional `shadow` | `shadowtex0`, `watershadow`, conditional `shadow` | `shadowtex0`, `watershadow`, conditional `shadow` |
-| 5 | `shadowtex1`, conditional `shadow` | `shadowtex1`, conditional `shadow` | `shadowtex1`, conditional `shadow` |
-| 6 | `depthtex0` | `depthtex0` | `depthtex0`, `gdepthtex` |
-| 7 | `gaux1` | `gaux1` | `colortex4`, `gaux1` |
-| 8 | `gaux2` | `gaux2` | `colortex5`, `gaux2` |
-| 9 | `gaux3` | `gaux3` | `colortex6`, `gaux3` |
-| 10 | `gaux4` | `gaux4` | `colortex7`, `gaux4` |
-| 11 | `depthtex1` | `depthtex1` | `depthtex1` |
-| 12 | no sampler | no sampler | `depthtex2` |
-| 13 | `shadowcolor0`, `shadowcolor` | `shadowcolor0`, `shadowcolor` | `shadowcolor0`, `shadowcolor` |
-| 14 | `shadowcolor1` | `shadowcolor1` | `shadowcolor1` |
-| 15 | `noisetex` | `noisetex` | `noisetex` |
+The exact Phase-5-owned operation and result algebra consumed here are:
 
-For each effective program, the `shadow` alias points to unit 5 when its published
-`ProgramUniformLayout` contains a sampler-compatible `watershadow` declaration, otherwise unit 4.
-This uses the same immutable layout already required for plan validation and means “when
-watershadow used” (`reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:277`); it does not infer
-the condition from shadow-buffer count. Both `shadowtex0` and `watershadow` remain at 4 and
-`shadowtex1` remains at 5. The unit-11 choice intentionally contradicts the later “GBuffers
-Textures” typo at
-`reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:283`; the same shipped file's uniform table
-puts it at 11 (`reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:203`), matching RESEARCH's
-ruling.
+```java
+FixedSamplerPlanResult resolve(ProgramSamplerLayout layout, StageId stage, StageBand band);
 
-At runtime:
+// FixedSamplerPlanResult alternatives:
+Ready(List<ResolvedSamplerBinding> bindings, FixedSamplerPolicyFingerprint policy)
+Invalid(SamplerLayoutValidation reason)
 
-1. select map kind from Phase 4's effective `StageId`/`StageBand`;
-2. take only names present in the effective `ProgramUniformLayout`;
-3. locate each name once through the verified bound-program capability published in §5;
-4. validate that the declaration is a sampler-compatible type;
-5. queue `(name, location, fixedUnit)` in ascending unit then catalog-name order;
-6. remove duplicate `(location,unit)` pairs within the plan;
-7. on every activation, visit the plan and upload only when that effective program's cached unit
-   differs; and
-8. apply §4.11's error isolation to attempted sampler uploads.
+// Each Ready row:
+ResolvedSamplerBinding(String exactName, DeclaredGlslType.Sampler shape, int unit)
+```
+
+These are the existing owner types, not Phase 6 redeclarations
+(`docs/phase5/v1/PHASE_5_DOC.md:908-917`, “record ResolvedSamplerBinding”).
+The pure resolver uses appB3's same table/schema/fingerprint; Ready rows are immutable, ascending
+unit then fixed-name declaration order, preserving distinct exact names sharing one unit.
+Invalid preserves the complete `SamplerLayoutValidation` evidence, including unsupported
+names/domains/shapes and same-unit incompatible types. Arrays/structs containing samplers are not
+coerced to scalar samplers. Fixed/virtual empty layouts resolve to empty Ready; unsupported shader
+domains never fall back to a fullscreen map
+(`docs/phase5/v1/PHASE_5_DOC.md:2150-2172`, “Invalid retains the complete validation evidence”).
+
+The conditional `shadow` rule is evaluated only by Phase 5 from the effective provider's complete
+sampler layout: a direct sampler-compatible `watershadow` declaration selects unit 5; otherwise
+unit 4. Driver location absence and shadow-buffer count do not affect that declaration rule.
+Both gbuffers bands share the policy, and `tex` remains shadow-only
+(`docs/phase5/v1/PHASE_5_DOC.md:2127-2148`, “Both gbuffers bands share this map”).
+`depthtex1` remains unit 11, and unit 12 has no gbuffers/shadow sampler; these are consequences of
+the sole owner policy, not a second local table. Phase 6 never infers the alias from
+`ProgramUniformLayout`, scans source, or assigns units to unsupported names.
+
+Inside the existing `SamplerRepointParticipant.afterBind(binding, context, uniforms)`:
+
+1. Use the effective `binding.samplerLayout()` and Phase-4-issued activation context, never the
+   requested fallback child's layout or state. Obtain the plan through
+   `samplerResolver.resolve(binding.samplerLayout(), context.stage(), context.band())`.
+   Phase 4 has already authenticated the effective provider's stage/band membership. The same
+   effective layout/context governed Phase 5's preceding object binds; Phase 6 does not select,
+   activate, or resolve a backup chain again.
+2. Reuse the immutable resolved plan within §4.10's existing `ProgramUniformCacheKey` cache.
+   Resolve/build it on first use of that effective sampler-layout/policy and stage/band combination,
+   not on every steady-state activation. Plan reuse must match those inputs; both gbuffers bands
+   may share the identical plan. The outer key, generation lifetime, location/value caches and
+   activity-token semantics are unchanged. A cached Invalid remains a sampler-participant
+   degradation for that program/generation; it never becomes an empty successful plan.
+3. On Invalid, preserve the typed reason in the diagnostic and return the existing Phase 4
+   `BarrierParticipantResult.Degraded` scoped to that effective program's sampler participant.
+   Issue no sampler uploads, choose no replacement map, and do not disable unrelated uniforms.
+   Invalid layouts should already have failed Phase 4's provider validation before activation;
+   this branch contains an invariant breach rather than authorizing a different fallback.
+4. On Ready, use only its exact-name/full-sampler-shape/unit rows. Locate each exact name once
+   through the callback-scoped `BoundProgramUniformAccess`; retain full declaration types, never
+   reduce the shape or infer driver activity from declaration presence.
+5. Queue `(name, location, fixedUnit)` in the existing ascending-unit then catalog-name order,
+   using Phase 5's fixed-name declaration order as that canonical catalog order; do not reorder
+   by driver location or physical texture identity.
+6. Remove duplicate `(location,unit)` pairs within the plan.
+7. On every activation, visit the plan and upload only when that effective program's cached unit
+   differs.
+8. Apply §4.11's unchanged attempted-batch error isolation to sampler uploads.
 
 An absent/optimized-out location is cached as absent. Two different names at different locations may
 legally receive the same unit; they are not deduplicated by unit. A name resolving to the same
@@ -1023,15 +1098,17 @@ successful location lookup
 (`reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/program/ProgramSamplers.java:134`).
 Its dynamic `nextUnit` allocation is visible at
 `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/program/ProgramSamplers.java:196`
-and is rejected. Phase 6 never calls
-`TextureService.bindToUnit`; Phase 5 backs the units before drawing.
+and is rejected. Phase 6 never calls `TextureService.bindToUnit`, acquires texture leases, or walks
+physical handles/texture-binding rows. Phase 5 binds backing objects before Phase 4 activation;
+the existing sampler participant then uploads the corresponding integers before built-ins/customs.
+No fourth participant, unit allocator, texture-bind loop, or independent activation is introduced.
 
 ### 4.10 Phase 4 barrier fulfillment and program caches
 
-Phase 4's verified binding callback now receives both the handle-free effective descriptor/layout
-and a callback-scoped capability over its privately held program
-(`docs/phase4/v1/PHASE_4_DOC.md:1056`–`:1066`,
-`docs/phase4/v1/PHASE_4_DOC.md:1186`–`:1201`). The published shape consumed here is:
+Phase 4's binding callback retains its exact callable shape, receiving the handle-free effective
+descriptor/layout and a callback-scoped capability over its privately held program
+(`docs/phase4/v1/PHASE_4_DOC.md:1362-1372`, “BarrierParticipantResult afterBind”).
+The published shape consumed here, subject to §5.2's owner-review gate, is:
 
 ```java
 public interface BoundProgramUniformAccess {
@@ -1074,7 +1151,7 @@ With it, the barrier trace is:
 | shadow override and backup resolution | accept effective descriptor; never re-resolve |
 | restore prior lock | no action |
 | bind effective shader program | receive bound-only access; never call `use` |
-| sampler participant | execute §4.9 fixed-unit plan |
+| sampler participant | execute §4.9's shared-resolver integer plan; no object binds |
 | built-in participant | snapshot current cells, then execute §4.11 batch |
 | custom participant | invoke §4.13 from the same stable built-in view |
 | apply effective alpha/blend lock | before upload, derive `blendFunc` from the same effective `BlendSpec`: explicit factors override the observed underlying state, explicit OFF yields zeros, absent uses observed state; Phase 4 then applies exactly that lock |
@@ -1086,7 +1163,8 @@ Phase 4 promises participants run even when the same handle stays active
 `ProgramCache` is keyed by `ProgramUniformCacheKey` and contains:
 
 - immutable `ProgramUniformLayout`;
-- sampler and built-in plans;
+- sampler plans derived solely from Phase 5, with their effective sampler-layout/policy and
+  stage/band reuse identity, plus built-in plans;
 - cached present/absent locations;
 - last uploaded canonical value per location/name;
 - disabled scopes; and
@@ -1379,19 +1457,18 @@ turn a future producer into optional work.
 
 | Exposed contract | Exact content | Consumer(s) |
 |---|---|---|
-| `UniformRuntimeFactory` / `UniformBuildResult` | exact §2.2 callable shape: `create(long initialRegistryGeneration, UniformConfiguration, UniformPlatformProvider, CenterDepthSource, GLDevice, DiagnosticReporter) -> UniformBuildResult`; closed `Success(UniformRuntime runtime)` / `Failure(String diagnosticId)`. Creation installs the current `PublishedRegistry.generation`; success transfers the sole runtime lifecycle, failure has no runtime or GL work | Phase 7 composition/reload |
+| `UniformRuntimeFactory` / `UniformBuildResult` | exact §2.2 callable shape: `create(long initialRegistryGeneration, UniformConfiguration, FixedSamplerResolver samplerResolver, UniformPlatformProvider, CenterDepthSource, GLDevice, DiagnosticReporter) -> UniformBuildResult`; resolver is required immediately after configuration, borrowed from Phase 5's pure `FixedSamplerPolicies.resolver()` and paired with compilation's appB3 policy; no local fallback. Closed `Success(UniformRuntime runtime)` / `Failure(String diagnosticId)`. Creation installs current `PublishedRegistry.generation`; success transfers sole runtime lifecycle, failure has no runtime or GL work; resolver retention/release follows §2.2's existing service lifetime | Phase 7 composition/reload; R7-10 adopted, fresh PASS owed |
 | `UniformRuntime` / `UniformResetReason` / `RegistryGenerationAdoptionResult` | exact §2.2 callable shape: `adoptRegistryGeneration(long, UniformResetReason) -> RegistryGenerationAdoptionResult`; `fixedExpressionInputSchema() -> FixedExpressionInputSchema`; `beginFrame(FrameBeginInput) -> FrameBeginResult`; `events() -> UniformEventSink`; `samplerParticipant()`, `builtInParticipant()`, and `customParticipant() -> ProgramBindingParticipant`; `centerDepthMacroContributor() -> MacroContributor`; `installCustomUniformBridge(CustomUniformBridge) -> void`; `reset(UniformResetReason) -> void`. Closed adoption results are `ADOPTED`, `ALREADY_CURRENT`, `REJECTED_RETIRED_GENERATION`; closed reasons are `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`, `WORLD_EPOCH`, `CLOSE`; adoption accepts exactly the first three and direct reset exactly the last two; after accepted publication and reacquisition, atomically adopt the replacement's authoritative generation plus reason before its first `beginFrame`, event, or participant activation; unseen inequality adopts and retires prior, equality is idempotent, retired input rejects without mutation, with equality-only comparison and §4.14 state scopes; `WORLD_EPOCH` reset follows final old-world use and precedes next-world use; teardown-only terminal `CLOSE` follows final use of all three Phase 6 participants, after which Phase 7 permits no later participant call and initiates Phase 4's atomic teardown operation; ordinary publication replacement never invokes `CLOSE`; custom bridge install is non-null, composition-thread/pre-use, first-install wins, same-instance idempotent, different/late fail-fast, retained through non-close resets and released on close | Phases 7, 8, 9, 11, 13 |
 | `FrameBeginInput` / `FrameBeginResult` | input schema plus `ACCEPTED`, `DUPLICATE`, `REJECTED_STALE_FRAME`, `REJECTED_GENERATION`; only accepted mutates, duplicate is a safe no-op, rejection forbids shader draw | Phase 7 |
 | **Frame-begin ordering contract** | `beginFrame` completes world/tick sampling, previous snapshots, and center-depth read **before any Phase 5 resize or clear**; then first-clear matrix capture occurs after camera setup | Phase 7; integration review |
 | `UniformEventSink` and immutable sample records | exact §4.2 schemas; world/frame/tick identity; finite/range validation; copy/absence/fallback rules; held-light old-mode mapping; next-activation vs immediate-if-active policy | Phases 7, 8, 9, 13 |
-| `SamplerRepointParticipant` | exact §4.9 fixed-map plan, stage variant, conditional `shadow`, error isolation | Phase 4 composition via Phase 7 |
+| `SamplerRepointParticipant` | exact §4.9 shared-resolver operation/results and plan-reuse rules; unchanged `afterBind(ResolvedProgramDescriptor, BarrierContext, BoundProgramUniformAccess)`; effective `binding.samplerLayout()` plus `context.stage()/band()`, never child state; Ready exact-name/full-shape rows become ascending-unit then fixed-name declaration-order integer uploads; Invalid retains validation evidence and degrades only the effective program's sampler participant without uploads or replacement mapping; existing absent-location, deduplication, cache/activity-token and §4.11 error semantics remain | Phase 4 composition via Phase 7; R7-10 |
 | `BuiltInUniformRefreshParticipant` | Appendix D plan, every-activation visit, cached-value skip, matrices always upload, error isolation | Phase 4 composition via Phase 7 |
 | `CustomUniformRefreshParticipant` / `CustomUniformBridge` | ordered third participant; closed `NoCustoms`, `Completed(accepted, skippedAbsent, rejected)`, or `Aborted(diagnosticId, accepted, skippedAbsent, rejected)` result; both counted results must be non-negative and equal the authoritative sink ledger (an aborted result counts only its submitted prefix); typed immutable commands are submitted in definition order; skipped/rejected calls occupy no batch slot; a valid aborted refresh commits only its accepted prefix in original order with no carry-over; any negative or mismatched counter discards the whole accepted batch without GL, returns `BarrierParticipantResult.Degraded(diagnosticId, "custom uniforms for this activation")`, carries nothing over, and permits a fresh refresh only at the next activation; Phase 6 validates, deduplicates, counts, diagnoses, encodes bools, and isolates uploads | Phase 11; Phase 4 composition via Phase 7 |
 | `FixedExpressionInputSchema` / `FixedExpressionInputType` | deeply immutable construction-time schema, versioned exactly with the fixed Phase 6 catalog; exact-name `Present(closed type)`/`Absent`; positive types are `FLOAT`, `INT`, `VEC2/3/4`, `IVEC2/3/4`, `MAT4`; every Appendix D name except all five D.4 dynamics plus `fogMode`/`fogColor`; independent of active program/runtime validity | Phase 11 load-time compiler |
 | `BuiltInExpressionView` / `CustomUniformUploadSink` | view carries the matching catalog version and exact-name `Present(typed value)`/`Absent`; every present value conforms bidirectionally to the fixed schema's exact name/type mapping; upload commands are closed to `Float1`, `Int1`, `Bool1`, `Float2`, `Float3`, and `Float4`, matching `float`, `int`, `bool`, `vec2`, `vec3`, and `vec4`; sink returns closed `Accepted`, normal no-warning/no-GL `SkippedAbsent`, or `Rejected(stable diagnostic ID)`; active layout or location absence skips, while actual type mismatch, invalid name, and duplicate submission reject; `Bool1` matches GLSL `bool` and Phase 6 owns 0/1 GL encoding; outcomes preserve call order and feed the three refresh counts per §4.13 | Phase 11 |
 | `UniformPlatformProvider` / `CenterDepthSource` | exact §4.2 request/result schemas and validation; loader-neutral sampling SPI with no Minecraft or GL-name types | `mod.glue`, Phase 7 |
 | `centerDepthMacroContributor` | always `MacroContribution.Empty` under D-P6-1 | Phase 3/4 materialization |
-| Fixed sampler maps | immutable canonical name→unit maps in §4.9, including unit-11 ruling | Phase 5 integration cross-check, Phase 7 |
 
 The exact external schemas and semantics incorporated above from §§2.2, 4.2, 4.9, and 4.13 are
 binding parts of §5. Every consumer-visible API, schema, or semantic change to those incorporated
@@ -1428,23 +1505,54 @@ Existing Phase 1 overloads and the readback verb are sufficient for every Phase 
 
 | Phase 4 §5 contract | Use |
 |---|---|
-| `ProgramSlotDescriptor` / `ResolvedProgramDescriptor` / `ProgramUniformLayout` | stage/effective identity, whole provider state, immutable exact-name declaration/type layout, and fixed-function empty layout |
+| `ProgramSlotDescriptor` / `ResolvedProgramDescriptor` / `ProgramUniformLayout` | stage/effective identity, whole provider state, immutable exact-name declaration/type layout, and fixed-function empty layout; effective descriptor supplies `samplerLayout` without fallback-child overlay |
+| `ProgramSamplerLayout` / `ProgramSamplerDeclaration` / `ProgramSamplerLayoutFingerprint` / `FixedSamplerPolicyFingerprint` / `SamplerLayoutValidation` | exact Phase 4 §2.2 schemas incorporated by its §5.1: lossless effective sampler declarations, policy/layout identities and closed Valid/ConflictingTypes/Unsupported evidence; passed unchanged to Phase 5's resolver, never reconstructed from the uniform catalog |
 | `PublishedRegistry.generation` / `RegistryFingerprint` | cache invalidation and reload identity |
 | `ProgramUniformCacheKey` / `ProgramUniformLayoutFingerprint` | exact generation + effective provider + linked-layout cache identity shared by fallback children |
-| `BarrierContext` | Phase-4-issued stage-map selection and frame validation |
+| `BarrierContext` | Phase-4-issued, authenticated effective stage/band inputs to the shared resolver and frame validation; not a Phase 6 map selector |
 | `ProgramBindingParticipant.afterBind` / `BoundProgramUniformAccess` | callback-only exact-name lookup over the private bound program; no handle or program operation |
 | `BoundProgramActivityToken` | retainable operation-free current-activation proof for already-cached immediate uploads |
 | three fixed `ProgramBindingParticipant` positions | sampler, built-in, custom ordering on every shader activation |
 | `BarrierParticipantResult.Degraded` | isolated uniform/participant degradation |
 | per-slot `instanceCount` | Phase 7 loop supplies Phase 6 `instanceId` |
 
-Phase 6 never bypasses `PublishedRegistry.barrier`, as Phase 4 explicitly forbids
-(`docs/phase4/v1/PHASE_4_DOC.md:1383`–`:1385`).
+Phase 6 never bypasses `PublishedRegistry.barrier`. Phase 4 binds its retained selection and invokes
+exactly the three callbacks; no Phase 6 operation selects or activates a program independently
+(`docs/phase4/v1/PHASE_4_DOC.md:1789-1790`, “calls three participants”).
 
-### 5.3 Adopted and verified dependency contract changes
+#### Phase 5 — R7-10 pure policy dependency
 
-The original build document requested the following two interfaces. Both now exist in binding §5
-surfaces and have completed their required fresh verification; Phase 6 consumes them directly.
+| Phase 5 §5 contract | Use |
+|---|---|
+| `FixedSamplerPolicies.resolver()` / `FixedSamplerResolver` | required borrowed factory input immediately after configuration; pure and available before runtime/registry/estate creation; same sole table/schema/fingerprint as `FixedSamplerPolicies.appB3()` used by Phase 4 compilation |
+| `FixedSamplerPlanResult` / `ResolvedSamplerBinding` | exact `resolve(ProgramSamplerLayout, StageId, StageBand)` result `Ready(List<ResolvedSamplerBinding> bindings, FixedSamplerPolicyFingerprint policy)` or `Invalid(SamplerLayoutValidation reason)`; row `(String exactName, DeclaredGlslType.Sampler shape, int unit)`; complete §4.9 semantics incorporated, with no Phase 6 unit policy, physical handle selection or texture-binding operation |
+
+These existing Phase-5-owned interfaces are published at
+`docs/phase5/v1/PHASE_5_DOC.md:2360` (“no second map or free-unit allocation”), incorporating
+§§2.4/4.12.1. The user-authorized R7-10 adoption adds this pure policy dependency to the maintained
+Phase 6 architecture; it does not silently change RC3's original declared dependency graph.
+
+**Dependency status / implementation gates:** these are current-byte contracts, not fresh verified
+grants. Phase 4's coordinated §5 explicitly awaits whole-document PASS
+(`docs/phase4/v1/PHASE_4_DOC.md:329`, “Unverified”); Phase 5 states that its prior PASS does not
+certify the rebuild and that Phase 3 and Phase 4 remain provisional
+(`docs/phase5/v1/PHASE_5_DOC.md:338-354`, “that evidence does not certify this rebuild”).
+The older verified declaration/access grants in §5.3 are historical evidence for the unchanged
+mechanics, not certification of the new sampler-layout/resolver surface. Implementation of this
+seam requires the corresponding current Phase 3/4/5 owner verification gates and a fresh
+whole-document Phase 6 literal PASS. R7-10 is adopted here only; sibling request-status rows are
+not edited by this owner.
+
+**UNGRANTED, separate dependency:** Phase 7's R7-11 permanent retirement algebra remains requested
+at `docs/phase7/v1/PHASE_7_DOC.md:2322-2330` (“Until adoption, the candidate/replacement lifecycle
+is an implementation blocker”). R7-10 grants neither `retire` nor `close`, changes no reset reason
+or lifetime ordering, and does not unblock that lifecycle protocol. Existing §4.14 remains binding.
+
+### 5.3 Historical verified dependency contract changes
+
+The original build document requested the following two interfaces. Both were granted and freshly
+verified at the cited rounds. Their unchanged declaration/access mechanics remain in use; those
+historical reviews do not certify the current coordinated owner bytes or waive §5.2's gates.
 
 1. **Phase 3 — declaration metadata granted.** Every successful `MaterializedSource` carries a
    complete immutable `DeclaredUniformCatalog`: exact name, closed structural GLSL type, declaring
@@ -1462,7 +1570,8 @@ surfaces and have completed their required fresh verification; Phase 6 consumes 
    (`docs/phase4/v1/PHASE_4_DOC.md:1373`–`:1375`). Round eighteen's literal PASS verifies the
    changed interface (`docs/phase4/reviews/PHASE_4_REVIEW_18.md:57`–`:70`).
 
-No `ProgramHandle`, source string, parallel declaration parser, or unverified interface is assumed.
+No `ProgramHandle`, source string, or parallel declaration parser is assumed. The provisional
+current-byte sampler interfaces and still-ungranted lifecycle request are explicitly gated in §5.2.
 
 ### 5.4 Requested governing clarification
 
@@ -1487,6 +1596,7 @@ RC3's stated default—Candidate A when the check is inconclusive—without edit
 | feature provider fails (center-depth source unavailable, matrix inverse singular) | 2a | disable/retain only that feature value; center depth retains prior sample, bad inverse disables only inverse |
 | Phase 4 compile/link/validate fails | 3 | Phase 4 backup chain; Phase 6 has no cache for a failed program |
 | uniform layout/type conflicts with Appendix D | 2 | disable only the mismatched uniform; attributed diagnostic; do not coerce |
+| Phase 5 resolver returns `Invalid(SamplerLayoutValidation)` | 3 | retain complete typed evidence in diagnostic; return existing Phase 4 `Degraded` for that effective program's sampler participant; no sampler upload or replacement map, unrelated uniform scopes unchanged |
 | sampler plan maps one location to conflicting units | 3 | sampler participant degrades that program; do not issue ambiguous integer uploads |
 | batched GL drain is non-empty but replay is clean | 3→4 | mark unattributable, disable no uniform, rate-limit; persistent condition handed to broader pack-level escalation |
 | required capability/texture-unit count fails at init | 4 | pack off through existing capability gate; no Phase 6 GL work |
@@ -1513,6 +1623,7 @@ state itself. Those would violate Phase 4 and §G4.6 ownership.
 | Component | Thread |
 |---|---|
 | runtime construction from pure configuration | any caller thread before publication; no GL work |
+| injected Phase 5 fixed-sampler resolver | pure; plan resolution inside render-thread `afterBind` on plan-cache miss, with immutable results reused |
 | `beginFrame`, all event methods, all barrier participants | render thread only |
 | `UniformPlatformProvider` / `CenterDepthSource` production implementation | render thread only |
 | smoothing, inverse, catalog planning in headless tests | test thread; no affinity |
@@ -1528,7 +1639,8 @@ scope.
 
 The hot path is every successful Phase 4 activation. Steady state must allocate nothing:
 
-- program plans, locations, and command slots are built once per effective program/generation;
+- program locations and command slots are built once per effective program/generation; sampler
+  plans reuse the matching effective sampler-layout/policy and stage/band inputs within that cache;
 - value cells reuse primitive storage;
 - activation copies values into preallocated command slots, with immutable semantics enforced by
   ownership rather than per-switch record allocation;
@@ -1569,7 +1681,7 @@ Minecraft, LWJGL, display, pack source, or image is needed.
 | Test | Assertions |
 |---|---|
 | `UniformCatalogCompletenessTest` | every Appendix D name appears once with exact type/provider/cadence/milestone; no extra built-in silently added |
-| `FixedSamplerMapTest` | all three stage maps match §4.9; conditional `shadow`; unit 11 ruling; no gbuffer/shadow unit 12 |
+| `SharedSamplerRepointTest` | real Phase 5 resolver plus effective fallback layouts yield exact integer uploads in unit/fixed-name order; direct `watershadow` selects `shadow` at 5 even if its location is optimized out, otherwise 4; `depthtex1` uploads 11; gbuffers/shadow never acquire a unit-12 sampler; unsupported declarations/domains/shapes and conflicting types return Degraded without sampler uploads or local fallback; same-unit distinct locations both upload, duplicate location/unit pairs coalesce, conflicting location units degrade; repeated activation and generation replacement preserve skip/invalidation behavior |
 | `TickEmaClosedFormTest` | first sample, 1/2/3 half-lives, irregular \(\Delta t\), zero half-life, zero time, asymmetric wet/dry |
 | `EyeBrightnessQuantizationTest` | independent components, truncation toward zero, 0…240 clamp |
 | `FrameOrderingTest` | call log proves depth/world sampling completes before synthetic resize/clear callback |
@@ -1625,11 +1737,12 @@ at `docs/design/v2.0-RC3/DESIGN.md:691`.
 The Phase 6 implementation gate is met when:
 
 1. all §8.1 tests are green against at least two recorded capability profiles;
-2. the recording log proves documented cadence, location-cache, sampler-map, and skip behavior;
+2. the recording log proves documented cadence, location-cache, shared-resolver integer routing, and skip behavior;
 3. the error replay test proves providers are evaluated once;
 4. the frame log proves center depth precedes resize/clear; and
-5. integration compilation consumes the verified Phase 3 declaration and Phase 4 layout/access
-   contracts without source reopening, a parallel parser, or test-only handle leakage; and
+5. integration compilation consumes the current Phase 3 declaration, Phase 4 effective layout/access,
+   and Phase 5 sole-resolver contracts after §5.2's owner gates, without source reopening, a parallel
+   parser, a second sampler map, or test-only handle leakage; and
 6. the schema/view conformance and accepted/skipped/rejected ordering/count tests prove the Phase 11
    interface without a GL context.
 
@@ -1641,8 +1754,8 @@ The Phase 6 implementation gate is met when:
 |---|---:|---:|---|
 | catalog, cadence, providers, frame snapshot, CPU smoothing | v0.1 | v0.1 | Phase 6 core |
 | synchronous center depth + empty macro contribution | v0.1 | v0.1 | PBO remains Phase 14 |
-| fixed sampler maps and sampler participant | v0.1 | v0.1 | backing textures Phase 5 |
-| built-in participant, location/value caches, error replay | v0.1 | v0.1 | consumes verified P3/P4 contracts |
+| shared Phase 5 resolver injection and existing sampler participant | v0.1 | v0.1, gated by §5.2 owner reviews and fresh Phase 6 PASS | Phase 5 owns unit policy/backing objects; no duplicate map |
+| built-in participant, location/value caches, error replay | v0.1 | v0.1 | unchanged P3/P4 mechanics; current owner-review gates in §5.2 |
 | gbuffer capture/inverse/previous machinery | v0.1 | v0.1 | hook invoked by Phase 7 |
 | frame/fog/blend/entityColor producers | v0.1 | v0.1 with Phase 7 | audit required |
 | versioned fixed-expression schema, conforming runtime view, typed custom sink/default participant | v0.1 | v0.1 no-op | closed types/outcomes, bool encoding, and normal per-program absence are fixed before Phase 11 plugs in at v0.4 |
@@ -1680,7 +1793,7 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
 | D-P6-3 | interpret half-lives as ticks and use time-corrected closed-form EMA | governing assignment says per-tick; Pintonium deciseconds are evidence for math only |
 | D-P6-4 | truncate smoothed eye brightness toward zero after continuous EMA | deterministic `ivec2` rule, verified working reference mechanic, bounded by T2 evidence |
 | D-P6-5 | rotate previous camera/matrices only at frame begin, never on provider read | program switches cannot advance a per-frame contract |
-| D-P6-6 | map samplers exactly to App B.3; never allocate or bind units | pack-visible fixed numbers and P5/P6 split |
+| D-P6-6 | consume Phase 5's sole App B.3 resolver for sampler integers; never maintain another map, allocate or bind units | pack-visible fixed numbers and P5/P6 split; R7-10 adoption in §§0.23/4.9 |
 | D-P6-7 | cache by effective linked program + generation, not requested fallback slot | Phase 4 fallback copies the whole provider binding |
 | D-P6-8 | use typed always-present event sink rather than assignable nullable notifiers | makes B6 structurally impossible and auditable |
 | D-P6-9 | GL-error disable scope is uniform + effective program + generation | rung 2 says one uniform only; avoids cross-program over-degradation |
@@ -1726,6 +1839,11 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
    immutable versioned schema and closed types, schema/view conformance, `Bool1` with Phase-6-owned
    encoding, and ordered accepted/skipped/rejected outcomes and counts. Because this is a §5
    change, it is not a verified grant until the fresh loop returns literal PASS.
+10. **ADOPTED IN CURRENT BYTES, FRESH VERIFICATION OWED — R7-10.** §§2.2/4.9/5 replace Phase 6's
+    independent map with Phase 5's required pure resolver. Appendix B.3 numbers, conditional
+    declaration rule, participant order and cache/error mechanics are preserved. Phase 4/5's
+    coordinated owner contracts remain unverified, with Phase 3's provisional input gate intact;
+    §5.2 records those blockers. R7-11 retirement is separate and remains ungranted.
 No contradiction with RESEARCH.md's authority was silently resolved.
 
 ### 11.3 Items handed onward
@@ -1734,6 +1852,10 @@ No contradiction with RESEARCH.md's authority was silently resolved.
 capture exactly once; supply frame/fog/blend/entityColor/celestial events; restore scoped dynamics;
 compose the three participants in Phase 4's fixed positions; add actual hook coordinates beside every
 §4.12 audit row. Do not resample providers from a hook that merely switches programs.
+Inject `FixedSamplerPolicies.resolver()` immediately after configuration in the §2.2 factory call,
+paired with compilation's appB3 policy. R7-10 is adopted in this document but not yet a verified
+grant. Await §5.2's owner reviews and fresh Phase 6 whole-document PASS; do not treat this as R7-11
+retirement adoption or introduce another participant/texture-bind loop.
 
 **To Phase 8:** supply all four shadow matrices and celestial/shadow-light values after shadow-camera
 setup through the v0.1 event interface. A singular inverse disables only that inverse.
@@ -1756,9 +1878,10 @@ Texture/normal/specular changes do not change fixed sampler integers.
 **To Phase 14:** D-P6-1 leaves the PBO/fence async-center-depth ledger item live. Measure against the
 one-read-per-frame synchronous baseline; synchronous fallback remains mandatory.
 
-**To Phase 6 implementers:** consume the verified §5.3 declaration/layout/access contracts
-directly. Do not replace them with source strings, a parallel declaration parser, retained
-`BoundProgramUniformAccess`, or `ProgramHandle`.
+**To Phase 6 implementers:** consume the declaration/layout/access mechanics directly and the sole
+Phase 5 resolver under §5.2's current owner-verification gates. Do not replace them with source
+strings, a parallel declaration parser, a local sampler map, retained `BoundProgramUniformAccess`,
+or `ProgramHandle`.
 
 ### 11.4 Requested upstream changes
 
@@ -1772,8 +1895,14 @@ directly. Do not replace them with source strings, a parallel declaration parser
   Candidate B with §5.4's declaration-safe rewrite and fixed sampler-unit prerequisites. D-P6-1
   already selects the fully specified Candidate A, so no current implementation contract depends
   on this future wording.
-- **GRANTED AND VERIFIED — Phase 3 and Phase 4 dependency contracts:** §5.3 records their exact
-  adopted surfaces and literal-PASS reviews.
+- **HISTORICALLY GRANTED AND VERIFIED — Phase 3 and Phase 4 dependency contracts:** §5.3 records
+  the original adopted surfaces and literal-PASS reviews; §5.2 records the current owner gates.
+- **ADOPTED HERE, FRESH VERIFICATION OWED — Phase 7 R7-10 / Phase 5 §5.5 item 4:** the exact
+  resolver injection and same-layout/context integer-upload contract now bind §§2.2/4.9/5. There
+  is no remaining Phase 6 independent map. Owner review gates remain open; Phase 5/7 status rows
+  require separate owner maintenance after this grant is verified, not edits in this session.
+- **UNGRANTED — Phase 7 R7-11:** permanent candidate/replacement retirement remains a separate
+  architecture change. No `retire`, `close`, new reset reason or relaxation of §4.14 is granted.
 - **GRANTED IN CURRENT BYTES, FRESH VERIFICATION OWED — Phase 11 dependency closure:** §§4.13
   and 5.1 publish the immutable versioned fixed-input schema, closed exact-name types, runtime-view
   conformance, `Bool1` with Phase-6-owned GL encoding, and ordered accepted/skipped/rejected
@@ -1792,10 +1921,10 @@ Ordered so each item has one outcome and one test hook.
 
 | # | Work item | Tag | Test hook |
 |---:|---|---:|---|
-| 1 | consume the verified Phase 3 `DeclaredUniformCatalog` and Phase 4 `ProgramUniformLayout` / `BoundProgramUniformAccess` contracts from §5.3 | v0.1 | dependency rounds 20/18 literal PASS; compile-time API test |
+| 1 | satisfy §5.2's current Phase 3/4/5 owner-review gates and fresh Phase 6 whole-document PASS, then consume published declaration/layout/access/resolver contracts | v0.1 | literal PASS for current owner surfaces; compile-time API test; R7-11 lifecycle remains separately gated |
 | 2 | create `engine.uniforms` packages and immutable primitive/vector/matrix records under C-1 | v0.1 | seam tests; mutation/finite validation tests |
-| 3 | implement the catalog containing every §4.4 row and three §4.9 maps | v0.1 | `UniformCatalogCompletenessTest`, `FixedSamplerMapTest` |
-| 4 | adapt Phase 3 configuration into validated `UniformConfiguration` without source reopening | v0.1 | fingerprint/schema/invariant tests |
+| 3 | implement the catalog containing every §4.4 built-in row, with no sampler-name/unit table | v0.1 | `UniformCatalogCompletenessTest`; sampler behavior covered through the real shared resolver |
+| 4 | adapt Phase 3 configuration without source reopening; inject Phase 5's pure resolver immediately after configuration in the exact §2.2 factory call, paired with compilation's appB3 policy | v0.1 | fingerprint/schema/invariant tests; missing resolver fails without GL or local fallback |
 | 5 | implement provider SPIs and scripted test providers | v0.1 | provider exception/range isolation tests |
 | 6 | implement `UniformCell`, acquisition revisions, frame/tick/signal buckets | v0.1 | cadence table-driven tests |
 | 7 | implement tick-domain scalar/vector EMA exactly as §4.5 | v0.1 | closed-form and quantization tests |
@@ -1805,7 +1934,7 @@ Ordered so each item has one outcome and one test hook.
 | 11 | implement conditional synchronous center-depth source and exact center coordinate | v0.1 | `ScriptedResponses.depthPixel`, ordering and undeclared tests |
 | 12 | implement empty Phase 3 macro contributor per D-P6-1 | v0.1 | materialization test has no `centerDepthSmooth` define |
 | 13 | implement initial/replacement generation adoption and `ProgramCache` keyed by effective provider/generation, including absent locations | v0.1 | adoption/lookup/fallback/generation tests |
-| 14 | implement sampler plans and deterministic integer upload order | v0.1 | recorded GL calls match §4.9 for every stage |
+| 14 | build/reuse sampler integer plans from the sole Phase 5 resolver and effective descriptor/context inside unchanged afterBind; retain deterministic order, locations, cache keys, tokens and error isolation | v0.1 | `SharedSamplerRepointTest`; real resolver/fallback/Invalid/alias/order/skip/generation cases; no physical texture binds |
 | 15 | implement built-in upload plans, exact skip, and matrix-always rule | v0.1 | recorded GL redundant/matrix tests |
 | 16 | implement immutable activation/dynamic attempted batches and Phase 1 attributed replay | v0.1 | reproduced/unattributable/provider-once/token-invalidated tests |
 | 17 | implement typed `UniformEventSink` with scoped reset helpers and no nullable listeners | v0.1 | notifier coverage and B6 regression tests |
@@ -1825,5 +1954,5 @@ Ordered so each item has one outcome and one test hook.
 ---
 
 *End of PHASE_6_DOC.md. The original §G1.1 build session stopped after this architecture
-document; §§0.3–0.22 record the later governed review, fix-up, and dependency-adoption maintenance.
+document; §§0.3–0.23 record the later governed review, fix-up, and dependency-adoption maintenance.
 Implementation and any post-loop version roll remain separate work.*
