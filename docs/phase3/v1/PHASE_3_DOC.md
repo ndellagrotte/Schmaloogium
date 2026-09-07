@@ -3,7 +3,7 @@
 ## 0. Header
 
 **Phase:** 3 — Pack front-end: ingestion, preprocessing, and configuration model
-**Date:** 2026-08-03 · **Last revised:** 2026-08-03 (§0.54)
+**Date:** 2026-08-03 · **Last revised:** 2026-09-07 (§0.55)
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 3
 specification only. RC3 governs this phase only; this document does not change the Phase 1 or
 Phase 2 governance pins.
@@ -352,6 +352,30 @@ Round 54 closes discovery-diagnostic encoding, load-failure diagnostic payloads,
 pack-buffer spelling projection, and brings the closing ledger through this §0.54 surface. Schema
 14 remains current; the binding §5 changes require a fresh whole-document review.
 
+### 0.55 Downstream-request addendum (Phase 13 R1 companion option macros — 2026-09-07)
+
+This maintainer-authorized architecture-only amendment grants the Phase-3-owned input requested at
+`docs/phase13/v1/PHASE_13_DOC.md:1341-1348`: the new typed pair belongs "immediately after engineOptions";
+"Off still short-circuits. Do not overload MacroContribution." Active §§2–5 now carry that
+immutable pair through load-time shader analysis,
+the published option-macro state, every same-build materialization, and both fingerprints.
+The pair replaces Phase 3's former engine-option/renderer-availability emission gates; it does not
+add a second macro producer. D-P3-58 records this cutover. The changed nested `MacroConfiguration`
+shape and meaning advance the configuration schema from 14 to 15.
+
+Inputs read for this amendment: `docs/MOVES.md`; this Phase 3 document's affected contracts,
+testability plan, staging, and decision history; RC3 Part I and Phase 3 specification;
+`docs/research/v1/RESEARCH.md` §§0–1 and §3.5; the shipped
+`reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:653-661` option meanings; and Phase 13
+§0's governing header, §2.2, §4.1.1, §4.1.6, §5.3 R1, with its own v3 Phase 13 specification. Phase 13 was read
+as the expressly assigned downstream request, not as a verified dependency or a new Phase 3
+governing authority. RC3 remains this document's pin; all earlier addenda remain historical.
+
+**Current §G1.3 status:** §5 changes require fresh whole-document verification. This amendment
+does not perform it, grant other owners' dependencies, or claim downstream adoption; §5.4 records
+the remaining gates. No code, review edits, builds, tests, verification runs, or directory rolls
+are part of this amendment.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 3 owns
@@ -367,6 +391,7 @@ Phase 3 owns the complete pure-JVM path from a selected pack location to one imm
   option rewriting;
 - the configurable standard/identity macro environment and the reserved Phase 6
   `centerDepthSmooth` macro contribution point;
+- the Phase-3-owned typed companion option-macro snapshot supplied before load by Phase 7;
 - jcpp preprocessing for shader sources and a separate properties-safe jcpp adapter;
 - complete default-block uniform declaration capture from each final materialized shader, with a
   closed structural GLSL type, declaring source stage, attributed source location, and the exact
@@ -399,6 +424,7 @@ jcpp library. They contain no Minecraft, Forge, Cleanroom, Mixin, or LWJGL type.
 | Evaluation of `uniform.*`/`variable.*` expressions | **Phase 11**; Phase 3 stores typed declarations plus raw expressions |
 | GUI widgets, navigation, slider interaction, apply/discard, and reload UX | **Phase 12**; Phase 3 owns the model and persistence codec |
 | Loading/uploading custom/noise textures and interpreting `.mcmeta` | **Phase 13**; Phase 3 stores lossless specs |
+| Preliminary companion policy and adaptation into `CompanionOptionMacros` before load | **Phase 13** owns the policy; **Phase 7** supplies the Phase-3-owned value; Phase 3 never waits for a texture plan or infers enablement from shader analysis |
 | Async/PBO work or preprocessor performance optimization | **Phase 14** |
 | Modern compute/storage execution and the final identity decision | **G8/S2 and G8/S3**; Phase 3 reserves compatible data shapes now |
 
@@ -457,7 +483,7 @@ public final class PackFrontEndServices {
 }
 
 public interface PackFrontEnd {
-    int CURRENT_SCHEMA_VERSION = 14;
+    int CURRENT_SCHEMA_VERSION = 15;
     DiscoveryLimits discoveryLimits();
     PackDiscoveryResult discover(PackDiscoveryRequest request);
     FilesystemCandidateResolution resolveFilesystemCandidate(
@@ -542,6 +568,7 @@ public record PackLoadRequest(
     RuntimeIdentityData runtimeIdentity,
     GLCapabilityProfile capabilities,
     EngineOptionData engineOptions,
+    CompanionOptionMacros companionOptionMacros,
     RendererFeatureData rendererFeatures,
     PersistenceFileAccess persistenceFiles,
     InternalPackSource internalPackSource,
@@ -554,6 +581,7 @@ public record RuntimeIdentityData(
     String engineVersion,
     OsFamily osFamily,
     Map<String, MacroOverride> perPackIdentityOverrides) {}
+public record CompanionOptionMacros(boolean normalMap, boolean specularMap) {}
 public record RendererFeatureData(
     boolean normalMapAvailable,
     boolean specularMapAvailable) {}
@@ -626,6 +654,7 @@ public record MacroConfiguration(
     MacroIdentityPolicy identityPolicy,
     List<MacroDefinition> baseCompatibilityMacros,
     List<MacroDefinition> optionMacros,
+    CompanionOptionMacros companionOptionMacros,
     List<MacroDefinition> capabilityFeatureMacros,
     List<MacroDefinition> engineIdentityMacros,
     Map<String, MacroOverride> perPackOverrides,
@@ -1243,6 +1272,10 @@ location remains one edge regardless of how many roots reach it. Edges order by 
 logical line; a missing target has an empty `included`.
 The catalog and its materializer retain defensive snapshots and no reader, archive lease, path
 handle, or mutable builder.
+The materializer retains the containing configuration's finalized `MacroConfiguration`, including
+its `CompanionOptionMacros` value, alongside `options().state()`. Every call uses that same-build
+snapshot; there is no companion-state argument, live policy lookup, or post-jcpp shader patch.
+Changing either boolean requires a fresh atomic load, not a new `MacroContribution`.
 `MaterializedSource.root()` identifies the requested root. `transformedText()` returns the exact
 final transformed GLSL `String`; `sourceMap()` describes that exact string and
 `sourceForFileNumber(n)` returns the mapped `SourceId` or `Optional.empty()` for an unknown number.
@@ -1268,6 +1301,8 @@ with its `MaterializationFingerprint`.
 
 The load is a transaction with no externally visible partial state. `OFF` short-circuits to
 `PackLoadResult.Off`; every other selection follows this pipeline:
+The selection-first, pre-I/O request validation in §5.1 precedes step 1, including required
+`CompanionOptionMacros` on every non-`Off` request; it never validates that field for `Off`.
 
 1. enumerate and resolve the selected candidate;
 2. open one bounded `PackInput` lease, locate the effective `shaders/` root, index files, read
@@ -1281,18 +1316,21 @@ The load is a transaction with no externally visible partial state. `OFF` short-
    it through `persistenceFiles`, and finalize the default-plus-persistence `OptionState`; `Internal`
    uses the baseline. Validate the supplied global engine options separately;
 7. assemble immutable macro-configuration data from `RuntimeIdentityData`, `GLCapabilityProfile`,
-   `EngineOptionData`, and `RendererFeatureData`, without applying it to shader text;
+   `EngineOptionData`, `CompanionOptionMacros`, and `RendererFeatureData`, retaining the typed
+   companion pair in `MacroConfiguration` option state without applying it to shader text;
 8. safely preprocess and parse `shaders.properties`, then validate profiles/screens/textures/
    custom declarations/program state;
-9. run plan-independent analysis of active shader roots with that same finalized option state:
-   expand includes with numeric `#line` attribution, establish the standard macro environment,
+9. run plan-independent analysis of active shader roots with that same finalized option state
+   and companion pair: expand includes with numeric `#line` attribution, establish the standard
+   and option macro environment before jcpp,
    rewrite every captured option occurrence in the expanded stream, then evaluate conditionals
    with jcpp, preserving any attributed legacy geometry pair without translating it;
 10. scan directives/declarations and fold them into immutable `ResourceRequirements`;
 11. snapshot each pack ID-map file's presence, preprocess/parse it with standard A–G macros only,
     and for a present entity file also produce the isolated forced-`MC_VERSION=11300` parse;
-12. validate cross-field invariants, compute a fingerprint containing the finalized option state,
-    and atomically publish `PackConfiguration`; final-source debug dumping occurs only on later
+12. validate cross-field invariants, compute a fingerprint containing the finalized option state
+    and both companion booleans, and atomically publish `PackConfiguration`; final-source debug
+    dumping occurs only on later
     successful materialization.
 
 The dimensions map always contains a `BASE` entry. A non-empty `world<id>` directory contributes
@@ -1474,10 +1512,11 @@ smoothing formula; this phase does not import an alternate unit.
 | Source identity and compiler attribution | `SourceCatalog` publishes ordered stage roots and one distinct ascending dimension/name `executablePrograms` projection; `SourceMap` and materializer retain attribution | RESEARCH §§3.2/4.2 and App A.2 source presence; `sourceCatalog_programProjectionStagesDimensionsAndAbsence`, `sourceMap_numericLookupAndMaterializedLifetime` |
 | Global compute-source recognition (`post-v0.5`) | For each known non-gbuffers program `p`, P3-C19 indexes only base-folder `p.csh` and `p_a.csh`…`p_z.csh`; the `SourceKey` uses associated name `p`, stage `COMPUTE`, and the distinct physical `SourceId`, then materializes through the same include/source-map path. Dimension folders remain `.vsh`/`.fsh` only | RESEARCH §§3.1/3.6.2; `sourceCatalog_computeRootsApplicabilityAndDimensions` (`post-v0.5`) |
 | Standard macro identity families | `MacroConfiguration` closes OF A–G plus the exact shader-only option set `MC_NORMAL_MAP`, `MC_SPECULAR_MAP`, `MC_RENDER_QUALITY`, `MC_SHADOW_QUALITY`, `MC_HAND_DEPTH`, `MC_OLD_HAND_LIGHT`, `MC_OLD_LIGHTING`, `MC_FXAA_LEVEL`, and the separately named capability-feature, engine-identity, override, and reserved-contributor families; it adopts PD's version/parser shape but rejects enumerate-all extension emission | RESEARCH §3.5; PD §7.6 `[V:observed — Pintonium common-shaders/src/main/java/net/irisshaders/iris/gl/shader/StandardMacros.java]`; D-P3-9; `macro_standardAndShaderPayloadFamiliesClosed`, `macro_optionFamilyMembershipAndValues`, `macro_optionNumericSerializationAliasesAndThresholds` |
+| Companion option-macro input | `CompanionOptionMacros` is captured before load-time shader jcpp, retained in `MacroConfiguration`, and reused by same-build materialization with both booleans hashed | RESEARCH §3.5; `docs/phase13/v1/PHASE_13_DOC.md:1343-1347` requests "every same-build materialization" and "Include both booleans"; D-P3-58; `macro_companionTypedStateBeforeJcpp`, `macro_companionMissingNonOffAndOffShortCircuit`, `macro_companionSameBuildAndFingerprints` |
 | Conditional preprocessing and substitution | jcpp adapters implement define/undef/if-family/defined/substitution for shaders and properties | RESEARCH §3.5; `preprocess_completeConditionalGrammarAllInputs` |
 | Public discovery/load and identity values | sealed tokens, explicit invalid generations, durable references, snapshot lifecycle, closed resolver/load outcomes, identity, and fingerprints | §2.2/§5; `discovery_invalidGenerationOrderingAndPublication`, `discovery_referenceRestartResolutionOutcomes` |
-| Block/item/entity short, namespaced, property, and legacy `id:meta` entry rules | schema-v14 `IdMappingInput` retains typed entry rules, selector order, file state, origin, and classic era for Phase 9 | RESEARCH §3.7; `idMap_allDocumentedRuleForms` |
-| `%namespace:path` tag-selector interpretation | Under D-P3-47/D-P3-49, schema-v14 `IdMappingInput` uses `%` plus the exact provisional lower-case ASCII identifier grammar in §§4.9/5.1 to retain `SelectorKind.TAG`; Phase 9 supplies the 1.12 shim and entries-before-tags priority | RESEARCH §3.6.8 supports only the generic modern-tag risk/shim/priority; concrete grammar remains local pending clarification; `idMap_selectorKindEntryAndTag`, `idMap_tagIdentifierGrammarBoundaries` |
+| Block/item/entity short, namespaced, property, and legacy `id:meta` entry rules | schema-v15 `IdMappingInput` retains typed entry rules, selector order, file state, origin, and classic era for Phase 9 | RESEARCH §3.7; `idMap_allDocumentedRuleForms` |
+| `%namespace:path` tag-selector interpretation | Under D-P3-47/D-P3-49, schema-v15 `IdMappingInput` uses `%` plus the exact provisional lower-case ASCII identifier grammar in §§4.9/5.1 to retain `SelectorKind.TAG`; Phase 9 supplies the 1.12 shim and entries-before-tags priority | RESEARCH §3.6.8 supports only the generic modern-tag risk/shim/priority; concrete grammar remains local pending clarification; `idMap_selectorKindEntryAndTag`, `idMap_tagIdentifierGrammarBoundaries` |
 | Entity compatibility preprocessing extension | a present entity file publishes ordinary A–G results and a separate result made by replacing only `MC_VERSION` with `11300`; no selection or merge occurs here | RESEARCH §3.7 supplies the preprocessing base; DESIGN.md Phase 9 §Scope and PD §8.1; `idMap_entityForced11300Isolated` |
 | Mod-provided ID-map contributions | public pure `IdMappingParser` accepts optional bounded bytes, mapping kind, the published parser environment, and `MappingOrigin` from Phase 9 | RESEARCH §3.7; `idMap_modContributionOriginPreserved` |
 | `layer.solid/cutout/cutout_mipped/translucent` and opaque-solid exclusion | typed `LayerRule` with the same selector/era provenance plus deferred resolution constraint | RESEARCH §3.7; `idMap_layersAndOpaqueSolidExclusion` |
@@ -1739,6 +1778,7 @@ MacroConfiguration
   identityPolicy              // OPTION_1, OPTION_2, or OPTION_3; OQ-7 remains open
   baseCompatibilityMacros    // ordered MacroDefinition list, OF A–G
   optionMacros                // ordered MacroDefinition list, shader sources only
+  companionOptionMacros      // immutable typed source for the first two option macros
   capabilityFeatureMacros    // honest supported IRIS_FEATURE_* definitions
   engineIdentityMacros       // SCHMALOOGIUM + version
   perPackOverrides            // immutable name→MacroOverride map
@@ -1777,11 +1817,19 @@ unsigned-UTF-8 order and checks identifier grammar, action/replacement shape, pr
 rules close the macro component without choosing OQ-7; the policy switch remains a configuration
 change for G8/S3.
 
-The `optionMacros` family projects the eight known engine settings in their §5.1 key order.
-`normalMapEnabled` emits `MC_NORMAL_MAP 1` only when its parsed Boolean and
-`RendererFeatureData.normalMapAvailable()` are both true; `specularMapEnabled` analogously emits
-`MC_SPECULAR_MAP 1`. Phase 7 supplies both availability bits as false at v0.1 and may set either
-true only while Phase 13's corresponding companion-atlas path is implemented and active at v0.5.
+The `optionMacros` family retains its exact eight-name order. Its first two positions project
+`MacroConfiguration.companionOptionMacros()`: `normalMap=true` emits `MC_NORMAL_MAP 1`,
+`specularMap=true` emits `MC_SPECULAR_MAP 1`; false omits the corresponding definition entirely,
+never defines it as `0`. All four boolean pairs are valid, with independent component semantics.
+The pair is copied by value from the required load input before any shader jcpp evaluation.
+Phase 3 neither recomputes it from `EngineOptionData`/`RendererFeatureData` nor adds their former
+gates. The eight global settings retain their validation, persistence, and defaults, but
+`normalMapEnabled`/`specularMapEnabled` are no longer direct macro producers in Phase 3.
+Phase 7 adapts Phase 13's static preliminary state before load, without requiring a configuration,
+registry, declarations, atlas, or completed texture plan. The staged v0.1 caller supplies an explicit
+`CompanionOptionMacros(false,false)`; active v0.5 policy is supplied before preprocessing, not
+inferred from later allocation success. Post-analysis demand may optimize physical allocation only;
+it cannot revise the chosen pair. The remaining six option positions are unchanged:
 `renderResMul`, `shadowResMul`, and `handDepthMul` always emit `MC_RENDER_QUALITY`,
 `MC_SHADOW_QUALITY`, and `MC_HAND_DEPTH`; `oldHandLight` and `oldLighting` emit
 `MC_OLD_HAND_LIGHT 1` and `MC_OLD_LIGHTING 1` only when true; positive `antialiasingLevel` emits
@@ -1798,14 +1846,16 @@ superfluous trailing fractional zeros but retains at least one digit after `.`. 
 
 Missing known settings warn and use, in key order, `true`, `true`, `1.0`, `1.0`, `0.125`, `false`,
 `false`, and `0`; typed-invalid persisted occurrences have already warned and been omitted by
-§5.1. Missing availability is invalid request data, never implied support. All three
-`MacroIdentityPolicy` values retain this family; OQ-7 changes only identity/feature payloads.
+§5.1. Missing required companion data or renderer-feature data on non-`Off` is `INVALID_REQUEST`,
+never implied support or an implicit false pair. All three `MacroIdentityPolicy` values retain
+this family; OQ-7 changes only identity/feature payloads.
 `perPackOverrides` is limited to non-version identity/capability names and rejects standard A–G,
 `SCHMALOOGIUM_VERSION`, and all eight option names.
-Option macros enter shader-source materialization only, never properties or ID-map preprocessing.
-P3-C08 implements the six v0.1-effective members and complete family; P3-C23 activates the two
-companion members at v0.5. Tests cover every gate, default, alias, formatter threshold, policy, and
-override-target rejection.
+Option macros enter load-time shader analysis and every same-build shader-source materialization,
+never properties or ID-map preprocessing. P3-C08 implements the required typed snapshot and six
+v0.1-effective members; P3-C23 activates the two companion members at v0.5. Planned checks cover
+typed enablement, pre-jcpp branches, same-build retention, fingerprints, defaults, numeric
+serialization, policy, and override-target rejection.
 
 `macro_optionNumericSerializationAliasesAndThresholds` compares exact UTF-8 macro lines: the five
 float aliases above all yield replacement `1.0`; `0.001`, `1.0E-4`, `9999999.0`, and `1.0E7`
@@ -1875,7 +1925,9 @@ Processing order:
 4. token-rewrite actual directive lines `#version` and `#extension` into invocation-scoped
    `#warning` markers (never global substring replacement);
 5. establish standard, option, identity, feature, override, and Phase 6 contribution macros through
-   `Preprocessor.addMacro`, not textual lines;
+   `Preprocessor.addMacro`, not textual lines; option macros include the same-build companion pair.
+   Their logical header position is after `#version`/active extensions and before the restored
+   pack `#line`; the definitions are installed before jcpp evaluates any pack conditional.
 6. rewrite every captured option occurrence in the expanded attributed stream, then run jcpp
    conditional evaluation;
 7. collect the active version and extension markers, preserve extension source order, and rebuild:
@@ -2287,7 +2339,7 @@ receives only the eligible projected/virtual-pre flip map.
 
 ### 4.9 Schema-versioned ID-mapping input
 
-`PackConfiguration.idMappings()` is the schema-v14 `IdMappingInput` in §2.2, not a flattened list.
+`PackConfiguration.idMappings()` is the schema-v15 `IdMappingInput` in §2.2, not a flattened list.
 Its four `IdMappingFileInput`s have exactly matching `MappingKind`s and immutable source order.
 For pack input, paths are exactly `shaders/block.properties`, `shaders/item.properties`,
 `shaders/entity.properties`, and `shaders/block.properties`'s `layer.*` family: block rules and
@@ -2389,9 +2441,9 @@ Validation has three levels:
 
 Only level 3 may fail the pack load. Levels 1–2 produce defaults/partial models and diagnostics.
 The immutable configuration fingerprint hashes pack bytes, normalized paths, the finalized
-default-plus-persistence option state, load-time macro policy, renderer-feature availability,
-capability identity fields, parser schema version, the computed `CompatibilityStatus` as its exact
-enum name after all minimum-edition rules are evaluated, and the canonical schema-v14
+default-plus-persistence option state, load-time macro policy, both companion booleans,
+renderer-feature availability, capability identity fields, parser schema version, the computed
+`CompatibilityStatus` as its exact enum name after all minimum-edition rules are evaluated, and the canonical schema-v15
 `IdMappingInput` including every file state and ordinary/forced rule-list fingerprint.
 Hidden domain, pack-key, catalog-identity, and discovery token identities are excluded from
 canonical fingerprints; their authenticated semantic values and the complete option value map are
@@ -2414,6 +2466,12 @@ attachment format is exactly `DefaultRgba` with no payload or `Explicit` followe
 `ColorInternalFormat` name. Equivalent maps/sets yield identical bytes regardless of insertion
 history, while any published leaf mutation changes the payload. This is producer canonicalization,
 not a portable digest or downstream wire-format promise.
+Both configuration and materialization fingerprints additionally include exactly
+`seq(atom("CompanionOptionMacros"), atom(normalMap), atom(specularMap))`, using the `true`/`false`
+atoms above in record-component order. The materialization payload uses the retained same-build
+pair, not a fresh caller value. Neither omitted macro definitions nor identical transformed text
+elide this payload: changing either boolean changes both fingerprint inputs even when the root
+never references that macro. Equal semantic inputs remain deterministic across service instances.
 For every Phase-3-produced `EngineDiagnostic`, all six record components and every argument are
 non-null, `args` is immutable, and an empty `detail` is the sole absence form. The closed argument
 runtime algebra is exactly `String`, `Boolean`, `Integer`, or `Long` (exact boxed classes);
@@ -2476,18 +2534,18 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 |---|---|---|
 | `PackFrontEnds.create` / `PackFrontEndServices` | dependency-free public acquisition of one immutable, thread-safe, final bundle with no public constructor; it exposes four readable receivers plus typed acquisition of bundle-owned safe persistence access, and owns one bounded authentication lifetime, the published finite discovery-retention policy, and no open handles | Phases 7, 9, 12 |
 | `PackFrontEnd.discover` / `discoveryLimits` / `resolveFilesystemCandidate` / `PackDiscoveryRequest` / `PackDiscoveryResult` / `DiscoveryLimits` / `PackCandidate` / `FilesystemCandidateReference` / `FilesystemCandidateResolution` | deterministic immutable discovery snapshots; exact candidate/byte overflow result; completion-LRU bounded directory retention; directory-keyed or explicit non-directory-keyed invalid generations; exact sentinel, supersession, eviction, and invalid-snapshot behavior; durable references and closed resolution outcomes | Phase 7 bootstrap/reload; Phase 12 selection UI |
-| `PackFrontEnd` / `CURRENT_SCHEMA_VERSION` / `packOptionsTarget` / `PackOptionsTargetAcquisition` / `PackOptionsTargetRejection` / `PackLoadRequest` / `PackLoadResult` | atomic load entry point with current schema literal `14`; target acquisition rejects null, foreign, unknown, superseded, sentinel, and unavailable IDs before persistence I/O; filesystem loads incorporate catalog-validated persisted state before option-sensitive work; `OFF` remains a successful no-configuration result | Phase 7 bootstrap/reload; Phase 12 selection |
-| `PackConfiguration` | single validated downstream truth, immutable and fingerprinted; its evaluator takes no option state and uses exactly `options().state()` finalized by the same atomic load | Phases 4–13 as listed below |
+| `PackFrontEnd` / `CURRENT_SCHEMA_VERSION` / `packOptionsTarget` / `PackOptionsTargetAcquisition` / `PackOptionsTargetRejection` / `PackLoadRequest` / `PackLoadResult` | atomic load entry point with current schema literal `15`; required `CompanionOptionMacros companionOptionMacros` immediately follows `engineOptions` in the incorporated request declaration; target acquisition rejects null, foreign, unknown, superseded, sentinel, and unavailable IDs before persistence I/O; filesystem loads incorporate catalog-validated persisted state before option-sensitive work; missing required non-Off companion data is `INVALID_REQUEST`; `OFF` short-circuits without validating other fields | Phase 7 bootstrap/reload; Phase 12 selection |
+| `PackConfiguration` | single validated downstream truth, immutable and fingerprinted; its evaluator takes no option state and uses exactly `options().state()` finalized by the same atomic load; nested `macros()` now retains the load's companion pair, and both booleans participate in the configuration fingerprint | Phases 4–13 as listed below |
 | `PackIdentity`, `CompatibilityStatus`, `DimensionKey`, `DimensionConfiguration`, `DimensionMode` | `PackIdentity` is `(NormalizedPackPath selectedRoot, Map<NormalizedPackPath,String> contentHashes)` with immutable canonical-path order; `CompatibilityStatus` is the closed `COMPATIBLE`/`REQUIRES_NEWER_EDITION` result, and dimensions are the ordered base/override/disabled map; absent world keys select the base entry, overrides expose only their own source roots, and disabled entries expose none | Phases 7, 12 |
-| `PackSelection`, `PackCandidateId`, `DiscoveryGeneration`, `RuntimeIdentityData`, `RendererFeatureData`, `PackInputLimits`, `PackLoadFailure`, `PackLoadFailureCode`, `PackCandidateKind`, `PackCandidateStatus`, `ConfigurationFingerprint` | exhaustive selection/failure/value domains; runtime identity accepts exactly MC `(1,12,2)`, the bounded edition grammar, and bounded canonical decimal engine version; the fingerprint includes the final `CompatibilityStatus`, so compatibility-changing edition comparisons invalidate retained state; each failure has the exhaustive cause/precedence mapping below and one immutable Phase-1 primary diagnostic, with exact-once delivery only when a non-null reporter exists; permitted token classes and their package-private issuer share `com.schmaloogium.engine.pack` under the unnamed module, authenticate owning instance and generation kind, use identity equality/hash, and are nonserializable | Phases 7, 12 |
-| `SourceCatalog`, `SourceDocument`, `SourceKey`, `SourceId`, `IncludeEdge`, `SourceMap`, `MaterializedSource`, `MaterializationFingerprint`, `SourceMaterializer`, `MaterializationResult`, `SourceSpan`, `LegacyGeometryConfig`, `LegacyGeometryRewriteSite`, `GeometryTranslationRequest`, `GeometryTranslationPlan` | one `SourceId`/document/graph node per indexed physical path and one edge per physical include location; only roots carry dimension/program/stage `SourceKey` context; immutable roots/edges; `executablePrograms()` is the distinct ascending dimension/name projection of all `.vsh`/`.fsh`/`.gsh` roots, excluding virtual-pre and including partial stage sets; materialization takes no option state and uses the containing configuration's finalized state | Phase 4; Phase 7; Phase 12 |
-| `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, `IdMappingMacroEnvironment`, `IdMappingFileFingerprint`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, closed `MappingOrigin` variants | schema-v14 per-kind `ABSENT`/`PRESENT_EMPTY`/`PRESENT_RULES`; ordered entry/tag rules retain classic grammar plus D-P3-47/D-P3-49's local `%` tag syntax: lower-case ASCII namespace `[a-z0-9][a-z0-9._-]*`, nonempty slash-separated `[a-z0-9._-]+` path segments other than `.`/`..`, at most one colon, no empty component, short-path expansion to `minecraft:`, and rejection rather than case folding; only a short unslashed `[0-9]+` tag ID is numeric and rejected, so `%123` rejects while `%minecraft:123`, `%123:foo`, and `%123/foo` canonicalize to `minecraft:123`, `123:foo`, and `minecraft:123/foo`; the immutable typed macro environment, fingerprint, predicates, provenance, and isolated forced-11300 result are binding | Phase 9; resolved layer result handed onward to Phase 7 |
-| `MacroConfiguration`, `MacroDefinition`, `MacroOverride`, `MacroContributor`, `MacroContribution`, reserved `phase6.centerDepthSmoothRedirect` slot | immutable OF A–G with exact `MC_VERSION=11202`, bounded decimal `SCHMALOOGIUM_VERSION`, GL/GLSL formulas, OS/vendor/renderer projection, and the exact eight-setting option projection; base order is A–G, option, capability, identity, then unsigned-UTF-8-ordered overrides before the Phase 6 contribution; protected targets reject; for allowed absent/present names `ADD` inserts/rejects, `SUPPRESS` no-ops/removes, and `FORCE` inserts/replaces, with §4.4's pre-I/O diagnostic precedence; six option members are effective at v0.1 and companion macros additionally require their active v0.5 capability | Phase 6 contributor; Phase 4 materialization; Phase 7 feature/input baseline; Phase 12 global settings; Phase 13 companion capability; G8/S3 |
+| `PackSelection`, `PackCandidateId`, `DiscoveryGeneration`, `RuntimeIdentityData`, `RendererFeatureData`, `PackInputLimits`, `PackLoadFailure`, `PackLoadFailureCode`, `PackCandidateKind`, `PackCandidateStatus`, `ConfigurationFingerprint` | exhaustive selection/failure/value domains; runtime identity accepts exactly MC `(1,12,2)`, the bounded edition grammar, and bounded canonical decimal engine version; the fingerprint includes final `CompatibilityStatus`, so compatibility-changing edition comparisons invalidate retained state, and §4.10's companion payload; renderer-feature shape remains unchanged but no longer gates companion emission; each failure has the exhaustive cause/precedence mapping below and one immutable Phase-1 primary diagnostic, with exact-once delivery only when a non-null reporter exists; permitted token classes and their package-private issuer share `com.schmaloogium.engine.pack` under the unnamed module, authenticate owning instance and generation kind, use identity equality/hash, and are nonserializable | Phases 7, 12 |
+| `SourceCatalog`, `SourceDocument`, `SourceKey`, `SourceId`, `IncludeEdge`, `SourceMap`, `MaterializedSource`, `MaterializationFingerprint`, `SourceMaterializer`, `MaterializationResult`, `SourceSpan`, `LegacyGeometryConfig`, `LegacyGeometryRewriteSite`, `GeometryTranslationRequest`, `GeometryTranslationPlan` | one `SourceId`/document/graph node per indexed physical path and one edge per physical include location; only roots carry dimension/program/stage `SourceKey` context; immutable roots/edges; `executablePrograms()` is the distinct ascending dimension/name projection of all `.vsh`/`.fsh`/`.gsh` roots, excluding virtual-pre and including partial stage sets; materialization takes no option or companion state and uses the containing configuration's finalized option state and macro snapshot, including both booleans before jcpp and in its fingerprint | Phase 4; Phase 7; Phase 12 |
+| `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, `IdMappingMacroEnvironment`, `IdMappingFileFingerprint`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, closed `MappingOrigin` variants | schema-v15 per-kind `ABSENT`/`PRESENT_EMPTY`/`PRESENT_RULES`; ordered entry/tag rules retain classic grammar plus D-P3-47/D-P3-49's local `%` tag syntax: lower-case ASCII namespace `[a-z0-9][a-z0-9._-]*`, nonempty slash-separated `[a-z0-9._-]+` path segments other than `.`/`..`, at most one colon, no empty component, short-path expansion to `minecraft:`, and rejection rather than case folding; only a short unslashed `[0-9]+` tag ID is numeric and rejected, so `%123` rejects while `%minecraft:123`, `%123:foo`, and `%123/foo` canonicalize to `minecraft:123`, `123:foo`, and `minecraft:123/foo`; the immutable typed macro environment, fingerprint, predicates, provenance, and isolated forced-11300 result are binding; semantics unchanged except containing schema | Phase 9; resolved layer result handed onward to Phase 7 |
+| `MacroConfiguration`, `CompanionOptionMacros`, `MacroDefinition`, `MacroOverride`, `MacroContributor`, `MacroContribution`, reserved `phase6.centerDepthSmoothRedirect` slot | immutable OF A–G with exact `MC_VERSION=11202`, bounded decimal `SCHMALOOGIUM_VERSION`, GL/GLSL formulas, OS/vendor/renderer projection, and the exact eight-name option family; the incorporated macro record adds the required typed companion pair immediately after `optionMacros`, which projects that pair for its first two positions and retains the other six projections; base order is A–G, option, capability, identity, then unsigned-UTF-8-ordered overrides before the Phase 6 contribution; protected targets reject; for allowed absent/present names `ADD` inserts/rejects, `SUPPRESS` no-ops/removes, and `FORCE` inserts/replaces, with §4.4's pre-I/O diagnostic precedence; §4.10's canonical pair payload participates in both fingerprints; the singular Phase 6 contribution algebra, slot, validation, and placement are unchanged | Phase 6 contributor; Phase 4 materialization; Phase 7 typed input; Phase 12 global settings; Phase 13 preliminary policy through Phase 7; G8/S3 |
 | `OptionConfiguration`, sealed `OptionCatalog` / `OptionState`, `OptionDefinition`, option values/enums, `OptionStateResult`, `OptionStateValidation`, `OptionStateFailure`, profiles/screens/sliders/decorations | catalog-issued complete default/constructed/updated states with closed failures and safe out-of-list warnings; profile inference returns `Inferred` or `InvalidState`; `ScreenModel.resolvedColumns(expandedSlotCount)` treats configured columns (default two) as a floor, counts the retained array after `*` expansion including ordinary option, applicable profile/subscreen, and empty slots, and raises the floor to `ceil(expandedSlotCount/9)` | Phase 4; Phase 12 |
 | `PersistenceRootConfiguration`, safe-access/target types, both persistence codecs, and their request/result/failure types | exact direct-child files and safe-write lifecycle; option operations authenticate domain and same-pack target/catalog pairing plus exact state/catalog identity before I/O; global operations authenticate access and implement §4.3's baseline-overlay/result matrix, §5.1 value-domain invariant, and exact all-entry output | Phase 7 load; Phase 12 standalone settings |
 | `ShaderPropertiesModel`, `EngineFlags`, `MinimumEditionRule`, `UnknownProperty`, `EngineOptionData` | closed immutable Appendix F model plus §5.1's separate eight-known-setting/unknown-safe global data domain; `MinimumEditionRule.minecraftVersion()` retains the exact decoded key suffix and `minimumEdition()` the exact decoded value, while canonical forms are comparison-only; source order, canonical map order, and nested collections are frozen | behavior owners in §3.1; Phase 12 persistence/UI |
-| `ProgramStateModel`, `ProgramKey`, state value types, `ProgramStateEvaluationResult`, `EvaluatedProgramStates`, `EvaluatedProgramState` | schema-v14 declarations; runtime evaluation takes no option state, uses the containing configuration's finalized state, returns one state per `SourceCatalog.executablePrograms()` key, diagnoses/omits source-absent raw properties, and publishes flips only for projected eligible or virtual-pre keys | Phase 4; Phase 5 flip state |
-| `ResourceRequirements` | the schema-v14 closed immutable record graph and exact leaf declarations below, including positional `DrawSlot` values and `ColorAttachmentFormat.DefaultRgba|Explicit(ColorInternalFormat)`. Last active valid scalar wins, malformed retains prior/baseline, and minima aggregate monotonically. New attachment entries use `DefaultRgba`; explicit directives use `Explicit`, and active `gdepth` forces `Explicit(RGBA32F)`. Absence is only empty collections, `Optional.empty()`, or typed baselines—never null/sentinel. Maps/sets/lists are immutable and ordered as declared; the complete graph uses §4.10's canonical codec | Phase 5 sizing/format/clear; Phase 6 center depth/smoothing; Phase 8 shadow; Phase 13 noise; Phases 4/7/10 per-program data |
+| `ProgramStateModel`, `ProgramKey`, state value types, `ProgramStateEvaluationResult`, `EvaluatedProgramStates`, `EvaluatedProgramState` | schema-v15 declarations; runtime evaluation takes no option state, uses the containing configuration's finalized state, returns one state per `SourceCatalog.executablePrograms()` key, diagnoses/omits source-absent raw properties, and publishes flips only for projected eligible or virtual-pre keys; semantics unchanged except containing schema | Phase 4; Phase 5 flip state |
+| `ResourceRequirements` | the schema-v15 closed immutable record graph and exact leaf declarations below, including positional `DrawSlot` values and `ColorAttachmentFormat.DefaultRgba|Explicit(ColorInternalFormat)`. Last active valid scalar wins, malformed retains prior/baseline, and minima aggregate monotonically. New attachment entries use `DefaultRgba`; explicit directives use `Explicit`, and active `gdepth` forces `Explicit(RGBA32F)`. Absence is only empty collections, `Optional.empty()`, or typed baselines—never null/sentinel. Maps/sets/lists are immutable and ordered as declared; the complete graph uses §4.10's canonical codec; algebra unchanged, with shader analysis now using the retained companion pair | Phase 5 sizing/format/clear; Phase 6 center depth/smoothing; Phase 8 shadow; Phase 13 noise; Phases 4/7/10 per-program data |
 | `CustomTextureSpec`, `NoiseTextureSpec`, `TexturePropertyStage`, `TextureBindingKey`, `TextureTarget`, `ColorInternalFormat`, `PixelFormat`, `PixelType`, `TextureSidecarRef` | canonical §2.2 declarations form the closed Phase-13 algebra; raw and colortex formats share the one 37-value `ColorInternalFormat`; target, pixel-format, and pixel-type enums are exhaustive. `TextureSidecarRef.path()` is the exact non-null adjacent `.mcmeta` path; ordinary `PackPath` uses D-P3-38's non-empty-stem/lowercase-`.png` interpretation. No filter/wrap suffix is recognized or normalized absent authority; such keys diagnose and omit | Phase 13 |
 | `InternalPackSource` / `InternalPackReadException` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; `snapshot` may raise only the declared provider-only checked exception, which is reduced to an attributed failure; defensive byte copies and the canonical path projection are binding | Phase 7 supplies content and consumes the projection |
 The public declarations in §2.2 are incorporated into binding rows above, not merely illustrative.
@@ -2539,6 +2597,13 @@ require safe text, and safe out-of-list text warns but succeeds. `OptionConfigur
 state not issued by its catalog. `inferProfile` alone accepts a candidate state for preview.
 `SourceMaterializer.materialize` and `PackConfiguration.evaluateProgramStates` accept no state and
 use exactly the containing configuration's finalized `options().state()`.
+The source/materialization row also binds §2.2's retained same-build macro snapshot and §4.5's
+pre-jcpp application. `MacroConfiguration.companionOptionMacros()` is a non-null immutable
+`CompanionOptionMacros(boolean normalMap, boolean specularMap)` with value equality and exact
+component accessors. Its `optionMacros()` projection must agree with that pair; construction
+rejects null or inconsistent publication data, never silently repairs it. The load owns construction
+and publishes no partial configuration. Both fingerprints use §4.10's exact pair encoding.
+No Phase 13 type, callback, GL handle, plan, or mutable policy object crosses the Phase 3 seam.
 
 For persistence, the hidden catalog pack key must match the target's bundle domain and exact
 engine-issued candidate credential (not merely its potentially ambiguous durable reference), and
@@ -2587,18 +2652,25 @@ For values, printable ASCII is literal except `\`, `=`, `:`, `#`, `!`, and every
 which is backslash-prefixed; every non-ASCII UTF-16 code unit is `\uXXXX` with uppercase hex.
 The resulting bytes are ISO-8859-1 and are the exact all-entry output.
 
-The binding option projection iterates the eight known keys in the order listed above:
-`normalMapEnabled→MC_NORMAL_MAP 1` and `specularMapEnabled→MC_SPECULAR_MAP 1` only when both
-the Boolean and matching renderer capability are true; `renderResMul→MC_RENDER_QUALITY`,
-`shadowResMul→MC_SHADOW_QUALITY`, and `handDepthMul→MC_HAND_DEPTH` always;
+The binding option projection begins with `companionOptionMacros.normalMap→MC_NORMAL_MAP 1`
+and `companionOptionMacros.specularMap→MC_SPECULAR_MAP 1`, each iff its boolean is true.
+False means absent, not `0`; all four pairs are legal, and neither engine options nor renderer
+features add a second emission gate. The remaining six positions use `EngineOptionData`:
+`renderResMul→MC_RENDER_QUALITY`, `shadowResMul→MC_SHADOW_QUALITY`, and
+`handDepthMul→MC_HAND_DEPTH` always;
 `oldHandLight→MC_OLD_HAND_LIGHT 1` and `oldLighting→MC_OLD_LIGHTING 1` only when true; and
-positive `antialiasingLevel→MC_FXAA_LEVEL`, with zero omitted. Missing-key defaults in that order
-are `true,true,1.0,1.0,0.125,false,false,0`. The Phase 7/12 global-input path supplies that complete
+positive `antialiasingLevel→MC_FXAA_LEVEL`, with zero omitted. Global missing-key defaults remain
+`true,true,1.0,1.0,0.125,false,false,0` in the eight-known-key order of the validity invariant
+above, not defaults for the typed pair. The Phase 7/12 global-input path supplies that complete
 default map as its canonical baseline; retained unknown-safe keys never project to macros.
 Multiplier replacements are exactly Java-25 `Float.toString` of the accepted parsed float, with
 plain notation on `[1.0e-3f,1.0e7f)` and otherwise uppercase-`E` scientific notation as specified
 in §4.4; FXAA is exactly base-10 `Integer.toString` of the parsed integer. These exact strings and
 the family order are consumer-visible through `MacroConfiguration.optionMacros()`.
+The global `normalMapEnabled`/`specularMapEnabled` entries still validate and round-trip under
+the unchanged global codec, but do not override the typed pair in Phase 3. It has no missing-value
+default: every non-`Off` caller supplies it explicitly. The v0.1 caller uses `(false,false)`; Phase 7
+adapts the v0.5 preliminary policy before load. This replaces D-P3-31's former producer gates.
 
 The binding standard A–F projection is exact. `MC_VERSION` is ASCII decimal `11202`, and a non-
 `Off` MC tuple other than `(1,12,2)` is pre-I/O `INVALID_REQUEST`. `engineVersion` matches
@@ -2859,7 +2931,9 @@ request directory, and never accesses `internalPackSource`. A foreign access rec
 mismatch returns `Failed(INVALID_REQUEST)` before file I/O. Validation first rejects a null request,
 null/malformed selection shape, or unauthenticated selection token; `Off` then returns immediately.
 Before any external I/O, every non-`Off` request validates `diagnostics`, identity, capabilities,
-engine options, and renderer features, followed by its selection-dependent fields. A null reporter
+engine options, companion option macros, and renderer features, followed by its selection-dependent
+fields. A null `companionOptionMacros` returns `Failed(INVALID_REQUEST)` before pack, persistence,
+internal-provider, or jcpp work; no default is synthesized. A null reporter
 is the special `INVALID_REQUEST` delivery branch below. Other null or structurally invalid required
 data likewise returns `Failed(INVALID_REQUEST)` rather than throwing.
 
@@ -2870,8 +2944,9 @@ comparison. `engineVersion` obeys §4.4's bounded canonical decimal grammar and 
 projection. `osFamily` is the closed macro OS family with `OTHER`; overrides are the validated
 add/suppress/force map described in §4.4, and absent overrides become an empty map. Every invalid
 value fails before pack or persistence I/O.
-`RendererFeatureData` contains independent normal/specular companion-atlas availability; false
-means the corresponding feature macro is absent regardless of its engine option. `EngineOptionData`
+`RendererFeatureData` retains its independent normal/specular companion-atlas availability fields
+and fingerprint participation, but is not the companion option-macro producer or a second gate.
+The required `CompanionOptionMacros` pair is authoritative for emission. `EngineOptionData`
 is the immutable canonical-order map valid exactly under §5.1's eight-known-setting and
 unknown-safe invariant. Global reads classify logical occurrences only after request validation:
 typed-invalid known and unsafe unknown occurrences are omitted with warnings, unknown-safe entries
@@ -2914,7 +2989,7 @@ The cause mapping is exhaustive:
 
 | Code | Exact cause class |
 |---|---|
-| `INVALID_REQUEST` | null request; null/malformed selection shape such as `Filesystem(null)`; any missing/invalid selection-dependent request field, domain/root mismatch, runtime identity, capability, option, feature, reporter, or persistence receiver |
+| `INVALID_REQUEST` | null request; null/malformed selection shape such as `Filesystem(null)`; any missing/invalid selection-dependent request field, domain/root mismatch, runtime identity, capability, option, companion option macros, feature, reporter, or persistence receiver |
 | `INVALID_SELECTION` | a non-null filesystem ID that is foreign, unknown, stale, superseded, evicted, or names a sentinel; an authenticated candidate status is classified by its specific input code instead |
 | `INPUT_UNSAFE` | an `UNSAFE` candidate or selected filesystem input with an absolute, traversal, NUL, drive-qualified, symlink-following, collision, or containment-escaping path/root condition |
 | `INPUT_LIMIT_EXCEEDED` | a `LIMIT_EXCEEDED` candidate or selected filesystem/archive input exceeding any configured entry, byte, path, nesting, source, graph, line, token, macro, or diagnostic bound |
@@ -2957,11 +3032,15 @@ Phase 2 owns the adapter, CI job, and `:conformance` integration.
 
 ### 5.3 Interface/version discipline
 
-`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `14`, and every configuration produced by this revision
+`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `15`, and every configuration produced by this revision
 publishes that value. A consumer supports exactly `schemaVersion == CURRENT_SCHEMA_VERSION`; every
 other value is rejected before derived state is created or retained. The schema is separate from
 the content fingerprint. Any record-component change, changed component meaning/default, or removal
 requires the next version and producer/consumer compatibility tests.
+The §0.55 R1 amendment adds `MacroConfiguration.companionOptionMacros` and replaces the previous
+companion projection inputs; this changes the nested `macros` shape/meaning and requires schema 15.
+Schema-14 and schema-15 consumers reject the opposite producer version; no adapter infers missing
+companion state. All downstream schema adoption is outstanding outside this single-document edit.
 
 Round 40's program-state meaning required schema 6; Round 41's program-state and macro-default
 changes required schema 7. Round 42 changed binding operations but no component meaning, so retained
@@ -3009,7 +3088,7 @@ where pack order matters. Enums intended for forward-compatible storage include 
 is never a silently executable state. Closed executable enums reject unknown values; in particular,
 `GeometryInputPrimitive` and `GeometryOutputPrimitive` contain only their declared primitive sets.
 `IdMappingInput.schemaVersion` must equal its containing `PackConfiguration.schemaVersion`; Phase 9
-rejects a mismatch before parsing mod bytes or building aliases. Versions 1 through 13 are
+rejects a mismatch before parsing mod bytes or building aliases. Versions 1 through 14 are
 incompatible with the current surface and are never upgraded by inference.
 Closing the already-named `NormalizedPackPath` value with its canonical string projection does not
 add or reinterpret a `PackConfiguration` component and therefore did not itself increment the
@@ -3018,8 +3097,9 @@ publishing `customExpressions()` does not add or reinterpret a record component:
 immutable projection of declaration data already retained by `ShaderPropertiesModel`, while the
 existing pack bytes already made those declarations configuration-fingerprint inputs. The
 custom-expression publication itself did not increment the schema; the value became `13` in Round
-49 because that round closed the nested raw-texture component type. Round 52 advances the current
-value to `14` for the independently described `ScreenModel` meaning change. The canonical typed-list
+49 because that round closed the nested raw-texture component type. Round 52 advanced the value
+to `14` for the independently described `ScreenModel` meaning change; §0.55 now requires `15`
+for the companion macro state. The canonical typed-list
 encoding in §4.10 makes the existing fingerprint dependency independently executable. Adding the
 collection as a new record component or changing its decoded meaning, order, duplicate policy,
 attribution, or absence semantics would require the next schema.
@@ -3040,6 +3120,19 @@ dependency-contract change.
 No new Phase 1 runtime interface is assumed. `RuntimeIdentityData` and `InternalPackSource` are
 Phase 3 interfaces supplied by later `:mod` work as plain data.
 
+**R1 grant and remaining dependency gates.** This document grants only the Phase-3-owned typed
+input requested by `docs/phase13/v1/PHASE_13_DOC.md:1341-1348` ("copy into MacroConfiguration
+option state and every same-build materialization"). Phase 7 must adapt its pre-load preliminary
+state into this value and migrate load callers; Phase 4 and other consumers must adopt schema 15.
+Those owner-document changes and their fresh §5 reviews are not granted or completed here.
+Phase 13's unchanged R1 ledger still says "ungranted"; reconcile that ledger in its own authorized
+session after this producer contract is verified, not by assuming the old load API remains valid
+for schema 15. PBR conformance remains blocked pending coordinated adoption and fresh verification.
+Phase 3 calls no Phase 13 producer and gains no reverse dependency. Phase 13's separate R4
+post-analysis demand request, its Phase 1 package request, and the texture-suffix authority gap
+remain ungranted by this amendment; none is needed to retain the preliminary pair or may supply
+it after jcpp. The jcpp build/seam request above also remains outstanding.
+
 ## 6. Failure modes & degradation
 
 | Failure | Degradation and diagnostic | G2.4 rung |
@@ -3057,6 +3150,7 @@ Phase 3 interfaces supplied by later `:mod` work as plain data.
 | Null/foreign/malformed option state or same-domain cross-pack persistence pairing | return the closed state/persistence failure before evaluation, rewrite, or I/O; publish no partial result | rung 2a/4 |
 | Selected input unsafe, over limit, unreadable/corrupt, internally invalid, or structurally unusable | apply §5.1's exhaustive ordered cause matrix, close all resources, publish no partial configuration, and select shaders-off | rung 4→5 |
 | Null load reporter | return `Failed(INVALID_REQUEST)` with its primary diagnostic, no callback, no I/O, and no throw | rung 4 |
+| Missing companion option macros on non-`Off` | return `Failed(INVALID_REQUEST)` with the existing primary diagnostic before I/O or preprocessing; `Off` still returns successfully without inspecting that field | rung 4 |
 | Debug-dump/persistence write failure | warn; retain in-memory configuration/state; never turn pack off | rung 2a |
 | Unexpected parser/library exception | after input/provider attribution, catch at the front-end boundary as `UNEXPECTED_INTERNAL`, close the lease, and return shaders-off | rung 5 |
 
@@ -3175,7 +3269,19 @@ context or Minecraft type needed.
   fallback, null rejection, and proof that no unlisted macro is emitted),
   `macro_optionFamilyMembershipAndValues`,
   `macro_optionNumericSerializationAliasesAndThresholds`,
-  `macro_companionMapsAbsentAtV01AndCapabilityGatedAtV05`, `macro_phase6CenterDepthSlot`,
+  `macro_companionTypedStateBeforeJcpp`
+  (each of the four typed pairs selects the matching load-time resource branch and materialized
+  declaration branch; false is absent rather than defined as zero; differing valid global settings
+  or renderer availability cannot override the pair; all three identity policies agree; properties
+  and ID-map conditionals receive neither macro),
+  `macro_companionMissingNonOffAndOffShortCircuit`
+  (null pair on valid Internal/Filesystem requests yields `INVALID_REQUEST` before provider,
+  persistence, pack, or jcpp work; Off with null other fields returns Off),
+  `macro_companionSameBuildAndFingerprints`
+  (reload with either bit changed changes both fingerprints, even for macro-unreferencing roots;
+  equal inputs across service instances agree; retained old materializers keep the old branch and
+  fingerprint after reload; no later plan/contribution can replace the pair),
+  `macro_phase6CenterDepthSlot`,
   `directive_shadowFovDomain`
   (accepts finite values immediately above 0 and below 180 in every form; rejects 0, 180,
   out-of-range, NaN, and infinities while retaining the prior/baseline value),
@@ -3283,7 +3389,7 @@ context or Minecraft type needed.
   `idMap_originVariantsIdentityValidationAndOrdering` covers pack attribution, canonical mod IDs,
   per-mod ordinals, record equality, invalid construction, and leaves precedence evaluation to Phase 9;
   `idMap_fingerprintCoversPresenceEnvironmentAndBothParses` mutates each load-bearing input; and
-  `idMap_schemaAndContainingConfigurationMustMatch` rejects unsupported v1–v13 values and mismatched nested schemas.
+  `idMap_schemaAndContainingConfigurationMustMatch` rejects unsupported v1–v14 values and mismatched nested schemas.
 - Appendix F tests: every Phase-3-owned test named in §§3.1–3.2 is required; a parameterized key
   manifest fails if a parser/model row lacks a Phase 3 assertion. Behavior-only handoff rows name
   their downstream owner's test and are excluded from the Phase 3 parser manifest.
@@ -3313,13 +3419,14 @@ context or Minecraft type needed.
   (holds pack bytes and every other fingerprint input fixed and asserts both status and fingerprint change),
   `materializedFingerprintChangesWithContributionOrGeometryPlan`,
   `materializedFingerprintChangesWithUniformCatalogSchemaOrContent`,
-  `schema_currentValuePublished` (asserts the literal `14`, not equality through the production constant), `schema_recordComponentChangeBumps`,
+  `schema_currentValuePublished` (accepts current schema 15), `schema_recordComponentChangeBumps`,
   `schema_incompatibleChangeBumps`, `schema_unsupportedVersionRejected`,
   `schema7RejectedBySchema8`, `schema8RejectedBySchema9`, `schema9RejectedBySchema10`,
   `schema10RejectedBySchema11`, `schema11ProducerRejectedBySchema12Consumer`,
   `schema12ProducerRejectedBySchema11Consumer`, `schema12ProducerRejectedBySchema13Consumer`,
   `schema13ProducerRejectedBySchema12Consumer`, `schema13ProducerRejectedBySchema14Consumer`,
   `schema14ProducerRejectedBySchema13Consumer`,
+  `schema14ProducerRejectedBySchema15Consumer`, `schema15ProducerRejectedBySchema14Consumer`,
   `schemaMismatchInvalidatesRetainedState`, `texture_sharedUnitSamplerTypeDerivedLater`,
   `texture_publicNominalAlgebraProducerConsumerCompatibility`,
   `publicServices_factoryDependenciesLifetimeAndOwnership`,
@@ -3411,22 +3518,22 @@ milestone.
 | P3-C05 | include expansion and `#line`/source-map attribution | `v0.1` |
 | P3-C06 | sealed catalog-bound option state, closed construction/update/validation/inference, and profile/screen/slider/lang model with expanded-slot screen-column floors | `v0.1` |
 | P3-C07 | typed current-candidate target acquisition, same-pack catalog/state authentication, safe access, direct-name persistence, closed per-pack/global codec matrices, and atomic load integration | `v0.1` |
-| P3-C08 | configurable OF-era/feature/identity macros with fixed `MC_VERSION`, canonical engine-version projection, six v0.1-effective option macros, the complete override action/state matrix, and Phase 6 slot | `v0.1` |
+| P3-C08 | configurable OF-era/feature/identity macros with fixed `MC_VERSION`, canonical engine-version projection, required typed companion snapshot (explicit false pair at v0.1), six v0.1-effective option macros, the complete override action/state matrix, and unchanged Phase 6 slot | `v0.1` |
 | P3-C09 | OQ-7 policy finalizer/per-pack experiment results | `post-v0.5` |
 | P3-C10 | jcpp shader-source processor with hoisting/spoof guards | `v0.1` |
 | P3-C11 | properties-safe jcpp adapter and lossless property parser | `v0.1` |
 | P3-C12 | table-driven legacy Appendix A.3 directive scanner with exact family applicability and positional `DRAWBUFFERS` slots, excluding `RENDERTARGETS` | `v0.1` |
 | P3-C13 | immutable resource-requirement aggregator with exact closed public leaves, positional routing, program-family filters, and complete canonical codec | `v0.1` |
 | P3-C14 | complete Appendix F model with exact decoded edition accessors, provisional edition grammar/comparator, source-projected program evaluation, D-P3-38 PNG interpretation, sampling-suffix authority gap, closed flags/state, unknown retention, and custom expressions | `v0.1` |
-| P3-C15 | schema-v14 ID-mapping/layer parser, classic/modern provenance, file-state/selector/era provenance, and forced-11300 entity parse | `v0.1` |
-| P3-C16 | source materializer and local processed-source debug dump | `v0.1` |
-| P3-C17 | schema-v14 validation, compatibility-status/resource/custom-expression fingerprint payloads, and atomic `PackConfiguration` publication | `v0.1` |
+| P3-C15 | schema-v15 ID-mapping/layer parser, classic/modern provenance, file-state/selector/era provenance, and forced-11300 entity parse | `v0.1` |
+| P3-C16 | same-build macro-snapshot source materializer and local processed-source debug dump | `v0.1` |
+| P3-C17 | schema-v15 validation, companion/compatibility-status/resource/custom-expression fingerprint payloads, and atomic `PackConfiguration` publication | `v0.1` |
 | P3-C18 | loader-neutral diagnostics, null-reporter handling, and exhaustive load-failure classification/degradation adapter | `v0.1` |
 | P3-C19 | global `.csh` source recognition/materialization reserved for G8/S2 | `post-v0.5` |
 | P3-C20 | headless manifests, fuzz fixtures, and the specified Phase 2 front-end hand-off | `v0.1` |
 | P3-C21 | `(internal)` in-memory source-provider bridge with canonical UTF-8 path identities (content remains Phase 7) | `v0.1` |
 | P3-C22 | modern `RENDERTARGETS` recognition and source-order precedence | `post-v0.5` |
-| P3-C23 | capability-gated effective `MC_NORMAL_MAP`/`MC_SPECULAR_MAP` emission with companion atlases | `v0.5` |
+| P3-C23 | effective `MC_NORMAL_MAP`/`MC_SPECULAR_MAP` emission from the typed pre-load companion pair, with preliminary policy supplied by Phase 7 rather than completed atlases | `v0.5` |
 
 Later consumers may initially ignore fields, but Phase 3's v0.1 model already preserves all
 Appendix A.3/F data. P3-C19 does not change legacy dimension semantics.
@@ -3514,7 +3621,7 @@ not a decision (PD §7.6).
 | D-P3-28 | Use tagged `DrawRouting.AllUsed` versus `DrawRouting.Explicit(List<DrawSlot>)`, preserving every digit or `N` as one attachment/none slot so routing positions are lossless and absence remains distinct. |
 | D-P3-29 | Do not recognize, strip, or invent texture-key filter/wrap suffix semantics: the governing inputs identify Pintonium's destructive behavior as a gap but supply no grammar or value domain. Record the authority gap and require a revised sampling-state handoff once resolved. |
 | D-P3-30 | Serialize a filesystem selection as the typed percent-encoded direct-child reference and resolve it only against authenticated fresh discovery; opaque IDs remain live instance capabilities, never persistence data. |
-| D-P3-31 | Keep eight option-macro names policy-invariant, but emit companion-map macros only when their engine option and v0.5 renderer capability are both active. |
+| D-P3-31 | Historical producer rule: keep eight option-macro names policy-invariant, but gate companion macros by engine option and v0.5 renderer capability. D-P3-58 supersedes only those producer gates; the policy-invariant family remains. |
 | D-P3-32 | Treat virtual-pre names as flip-only, expand one-token scale to zero offsets, restrict scale to executable deferred/composite, and filter flips to that family plus the two virtual slots. |
 | D-P3-33 | Use the contract-required direct `shaderpacks/<pack>.txt` target and preserve safety through canonical direct-child derivation, containment checks, and symlink rejection rather than replacing the observable format. |
 | D-P3-34 | Make filesystem load itself read persisted values before every option-sensitive step; a post-publication codec cannot repair an atomic configuration. |
@@ -3541,6 +3648,7 @@ not a decision (PD §7.6).
 | D-P3-55 | After checking Appendix F.4's syntax, default two columns, and beyond-18 requirement, adopt only the §G7-qualified behavior that treats configured columns as a floor and raises it to the nine-row minimum over the expanded retained slot array `[V:observed — OptiFine G6 screen behavior; behavioral-observation-only]`; this is behavior, not implementation structure. |
 | D-P3-56 | Give each load-failure code one localized key and a common `ERROR`/`CHAT`, empty-argument, empty-detail, pack-log payload because Phase 1 routes pack-level failures to chat and untrusted cause data must not cross the public failure seam. |
 | D-P3-57 | Close Phase 3 diagnostic arguments to four tagged boxed scalar classes and make the fixed discovery-overflow diagnostic argument-free, so exact snapshot accounting cannot depend on erased `Object` values or input-derived detail. |
+| D-P3-58 | Grant Phase 13 R1 through Phase-3-owned `CompanionOptionMacros`, captured before jcpp and retained/hash-bound for the whole build, rather than a post-analysis producer or another `MacroContribution`. The shipped `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:655-656` says "When the normal map is enabled" / "When the specular map is enabled"; `docs/research/v1/RESEARCH.md:313-319` places these in the standard shader header. Phase 7 adapts preliminary policy; Phase 3 projects the supplied booleans without reapplying D-P3-31's gates. |
 
 ### 11.2 Binding-decision disposition
 
@@ -3584,15 +3692,17 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
   the Phase 3 type algebra.
 - Phase 4 calls `SourceMaterializer.materialize(root, contribution, geometryTranslation)` and
   `PackConfiguration.evaluateProgramStates(selectedProfile, diagnostics)` only; both use the same
-  finalized option state that produced the configuration's resources and fingerprint. It never
-  calls or reconstructs a raw-model evaluator or passes a preview state.
+  finalized option state that produced the configuration's resources and fingerprint; materialization
+  also retains that load's companion pair and hashes it. It never calls or reconstructs a raw-model
+  evaluator, passes preview state, or patches a later companion decision into shader text.
 - Phase 7 must supply the bounded `InternalPackSource`; for filesystem loads it obtains
   `PersistenceFileAccess` from its factory bundle using the exact game/shaderpacks roots and passes
   only that same-domain receiver into `load`. It persists only
   `FilesystemCandidateReference.canonicalValue()`, performs fresh discovery/resolution after
-  restart/reload, supplies both `RendererFeatureData` bits as false at v0.1 and only as true with
-  the corresponding active v0.5 Phase 13 capability, and publishes new configurations on pack,
-  dimension, or reload transitions. Content hashing/serialization uses only
+  restart/reload, supplies an explicit `CompanionOptionMacros(false,false)` at v0.1, and adapts
+  Phase 13's preliminary companion state before load at v0.5. Renderer-feature availability remains
+  request metadata, not an alternative emission gate. It publishes new configurations on pack,
+  dimension, option/policy, or reload transitions. Content hashing/serialization uses only
   `NormalizedPackPath.canonicalString()`.
 - Phase 7 selects the published `DimensionConfiguration` by key: an absent world entry falls back
   to base, an override is source-exclusive, and a disabled entry never falls back or merges.
@@ -3613,6 +3723,10 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
 - Phase 13 receives no property-key sampling request until the upstream grammar/value domain is
   resolved. It must not infer one from `.mcmeta`; after resolution, Phase 3 must publish an
   immutable sampling-state value and revise the schema and handoff before Phase 13 consumes it.
+- Phase 13 R1 is granted on the Phase 3 side only. Phase 7 load-call adaptation, all affected
+  schema-15 consumers, and Phase 13's grant ledger must be reconciled by their authorized owners;
+  their changed §5 contracts and this whole document require fresh verification. §5.4 lists
+  ungranted dependencies; post-analysis R4 never becomes a macro producer.
 - G8/S3 owns OQ-7's final policy after §10's spike.
 - G8/S2 consumes P3-C19; it must not alter legacy dimension-file rules silently.
 
@@ -3670,9 +3784,10 @@ Each item is independently actionable and names its test hook.
    classifiers, ordered option projection, Java-25 numeric serialization, six effective option
    macros, complete eight-name family, §4.4's full override action/state matrix and diagnostic
    precedence, protected targets, on-demand extensions, and Phase 6 contributor; run every
-   `macro_*` boundary/classifier/action test and prove failures precede I/O and both companion
-   macros are absent at v0.1. `[v0.5]` implement P3-C23 and test each companion macro's independent
-   renderer-capability and engine-option gates.
+   `macro_*` boundary/classifier/action test and prove failures precede I/O and the explicit v0.1
+   false pair omits both companion macros. `[v0.5]` implement P3-C23 from the pre-load typed pair;
+   run `macro_companionTypedStateBeforeJcpp`, `macro_companionMissingNonOffAndOffShortCircuit`,
+   and `macro_companionSameBuildAndFingerprints`; do not add a contribution variant or later patch.
 7. `[v0.1]` Implement P3-C06's sealed catalog/state identity, exact construction/update/validation,
    preview-only profile inference, finalized-state-only runtime materialization/evaluation, and
    remaining option/profile/screen models, including D-P3-55's expanded-slot configured-column
@@ -3721,14 +3836,15 @@ Each item is independently actionable and names its test hook.
     `fingerprint_attachmentFormatVariantAndExplicitValue`,
     `fingerprint_resourceCodecEveryLeafAndInsertionOrder`, all routing-slot tests, eligible/wrong-
     family orderings, and hand-verify one classic pack's resource requirements.
-13. `[v0.1]` Implement P3-C15's schema-v14 `IdMappingInput`, four per-kind file states, pure
+13. `[v0.1]` Implement P3-C15's schema-v15 `IdMappingInput`, four per-kind file states, pure
     bounded-byte parser, exact provisional tag identifier and numeric-short exclusion grammar,
     classic/modern provenance, entry/tag classification, per-rule era, and isolated forced-11300
     entity result; run all `idMap_*` tests, including the four explicit numeric-boundary outcomes
     and long/short/property/legacy/layer cases.
 14. `[v0.1]` Implement P3-C16's source-catalog snapshot/materializer access, exact
-    `executablePrograms()` projection, materialization cache, complete fingerprint-bound
-    `DeclaredUniformCatalog`, exact transformed-text/source-map projections, and local-only dump;
+    `executablePrograms()` projection, retained same-build companion macro snapshot, materialization
+    cache and both-boolean fingerprint payload, complete fingerprint-bound `DeclaredUniformCatalog`,
+    exact transformed-text/source-map projections, and local-only dump;
     run `sourceCatalog_orderedRootsSourcesIncludesAndMaterializer`,
     `sourceCatalog_programProjectionStagesDimensionsAndAbsence`,
     `sourceMap_numericLookupAndMaterializedLifetime`,
@@ -3739,12 +3855,12 @@ Each item is independently actionable and names its test hook.
     every code-selected field and exact primary-value delivery once to each non-null reporter, and
     prove a null reporter returns its table-defined primary `INVALID_REQUEST` with no callback,
     I/O, or throw.
-16. `[v0.1]` Implement P3-C17 schema-v14 validation/fingerprint/atomic publication, including
+16. `[v0.1]` Implement P3-C17 schema-v15 validation/fingerprint/atomic publication, including
     canonical physical source identity, catalog-bound option state, executable-program projection,
-    renderer features, computed compatibility status, the closed custom-texture nominal algebra,
+    renderer features, both companion booleans, computed compatibility status, the closed custom-texture nominal algebra,
     complete resource codec, and custom-expression payload; prove `PackConfiguration` is the only
-    success output, run `fingerprintChangesWhenMinimumEditionCrossesCompatibility`, and run both
-    schema-12/schema-13 and schema-13/schema-14 producer-consumer rejection directions.
+    success output, run `fingerprintChangesWhenMinimumEditionCrossesCompatibility`, and run
+    schema-12/schema-13, schema-13/schema-14, and schema-14/schema-15 producer-consumer rejection directions.
 17. `[v0.1]` Implement P3-C21's in-memory `(internal)` bridge with a synthetic engine-only pack;
     hash/order/serialize only canonical-string UTF-8 bytes and leave actual content to Phase 7.
 18. `[v0.1]` Implement P3-C20 manifest/fuzz/fixture emission and the specified Phase 2 hand-off;
@@ -3771,3 +3887,7 @@ reviewed §0.49 and produced §0.50; round 51 reviewed §0.50 and produced §0.5
 §0.51 and produced §0.52; round 53 reviewed §0.52 and produced §0.53; round 54 reviewed §0.53 and
 produced §0.54. Phase 3 v1 is not verified pending a fresh whole-document review; no version roll
 occurs while the loop is open.*
+
+*The maintainer-authorized §0.55 R1 amendment changes the incorporated §5 load, macro, materialization,
+fingerprint, and schema contracts after that history. Phase 3 v1 remains unverified and requires a
+fresh whole-document verify session before dependent consumption. No review or directory was changed.*
