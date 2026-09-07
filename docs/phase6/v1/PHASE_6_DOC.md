@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Phase | 6 — Uniform & sampler system |
-| Document revision | v1, maintained architecture through §0.23 |
+| Document revision | v1, maintained architecture through §0.24 |
 | Date | 2026-07-29 |
 | Governing design | `docs/design/v2.0-RC3/DESIGN.md` |
 | Milestone | v0.1; shadow/celestial values v0.2 |
@@ -15,7 +15,7 @@
 
 This document originated as the Phase 6 build-session deliverable and still designs architecture
 only. The original fresh build session did not implement source code, change a dependency
-document, create a verification profile, or perform an adversarial review; §§0.3–0.23 record later
+document, create a verification profile, or perform an adversarial review; §§0.3–0.24 record later
 governed maintenance. The governing assignment says the deliverable is `PHASE_6_DOC.md`
 (`docs/design/v2.0-RC3/DESIGN.md:1702`, “**Deliverable.** `PHASE_6_DOC.md` per §G9”), and the
 mandatory skeleton is the thirteen sections reproduced at
@@ -269,6 +269,38 @@ corrections before verified downstream consumption
 (`docs/design/v2.0-RC3/DESIGN.md:327-332`, “before any dependent consumes it”). No code, reviews,
 builds, tests, verification runs, other documents, or directory rolls are part of this amendment.
 
+### 0.24 R7-11 permanent-runtime retirement adoption (2026-09-07)
+
+This maintainer-authorized architecture-only amendment adopts
+`docs/phase7/v1/PHASE_7_DOC.md:2322-2330`: “UniformRetirementResult retire(UniformRetirementReason reason)”
+and “its owner must reconcile that rule, not add a conflicting alias”. Sections 2.2/4.14/5
+now publish non-GL retirement for `UNPUBLISHED_ABORT`, `REPLACEMENT`, and `SHUTDOWN`, with
+`Retired`, `AlreadyRetired`, and `Rejected(WRONG_THREAD|ACTIVE_CALLBACK)` outcomes.
+`CLOSE` is removed from the active reset domain; there is no `reset(CLOSE)` compatibility route
+or runtime `close()`. Non-terminal generation adoption remains distinct from retiring an old
+runtime and adopting the accepted generation on its replacement.
+
+Scoped inputs actually read: `docs/MOVES.md`; RC3 Part I and the Phase 6 assignment;
+`docs/research/v1/RESEARCH.md` §§0–1.3, §4.2 and the §4.4 frame sequence;
+this document's runtime/event/participant/custom/lifecycle contracts and maintained hand-offs;
+`docs/phase7/v1/PHASE_7_DOC.md` §0, §4.1 and §§5.2–5.4's lifecycle request/protocol;
+and `docs/phase4/v1/PHASE_4_DOC.md` §0, activity-token/publication lifetime and their §5
+incorporation. These are narrow maintenance reads authorized by this request, not a dependent
+build's verified consumption. All three phase documents retain their declared RC3 governance.
+
+Earlier addenda, including §§0.10/0.15/0.16/0.23, remain historical and unchanged. This addendum
+supersedes their terminal-close, replacement-only-adoption, and R7-11-ungranted statements,
+not their record of what earlier sessions changed. Active contracts, threading, failure handling,
+testability, staging and implementation hand-offs now distinguish reset from terminal retirement.
+
+**Current §G1.3 status (superseding earlier status notes):** R7-10 and R7-11 are adopted in
+Phase 6's current binding bytes, not verified grants. Changed §5, including incorporated
+§§2.2/4.9/4.13/4.14, requires fresh whole-document verification returning literal PASS with
+zero blocking findings and zero corrections before verified downstream consumption
+(`docs/design/v2.0-RC3/DESIGN.md:327-332`, “before any dependent consumes it”).
+Section 5.2 preserves ungranted dependency and owner-verification gates. No code, reviews,
+builds, tests, verification runs, other documents, or directory rolls are part of this amendment.
+
 ---
 
 ## 1. Scope & boundaries
@@ -289,8 +321,10 @@ Phase 6 owns:
 6. loader-neutral provider and event interfaces implemented or invoked from `mod.glue`;
 7. the Phase 11 extension boundary: fixed expression-input schema, conforming built-in view,
    ordered typed submission/refresh outcomes, and custom-uniform participant placed after built-ins;
-8. per-uniform GL upload isolation using Phase 1's attributed replay protocol; and
-9. the notifier-to-producer contract consumed by Phase 7 and later hook owners.
+8. per-uniform GL upload isolation using Phase 1's attributed replay protocol;
+9. the notifier-to-producer contract consumed by Phase 7 and later hook owners; and
+10. permanent non-GL runtime retirement, including invalidation of every retained event/participant
+    capability and release of borrowed references; Phase 7 owns quiescence and service ordering.
 
 ### 1.2 Adjacent concerns, explicitly not owned here
 
@@ -385,6 +419,7 @@ public interface UniformRuntime {
     MacroContributor centerDepthMacroContributor();
     void installCustomUniformBridge(CustomUniformBridge bridge);
     void reset(UniformResetReason reason);
+    UniformRetirementResult retire(UniformRetirementReason reason);
 }
 
 public enum RegistryGenerationAdoptionResult {
@@ -392,7 +427,21 @@ public enum RegistryGenerationAdoptionResult {
 }
 
 public enum UniformResetReason {
-    PACK_REPLACEMENT, SHADERS_OFF, GL_CONTEXT_LOSS, WORLD_EPOCH, CLOSE
+    PACK_REPLACEMENT, SHADERS_OFF, GL_CONTEXT_LOSS, WORLD_EPOCH
+}
+
+public enum UniformRetirementReason {
+    UNPUBLISHED_ABORT, REPLACEMENT, SHUTDOWN
+}
+
+public sealed interface UniformRetirementResult {
+    record Retired() implements UniformRetirementResult {}
+    record AlreadyRetired() implements UniformRetirementResult {}
+    record Rejected(UniformRetirementRejection reason) implements UniformRetirementResult {}
+}
+
+public enum UniformRetirementRejection {
+    WRONG_THREAD, ACTIVE_CALLBACK
 }
 
 public enum FrameBeginResult {
@@ -430,7 +479,7 @@ The signatures are illustrative but the data contracts are binding. `Success` co
 operational runtime and transfers its lifecycle to the caller; the factory retains nothing.
 `Failure` contains one non-empty stable diagnostic ID, contains no runtime, performs no GL
 work, and leaves all supplied services caller-owned. A successful runtime retains borrowed service
-references until `close` reset; it owns only its caches, snapshots, and participants. The complete
+references until successful `retire`; it owns only its caches, snapshots, and participants. The complete
 provider-record validation, absence, and copy rules are in §4.2. `Matrix4Value` stores exactly 16
 floats in the facade's upload order and exposes no mutable array.
 
@@ -441,7 +490,7 @@ available before any runtime, registry, estate, or GL object exists
 (`docs/phase5/v1/PHASE_5_DOC.md:2116-2120`, “They share one table/schema”).
 Missing resolver input rejects construction through `UniformBuildResult.Failure` without GL;
 there is no default/local-map fallback. The runtime retains this borrowed reference under the
-existing service lifetime and releases it at terminal CLOSE; it never owns or closes Phase 5.
+existing service lifetime and releases it on `Retired`; it never owns or closes Phase 5.
 The new dependency and its owner-review gates are binding in §5.2.
 
 `UniformRuntime` owns no program handle. Phase 4 owns the active linked program and calls the three
@@ -560,7 +609,8 @@ generation creates a new program-cache namespace. Old locations and disabled sco
 temporal world values survive only when `worldEpoch` is unchanged.
 
 After Phase 4 accepts a replacement, Phase 7 calls
-`adoptRegistryGeneration(replacement.generation(), reason)` on the render thread before any
+`adoptRegistryGeneration(replacement.generation(), reason)` on the surviving or new runtime,
+never on a runtime retired under §4.14, on the render thread before any
 `beginFrame`, event, or participant activation against that replacement. Adoption is atomic: a
 different, never-retired generation becomes current and the prior generation becomes retired; the
 current value is an idempotent `ALREADY_CURRENT`; a retired value is rejected without mutation.
@@ -568,7 +618,9 @@ Generation values are compared only for equality, never ordered or subtracted, m
 wrap-safe protocol. Phase 7 must pass the generation from the newly reacquired authoritative
 publication, not a candidate view or delayed snapshot. `ADOPTED` applies §4.14's reset scope for
 the supplied semantic reason before returning. A rejection forbids shader drawing and requires
-reacquiring Phase 4's current publication.
+reacquiring Phase 4's current publication; a retired runtime cannot recover by reacquisition and
+must never be reused. Coordinated Phase 7 replacement retires the old runtime after old-barrier
+invalidation and adopts the actual accepted generation on the new runtime (§4.14).
 
 Lifecycle:
 
@@ -577,11 +629,15 @@ NEW
   → CONFIGURED(configuration, samplerResolver, providers)
   → FRAME_READY after first beginFrame
   → ACTIVE through any number of barrier activations/events
-  → RESET on world epoch, pack replacement, shaders-off, GL-context loss, or close
+  → RESET on world epoch or adopted pack/shaders-off/GL-context-loss generation
+  → FRAME_READY/ACTIVE again only while the runtime remains live
+Any live state, including CONFIGURED without publication
+  → RETIRED by retire(UNPUBLISHED_ABORT | REPLACEMENT | SHUTDOWN), terminal
 ```
 
-No GL work occurs in `reset`. Program-location objects belong to a registry generation and are
-dropped, not deleted.
+No GL work occurs in `reset`, generation adoption, or `retire`. Program-location objects belong
+to a registry generation and are dropped, not deleted. Reset/adoption never releases borrowed
+services or revives a retired runtime; retirement releases references without calling those services.
 
 ### 4.2 Provider seam and stable values
 
@@ -903,8 +959,10 @@ materialized program declares `centerDepthSmooth`.
 
 ### 4.6 Frame-begin ordering and temporal snapshots
 
-`beginFrame` returns `ACCEPTED` only for a new adopted-current-generation frame and then performs this exact
-sequence:
+The terminal-state guard in §4.14 runs first: a retired runtime returns `REJECTED_GENERATION`,
+even for the last accepted frame or a freshly supplied generation, without sampling or GL work.
+For a live runtime, `beginFrame` returns `ACCEPTED` only for a new adopted-current-generation
+frame and then performs this exact sequence:
 
 1. validate registry generation and world epoch;
 2. rotate `cameraPosition` into `previousCameraPosition`;
@@ -1221,8 +1279,10 @@ program.
 ### 4.12 Notifier-to-producer audit
 
 There are no nullable global listener fields. `UniformEventSink` is constructed with the runtime,
-is always valid until reset, and every method is safe when no program declares its consumer. Hook
-owners call typed methods; they never assign callbacks into Phase 6.
+remains usable across non-terminal resets, and every method is safe when no program declares its
+consumer. Successful retirement permanently invalidates even previously returned sink references:
+later calls fail before cell mutation, provider access or upload (§4.14). Hook owners call typed
+methods; they never assign callbacks into Phase 6.
 
 | Signal/notifier | Phase 6 consumer | Required producer and moment | Owner / milestone |
 |---|---|---|---|
@@ -1332,9 +1392,10 @@ The default bridge returns `NoCustoms`. `installCustomUniformBridge` rejects nul
 `IllegalArgumentException`; the composition thread may call it only after construction and before
 the first `beginFrame` or participant activation. The first non-default bridge installs, repeating
 that exact instance is a no-op, and a different instance or a late call throws
-`IllegalStateException` without changing the installed bridge. Pack replacement, world epoch,
-GL-context loss, and shaders-off retain it; close releases it and restores the default. Phase 11
-installs one at the composition root, never as a fourth Phase 4 participant.
+`IllegalStateException` without changing the installed bridge. Non-terminal generation adoption
+and world reset retain it; successful retirement releases it, never installs or invokes a
+replacement default, and permanently rejects subsequent installation. Phase 11 installs one at
+the composition root, never as a fourth Phase 4 participant.
 
 `fixedExpressionInputSchema()` is available immediately after successful runtime construction and
 does not depend on a frame, active program, provider sample, or linked location. The returned
@@ -1415,33 +1476,124 @@ duplicate/order/count enforcement, boolean GL encoding, diagnostics, and §4.11 
 owns expression syntax, dependency/evaluation policy, and whether an evaluation failure omits a
 command or aborts the remaining refresh.
 
-### 4.14 Reset, missing producers, and neutral values
+### 4.14 Reset, permanent retirement, missing producers, and neutral values
 
-`UniformResetReason` is the closed domain `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`,
-`WORLD_EPOCH`, and `CLOSE`.
+#### 4.14.1 Non-terminal reset and generation adoption
 
-Registry replacement, shaders-off, and GL-context-loss transitions use atomic generation adoption
-before the replacement's first frame or activation. Pack replacement and shaders-off discard all
-program caches and disabled scopes; GL-context loss additionally discards every location. All three
-retire the prior generation. Pack replacement retains temporal values only when configuration
-semantics and world epoch are unchanged; shaders-off retains borrowed provider references until
-close; GL-context loss retains pure temporal values but requires the newly adopted publication
-before activation.
-World-epoch reset does not change the generation and resets smoothers and previous snapshots. Close
-retires the runtime permanently and cannot be followed by adoption. `adoptRegistryGeneration`
-accepts exactly `PACK_REPLACEMENT`, `SHADERS_OFF`, and `GL_CONTEXT_LOSS`. Direct `reset` accepts
-exactly `WORLD_EPOCH` and `CLOSE`; any other reason fails fast without mutation.
-`WORLD_EPOCH` reset follows final old-world use and precedes the next world's `beginFrame`, event,
-or participant activation. Terminal `CLOSE` follows final use of all three Phase 6 participants;
-Phase 7 then permits no later participant call and initiates Phase 4's atomic publication
-teardown operation. Ordinary publication replacement never invokes `CLOSE` and remains exclusively
-on `adoptRegistryGeneration(..., PACK_REPLACEMENT)`.
+`UniformResetReason` is exactly `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`, and
+`WORLD_EPOCH`. `adoptRegistryGeneration` accepts exactly the first three; direct `reset` accepts
+exactly `WORLD_EPOCH`. An invalid operation/reason pairing or null reason fails fast with
+`IllegalArgumentException` without mutation. **`CLOSE` is removed**, not deprecated or translated:
+there is no `reset(CLOSE)` alias and no `UniformRuntime.close()`.
 
-- Pack/registry replacement drops program caches and disabled scopes; it retains temporal values
-  only when world epoch and pack semantics are unchanged.
-- World epoch resets smoothers and previous snapshots.
-- GL-context loss drops every location and requires a new registry publication before activation.
-- Shaders-off makes every participant a no-op; terminal close releases provider references.
+Registry replacement, shaders-off, and GL-context-loss transitions on a live retained runtime use
+atomic generation adoption before the replacement's first frame, event or activation. Pack
+replacement and shaders-off discard all program caches and disabled scopes; GL-context loss
+additionally discards every location. All three retire the prior **generation**, not the runtime.
+Pack replacement retains temporal values only when configuration semantics and world epoch are
+unchanged; shaders-off retains borrowed providers and the installed custom bridge; GL-context loss
+retains pure temporal values but requires the newly adopted publication before activation.
+World-epoch reset keeps the generation and resets smoothers and previous snapshots after final
+old-world use and before the next world's `beginFrame`, event, or participant activation.
+Shaders-off makes live participants no-ops; this is recoverable and is not terminal retirement.
+
+Generation adoption remains required for a new runtime constructed at the current publication's
+generation: after acceptance it must adopt the reacquired authoritative generation before use.
+In Phase 7's one-runtime-per-pipeline replacement, the old runtime instead ends through
+`retire(REPLACEMENT)`. The historical “ordinary replacement remains exclusively on adoption”
+restriction no longer applies to disposal of that old runtime. Adopting on the new/surviving
+runtime and retiring the replaced runtime are different operations on different lifetimes.
+
+#### 4.14.2 Terminal operation and closed outcomes
+
+`UniformRetirementResult retire(UniformRetirementReason reason)` accepts exactly
+`UNPUBLISHED_ABORT`, `REPLACEMENT`, and `SHUTDOWN`. Null fails fast with `IllegalArgumentException`
+without mutation. For a non-null reason, the following precedence is binding:
+
+1. Off the render thread, return `Rejected(WRONG_THREAD)`, including for an already retired
+   runtime. Construction on a worker does not authorize worker-thread candidate retirement.
+2. On the render thread, if already retired, return `AlreadyRetired` for any valid reason.
+   This is idempotent, does not change the original terminal disposition and performs no cleanup.
+3. While a Phase 6 operation/callback is in flight, return `Rejected(ACTIVE_CALLBACK)`.
+   This includes any of the three participants, frame/event processing, provider invocation,
+   custom refresh/submission, upload/error replay and reentrant diagnostics within those entries;
+   the guard spans the entire outer operation, not just the user callback's body. A rejected
+   retirement does not clear caches/references, cancel that operation, or schedule deferred work.
+4. Otherwise mark the runtime terminal and synchronously clear its operational state, then return
+   `Retired`. Terminal invalidation and cleanup complete before return, without invoking callbacks.
+
+`Retired` and `AlreadyRetired` authorize the caller to finish releasing that runtime's borrowed
+services; `Rejected` does not. The caller keeps ownership and services alive, keeps frame/event
+admission closed, and makes the retirement call on the render thread after the outer callback
+returns. It must not treat rejection as completed disposal or continue new-pipeline drawing.
+Reason-specific ordering below is a composition-root obligation, not a new public publication
+flag, barrier query, or extra rejection variant in Phase 6.
+
+Successful retirement drops every cached location (present or absent), sampler/built-in plan,
+uploaded-value cache, disabled scope, active `(activityToken, ProgramCache)` pair, pending custom
+batch, live value/snapshot/smoother state, and installed custom bridge. It releases all borrowed
+references, including `FixedSamplerResolver`, `UniformPlatformProvider`, `CenterDepthSource`,
+`GLDevice`/derived services and `DiagnosticReporter`; retained sinks/participants must not retain
+these indirectly. It owns none of those services and neither closes them nor calls them during
+retirement. There is **no GL, location lookup, error drain, barrier release/activation, token
+invalidation call, unbind or handle deletion**. Phase 4 alone invalidates its activity tokens;
+Phase 6 drops its reference and rejects all further use independently of token currency.
+
+The terminal guard takes precedence over duplicate-frame, generation-equality, shaders-off and
+absent-consumer paths, including on previously returned objects:
+
+| Entry after retirement | Permanent outcome before any operational work |
+|---|---|
+| `adoptRegistryGeneration` with an otherwise valid reason | `REJECTED_RETIRED_GENERATION` for every generation, including the former current value; no reacquisition can revive this instance |
+| `beginFrame` | `REJECTED_GENERATION`, never `DUPLICATE` or `ACCEPTED` |
+| any `UniformEventSink` method, `reset(WORLD_EPOCH)`, or custom-bridge installation | `IllegalStateException`; no cell mutation, sampling or borrowed-service access |
+| any retained sampler/built-in/custom participant's `afterBind` | existing `BarrierParticipantResult.Degraded` with stable `phase6.runtime.retired` diagnostic ID and that participant's scope; never successful/no-op refresh, lookup, resolver/provider access or GL |
+| a retained custom upload sink's `submit` | existing `Rejected("phase6.runtime.retired")`; never enqueues, counts or uploads a command |
+
+Rejecting stale capabilities does not call the released diagnostic reporter: the result/exception
+carries the stable evidence to the caller. Runtime event/participant accessors may return their
+same permanently guarded objects; obtaining them confers no new validity. Immutable detached
+`FixedExpressionInputSchema`/by-value snapshots already handed out remain readable, and the schema
+accessor and always-empty macro contributor remain pure metadata operations, not resurrection.
+No operational reference can install a bridge, acquire new values, adopt, or refresh again.
+
+#### 4.14.3 Final-use and borrowed-service ordering
+The retired-participant diagnostic is a lifecycle violation, not permission for Phase 7 to draw
+with an isolated missing uniform. The caller suppresses that stale pipeline's draw and retains
+the closed-admission recovery path; Phase 6 does not rebind or perform recovery itself.
+
+
+Phase 7 closes admission and drains the final frame, draw/binding/shadow scopes, producer events,
+custom refresh and all three Phase 6 participants before retirement. Final-use includes scope
+restoration events (for example Phase 9 per-draw resets), not only the last shader draw. No later
+event/callback may be deliberately routed to that instance. These ordered obligations implement
+R7-11's “after final callback and before borrowed services disappear”
+(`docs/phase7/v1/PHASE_7_DOC.md:2325-2327`):
+
+| Reason | Required caller ordering |
+|---|---|
+| `UNPUBLISHED_ABORT` | candidate runtime was never accepted into a publication; stop pending adapters and abandon/close caller-owned barrier candidates so they cannot be published later, finish any construction-time use, then retire without publishing solely for cleanup; release its borrowed services only after `Retired`/`AlreadyRetired` |
+| `REPLACEMENT` | finish old callbacks/restoration and detach old event routes; Phase 4 replaces/releases the old barrier and invalidates its activity token; only then retire the replaced runtime, before releasing its borrowed services; reacquire/adopt the actual accepted generation on the new runtime before any new frame/event/participant/shadow use |
+| `SHUTDOWN` | stop admission and finish every final callback/restoration while services remain available; retire every still-live runtime before Phase 7 initiates Phase 4's atomic teardown, then release borrowed services; do not split that atomic teardown merely to insert retirement |
+
+Replacement observes Phase 4's actual result: `Accepted` or `RecoveredOff` establishes old-barrier
+invalidation; a pre-release `Rejected` does not. Keep the old runtime/services retained and
+admission closed while Phase 7 compensates off through the existing publisher; retire that old
+runtime only after invalidation is established. A rejected, never-accepted candidate uses
+`UNPUBLISHED_ABORT`; a runtime whose barrier was accepted and then compensated off uses
+`REPLACEMENT`, even if no frame was admitted. No failure path revives a retired runtime.
+The publisher may already have deleted old program handles when replacement returns; dropping
+cached locations is safe because retirement never dereferences them. This differs intentionally
+from shutdown's retire-before-teardown order and requires no mid-publication callback.
+Phase 4's incorporated publication contract says “invalidate the old activity token” before
+“close the old registry” (`docs/phase4/v1/PHASE_4_DOC.md:1627-1631`, incorporated by §5.1).
+
+Closing Phase 8 or retiring a Phase 13 texture owner/registration in Phase 7's earlier quiescence
+steps is not permission to destroy Phase 6's borrowed provider/service adapters. Keep those
+adapters and the other borrowed services alive through final Phase 6 use and successful retirement;
+defer their disposal if necessary. Phase 6 calls no texture-owner/lease API to enforce this.
+R7-11 grants no new Phase 8/13 lifecycle capability; ungranted owner dependencies and coordinated
+ordering/verification obligations remain explicit in §5.2.
 
 Neutral values are deliberately few and visible: later-milestone IDs and integer metrics use 0;
 `entityColor`/blend use zeros; pending shadow matrices use identity; pending celestial vectors use
@@ -1458,19 +1610,20 @@ turn a future producer into optional work.
 | Exposed contract | Exact content | Consumer(s) |
 |---|---|---|
 | `UniformRuntimeFactory` / `UniformBuildResult` | exact §2.2 callable shape: `create(long initialRegistryGeneration, UniformConfiguration, FixedSamplerResolver samplerResolver, UniformPlatformProvider, CenterDepthSource, GLDevice, DiagnosticReporter) -> UniformBuildResult`; resolver is required immediately after configuration, borrowed from Phase 5's pure `FixedSamplerPolicies.resolver()` and paired with compilation's appB3 policy; no local fallback. Closed `Success(UniformRuntime runtime)` / `Failure(String diagnosticId)`. Creation installs current `PublishedRegistry.generation`; success transfers sole runtime lifecycle, failure has no runtime or GL work; resolver retention/release follows §2.2's existing service lifetime | Phase 7 composition/reload; R7-10 adopted, fresh PASS owed |
-| `UniformRuntime` / `UniformResetReason` / `RegistryGenerationAdoptionResult` | exact §2.2 callable shape: `adoptRegistryGeneration(long, UniformResetReason) -> RegistryGenerationAdoptionResult`; `fixedExpressionInputSchema() -> FixedExpressionInputSchema`; `beginFrame(FrameBeginInput) -> FrameBeginResult`; `events() -> UniformEventSink`; `samplerParticipant()`, `builtInParticipant()`, and `customParticipant() -> ProgramBindingParticipant`; `centerDepthMacroContributor() -> MacroContributor`; `installCustomUniformBridge(CustomUniformBridge) -> void`; `reset(UniformResetReason) -> void`. Closed adoption results are `ADOPTED`, `ALREADY_CURRENT`, `REJECTED_RETIRED_GENERATION`; closed reasons are `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`, `WORLD_EPOCH`, `CLOSE`; adoption accepts exactly the first three and direct reset exactly the last two; after accepted publication and reacquisition, atomically adopt the replacement's authoritative generation plus reason before its first `beginFrame`, event, or participant activation; unseen inequality adopts and retires prior, equality is idempotent, retired input rejects without mutation, with equality-only comparison and §4.14 state scopes; `WORLD_EPOCH` reset follows final old-world use and precedes next-world use; teardown-only terminal `CLOSE` follows final use of all three Phase 6 participants, after which Phase 7 permits no later participant call and initiates Phase 4's atomic teardown operation; ordinary publication replacement never invokes `CLOSE`; custom bridge install is non-null, composition-thread/pre-use, first-install wins, same-instance idempotent, different/late fail-fast, retained through non-close resets and released on close | Phases 7, 8, 9, 11, 13 |
-| `FrameBeginInput` / `FrameBeginResult` | input schema plus `ACCEPTED`, `DUPLICATE`, `REJECTED_STALE_FRAME`, `REJECTED_GENERATION`; only accepted mutates, duplicate is a safe no-op, rejection forbids shader draw | Phase 7 |
+| `UniformRuntime` / `UniformResetReason` / `RegistryGenerationAdoptionResult` | exact §2.2 callable shape: `adoptRegistryGeneration(long, UniformResetReason) -> RegistryGenerationAdoptionResult`; `fixedExpressionInputSchema() -> FixedExpressionInputSchema`; `beginFrame(FrameBeginInput) -> FrameBeginResult`; `events() -> UniformEventSink`; `samplerParticipant()`, `builtInParticipant()`, and `customParticipant() -> ProgramBindingParticipant`; `centerDepthMacroContributor() -> MacroContributor`; `installCustomUniformBridge(CustomUniformBridge) -> void`; `reset(UniformResetReason) -> void`; `retire(UniformRetirementReason) -> UniformRetirementResult`. Adoption results remain `ADOPTED`, `ALREADY_CURRENT`, `REJECTED_RETIRED_GENERATION`. Reset reasons are exactly `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`, `WORLD_EPOCH`; adoption accepts the first three, direct reset only `WORLD_EPOCH`; invalid pairings/null fail without mutation. Live adoption uses the reacquired accepted generation before new use, equality-only identity and §4.14.1 state scopes. World reset separates final old-world from first new-world use. Custom bridge installation remains non-null, pre-use, first-instance-wins/idempotent; non-terminal transitions retain it, retirement releases it. No `CLOSE`, `reset(CLOSE)` alias or runtime `close()` remains | Phases 7, 8, 9, 11, 13 |
+| `UniformRetirementReason` / `UniformRetirementResult` / `UniformRetirementRejection` | exact §2.2 algebra and complete §4.14 semantics: reasons `UNPUBLISHED_ABORT`, `REPLACEMENT`, `SHUTDOWN`; results `Retired()`, `AlreadyRetired()`, `Rejected(WRONG_THREAD\|ACTIVE_CALLBACK)`. Render-thread-only, terminal/idempotent, synchronous non-GL cleanup without any barrier/provider/service call. Wrong thread precedes already-retired, then active-callback rejection; rejection leaves state/ownership unchanged. Final callback precedes retirement; candidate abort requires no publication, replacement follows actual old-barrier invalidation, shutdown precedes Phase 4 atomic teardown, all precede borrowed-service disposal. Cached locations/plans/values, active token pair, pending batches and all provider/service/bridge references are dropped, not closed/deleted. Every retained operational capability is permanently guarded as §4.14.2 specifies; retirement is never generation adoption or shaders-off reset | Phase 7 composition/abort/replacement/shutdown; R7-11 adopted, fresh PASS owed; all retained-capability consumers |
+| `FrameBeginInput` / `FrameBeginResult` | input schema plus `ACCEPTED`, `DUPLICATE`, `REJECTED_STALE_FRAME`, `REJECTED_GENERATION`; only accepted mutates, duplicate is a safe no-op for a live runtime, rejection forbids shader draw; retired runtime always returns `REJECTED_GENERATION` before duplicate or identity handling | Phase 7 |
 | **Frame-begin ordering contract** | `beginFrame` completes world/tick sampling, previous snapshots, and center-depth read **before any Phase 5 resize or clear**; then first-clear matrix capture occurs after camera setup | Phase 7; integration review |
-| `UniformEventSink` and immutable sample records | exact §4.2 schemas; world/frame/tick identity; finite/range validation; copy/absence/fallback rules; held-light old-mode mapping; next-activation vs immediate-if-active policy | Phases 7, 8, 9, 13 |
-| `SamplerRepointParticipant` | exact §4.9 shared-resolver operation/results and plan-reuse rules; unchanged `afterBind(ResolvedProgramDescriptor, BarrierContext, BoundProgramUniformAccess)`; effective `binding.samplerLayout()` plus `context.stage()/band()`, never child state; Ready exact-name/full-shape rows become ascending-unit then fixed-name declaration-order integer uploads; Invalid retains validation evidence and degrades only the effective program's sampler participant without uploads or replacement mapping; existing absent-location, deduplication, cache/activity-token and §4.11 error semantics remain | Phase 4 composition via Phase 7; R7-10 |
-| `BuiltInUniformRefreshParticipant` | Appendix D plan, every-activation visit, cached-value skip, matrices always upload, error isolation | Phase 4 composition via Phase 7 |
-| `CustomUniformRefreshParticipant` / `CustomUniformBridge` | ordered third participant; closed `NoCustoms`, `Completed(accepted, skippedAbsent, rejected)`, or `Aborted(diagnosticId, accepted, skippedAbsent, rejected)` result; both counted results must be non-negative and equal the authoritative sink ledger (an aborted result counts only its submitted prefix); typed immutable commands are submitted in definition order; skipped/rejected calls occupy no batch slot; a valid aborted refresh commits only its accepted prefix in original order with no carry-over; any negative or mismatched counter discards the whole accepted batch without GL, returns `BarrierParticipantResult.Degraded(diagnosticId, "custom uniforms for this activation")`, carries nothing over, and permits a fresh refresh only at the next activation; Phase 6 validates, deduplicates, counts, diagnoses, encodes bools, and isolates uploads | Phase 11; Phase 4 composition via Phase 7 |
+| `UniformEventSink` and immutable sample records | exact §4.2 schemas; world/frame/tick identity; finite/range validation; copy/absence/fallback rules; held-light old-mode mapping; next-activation vs immediate-if-active policy while live; survives non-terminal reset, but every retained sink rejects after retirement with `IllegalStateException` before mutation or service/GL access (§4.14.2) | Phases 7, 8, 9, 13 |
+| `SamplerRepointParticipant` | exact §4.9 shared-resolver operation/results and plan-reuse rules; unchanged `afterBind(ResolvedProgramDescriptor, BarrierContext, BoundProgramUniformAccess)`; effective `binding.samplerLayout()` plus `context.stage()/band()`, never child state; Ready exact-name/full-shape rows become ascending-unit then fixed-name declaration-order integer uploads; Invalid retains validation evidence and degrades only the effective program's sampler participant without uploads or replacement mapping; existing absent-location, deduplication, cache/activity-token and §4.11 error semantics remain while live; retirement first rejects every retained callback with `Degraded`/`phase6.runtime.retired` without resolver, lookup, upload or service access (§4.14.2), and the stale pipeline must not draw | Phase 4 composition via Phase 7; R7-10; R7-11 terminal guard |
+| `BuiltInUniformRefreshParticipant` | Appendix D plan, every-activation visit, cached-value skip, matrices always upload, error isolation while live; retirement first rejects retained callbacks with `Degraded`/`phase6.runtime.retired`, without lookup, upload or service access (§4.14.2), and the stale pipeline must not draw | Phase 4 composition via Phase 7 |
+| `CustomUniformRefreshParticipant` / `CustomUniformBridge` | ordered third participant; closed `NoCustoms`, `Completed(accepted, skippedAbsent, rejected)`, or `Aborted(diagnosticId, accepted, skippedAbsent, rejected)` result while live; both counted results must be non-negative and equal the authoritative sink ledger (an aborted result counts only its submitted prefix); typed immutable commands are submitted in definition order; skipped/rejected calls occupy no batch slot; a valid aborted refresh commits only its accepted prefix in original order with no carry-over; any negative or mismatched counter discards the whole accepted batch without GL, returns `BarrierParticipantResult.Degraded(diagnosticId, "custom uniforms for this activation")`, carries nothing over, and permits a fresh refresh only at the next activation; Phase 6 validates, deduplicates, counts, diagnoses, encodes bools, and isolates uploads. Retirement releases the bridge and first rejects retained callbacks with `Degraded`/`phase6.runtime.retired`, never invokes the bridge/default or uploads (§4.14.2), and the stale pipeline must not draw | Phase 11; Phase 4 composition via Phase 7 |
 | `FixedExpressionInputSchema` / `FixedExpressionInputType` | deeply immutable construction-time schema, versioned exactly with the fixed Phase 6 catalog; exact-name `Present(closed type)`/`Absent`; positive types are `FLOAT`, `INT`, `VEC2/3/4`, `IVEC2/3/4`, `MAT4`; every Appendix D name except all five D.4 dynamics plus `fogMode`/`fogColor`; independent of active program/runtime validity | Phase 11 load-time compiler |
-| `BuiltInExpressionView` / `CustomUniformUploadSink` | view carries the matching catalog version and exact-name `Present(typed value)`/`Absent`; every present value conforms bidirectionally to the fixed schema's exact name/type mapping; upload commands are closed to `Float1`, `Int1`, `Bool1`, `Float2`, `Float3`, and `Float4`, matching `float`, `int`, `bool`, `vec2`, `vec3`, and `vec4`; sink returns closed `Accepted`, normal no-warning/no-GL `SkippedAbsent`, or `Rejected(stable diagnostic ID)`; active layout or location absence skips, while actual type mismatch, invalid name, and duplicate submission reject; `Bool1` matches GLSL `bool` and Phase 6 owns 0/1 GL encoding; outcomes preserve call order and feed the three refresh counts per §4.13 | Phase 11 |
+| `BuiltInExpressionView` / `CustomUniformUploadSink` | view carries the matching catalog version and exact-name `Present(typed value)`/`Absent`; every present value conforms bidirectionally to the fixed schema's exact name/type mapping; upload commands are closed to `Float1`, `Int1`, `Bool1`, `Float2`, `Float3`, and `Float4`, matching `float`, `int`, `bool`, `vec2`, `vec3`, and `vec4`; sink returns closed `Accepted`, normal no-warning/no-GL `SkippedAbsent`, or `Rejected(stable diagnostic ID)`; while live, active layout or location absence skips, while actual type mismatch, invalid name, and duplicate submission reject; `Bool1` matches GLSL `bool` and Phase 6 owns 0/1 GL encoding; outcomes preserve call order and feed the three refresh counts per §4.13. Retirement first makes retained sink submissions `Rejected("phase6.runtime.retired")`, with no counting, enqueue, service access or GL (§4.14.2); detached immutable values remain readable | Phase 11 |
 | `UniformPlatformProvider` / `CenterDepthSource` | exact §4.2 request/result schemas and validation; loader-neutral sampling SPI with no Minecraft or GL-name types | `mod.glue`, Phase 7 |
 | `centerDepthMacroContributor` | always `MacroContribution.Empty` under D-P6-1 | Phase 3/4 materialization |
 
-The exact external schemas and semantics incorporated above from §§2.2, 4.2, 4.9, and 4.13 are
+The exact external schemas and semantics incorporated above from §§2.2, 4.2, 4.9, 4.13, and 4.14 are
 binding parts of §5. Every consumer-visible API, schema, or semantic change to those incorporated
 declarations must update the corresponding §5 row in the same document revision; a reference that
 remains textually unchanged does not waive that synchronization requirement.
@@ -1543,10 +1696,23 @@ seam requires the corresponding current Phase 3/4/5 owner verification gates and
 whole-document Phase 6 literal PASS. R7-10 is adopted here only; sibling request-status rows are
 not edited by this owner.
 
-**UNGRANTED, separate dependency:** Phase 7's R7-11 permanent retirement algebra remains requested
-at `docs/phase7/v1/PHASE_7_DOC.md:2322-2330` (“Until adoption, the candidate/replacement lifecycle
-is an implementation blocker”). R7-10 grants neither `retire` nor `close`, changes no reset reason
-or lifetime ordering, and does not unblock that lifecycle protocol. Existing §4.14 remains binding.
+#### R7-11 adoption and remaining lifecycle gates
+
+R7-11 at `docs/phase7/v1/PHASE_7_DOC.md:2322-2330` (“its owner must reconcile that rule”)
+is adopted here by §§2.2/4.14/5.1, **pending fresh whole-document Phase 6 PASS**. No new Phase 4
+operation is needed: consume its existing old-token invalidation and actual
+`Accepted`/`Rejected`/`RecoveredOff` publication outcomes under its still-open owner-review gate.
+Phase 7 must separately synchronize its §5 consumed inventory/status and the final-use/service
+retention obligations before verified coordinated consumption. Its current request-status row
+and Phase 4's corresponding request remain untouched in this Phase-6-only amendment.
+
+**UNGRANTED dependencies remain ungranted:** Phase 7's R7-12/R7-13 requests to Phase 8 and
+Phase 13's R1 request to Phase 3 are not supplied by R7-11
+(`docs/phase7/v1/PHASE_7_DOC.md:2305-2307`, “requested, ungranted”). Retirement requires no
+new Phase 8/13 method and does not grant those shadow/texture/macro paths or certify Phase 7's
+coordinated rebuild. Phase 7 owns any adapter-lifetime coordination needed by §4.14.3; it must
+flag an unavailable owner capability, not dispose borrowed services early or invent a Phase 6
+barrier/close hook. R7-10's Phase 3/4/5 owner-verification gates above remain unchanged.
 
 ### 5.3 Historical verified dependency contract changes
 
@@ -1602,8 +1768,10 @@ RC3's stated default—Candidate A when the check is inconclusive—without edit
 | required capability/texture-unit count fails at init | 4 | pack off through existing capability gate; no Phase 6 GL work |
 | provider throws or returns non-finite/out-of-range data | 2/2a | catch at seam, retain last valid affected cell or neutral on first sample, diagnose once; unrelated cells continue |
 | immediate signal arrives with no current Phase 4 activity token | normal | replace the cell but issue no GL call; next activation uploads it |
-| frame ID repeats | — | return `DUPLICATE`; idempotent no-op; Phase 7 may continue |
+| frame ID repeats on a live runtime | — | return `DUPLICATE`; idempotent no-op; Phase 7 may continue; retirement guard takes precedence |
 | frame/world identity regresses or generation mismatches | 5 guard | return the exact §4.6 rejection; draw forbidden; Phase 7 reacquires publication |
+| retirement called off-thread or during an active callback | 5 guard | exact `Rejected(WRONG_THREAD\|ACTIVE_CALLBACK)` without mutation; caller retains runtime/services, keeps admission closed and retries only at the legal render-thread boundary |
+| operation uses a retired runtime or retained capability | 5 guard | exact §4.14.2 rejection before state mutation, borrowed-service access or GL; never revive through generation equality, duplicate frame, shaders-off or bridge installation |
 | matrix capture missing for frame | 2a | disable current gbuffer matrix set for that frame; previous snapshot remains coherent |
 | second matrix capture in frame | — | first wins; invariant diagnostic |
 | missing later-milestone producer | planned degrade | neutral value plus once-per-pack warning; declaring the uniform never throws |
@@ -1629,7 +1797,8 @@ state itself. Those would violate Phase 4 and §G4.6 ownership.
 | smoothing, inverse, catalog planning in headless tests | test thread; no affinity |
 | custom bridge evaluation | Phase 11 may prepare pure expression plans elsewhere, but activation/evaluation and upload occur on render thread at v0.4 |
 | generation adoption for pack/registry replacement or GL-context loss | render thread after accepted publication and authoritative-generation reacquisition, before replacement use |
-| direct reset for `WORLD_EPOCH` or `CLOSE` | render thread; world reset is between final old-world and first new-world use; teardown-only close follows final Phase 6 participant use and precedes Phase 7 initiating Phase 4 teardown; ordinary publication replacement never invokes `CLOSE` |
+| direct `reset(WORLD_EPOCH)` | render thread, after final old-world and before first new-world use; non-terminal |
+| `retire(UNPUBLISHED_ABORT\|REPLACEMENT\|SHUTDOWN)` | render thread even for worker-created candidates; after final callback; replacement after old-barrier invalidation, shutdown before atomic Phase 4 teardown, every reason before borrowed-service disposal; wrong-thread/in-flight rejection and ordering are exactly §4.14 |
 
 No event is queued asynchronously. A hook observes a value and writes it synchronously before the
 draw activation that consumes it. This prevents an entity ID or blend state from crossing draw
@@ -1699,12 +1868,13 @@ Minecraft, LWJGL, display, pack source, or image is needed.
 | `FixedExpressionInputSchemaTest` | construction-time immutability; catalog-version change on any name/type change; exact positive type for every permitted Appendix D name; all five D.4 names plus `fogMode`/`fogColor` absent; unknown exact name absent |
 | `ExpressionViewSchemaConformanceTest` | view/schema versions match; every runtime `Present` maps to the exact closed schema type and every present value variant has that mapping; transient invalid values are runtime-absent without changing schema |
 | `CustomBridgeOrderTest` | default no-op; stable permitted view; conservative exclusions absent; custom upload follows built-ins |
-| `CustomBridgeLifecycleTest` | null, late, and different-instance installs fail without mutation; same-instance repeat is a no-op; non-close reset retains and close releases |
+| `CustomBridgeLifecycleTest` | null, late, and different-instance installs fail without mutation; same-instance repeat is a no-op while live; non-terminal transitions retain the bridge; retirement releases it and permanently rejects installation and stale sink submissions |
 | `CustomSubmissionDispositionTest` | present/type-correct returns `Accepted`; active-layout and optimized-location absence return `SkippedAbsent` with zero GL/warnings; invalid name, actual type mismatch, and second exact-name submission return `Rejected`; skipped/rejected calls do not reorder the accepted batch; `Completed` counts all three outcomes exactly |
 | `CustomBoolUploadTest` | `Bool1(false/true)` validates only against GLSL `bool` and records Phase 6 integer uploads 0/1; `Int1` against `bool` and `Bool1` against `int` reject without GL |
 | `CustomAbortPrefixTest` | mixed accepted/skipped/rejected prefix then abort returns the exact three sink-ledger counts, uploads only accepted entries in original order, omits the suffix, and carries nothing forward |
 | `CustomCounterContractTest` | each negative and each ledger-mismatched completed/aborted counter discards every accepted command with zero GL, emits the stable diagnostic and Phase 4 activation-scoped degradation, carries nothing over, and retries only through a fresh next-activation refresh |
-| `ResetLifecycleTest` | initial generation installed; replacement adoption precedes frame/activation and does not invoke `CLOSE`; equality is idempotent; retired input rejects; generation/context/world reset scopes match §4.14; no stale location use |
+| `ResetLifecycleTest` | initial generation installed; live replacement adoption precedes frame/activation; equality is idempotent only while live; retired generation input rejects; generation/context/world reset scopes match §4.14.1; no stale location use; reset/adoption never retires the runtime |
+| `UniformRetirementTest` | unpublished candidate can retire without publication; old runtime retires after replacement invalidation while new runtime adopts and works independently; shutdown retires before atomic teardown; every reason follows final restoration/callback and precedes borrowed-service disposal; no GL/barrier/provider/diagnostic-service call during retirement; wrong-thread and reentrant active-callback rejection preserve usable state until legal retirement; repeat returns AlreadyRetired without cleanup; old sink, all three participants, current/new-generation adoption, duplicate beginFrame and custom install/submission cannot mutate, upload or revive afterward |
 
 `RecordingGLDevice` is the assigned mechanism
 (`docs/phase1/v14/PHASE_1_DOC.md:4146`, “recorded-GL run”). Scripted depth answers and GL errors
@@ -1744,7 +1914,9 @@ The Phase 6 implementation gate is met when:
    and Phase 5 sole-resolver contracts after §5.2's owner gates, without source reopening, a parallel
    parser, a second sampler map, or test-only handle leakage; and
 6. the schema/view conformance and accepted/skipped/rejected ordering/count tests prove the Phase 11
-   interface without a GL context.
+   interface without a GL context; and
+7. retirement traces prove unpublished abort, accepted/recovered-off versus rejected replacement,
+   and shutdown ordering with zero retirement GL/service calls and no post-retirement resurrection.
 
 ---
 
@@ -1756,6 +1928,7 @@ The Phase 6 implementation gate is met when:
 | synchronous center depth + empty macro contribution | v0.1 | v0.1 | PBO remains Phase 14 |
 | shared Phase 5 resolver injection and existing sampler participant | v0.1 | v0.1, gated by §5.2 owner reviews and fresh Phase 6 PASS | Phase 5 owns unit policy/backing objects; no duplicate map |
 | built-in participant, location/value caches, error replay | v0.1 | v0.1 | unchanged P3/P4 mechanics; current owner-review gates in §5.2 |
+| non-terminal reset/adoption and terminal `retire(reason)` | v0.1 | v0.1 with Phase 7, gated by fresh Phase 6/4/7 owner verification | R7-11; final use before retirement, borrowed-service disposal after it; no CLOSE alias |
 | gbuffer capture/inverse/previous machinery | v0.1 | v0.1 | hook invoked by Phase 7 |
 | frame/fog/blend/entityColor producers | v0.1 | v0.1 with Phase 7 | audit required |
 | versioned fixed-expression schema, conforming runtime view, typed custom sink/default participant | v0.1 | v0.1 no-op | closed types/outcomes, bool encoding, and normal per-program absence are fixed before Phase 11 plugs in at v0.4 |
@@ -1805,6 +1978,7 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
 | D-P6-15 | publish one immutable exact-name fixed-input schema at the Phase 6 catalog version, excluding all D.4 names plus `fogMode`/`fogColor` | gives Phase 11 load-time types without depending on a first activation and preserves the conservative authoritative-source union |
 | D-P6-16 | distinguish custom submission as accepted, skipped-absent, or rejected and count all three without reordering accepted commands | per-program declaration absence is normal; only admitted commands may enter the GL batch, while invalid/type/duplicate errors stay visible |
 | D-P6-17 | make `Bool1` distinct from `Int1` and encode boolean 0/1 only inside Phase 6 after linked-GLSL validation | keeps expression typing in Phase 11 and GL representation/location ownership in Phase 6 |
+| D-P6-18 | replace terminal `reset(CLOSE)` with R7-11's non-GL `retire(reason)`; keep generation adoption non-terminal | unaccepted abort, replaced-instance disposal and shutdown require distinct ordering and permanent capability invalidation, not a teardown-only alias; §§0.24/4.14 |
 
 ### 11.2 Contradictions and contract gaps found
 
@@ -1843,7 +2017,13 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
     independent map with Phase 5's required pure resolver. Appendix B.3 numbers, conditional
     declaration rule, participant order and cache/error mechanics are preserved. Phase 4/5's
     coordinated owner contracts remain unverified, with Phase 3's provisional input gate intact;
-    §5.2 records those blockers. R7-11 retirement is separate and remains ungranted.
+    §5.2 records those blockers. R7-11 is independently adopted by §0.24, not verified by R7-10.
+11. **ADOPTED IN CURRENT BYTES, FRESH VERIFICATION OWED — R7-11.** The old teardown-only
+    `reset(CLOSE)` rule could not dispose a replaced/unpublished runtime. §§2.2/4.14/5 now remove
+    CLOSE, distinguish runtime retirement from generation adoption, and preserve shutdown before
+    atomic Phase 4 teardown while placing replacement retirement after old-barrier invalidation.
+    All reasons require final use before retirement and borrowed-service disposal afterward.
+    Phase 7 owns caller migration/service ordering; ungranted dependencies remain gated in §5.2.
 No contradiction with RESEARCH.md's authority was silently resolved.
 
 ### 11.3 Items handed onward
@@ -1853,9 +2033,12 @@ capture exactly once; supply frame/fog/blend/entityColor/celestial events; resto
 compose the three participants in Phase 4's fixed positions; add actual hook coordinates beside every
 §4.12 audit row. Do not resample providers from a hook that merely switches programs.
 Inject `FixedSamplerPolicies.resolver()` immediately after configuration in the §2.2 factory call,
-paired with compilation's appB3 policy. R7-10 is adopted in this document but not yet a verified
-grant. Await §5.2's owner reviews and fresh Phase 6 whole-document PASS; do not treat this as R7-11
-retirement adoption or introduce another participant/texture-bind loop.
+paired with compilation's appB3 policy. R7-10 and R7-11 are adopted here but are not verified grants.
+Migrate terminal reset callers to `retire(UNPUBLISHED_ABORT|REPLACEMENT|SHUTDOWN)` under §4.14;
+never alias CLOSE, retire the newly adopted runtime as if it were the old one, or treat
+`Rejected` as disposal. Keep providers/adapters alive until `Retired`/`AlreadyRetired`, even when
+their texture/shadow owner retires earlier. Synchronize Phase 7's consumed §5 and status separately
+and obtain fresh whole-document owner verification; §5.2's ungranted gates remain intact.
 
 **To Phase 8:** supply all four shadow matrices and celestial/shadow-light values after shadow-camera
 setup through the v0.1 event interface. A singular inverse disables only that inverse.
@@ -1901,8 +2084,10 @@ or `ProgramHandle`.
   resolver injection and same-layout/context integer-upload contract now bind §§2.2/4.9/5. There
   is no remaining Phase 6 independent map. Owner review gates remain open; Phase 5/7 status rows
   require separate owner maintenance after this grant is verified, not edits in this session.
-- **UNGRANTED — Phase 7 R7-11:** permanent candidate/replacement retirement remains a separate
-  architecture change. No `retire`, `close`, new reset reason or relaxation of §4.14 is granted.
+- **ADOPTED HERE, FRESH VERIFICATION OWED — Phase 7 R7-11:** §§2.2/4.14/5 publish permanent
+  non-GL retirement, remove CLOSE rather than alias it, and bind candidate/replacement/shutdown
+  ordering before borrowed services disappear. Phase 7 and Phase 4 request/consumption rows need
+  separate owner synchronization; no sibling bytes or ungranted Phase 8/13 capability change here.
 - **GRANTED IN CURRENT BYTES, FRESH VERIFICATION OWED — Phase 11 dependency closure:** §§4.13
   and 5.1 publish the immutable versioned fixed-input schema, closed exact-name types, runtime-view
   conformance, `Bool1` with Phase-6-owned GL encoding, and ordered accepted/skipped/rejected
@@ -1921,7 +2106,7 @@ Ordered so each item has one outcome and one test hook.
 
 | # | Work item | Tag | Test hook |
 |---:|---|---:|---|
-| 1 | satisfy §5.2's current Phase 3/4/5 owner-review gates and fresh Phase 6 whole-document PASS, then consume published declaration/layout/access/resolver contracts | v0.1 | literal PASS for current owner surfaces; compile-time API test; R7-11 lifecycle remains separately gated |
+| 1 | satisfy §5.2's current Phase 3/4/5 owner-review gates and fresh Phase 6 whole-document PASS, then consume published declaration/layout/access/resolver contracts; coordinate R7-11 caller migration and current Phase 7 owner verification | v0.1 | literal PASS for current owner surfaces; compile-time API test; no adoption claim for ungranted §5.2 dependencies |
 | 2 | create `engine.uniforms` packages and immutable primitive/vector/matrix records under C-1 | v0.1 | seam tests; mutation/finite validation tests |
 | 3 | implement the catalog containing every §4.4 built-in row, with no sampler-name/unit table | v0.1 | `UniformCatalogCompletenessTest`; sampler behavior covered through the real shared resolver |
 | 4 | adapt Phase 3 configuration without source reopening; inject Phase 5's pure resolver immediately after configuration in the exact §2.2 factory call, paired with compilation's appB3 policy | v0.1 | fingerprint/schema/invariant tests; missing resolver fails without GL or local fallback |
@@ -1933,7 +2118,7 @@ Ordered so each item has one outcome and one test hook.
 | 10 | implement immutable matrix copy/inversion and singular isolation | v0.1 | known-matrix/inverse/singular tests |
 | 11 | implement conditional synchronous center-depth source and exact center coordinate | v0.1 | `ScriptedResponses.depthPixel`, ordering and undeclared tests |
 | 12 | implement empty Phase 3 macro contributor per D-P6-1 | v0.1 | materialization test has no `centerDepthSmooth` define |
-| 13 | implement initial/replacement generation adoption and `ProgramCache` keyed by effective provider/generation, including absent locations | v0.1 | adoption/lookup/fallback/generation tests |
+| 13 | implement non-terminal generation adoption and effective-provider/generation ProgramCache, plus §4.14 terminal retire algebra/guards; remove CLOSE callers, retire old/unpublished runtimes at the correct boundary and adopt on the new/surviving runtime | v0.1 | ResetLifecycleTest; UniformRetirementTest, including rejected publication not proving invalidation, final callback/service retention and shutdown-before-teardown |
 | 14 | build/reuse sampler integer plans from the sole Phase 5 resolver and effective descriptor/context inside unchanged afterBind; retain deterministic order, locations, cache keys, tokens and error isolation | v0.1 | `SharedSamplerRepointTest`; real resolver/fallback/Invalid/alias/order/skip/generation cases; no physical texture binds |
 | 15 | implement built-in upload plans, exact skip, and matrix-always rule | v0.1 | recorded GL redundant/matrix tests |
 | 16 | implement immutable activation/dynamic attempted batches and Phase 1 attributed replay | v0.1 | reproduced/unattributable/provider-once/token-invalidated tests |
@@ -1954,5 +2139,5 @@ Ordered so each item has one outcome and one test hook.
 ---
 
 *End of PHASE_6_DOC.md. The original §G1.1 build session stopped after this architecture
-document; §§0.3–0.23 record the later governed review, fix-up, and dependency-adoption maintenance.
+document; §§0.3–0.24 record the later governed review, fix-up, and dependency-adoption maintenance.
 Implementation and any post-loop version roll remain separate work.*
