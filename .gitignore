@@ -32,7 +32,5 @@ reference-src
 # The ignore rule is about repo size, not about the forbidden-source rule.
 docs/**/chatlogs/
 
-# verification-loop run state: leases and recovery journals (local run state, not review evidence)
-.verification-runs/
-
+# vscode settings
 .vscode/settings.json
