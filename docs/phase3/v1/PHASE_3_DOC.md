@@ -3,7 +3,7 @@
 ## 0. Header
 
 **Phase:** 3 — Pack front-end: ingestion, preprocessing, and configuration model
-**Date:** 2026-08-03 · **Last revised:** 2026-09-07 (§0.56)
+**Date:** 2026-08-03 · **Last revised:** 2026-09-07 (§0.57)
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 3
 specification only. RC3 governs this phase only; this document does not change the Phase 1 or
 Phase 2 governance pins.
@@ -414,6 +414,31 @@ consumption. U1's lossless Phase 3 publication is designed here; actual suffix h
 blocked by the explicit authority and consumer requests in §§5.4/11.5, not declared satisfied by
 retention alone. Earlier addenda and §0.55's companion-macro grant are preserved. No code, reviews,
 authority documents, builds/tests/verification, or directory rolls are changed or run here.
+
+### 0.57 Downstream-request addendum (Phase 4 per-program projections — 2026-09-07)
+
+This maintainer-authorized architecture-only amendment grants the Phase-3-owned publication
+requested at `docs/phase4/v1/PHASE_4_DOC.md:1866-1871`: Phase 4 must receive the
+"same immutable owner-defined values directly" while retaining the "existing Phase 5 pass-mipmap
+and Phase 10 vertex-layout consumers". Active §§3/4/5 now explicitly expose
+`ProgramRequirements.mipmappedAfterPass()` and `ProgramRequirements.vertices()` to Phase 4 through
+the existing `PackConfiguration.resources().programs()` map. The lookup uses the published
+dimension and exact program name; Phase 4 neither reparses sources nor calls Phase 5/10 to obtain
+the values. No record shape, directive meaning, canonical identity, or fingerprint encoding
+changes; schema 16 remains current. D-P3-60 records this publication-only grant.
+
+Inputs read: `docs/MOVES.md`; this document's affected contracts, addenda, testability, staging,
+and hand-offs; RC3 Part I and Phase 3 specification; RESEARCH §§0–1 and Appendix A.3; and the
+assigned Phase 4 request, its §0 governing declaration, §§4.9/5.3–5.4, and its RC3 specification
+to establish the registry/pre-link use. RC3 governs both documents independently. Phase 4 is read
+as the assigned downstream requester, not as a newly consumed or verified Phase 3 dependency.
+Earlier addenda and existing working-tree changes are preserved.
+
+**Current §G1.3 status:** this grant changes binding §5 and requires fresh whole-document
+verification before dependent consumption. Phase 4's own adoption and fresh §5 verification
+remain outstanding; its separate complete-legacy-geometry request and the existing ungranted
+dependencies in §5.4 are not resolved here. No code, review edits, builds, tests, verification
+runs, authority changes, or directory rolls are part of this amendment.
 
 ## 1. Scope & boundaries
 
@@ -1496,7 +1521,7 @@ without clearing a previously valid value.
 
 | Appendix A.3 directive | `PackConfiguration` target | Named conformance test |
 |---|---|---|
-| `attribute … mc_Entity / mc_midTexCoord / at_tangent` (`.vsh` only) | per-program `VertexRequirements.attributes` | `directive_extendedAttributeOptIns`, `directive_attributeWrongStageIgnored` |
+| `attribute … mc_Entity / mc_midTexCoord / at_tangent` (`.vsh` only) | per-program `VertexRequirements.attributes`, directly exposed to Phase 4 for declared pre-link attribute binding and retained for Phase 10 vertex layout (§5.1) | `directive_extendedAttributeOptIns`, `directive_attributeWrongStageIgnored`, `resource_programProjectionSnapshotAndIdentity` |
 | `const int countInstances=N` (`.vsh` only) | per-program `instanceCount` (positive integer) | `directive_countInstances`, `directive_countInstancesWrongStageIgnored` |
 | `#extension GL_ARB_geometry_shader4` + `maxVerticesOut` (`.gsh` only) | one validated `LegacyGeometryConfig` pair plus its attributed `LegacyGeometryRewriteSite`; materialization executes Phase 4's separate `GeometryTranslationPlan` and emits deterministic transformed core-form source | `directive_legacyGeometryPair`, `directive_geometryPairWrongStageIgnored`, `geometryRewrite_pairCardinalityAndSpans`, `geometryRewrite_deterministicAttributedOrUnavailable` |
 | `uniform … shadow/shadowtex0/shadowtex1/watershadow` | `shadowDepthBuffers` minimum 1/2 | `directive_shadowDepthUniformSizing` |
@@ -1525,7 +1550,7 @@ without clearing a previously valid value.
 | `colortexNFormat` / `gcolorFormat`, `gdepthFormat`, `gnormalFormat`, `compositeFormat`, `gaux1-4Format` | the shared §4.7 normalizer selects the attachment; a valid format becomes `ColorAttachmentFormat.Explicit`, while absent input remains distinct `DefaultRgba` | `directive_colortexFormatsAndAliases`, `directive_colortexFormatDomainAcceptedRejected`, `bufferNameNormalizer_allParserFamilies`, `directive_attachmentFormatDefaultExplicitAndGdepthFold` |
 | `colortexNClear=false` | `clear=false` and only for `DEFERRED`/`COMPOSITE` program families; no clear is issued, while any `clearColorOverride` remains explicit published data | `directive_colortexClearFamilyFilterAndOrdering` |
 | `colortexNClearColor=vec4(...)` | `clearColorOverride=Optional.of(Vec4f(...))` and only for `DEFERRED`/`COMPOSITE` program families; absence uses the index baseline, so an explicit transparent black remains distinguishable | `directive_colortexClearColorFamilyFilterAndOrdering`, `directive_explicitTransparentBlackRemainsExplicit` |
-| `colortexNMipmapEnabled=true` | per-program colortex mipmap requests only for `DEFERRED`/`COMPOSITE`/`FINAL` program families | `directive_colortexMipmapFamilyFilterAndOrdering` |
+| `colortexNMipmapEnabled=true` | per-program `mipmappedAfterPass` only for `DEFERRED`/`COMPOSITE`/`FINAL` program families; the same immutable set feeds Phase 4 registry state and Phase 5 pass-mipmap requirements (§5.1) | `directive_colortexMipmapFamilyFilterAndOrdering`, `resource_programProjectionSnapshotAndIdentity` |
 | `GAUX4FORMAT` (`RGBA32F`/`RGB32F`/`RGB16`) | colortex7 format request | `directive_gaux4FormatAllCommentForms` |
 | no active `DRAWBUFFERS`/`RENDERTARGETS` | `DrawRouting.AllUsed`; the program writes all color buffers it uses, not an empty/no-output route | `directive_drawbuffersAbsentMeansAllUsed` |
 | `DRAWBUFFERS` characters `0`–`7` or `N` | `DrawRouting.Explicit` with one ordered `DrawSlot.Attachment` or `DrawSlot.None` per character | `directive_drawbuffersPositionalSlotsAllCommentForms` |
@@ -2131,9 +2156,13 @@ rewrite before publication to GL.
 - half-lives in ticks and world constants; and
 - noise requirement.
 
-It never allocates anything. Phase 5 consumes the sizing/format/clear subset, Phase 6 the
-center-depth/half-life declarations, Phase 8 the shadow subset, Phase 13 the noise enablement and
-resolution, and Phase 4/7/10 per-program execution data.
+It never allocates GL resources. Phase 5 consumes the sizing/format/clear/pass-mipmap subset,
+Phase 6 the center-depth/half-life declarations, Phase 8 the shadow subset, Phase 13 the noise
+enablement and resolution, and Phase 4/7/10 per-program execution data. Phase 4 directly reads
+`mipmappedAfterPass()` and `vertices()` from the same frozen `ProgramRequirements` entries used
+by Phase 5's pass-mipmap and Phase 10's vertex-layout consumers. Section 5.1 binds the exact
+acquisition, key, absence, and consumer rules; no second accumulator or downstream callback is
+introduced.
 
 Its public immutable algebra is:
 
@@ -2528,6 +2557,11 @@ attachment format is exactly `DefaultRgba` with no payload or `Explicit` followe
 `ColorInternalFormat` name. Equivalent maps/sets yield identical bytes regardless of insertion
 history, while any published leaf mutation changes the payload. This is producer canonicalization,
 not a portable digest or downstream wire-format promise.
+The §0.57 Phase 4 projections read the existing `ProgramRequirements` components in that one
+payload. They add no consumer tag, duplicated resource payload, lookup history, derived registry
+bitmask, or object identity to either fingerprint. Reading a projection cannot change the
+configuration or materialization identity; changing its underlying owner value remains covered
+by the existing resource codec.
 Both configuration and materialization fingerprints additionally include exactly
 `seq(atom("CompanionOptionMacros"), atom(normalMap), atom(specularMap))`, using the `true`/`false`
 atoms above in record-component order. The materialization payload uses the retained same-build
@@ -2616,7 +2650,7 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 | `PersistenceRootConfiguration`, safe-access/target types, both persistence codecs, and their request/result/failure types | exact direct-child files and safe-write lifecycle; option operations authenticate domain and same-pack target/catalog pairing plus exact state/catalog identity before I/O; global operations authenticate access and implement §4.3's baseline-overlay/result matrix, §5.1 value-domain invariant, and exact all-entry output | Phase 7 load; Phase 12 standalone settings |
 | `ShaderPropertiesModel`, `EngineFlags`, `MinimumEditionRule`, `UnknownProperty`, `EngineOptionData` | closed immutable Appendix F model now includes `List<TexturePropertyDecl> textureDeclarations` immediately after `textures`, with §5.1's exact capture/classification/reduction semantics; decoded `texture.*` occurrences are excluded from `unknownProperties`, whose other-key retention is unchanged. The separate eight-known-setting/unknown-safe global domain and engine flags are unchanged. `MinimumEditionRule` accessors still retain exact decoded suffix/value text; source order, canonical map order, and nested collections are frozen | behavior owners in §3.1; Phase 12 persistence/UI; Phase 13 texture publication |
 | `ProgramStateModel`, `ProgramKey`, state value types, `ProgramStateEvaluationResult`, `EvaluatedProgramStates`, `EvaluatedProgramState` | schema-v16 declarations; runtime evaluation takes no option state, uses the containing configuration's finalized state, returns one state per `SourceCatalog.executablePrograms()` key, diagnoses/omits source-absent raw properties, and publishes flips only for projected eligible or virtual-pre keys; semantics unchanged except containing schema | Phase 4; Phase 5 flip state |
-| `ResourceRequirements` | the schema-v16 closed immutable record graph and exact leaf declarations below, including positional `DrawSlot` values and `ColorAttachmentFormat.DefaultRgba|Explicit(ColorInternalFormat)`. Last active valid scalar wins, malformed retains prior/baseline, and minima aggregate monotonically. New attachment entries use `DefaultRgba`; explicit directives use `Explicit`, and active `gdepth` forces `Explicit(RGBA32F)`. Absence is only empty collections, `Optional.empty()`, or typed baselines—never null/sentinel. Maps/sets/lists are immutable and ordered as declared; the complete graph uses §4.10's canonical codec; algebra and retained-companion shader analysis unchanged except containing schema | Phase 5 sizing/format/clear; Phase 6 center depth/smoothing; Phase 8 shadow; Phase 13 noise; Phases 4/7/10 per-program data |
+| `ResourceRequirements` | the schema-v16 closed immutable record graph and exact leaf declarations below, including positional `DrawSlot` values and `ColorAttachmentFormat.DefaultRgba|Explicit(ColorInternalFormat)`. Last active valid scalar wins, malformed retains prior/baseline, and minima aggregate monotonically. New attachment entries use `DefaultRgba`; explicit directives use `Explicit`, and active `gdepth` forces `Explicit(RGBA32F)`. Absence is only empty collections, `Optional.empty()`, or typed baselines—never null/sentinel. Maps/sets/lists are immutable and ordered as declared; the complete graph uses §4.10's canonical codec. §0.57 explicitly grants Phase 4 direct `ProgramRequirements.mipmappedAfterPass()` and `vertices()` projections through `resources().programs()` under the binding lookup below; record shapes, owner values, defaults, identity, and fingerprints are unchanged | Phase 4 routing/instance count/legacy geometry plus direct pass-mipmap and declared-vertex requirements; Phase 5 sizing/format/clear/pass-mipmap; Phase 6 center depth/smoothing; Phase 8 shadow; Phase 13 noise; Phase 7 per-program execution; Phase 10 vertex layout |
 | `CustomTextureSpec`, `NoiseTextureSpec`, `TexturePropertyStage`, `TextureBindingKey`, `TextureTarget`, `ColorInternalFormat`, `PixelFormat`, `PixelType`, `TextureSidecarRef`, `TexturePropertyDecl`, `TexturePropertyDisposition` | canonical §2.2 declarations and the exact §5.1 capture/reduction contract are binding. `properties().textureDeclarations()` retains all decoded active occurrences before collapse, including unresolved requests; executable `textures()`/`noise()` remain separate projections. The existing raw format domains, PNG rule, stage mapping, and sidecar retention remain unchanged. §4.10 hashes every declaration; retention does not claim suffix support or permit downstream parsing | Phase 13 specs and declaration diagnostics; Phase 3 alone owns semantic decoding |
 | `InternalPackSource` / `InternalPackReadException` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; `snapshot` may raise only the declared provider-only checked exception, which is reduced to an attributed failure; defensive byte copies and the canonical path projection are binding | Phase 7 supplies content and consumes the projection |
 The public declarations in §2.2 are incorporated into binding rows above, not merely illustrative.
@@ -2961,6 +2995,51 @@ instance count is 1, and geometry is `Optional.empty()`. Explicit `DRAWBUFFERS:N
 `DrawRouting.Explicit(List.of(new DrawSlot.None()))`; mixed/repeated `N` forms preserve every slot
 and remain distinct from the absent baseline.
 
+**Direct per-program projections (D-P3-60).** Phase 4 obtains these values from the same
+successfully loaded `PackConfiguration` used for source planning, materialization, and evaluated
+program state. The existing record accessors are the complete acquisition surface:
+`PackConfiguration.resources()` → `ResourceRequirements.programs()` →
+`ProgramRequirements.mipmappedAfterPass()` and `ProgramRequirements.vertices()` →
+`VertexRequirements.attributes()`. These are public Phase-3-owned values, not new
+`PackConfiguration` components, consumer-specific copies, or Phase 5/10 services.
+
+1. Select the effective `DimensionConfiguration` by the existing dimension rules below. For
+   each source program selected from that configuration's `SourceCatalog.executablePrograms()`,
+   look up `ProgramRequirementKey(dimension, programName)` using exactly the corresponding
+   `ProgramKey.dimension()` and `programName()`. `SourceKey` roots join by that same pair:
+   stage is not a resource-key component. An absent world entry selects the base dimension key;
+   an override never merges or borrows base requirements, and a disabled dimension selects no
+   source program. Preserve exact case-sensitive names and structural key equality; never use a
+   registry ordinal, source-path string, display name, or consumer-local alias as identity.
+2. The resource map remains sparse and unchanged. A present entry supplies its exact frozen
+   values; an absent entry means no recorded requirements, so the two projections have the
+   existing empty-set baseline (no mipmap request and `VertexRequirements` with no attributes).
+   Do not insert a synthetic entry, densify the map, or alter its fingerprint for a read. Absence
+   of a resource entry is not absence of shader source or evidence of compile/link success:
+   `executablePrograms()` and Phase 4's build outcomes retain those separate responsibilities.
+   Virtual-pre slots remain flip-only, never executable sources with inferred attributes or
+   mipmaps. Phase 3 does not resolve fallback chains or relabel an ancestor's requirements as a
+   requested slot; Phase 4 owns selection/inheritance of the entire effective configuration.
+3. `mipmappedAfterPass()` returns the non-null immutable `Set<ColorAttachmentKey>` already
+   supplied to Phase 5, in ascending attachment-index order. Phase 4 may represent that exact
+   membership in its registry's composite-mipmap state; it neither adds targets nor narrows the
+   `{DEFERRED, COMPOSITE, FINAL}` producer applicability to composite alone. Phase 5 retains
+   pass-mipmap consumption and buffer execution ownership; this grant does not move GL work
+   into Phase 3.
+4. `vertices()` returns the same immutable `VertexRequirements` value already supplied for
+   Phase 10 vertex layout. Its attributes retain the closed enum and declaration order above,
+   populated only by active `.vsh` declarations. Phase 4 uses those opt-ins to conditionally bind
+   declared fixed attributes before link; this is not post-link GL liveness and grants no new
+   attribute, location, or vertex-population policy. Phase 10 retains vertex-layout/population
+   ownership. Empty attributes require no declared extended-attribute bind.
+5. Both reads share one atomic load's finalized-option analysis and remain valid after the pack
+   lease closes or a later load publishes a replacement. Neither read reparses directives,
+   inspects final GLSL to rediscover opt-ins, uses `DeclaredUniformCatalog` as an attribute
+   parser, or waits for Phase 5/10 output. Phase 3 imports no registry/buffer/vertex consumer
+   type. Existing canonical key/collection/value equality, schema checks, and configuration/
+   materialization fingerprint retention rules apply unchanged; consumer access is not a new
+   identity domain.
+
 This §5 text is the sole binding consumer contract for these aggregates. For `ResourceRequirements`,
 Phase 5 consumes only attachment/pass records created by eligible exact program families:
 `colortexNClear`/`colortexNClearColor` are `{DEFERRED, COMPOSITE}`, and
@@ -3172,6 +3251,10 @@ and its canonical fingerprint payload, requiring schema 16. Schema-15 and schema
 reject the opposite producer version; older schemas are not upgraded by fabricating an empty
 declaration list or inferring missing companion state. Downstream schema adoption remains
 outstanding outside this single-document edit.
+The §0.57 grant adds Phase 4 as an explicit reader of two existing per-program components.
+It adds no record component or meaning/default and changes no canonical fingerprint payload, so
+it does not increment schema 16. It nevertheless changes binding §5's consumer surface and requires
+fresh whole-document verification; it does not waive any consumer's outstanding schema adoption.
 
 Round 40's program-state meaning required schema 6; Round 41's program-state and macro-default
 changes required schema 7. Round 42 changed binding operations but no component meaning, so retained
@@ -3282,6 +3365,21 @@ schema 16; their changes and fresh §5 reviews remain outstanding, as does fresh
 verification of Phase 3. U1 suffix-honoring conformance remains blocked; documented source forms
 and independent `.mcmeta` retention are not blocked by an invented suffix rule. There is no new
 Phase 3 dependency on a Phase 13 type, policy, or GL operation.
+
+**Phase 4 §5.4 item 2 — owner grant and remaining gates.** The direct per-program mipmap and
+vertex projections are granted on the Phase 3 side by §5.1, preserving Phase 5/10 consumption.
+Phase 4 must separately incorporate this grant into its active registry/pre-link contracts and
+§5.3 inventory, reconcile its pending §5.4 item 2 ledger, and adopt the current schema after
+Phase 3's fresh whole-document verification. That downstream edit and its fresh §5 verification
+are not performed or presumed here. No Phase 4 dependency on Phase 5 or Phase 10 is needed to
+obtain either value, and no Phase 3 reverse dependency is introduced.
+
+Item 1 at `docs/phase4/v1/PHASE_4_DOC.md:1859-1865` separately requests "complete legacy geometry";
+the current projection grant does not provide full extension translation or a Phase 1 pre-link
+legacy operation. That request remains ungranted by this amendment. The jcpp build/seam request,
+R1 consumer adoption, U1 authority/typed-sampling requests, and other owners' coordinated
+sampler/lifecycle/shadow grants remain outside this grant, not prerequisites to reading these
+already-owned immutable projections and not declared satisfied by it.
 
 ## 6. Failure modes & degradation
 
@@ -3610,6 +3708,14 @@ context or Minecraft type needed.
   (mutates every published scalar/enum/string/optional/variant/list/set/map leaf, distinguishes
   sequence order, equates semantically equal maps/sets with different insertion histories, and
   proves signed-zero canonicalization),
+  `resource_programProjectionSnapshotAndIdentity` (future headless producer-contract check:
+  load distinct base/world program requirements, including a source-present program with no
+  resource entry; observe exact mipmap membership and `.vsh` opt-ins through the Phase 4 access
+  path, unchanged Phase 5/10 values, empty baselines without map mutation, and no base borrowing
+  for an override. A reload changing an active opt-in/request changes the canonical resource
+  payload while the old configuration stays unchanged; projection reads neither change
+  fingerprints nor require a downstream service. Reuse the existing wrong-family/stage and
+  resource-codec cases rather than adding a second parser fixture suite),
   `directive_colortexFormatDomainAcceptedRejected`,
   `directive_gdepthUpgradeAlways`,
   `directive_gdepthWithPriorExplicitFormat`, `directive_gdepthWithSubsequentExplicitFormat`,
@@ -3689,7 +3795,7 @@ milestone.
 | P3-C10 | jcpp shader-source processor with hoisting/spoof guards | `v0.1` |
 | P3-C11 | properties-safe jcpp adapter and lossless property parser | `v0.1` |
 | P3-C12 | table-driven legacy Appendix A.3 directive scanner with exact family applicability and positional `DRAWBUFFERS` slots, excluding `RENDERTARGETS` | `v0.1` |
-| P3-C13 | immutable resource-requirement aggregator with exact closed public leaves, positional routing, program-family filters, and complete canonical codec | `v0.1` |
+| P3-C13 | immutable resource-requirement aggregator with exact closed public leaves, positional routing, program-family filters, complete canonical codec, and direct Phase 4 mipmap/vertex projections preserving Phase 5/10 consumers | `v0.1` |
 | P3-C14 | complete Appendix F model with exact decoded edition accessors, provisional edition grammar/comparator, source-projected program evaluation, D-P3-38 PNG interpretation, lossless pre-collapse texture declarations and dispositions under the U1 authority gate, closed flags/state, other-key unknown retention, and custom expressions | `v0.1` |
 | P3-C15 | schema-v16 ID-mapping/layer parser, classic/modern provenance, file-state/selector/era provenance, and forced-11300 entity parse | `v0.1` |
 | P3-C16 | same-build macro-snapshot source materializer and local processed-source debug dump | `v0.1` |
@@ -3819,6 +3925,7 @@ not a decision (PD §7.6).
 | D-P3-57 | Close Phase 3 diagnostic arguments to four tagged boxed scalar classes and make the fixed discovery-overflow diagnostic argument-free, so exact snapshot accounting cannot depend on erased `Object` values or input-derived detail. |
 | D-P3-58 | Grant Phase 13 R1 through Phase-3-owned `CompanionOptionMacros`, captured before jcpp and retained/hash-bound for the whole build, rather than a post-analysis producer or another `MacroContribution`. The shipped `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:655-656` says "When the normal map is enabled" / "When the specular map is enabled"; `docs/research/v1/RESEARCH.md:313-319` places these in the standard shader header. Phase 7 adapts preliminary policy; Phase 3 projects the supplied booleans without reapplying D-P3-31's gates. |
 | D-P3-59 | Preserve every active decoded `texture.*` occurrence before collapse in schema-16 `TexturePropertyDecl`, with closed disposition, exact value, order and provenance; only Phase 3 reduces known sources or later decodes approved sampling syntax. RC3 `docs/design/v2.0-RC3/DESIGN.md:2441-2443` says "ours must honor them"; `docs/research/v1/RESEARCH.md:1484-1490` defines numeric discriminators and sidecars, not filter/wrap key grammar. Retention prevents owner-side data loss without falsely claiming honoring; U1 remains an explicit authority/consumer gate. |
+| D-P3-60 | Grant Phase 4 direct existing `ProgramRequirements.mipmappedAfterPass()` and `vertices()` reads through the one configuration's dimension/name-keyed resource map, preserving Phase 5/10 consumers rather than introducing reverse dependencies or another parser. `docs/phase4/v1/PHASE_4_DOC.md:1866-1871` requests the "same immutable owner-defined values directly"; `docs/research/v1/RESEARCH.md:1159` says "enable extended vertex attribute for this program" and `:1186` specifies "per-pass mipmap gen (composite/deferred/final)". Publication changes, not record meaning, canonical identity, schema 16, or fingerprint encoding. |
 
 ### 11.2 Binding-decision disposition
 
@@ -3868,11 +3975,18 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
   linked-program layout, reject same-name/different-type conflicts with both source locations, and
   expose only that handle-free layout to Phase 6. Phase 6 must not reopen source or reinterpret
   the Phase 3 type algebra.
-- Phase 4 calls `SourceMaterializer.materialize(root, contribution, geometryTranslation)` and
+- For source materialization and program-state evaluation, Phase 4 calls
+  `SourceMaterializer.materialize(root, contribution, geometryTranslation)` and
   `PackConfiguration.evaluateProgramStates(selectedProfile, diagnostics)` only; both use the same
   finalized option state that produced the configuration's resources and fingerprint; materialization
   also retains that load's companion pair and hashes it. It never calls or reconstructs a raw-model
   evaluator, passes preview state, or patches a later companion decision into shader text.
+- Phase 4 obtains per-program `mipmappedAfterPass` and `VertexRequirements` directly through
+  §5.1's existing resource-map accessors and exact dimension/name join. Phase 5 pass-mipmap and
+  Phase 10 vertex-layout consumers retain the same values and responsibilities. Phase 4 must
+  adopt the owner grant/current schema in its own active contract and reconcile its pending
+  ledger after Phase 3 verification; no backward Phase 5/10 route or source reparse is permitted.
+  Complete legacy geometry and other ungranted dependency requests remain separate (§5.4).
 - Phase 7 must supply the bounded `InternalPackSource`; for filesystem loads it obtains
   `PersistenceFileAccess` from its factory bundle using the exact game/shaderpacks roots and passes
   only that same-domain receiver into `load`. It persists only
@@ -4025,7 +4139,8 @@ Each item is independently actionable and names its test hook.
     `directive_rendertargetsAndPrecedence`.
 12. `[v0.1]` Implement P3-C13's exact public leaf declarations, attachment-format and positional
     routing algebras, requirement folding, program-family filtering, cross-field diagnostics, and
-    complete canonical resource codec; run every `resourceLeaf_*`,
+    complete canonical resource codec and §5.1's direct Phase 4 projections without changing
+    Phase 5/10 values; run `resource_programProjectionSnapshotAndIdentity`, every `resourceLeaf_*`,
     `directive_attachmentFormatDefaultExplicitAndGdepthFold`,
     `fingerprint_attachmentFormatVariantAndExplicitValue`,
     `fingerprint_resourceCodecEveryLeafAndInsertionOrder`, all routing-slot tests, eligible/wrong-
@@ -4090,3 +4205,10 @@ fresh whole-document verify session before dependent consumption. No review or d
 fingerprinting, and schema 16 to the incorporated §5 surface. Fresh whole-document verification is
 required before dependent consumption. Suffix-honoring authority and downstream adoption remain
 explicitly ungranted under §§5.4/11.5; no review, authority document, or directory was changed.*
+
+*The maintainer-authorized §0.57 amendment grants Phase 4 §5.4 item 2 on the owner side through
+the existing immutable program-requirement accessors. Schema 16, canonical identities and both
+fingerprint semantics remain unchanged. Phase 3 remains unverified: changed §5 requires fresh
+whole-document verification before dependent consumption. Phase 4 adoption and separate ungranted
+dependencies remain explicit in §5.4; no review, build/test/verification run, or directory roll
+was performed.*

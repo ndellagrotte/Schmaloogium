@@ -7,7 +7,7 @@
 **Phase:** 1 — Foundation & project architecture
 **Milestone:** v0.1 · **Depends on:** — (Wave 0; this doc feeds every other phase)
 **Assigned OQs:** OQ-2, OQ-12, OQ-20 (seam hardness), OQ-21
-**Authored:** 2026-07-24 · **Last revised:** 2026-09-07 (§0.24)
+**Authored:** 2026-07-24 · **Last revised:** 2026-09-07 (§0.25)
 **Deliverable:** this document, per DESIGN.md §G9.
 **Verifies against:** `docs/design/v2.0-RC2/DESIGN.md` from §0.11 onward; `docs/design/v1.1/DESIGN.md`
 through §0.10. **There is no longer one governing revision for the project:** RC2 governs **this
@@ -21,10 +21,10 @@ defaults. §0.12 states the adoption state as of 2026-07-26; §0.1 records what 
 against — §4.1's template facts are read from the checkout on 2026-07-24, §4.2.6's thirteen pin rows
 are re-verified 2026-07-24, and `[V:repo]` below is defined as inspection on 2026-07-24 — so a single
 later stamp would silently re-date claims to a day on which they were not performed. The revision
-date is the most recent of the dates the addenda in §0.4–§0.24 carry, and each addendum states
+date is the most recent of the dates the addenda in §0.4–§0.25 carry, and each addendum states
 its own: §0.4–§0.5 are 2026-07-24, §0.6–§0.10 are 2026-07-25, §0.11–§0.14 are all
 2026-07-26, §0.15–§0.17 are 2026-07-28, §0.18–§0.19 are 2026-07-29, and §0.20–§0.23 are
-2026-08-03; §0.24 is 2026-09-07. The
+2026-08-03; §0.24–§0.25 are 2026-09-07. The
 few repository observations the round-eleven and round-twelve fix-ups made are tagged
 `[V:repo 2026-07-26]` inline for the same reason the authoring date is kept — §4.1's and §4.2.6's 2026-07-24 reads are not re-dated by a
 later session touching a different part of the tree.*
@@ -1479,6 +1479,52 @@ and needs a fresh **whole-document** review returning literal PASS before verifi
 consumption, per `docs/design/v2.0-RC2/DESIGN.md:308`–`:313`. This is not a review resolution
 or a claim that the unchanged Phase 7/13 documents have consumed the grant.
 
+### 0.25 Downstream-request addendum (Phase 4 legacy geometry — 2026-09-07)
+
+This maintainer-authorized architecture-only amendment selects the Phase 1 alternative in
+`docs/phase4/v1/PHASE_4_DOC.md:1859-1865`: "an engine-enum pre-link legacy geometry configuration
+operation". The preferred Phase 3 route was assessed first, not silently skipped.
+Its active contract says rewrites "may touch only the two spans"
+(`docs/phase3/v1/PHASE_3_DOC.md:1997-1998`), rebuilds the original active `#version`
+(`:1982-1984`), and exposes only `None` and `Translate(plan)` (`:1281-1284`).
+`MaterializedSource` has no whole-source compatibility result (`:1203-1209`).
+That is configuration rewriting, not complete legacy-to-core translation.
+
+Complete translation would additionally have to preserve extension-era varying declarations,
+input arrays and built-ins, effective-version semantics and adjacent-stage linkage, with every
+transformation attributed and fingerprinted. The published ARB specification defines `varying in`,
+`gl_VerticesIn`, the built-in input arrays (including two-dimensional `gl_TexCoordIn`), and separate
+GL 3.2 layout rules. Its "Dependencies on OpenGL 3.2" says core geometry "provides no program
+paramter state" and that a source layout overrides a program parameter. See
+[ARB_geometry_shader4](https://raw.githubusercontent.com/KhronosGroup/OpenGL-Registry/main/extensions/ARB/ARB_geometry_shader4.txt),
+§2.16, GLSL §§4.3.6/7.6 and that dependency section
+(`[V:web]`, read 2026-09-07). A version bump plus token substitutions is not a completeness proof.
+A new compliant translator is possible design work, but is not supplied by Phase 3's current
+stage-local two-span contract or its no-AST decision D-P3-16. This amendment does not certify a
+subset as dual-form support or adopt any prohibited transformer.
+
+**Decision D-P1-44:** grant the narrow native legacy operation in active §§4.7.4/5.2, keeping
+core program/shader objects and the D-6 seam. Source preservation remains Phase 3's, strategy
+and compilation remain Phase 4's. This replaces the active no-pre-link assumption; all historical
+addenda, the §0.24 package grants, and unrelated contracts are preserved. The source-side grant
+needed to use this operation is explicitly **ungranted** in §5.2/§11.4: today Phase 3 rejects
+`None` for a legacy pair and cannot return a legacy-preserving materialization.
+
+Inputs actually read for this bounded amendment: `docs/MOVES.md`; this document's header,
+scope/facade/§5/error/recorder/staging/decision/hand-off contracts; RC2 Part I and Phase 1
+specification; Phase 3's header and active source, materialization, geometry and dependency
+contracts; Phase 4's header, §4.8 and §§5.3–5.4; RC3 Part I, Phase 3 specification and the
+Phase 4 compile/geometry requirements; RESEARCH §§0–1, §§3.1–3.2/3.5/6.1–6.2 and App A.3;
+the shipped `doc/shaders.txt` geometry table; and the Khronos specification above to resolve
+the actual API/version/limit gap. Phases 3/4 are request evidence, not new Phase 1 dependencies.
+RC2 still governs Phase 1; RC3 still governs Phases 3/4. No review is consumed or edited here.
+
+**Current §G1.3 status:** §5 changes again and requires fresh whole-document verification
+returning literal PASS before verified downstream consumption. This is a producer-side
+architecture grant, not end-to-end legacy support: §11.4 names the Phase 3 grant and Phase 4
+migration still owed. No code, builds, tests, verification runs, authority edits or directory
+rolls; `v14` remains the path.
+
 ---
 
 ## 1. Scope & boundaries
@@ -1515,6 +1561,8 @@ Every concern this document touches but does not own — the §G9 anti-sprawl de
 | Conformance harness content: scenes, capture drivers, image diff, fixture downloader, golden-file format and update workflow, headless-GL-in-CI viability | **Phase 2** |
 | Everything pack-format: discovery, `#include`/preprocessing, option discovery, `shaders.properties` model, identity macros | **Phase 3** |
 | Stage registry contents, all classic catalog slots, backup-chain semantics, compile/link flow | **Phase 4** |
+| Legacy geometry source preservation/translation and source-map/fingerprint production | **Phase 3**; complete core translation is not established by its two-span contract. The requested native-preserving materialization is ungranted (§5.2) |
+| Legacy geometry topology selection, capability decision, pre-link invocation and program fallback | **Phase 4**; Phase 1 supplies only the engine-enum operation and its backend/recorder semantics (§4.7.4) |
 | All GL *policy*: texture formats, the fixed texture-unit map, ping-pong/flip rules, clear colors, buffer sizing, resize | **Phase 5** (buffers) and **Phase 6** (uniforms/samplers). The unit map's own split, because four other sites delegate to this row: **Phase 5** owns *which texture object backs each unit per stage* (`DESIGN.md` l. 1488), **Phase 6** owns *pointing the sampler uniforms at the units* (l. 1563) |
 | The Mixin **hook catalog** — which classes, which methods, which `@At` targets (App E) | **Phase 7** (with additions from **Phase 10** and **Phase 13**) |
 | GL context creation mechanics, HiDPI, resize (OQ-3); CleanMix divergences on hot injections (OQ-4) | **Phase 7** |
@@ -1665,6 +1713,7 @@ consistent with the `com.schmaloogium.{engine,mod,conformance}` tree. Publishing
 | `GLDevice` | `engine.gl` | Root facade handle; hands out the seven services, the capability profile and the GL-error drain |
 | `GLCapabilityProfile` | `engine.gl` | Immutable value object; RESEARCH.md §4.1's probe set + extension set + the macro-header fields (`glslVersion`, `vendor`, `renderer`); serializable as a test fixture |
 | `ProgramHandle`, `ShaderHandle`, `TextureHandle`, `BorrowedDepthAttachmentHandle`, `FramebufferHandle`, `UniformLocation` | `engine.gl` | Opaque handles — the engine never holds a raw GL int. **Four** direct `GLHandle` categories; the borrowed-depth marker is a narrower `TextureHandle`, not a fifth category, and there is no renderbuffer (§4.7.3) |
+| `LegacyGeometryInputPrimitive`, `LegacyGeometryOutputPrimitive` | `engine.gl` | Closed pre-link parameter domains, respectively `TRIANGLES` and `TRIANGLE_STRIP`; no GL enum values or Phase 3 types cross the facade |
 | `ForeignTextureProvider`, `ForeignTextures` | `engine.gl` | The slot a `mod.glue` implementation fills with ordinary `TextureHandle`s for textures **Minecraft** owns (`[D-P1-36]`, §4.7.3, §4.12). *Which* textures is not this phase's: the unit-map keys are **Phase 5's**, the `minecraft:`-resource-location keys **Phase 13's**. Those handles are **bind-and-label-only**, distinct from authenticated borrowed depth, and outside the owned-handle lifetime rule (§4.7.3) |
 | `GLError`, `GLErrorKind` | `engine.gl` | Driver errors as data. Attribution is per **drain window** — one call named when the window held one mutating **facade** call, the sweep named when it held many (`[D-P1-32]`); a window may also hold an error no facade call caused, since the GL flag is per-context (§4.7.4) — and this is the signal §G2.4's **rung 2** acts on; rung 1 is Phase 11's expression isolation and never reaches GL (§6) |
 | `ReplayAwareGLError` | `engine.gl` | One drained `GLError` plus the caller-established replay-attribution verdict. `attributed` is true only when isolated replay reproduces that error in the named call's window; labels, operation names, and clean or ambiguous replays never imply attribution (`[D-P1-42]`) |
@@ -1705,7 +1754,7 @@ debug affordances must satisfy, plus the vocabulary rule.
 | `blendFunc` is an **`ivec4`** uniform (current blend `srcRGB`, `dstRGB`, `srcA`, `dstA`) | RESEARCH.md App **D.4**, §3.4 | `UniformService.upload(loc, int, int, int, int)` (§4.7.4). Phase 6 owns the value provider and its cadence (`DESIGN.md` §G5.1 puts App D's inventory at **v0.1**). The value is *observed* from `GlStateManager` per §G4.6 — that observation is Phase 6's, not the facade's. **Phase 9 is named nowhere in this row, and the omission is deliberate** (V11-1): `DESIGN.md` routes `blendFunc` to Phase 6 in five independent passages and to Phase 9 in none — Phase 6's *Scope — in* (l. 1601), its cadence model (ll. 1549–1550, where the "at their hooks (Phases 7/9/10 invoke)" gloss names *invokers* of a whole list, not owners of one uniform), Phase 9's own *Scope — in* (ll. 1918–1920, which enumerates its per-draw dynamics exhaustively and excludes `blendFunc`), Phase 9's *Scope — out* (ll. 1931–1932, "uniform upload mechanics (Phase 6)"), and the dropped-item audit (l. 2419, "`blendFunc`/GlStateManager → P6 + G4.6"). **REV2 adds the sixth and makes the duty concrete:** the observation must be *wired*, not assumed — Phase 6 designs the notifier, Phase 7 owns the hook that feeds it, and Phase 6's doc carries a notifier→producer audit table (§G4.6 ll. 554–557; Phase 6's spec ll. 1602–1607). The failure that rule is drawn from is Pintonium's `blendFunc` notifier, never assigned on 1.12.2, so any pack declaring the uniform NPEs at program build — PD §17 B6, a standing do-not-inherit row (§G11.4). Phase 1 handles it by supplying the `ivec4` verb and **not** claiming the observation for the facade | `[V:doc]`; the notifier-wiring duty is `[V:observed — PD §17 B6]`, cited from PD as a pointer to Phase 6/7 rather than re-verified at Pintonium source, because no Phase 1 design element rests on it (§G1.1's load-bearing test) |
 | **Appendix A.1 fixed-function terminals** — external `<none>` and an absent `shadow` or `gbuffers_basic` root | RESEARCH.md App **A.1**, `docs/research/v1/RESEARCH.md:1106`–`:1145` | `ShaderService.useFixedFunction()` (§4.7.4, `[D-P1-39]`) selects program zero without exposing zero, a null, or a sentinel `ProgramHandle` to `:engine`. Phase 4 alone decides when its resolved binding is a fixed terminal and invokes this verb inside `ProgramStateBarrier`; the facade owns only the selection operation | `[V:doc]` |
 | **Absent `final` terminal** — passthrough copy, not fixed-function selection | RESEARCH.md App **A.1**, `docs/research/v1/RESEARCH.md:1139`–`:1140` | Downstream final-pass execution owns the passthrough copy. It does **not** invoke `ShaderService.useFixedFunction()` merely because `final` is absent | `[V:doc]` |
-| Geometry programs may declare the **ARB form** (`#extension GL_ARB_geometry_shader4` + `const int maxVerticesOut = N`) | RESEARCH.md §3.1, App A.3, §6.2 | Handled **upstream of the facade**: RESEARCH.md §6.2 lists core GL 3.2 geometry shaders with internal translation as a modernization *opportunity*, which this project adopts, so the ARB form is a source-level rewrite in the Phase 3 front-end / Phase 4 compile path. `ShaderService` therefore exposes no pre-link program-parameter verb, and says so (§4.7.4) | `[V:doc]` |
+| Geometry programs may declare the **ARB form** (`#extension GL_ARB_geometry_shader4` + `const int maxVerticesOut = N`) | `docs/research/v1/RESEARCH.md:213-215` says layout qualifiers **or** the ARB form; `:1161` names the legacy configuration; `:771` lists internal translation as an opportunity | `ShaderService.configureLegacyGeometry` supplies the native pre-link parameters through engine enums (§4.7.4, D-P1-44). Core-form sources retain their layout path. Phase 3 legacy-preserving output and Phase 4 adoption remain ungranted; neither two-span rewriting nor this facade grant alone establishes dual-form conformance (§5.2) | `[V:doc]`; route is D-P1-44 |
 | **Compat-profile baseline; `GL_QUADS` stays available** | RESEARCH.md §6.1 `[D-9]` | The facade is profile-agnostic by construction: `DrawService` exposes a `fullscreenQuad` primitive whose backend chooses `GL_QUADS` or the triangle-strip fallback. No core-profile-only entry point appears in any interface | `[V:doc]` |
 | **No UBOs**; per-program uniform upload with location caching | RESEARCH.md §6.1 `[V:doc]` | `UniformService` exposes only default-block uniform uploads keyed by `UniformLocation`. No uniform-block entry point exists — the facade cannot express a UBO | `[V:doc]` |
 | **Never compile against `org.lwjglx`** | RESEARCH.md §6.1, DESIGN.md §G2.2 | `enable_lwjglx=false` (§4.6) plus the §4.3 bytecode assertion, which lists `org.lwjglx` among the forbidden prefixes | `[V:mcp]` |
@@ -2963,6 +3012,9 @@ public interface ShaderService {
     ProgramHandle createProgram();
     void          attach(ProgramHandle p, ShaderHandle s);
     void          bindAttributeLocation(ProgramHandle p, int location, String name); // pre-link
+    void          configureLegacyGeometry(ProgramHandle p,
+                      LegacyGeometryInputPrimitive input,
+                      LegacyGeometryOutputPrimitive output, int maxVerticesOut); // pre-link
     LinkResult    link(ProgramHandle p);                 // never throws
     ValidateResult validate(ProgramHandle p);            // never throws
     void          use(ProgramHandle p);   // select a live linked shader program
@@ -2970,6 +3022,9 @@ public interface ShaderService {
     void          delete(ProgramHandle p);
     void          delete(ShaderHandle s);
 }
+
+public enum LegacyGeometryInputPrimitive { TRIANGLES }
+public enum LegacyGeometryOutputPrimitive { TRIANGLE_STRIP }
 
 public interface UniformService {
     UniformLocation locate(ProgramHandle p, String name);
@@ -3374,18 +3429,65 @@ Design rules embedded above, each with a reason:
   `int,int` and `int,int,int,int` uniform overloads above. Each is a
   transfer verb with no policy attached — no format choice, no cadence, no unit number — which is why
   they belong here and their callers' rules do not.
-- **No pre-link program-parameter hook, and that is a statement rather than an omission.** Packs may
-  configure geometry shaders the legacy way — `#extension GL_ARB_geometry_shader4 : enable` plus
-  `const int maxVerticesOut = N;` (RESEARCH.md §3.1, App A.3) — which in raw GL requires
-  `glProgramParameteriARB` calls between attach and link. RESEARCH.md §6.2 lists core GL 3.2
-  geometry shaders **with internal translation** as a modernization opportunity, the preprocessor
-  continuing to accept both source forms, and this project adopts it. The ARB form is therefore
-  handled *upstream of the facade*, as a source-level rewrite in the Phase 3 front-end / Phase 4
-  compile path, and `ShaderService` sees
-  only core-form sources — so `bindAttributeLocation` remains its only pre-link verb. If Phase 4
-  concludes the ARB program-parameter path must be driven through GL after all, that is an additive
-  `ShaderService` request in Phase 4's own §5 (the mechanism §5.2 already names), not a redesign.
-  §5.2 surfaces the resulting obligation to **Phase 3** as a flagged assumption it may contest.
+- **Native legacy geometry has one narrow pre-link operation (D-P1-44).**
+  `configureLegacyGeometry(p,input,output,maxVerticesOut)` replaces the former assumption that
+  every ARB source can be translated upstream. The exact engine domains are `TRIANGLES` and
+  `TRIANGLE_STRIP`; `maxVerticesOut` is a positive Java `int`, copied exactly from the
+  Phase-4-validated Phase 3 declaration. The operation does not parse GLSL, choose topology,
+  inject layouts, increase the GLSL version, or expose raw parameter names. Phase 1 imports
+  no Phase 3/4 type to implement it. Core-layout geometry does not call this operation.
+
+  **Order and ownership.** Render thread/current owning context only. The target is the live,
+  unpublished program created by this device, with its geometry shader already attached and
+  before its first `link` attempt. Null/foreign/forged handles, null enum arguments or nonpositive
+  counts reject with `IllegalArgumentException`; deleted programs, no attached geometry stage,
+  wrong thread/context or a prior link attempt reject with `IllegalStateException`. These are
+  precondition errors, before driver calls, parameter mutation or recorder append. The backend
+  keeps private issuance/liveness, attached-stage and link-attempt metadata for these checks;
+  it never validates by the raw GL name alone. This narrow operation's checks do not change
+  §4.7.3's general stale-handle disclaimer. Phase 4 invokes it once per fresh legacy program,
+  after successful shader compilation/attachment and fixed attribute binding, before link.
+  Repeating it before link replaces the complete parameter triple; there is no accumulated delta,
+  reset operation, post-link reconfiguration, or ownership transfer. Deleting the program drops
+  the metadata. No currently selected program, framebuffer, texture or vanilla cached state changes.
+
+  **Capability and native mapping.** Phase 4 must first require
+  `capabilities().hasExtension("GL_ARB_geometry_shader4")`; `atLeast(3,2)` is not a substitute.
+  The LWJGL3 backend also checks the current context's actual extension/entry-point availability
+  before dispatch. Absent support emits a queued `GLError` with this operation name,
+  `INVALID_OPERATION`, the program label and a capability explanation, with no native parameter
+  call. No synthetic success, core `glProgramParameteri` substitution, or guessed extension
+  support is allowed. On support, only `mod.glue` maps the input to `GL_TRIANGLES`, output to
+  `GL_TRIANGLE_STRIP`, and count unchanged, issuing `glProgramParameteriARB` on the same program
+  with `GL_GEOMETRY_INPUT_TYPE_ARB`, `GL_GEOMETRY_OUTPUT_TYPE_ARB`, and
+  `GL_GEOMETRY_VERTICES_OUT_ARB`, in that order. Core object creation/attach/link/validate/use/delete
+  remain unchanged. This is backend implementation of an engine operation, not an ARB API
+  exported to `:engine`.
+
+  **Limits and failure.** No clamping and no driver limit guessed from the GL version.
+  `MAX_GEOMETRY_OUTPUT_VERTICES_ARB` overflow is a parameter error; the active-varying-components
+  product limit is also subject to link failure. The driver enforces both; headless callers
+  script those failures rather than infer a limit absent from `GLCapabilityProfile`.
+  Native errors follow the existing `drainErrors()` cadence; backend dispatch failures are
+  caught and queued as `GLError` (`INVALID_OPERATION` for unavailable dispatch, `UNKNOWN` for
+  other backend failures), never propagated as pack-facing exceptions. A valid invocation counts
+  as one mutating facade call even if capability rejection prevents native mutation; queued errors
+  must survive until the next drain, including under per-call debug checking.
+  Partial parameter writes are not rolled back: this is an unpublished candidate, not live state.
+  **Mandatory consumer transaction:** drain and handle preceding build errors, configure, then
+  drain immediately before any link or other facade mutation. Any rejection or nonempty drain
+  aborts this program, deletes its owned candidate objects and follows Phase 4's rung-3 fallback;
+  never link a partial/default triple, retry it as core source, or disable only the geometry stage.
+  A nonempty drain need not prove which native setter failed (or exclude a foreign error);
+  conservative candidate rejection needs no such attribution. A clean drain permits link, whose
+  `LinkResult` still decides actual GLSL/version/interface/total-output compatibility.
+
+  The Khronos specification cited in §0.25 supplies the parameter and limit semantics:
+  §2.16 says the input type "must be set before linking" and the total output limit can make
+  `LinkProgram` fail. Its GL 3.2 interaction says source layouts take precedence over program
+  parameters. Thus this operation cannot repair stripped extensions, extension-era built-ins
+  left in core source, or conflicting source layouts. Phase 3 must publish the appropriate
+  native legacy source first, and Phase 4 must select it explicitly (§5.2/§11.4).
 
 **What the facade deliberately does NOT contain**, so no later phase mistakes an omission for a gap.
 Two kinds, and the distinction matters:
@@ -3417,7 +3519,7 @@ the column is headed as it is:
 | **Face-culling state** (`backFace.*`, App F.1) | Terrain draws through vanilla's path, so these flags are applied by `:mod` through `GlStateManager` rather than through the facade. The authoritative assignment is not this document's to make: `DESIGN.md` makes the **engine-flag ownership map** a Phase 3 deliverable (§G5.3's integration review audits it), and this row exists so a reader is not left wondering whether the absence is an oversight | **3** (produces the map; `DESIGN.md`'s own worked example routes `backFace.*` to **7**) |
 | Free-standing pixel-store state (row length, alignment) | Carried *inside* `TextureData`'s layout instead, so an upload cannot leave global state perturbed behind it | — (by design) |
 | **Bind a framebuffer the engine did not create** — Minecraft's own world FBO | `bindDefault` is framebuffer **name 0** (see its javadoc) and `bind` needs a `FramebufferHandle`, which §4.7.4 yields only for framebuffers the engine created: the same shape of hole §4.12 found for `TextureHandle`, in the framebuffer direction. **The ground for the absence is that no verb here binds it and the bind has a legitimate home outside the facade — not that nobody needs it.** The need is real and it is v0.1: RESEARCH.md §4.3 **l. 526** is *"**Final** renders to the vanilla framebuffer (anaglyph-aware color masking)"*, and `DESIGN.md` states it on both sides of the seam untagged — Phase 5's *Scope — in* **l. 1486** (*"`Final` renders to the vanilla framebuffer (handoff contract with Phase 7)"*) and Phase 7's composite/final bullet **l. 1685**. It stays out because `DESIGN.md`'s own injection timeline already houses it in `:mod`: *"composite-all then final to the MC framebuffer"* at Phase 7's `renderWorldPass` **TAIL** (l. 1713), with *"rebind default FB"* at hook sites 3 and 4 (ll. 1709–1710) — the same pattern the colour-mask row above uses, and the reason this is an absent verb rather than a `[D-P1-36]`-shaped slot. **The `[A]`-tagged reason printed here through the §0.12 revision was wrong and is deleted (V13-1):** App E row 17's last column is headed *"Serves hook needs (§7.1)"*, so its `6` is **hook need 6** — *"composite/final at frame end"* (RESEARCH.md l. 813) — which catalogues `bindFramebuffer` as a site the mod must **hook**, not as evidence that vanilla's bracketing makes a rebind unnecessary. It does not: RESEARCH.md's per-frame flow ends *"COMPOSITE passes (fullscreen ping-pong …)"* → *"FINAL to screen"* (**ll. 545–546**) with no vanilla code between, and a GL framebuffer binding is sticky, so the binding in force when `final` runs is the last composite's colortex. **A `final` pass that does not rebind writes into the shader estate, not into Minecraft's framebuffer** — and nothing catches it, since `bindsBalanced()` sees facade-level calls only (§5.2), so a headless replay records a draw into the last composite's target and passes. If a facade verb is ever wanted anyway, the cheap answer is `[D-P1-36]`'s shape rather than a new verb: `mod.glue` implements `FramebufferHandle` for that FBO and `bind` takes it unchanged | **7** — and this is a **v0.1** obligation on you, not a someday one: RESEARCH.md §4.3's `final` renders to the vanilla framebuffer, `DESIGN.md` makes that a **handoff contract** between Phase 5 and Phase 7 (ll. 1486, 1685), and since no verb here binds it you arrange the bind yourself through vanilla's own path at l. 1713's TAIL site; **5**, if the buffer estate ever needs vanilla's FBO as a `blit`/`copyDepthToTexture` **source** |
-| Pre-link program parameters | See the ARB-geometry rule above: the path is translated upstream | **4**, if translation proves insufficient |
+| General pre-link parameter setter | Only the closed legacy geometry triple is served by `configureLegacyGeometry`; no arbitrary integer parameter-name/value escape hatch | **4**, for any separately justified additional parameter |
 | **Instanced draw** (a `fullscreenQuadInstanced(int)`-shaped verb) | **It cannot express the directive it looks like it serves.** `const int countInstances = N` re-renders the geometry N times with an **incrementing `instanceId` uniform** (RESEARCH.md §3.2, App A.3), and App D.4 declares `instanceId` as an `int` *uniform* — one instanced draw cannot vary a uniform between copies, and the backend could not do it on the caller's behalf either, since it is handed no `UniformLocation`. GLSL 120 has no `gl_InstanceID` (RESEARCH.md §3.5), which is precisely why the contract carries a uniform at all. The faithful shape — **for the composite/deferred programs RESEARCH.md §4.4 observes the loop on** — is a caller-side loop over `fullscreenQuad()` with `UniformService.upload(instanceIdLoc, i)` between copies, which this facade already supports. The directive on a **gbuffers/shadow** program is not this row's subject and would not be served by an instanced verb either: that geometry is vanilla's and is drawn outside the facade (§3's second row, `[D-P1-35]`). A verb of this shape was present in the §0.5 revision, unspecified, and is deleted `[D-P1-33]`. Nobody **requests** this verb; what follows is who owns the served work instead. | **7** — the composite/final **execution** owner, `[v0.5]`: `DESIGN.md` names the `countInstances` instancing loop in Phase 7's *Scope — in* under composite/final execution, and says it a second time and more explicitly in Phase 4's, *"`countInstances` exposure to the pass executor (**execution is Phase 7, tag v0.5**)"* — which is where the milestone comes from. **6** owns the `instanceId` upload the loop makes between copies (`DESIGN.md` carries it among Phase 6's per-draw dynamics). **5** owns the buffer estate those passes read and write — the read/write/flip law the N draws run inside — but not the draw loop that runs them. An instanced verb itself is requested by **7**, and only if a future non-GLSL-120 path ever needs one |
 
 Additions to this facade are expected and cheap; **silent** additions are not. A phase that needs a
@@ -3491,6 +3593,18 @@ Behavior:
   `neverCalled("shaders.use")` can prove a fixed terminal without a special assertion API, while
   `noUseAfterDelete()` examines the handle-bearing `shaders.use` call and treats the handle-free
   fixed-function selection as legal even after a prior program was deleted (`[D-P1-39]`).
+- Legacy geometry records exactly
+  `GLCall("shaders.configureLegacyGeometry", List.of(p,input,output,maxVerticesOut))`,
+  one event per valid facade invocation, not three raw-GL events. The recorder enforces the
+  same origin/liveness/stage/pre-link checks; precondition rejection appends nothing.
+  Enum names and the exact decimal count render deterministically. Extension absence in the
+  supplied profile queues `INVALID_OPERATION` without successful configuration; default success
+  is available only when the profile contains `GL_ARB_geometry_shader4`.
+  Existing `ScriptedResponses.glError("shaders.configureLegacyGeometry", programLabel, kind)`
+  covers setter/dispatch failures at the immediate following drain; `linkFails` covers total-output
+  or shader-interface rejection. No geometry-limit field is inferred in a recorded profile.
+  Existing `calledInOrder`, argument inspection, `neverCalled`, `noLeakedObjects` and
+  `noUseAfterDelete` prove configure-before-link and failure cleanup, without a new assertion API.
 - Framebuffer depth operations also have exact, distinct stable names:
   `attachDepth` appends `GLCall("framebuffers.attachDepth", List.of(f,t,restoredRead,restoredDraw))`;
   `attachDepthStencil` appends
@@ -4263,6 +4377,7 @@ authenticated permission matrix is the binding §5.2 row below.
 | Exposed | Detail | Consumed by |
 |---|---|---|
 | `GLDevice` + the seven services | §4.7.4 signatures. **Changed in the §0.5 revision:** `UniformService` gained an `ivec4` overload, `StateService` gained `depthTest`/`fog`, `FramebufferService` gained `copyDepthToTexture`, and `GLDevice` gained `drainErrors()`. **Changed in the §0.6 revision:** `DrawService.fullscreenQuadInstanced(int)` was **removed** (`[D-P1-33]`), `RecordingGLDevice` gained a log-supplying constructor, and the GL-error row's attribution promise was narrowed to what the default cadence delivers. **Changed in the §0.7 revision: nothing in any signature.** Two rows were corrected in prose only — the non-verbs row (the `countInstances` mapping scoped to composite/deferred and the non-composite case handed to Phase 7) and the GL-error row (the drain's cadence, and three preconditions of the rung-2 protocol). **Changed in the §0.8 revision: again nothing in any signature** — the same two rows corrected in prose: the **GL-error row** (the elision bit tracks *facade* calls while the GL flag is per-context, so a non-empty drain does not imply one of Phase 6's uploads failed — V8-1; and property (i) no longer asserts a per-sample halflife premise it had no source for — V8-3), and the **non-verbs row** (the composite `countInstances` loop is **Phase 7's**, not Phase 5's, with Phase 6 named for the `instanceId` upload — V8-2). **Changed in the §0.9 revision: again nothing in any signature** — every service interface, handle type and value type is byte-for-byte what rounds seven, eight and nine all reviewed, and round nine's one edit inside the §4.7.4 block is a **javadoc sentence** on `GLError` and `drainErrors()`, not a declaration (V9-2). The same two rows again, in prose: the **GL-error row** (the frame-level remedy is one of two and carries two limits, not "the only sound remedy" — V9-1; the recurring-foreign replay cost is stated — V9-1; property (i)'s disclaimer is rescoped to what a second evaluation would do — V9-10), and the **non-verbs row** (its header now covers adjacent owners as well as requesters, readmitting **Phase 5** — V9-7; the composite loop carries `DESIGN.md`'s **`[v0.5]`** tag and its Phase 4 citation — V9-8). **Changed in this revision (§0.11): again nothing in any signature — and this time nothing in this row's subject at all.** The seven services, every handle type and every value type are byte-for-byte what rounds seven through **eleven** reviewed. §5 *is* altered this revision, at three places elsewhere: V11-1's deletion from the pixel-transfer row's consumer column, and **two new §5.1 rows** — the engine bring-up sequence (`[D-P1-37]`, §4.13) and the `mod.glue` vanilla-texture provider slot (`[D-P1-36]`, §4.12, which the REV2-mandated PD §2 completeness check produced). Neither new row adds a facade verb, which is exactly why this row is untouched while §5 is not. **Changed in the §0.12 revision — the first revision since §0.5 in which a *declaration* moves, so it is stated first and plainly.** No **verb** is added, removed or changed: the seven services' method lists, the result types and the value types are byte-for-byte what rounds seven through **twelve** reviewed (round twelve swept them member by member and found nothing — its §2 item 7). Two declarations do change, both forced by the round-eleven material rather than chosen. *(a)* The four handle sub-interfaces and `UniformLocation` **lose the `sealed` modifier** (V12-3): with JPMS rejected (§4.3, `[D-P1-6]`) `:engine` compiles into the **unnamed module**, where a sealed type's permitted subtypes must sit in its own **package** — so `Lwjgl3GLDevice`'s handles (`mod.glue`), `RecordingGLDevice`'s (`engine.gl.record`) and `[D-P1-36]`'s `mod.glue` handle were *all* uncompilable as declared. `GLHandle` stays sealed and its `permits` clause is still the enforced "four types, not five" (§12 item 18). *(b)* `engine.gl` gains **`ForeignTextureProvider`** and its installer `ForeignTextures` (V12-4) — the type §5.1's provider row named without declaring. The **non-verbs row** below also gains an entry — binding a framebuffer the engine did not create (V12-6) — and the consumer column names **7** then **5** for it. **No member of any pre-existing type changed and no dependent's call site changes. Changed in §0.15:** `ShaderService` gains `useFixedFunction()`, the first new facade verb since §0.5, to select program zero without exposing a raw integer, null, or sentinel handle. It is the exact Phase 4 §5.4 request and is additive to `use(ProgramHandle)` (`[D-P1-39]`) | 4, 5, 6, 7, 8, 13, 14 |
+| **§0.25 legacy geometry addition** | Incorporates the exact `ShaderService.configureLegacyGeometry(ProgramHandle,LegacyGeometryInputPrimitive,LegacyGeometryOutputPrimitive,int)` declaration and complete §4.7.4 preconditions, ordering, native mapping, errors and mandatory drain/abort transaction. Closed enums contain only `TRIANGLES` and `TRIANGLE_STRIP`. Count is positive and never clamped. No source/strategy ownership or general parameter setter is granted (D-P1-44) | **4** |
 | **§0.18/§0.19 framebuffer/depth additions** | Facade shape: `BorrowedDepthAttachmentHandle extends TextureHandle`; `FramebufferService.borrowDepthAttachment(platformTexture)`, `attachDepthStencil(f,t)`, and `initializeDepthTextureFromFramebuffer(src,dst,region)`. Issuance accepts a live ordinary foreign handle recognized by the receiving device and returns its opaque, non-owned borrowed handle; rejection is pre-GL. Phase 5 owns format, freshness, attachment/copy cadence, allocation/copy tier, restoration, and Minecraft lifetime (`[D-P1-40]`) | **5**, 7, 8 |
 | **GL-error surface** — `GLDevice.drainErrors()` → `List<GLError>` (`op`, `subjectLabel`, `kind`, `detail`) | §4.7.4. This is the signal §G2.4's **rung 2** acts on — rung 1 is Phase 11's expression isolation and never reaches GL (§6). **Attribution is scoped to the drain window, and this is contract, not implementation detail:** a window holding exactly one mutating **facade** call yields a record naming that call; a window holding several yields **at most one record per driver error flag** — in practice one, carrying `subjectLabel = "(batched, N calls)"` — because GL holds only the first error in a flag until that flag is cleared. The rung-2 protocol is therefore: drain, upload the program's uniform set, drain — and **only if that drain is non-empty**, re-upload the set draining between uploads, so each record names one uniform, then disable those uniforms only (`[D-P1-32]`). **Three properties of that protocol are contract too, because you cannot implement it correctly without them.** (i) The re-upload reuses the values **already computed for this sweep** and never re-evaluates the providers — `glUniform*` is idempotent on the bound program, so re-uploading cached values changes nothing except *which drain window* each upload lands in, which is the replay's entire purpose. Re-running the sweep would instead re-enter your world-state providers, and **this document deliberately asserts no property of what a second evaluation would do** — not that it is safe, and not that it is harmful. Two facts about the surroundings are relayed, and they are statements about the sources rather than about your providers: RESEARCH.md §4.4 places the world-state sampling at frame begin, and `DESIGN.md` puts the time-corrected halflife formula in **your** *Scope — in*. Both are already inputs of your own spec; the design that follows from them is yours, and that is precisely why the protocol is "re-upload" rather than "re-run". (ii) If the replay comes back clean — `OUT_OF_MEMORY` need not recur, and per the cadence note below the error may not have been ours at all — the sweep is **unattributable**, and falls to §6's 3→4 row rather than silently disabling nothing or guessing. (iii) A `GLError` naming a uniform depends on the backend **retaining the name passed to `locate(p, name)`**; `UniformLocation` carries no name in its signature, so this is a stated backend obligation (`[D-P1-34]`), not something a test can catch. The **cadence** that delivers all of it: a drain is a `glGetError` **loop terminating on `GL_NO_ERROR`** (the GL-sanctioned form — a single call leaks a second flag into the next window and misattributes it), and a drain issues **no query at all** when no mutating **facade** call has occurred since the previous drain — which is what makes the two-drain protocol cost **one** query per clean sweep. **That bit tracks *facade* calls, while the GL error flag is per-context**, so a drain window can hold an error this facade did not cause — vanilla's own draws never reach it (§3's second row). **A non-empty trailing drain therefore does not by itself imply that one of your uploads failed**, which is why (ii) is load-bearing in general rather than an `OUT_OF_MEMORY` corner. **Two consequences you should plan for.** First, a *recurring* foreign error re-enters the replay every frame — reproducing nothing, disabling nothing, and costing a re-upload of the whole set — so a replay that repeatedly comes back clean is evidence of foreign GL rather than of a flaky uniform, and is the case to escalate rather than to retry forever. Second, the mitigation is not this facade's: §4.7.4 states the case once and §11.4 hands **Phase 7** a frame-level drain to place, whose two limits are stated there — it bounds only the gap spanning the frame boundary, and it is subject to the same elision, so it is not unconditional at the driver unless a mutating facade call precedes it. It is one remedy among two, not the only sound one: §4.7.4 records that dropping the elision would also bound the window and is rejected on **cost**, not on soundness. This works in the **shipping** configuration; the per-call cadence under a debug context or `-Dschmaloogium.debug.recordGL`/`glLabels` (those two flags only) is an optimisation of it, not a precondition for it. `ScriptedResponses.glError(...)` makes both window shapes testable headlessly | **6** (rung 2 is its v0.1 scope-in), 4, 5, 14 |
 | **Replay-aware GL-error result** — `ReplayAwareGLError(GLError error, boolean attributed)` | There is exactly one result for each `GLError` from the triggering non-empty drain. `attributed=true` only when the caller's replay isolates the named facade call and the error recurs in that call's one-call drain window. A clean replay, a batched/ambiguous window, a foreign-context error, or a non-reproducing error yields `false`; neither `op` nor `subjectLabel` can manufacture `true`. Phase 6 performs the cached-value replay and emits this owner-defined value; Phase 2/7 may serialize or assert it verbatim (`[D-P1-42]`) | **6**, 2, 7 |
@@ -4270,12 +4385,13 @@ authenticated permission matrix is the binding §5.2 row below.
 | **`GLCapabilityProfile` text serialization format** | §4.7.2; `parse(Reader)` / `write(Writer)` | **2** (this is "recorded `GLCapabilityProfile`s"), 4, 5, 6 |
 | Opaque handle types | §4.7.3 — four direct `GLHandle` categories, `UniformLocation.isAbsent()`, and the owned-handle lifetime rule. `BorrowedDepthAttachmentHandle` is a narrower `TextureHandle`, not a fifth category. Backends classify every texture argument before GL. Ordinary `ForeignTextureProvider` values are legal only at `bindToUnit` and `DebugService.label`. An authenticated same-device borrowed-depth value is additionally legal at `attachDepth` and `attachDepthStencil`, with the combined form requiring packed depth/stencil metadata. Both foreign classes are illegal for allocation, parameters, upload, mipmaps, deletion, color attachment, and initialization/steady-copy destination use. A public marker implementation, wrong-device value, or wrong-origin borrowed value is rejected before GL. Neither foreign class is owned/deleted by the engine; ordinary provider handles resolve their underlying vanilla object per use, while Phase 5 detects borrowed-depth identity/version changes and reattaches (`[D-P1-40]`) | 4, **5**, 6, 7, 8, 13 |
 | `RecordingGLDevice`, `GLCallLog`, `GLCall`, `ScriptedResponses` | §4.7.5. `GLCallLog` is bounded (`bounded(capacity)` + `droppedCallCount()`) and is supplied to the device. Scripted responses cover compile/link/validate failures, absent uniforms, framebuffer status, depth pixels, and driver errors. Fixed-function selection records zero-argument `shaders.useFixedFunction`. §0.18 adds distinct `framebuffers.attachDepthStencil` and `framebuffers.initializeDepthTextureFromFramebuffer` events, keeps steady `framebuffers.copyDepthToTexture` distinct, records restored binding identities and format/extent summaries, and authenticates recorder-issued borrowed-depth values without treating them as owned/leak-counted objects | **2**, **4**, 5, 6, 8 |
+| **§0.25 recorder and error incorporation** | The preceding recorder and GL-error rows incorporate §4.7.5's exact `shaders.configureLegacyGeometry(p,input,output,maxVerticesOut)` event, no-event precondition rejection, extension gate and existing `glError`/`linkFails` scripts. `drainErrors`, `GLError`, replay APIs, handle type declarations and profile record/serialization signatures are **unchanged**; §4.7.4's narrow pre-link handle checks and mandatory error transaction are added semantics | **4**, 2 |
 | `ReplayAssertions` incl. `bindsBalanced()`, `noLeakedObjects()`, **`noUseAfterDelete()`**, `drawBuffersWere()` | §4.7.5. `bindsBalanced()` sees facade-level calls only; the backend restore obligations on blit, depth attachment, initialization, and steady copy are contracts checked through restored-binding identities in their recorder events. Generic `calledInOrder`/argument inspection distinguishes combined attachment and initialization from depth-only attachment and steady copy. Borrowed handles are never counted as created/leaked/deletable; forged/wrong-origin rejection appends no call. Phase 4's fixed-terminal assertions remain unchanged | 2, **4**, 5, 8 |
 | `CompileResult` / `LinkResult` / `ValidateResult` | never-throwing result types carrying driver logs | 4 |
 | `StateService` state verbs + `snapshot()` / `restore()` | the §G4.6 perturb-and-restore mechanism, over viewport, clears, depth mask, **depth test**, blend, alpha test and **fog** — the composite/final block RESEARCH.md §4.4 requires. `DrawService.fullscreenQuad()` establishes **no** state: the caller sets the block. The backend issues every `GlStateManager`-cached verb through `GlStateManager` (§4.7.4, `[D-P1-29]`). **Phase 4 is a consumer too (V14-2):** the per-program `alphaTest.<prog>`/`blend.<prog>` override values are Phase 4's to apply — its use-program barrier carries the *"per-program alpha/blend lock"* (`DESIGN.md` ll. 1245, 1365) — through `alphaTest(...)`/`blend(...)` here, with Phase 7 invoking the barrier (§3's rows) | **4** (the alpha/blend lock at the use-program barrier, `DESIGN.md` ll. 1245, 1365), 5, 6, **7** |
 | **Pixel-transfer verbs** — `FramebufferService.readDepthPixel(f,x,y)`, `initializeDepthTextureFromFramebuffer(src,dst,region)`, `copyDepthToTexture(src,dst,region)`, `TextureService.upload(t, TextureData)`, `UniformService.upload(loc,int,int)` (ivec2) and `upload(loc,int,int,int,int)` (**ivec4**) | §4.7.4; value types `TextureData` / `TextureRegion` / `PixelLayout` / `BlitSpec`. Depth initialization is first-copy exact-format storage definition on an owned destination; steady copy requires matching defined storage. Neither accepts a foreign destination, and both restore framebuffer/texture bindings | **6** (the v0.1 synchronous `centerDepthSmooth` readback; `atlasSize`/`eyeBrightness`; `blendFunc`), **5** (`depthtex1`/`depthtex2` first and steady copies plus formats), **8** (shadow depth→`shadowtex1`), **13** (noise, companion atlases, custom textures) |
-| **The facade's stated non-verbs**, each with the phase that would request it — **and, where a row names an adjacent owner of the served work instead, that phase too** (§4.7.4's table header says which rows those are; the instanced-draw row is the only one today, because nobody *requests* an instanced verb) | §4.7.4's closing table — async/PBO readback, general colour readback, texture readback, `ivec3`/`mat3`, **colour mask**, **face culling**, free-standing pixel-store state, pre-link program parameters, **instanced draw**, and **new in the §0.12 revision: binding a framebuffer the engine did not create** — Minecraft's own world FBO, which `bindDefault` (framebuffer name 0) does not bind and `bind` cannot take a handle for; requesters **7** then **5**. **Phase 7: this is a v0.1 fact about you, and it was printed as a someday one through the §0.12 revision (V13-1).** RESEARCH.md l. 526 and `DESIGN.md` ll. 1486/1685 put the `final`-to-vanilla render at v0.1, and **nothing in this facade binds Minecraft's framebuffer object** — so your `final` pass arranges that bind itself, through vanilla's own path at the `renderWorldPass` TAIL site `DESIGN.md` l. 1713 already names. A `final` pass that simply does not rebind writes into the last composite's colortex, and `bindsBalanced()` will not tell you, because it sees facade-level calls only. If you want it as a verb instead, the answer is `[D-P1-36]`'s provider shape rather than a new verb (§4.12's second gap, V12-6). `ivec4` is **not** among them: it is served. **Scoped in the §0.7 revision:** the caller-side loop that replaces an instanced verb answers `countInstances` **on composite/deferred programs only** — the form RESEARCH.md §4.4 observes. **Retargeted in the §0.8 revision:** the owner of that loop is **Phase 7**, not Phase 5 — `DESIGN.md` names the `countInstances` instancing loop in Phase 7's *Scope — in* under composite/final execution, and Phase 5's *Scope — in* carries no pass-execution bullet. **Cited and tagged in this revision (§0.9):** the stronger citation is `DESIGN.md` Phase 4's *Scope — in*, *"`countInstances` exposure to the pass executor (**execution is Phase 7, tag v0.5**)"*, which settles the owner and the milestone in one line — so the composite loop is **`[v0.5]` work**, not v0.1 work, and Phase 7's own v0.1-exit milestone does not carry it. The same directive on a **gbuffers/shadow** program re-renders vanilla geometry through Phase 7's hooks, never reaches this facade, and is an **open case with named owners** rather than a Phase 1 design element (`[D-P1-35]`, §3's second row, §11.4) | **14** (async readback), **13** (texture readback), **7** (colour mask / anaglyph; **the framebuffer-bind row, for the `final`-to-vanilla handoff** (§0.12, V12-6); **and both halves of `countInstances` — the composite loop itself `[v0.5]`, which `DESIGN.md` names in your *Scope — in* under composite/final execution and tags in Phase 4's, and the non-composite re-render if it proves real** — plus an instanced draw verb only if a future non-GLSL-120 path ever needs one, since `countInstances` on a composite is a caller-side loop, `[D-P1-33]`), **6** (the `instanceId` **upload** that loop makes between copies — `DESIGN.md` carries it among your per-draw dynamics, invoked at Phase 7's hooks), **5** (named on two grounds since the §0.12 revision: as an **adjacent owner**, because the composite loop's N draws run inside the buffer estate you own — the read/write/flip law is yours and the loop does not change it; §4.7.4's table header says why this column carries adjacent owners — **and as the second requester of the framebuffer-bind row**, if the estate ever needs vanilla's own FBO as a `blit`/`copyDepthToTexture` source), **3** (the App F.1 flag-ownership map that settles face culling; **and the `const`-scan that detects `countInstances` at all**), **4** (pre-link program parameters, only if the ARB geometry form is not translated upstream; **and the per-slot instance count**) |
-| **Assumption Phase 3 may contest** — the ARB-geometry source rewrite | §4.7.4 exposes **no** pre-link program-parameter verb because the legacy `#extension GL_ARB_geometry_shader4` + `maxVerticesOut` form is rewritten to the core form **in your front-end**, upstream of GL (§4.7.4, §11.4). This document does not design that rewrite and does not own the translation *strategy* — `DESIGN.md` assigns the strategy to **Phase 4**'s spec, which also forbids ARB entry points through the facade. What is yours is the front-end half; if you conclude the rewrite belongs at the GL level instead, flag it in your §5 and the verb is added additively | **3**, with **4** |
+| **The facade's stated non-verbs**, with requesters and adjacent owners | §4.7.4's closing table remains binding: async/PBO and general colour/texture readback, `ivec3`/`mat3`, colour mask, face culling, free-standing pixel-store state, a **general** pre-link parameter setter, instanced draw, and binding Minecraft's own framebuffer. §0.25 serves the legacy geometry triple only; it is no longer an absent operation. Minecraft's FBO is not `bindDefault`'s name 0: Phase 7 must arrange the v0.1 final-to-vanilla bind through vanilla's path, with Phase 5 the second requester if its estate needs that FBO as a copy/blit source (§4.12). `bindsBalanced` cannot prove an internal/vanilla bind. `ivec4` is already served. The replacement for composite/deferred instancing remains Phase 7's caller-side loop at **v0.5**, Phase 6 uploads `instanceId`, and Phase 5 owns the unchanged estate/flip law. Gbuffers/shadow re-render remains an open Phase 7 case, not a facade instanced draw (D-P1-33/35) | **14** async; **13** texture readback; **7** colour mask/anaglyph, face culling, framebuffer bind and both re-render cases; **6** `instanceId` upload; **5** estate policy and second framebuffer requester; **3** flag-ownership map and `countInstances` detection; **4** any additional general pre-link parameter request and per-slot instance count |
+| **Legacy geometry source/consumer migration — ungranted outside Phase 1** | The former mandatory-core-rewrite assumption is withdrawn. §11.4's explicit hand-off is incorporated: Phase 3 must grant a legacy-preserving `MaterializationResult` path with same-build options/macros, final declarations, exact source map and fingerprint; current `None` rejects a pair and current `Translate` is not complete. Phase 4 must adopt that verified producer result and this operation in its active §4.8/§5/compile/fingerprint/failure contracts. Until both owner amendments and fresh whole-document verification, the legacy program remains unavailable and follows fallback. This row grants no new Phase 3 API and no reverse dependency | **3**, **4** |
 | `DebugService` | present in v0.1, active at v0.5 | 4, 5 (call sites), **14** (implementation) |
 
 **Explicit note to Phase 2:** your declared input is "`PHASE_1_DOC.md` (module layout, facade,
@@ -4339,6 +4455,7 @@ is the invariant every row below serves.
 | **Capability probe fails or returns nonsense** (missing entry point, driver returns 0 for a max) | 4 | `CapabilityProbe` catches, logs on `schmaloogium.gl`, and produces a *conservative* profile (GL 2.1, the spec minimums). The engine then fails its capability gates naturally and turns the pack off with a chat error. It does not guess optimistically, and it does not propagate an exception into display init. |
 | **A capability gate fails at init** (pack needs more draw buffers / attachments / units than the profile offers) | 4 | Pack turns off gracefully; `EngineDiagnostic(ERROR, CHAT)` naming the shortfall; `schmaloogium.gl` line with the profile values. Vanilla rendering is untouched because no GL object was created yet. |
 | **A shader fails to compile / a program fails to link or validate** | 3 | The facade returns a failed `CompileResult`/`LinkResult`/`ValidateResult` — it never throws. Phase 4 deletes the program, emits `EngineDiagnostic(ERROR, SHADER_GUI)` carrying the driver log, and resolves through the backup chain. |
+| **Legacy geometry pre-link configuration is rejected or its immediate drain is nonempty** | 3 | Phase 4 aborts before link, cleans up the entire candidate program and its shaders, reports the geometry source/declaration plus capability/driver diagnostic, and resolves the backup chain. No stage-only disable, clamped count, partial configuration or claimed two-span translation success (§4.7.4) |
 | **A built-in uniform's upload fails at the driver level** | **2** | The backend records a `GLError`. Phase 6 drains, uploads the set, and drains again; if that drain is empty the sweep cost **one** `glGetError` — the leading drain elides its query (nothing mutating **through the facade** since the last drain) and the trailing drain's loop stops at its first `GL_NO_ERROR` (`[D-P1-30]`). If it is **not** empty, the record names the *sweep* rather than a uniform — GL holds only the first error in a flag until that flag is cleared — so Phase 6 re-uploads the set **draining between uploads**, which puts one mutating call in each window and names each failing uniform exactly (`[D-P1-32]`). The re-upload uses the values **already computed for this sweep** — `glUniform*` is idempotent on the bound program, so the replay changes only which drain window each upload lands in, and re-running the sweep would re-enter world-state providers whose cadence and smoothing math are Phase 6's own scope to design. It then **disables those uniforms only**, leaving the program running. `EngineDiagnostic(WARN, LOG_ONLY)` on `schmaloogium.uniforms` per §4.9.4's severity map. The facade supplies the signal (`GLDevice.drainErrors()`, §4.7.4); the disable policy is Phase 6's. **If the replay reproduces nothing** — `OUT_OF_MEMORY` need not recur, and the error may not have been ours at all, since the elision bit tracks *facade* calls while the GL flag is per-context (§4.7.4) — the drain is real but unattributable and falls to the 3→4 row below. |
 | **A custom uniform's expression errors at runtime** | **1** | **Not a foundation failure mode, and recorded here so §6 maps the whole ladder.** `DESIGN.md`:378 scopes rung 1 to *custom* uniforms, and its Phase 11 spec puts the behaviour in `engine.expr`'s evaluator at **v0.4** (§G5.1 l. 577; the spec at ll. 2081–2083 is *"Pure `:engine` code"*) — above the facade, with no GL call involved. Nothing in this phase observes it; Phase 1 supplies only `Log` and `EngineDiagnostic` for it to report through. |
 | **A single feature's GL call fails** (a capability the pack asked for is unsupported in practice) | **2a** | The drain names the failing operation, the owning phase turns *that feature* off and continues. **This row carried an explicitly *unnumbered* rung through ten rounds, and REV2 numbers it.** §11.5 item 4 carried the gap upstream where it was found — rungs 1 and 2 are both about uniforms, rung 3 is a program, rung 4 is a capability gate at init, and none of them covered a pack feature whose GL call fails at runtime while the program keeps running. `DESIGN.md` §G2.4 now inserts **rung 2a** at exactly the position item 4 proposed, *"a rung between 2 and 3"*: *"A pack **feature** whose GL call fails at runtime — neither a single uniform (rungs 1–2) nor the whole program (rung 3) — disables **that feature** only, at the owning phase's discretion, while the program keeps running."* It is lettered `2a` rather than renumbering 3–5 **so that existing §6 maps stay valid**, and REV2 names *this row* as the one to relabel at its next §G1.3 fix-up. This is that fix-up, the relabel is the entire change, and no behaviour moves. A *custom* uniform whose **upload** fails — as opposed to its evaluation — still lands here, served by the same drain and the same disable-one behaviour rung 2 describes. |
@@ -4415,6 +4532,10 @@ grow it without limit. Nobody should
 diagnostic machinery are all init-time or test-time. `GLCallLog` is init-time or test-time **except**
 under `recordGL`, where it is per-call by definition — which is what the bound is for.
 
+`configureLegacyGeometry` and its two-drain consumer transaction are build-time only, never
+program-use or per-draw work. They retain only private candidate metadata, not source text;
+the existing GL-error cadence and hot uniform-upload path are unchanged.
+
 ---
 
 ## 8. Testability plan
@@ -4433,6 +4554,7 @@ under `recordGL`, where it is per-call by definition — which is what the bound
 | `RecordingGLDeviceTest` | `:engine` | Calls are logged in order with correct arguments, including distinct `shaders.use`/`shaders.useFixedFunction`, `framebuffers.attachDepth`/`attachDepthStencil`, and initialization/steady-copy events. Handles are distinct and never reused after delete; recorder-issued borrowed-depth handles carry a private device origin and are not leak-counted; copied depth is summarized, not logged; restored read/draw/texture binding identities are present. Scripted compile/link/validate/GL-error paths, bounded-log behavior, supplied-log behavior, and stable rendering remain covered |
 | `FramebufferDepthContractTest` | `:engine` | Exhaustive owned/ordinary-foreign/authenticated-borrowed/forged-marker/wrong-device/deleted matrix for every texture-accepting framebuffer verb; all invalid cases reject pre-GL with an unchanged log. `attachDepth` removes stencil, `attachDepthStencil` accepts only exact packed metadata and attaches the same handle to both points, and both report restored read/draw bindings. Initialization accepts owned destination only and defines exact format/extent; steady copy rejects undefined or mismatched storage and never redefines it; both restore read/draw/texture bindings |
 | `ReplayAssertionsTest` | `:engine` | Each assertion passes on a conforming log and fails informatively on a violation, including balanced binds, leaks, and use-after-delete. Fixed-terminal fixtures distinguish `shaders.useFixedFunction`; depth fixtures distinguish combined attachment and initialization from depth-only/steady operations, assert restored binding identities, and prove borrowed handles are neither created/leaked nor deletable |
+| `LegacyGeometryPreLinkContractTest` | `:engine` | Extension-present configure/clean-drain/link versus GL-3.2-without-extension rejection; exact positive count and closed topology; null/forged/wrong-device/deleted/no-geometry/after-link/wrong-thread rejection without recorder mutation. Parameter-error scripts followed by the required abort emit no link/use and leak no candidate objects; link-failure scripts cover total-output limits. Reconfiguration before link replaces the whole triple; deletion removes its state. Tests of Phase 4's cleanup/backup selection belong to Phase 4, not this facade-only test |
 | `BailRegistryTest` | `:mod` | `Ok`/`Degrade`/`Bail` aggregation; a throwing check is treated as `Bail`; evaluation is idempotent |
 | `MixinConfigAgreementTest` | `:mod` | For each config, the `@Mixin`-annotated classes in its declared `package` **minus any sub-package another config declares** are exactly the classes its arrays name (§4.5.2a, `[D-P1-38]`) — the drift insurance taken instead of a class-scan plugin. The sub-package exclusion is required, not optional: the three declared packages are nested (§4.5.2 observation 1) |
 | `LogChannelTest` | `:engine` | Every `LogChannels` constant is unique and starts with `schmaloogium.`; the no-op sink is active before installation |
@@ -4542,6 +4664,7 @@ Per §G4.3, every designed component carries exactly one tag meaning "implemente
 | `LICENSE` (GPL-3.0), SPDX headers, `THIRD-PARTY.md` | `v0.1` | |
 | `GLCapabilityProfile` + serialization | `v0.1` | |
 | `GLDevice`, `ShaderService`, `UniformService`, `TextureService`, `FramebufferService`, `StateService`, `DrawService` | `v0.1` | Interfaces + the LWJGL3 implementation, including both explicit program-selection modes and the authenticated depth-only/combined depth-stencil attachment operations (`[D-P1-39]`, `[D-P1-40]`) |
+| `configureLegacyGeometry` and closed topology enums | `v0.1` | Native backend plus recorder/error transaction (D-P1-44). Implementation consumption waits for the §5.2 source grant, Phase 4 migration and fresh whole-document reviews; no complete core translator is claimed |
 | Pixel-transfer verbs (`readDepthPixel`, first-copy `initializeDepthTextureFromFramebuffer`, steady `copyDepthToTexture`, `TextureService.upload`, ivec2 and **ivec4** uploads) + `TextureData`/`TextureRegion`/`PixelLayout`/`BlitSpec` | `v0.1` | Interfaces and LWJGL3 implementation. Phase 5's depthtex1/depthtex2 first copy defines exact storage; later copies preserve it. Phase 6 owns center-depth readback/ivec uploads, Phase 8 consumes the same depth-copy split for shadowtex1, and Phase 13 consumes texture upload |
 | GL-error surface (`GLDevice.drainErrors()`, `GLError`, `GLErrorKind`, `ReplayAwareGLError`) + the backend's `glGetError` policy | `v0.1` | §G2.4 rung 2 is Phase 6's v0.1 scope-in, so both the drained signal and its replay verdict cannot be later than v0.1. The **cadence** ships with it: batched by default with window-scoped attribution — each drain a `glGetError` loop, elided entirely when nothing mutating has happened **through the facade** since the last one — and per call under a debug context or the `recordGL`/`glLabels` flags (`[D-P1-30]`, `[D-P1-32]`, `[D-P1-42]`) |
 | Phase 7 frame package homes | `v0.1` | The packages themselves are architectural slots established at foundation time; Phase 7 fills them without moving policy into mixins or weakening C-1 through C-4 (`[D-P1-41]`) |
@@ -4820,7 +4943,7 @@ designed for, which is the best available evidence that it is drawn in the right
 | D-P1-22 | `:engine` emits `EngineDiagnostic` values with lang **keys**; `:mod` routes to chat/GUI/log | The seam forbids Minecraft types in `:engine`, and Phase 12 needs lang keys for the GUI regardless |
 | D-P1-23 | The bail registry ships with **zero** registered checks and names no mod ids | Naming Celeritas or Nothirium here would be Phase 10's policy decision made by the wrong session; the landscape moves (RESEARCH.md §2.3) |
 | D-P1-24 | CI runs `:engine:test` **and** `:mod:test` as one named "Seam architecture test" step and `:conformance:test` as a second named step, **both placed before `./gradlew build`** | The seam is the project's highest-weight structural risk; its regression should be legible at a glance, not buried in an aggregate build. **Both module tasks** are named because C-1 lives in `:engine` while C-2 and C-3 live in `:mod` (§8.1), so a step running only `:engine:test` would leave half the seam sentence anonymous. **The ordering is load-bearing, not cosmetic:** `./gradlew build` → `check` → `test` runs all four seam tests itself, so a named step placed after it would never execute on the very failure it exists to name — the job would already have aborted inside `build` (§4.11) `[fix-up: PHASE_1_REVIEW_4.md F4-10; PHASE_1_REVIEW_5.md V5-5, V5-3]` |
-| D-P1-25 | The facade carries **pixel-transfer verbs** (`FramebufferService.readDepthPixel`, `FramebufferService.copyDepthToTexture`, `TextureService.upload`, `UniformService.upload(loc,int,int)` and `upload(loc,int,int,int,int)`) and **no pre-link program-parameter hook**; the ARB geometry form is translated upstream of the facade | Dependents cannot implement their milestones without them: Phase 6's synchronous `centerDepthSmooth` readback is a v0.1 consumer (RESEARCH.md §4.4/§6.2), Phase 13 fills the noise/`_n`/`_s`/custom textures (RESEARCH.md §4.1 step 4, App F.5), `atlasSize` (App D.3) and `eyeBrightness` (App D.1) are `ivec2`, `blendFunc` (App D.4) is `ivec4`, and the `depthtex1`/`depthtex2` copies target textures rather than framebuffers (RESEARCH.md §4.3). Each verb carries no policy. The ARB geometry path is a *source-level* construct that RESEARCH.md §6.2's internal translation handles in the front-end, so a GL-level program-parameter verb would be the wrong seam — and its absence is stated, not implied `[fix-up: PHASE_1_REVIEW_1.md F-1; PHASE_1_REVIEW_4.md F3-2, F4-7]` |
+| D-P1-25 | The facade carries **pixel-transfer verbs** (`FramebufferService.readDepthPixel`, `FramebufferService.copyDepthToTexture`, `TextureService.upload`, ivec2 and ivec4 uploads); its former no-pre-link geometry decision is **superseded by D-P1-44** | Pixel-transfer rationale is unchanged: Phase 6 needs synchronous center-depth readback and typed uploads; Phase 13 fills textures; depth copies target standalone textures. Each verb carries no format/cadence/unit policy. Historical geometry reasoning assumed complete upstream translation, which Phase 3's two-span contract cannot supply; the active facade now admits the narrow native operation, not a general parameter setter. Earlier dispositions remain in §0 addenda `[fix-up: PHASE_1_REVIEW_1.md F-1; PHASE_1_REVIEW_4.md F3-2, F4-7]` |
 | D-P1-26 | Shared `GLCapabilityProfile` fixtures live in **`:engine`'s `testFixtures`** source set, consumed by `:conformance`/`:mod` via `testFixtures(project(':engine'))` | C-4 makes `:conformance → :engine` the only legal direction, so fixtures in `:conformance` are unreadable by the `:engine` tests that need them; a fixtures source set keeps the dependency edge legal and Phase 2's ownership of the fixture *set* intact `[fix-up: PHASE_1_REVIEW_1.md F-2]` |
 | D-P1-27 | `:conformance` declares its **own** `repositories { mavenCentral() }` (§4.2.4a); `mavenCentral()` is **not** hoisted into the root `subprojects {}` block | Repositories are per-`Project` in Gradle with no inheritance, so without it `:conformance` cannot resolve JUnit and the Impl gate's `./gradlew build` fails in the *test* configuration. Hoisting would fix it in fewer lines but would inject `mavenCentral()` into `:mod` ahead of `dependencies.gradle`'s mod repositories and blur §4.2.3's single-file statement of what `:engine` can see `[fix-up: PHASE_1_REVIEW_4.md F3-5]` |
 | D-P1-28 | **A handle is invalid the moment its `delete` returns**; Phase 5 owns re-acquisition across the uninit/rebuild; `ReplayAssertions.noUseAfterDelete()` enforces under replay what the LWJGL backend cannot | Teardown-and-rebuild is a routine v0.1 event (RESEARCH.md §4.1 step 5 — an option change fires it), and a driver may reissue a GL name after a delete, so a stale handle silently addresses a *different live object*. The recording backend's monotonic, never-reused sequence numbers make the misuse detectable; stating the rule is what turns an accident into a contract `[fix-up: PHASE_1_REVIEW_4.md F4-8]` |
@@ -4839,6 +4962,7 @@ designed for, which is the best available evidence that it is drawn in the right
 | D-P1-41 | **Reserve `engine.frame`, `mod.glue.frame`, `mod.mixin.frame`, and `mod.conformance` as Phase 7's exact package homes.** | Phase 7 needs a pure orchestration core, platform adapters, dumb injection sites, and a capture-agent entry point. Naming all four here prevents generic `mod.glue`/`mod.mixin` dumping grounds and preserves C-4: the capture agent is compiled with `:mod`; it is not a reverse dependency from `:conformance` (§0.22, §2.1, §5.1). |
 | D-P1-42 | **Expose replay attribution as `ReplayAwareGLError(GLError error, boolean attributed)`, one result per triggering drained error, with `true` earned only by isolated reproduction.** | The original `GLError` accurately describes a drain window but cannot distinguish an isolated replay success from a clean, batched, ambiguous, or foreign-error replay. A boolean paired with the original immutable value is the minimum transport that lets Phase 6 report the result and Phase 2/7 capture it without guessing from labels or operation names (§0.22, §4.7.4, §5.2). |
 | D-P1-43 | **Grant Phase 13 R3 exactly `engine.textures`, `mod.glue.textures`, and `mod.mixin.textures`; retain every existing grant, including Phase 7 R7-8.** | The current closed table already supplies all four frame/capture homes but lacks the texture trio. Reuse the engine-policy / platform-adapter / dumb-hook split of the frame and shadow grants; add no API permission, facade verb or module edge (§0.24, §2.1, §5.1). |
+| D-P1-44 | **Accept Phase 4 §5.4 item 1's native alternative:** one engine-enum pre-link legacy geometry operation; no asserted complete core translation | Phase 3's two-span contract lacks whole-source/version/interface translation, whereas the published ARB specification supplies native semantics. Keep core GL objects and opaque handles, map only inside `mod.glue`, and require explicit Phase 3 source and Phase 4 consumer migration before legacy support is usable (§0.25, §§4.7.4/5.2/11.4). This supersedes only D-P1-25's geometry assumption |
 
 ### 11.2 D-1..D-10 disposition
 
@@ -4994,13 +5118,26 @@ rather than a signal.
 at v0.1 and implements no behavior behind it, so the dump arrives with your preprocessor.
 `GLCapabilityProfile` is the whole GL-side input to RESEARCH.md §3.5's standard macro header, not
 only `extensions()` for `MC_<GL_extension>`: `MC_GL_VERSION`, `MC_GLSL_VERSION`, `MC_GL_VENDOR_*` and
-`MC_GL_RENDERER_*` all read off the profile (§3's macro-header row). One assumption of the facade is
-yours to honor or contest, and §5.2 carries it as a row so you need not find it here: §4.7.4 exposes
-**no** pre-link program-parameter verb because RESEARCH.md §6.2's internal translation makes the
-legacy `GL_ARB_geometry_shader4` + `maxVerticesOut` form a source-level rewrite in your front-end
-(the *strategy* for that translation is specified by Phase 4's spec, not by this document). If the
-rewrite turns out to belong at the GL level instead, flag it in your §5 and the verb is added
-additively. Separately, `DESIGN.md` makes the **engine-flag ownership map** yours — §4.7.4's
+`MC_GL_RENDERER_*` all read off the profile (§3's macro-header row). The former required-core-rewrite
+assumption is withdrawn by D-P1-44. **Requested, not granted here:** add a closed native-preserving
+materialization choice for a recognized legacy pair, rather than repurpose `None`, which your
+current contract explicitly rejects for that pair (`docs/phase3/v1/PHASE_3_DOC.md:2997-3002`).
+It must run the existing same-build option/include/jcpp/contribution pipeline, retain the effective
+GLSL version, active ARB extension, `maxVerticesOut` constant and all legacy varying/built-in
+semantics, and publish the final declaration catalog with its identical materialization fingerprint.
+The preserved constant may still be read by pack code; do not delete it just because the engine
+also consumes its value. Preserve source attribution through includes and macros, diagnose an
+invalid or mismatched pair source-locally, and include the native route discriminator, exact
+text/map, pair/site identity, count and all existing materialization inputs in Phase-3-owned
+fingerprinting. Native and transformed results must never alias in caches.
+The source result must distinguish native legacy from ordinary/core materialization without
+downstream reopening or rescanning, and retain any source layout precedence rather than silently
+overriding it with API defaults. Your owner amendment must specify that closed result/request,
+mixed-form handling and schema migration and replace all affected active §§2–5 contracts;
+the two-span path must not remain an advertised complete translator.
+Phase 1 supplies no synthetic `Available`, raw-source bypass or new Phase 3 type by printing this
+request. Until that grant and its fresh review, Phase 4 cannot use the native facade operation
+to compile legacy packs. Separately, `DESIGN.md` makes the **engine-flag ownership map** yours — §4.7.4's
 face-culling row defers to it rather than pre-empting it. One small thing your `const`-directive scan
 is named for by this document: `countInstances` is a *vertex-stage* directive that a **gbuffers**
 program may carry, and detecting it is the first step in a case Phase 1 deliberately leaves open
@@ -5016,6 +5153,41 @@ exactly as `docs/phase4/v1/PHASE_4_DOC.md:758`–`:821` specifies. This addition
 your separate legacy-geometry request. Most importantly, it is unverified until the fresh Phase 1
 round required by §0.15 returns; do not consume it merely because this fix-up now prints the
 signature.
+
+**To Phase 4 — item 1 consumer migration (D-P1-44).** The fixed-function grant above remains
+independent. This amendment supplies the missing native parameter verb, **not** a completed
+dual-form path. In your own authorized owner session, migrate active §§3.1/4.6/4.8/5.2–5.4,
+§8.2, fingerprint inputs and failure/implementation ledgers to:
+
+1. Keep ordinary/core-layout geometry on Phase 3's no-legacy path and its existing GL 3.2 gate.
+   For a recognized legacy pair, require the native-preserving result requested above, once granted;
+   never call today's `None`, compile the incomplete `Translate` output, or patch source locally.
+2. Adapt the validated native legacy configuration into Phase 1's closed
+   `LegacyGeometryInputPrimitive.TRIANGLES` / `LegacyGeometryOutputPrimitive.TRIANGLE_STRIP`
+   and exact positive count. These are engine enums, not aliases of Phase 3 enums or GL integers.
+   Keep source-layout precedence/compatibility decisions in the Phase 3/4 contract, not this verb.
+3. Gate on the actual ARB extension, compile the preserved sources, create/attach and bind
+   attributes through the existing core-object facade, then perform §4.7.4's drain/configure/drain
+   transaction before link/validate. Precondition rejection, unavailable dispatch, parameter error
+   or link failure takes rung 3 with complete cleanup, source-attributed diagnostics and the
+   existing whole-binding fallback. Do not reuse an old linked executable or omit just `.gsh`.
+4. Include the native strategy discriminator, enum names, exact count, extension capability and
+   Phase 3 materialization fingerprint in registry identity; a strategy/count/capability/source
+   change invalidates reuse. Phase 1 never hashes caller source or generates registry fingerprints.
+5. Update the consumed §5 interface row and item-1 disposition to distinguish the Phase 1 grant
+   from the still-pending source grant. Replace the current future-only geometry checks with
+   source-preservation/built-in/varying fixtures and configure-before-link, absent-extension,
+   parameter/total-output-limit, diagnostics, cleanup/fallback and cache-invalidation checks.
+   Real driver compilation/linkage of original minimal legacy and core fixtures is required later;
+   recorder success is not a GLSL compatibility proof.
+
+Phase 4's current §4.6 planning text passes an explicit `OptionState`, unlike Phase 3's no-option-argument
+signature (`docs/phase3/v1/PHASE_3_DOC.md:1185-1189`); migrate to the owner's same-build state
+rather than invent an overload. These consumer/source edits are explicitly **ungranted and
+unperformed** here. All changed §5 surfaces need fresh whole-document verification. Item 2's
+registry projections, the jcpp build/seam request, and unrelated coordinated requests remain open;
+no new Phase 1 dependency or broader transformer/library permission is implied.
+
 
 **To Phase 7** — the three mixin configs exist and are empty. Verify refmap generation before
 building the hook catalog on top (§11.3 item 9). `compatibilityLevel` is worth your spot check
@@ -5210,8 +5382,9 @@ Verified consumption requires the fresh Phase 1 whole-document PASS in §0.24.
 `docs/phase13/v1/PHASE_13_DOC.md:1341`–`:1404`: Phase 3's typed macro input (R1) and optional
 post-analysis allocation hint (R4), Phase 6's fixed-resolver migration and retirement (R7-10/11),
 and Phase 8's shared-shadow migration and construction split (R7-12/13) remain **ungranted**.
-The Phase 3 suffix conflict and pending reverification, Phase 4 legacy-geometry/attribute requests,
-and fresh verification of the coordinated Phase 4/5/7/13 §5 changes remain outstanding.
+The Phase 3 suffix conflict and pending reverification, Phase 4 attribute request, and fresh
+verification of the coordinated Phase 4/5/7/13 §5 changes remain outstanding. For legacy geometry,
+§0.25 grants only Phase 1's operation; the explicit source grant and consumer migration above remain open.
 Already-granted R7-9 still needs Phase 3 reverification; no package row clears those blockers,
 changes their stated fallbacks, or certifies PBR/shadow/conformance execution.
 
@@ -5307,6 +5480,18 @@ conflicts** and are discharged in §4.12 and §4.13. Where REV2 states a referen
 could not verify to the standard §G11.4 sets, the limit is recorded at the site (§4.12's `:babric`
 note) rather than escalated as a request.
 
+**§0.25 geometry disposition — not a new global rewrite.** The supersession in D-P1-44 is local
+to the former Phase 1 assumption. Phase 4's RC3 requirement still says "internal translation
+strategy specified here" and "Core GL objects … via the facade, not ARB entry points"
+(`docs/design/v2.0-RC3/DESIGN.md:1511-1514,1522-1524`). The selected operation retains core
+objects and exports no ARB entry point or constant; only its native backend uses the ARB
+geometry parameter facility, as the maintainer's requested alternative permits. This does
+**not** prove complete core translation or relax the pack-facing dual-form requirement.
+If the design maintainer intends the ARB prohibition to include even this hidden geometry-only
+backend facility, that broader interpretation requires an explicit authority clarification;
+it is not silently resolved by this phase. No authority text is edited and no general ARB
+shader-object fallback is granted.
+
 Per §G1.1 none of RESEARCH.md, any of the three design revisions, or PINTONIUM_DESIGN.md is modified
 by this session.
 
@@ -5362,6 +5547,7 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 | 22a | **Review hook extension for `[D-P1-29]`, added against PD §17 B11** (§11.3 item 11): confirm by reading that `StateService.snapshot(...)` reads **real** state for every `StateAspect` and returns no constant. Pintonium's `GLStateManagerImpl.getColorMask()` hardcodes all-true, which satisfies every signature and passes every driverless test while silently breaking the §G4.6 restore discipline every later phase depends on. Numbered `22a` because it belongs to item 22's review pass, which exists precisely for obligations no test can catch | `v0.1` | Reviewer confirms each snapshot aspect resolves to a `GlStateManager` read or a driver query, and that `restore()` round-trips a deliberately-perturbed state in a `runClient` spot check |
 | 22b | The `mod.glue` ordinary vanilla-texture provider slot (`ForeignTextureProvider` / `ForeignTextures`, `[D-P1-36]`) and per-use object resolution | `v0.1` | Provider compiles from `mod.glue`; seam tests pass; before-install lookup is empty. `FramebufferDepthContractTest` plus live-backend review confirms closure: ordinary values are accepted only by `bindToUnit`/label and rejected by every other texture-accepting verb, including both §0.18 additions; per-use resolution survives vanilla reload |
 | 22c | `Lwjgl3GLDevice` borrowed-depth authentication and framebuffer-depth implementation (`[D-P1-40]`): private same-device/context credential, owned-versus-borrowed matrix, exact combined-format check, first-versus-steady storage state, and binding restoration | `v0.1` | `FramebufferDepthContractTest` exhausts owned/ordinary/borrowed/forged/wrong-origin/deleted cases in the recorder. Live-backend review confirms no public-marker trust, `attachDepth` detaches stencil, combined attachment uses the same packed object twice, initialization maps to exact-format `glCopyTexImage2D`, steady copy never redefines storage, and every exit restores read/draw/texture bindings |
+| 22d | Implement the exact legacy geometry operation and closed enums in `engine.gl`, native mapping in `mod.glue`, and recorder transaction in `engine.gl.record` (D-P1-44); no generic integer parameter API | `v0.1` | `LegacyGeometryPreLinkContractTest` covers the headless boundaries; later backend exercise compiles/links original legacy varying/built-in and core-layout fixtures, checks exact native parameters, capability/limit rejection, cleanup and unchanged current bindings. Phase 3 native output and Phase 4 migration must be granted and freshly verified first; no test or runtime exercise is performed by this architecture amendment |
 | 23 | `CapabilityProbe` in `mod.glue` + `-Dschmaloogium.debug.dumpCapabilities`, invoked at **`OpenGlHelper.initializeTextures` @`RETURN`** — stage 2 of §4.13's bring-up sequence (`[D-P1-37]`). The hook itself is Phase 7's catalog entry (App E); this item is the probe's placement requirement against it | `v0.1` | Running the client with the flag writes a parseable profile that round-trips through item 17, **and the probe runs after vanilla's texture setup rather than before** — a profile with a plausible `GL_MAX_TEXTURE_IMAGE_UNITS` is the cheap signal |
 | 24 | `-Dschmaloogium.debug.recordGL` decorator wrapping the live device, **with a bounded log** (`GLCallLog.bounded(100_000)` by default, oldest discarded and counted) supplied to the device through `new RecordingGLDevice(profile, responses, log)` (§4.7.5) — the decorator constructs the ring, the device does not — and off unless the flag is set | `v0.1` | Flag produces a `GLCallLog` dump in the same format the tests assert over; a long session does not grow the log without bound, and the dump reports `droppedCallCount()` when it wrapped |
 
@@ -5469,8 +5655,10 @@ Every finding's disposition is recorded in the review files under `## Resolution
 of round three's proposed fixes and the items of rounds five and six that were deliberately narrowed
 rather than applied as written, and why.
 
-**Current §G1.3 status (§0.24).** Review 25's literal PASS verified the §0.23 surface and is now
-historical because the Phase 13 package grant changes binding §5. Phase 7 R7-8 remains granted
-unchanged; Phase 13 R3 is granted architecturally. `PHASE_1_DOC.md` is **not verified** and is not
-a valid dependency input until a fresh **whole-document** review returns literal PASS. No review
-was run or edited for this amendment, and no implementation is claimed. The version stays `v14`.*
+**Current §G1.3 status (§0.25).** Review 25's literal PASS verified the §0.23 surface and remains
+historical. The §0.24 package grants are preserved; §0.25 additionally grants only the native
+legacy geometry facade operation and its incorporated §5 semantics. Phase 3 native-preserving
+materialization and Phase 4 consumer migration remain explicitly ungranted. `PHASE_1_DOC.md`
+is **not verified** and is not a valid dependency input until a fresh **whole-document** review
+returns literal PASS. No review, build, test or verification run was performed, no code or other
+document was edited, and no implementation or complete dual-form support is claimed. `v14` stays.*
