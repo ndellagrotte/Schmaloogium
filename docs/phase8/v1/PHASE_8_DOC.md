@@ -146,6 +146,34 @@ literal PASS before verified downstream consumption.** R7-13 and the other gates
 the real slot stays `NotInstalled`/unavailable until adoption and owner verification gates close.
 No code, reviews, builds, tests, verification, or directory roll are part of this amendment.
 
+### 0.8 Maintenance adoption — R7-13 registry-independent planning (2026-09-07)
+
+This maintainer-authorized architecture-only amendment adopts Phase 7 §5.4 R7-13:
+“Final publication identity and build validation include that registry; planning never borrows an old”
+(`docs/phase7/v1/PHASE_7_DOC.md:2348`), continued by “registry to break the cycle” at `:2349`.
+`ShadowPlanInput` and `ShadowPlan` now contain no registry identity. Policy and hook health
+determine the pure plan fingerprint; `ShadowPassFactory.create` receives the final new
+`RegistryFingerprint registry` immediately after `ShadowPlan plan` and binds publication identity
+and validation to it. §§2/4 and their incorporated §5 contracts define the complete cutover.
+§§0.1–0.7 remain unchanged historical records, including §0.7's then-ungranted R7-13 posture.
+
+Scoped inputs actually read: `docs/MOVES.md`; this whole document; RC3 Part I and Phase 8
+assignment; `docs/research/v1/RESEARCH.md` §§0–1 and §4.5; Phase 7 §0, §4.1's construction
+sequence and §§5.3–5.4; Phase 4 §0, §4.11's fingerprint/generation distinction and §5.1's
+registry interfaces; Phase 6 §0, §2.2 and §§5.1–5.2's current sampler/retirement grants.
+Those narrow dependency reads establish the acyclic construction and current gates, not
+verified implementation consumption. Each consumed phase retains its declared RC3 governance.
+No reference implementation, review or forbidden transcript was read for this amendment.
+
+Phase 6 now records R7-10/R7-11 as “adopted in” its current bytes, “not verified grants”
+(`docs/phase6/v1/PHASE_6_DOC.md:296-297`); active readiness wording below reflects that owner
+status without changing its APIs or Phase 7's still-unsynchronized request rows. R7-12/R7-13
+are both adopted here, not verified. Remaining ungranted dependencies and owner synchronization/
+verification gates are explicit in §5.5. **§5 changed: fresh whole-document Phase 8 verification
+returning literal PASS is required before verified downstream consumption.** Real shadow stays
+`NotInstalled`/unavailable until those gates close. No code, reviews, builds, tests, verification
+or directory roll are part of this amendment.
+
 ---
 
 ## 1. Scope & boundaries
@@ -207,11 +235,11 @@ Mixin, and LWJGL types remain in `:mod` glue.
 
 The current dependency surfaces grant R8-1/R8-2/R8-4 and Phase 7's part of R8-5 in architecture,
 subject to their fresh-verification gates. Phase 8 consumes R7-12's replacement binding contract
-in this amendment, not the obsolete four-row proposal. R7-13's registry-independent planning is
-**ungranted here**; this document does not change `ShadowPlanInput` or `ShadowPassFactory.create`
-to imply otherwise. R8-3 package placement, Phase 2's part of R8-5, and the upstream gates in
-§5.5 remain explicit implementation blockers. No old binding or prior-frame state substitutes
-for a gated real shadow slot.
+in §0.7, not the obsolete four-row proposal. R7-13 is now adopted by §0.8: planning is
+registry-independent and final construction explicitly receives the new registry fingerprint.
+R8-3 package placement, Phase 2's part of R8-5, and the owner synchronization/verification and
+upstream gates in §5.5 remain implementation blockers. Neither an old registry nor prior-frame
+bindings substitute for a gated real shadow slot.
 
 ---
 
@@ -256,7 +284,6 @@ public interface ShadowPlanFactory {
 }
 
 public record ShadowPlanInput(
-    RegistryFingerprint registry,
     ShadowPolicy policy,
     ShadowHookHealth hookHealth) {}
 
@@ -281,6 +308,7 @@ public record ShadowPolicy(
 public interface ShadowPassFactory {
     ShadowPassBuildResult create(
         ShadowPlan plan,
+        RegistryFingerprint registry,
         UniformRuntime uniforms,
         ShadowWorldPort world,
         DiagnosticReporter diagnostics);
@@ -364,7 +392,6 @@ public sealed interface ShadowDisableReason {
 }
 
 public record ShadowPlan(
-    RegistryFingerprint registry,
     ShadowPolicy policy,
     ShadowCelestialPolicy celestialPolicy,
     ShadowHookHealth hookHealth,
@@ -402,10 +429,14 @@ public enum HookDisposition { HEALTHY, FEATURE_DISABLED }
 
 All collections above are immutable, reject nulls/duplicates, and iterate in canonical logical-buffer
 or hook-ID order. `ShadowPolicy` is the complete effective configuration-derived projection for plan
-identity. `ShadowPlanFingerprint` hashes the registry fingerprint plus every policy value and the
-hook fingerprint using their canonical encodings; structural equality is by record value, while
-publication reuse and stale checks use that fingerprint. `ShadowHookHealth` is owned by the
-application health audit and borrowed immutably by plans. `ShadowCameraMath` implements exactly
+identity. `ShadowPlanFingerprint` hashes every policy value and the hook fingerprint using their
+canonical encodings, never a registry fingerprint or generation. Structural policy/hook equality
+and this fingerprint identify pure planning content; the celestial policy is derived only from
+that content. The final publication separately fingerprints the ordered pair `(plan.fingerprint(),
+registry)` supplied to `create`, using canonical SHA-256 encoding. Publication pairing/reuse must
+match both inputs, not the plan fingerprint alone; equal hashes never revive a closed slot epoch.
+`ShadowHookHealth` is owned by the application health audit and borrowed immutably by plans.
+`ShadowCameraMath` implements exactly
 §4.5–§4.6; `planes()` returns an immutable normalized ordered fixture view and `intersects` is the
 total finite-AABB predicate. `ShadowCelestialPolicy.sample` implements §4.5.1/§4.5.4 and returns the
 same sample consumed by Phase 6 and `ShadowCamera`.
@@ -423,10 +454,17 @@ specified in §5.4. None is construction-retained or closed by Phase 8.
 Phase 7-owned projection of the immutable Phase 3 configuration
         |
         v
- ShadowPlan (pure, fingerprinted) -----> Phase 6 provider gets celestial policy
-        |                                      |
-        +---------------------+----------------+
-                              v
+ ShadowPlan (pure, registry-independent) -> Phase 6 provider gets celestial policy
+                                                   |
+                                        runtime -> Phase 4 compile/compose
+                                                   |
+                  plan + final new registry fingerprint + same runtime
+                                                   |
+                                         ShadowPassFactory.create
+                                                   |
+                                   registry-bound ShadowPassPublication
+                                                   |
+                                                   v
 Phase 7 H-FRAME-05 -> ShadowInvocationSlot.invoke(borrowed context)
                               |
           +-------------------+--------------------+
@@ -448,8 +486,9 @@ Phase 7 H-FRAME-05 -> ShadowInvocationSlot.invoke(borrowed context)
 ```
 
 The slot owns no published dependency and retains no invocation context. It may retain the
-generation-scoped `ShadowPlan`, its construction-time `UniformRuntime`, world port, and diagnostics
-until the enclosing Phase 7 pipeline publication closes.
+pure `ShadowPlan`, final construction registry fingerprint and combined publication fingerprint,
+construction-time `UniformRuntime`, world port, and diagnostics until the enclosing Phase 7
+pipeline publication closes. Registry generation and slot epoch remain separate live credentials.
 An invocation owns a separately acquired `TextureOverlayLease` only until `Bound` transfers it
 into a `TextureBindingSnapshot`. The one cleanup path closes exactly that current owner, including
 on exceptions and after pass invalidation; it never closes any borrowed publication or source.
@@ -457,8 +496,8 @@ on exceptions and after pass invalidation; it never closes any borrowed publicat
 ### 2.4 Core invariants
 
 1. One frame may open at most one shadow snapshot. Every acquired snapshot is completed or aborted.
-2. No shadow GL/draw operation occurs before context, registry, estate, plan fingerprint, and hook
-   health validation.
+2. No shadow GL/draw operation occurs before context, registry, estate, registry-bound publication
+   identity, plan fingerprint, and hook health validation.
 3. The main traversal list, camera mode, Forge render pass, blob-shadow state, matrices, framebuffer,
    viewport, culling, active texture, and cached vanilla state are restored in `finally` order.
 4. The shadow program is selected only through a Phase-4-issued context whose
@@ -478,6 +517,8 @@ on exceptions and after pass invalidation; it never closes any borrowed publicat
     ordinary and shadow readable sides and performs every required object bind before activation
     and sampler upload. No Phase 8 row-bind loop or fallback re-resolution exists.
 12. Completion/abort/neutralization invalidates binding use, not the Bound owner's closure duty.
+13. Planning needs only policy and hook health. Final construction fingerprints the plan with the
+    new registry; a prior registry is never an input to planning or a substitute at construction.
 
 ---
 
@@ -561,9 +602,10 @@ only that inverse; it does not suppress the original matrix or the pass.
 
 ### 4.1 Plan construction and lifecycle
 
-`ShadowPlanFactory` is pure. It receives an already-resolved policy, registry fingerprint, and
-hook-health snapshot. It never accepts source strings, property maps, Minecraft objects, GL
-handles, or mutable collections.
+`ShadowPlanFactory` is pure. Its exact input is
+`ShadowPlanInput(ShadowPolicy policy, ShadowHookHealth hookHealth)`. It never accepts a registry
+fingerprint/generation, source strings, property maps, Minecraft objects, GL handles, or mutable
+collections. The resulting `ShadowPlan` likewise contains no hidden registry identity.
 
 Validation is closed and deterministic:
 
@@ -579,6 +621,44 @@ Invalid values are not clamped into a different pack contract. They produce a st
 a disabled shadow feature; the main pipeline remains valid. Ordinary absence returns
 `NotRequested`, not an error.
 
+Construction follows Phase 7's §5.3 ordering, with R7-13's request adopted here:
+
+1. Freeze the intended resolved policy and hook health; build the pure plan and its celestial
+   policy before constructing Phase 6's provider/runtime. `NotRequested`/`Disabled` supplies
+   explicit shadow absence rather than a fabricated ready plan.
+2. Phase 7 supplies that same celestial policy to the new provider, constructs the new runtime,
+   then compiles Phase 4 using that runtime's macro contribution and the sole Phase 5 policy.
+   Derive the Phase 5 candidate from the final detached registry view and compose Phase 4 using
+   exactly that runtime's three participants. Planning never waits for these products.
+3. Only after the final new registry fingerprint exists, call
+   `create(plan, registry, uniforms, world, diagnostics)` with that fingerprint and the same new
+   runtime. The factory validates required non-null inputs, policy/hook validity and the canonical
+   plan fingerprint before returning `Ready`; malformed or inconsistent build input returns
+   `Invalid(diagnosticId)` without a publication or retained services. Feature-disable results
+   remain `Disabled(reason,diagnosticId)`. No registry is fetched implicitly or substituted.
+4. Phase 7 validates the supplied fingerprint against the final candidate view and the intended
+   configuration/dimension/resource/hook tuple before installing the returned publication; the
+   opaque fingerprint alone is not evidence that a caller selected the right candidate. Its
+   composition transaction also pairs the exact runtime/provider and buffer candidate. Phase 8
+   receives no invented runtime fingerprint getter, registry lookup or publisher authority.
+
+The returned publication retains that exact registry fingerprint and the canonical SHA-256
+fingerprint of `(plan.fingerprint(), registry)`. Build validation and Phase 7 precommit pairing
+include both; a mismatch prevents installation and follows the existing failed-build
+rollback/off path. A plan may have identical content across compilations, but a changed registry
+requires a newly paired publication; never patch the pure plan with a late registry field.
+At invocation, compare the borrowed published registry fingerprint with the retained construction
+fingerprint and validate the plan fingerprint as well as the separate live execution/slot/registry/
+estate generations. Hash equality cannot authenticate live publication ownership.
+`RegistryFingerprint` excludes generation (`docs/phase4/v1/PHASE_4_DOC.md:1615-1617`,
+“It does not hash” ... “generation”); accepted-generation adoption remains Phase 7's subsequent
+publication handshake, not a predicted generation or part of pure planning.
+
+This removes the plan -> provider -> compile -> plan cycle: policy/hook planning precedes the
+provider, while registry-dependent validation/fingerprinting belongs to final construction and
+publication. No old registry is borrowed, even on first load, reload, or failed compilation.
+Construction and execution remain unavailable until §5.5's remaining gates close.
+
 The lifecycle is:
 
 ```text
@@ -589,9 +669,10 @@ PLANNED -> READY -> INVOKING -> READY
 ```
 
 Only the render thread enters `INVOKING`. A second or re-entrant invocation returns
-`Rejected(WRONG_FRAME)` before mutation. `CLOSED` never becomes ready again. Plan identity includes
-the registry fingerprint, hook-health fingerprint, and every field of the complete effective
-`ShadowPolicy`; reload creates a new plan rather than mutating one in place.
+`Rejected(WRONG_FRAME)` before mutation. `CLOSED` never becomes ready again. Pure plan identity
+includes the hook-health fingerprint and every field of the complete effective `ShadowPolicy`,
+not a registry. Reload derives an immutable plan from the new resolved inputs and creates a new
+registry-bound publication; content equality never revives an old publication.
 
 The generation-scoped `ShadowPassPublication` owns the slot. `close()` first rejects a non-render
 thread with `WRONG_THREAD`, then accepts `READY` or `DISABLED_RUNTIME`. First success invalidates
@@ -605,9 +686,11 @@ This is the adopted R7-12 transaction, executable only after §5.5's remaining g
 owner-verification gates close. Phase 7 selects root shadow once before `invoke` and owns the
 execution bridge around it; Phase 8 does not repeat selection or mint another activation context.
 
-1. Validate borrowed Phase 7 execution, frame identity, plan fingerprint, current registry and
-   estate generations, render thread, and single-entry state. Stale/wrong-frame input returns
-   `Rejected` before Phase 5 or GL work. Borrow all invocation fields from one active pipeline tuple.
+1. Validate borrowed Phase 7 execution, frame identity, plan fingerprint and registry-bound
+   publication pairing against the retained final construction registry fingerprint, current
+   registry and estate generations, render thread, and single-entry state. Stale/wrong-frame
+   input returns `Rejected` before Phase 5 or GL work. Borrow all invocation fields from one
+   active pipeline tuple; equal plan content alone cannot admit a different registry.
 2. Query `PublishedBufferEstate.shadow()`:
    - `ShadowEstateNotRequested` returns `Completed` without opening state;
    - `ShadowEstateUnavailable` records its feature diagnostic and returns `Completed`, relying on
@@ -717,8 +800,9 @@ validated before traversal.
 
 The pure `ShadowCelestialPolicy` is constructed before Phase 6's platform provider, so
 `FrameUniformSample.shadowAngle` and Phase 8 camera math call the same function. This requires the
-Phase 7 composition grant in R8-4, with R7-13's planning-cycle gate still open; Phase 8 does not add a second Phase 6 participant or a late
-`shadowAngle` upload.
+Phase 7 composition grant in R8-4 and the R7-13 ordering now adopted in §4.1, still subject to
+§5.5's remaining gates. Phase 8 does not add a second Phase 6 participant or a late `shadowAngle`
+upload.
 
 ### 4.4 Reversible state lease
 
@@ -1049,8 +1133,8 @@ performs the required ascending-unit binds; only `Bound` permits immediate same-
 activation and then Phase 6 sampler integer upload. `Rejected`/`Degraded` bind nothing;
 `BackendFailed` may have partially bound objects and requires containment. No Phase 8 manual
 row loop, second unit map, four-row view, or prior-frame fallback is permitted. Phase 6's R7-10
-sole-resolver adoption remains an explicit gate; existing callback count/cache/error isolation
-is unchanged. Non-final `FixedFunctionEmpty` produces purpose `NONE`, sixteen `Unused` rows,
+sole-resolver contract is adopted by its owner but still awaits fresh verification; existing
+callback count/cache/error isolation is unchanged. Non-final `FixedFunctionEmpty` produces purpose `NONE`, sixteen `Unused` rows,
 no shader candidates/object binds, and no sampler upload; it still follows the same ownership
 protocol and renders depth through vanilla state after `FixedFunction`.
 
@@ -1078,8 +1162,8 @@ Reload/shutdown ordering is:
    it owns no GL object and no outstanding invocation resource may be hidden inside it;
 4. follow Phase 7's coordinated owner teardown: retire texture acquisition authority before its
    borrowed services disappear, let outstanding leases defer owned deletion rather than stale-use
-   rejection, and retire Phase 6 only after its final callback under the still-ungranted R7-11
-   contract; never invent `UniformRuntime.close()` or revive retired textures as fallback;
+   rejection, and retire Phase 6 only after its final callback under its adopted-but-unverified
+   R7-11 contract; never invent `UniformRuntime.close()` or revive retired textures as fallback;
 5. restore blob-shadow behavior and remove Phase-8 hook-state publication.
 
 Closing during `INVOKING` is rejected without mutation; Phase 7 first aborts the frame. A stale
@@ -1115,9 +1199,9 @@ borrowed views only for the duration of `invoke`; no vanilla collection is retai
 
 | Exposed contract | Exact content | Consumer(s) |
 |---|---|---|
-| `ShadowPlanFactory`, `ShadowPlanInput`, `ShadowPlanResult`, `ShadowPlan`, `ShadowPolicy` | pure resolved-policy validation; complete effective configuration-derived identity projection with exact camera/traversal/flag/mipmap/PCF fields; registry/hook fingerprint; no parser, MC, GL, or handle | Phase 7 pipeline construction; Phase 2 headless tests |
+| `ShadowPlanFactory`, `ShadowPlanInput`, `ShadowPlanResult`, `ShadowPlan`, `ShadowPolicy` | exact §2.2 shapes and §4.1 rules: input `(ShadowPolicy policy,ShadowHookHealth hookHealth)`; pure resolved-policy/celestial metadata; complete camera/traversal/flag/mipmap/PCF and hook fingerprint identity; neither input, plan nor plan fingerprint contains registry identity; no parser, MC, GL, or handle | Phase 7 pipeline construction; Phase 2 headless tests |
 | `ShadowCelestialPolicy` | pure total `sunAngle -> day/shadowAngle/celestial rotation` function shared by Phase 6 provider and Phase 8 camera | Phase 6 `mod.glue` provider via Phase 7 composition |
-| `ShadowPassFactory`, `ShadowPassBuildResult`, `ShadowPassPublication` | construction of exactly one generation-scoped owner exposing Phase 7's `ShadowInvocationSlot` plus idempotent render-thread close; close from `READY`/`DISABLED_RUNTIME` invalidates the slot epoch and releases retained references, while `INVOKING` rejects without mutation | Phase 7 |
+| `ShadowPassFactory`, `ShadowPassBuildResult`, `ShadowPassPublication` | exact `create(ShadowPlan plan,RegistryFingerprint registry,UniformRuntime uniforms,ShadowWorldPort world,DiagnosticReporter diagnostics) -> ShadowPassBuildResult`; final new registry immediately after plan; §4.1 validation and combined publication fingerprint; one generation-scoped owner exposing Phase 7's slot and idempotent render-thread close; READY/DISABLED_RUNTIME close invalidates epoch/releases services, INVOKING rejects | Phase 7 |
 | `ShadowWorldPort` and closed world/state/terrain/draw results | loader-neutral primitive/value interface; Minecraft implementation owns setup/draw/state restoration and Forge pass adapter; every borrowed execution validated | `mod.glue.shadow`; recorded tests |
 | `ShadowCameraMath`, `ShadowCamera`, `ShadowFrustum`, `ShadowTraversalPlan` | deterministic column-major camera/celestial math, finite plane set, total AABB predicate, full/prism traversal strategies | Phase 8 runtime; Phase 2 fixtures |
 | `ShadowHookHealth`, Phase-8 hook rows | immutable expected/actual counts and enabled/disabled outcome for §4.13 | diagnostics; Phase 2 manifest integration |
@@ -1125,6 +1209,17 @@ borrowed views only for the duration of `invoke`; no vanilla collection is retai
 
 Phase 8 exposes no GL handle, framebuffer name, program handle, parsed source, mutable vanilla
 collection, or physical shadowcolor side.
+
+The complete §2.2 plan/factory/publication shapes and §4.1 construction, identity, validation,
+failure and lifecycle rules are incorporated into this binding §5 interface. R7-13 at
+`docs/phase7/v1/PHASE_7_DOC.md:2344-2349` is granted by this owner: pure planning before the
+provider; final-registry `create` after compile/compose. `ShadowPlanFingerprint` excludes registry;
+the retained publication fingerprint hashes the ordered canonical pair `(plan.fingerprint(),
+registry)`. Phase 7 checks the supplied registry against its final candidate and intended tuple
+before installation; Phase 8 checks it against the invocation's registry before any Phase 5/GL
+work. No old fingerprint, implicit registry lookup, late plan mutation or plan-only stale check
+is permitted. Live generation/slot authentication remains mandatory even when content hashes
+match. This grant closes the design cycle, not §5.5's implementation/verification gates.
 
 ### 5.2 Phase 4 contracts consumed
 
@@ -1134,7 +1229,7 @@ collection, or physical shadowcolor side.
 | `ProgramSlotId`, `ProgramStateBundle` | root `shadow` identity and complete effective state; no child overlay |
 | `ProgramBindingSelection`, `ProgramBindingSelections.validateSelection`, closed validation results | supplied opaque private credential and its effective descriptor/layout; identical selection in begin/bind/activate; no Phase 8 fallback resolution |
 | `PublishedProgramStateBarrier`, `FrameBarrierContexts`, `BarrierContext`, `UseProgramRequest(selection,context)`, closed `BarrierResult` | only activation route, consuming the already-issued exact context after Bound; Phase 4 retains force-shadow and fallback authority |
-| `RegistryFingerprint` / generation | plan/publication pairing and stale rejection |
+| `RegistryFingerprint` / generation | final construction/publication pairing and invocation stale rejection; deterministic content fingerprint is separate from live generation and absent from pure planning |
 
 These are the incorporated contracts at `docs/phase4/v1/PHASE_4_DOC.md:1782-1796`, with exact
 selection accessors/validation/request shapes at `:614-644` and authentication/activation/lifetime
@@ -1221,11 +1316,14 @@ borrowed publication/source. §§4.2/4.12 incorporate the same exactly-one final
 |---|---|
 | `UniformRuntime.events()` | typed celestial and primary shadow-matrix signals |
 | `CelestialSample`, `ShadowMatrixSample`, `Matrix4Value` | copied values with exact world/frame identity |
-| sampler participant and barrier participants | fixed integer upload after Phase 5 object binding and same-selection activation; R7-10 sole-resolver adoption remains gated, with no fourth participant |
+| sampler participant and barrier participants | fixed integer upload after Phase 5 object binding and same-selection activation; R7-10 adopted by Phase 6 but unverified, with no fourth participant |
 | deterministic inverses/per-uniform isolation | no duplicate inversion or pass-wide failure for one inverse |
 
-The runtime/event surface is `docs/phase6/v1/PHASE_6_DOC.md:234`–`:291`; Phase 8 handoff is also
-explicit at `docs/phase6/v1/PHASE_6_DOC.md:1508`–`:1517`.
+The current runtime/event and sampler contracts are incorporated by
+`docs/phase6/v1/PHASE_6_DOC.md` §5.1 at `:1613`, `:1617-1618`; R7-10/R7-11 are adopted but
+not verified per `:296-300`. Phase 7, not Phase 8, owns runtime construction, accepted-generation
+adoption and retirement under that owner's §5.1/§5.2. Its required consumer synchronization and
+owner-verification gates at `:1688-1707` remain; no Phase 8 runtime-close authority is added.
 
 **Phase 7:**
 
@@ -1237,6 +1335,7 @@ explicit at `docs/phase6/v1/PHASE_6_DOC.md:1508`–`:1517`.
 | `ProgramBindingSelection selection`, `BarrierContext activationContext` | Phase 7 selects root shadow once before invoke; Phase 8 authenticates and reuses identical values, never remints/reselects |
 | `TexturePublication texturePublication`, `TextureLeaseSource textureLeases` | non-owning members of the same active tuple; acquire full expected-publication lease with that same selection |
 | result semantics and H-FRAME-05 | NotInstalled/Completed advance to main clear; pre-mutation Rejected aborts one frame; Failed schedules off; Phase 8 returns and Phase 7 closes execution before main bind/clear |
+| §5.3 construction protocol and §5.4 R7-13 | adopted §4.1 sequence: policy/hook plan -> new provider/runtime -> compile/compose -> create with final new registry; publication validates/fingerprints both plan and registry; no planning-time registry dependency |
 
 The exact field order incorporated from `docs/phase7/v1/PHASE_7_DOC.md:1576-1587` is:
 
@@ -1280,16 +1379,21 @@ absence and still uses this protocol. Phase 13's required fresh verification rem
 | R8-1 | Phase 7 — architecturally granted, owner reverification required | Consume exact ShadowFrameView, authenticated ShadowExecutionView and driver-owned bridge from §5.4; preserve existing main-hook bypass and traversal token | §0.25 granted this; R7-12 appends credentials without changing bridge ownership |
 | R8-2 | Phase 5 — architecturally granted, current shared contract adopted here subject to owner reverification | Consume §5.3's five-argument physical binding, sixteen-row closeable result and Bound-only transfer, plus typed mipmaps and coherent runtime neutralization | current §5 supersedes the historical four-row borrowed proposal; no additional shadow-only binder requested |
 | R8-3 | Phase 1 | Grant `com.schmaloogium.engine.shadow`, `mod.glue.shadow`, and `mod.mixin.shadow` (or exact owner-selected equivalents) in the closed package table | module placement is binding; Phase 8 does not squat in another phase's package |
-| R8-4 | Phase 7 composition — architecturally granted, owner reverification and R7-13 still required | Keep typed policy projection without reparsing, shared celestial policy, Phase 8 publication construction/rollback/close | accepted Phase 7 §0.25 composition intent does not solve the new planning/provider/compile cycle without the separate R7-13 grant |
+| R8-4 | Phase 7 composition — architecturally granted, owner synchronization/reverification required | Keep typed policy projection without reparsing, shared celestial policy, Phase 8 publication construction/rollback/close | R7-13 now closes the planning/provider/compile design cycle through registry-independent planning and final-registry construction |
 | R8-5 | Phase 7 half architecturally granted; Phase 2 half ungranted | Preserve nested Phase 8 hook-health rows without changing Phase 7 identities; Phase 2 must still consume them in its manifest | Phase 7 health wiring alone cannot grant the Phase 2 reporting contract |
-| R7-12 | Phase 8 — adopted by this amendment, unverified | §4.2 and incorporated §§5.1–5.4 consume the exact supplied selection/context/publication/source, selector-based beginPass, full physical binding and four-result closure protocol | closes the consumer design mismatch only; real slot remains gated until fresh whole-document owner PASS |
-| R7-13 | Phase 8 — requested, **ungranted in this task** | Requested ShadowPlanInput(policy,hookHealth) without registry and create(plan,registry,uniforms,world,diagnostics) with registry immediately after plan | existing §2 planning/factory signatures intentionally unchanged; no old registry fingerprint may break the cycle; real construction stays NotInstalled |
-| R7-10 / R7-11 | Phase 6 — requested, ungranted | Phase 5 sole FixedSamplerResolver injection and permanent non-GL retirement for candidate abort/replacement/shutdown | sampler upload and coordinated lifecycle integration remain blocked; no second map or invented runtime close |
+| R7-12 | Phase 8 — adopted by §0.7, unverified | §4.2 and incorporated §§5.1–5.4 consume the exact supplied selection/context/publication/source, selector-based beginPass, full physical binding and four-result closure protocol | closes the consumer design mismatch only; real slot remains gated until fresh whole-document owner PASS |
+| R7-13 | Phase 8 — adopted by §0.8, unverified | ShadowPlanInput(policy,hookHealth) and ShadowPlan contain no registry; create(plan,registry,uniforms,world,diagnostics) receives final new registry immediately after plan; §4.1 validation and publication fingerprint include it | closes the cycle without an old fingerprint; real construction stays NotInstalled until remaining grants and fresh owner/Phase 8 PASS |
+| R7-10 / R7-11 | Phase 6 — adopted in current owner bytes, unverified | Phase 5 sole FixedSamplerResolver injection and permanent non-GL retirement for candidate abort/replacement/shutdown | Phase 6 §0.24/§5.2 still require fresh owner PASS and Phase 7 consumer synchronization; no second map or invented runtime close |
 
-The new Phase 4/5/7/13 shared-unit surfaces require their owners' fresh whole-document verification.
-Phase 7's other upstream gates (including Phase 3 reverification, package placement and Phase 13's
-macro/package grants) remain unchanged, as recorded in its §5.4/§11.3. This single-file amendment
-neither edits their request status tables nor grants those dependencies on their owners' behalf.
+The new Phase 4/5/6/7/13 shared-unit surfaces require their owners' fresh whole-document verification.
+Phase 7's other upstream gates (including Phase 3 reverification, R7-8 package placement and
+Phase 13's macro/package grants) remain unchanged, as recorded in its §5.4/§11.3. R8-3 and Phase
+2's R8-5 half remain **ungranted**; Phase 13 R1 is not supplied by this shadow grant.
+Phase 7's §5.4 still calls R7-12/R7-13 “requested, ungranted” at
+`docs/phase7/v1/PHASE_7_DOC.md:2305-2306`; that unchanged consumer status must be synchronized
+with this owner's §§0.7–0.8 grants before verified coordinated consumption. Its R7-10/R7-11
+rows similarly await owner-side synchronization with Phase 6. This single-file amendment
+edits none of those dependency tables and grants no other owner's interface.
 
 R8-1's consumed representation-neutral authentication contract is exact: Phase 7 is the sole
 issuer and owner of `ShadowExecutionBridge`; `open(activeExecutionIdentity, slotEpoch)` returns
@@ -1337,11 +1441,12 @@ state, and makes all later `shadow()` calls return `ShadowEstateUnavailable`; fi
 is unchanged. It is idempotent, and no old binding/pass snapshot remains usable after success;
 the Bound owner must still close its binding snapshot.
 
-R8-1/R8-2/R8-4's architectural grants are not readiness claims. R7-12's consumer change here alters
-§5 and requires fresh whole-document verification; R7-13 and other ungranted rows remain open.
-Until all required grants and owner reviews land, real shadow is `NotInstalled`/unavailable with
-existing typed neutral-shadow behavior, never success through four rows or prior-frame bindings.
-No dependency is edited and no substitute interface is fabricated.
+R8-1/R8-2/R8-4's architectural grants are not readiness claims. R7-12 and R7-13 are adopted in
+the active and incorporated §5 contracts here, requiring fresh whole-document verification.
+Until all remaining required grants, consumer synchronization and owner reviews land, real shadow
+is `NotInstalled`/unavailable with existing typed neutral-shadow behavior, never success through
+an old registry, four rows or prior-frame bindings. No dependency is edited or substitute
+interface fabricated.
 
 ---
 
@@ -1352,6 +1457,7 @@ No dependency is edited and no substitute interface is fabricated.
 | no shadow buffers requested | normal absence | return `Completed`; vanilla blob shadows remain; no diagnostic |
 | sfb creation unavailable | 2a | use Phase 5 neutral shadow bindings, disable Phase 8, keep main program/pipeline active |
 | invalid resolved shadow policy | 2a | disable shadow feature with one source-attributed diagnostic; do not clamp |
+| invalid final construction input or final-registry/publication mismatch | protocol | create returns Invalid without a publication for invalid input; Phase 7 refuses mismatched installation and follows candidate rollback/off; invocation mismatch rejects before Phase 5/GL; never borrow an old registry |
 | missing/over-matched H8 traversal/restore/blob hook | 2a | keep vanilla behavior, disable real shadow feature, report exact hook ID |
 | frustum numeric degeneracy | 2a | disable culling/optimization for that frame and over-render loaded chunks; never under-render or crash |
 | cloud draw failure | 2a | disable clouds-in-shadow only; terrain/entity shadows continue |
@@ -1457,6 +1563,10 @@ correctness; it may not change camera, plane, split, or order semantics.
    no-omission property tests.
 8. **State machine:** re-entry, stale frame, every closed Phase 4/5/7 result, exactly one complete or
    abort, and no retained borrowed context.
+9. **Plan/publication identity:** planning succeeds without a registry; equal policy/hook inputs
+   yield equal plan fingerprints across compilations. Changing only the final registry changes
+   publication identity, not plan identity; wrong-registry invocation rejects before Phase 5/GL,
+   and equal content never revives a closed epoch.
 
 Pintonium's dawn/negative-coordinate sample is a cross-check, not a golden authority. Expected
 values are generated from the formulas in §4.5 and compared independently.
@@ -1485,8 +1595,11 @@ With `RecordingGLDevice`/scripted ports and fake verified dependencies:
   transition or manual GL bind between physical binding and activation;
 - assert mipmap filter-restoration failure consumes result-level Neutralized and performs no second
   complete/abort/neutralize while still closing the binding and restoring camera/traversal state;
-- assert the real slot remains NotInstalled while R7-13 or any required owner-verification gate
-  remains open, despite this R7-12 consumer adoption;
+- assert the real slot remains NotInstalled while any remaining grant, consumer synchronization
+  or required owner-verification gate remains open, despite R7-12/R7-13 adoption;
+- exercise first-load and reload ordering: pure plan/celestial policy before provider/runtime,
+  compile/compose before final-registry create; wrong candidate pairing prevents installation,
+  compile failure creates no real slot, and no path borrows an old registry;
 - assert shadow matrices/celestial values precede first activation;
 - assert pass 0 before split and pass 1 after optional translucent draw;
 - assert prior Forge pass, third-person option, matrices, viewport, framebuffer, renderInfos, and
@@ -1528,7 +1641,7 @@ image committed; `-PupdateGoldens` remains explicit and fails the regeneration r
 | pure shadow plan/camera/celestial math | v0.2 | implement first; headless goldens |
 | extended frustum and full-view traversal | v0.2 | correctness baseline before optimization |
 | `shadowDistanceRenderMul` sun-prism iterator | v0.2 | enable only after full-view oracle proof |
-| Phase 7 slot/context/composition | v0.2 | R8-1/R8-4 architectural grants consumed; R7-12 adopted here, R7-13 ungranted; fresh owner/Phase 8 whole-document verification before real slot |
+| Phase 7 slot/context/composition | v0.2 | R8-1/R8-4 architectural grants consumed; R7-12/R7-13 adopted here; remaining grants, consumer synchronization and fresh owner/Phase 8 whole-document verification before real slot |
 | Phase 5 shared binding/mipmap/neutralization | v0.2 | five-argument physical binding and sixteen-row closure protocol consumed; fresh owner verification first, no four-row substitute |
 | FF state/world port and hook ledger | v0.2 | Cleanroom integration after pure tests |
 | terrain/entity/cloud/split render order | v0.2 | ordered recorded test then T1 |
@@ -1558,8 +1671,8 @@ closed fallbacks already designed:
 - if a traversal/blob hook does not apply exactly once, disable shader shadows and retain vanilla;
 - if runtime neutralization cannot safely contain a backend failure, fail the shader pipeline
   rather than continue with a partial shadow target;
-- while R7-13 or required grants/owner reviews remain open, keep real shadow NotInstalled with
-  existing typed unavailable/neutral behavior; R7-12 adoption alone never enables it.
+- while remaining required grants, consumer synchronization or owner reviews remain open, keep
+  real shadow NotInstalled with typed unavailable/neutral behavior; R7-12/R7-13 adoption is not readiness.
 
 These outcomes do not modify RESEARCH §11.
 
@@ -1583,6 +1696,7 @@ These outcomes do not modify RESEARCH §11.
 | D-P8-10 | Do not execute shadowcomp at v0.2 | explicit scope-out/G8 ownership |
 | D-P8-11 | Do not add an unconditional `glFlush` to the pass contract | ordered commands on one GL context already order draws, copy, mipmaps, and completion; the digest's flush is not a RESEARCH contract and would create an avoidable driver-submission policy |
 | D-P8-12 | Adopt R7-12's same-selection, full shared physical binding and Bound-only closure contract | Phase 7 §5.4 `docs/phase7/v1/PHASE_7_DOC.md:2332-2342` and Phase 5 §5.1 `docs/phase5/v1/PHASE_5_DOC.md:2357-2363` supply the operation; preserves RESEARCH App B.3 `docs/research/v1/RESEARCH.md:1228-1255` without a second map or four-row success |
+| D-P8-13 | Adopt R7-13: pure policy/hook plan first; final-registry validation and fingerprinting only at publication construction | Phase 7 §5.4 `docs/phase7/v1/PHASE_7_DOC.md:2344-2349` requires registry-independent metadata and final-registry create; breaks the provider/compile cycle without borrowing an old registry or weakening live generation/epoch authentication |
 
 ### 11.2 Binding decision disposition
 
@@ -1630,13 +1744,15 @@ These outcomes do not modify RESEARCH §11.
    constrains pass order rather than a flush. D-P8-11 relies on same-context command ordering and
    leaves any evidence-driven synchronization change to a governed correction, not an incidental
    glue call.
-10. **Planning cycle remains open:** R7-13 asks for registry-independent planning and final-registry
-    construction (`docs/phase7/v1/PHASE_7_DOC.md:2344-2349`). This task grants only R7-12;
-    existing planning/factory signatures remain unchanged and unusable for real composition until
-    the separate grant lands. An old registry fingerprint is not a workaround.
-11. **Shared pipeline gates remain open:** Phase 6 R7-10/R7-11, Phase 4/5/7/13 fresh owner
-    verification, and §5.5's unrelated package/reporting/upstream grants are not satisfied by this
-    consumer amendment. Phase 8 itself owes fresh whole-document verification because §5 changed.
+10. **Planning cycle architecturally closed:** R7-13 is adopted in §§2/4/5 with the exact
+    input/factory order requested at `docs/phase7/v1/PHASE_7_DOC.md:2344-2349`. The pure plan
+    precedes the provider/runtime and compilation; final publication validation/fingerprinting
+    includes the final new registry. An old registry fingerprint is never a workaround.
+11. **Shared pipeline gates remain open:** Phase 6 R7-10/R7-11 are now adopted by their owner,
+    not verified grants (`docs/phase6/v1/PHASE_6_DOC.md:296-300`). Phase 4/5/6/7/13 fresh owner
+    verification, consumer synchronization and §5.5's unrelated ungranted package/reporting/
+    upstream interfaces remain blockers. Phase 8 itself owes fresh whole-document verification
+    because §5 changed; Phase 7's unchanged request rows are not evidence against this owner's grant.
 
 ### 11.4 Open hand-offs
 
@@ -1655,11 +1771,12 @@ These outcomes do not modify RESEARCH §11.
 ### 11.5 Requested upstream changes
 
 §5.5 is the complete active adoption/gate ledger. R8-1/R8-2/R8-4 and Phase 7's R8-5 half are
-architecturally granted, not newly requested. R7-12 is adopted here but unverified. R7-13 remains
-ungranted and blocks real construction; Phase 6 R7-10/R7-11 and the upstream owner-verification
-gates still block shared-pipeline integration. R8-3 blocks package placement. Phase 2's R8-5 half
-still blocks a complete hook-health manifest, not pure math design. Request owner-side adoption
-and fresh verification through the governing process; this amendment edits no dependency or review.
+architecturally granted, not newly requested. R7-12/R7-13 are adopted here but unverified.
+Phase 6 R7-10/R7-11 are likewise adopted, pending owner verification and Phase 7 synchronization.
+Those gates still block shared-pipeline integration. R8-3 remains ungranted and blocks package
+placement. Phase 2's ungranted R8-5 half still blocks a complete hook-health manifest, not pure
+math design. Request remaining owner grants, consumer synchronization and fresh verification
+through the governing process; this amendment edits no dependency or review.
 
 No change is requested to RESEARCH's shadow contract. A future DESIGN candidate should retain the
 Phase 5/Phase 8 PCF ownership split explicitly. This amendment preserves that behavior and the
@@ -1669,13 +1786,13 @@ traversal/camera/bridge/copied-depth/mipmap/neutralization contracts; it grants 
 
 ## 12. Implementation checklist
 
-1. **[v0.2]** Obtain the separate R7-13 grant and remaining package/reporting/sampler/lifecycle
-   grants in §5.5, plus fresh whole-document owner and Phase 8 literal-PASS reviews. R7-12's
-   adoption alone leaves real shadow NotInstalled; compile nothing against ungranted surfaces.
+1. **[v0.2]** Obtain the remaining ungranted package/reporting/upstream interfaces in §5.5 and
+   synchronize consumer grants, then obtain fresh whole-document owner and Phase 8 literal-PASS
+   reviews. R7-12/R7-13 adoption leaves real shadow NotInstalled until those gates close.
 2. **[v0.2]** Add the granted engine/glue/mixin packages with seam tests rejecting Minecraft,
    Forge, Mixin, and LWJGL from `:engine`.
-3. **[v0.2]** Implement `ShadowPolicy`, plan validation, fingerprinting, and closed results;
-   headless invalid/absence tests.
+3. **[v0.2]** Implement registry-independent `ShadowPolicy`/plan validation, fingerprinting and
+   closed results; headless invalid/absence and plan/publication identity-boundary tests.
 4. **[v0.2]** Implement `ShadowCelestialPolicy` and share it with the Phase 6 frame provider;
    angle-boundary tests.
 5. **[v0.2]** Implement ortho/perspective matrices in column-major `Matrix4Value`; projection
@@ -1720,8 +1837,9 @@ traversal/camera/bridge/copied-depth/mipmap/neutralization contracts; it grants 
     enablement on hook health.
 28. **[v0.2]** Consume coherent runtime neutralization and prove main pipeline remains active only
     after safe feature-local containment; partial bind failures never activate/upload/draw.
-29. **[v0.2]** Integrate Phase 8 construction/rollback/close into Phase 7 only after R7-13 and
-    lifecycle grants; drain binding/lease closure with no draw between paired publications.
+29. **[v0.2]** Integrate plan-before-provider and final-registry create/validation/fingerprinting
+    into Phase 7 construction/rollback/close after §5.5's gates; prove no old-registry dependency,
+    reject wrong candidate pairing, and drain binding/lease closure between paired publications.
 30. **[v0.2]** Add Phase 8 hook-health data to Phase 2 manifests after R8-5; no inferred capability.
 31. **[v0.2]** Run static day/night, moving-camera, water split, entity pass, cloud, perspective,
     PCF/mipmap, and far-caster T1 scenes.
@@ -1732,7 +1850,9 @@ traversal/camera/bridge/copied-depth/mipmap/neutralization contracts; it grants 
 34. **[post-v0.5]** Hand completed targets to G8/S1 for `shadowcomp`; do not implement it in this
     checklist.
 
-**Current §G1.3 status:** R7-12 is adopted in the active and incorporated §5 contracts. Phase 8 is
-**unverified** after this §0.7 amendment; fresh whole-document verification returning literal PASS
-is required before verified downstream consumption. R7-13 and §5.5's other gates remain open.
-No verification was run and `v1` is retained without a directory roll.
+**Current §G1.3 status:** R7-12 and R7-13 are adopted in the active and incorporated §5 contracts.
+Phase 8 is **unverified** after §0.8; fresh whole-document verification returning literal PASS
+is required before verified downstream consumption. The planning cycle is architecturally closed,
+but §5.5's remaining ungranted dependencies, consumer synchronization and owner-verification
+gates keep real shadow `NotInstalled`/unavailable. No code or reviews were edited; no builds,
+tests or verification were run. `v1` is retained without a directory roll.
