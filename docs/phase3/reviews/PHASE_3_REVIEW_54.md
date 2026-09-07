@@ -212,46 +212,60 @@ round is required before Phase 3 may close or be consumed as a verified dependen
 ## Resolutions
 
 ### candidate-001 — resolved
-
-The terminal chronology was independently compared with the extant §0.51–§0.53 headings. It now
-records the Round 52 and Round 53 transitions omitted from the reviewed surface and the present
-Round 54 transition to §0.54, while retaining the pending fresh-review and no-version-roll status.
-This footer-only repair is outside the manifest interface region.
+The §0 headings independently confirm the omission. The footer now records Rounds 52 and 53
+through §0.53 and this Round 54 transition to §0.54, while retaining fresh-review and no-roll
+status. This footer-only repair is outside the manifest interface region.
 
 ### candidate-002 — resolved
-
-Binding §5.1 now gives every `PackLoadFailureCode` one exact Phase 1 diagnostic payload: all use
-`ERROR`, `CHAT`, immutable empty arguments, empty detail, and `schmaloogium.pack`, with one exact
-localization key per code. Empty detail deterministically bounds and redacts cause data, and no
-cause variant changes the code-selected payload. The tests now assert every field, exact instance
-correspondence with the one reported value, every cause variant, and the null-reporter result.
-This intentionally changes the manifest-declared interface region.
+Binding §5.1 now maps every `PackLoadFailureCode` to one exact Phase 1 payload under D-P3-56:
+`ERROR`, `CHAT`, immutable empty arguments, empty detail, `schmaloogium.pack`, and a code-specific
+localization key. Empty detail bounds and redacts cause data; no cause variant changes the payload.
+Tests assert every field, exact reporter/result instance correspondence, every variant, and the
+null-reporter result. This intentionally changes the manifest interface region.
 
 ### candidate-003 — resolved
-
-Section 4.10 now restricts Phase-3-produced diagnostic arguments to exact non-null boxed `String`,
-`Boolean`, `Integer`, and `Long` values, gives each a dynamic type tag and canonical payload, frames
-all remaining diagnostic fields, and rejects null, nested, or unsupported values before
-publication. Binding §5.1 applies that codec to candidate/result diagnostics and fixes below/at/
-above-limit behavior plus the minimum encoded overflow snapshot. Added tests cover every variant,
-same-text/different-type values, unsupported inputs, exact boundaries, and the fixed minimum.
-This intentionally changes the manifest-declared interface region.
+Section 4.10 and binding §5.1 now close Phase-3-produced arguments under D-P3-57 to exact non-null
+boxed `String`, `Boolean`, `Integer`, and `Long`, with a dynamic type tag, canonical payload, and
+framing for all remaining diagnostic fields. Null, nested, and unsupported values reject before
+publication. The exact argument-free overflow diagnostic, below/at/above-limit behavior, and its
+minimum encoded snapshot are fixed. Tests cover each variant, same-text/different-type values,
+unsupported inputs, exact boundaries, and the fixed minimum. This intentionally changes §5.
 
 ### candidate-005 — resolved
-
-The target now defines one case-sensitive normalizer with the exact Appendix B.1/B.5 projection:
-`colortex0`–`colortex7` and `gcolor`, `gdepth`, `gnormal`, `composite`, `gaux1`–`gaux4` map to
-indices 0–7. Uniform sizing, format, clear, clear-color, mipmap, fixed `GAUX4FORMAT`, and flip
-parsers use it before constructing `ColorAttachmentKey`; other spellings warn/ignore at a
-buffer-bearing grammar site. Exhaustive normalizer and per-parser integration tests were added.
-The public index-only representation is unchanged, so this repair is outside §5.
+The target now gives the exact Appendix B.1/B.5 projection from all eight `colortex` and eight
+legacy spellings to indices 0–7. One case-sensitive normalizer serves uniform sizing, format,
+clear, clear-color, mipmap, fixed `GAUX4FORMAT`, and flip parsing; other buffer-grammar spellings
+warn/ignore. Exhaustive normalizer and parser-integration tests were added. The index-only public
+shape is unchanged, so this repair is outside §5.
 
 ### Interface/change-trigger disposition
-
-The edits for candidates 002 and 003 intentionally modify the manifest-declared
-`cross-phase-interfaces` region. The declared trigger fires: Phase 3 remains unverified and requires
-a fresh whole-document verification round before closure or dependent consumption.
+Candidates 002 and 003 intentionally modify the manifest-declared `cross-phase-interfaces` region.
+The declared trigger fires: Phase 3 remains unverified and requires a fresh whole-document review
+before closure or dependent consumption.
 
 ### Notes deferred
-
 None. Round 54 admitted no notes, so there is nothing to apply or defer.
+
+### Recovery reconciliation — 2026-09-07
+
+The isolated fix-up continuation wrote the resolutions above and the §0.54 edits, then failed
+the post-writer worktree check. Its checkpoint at
+`.verification-runs/phase-3/phase-3-2026-09-07T200305667Z-4762-112807483.json:23`
+records `"code": "WRITE_VIOLATION"`; the same file's lines 25–74 list the two permitted documents
+alongside unauthorized Gradle/build artifacts and `.vscode/settings.json`. A concurrent VS Code
+Java/Gradle process tree and those outputs' 16:11 timestamps corroborated external workspace
+mutation during the writer window. The failed checkpoint is preserved, not relabeled
+`FIXUP-COMPLETE`, and none of those external changes was reverted.
+
+Operator reconciliation confirmed the original review prefix byte-for-byte, exactly one appended
+Resolutions section, all four landed correction sites, and unchanged checksums for the 53 prior
+Phase 3 reviews, four unrelated modified phase documents, and the original failed-run journal.
+The canonical next-round dry run resolves Round 55 with available coordination and the existing
+v3 verification-only override. These checks reconcile the landed state; they do not override the
+failed enforcement result or certify the architecture.
+
+**§G1.3 status:** Phase 3 is **not verified**. The §0.54 surface is explicitly unreviewed and
+requires a fresh whole-document Round 55 review before closure or dependent consumption. Do not
+repeat `--fixup-review latest` over these existing resolutions. Retain `--design-version v3` for
+that review without changing the RC3 governing declaration or rolling `v1`; keep IDE imports and
+builds out of future writer snapshot windows rather than broadening the write allowlist.

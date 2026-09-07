@@ -1521,8 +1521,10 @@ Candidate count includes both sentinels. Snapshot bytes are the §4.10 canonical
 candidate and result diagnostic, recursively using declaration order, variant/enum tags, and all
 public scalar/string/list fields. If complete sorted enumeration would exceed either per-snapshot
 limit, discovery publishes for that real-directory key only fresh `Off` and `Internal` candidates
-plus one fixed bounded limit diagnostic; that compact result must itself fit the configured limits
-and supersedes the key's prior generation.
+plus exactly one diagnostic with `ERROR`, `CHAT`, key
+`schmaloogium.error.pack.discovery_limit`, `List.of()`, empty detail, and
+`schmaloogium.pack`; that compact result must itself fit the configured limits and supersedes the
+key's prior generation.
 
 After each successful completion publishes or replaces its key, the bundle marks that key most
 recent and evicts least-recently-successfully-completed keys until the retained count is within
@@ -1977,11 +1979,12 @@ the `.vsh`/`.fsh` source stage. The affected predicates are `colortexNClear` and
 
 One case-sensitive `normalizeColorBufferName(String)` owns every pack-facing color-buffer spelling:
 `colortex0`/`gcolor` → 0, `colortex1`/`gdepth` → 1, `colortex2`/`gnormal` → 2,
-`colortex3`/`composite` → 3, and `colortex4`/`gaux1` through `colortex7`/`gaux4` → 4 through 7.
-Every other spelling is rejected; at a buffer-bearing grammar site it produces that site's existing
-source-attributed warn/ignore outcome without mutation. Uniform sizing and `gdepth` upgrade,
-format (including fixed `GAUX4FORMAT` → index 7), clear, clear-color, mipmap, and `flip` parsing all
-call this normalizer before constructing a `ColorAttachmentKey`; no parser keeps a private alias map.
+`colortex3`/`composite` → 3, `colortex4`/`gaux1` → 4, `colortex5`/`gaux2` → 5,
+`colortex6`/`gaux3` → 6, and `colortex7`/`gaux4` → 7. Every other spelling is rejected; at a
+buffer-bearing grammar site it produces that site's existing source-attributed warn/ignore outcome
+without mutation. Uniform sizing and `gdepth` upgrade, format (including fixed `GAUX4FORMAT` →
+index 7), clear, clear-color, mipmap, and `flip` parsing all call this normalizer before constructing
+a `ColorAttachmentKey`; no parser keeps a private alias map.
 
 Each recognized key maps to one typed parser, one target field, one validation rule, and one test
 ID from §3.3. There are no hand-written setter chains where adjacent half-life fields can be
@@ -2418,15 +2421,18 @@ collections, arrays, maps, enums, other numbers/objects, nested values, and null
 Phase 3 diagnostic factory before publication. Diagnostic encoding is
 `seq(atom("EngineDiagnostic"), atom(severity.name()), atom(channel.name()), atom(messageKey),
 encodeArgs(args), atom(detail), atom(logChannel))`, where `encodeArgs` is
-`seq(atom("DiagnosticArgs"), encodeArg...)` and each argument is
-`seq(atom("String"|"Boolean"|"Integer"|"Long"), atom(value))`. String values are exact UTF-8,
-booleans are `true`/`false`, and integers/longs are canonical signed base-10; the mandatory type tag
-therefore distinguishes equal text such as string `"1"`, integer `1`, and long `1L`.
+`seq(atom("DiagnosticArgs"), encodeArg...)`. For exact Java class `String`, `Boolean`, `Integer`,
+or `Long`, respectively, `encodeArg(v)` is `seq(atom("String"),atom(v))`,
+`seq(atom("Boolean"),atom(v))`, `seq(atom("Integer"),atom(v))`, or
+`seq(atom("Long"),atom(v))`. String payloads are exact UTF-8, Boolean payloads are `true`/`false`,
+and Integer/Long payloads are canonical signed base-10; the tag distinguishes equal text such as
+string `"1"`, integer `1`, and long `1L`.
 
 Discovery applies that encoding recursively to diagnostics in candidates and the result. The fixed
 overflow snapshot is encoded by the same path, and `DiscoveryLimits` construction rejects any
 `maxSnapshotBytes` smaller than its exact encoded size. Unsupported diagnostic arguments cannot
 enter a partial snapshot; factory rejection is an implementation invariant tested before counting.
+
 It also hashes `PackConfiguration.customExpressions()` as one canonical list in source order: fixed
 payload domain tag `customExpressions`, configuration schema version, list count, then for each
 declaration its `kind` and `type` enum tags, exact `name`, exact unescaped `rawExpression`, canonical
@@ -2814,7 +2820,8 @@ evicts least-recently-successfully-completed keys until the table has at most
 `maxRetainedDirectorySnapshots` entries. A result may contain at most `maxCandidatesPerSnapshot`
 candidates including sentinels and at most `maxSnapshotBytes` under §4.1's canonical accounting.
 If full enumeration would exceed either limit, the keyed result is exactly fresh `Off`, fresh
-`Internal`, and one fixed limit diagnostic; the configured minima guarantee that result fits.
+`Internal`, and the fixed `ERROR`/`CHAT` diagnostic
+`("schmaloogium.error.pack.discovery_limit", List.of(), "", "schmaloogium.pack")`.
 
 The §4.10 closed diagnostic-argument algebra, exact dynamic type tags, non-null field rules, and
 record/list framing are binding parts of this discovery contract. Counting includes every encoded
@@ -3532,6 +3539,8 @@ not a decision (PD §7.6).
 | D-P3-53 | Preserve each valid minimum-edition rule's decoded key suffix and decoded edition spelling in its accessors, using parsed/canonical forms only for comparison, because Appendix F.2 defines meaning but no canonical public projection. |
 | D-P3-54 | Apply overrides after the four base families with `ADD` absent/present = insert/reject, `SUPPRESS` = no-op/remove, and `FORCE` = insert/replace; deterministic pre-I/O validation rejects malformed overrides, protected targets, and `ADD` collisions without publishing a partial map. An absent `SUPPRESS` remains an intentional no-op and therefore cannot detect a syntactically valid misspelling. |
 | D-P3-55 | After checking Appendix F.4's syntax, default two columns, and beyond-18 requirement, adopt only the §G7-qualified behavior that treats configured columns as a floor and raises it to the nine-row minimum over the expanded retained slot array `[V:observed — OptiFine G6 screen behavior; behavioral-observation-only]`; this is behavior, not implementation structure. |
+| D-P3-56 | Give each load-failure code one localized key and a common `ERROR`/`CHAT`, empty-argument, empty-detail, pack-log payload because Phase 1 routes pack-level failures to chat and untrusted cause data must not cross the public failure seam. |
+| D-P3-57 | Close Phase 3 diagnostic arguments to four tagged boxed scalar classes and make the fixed discovery-overflow diagnostic argument-free, so exact snapshot accounting cannot depend on erased `Object` values or input-derived detail. |
 
 ### 11.2 Binding-decision disposition
 
