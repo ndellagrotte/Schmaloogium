@@ -86,11 +86,11 @@ anchored per phase:
 `docs/design/v2.0-RC2/DESIGN.md` from its §0.11 onward, adopted at the round-eleven fix-up as §G0.4
 step 3; `docs/phase2/v2/PHASE_2_DOC.md` §0.1 declares v3 after the maintainer-authorized Review-36
 rebuild, while `docs/phase2/v1/PHASE_2_DOC.md` retains its historical v1.1 declaration unchanged;
-and Phases 3–9 deliberately adopt RC3 from their initial builds. Phase 11 v1 §0 and Phase 13 v1 §0
-each explicitly declare v3, quoted at `docs/design/v3/DESIGN.md` and recorded in the Version-labels
-table below. Every
+and Phases 3–9 deliberately adopt RC3 from their initial builds. Phase 10 v1 §0, Phase 11 v1 §0,
+and Phase 13 v1 §0 each explicitly declare v3, quoted at `docs/design/v3/DESIGN.md` and recorded
+in the Version-labels table below. Every
 Phase 1 review through round 11 is in v1.1's coordinates. RC4 remains unadopted; v3 is adopted by
-Phases 2, 11, and 13 only and is not the global default.
+Phases 2, 10, 11, and 13 only and is not the global default.
 
 **The `$verify-loop` harness is retired (2026-08-08).** It used to resolve the revision **per
 target** from profiles under `verification/targets/`, with content selectors for Part I, the target
@@ -99,7 +99,7 @@ That machinery — `scripts/verify`, the `$verify-loop` skill, the profiles, and
 is gone; §0's per-doc declaration is the single source of truth. The governing revision is declared
 in each phase document's own §0, exactly as the rules below say: Phase 1's §0 selects RC2; current
 Phase 2 v2 §0 selects v3; Phases 3–8 §0 select RC3. Phase 9 declares RC3 in its document header.
-RC4 remains unselected; v3 is selected only by Phases 2, 11, and 13 until other phases execute §G0.4
+RC4 remains unselected; v3 is selected only by Phases 2, 10, 11, and 13 until other phases execute §G0.4
 independently. There is no executable pin table to synchronize.
 
 **Reading a phase against the wrong revision still yields plausible-looking wrong text that does
@@ -120,13 +120,14 @@ Directory names come from each document's own header, not from the folder it use
 | REV2 | `v2.0-RC2` | header states v2.0-RC2 (created 2026-07-26, not a move); supersedes RC1, which stays for history. **`-RC` retained after partial adoption — see the ruling below** |
 | REV3 | `v2.0-RC3` | header states v2.0-RC3 (created 2026-07-26, not a move); **governs Phases 3–9** — RC2 governs Phase 1 and v3 governs current Phase 2 v2 and Phase 11 v1; partial adoption retains `-RC` |
 | REV4 | `v2.0-RC4` | header states v2.0-RC4 (created 2026-08-03, not a move); unadopted candidate implementing PHASE_9_DOC §11.4's tag-evidence qualification; no phase §0 cites it |
-| REV5 | `v3` | header states v3; promoted together with its directory on 2026-08-03 from the former candidate label. It implements PHASE_7_DOC §11.5's split frame-begin/matrix-capture timeline and is now **adopted by Phase 2 v2 and Phase 11 v1 only**; it remains unadopted overall and is no global default |
+| REV5 | `v3` | header states v3; promoted together with its directory on 2026-08-03 from the former candidate label. It implements PHASE_7_DOC §11.5's split frame-begin/matrix-capture timeline and is now **adopted by Phase 2 v2 and Phases 10, 11, and 13 v1 only**; it remains unadopted overall and is no global default |
 | `RESEARCH.md` | `v1` | "first complete draft"; no version stated |
 | `PINTONIUM_DESIGN.md` | `v1.0` | header states v1.0 |
 | `PHASE_1_DOC.md` | `v14` | fix-up addenda §0.4–**§0.14**; `PHASE_1_REVIEW_14.md` has complete `## Resolutions`, and round fifteen returned a literal PASS with no further fix-up. Rolled from `v13` on 2026-07-26 after that round |
 | `PHASE_2_DOC.md` (historical) | `v1` | initial build/fix-up lineage through §0.35; retained byte-for-byte as the artifact Review 36 assessed under the explicit v3 override. Review 36 returned FAIL and remains without Resolutions |
 | `PHASE_2_DOC.md` (current) | `v2` | maintainer-authorized major rebuild exception after Review 36's FAIL; §0.36 formally adopts v3. The next review is Round 37 |
 | `PHASE_3_DOC.md` | `v1` | initial build under RC3; rolls only after a fix-up addendum and a later literal PASS |
+| `PHASE_10_DOC.md` | `v1` | initial build explicitly adopts v3 in §0 (2026-09-07); §0.1 records the maintainer-authorized §G5.3 exception for the current unverified Phase 4, 7, and 9 documents; architecture only, unverified |
 | `PHASE_11_DOC.md` | `v1` | initial build explicitly adopts v3 in §0 |
 | `PHASE_13_DOC.md` | `v1` | initial build explicitly adopts v3 in §0 (2026-08-08); §0.2 records the maintainer-authorized §G5.3 deviation for the still-unverified `PHASE_7_DOC.md` |
 
