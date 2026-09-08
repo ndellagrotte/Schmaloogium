@@ -7,7 +7,7 @@
 **Phase:** 1 — Foundation & project architecture
 **Milestone:** v0.1 · **Depends on:** — (Wave 0; this doc feeds every other phase)
 **Assigned OQs:** OQ-2, OQ-12, OQ-20 (seam hardness), OQ-21
-**Authored:** 2026-07-24 · **Last revised:** 2026-09-07 (§0.26)
+**Authored:** 2026-07-24 · **Last revised:** 2026-09-07 (§0.28)
 **Deliverable:** this document, per DESIGN.md §G9.
 **Verifies against:** `docs/design/v2.0-RC2/DESIGN.md` from §0.11 onward; `docs/design/v1.1/DESIGN.md`
 through §0.10. **There is no longer one governing revision for the project:** RC2 governs **this
@@ -1546,6 +1546,121 @@ earlier open-case statements in §0/decision history are superseded, not erased.
 verb, renderer API, source reuse, implementation or verification claim. Changed §5 remains unverified.
 
 
+### 0.28 Fresh R26 fix-up and commissioned foundation grants — 2026-09-07
+
+This is the separate fix-up of `PHASE_1_REVIEW_26.md`, not its reviewer. R26-1 is
+addressed by D-P1-48: successful-link primitive metadata belongs to the backend and the
+existing `fullscreenQuad()` uses its triangle-strip route when required. P7 adoption and
+the separate P10 native-QUADS topology question are explicitly handed onward in §11.4.
+D-P1-49 admits P3 §5.4's pure-JVM jcpp dependency with a verified implementation-time pin;
+D-P1-50 grants the bounded P10 R10-1 package/input facade and early-check contracts;
+D-P1-51 reconciles active build instructions to the executable checkout without a pin upgrade.
+
+Inputs actually read: complete RC2 globals and Phase 1 specification, complete P1 and R26;
+P3's dependency/schema/request contracts; P10's complete §5 request and incorporated
+layout, draw/restoration and compatibility sections; P7 fullscreen/prepared-submission
+semantics; P4's consumed contracts and complete §11.5 prepared-submission contract;
+the current root build/settings/properties, dependency/extra scripts, wrapper and all three
+CI workflows; and the U1 decision. The additional owner reads answer concrete requests,
+not new dependency edges. The published Khronos ARB_geometry_shader4 specification was
+read at its native primitive and GL-3.2 precedence/query clauses: revision 26,
+last modified 2011-01-21, copyright 2008–2013 Khronos under its stated specification
+copyright terms, URL in §0.25. No implementation source was read or copied in this fix-up.
+`[V:repo 2026-09-07]` below means file inspection only, not artifact resolution or execution.
+New mechanisms are local design decisions, not source-observed implementations.
+
+The July template/pin evidence and all prior addenda remain dated history. Active instructions
+are overridden only where D-P1-51 explicitly says so. U1's approved documented-mechanism
+correction supersedes this document's old pending-suffix prerequisite, not texture defaults.
+P3 native-source completion is separately commissioned; this fix-up does not author its schema.
+All changed §5 contracts remain **unverified**. Fresh independent whole-document review
+returning literal PASS and final integration remain required; no code, build, test, formatter,
+linter or validation command was run, and no complete legacy-rendering support is claimed.
+
+### 0.29 Settled producer receipts and remaining foundation closure — 2026-09-07
+
+P3 D-P3-68/schema19 now grants native-preserving source; §11.4 adopts its exact source/API
+precedence and P3 adopts D-P1-49 jcpp admission. P10 §0.6 and P7 §0.44 adopt D-P1-50,
+with P4 D-P4-28 supplying checked effective linked input. These remain unverified.
+D-P1-52 completes the already-named `TextureParameters` contract for required synchronous
+P5/P13 operation; optional P14 sampler/async architecture is not thereby approved.
+D-P1-53 moves the real MOD-plugin/class-only veto to v0.1 with the approved geometry-only
+adapter subset. The former empty-until-v0.3 plugin schedule cannot protect those early hooks.
+Extended CLASSIC56 production and vertex-format transitions remain v0.3.
+Historical addenda/review findings remain intact; fresh whole-document verification is required.
+
+### 0.30 R27 native-array isolation correction — 2026-09-08
+
+D-P1-55 addresses R27-1 and the identical NS-1 finding in the native/lifecycle seam
+review. §4.7.6 now isolates generic zero for conventional positions and admits every
+capture array through one complete plan, with actual-predecessor restoration and rollback.
+The original reviews and prior amendments remain historical; this is an authorized
+architecture correction, not reviewer re-verification, runtime success or literal PASS.
+§5 incorporates the changed contract; §8 specifies value-observing proof still to run.
+§11.4 requests exact P10 adoption and P7 receiving containment, not a new renderer API.
+The published ARB_vertex_shader revision 0.83 array and state-query clauses support the position
+precedence, enabled-array capture and absence of a queryable current generic-zero value:
+https://registry.khronos.org/OpenGL/extensions/ARB/ARB_vertex_shader.txt .
+No implementation source was copied, and no build/test/lint/formatter or GL run was performed.
+
+### 0.31 P3 R55 schema ownership receipt — 2026-09-08
+
+D-P1-56 reads P3 D-P3-70's schema21 correction: payload-free profile selector,
+usable base-or-override load classification and exact documented rectangle token.
+These change no P1 facade type or operation. Current P3 version assertions below defer
+to its binding §5.3/CURRENT_SCHEMA_VERSION instead of making foundation a second schema
+authority. Native-source algebra and same-load asset ownership remain exactly granted.
+R28's original literal PASS is preserved; this changed §5 receipt requires fresh review.
+
+### 0.32 Attempt-5 synchronous texture receiving amendment — 2026-09-08
+
+D-P1-63 grants P13 R5 C2's mandatory target-bearing synchronous value boundary with
+P5 D-P5-42; no new verb or optional async API. D-P1-64 receives P14 D-P14-31's
+always-current complete owned-object baseline, and D-P1-65 receives schema23, making
+earlier numeric receipts historical. Governing RC2 seam/thread/failure constraints,
+RESEARCH App B.4/F.5, complete affected allocation/parameter contracts and P13 R5
+were the selected inputs. Native/options/assets/parameter-domain authority is unchanged.
+Changed §5 is unverified; fresh owner/receiver review and later runtime proof remain
+required. No validation commands, build/tests, implementation edits or PASS claim.
+
+### 0.33 Attempt-6 corrections and complete-plan receipt — 2026-09-08
+
+D-P1-66 resolves R33 C33-1 with captured target maxima; D-P1-67 grants P5 R43's
+mandatory typed clear; D-P1-68 receives P10 D-P10-29's complete source-participation
+plan. RC2 Phase1 seam/failure constraints, P5's RC3 clear/format contract, affected
+owner declarations and the cited Khronos native specifications govern these changes.
+Historical pinned-source confidence and R33 N33-1 remain separate from current
+corroboration; no old path/commit claim is reauthenticated here. Live §4/§5/§8/§12
+change together; reviews remain historical and fresh applicable review is still required.
+No implementation, validation command, native execution or new PASS is claimed.
+
+### 0.34 Attempt-7 clear/recorder/lifetime corrections — 2026-09-08
+
+D-P1-69/70 resolve R34's two corrections in actual algorithms, exact fixture
+declaration, §5, cases and checklist; D-P1-71 receives P14's target-materialization
+and deletion law without changing create inputs. P10's real late BLOCK brightness
+completion is distinguished from partial ITEM ingress. Selected RC2 Phase1 authority,
+R34, affected load-bearing P1/P10 contracts and the cited Khronos discard specification
+were read; original pin/license qualifications and report verdicts remain historical.
+P5/P7/P10/P14/P2 receiving deltas require fresh review. No validation command,
+implementation, runtime proof or PASS is claimed.
+
+### 0.35 Attempt-8 confinement/label corrections — 2026-09-08
+
+D-P1-72 resolves R35 C1 by restating C-3's confinement as the package tree
+`com.schmaloogium.mod.glue` and its subpackages at the four normative sites — §4.3's softer
+layer (`:2537-2539`), the C-3 restatement (`:2551-2552`), §8.1's `SeamLwjglConfinementTest` row
+(`:5708`) and §5.1's seam row (`:5460`). D-P1-73 resolves R35 C2 by giving D-P1-71's label limb
+its full recorded-only form at §4.7.3 (`:3143-3149`), §4.7.4's creation-site instruction
+(`:3836-3840`), §4.7.8's restatement (`:4720-4727`) and §5.2's materialization row (`:5509`).
+Inputs read: `PHASE_1_REVIEW_35.md` and the RC2 Phase 1 specification; P14 owns the label law
+(D-P14-40/41), and P5/P13/P2 consume the no-queued-`GLError` drain guarantee while every phase
+inheriting C-3 reads the tree form. This addendum and §3's `blend.<prog>` coordinate repoints
+(RESEARCH.md `:1517` and `:430`; row now at `:1906`) were applied by the review-36 fix-up
+session. R35's verdict and all earlier review verdicts remain historical; fresh whole-document
+review and final integration are still required. No build, test, implementation or PASS
+claim accompanies these documentation edits.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 1 owns
@@ -1587,6 +1702,7 @@ Every concern this document touches but does not own — the §G9 anti-sprawl de
 | GL context creation mechanics, HiDPI, resize (OQ-3); CleanMix divergences on hot injections (OQ-4) | **Phase 7** |
 | Shadow policy, camera/celestial math, traversal and pass lifecycle; Minecraft/Forge/LWJGL adapters; shadow Mixins and accessors | **Phase 8**. Phase 1 grants only package placement and seam constraints |
 | Coexistence **policy**: which mod ids bail, detection mechanics, the user-visible message text (OQ-5) | **Phase 10** |
+| Vertex layout/producers, mesh epochs, declaration plans, shader lighting and topology | **Phase 10**, with P7 activation/lifecycle policy. P1 grants packages, borrowed-source input state and recording (§4.7.6); native conversion has the narrow approved §11.4 authority and still requires owner adoption/runtime proof |
 | GUI framework evaluation — whether ModularUI is fit for generated screens (OQ-9) | **Phase 12** |
 | Texture systems: noise generation, `_n`/`_s` companion atlases, custom-texture loading, platform adapters and dumb hooks | **Phase 13**. Phase 1 supplies package placement, seam constraints and transfer verbs (§4.7.4), not texture policy; unit-map ownership stays with Phases 5/6 (§1.2 above) |
 | KHR_debug labels/groups, sampler objects, async compile, GC posture | **Phase 14** |
@@ -1639,9 +1755,10 @@ LWJGL. Testable headless with JUnit alone.
 | `com.schmaloogium.engine.frame` | frame orchestration policy, lifecycle state, and closed frame results; no Minecraft, Forge, Mixin, or LWJGL types | Phase 7 |
 | `com.schmaloogium.engine.uniforms` | built-in uniform model, cadences, smoothing math, value-provider interfaces | Phase 6 |
 | `com.schmaloogium.engine.shadow` | shadow policy, camera/celestial math, traversal, pass lifecycle, and closed results | Phase 8 |
+| `com.schmaloogium.engine.vertex` | pure layout/field/epoch values, quad math, mesh policy and input plans; `.internal` for private stack/range/layout implementation | Phase 10 (D-P1-50) |
 | `com.schmaloogium.engine.expr` | custom-uniform expression language | Phase 11 |
 | `com.schmaloogium.engine.textures` | companion-atlas planning, noise generation, custom-texture resolution, `.mcmeta` interpretation, overlay model, `atlasSize` values, and closed results/failures; no Minecraft, Forge, Cleanroom, Mixin, or LWJGL types | Phase 13 |
-| `com.schmaloogium.engine.gl` | **the GL facade** — interfaces, `GLCapabilityProfile`, recording/replay impl | **Phase 1** |
+| `com.schmaloogium.engine.gl` | **the GL facade** — interfaces, capability/parameter values, recording/replay; P14's exact pure modernization values granted by D-P1-54/§4.7.8 | **Phase 1**, Phase 14 values only |
 | `com.schmaloogium.engine.log` | the zero-dependency `Log`/`LogSink` SPI and channel constants | **Phase 1** |
 | `com.schmaloogium.engine.diag` | `EngineDiagnostic` and the user-facing-channel vocabulary | **Phase 1** |
 
@@ -1653,10 +1770,13 @@ LWJGL. Testable headless with JUnit alone.
 | `com.schmaloogium.mod.glue` | adapters: world-state sampling, Forge registries, resources, **the LWJGL3 implementation of `engine.gl`** | Phases 1 (facade impl shape), 6, 7, 8, 9 |
 | `com.schmaloogium.mod.glue.frame` | Minecraft/Forge frame adapters and the LWJGL/platform bridge for Phase 7; no engine policy | Phase 7 |
 | `com.schmaloogium.mod.glue.shadow` | Minecraft traversal/draw/state, Forge render-pass, and facade-backed shadow adapters; no engine policy | Phase 8 |
+| `com.schmaloogium.mod.glue.vertex` | builder/state/VBO/list sidecars, format/cache/ordinal/task adapters and native vertex-input implementation; no engine policy | Phase 10 (D-P1-50) |
 | `com.schmaloogium.mod.glue.textures` | atlas/resource-manager adapters, Forge stitch-event listener, and facade-backed texture uploader; no engine policy or direct GL outside the facade implementation | Phase 13 |
+| `com.schmaloogium.mod.glue.gl` | Phase14 sampler/DSA/debug/readback/worker helper mechanisms; existing Lwjgl3GLDevice stays Phase1-owned in mod.glue and delegates | Phase 14, D-P1-54 placement only; operation/worker gates remain |
 | `com.schmaloogium.mod.mixin` | all Mixin classes, SRG-targeted, declared via the `MixinConfigs` manifest attribute | Phases 7, 8, 10, 13 |
 | `com.schmaloogium.mod.mixin.frame` | dumb Phase 7 redirects, injections, and accessors; no policy or retained frame state | Phase 7 |
 | `com.schmaloogium.mod.mixin.shadow` | dumb Phase 8 shadow redirects and accessors; no policy or retained frame state | Phase 8 |
+| `com.schmaloogium.mod.mixin.compat.vertex` | dumb MOD-phase vertex hooks, collectively gated by the existing plugin; no renderer or format policy | Phase 10 (D-P1-50) |
 | `com.schmaloogium.mod.mixin.textures` | dumb Phase 13 texture accessors and tick hooks; observe and delegate, no texture policy or retained lifecycle state | Phase 13 |
 | `com.schmaloogium.mod.gui` | pack selection + options screens | Phase 12 |
 | `com.schmaloogium.mod.compat` | coexistence detection, **bail registry** | Phase 1 (mechanism) / Phase 10 (policy) |
@@ -1729,10 +1849,12 @@ consistent with the `com.schmaloogium.{engine,mod,conformance}` tree. Publishing
 
 | Type | Module | Role |
 |---|---|---|
-| `GLDevice` | `engine.gl` | Root facade handle; hands out the seven services, the capability profile and the GL-error drain |
+| `GLDevice` | `engine.gl` | Root facade handle; eight services including the bounded v0.1 vertex-input service (§4.7.6), capability profile and GL-error drain |
 | `GLCapabilityProfile` | `engine.gl` | Immutable value object; RESEARCH.md §4.1's probe set + extension set + the macro-header fields (`glslVersion`, `vendor`, `renderer`); serializable as a test fixture |
 | `ProgramHandle`, `ShaderHandle`, `TextureHandle`, `BorrowedDepthAttachmentHandle`, `FramebufferHandle`, `UniformLocation` | `engine.gl` | Opaque handles — the engine never holds a raw GL int. **Four** direct `GLHandle` categories; the borrowed-depth marker is a narrower `TextureHandle`, not a fifth category, and there is no renderbuffer (§4.7.3) |
 | `LegacyGeometryInputPrimitive`, `LegacyGeometryOutputPrimitive` | `engine.gl` | Closed pre-link parameter domains, respectively `TRIANGLES` and `TRIANGLE_STRIP`; no GL enum values or Phase 3 types cross the facade |
+| `LinkedGeometryInputPrimitive`, `FullscreenPrimitive` | `engine.gl` | Closed linked-result/script and selected-route vocabulary (§4.7.4a), not new pre-link parameters |
+| `VertexInputService`, `VertexSource`, `VertexBinding`, `VertexBindMode`, `VertexBindResult`, `VertexBindRejection` | `engine.gl` | Bounded borrowed-source input state; complete shapes/lifetimes in §4.7.6, P10 policy/types remain `engine.vertex` |
 | `ForeignTextureProvider`, `ForeignTextures` | `engine.gl` | The slot a `mod.glue` implementation fills with ordinary `TextureHandle`s for textures **Minecraft** owns (`[D-P1-36]`, §4.7.3, §4.12). *Which* textures is not this phase's: the unit-map keys are **Phase 5's**, the `minecraft:`-resource-location keys **Phase 13's**. Those handles are **bind-and-label-only**, distinct from authenticated borrowed depth, and outside the owned-handle lifetime rule (§4.7.3) |
 | `GLError`, `GLErrorKind` | `engine.gl` | Driver errors as data. Attribution is per **drain window** — one call named when the window held one mutating **facade** call, the sweep named when it held many (`[D-P1-32]`); a window may also hold an error no facade call caused, since the GL flag is per-context (§4.7.4) — and this is the signal §G2.4's **rung 2** acts on; rung 1 is Phase 11's expression isolation and never reaches GL (§6) |
 | `ReplayAwareGLError` | `engine.gl` | One drained `GLError` plus the caller-established replay-attribution verdict. `attributed` is true only when isolated replay reproduces that error in the named call's window; labels, operation names, and clean or ambiguous replays never imply attribution (`[D-P1-42]`) |
@@ -1781,7 +1903,8 @@ debug affordances must satisfy, plus the vocabulary rule.
 | `const int countInstances = N` — **instanced re-render** with an incrementing `instanceId`, on a **composite/deferred** program | RESEARCH.md §3.2 and App A.3 for the directive; App **D.4** declares `instanceId` an `int` **uniform** ("0 original, 1..N instanced copies"). **the only observed form is RESEARCH.md §4.4's**, which is the only place the instancing *loop* is observed — "optional sub-viewport (`scale.<prog>`), `countInstances` instancing loop", in the composite-pass line | A **caller-side loop** over `DrawService.fullscreenQuad()` with `UniformService.upload(instanceIdLoc, i)` between copies. GLSL 120 has no `gl_InstanceID` (RESEARCH.md §3.5), so no single instanced draw can vary the uniform per copy — which is why the facade carries **no** instanced verb (`[D-P1-33]`, and §4.7.4's absent-verbs table says so). **The loop is Phase 7's, at `[v0.5]`**: `DESIGN.md` Part II names the `countInstances` instancing loop in Phase 7's *Scope — in*, under **Composite/final execution**, tagged `[v0.5]` there, and says it a second time and more explicitly in Phase 4's *Scope — in* — *"`countInstances` exposure to the pass executor (**execution is Phase 7, tag v0.5**)"* — which is the strongest citation on the point and the source of the milestone. Phase 5 — which owns the buffer estate the composite passes read and write — has no pass-execution bullet at all and puts "when copies/clears *happen* in the frame" in its *Scope — out*. The `instanceId` **upload** the loop makes between copies is **Phase 6's** entry point: `DESIGN.md` Phase 6's cadence model carries `instanceId` among the per-draw dynamics "at their hooks (Phases 7/9/10 invoke)" | `[V:doc]` |
 | `const int countInstances = N` on a **gbuffers/shadow** program | RESEARCH §3.2/App A.3 require repeated vertex-stage geometry without program restriction; explicit maintainer choice on 2026-09-07 settles the submission boundary | P3 detects, P4 carries the effective provider's count, P7 policy/P10 existing adapters repeat prepared native submissions N times at v0.5; P8 traverses once. No new facade verb; complete authentication/restoration contract §5.2/§11.4 | D-P1-47; ordering is maintainer-approved, not reference-observed |
 | `alphaTest.<prog>` — per-program alpha-test state | RESEARCH.md App F.7 | `StateService.alphaTest(AlphaTestState)` (§4.7.4) — the verb only. **The "which program carries which value is Phase 5/6 policy" clause this row carried through the §0.13 revision was wrong (V14-2):** `DESIGN.md` routes the directive **3 (parse), 4 (apply), 7 (execute)** — its coverage row says exactly that (l. 2410), the value is parsed and stored by **Phase 3** (*"per-program render-state overrides (alphaTest/blend/scale/flip/enabled — stored; applied by Phase 4)"*, l. 1245), carried as per-slot registry state and locked at the use-program barrier by **Phase 4** (ll. 1334, 1365 — the *"per-program alpha/blend lock"* is one of the barrier's stated obligations), and executed by **Phase 7**. "alphaTest" occurs nowhere in `DESIGN.md` outside ll. 1245 and 2410, and "blend" occurs zero times in Phase 5's whole spec (ll. 1409–1525) — the 5/6 attribution was this row's alone, the same defect class V13-4 fixed in the mipmap row against the same coverage table | `[V:doc]` for the directive; the routing is `[V:design]` (`DESIGN.md` ll. 1245, 1334, 1365, 2410) |
-| `blend.<prog>` — per-program blend state | RESEARCH.md App F.7 | `StateService.blend(BlendState)` plus `snapshot()`/`restore()` (§4.7.4) — the verbs only; the routing is the row above's: parsed and stored by **Phase 3** (l. 1245), carried per slot and locked at the use-program barrier by **Phase 4** (ll. 1334, 1365), executed by **Phase 7** (l. 2410). **The "per-buffer routing decision is Phase 5's" clause this row carried through the §0.13 revision is deleted (V14-2), and not re-homed:** App F.7's form is `blend.<prog>=off\|<src> <dst> [<srcA> <dstA>]` (RESEARCH.md l. 1511) — per-program, with **no per-buffer axis to route**. Per-buffer blending in this project's sources is RESEARCH.md §3.6.7's Iris-side `PER_BUFFER_BLENDING` feature flag (l. 429), modern-superset material assigned to no phase at v0.1; its one adjacency in `DESIGN.md` is l. 1337's per-buffer `BufferBlendOverride` inside Phase **4**'s registry bullet's REV1 Pintonium cross-check — an inventory to check the slot model against, not an assignment, and in Phase 4's bullet, not Phase 5's | `[V:doc]` for the directive; the routing is `[V:design]` (ll. 1245, 1334, 1365, 2410) |
+| `blend.<prog>` — per-program blend state | RESEARCH.md App F.7 | `StateService.blend(BlendState)` plus `snapshot()`/`restore()` (§4.7.4) — the verbs only; the routing is the row above's: parsed and stored by **Phase 3** (l. 1245), carried per slot and locked at the use-program barrier by **Phase 4** (ll. 1334, 1365), executed by **Phase 7** (l. 2410). **The "per-buffer routing decision is Phase 5's" clause this row carried through the §0.13 revision is deleted (V14-2), and not re-homed:** App F.7's form is `blend.<prog>=off\|<src> <dst> [<srcA> <dstA>]` (RESEARCH.md l. 1517) — per-program, with **no per-buffer axis to route**. Per-buffer blending in this project's sources is RESEARCH.md §3.6.7's Iris-side `PER_BUFFER_BLENDING` feature flag (l. 430), modern-superset material assigned to no phase at v0.1; its one adjacency in `DESIGN.md` is l. 1337's per-buffer `BufferBlendOverride` inside Phase **4**'s registry bullet's REV1 Pintonium cross-check — an inventory to check the slot model against, not an assignment, and in Phase 4's bullet, not Phase 5's | `[V:doc]` for the directive; the routing is `[V:design]` (ll. 1245, 1334, 1365, 2410) |
+| R32 active mechanism correction | D-P1-57 | The preceding immediate verbs do not implement duration locks: P4 now uses lockAlphaBlend/AlphaBlendOverride and concrete HEAD interception; historical ownership explanations remain | Unverified |
 | `scale.<prog>` — per-program sub-viewport | RESEARCH.md App F.7 | `StateService.viewport(x, y, w, h)` (§4.7.4), which §4.7.4's inclusion criterion already names the sub-viewport as its reason for existing. **Who computes the rectangle, this document does not say, and the reason is that `DESIGN.md` does not either.** Its three inputs have named owners — the **scale factor** is parsed and stored by **Phase 3** (*"per-program render-state overrides (alphaTest/blend/**scale**/flip/enabled — stored; applied by Phase 4)"*) and carried per slot by **Phase 4** (*"scale/flip storage"*); the **buffer dimensions** it multiplies are **Phase 5's** (*"Sizing: display size × render-quality multiplier; `superSamplingLevel`"*); and applying the result is **Phase 7's**, whose *Scope — in* part (a) lists *"`scale.<prog>` sub-viewports [v0.5]"* under **Composite/final execution**. Phase 5's *Scope — in* has no per-program sub-viewport bullet. The multiplication itself is assigned nowhere, so naming an owner here would be this document ruling on another phase's boundary — §G5.3's integration review is where a seam this shape gets settled | `[V:doc]` for the verb and the directive; the ownership is **`DESIGN.md`'s silence**, reported rather than filled |
 | Pack-facing vocabulary used **verbatim** in identifiers | DESIGN.md §G4.1 | The facade deliberately contains no pack vocabulary at all (it is below that layer), so no synonym risk is introduced here. The phases that do carry pack vocabulary (3, 5, 6) inherit §G4.1 directly | `[V:design]` |
 
@@ -1840,6 +1963,10 @@ change what the plan has to do.
 | `.gitignore` | already contains `**/build/` | No change needed for subproject build dirs. |
 | CI artifact paths | all three workflows reference `build/libs` (root-relative) | Breaks under the split — §4.11. |
 
+**Active migration override (D-P1-51).** This table is July evidence, not the current
+executable configuration. Apply §4.2.6a's September pin and script-placement ledger when
+performing the split; do not restore the old loader/plugin/wrapper or explicit Mixin dependency.
+
 ### 4.2 The Gradle module split
 
 #### 4.2.1 `settings.gradle`
@@ -1879,7 +2006,7 @@ configuration to subprojects.
 plugins {
     id 'com.gradleup.shadow'                     version '9.5.1'   apply false
     id 'org.jetbrains.gradle.plugin.idea-ext'    version '1.4.1'
-    id 'xyz.wagyourtail.unimined'                version '1.4.26-kappa' apply false
+    id 'xyz.wagyourtail.unimined'                version '1.4.36-kappa' apply false
     id 'net.kyori.blossom'                       version '2.2.0'   apply false
 }
 
@@ -1917,7 +2044,6 @@ subprojects {
     }
 }
 
-apply from: 'gradle/scripts/extra.gradle'
 ```
 
 `idea-ext` stays applied at root because the `idea.project.settings` block is a root-only concept;
@@ -1925,6 +2051,11 @@ its `runConfigurations` entries are retargeted at `:mod`'s tasks (`:mod:runClien
 `:mod:runServer`). The template's `moduleJavacAdditionalOptions` key `project.name + '.main'` becomes
 per-module keys (`engine.main`, `mod.main`, `conformance.main`) — recorded because it is a silent
 breakage otherwise.
+
+`extra.gradle` is **not** applied to the source-set-free root. Its current Buildship
+callback requires `sourceSets.main` and `generateJavaTemplates`, so it moves to `:mod`
+after Unimined/Blossom setup (§4.2.6a). The root-only IDEA configuration remains here;
+its `genSources` trigger targets `:mod:genSources`, not a nonexistent aggregator task.
 
 #### 4.2.3 `:engine/build.gradle` — the seam, by construction
 
@@ -1939,9 +2070,10 @@ repositories {
 }
 
 dependencies {
-    // Production dependencies: NONE. This is the seam (D-6).
-    // Test-only tooling is permitted; see the forbidden-coordinate list
-    // in the architecture test.
+    // P3 production dependency is admitted by D-P1-49, after its verified pin is recorded.
+    // jcpp_version is one exact implementation-selected version, never a dynamic selector.
+    implementation "org.anarres:jcpp:${jcpp_version}"
+    // C-1 remains enforced over the complete main compile/runtime dependency closure.
     testImplementation 'org.ow2.asm:asm:9.10.1'     // bytecode scan, test scope only
 }
 
@@ -2104,15 +2236,18 @@ jar {
 }
 ```
 
-The `contain`/`shadow`/coremod branches of the template's manifest block are retained but stay
-inert (`enable_shadow=false`, `is_coremod=false`, empty `contain`), so re-enabling any of them later
-is a property flip rather than a rewrite.
+The template's manifest branches remain. Shadow/coremod stay inert
+(`enable_shadow=false`, `is_coremod=false`); `contain` is now activated solely for
+D-P1-49's verified third-party closure, not for the first-party engine module.
 
 `gradle/scripts/dependencies.gradle` and `gradle/scripts/publishing.gradle` are applied **from
-`:mod` only**. `dependencies.gradle` carries `compileOnly sponge-mixin` and the (now-disabled)
-lwjglx line, both of which are meaningless outside `:mod`. `publishing.gradle` publishes the mod
+`:mod` only**. The current dependency script has the conditional lwjglx line and
+`modLibrary 'mezz:jei:4.33.0:dev'`, but no explicit sponge-mixin row. Preserve the current
+Unimined-provided dependency model; do not resurrect July's row (§4.2.6a). `publishing.gradle` publishes the mod
 artifact; `:engine` is not published separately (it is not a library anyone else consumes — it ships
 inside the mod jar).
+Apply `rootProject.file('gradle/scripts/extra.gradle')` from this project after its
+Unimined/Blossom setup under §4.2.6a, preserving the current Buildship callback exactly.
 
 #### 4.2.4a `:conformance/build.gradle` — the empty slot, wired
 
@@ -2170,6 +2305,35 @@ resolution order for a reason unrelated to mod dependencies, and it would weaken
 by-construction argument for C-1 — that `:engine/build.gradle` declares, visibly and in one file,
 exactly what `:engine` can see.
 
+#### 4.2.4b P3 jcpp admission and pin-at-implementation rule (D-P1-49)
+
+P3 §5.4 requests precisely `org.anarres:jcpp` in pure `:engine` production scope,
+not a runtime facade. Granted at v0.1 as `implementation`, with one exact
+`jcpp_version` property selected and verified by the implementation session before
+P3 code lands. RC2 §G7 item 7 / §G11.2 rule 4 supplies the Apache-2.0 candidate
+admission; this is not a claim that a particular release or transitive graph was inspected now.
+Record the exact version, repository/POM/artifact identity, full runtime dependency closure,
+licenses/notices and verification outcome in `PINS.md` and the existing `THIRD-PARTY.md`
+mechanism. No range, latest selector, snapshot or inferred Pintonium-vendored version.
+If verification cannot establish a compatible pure-JVM closure, the dependency remains
+implementation-blocked; do not weaken C-1 or adopt a prohibited transformer to unblock it.
+
+The seam forbids platform dependencies, not all production libraries. C-1 continues
+to scan the actual main compile/runtime closure and bytecode unchanged: jcpp and its
+verified pure-JVM transitives pass normally, never by an allowlist that bypasses
+Minecraft/Forge/Cleanroom/Mixin/LWJGL checks. No jcpp type enters public engine APIs;
+P3 owns adapters, preprocessing behavior and diagnostics. No new module edge.
+
+Merging first-party `:engine` classes does not ship its external runtime libraries.
+The `:mod` packaging step must include the verified jcpp runtime closure once through
+the existing third-party `contain` mechanism (not the first-party class merge), with
+matching versions at engine compile, headless runtime and client runtime. Exclude duplicate
+artifacts already deliberately supplied at the identical pinned runtime identity only with
+recorded verification; do not rely on Minecraft accidentally supplying a library.
+Preserve upstream LICENSE/NOTICE material and list shipped artifacts. This admits no
+extra library merely because jcpp's POM happens to mention it; its resolved closure
+must satisfy the same licensing/seam verification before inclusion.
+
 #### 4.2.5 Jar packaging: how `:engine` reaches the shipped jar
 
 `[D-P1-4]` **`:engine`'s compiled classes are merged directly into `:mod`'s jar**, via
@@ -2195,8 +2359,14 @@ packaging step into a debugging session. Recorded against §12 item 7, which is 
 that depends on this merge.
 
 `:conformance` is never packaged. It has no place in the mod jar and no publication.
+D-P1-49's third-party jcpp closure uses `contain` separately; this section's rejection
+of first-party engine containment and its flat engine-class merge remain unchanged.
 
 #### 4.2.6 Pin table (OQ-2)
+
+**Historical pin evidence follows.** The July values and verification claims are preserved.
+The active September configuration and after-split instructions are §4.2.6a; its explicit
+overrides win over this table, §10.1's old pin and every inherited implementation example.
 
 All values **re-verified 2026-07-24** for this document. The spec's prediction held: `0.6.6-alpha`
 was still current at re-verification time, but two releases (`0.6.5-alpha`, `0.6.6-alpha`) shipped
@@ -2269,6 +2439,36 @@ debugging only.
 `[D-P1-5]` The loader pin is a `gradle.properties` property rather than an inline literal precisely
 so that steps 4 and 6 are trivial and auditable.
 
+#### 4.2.6a Current executable migration ledger — 2026-09-07 (D-P1-51)
+
+`[V:repo 2026-09-07]` file inspection, **not** a new Maven/release availability check:
+
+| Component | Current executable observation | Binding split instruction |
+|---|---|---|
+| Gradle wrapper | `gradle/wrapper/gradle-wrapper.properties`: `gradle-9.7.0-bin.zip` | Preserve **9.7.0**; no downgrade or latest-release upgrade |
+| Unimined | `build.gradle`: **1.4.36-kappa** | Preserve exact plugin version in root `apply false`, apply only to `:mod` |
+| Cleanroom | `build.gradle`: inline **0.6.10-alpha** | Move unchanged to `cleanroom_loader_version=0.6.10-alpha`, read only by `:mod` |
+| Java / mappings | 25; MCP `stable`, `39-1.12` | Unchanged |
+| Blossom / Shadow / idea-ext / foojay / JUnit | 2.2.0 / 9.5.1 / 1.4.1 / 1.0.0 / 6.0.3 | Unchanged; ASM 9.10.1 remains the separately planned historical test-only pin, not a newly observed executable dependency |
+| Mixin dependency | Current `dependencies.gradle` has **no** explicit `sponge-mixin` declaration | Preserve current Unimined/loader resolution; do not add the July compileOnly row. Confirm resolved compile/refmap tooling and loader runtime at implementation, without bundling a competing Mixin runtime |
+| Current mod library | `modLibrary 'mezz:jei:4.33.0:dev'` in dependency script | Preserve its existing mod-only configuration during the split; not an engine dependency or a new shader prerequisite |
+| All three CI workflows | `setup-gradle` still says **9.6.1**, while build commands invoke `./gradlew` | Wrapper controls executed build version. Align setup inputs to **9.7.0** during implementation; do not claim current files already agree |
+| Buildship | `extra.gradle` registers `eclipseDependencies`, lazy main compile-classpath provider, `eclipse.classpath.plusConfigurations`, and `generateJavaTemplates` synchronization | Apply exactly once from `:mod`, after Unimined/Blossom establish its main source set/template task, using `rootProject.file('gradle/scripts/extra.gradle')`. Never apply the source-set-consuming script to root or headless modules |
+
+The script's `plugins.withId('eclipse')` guard defers Buildship setup until Eclipse is
+applied; it does not create missing main source sets or template tasks. Applying it to
+an Eclipse-imported aggregator would therefore reference absent model objects
+(`[INFERENCE]` from the inspected callback, not a run result). Preserve lazy classpath
+resolution and generated-source synchronization in the actual Minecraft-owning project.
+Root IDEA setup retains its own `idea.project.settings`; headless projects retain ordinary
+Java IDE models, not Minecraft/Blossom dependencies.
+
+`PINS.md` creation must begin with this current-file baseline, explicitly labeled
+"inspected, runtime/resolution verification pending", then append actual implementation
+verification and jcpp pin results. Keep July rows as historical evidence, never re-date
+them or invent a successful bump from them. §4.2.6's deliberate re-pin procedure remains;
+this reconciliation performs **no bump** and does not declare any pin last-known-good by test.
+
 ### 4.3 Seam enforcement — the testable constraint
 
 The §G3.1 sentence has two halves. Each gets its own mechanism.
@@ -2335,8 +2535,8 @@ while adding real build complexity. The bytecode scan gives the same enforcement
 (build time) with none of the runtime risk.
 
 A third, softer layer: `:mod` also gets a scan asserting that no `org.lwjgl*` reference appears
-outside `com.schmaloogium.mod.glue`, which is the mechanical half of §G4.6's "no direct LWJGL calls
-outside `mod.glue`'s facade implementation."
+outside `com.schmaloogium.mod.glue` and its subpackages, which is the mechanical half of §G4.6's
+"no direct LWJGL calls outside `mod.glue`'s facade implementation."
 
 #### The constraint, restated for later phases to inherit
 
@@ -2348,8 +2548,8 @@ outside `mod.glue`'s facade implementation."
 > **C-2** `:mod`'s compiled classes reference no type matching
 > `com.schmaloogium.engine.*.internal.*`.
 >
-> **C-3** `:mod`'s compiled classes reference no type under `org.lwjgl` outside the package
-> `com.schmaloogium.mod.glue`.
+> **C-3** `:mod`'s compiled classes reference no type under `org.lwjgl` outside
+> `com.schmaloogium.mod.glue` and its subpackages.
 >
 > **C-4** `:conformance` depends on `:engine` and never on `:mod` — asserted by
 > `SeamConformanceDependencyTest` (§8.2), in the same classpath-plus-bytecode form as C-1.
@@ -2377,7 +2577,7 @@ found a design error and must flag it, not work around it.
 | `is_coremod` | `false` | `false` (unchanged) | §4.5 |
 | `enable_shadow` | `false` | `false` (unchanged) | §4.2.5 |
 | `enable_junit_testing` | `true` | `true` (unchanged) | |
-| `cleanroom_loader_version` | *(absent — inline literal)* | **`0.6.6-alpha`** | new property, §4.2.6 |
+| `cleanroom_loader_version` | *(absent — inline literal)* | **`0.6.10-alpha`** | new property retaining the current executable pin, §4.2.6a |
 | `mixin_configs` | *(absent)* | **`schmaloogium.preinit.mixin.json,schmaloogium.default.mixin.json,schmaloogium.mod.mixin.json`** | new property, §4.5 |
 | `enable_mixin_debug` | *(absent)* | **`true`** locally; **not read by CI** — the flags reach only Unimined's run tasks (§4.5.5) | new property, §4.5.5 — gates `-Dmixin.debug.export` / `-Dmixin.checks.interfaces` on the client run; §12 item 32 |
 
@@ -2479,15 +2679,15 @@ once. The template README states it directly: "You will need one json per phase 
 
 | File | `target` | Mixin package | Purpose | Milestone |
 |---|---|---|---|---|
-| `schmaloogium.preinit.mixin.json` | `@env(PRE_INIT)` | `com.schmaloogium.mod.mixin.preinit` | Reserved. Anything needing to apply before mod construction — the vertex-format work (Phase 10) is the likely first tenant, expected `v0.3`. **The file ships empty at v0.1.** | `v0.1` |
+| `schmaloogium.preinit.mixin.json` | `@env(PRE_INIT)` | `com.schmaloogium.mod.mixin.preinit` | Reserved and empty; D-P1-50 grants the vertex family MOD placement, not preinit. Earlier attachment requires target evidence and a separate owner amendment. | `v0.1` |
 | `schmaloogium.default.mixin.json` | `@env(DEFAULT)` | `com.schmaloogium.mod.mixin` | The bulk: render-loop hooks (Phase 7), shadow-pass hooks (Phase 8), texture hooks (Phase 13). | `v0.1` |
-| `schmaloogium.mod.mixin.json` | `@env(MOD)` | `com.schmaloogium.mod.mixin.compat` | Mixins gated on other mods being present — `Loader.isModLoaded(...)` is only answerable in this phase; first tenant expected `v0.3`. Will carry the config plugin: the **`plugin` key is written at `v0.3`, in the same change as the class** — never at v0.1, because a `plugin` naming a class that does not exist fails config load at runtime. | `v0.1` |
+| `schmaloogium.mod.mixin.json` | `@env(MOD)` | `com.schmaloogium.mod.mixin.compat` | Coordinated P10 geometry-only hooks use the real class-only veto from v0.1. Plugin class and `plugin` key land together; CLASSIC56 hooks remain v0.3. No absent plugin class or permissive skeleton. | `v0.1` |
 
 **All three files are `v0.1`**, and the tag is on the *file*, not on its first tenant — §G4.3 allows
 each component exactly one tag. The `mixin_configs` manifest attribute names all three from v0.1
 (§4.4.1, §12 item 31), and a manifest naming a config file that does not exist fails config load at
 runtime — the same failure mode this table warns about for the `plugin` key. §9 carries the same
-three rows with "first tenant expected v0.3" in its note column.
+split: v0.1 geometry-only MOD family, v0.3 extended hooks.
 
 Common fields, following the template snapshot `[V:mcp get_project_template("mixins.json")]`:
 
@@ -2520,12 +2720,13 @@ An `IMixinConfigPlugin` slot, `com.schmaloogium.mod.mixin.SchmaloogiumMixinPlugi
 the **MOD-phase** config. Its designed role is to consult the bail registry (§4.10) in
 `shouldApplyMixin` so that a detected incompatible chunk-renderer replacement can veto vertex-pipeline
 mixins *before they apply*, rather than applying them and then disabling the engine — a materially
-better failure mode. It is a reserved slot in v0.1; Phase 10 gives it content.
+better failure mode. D-P1-53 requires that functioning veto at v0.1 before any approved
+geometry-only hook applies; P10 supplies its class-only policy through D-P1-50.
 
-**"Reserved" means reserved in this document, not declared in the JSON.** The v0.1 config files carry
-the common fields above and no `plugin` key — the key is added at `v0.3` together with the class
-(§9, §12 items 30 and 37). Declaring a plugin class that does not yet exist would fail config load,
-which is the one way this slot could hurt before it helps.
+The MOD config's `plugin` key and actual `SchmaloogiumMixinPlugin` class ship together
+at v0.1. DEFAULT/PRE_INIT receive no plugin key. This is not a returns-true skeleton:
+it evaluates the registered early subset and retains the whole-family terminal veto.
+It does not manufacture a runtime GL context or move CLASSIC56 production before v0.3.
 
 **Two package-placement observations, neither of them a change** — recorded so §12 item 30's
 "`runClient` loads all three configs without error" hook is run with them in mind, and so item 33's
@@ -2627,8 +2828,9 @@ are the norm (RESEARCH.md §2.3).
 
 The template README states it plainly: "Don't worry about refmap, Unimined will handle it
 automatically. You can still `disableRefmap()` manually though" `[V:template]`. The MCP guide agrees:
-"Refmaps are handled by Unimined at build" `[V:mcp]`. `sponge-mixin` stays `compileOnly` because the
-loader provides the runtime — RESEARCH.md §5.1 records exactly this.
+"Refmaps are handled by Unimined at build" `[V:mcp]`. The current checkout has no explicit
+`sponge-mixin` row; preserve its dependency model under §4.2.6a rather than recreate July's
+compileOnly declaration. Loader-provided runtime and first-hook/refmap verification remain required.
 
 The one thing to watch, recorded for the Phase 7 implementation session: the template checkout is the
 `main` branch and therefore has **never had a mixin config present**, so Unimined's refmap machinery
@@ -2759,6 +2961,8 @@ public record GLCapabilityProfile(
         int maxTextureImageUnits,    // GL_MAX_TEXTURE_IMAGE_UNITS
         int maxVertexAttribs,        // GL_MAX_VERTEX_ATTRIBS
         int maxTextureSize,          // GL_MAX_TEXTURE_SIZE
+        int max3DTextureSize,        // GL_MAX_3D_TEXTURE_SIZE; zero only unsupported
+        int maxRectangleTextureSize, // GL_MAX_RECTANGLE_TEXTURE_SIZE; zero only unsupported
         Set<String> extensions) {
 
     public boolean atLeast(int major, int minor) { … }
@@ -2781,6 +2985,24 @@ every pack shader, and `MC_GL_VERSION` comes from the version pair. The profile 
 whole GL-side input to Phase 3's header, which is what the §3 macro-header row records; Phase 3 owns
 the formatting and the non-GL macros.
 
+**Captured target limits — D-P1-66 (R33 C33-1).** The native probe admits 3D on
+`atLeast(1,2)` and rectangle on `atLeast(3,1)` or any of
+`GL_ARB_texture_rectangle`, `GL_EXT_texture_rectangle`, `GL_NV_texture_rectangle`.
+These are target-support gates, not inferred maxima. Query `GL_MAX_3D_TEXTURE_SIZE`
+and `GL_MAX_RECTANGLE_TEXTURE_SIZE` (the extension aliases have the same meaning)
+only behind their respective gates. A false gate produces exactly zero and performs
+no unsupported query or target call. A true gate requires a positive captured integer
+and the target's required image/subimage entry points; missing functions, GL query
+errors or nonpositive results fail capture and prevent device/profile publication.
+They never masquerade as unsupported zero. 1D/2D retain positive `maxTextureSize`.
+No maximum is guessed from another limit, a version or an extension string.
+Allocation checks width for 1D and width/height for 2D against `maxTextureSize`;
+all three 3D dimensions use `max3DTextureSize`; rectangle width/height use
+`maxRectangleTextureSize`. Unused axes retain §4.7.7a's canonical values.
+Native support rationale: [Khronos glGet](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGet.xhtml)
+and [ARB_texture_rectangle issue 12](https://raw.githubusercontent.com/KhronosGroup/OpenGL-Registry/main/extensions/ARB/ARB_texture_rectangle.txt).
+This is a facade decision grounded in distinct native limits, not observed pack parity.
+
 **Serialization.** `[D-P1-16]` The profile has a stable, human-readable, diff-friendly text form —
 a sorted `key = value` properties document with `extensions` as a sorted newline-delimited block.
 This is what makes the whole headless testing strategy work:
@@ -2795,6 +3017,8 @@ max.colorAttachments = 8
 max.textureImageUnits= 32
 max.vertexAttribs    = 16
 max.textureSize      = 32768
+max.3DTextureSize    = 2048
+max.rectangleTextureSize = 32768
 extensions =
   GL_ARB_debug_output
   GL_ARB_sampler_objects
@@ -2810,6 +3034,21 @@ a fixture's diff is readable when a driver update changes one extension.
 This format **is** what §G6 means by "recorded `GLCapabilityProfile`s", what Phase 2's
 "capability-profile replay" replays, and what Phase 4/5/6's "recorded-GL run" impl gates run against.
 Phase 1 owns the format; Phase 2 owns the fixture set and the update workflow.
+
+D-P1-66 makes `max.3DTextureSize` and `max.rectangleTextureSize` mandatory exact,
+case-sensitive keys. Values are base-10 nonnegative Java-int-range integers; zero is
+legal iff the corresponding gate above is false. Existing positive `max.textureSize`
+remains mandatory. Parse rejects missing/duplicate/malformed/negative/overflowing or
+gate-inconsistent values, never substitutes old defaults. Canonical write sorts scalar
+keys lexicographically, uses exactly `key = value` with LF endings, no padding, and
+then the existing sorted `extensions =` block; the display above is an illustrative
+profile, not an exception to canonical ordering. Round-trip preserves all captured
+integers exactly. P2 captures/replays this complete profile and explicitly refreshes
+old fixtures; recorder construction has no secondary target-limit scripts or GL query.
+The native probe also verifies callable required clear entry points for the advertised
+GL>=3.0 (`glClearBufferfv/iv/uiv`) or GL2 `GL_EXT_texture_integer`
+(`glClearColorIiEXT/IuiEXT`) tier before publication (D-P1-67); advertised-but-broken
+support fails capture, not a fabricated working recorder capability.
 
 #### 4.7.3 Handles
 
@@ -2886,6 +3125,28 @@ long-lived engine state outlive their objects as a matter of course. `[D-P1-28]`
 - `noLeakedObjects()` is not the same assertion and does not cover this: it checks that every create
   has a matching delete, which is the direction a *leak* runs. A reload produces the opposite —
   deletes whose handles are still held.
+
+**Owned texture materialization — D-P1-71 (P14 lifecycle receipt).**
+`TextureService.create(debugLabel)` creates only the authenticated logical handle and
+retains its label; it chooses no target and creates/labels no native texture. First
+admitted `allocate(t,spec)` materializes the exact `spec.target()` after preflight,
+then applies the retained label to that object. The existing first depth initialization
+likewise materializes its already-known 2D target. No target argument or raw-name
+adoption is added to create. Failed preflight leaves the handle unmaterialized.
+Deleting an unmaterialized handle retires it without a native texture-delete call.
+Native deletion is lifetime-ending, not binding-neutral: affected bindings/cache entries
+become zero, unrelated bindings remain, and cleanup never rebinds a deleted name.
+Existing final-use/lease retirement applies before deletion; no async grant follows.
+Failed first native storage retains its materialized name for owned cleanup but
+publishes no usable storage; rebuilding uses a new logical handle, never retargets
+a possibly typed failed name. Deletion preserves the active unit and unrelated bindings.
+`DebugService.label` on a live-but-unmaterialized owned texture handle is legal and
+recorded-only (D-P1-73): it updates the retained label, issues no GL, appends no
+native-label event and queues no `GLError`, and the retained value — original or
+updated — is applied exactly once by the first admitted materialization, after
+exact-target materialization and before storage work; it is dropped if the handle is
+deleted while still unmaterialized. Foreign and borrowed handles are already
+materialized objects, so this limb changes nothing for them.
 
 `UniformLocation.isAbsent()` is load-bearing and belongs here rather than in Phase 6: GLSL compilers
 routinely optimize out unused uniforms, `glGetUniformLocation` returns `-1`, and the reference
@@ -3005,6 +3266,7 @@ public interface GLDevice {
     StateService       state();
     DrawService        draw();
     DebugService       debug();
+    VertexInputService  vertexInputs();
 
     /** Errors observed since the last drain; empty when clean. Draining clears.
      *  NOT a query of GL's state on demand, in either direction: the drain elides entirely
@@ -3022,7 +3284,8 @@ public interface GLDevice {
 }
 ```
 
-Seven services, each a role rather than a GL module. Load-bearing signatures:
+Seven baseline services plus the bounded vertex-input service in §4.7.6, each a role
+rather than a GL module. Load-bearing baseline signatures:
 
 ```java
 public interface ShaderService {
@@ -3035,6 +3298,9 @@ public interface ShaderService {
                       LegacyGeometryInputPrimitive input,
                       LegacyGeometryOutputPrimitive output, int maxVerticesOut); // pre-link
     LinkResult    link(ProgramHandle p);                 // never throws
+    Optional<LinkedGeometryInputPrimitive> linkedGeometryInput(ProgramHandle p);
+    SamplerInitializationResult initializeSamplerUnits(
+        ProgramHandle p, List<SamplerUnitAssignment> assignments);
     ValidateResult validate(ProgramHandle p);            // never throws
     void          use(ProgramHandle p);   // select a live linked shader program
     void          useFixedFunction();     // select program zero; no null/magic handle ([D-P1-39])
@@ -3044,6 +3310,12 @@ public interface ShaderService {
 
 public enum LegacyGeometryInputPrimitive { TRIANGLES }
 public enum LegacyGeometryOutputPrimitive { TRIANGLE_STRIP }
+
+public record SamplerUnitAssignment(String exactName, int unit) {}
+public sealed interface SamplerInitializationResult {
+    record Completed() implements SamplerInitializationResult {}
+    record Failed(String detail, boolean selectionRestored) implements SamplerInitializationResult {}
+}
 
 public interface UniformService {
     UniformLocation locate(ProgramHandle p, String name);
@@ -3058,6 +3330,11 @@ public interface UniformService {
     void uploadMatrix4(UniformLocation loc, float[] m16, boolean transpose);
     // NO uniform-block / UBO entry point — the pack contract forbids it
     // (RESEARCH.md §6.1, D-9).
+}
+
+public sealed interface FramebufferDrawSlot {
+    record Attachment(int index) implements FramebufferDrawSlot {}
+    record None() implements FramebufferDrawSlot {}
 }
 
 public interface FramebufferService {
@@ -3076,10 +3353,9 @@ public interface FramebufferService {
      *  read/draw bindings before return. */
     void attachDepthStencil(FramebufferHandle f, TextureHandle t);
 
-    /** Which attachments this framebuffer writes. A ZERO-LENGTH array means the contract's
-     *  "draw-buffers = none" state (RESEARCH.md §4.4's first-person item overlay; App A.3's
-     *  `N` = none), NOT "leave the current selection alone" — there is no verb for the latter. */
-    void drawBuffers(FramebufferHandle f, int[] attachmentIndices);
+    /** Positional output locations; None consumes a location but names no attachment.
+     * Empty means no writes, never preserve-current. No raw sentinel is accepted. */
+    void drawBuffers(FramebufferHandle f, List<FramebufferDrawSlot> slots);
 
     FramebufferStatus check(FramebufferHandle f);
     void bind(FramebufferTarget target, FramebufferHandle f);
@@ -3127,6 +3403,10 @@ public interface FramebufferService {
      *  result are Phase 6 policy; this is only the verb. */
     float readDepthPixel(FramebufferHandle f, int x, int y);
 
+    /** Exact owned color attachment, selected through its positional draw-route index.
+     *  Clears its full extent and restores all private temporary state; §4.7.4b. */
+    void clearColorAttachment(FramebufferHandle f, int drawBufferIndex, ColorClearValue value);
+
     void delete(FramebufferHandle f);
 }
 
@@ -3142,6 +3422,7 @@ public interface TextureService {
      *  format, and to which unit is Phase 13/5 policy. */
     void upload(TextureHandle t, TextureData data);
 
+    void prepareUnitBindings(int occupiedUnitMask);
     void bindToUnit(int unit, TextureHandle t);
     void generateMipmap(TextureHandle t);                 // caller checks supportsMipmapGeneration()
     void delete(TextureHandle t);
@@ -3155,6 +3436,10 @@ public interface StateService {
     void depthTest(boolean enabled);          // depth TEST — a different bit of state
     void blend(BlendState state);             // null/absent = disabled
     void alphaTest(AlphaTestState state);
+    AlphaBlendOverride lockAlphaBlend(
+        Optional<AlphaTestState> alpha, Optional<BlendState> blend);
+    BlendState effectiveBlend();
+
     void fog(FogState state);                 // null/absent = disabled
 
     /** Snapshot the state we are about to perturb, for the §G4.6 restore discipline.
@@ -3163,9 +3448,16 @@ public interface StateService {
     void restore(StateSnapshot snapshot);
 }
 
+/** Backend-implemented opaque render-thread lease; obtain only from StateService. */
+public interface AlphaBlendOverride extends AutoCloseable {
+    @Override void close();
+}
+
 public interface DrawService {
-    /** The composite/final full-screen pass primitive. The backend picks GL_QUADS or the
-     *  triangle-strip fallback (RESEARCH.md §6.1); the engine never expresses that choice.
+    /** The composite/final full-screen pass primitive. The backend uses its active linked
+     *  input requirement: TRIANGLES forces the existing triangle strip even where QUADS
+     *  is available; non-geometry retains QUADS preference (§4.7.4a, D-P1-48).
+     *  The engine never expresses that backend choice.
      *  It delegates the PRIMITIVE only: it establishes no draw state, and the caller is
      *  responsible for the composite state block through StateService.
      *  `const int countInstances = N` (RESEARCH.md §3.2) is NOT served by an instanced verb —
@@ -3181,7 +3473,7 @@ public interface DebugService {
     void pushGroup(String label);
     void popGroup();
     void label(GLHandle handle, String label);
-    boolean isActive();          // false unless a debug context and the dev flag are both on
+    boolean isActive();          // installed supported backend && glLabels; no debug-context prerequisite (§4.7.8)
 }
 
 /** One driver-level error, attributable to the DRAIN WINDOW that produced it — and therefore
@@ -3211,6 +3503,110 @@ public record ReplayAwareGLError(GLError error, boolean attributed) {
     }
 }
 ```
+
+**Candidate sampler initialization — D-P1-59.** P4 alone calls
+`initializeSamplerUnits` after successful link/linked-input checks and before validation.
+P5 supplies the immutable complete fixed-unit assignments; P1 has no sampler-name policy.
+Validate the live same-device linked program, render thread/context, non-null list/elements,
+nonempty unique exact names and units 0–15 before GL. Invalid arguments follow existing
+precondition rejection with no event/mutation. An empty assignment list completes without GL.
+For nonempty input, retain the backend's authenticated previous program selection and linked
+input metadata, drain/report preceding errors, and stop on a nonempty preceding drain.
+Privately select the candidate, locate each name and upload its integer unless absent.
+Drain each lookup/upload window; stop at the first error, preserving sanitized detail.
+Always attempt previous-selection restoration and its immediate error check before return.
+These private selection operations update the same backend tracker, but neither dispatch P4/P6
+participants nor execute public fixed-function sampler normalization. Texture/sampler bindings,
+active unit and alpha/blend state remain unchanged. No candidate location escapes.
+Completed requires every active assignment initialized and exact previous selection restored.
+Failed(detail,true) permits P4's candidate cleanup/fallback; failed or unprovable restoration
+returns Failed(detail,false), invalidates remembered selection and poisons shader admission
+until safe backend recovery/reconstruction. It cannot become a local successful fallback.
+Backend exceptions are contained by this result; independent cleanup still runs. There is no
+caller-side upload replay or fabricated attribution. The operation is render-thread-only even
+if optional worker compilation is later enabled; it is not a runtime uniform initializer.
+
+**Sampler normalization dispatch — D-P1-60.** `prepareUnitBindings` accepts exactly a
+16-bit occupied-unit mask (bit n denotes fixed unit n), with thread/context/argument checks
+before mutation. P5 calls it only after all-row successful binding preflight. Under P14's
+admitted sampler strategy it clears native sampler bindings on unoccupied units 0–15;
+under NONE there are no owned native samplers to clear. It does not bind textures, change
+the active texture unit, allocate, or reparameterize borrowed objects. Driver failure uses
+the existing drain/exception surface and prevents P5 Bound/ownership transfer.
+Public `useFixedFunction` clears all strategy-owned sampler bindings on units 0–15 before
+its successful return, so P4/P7's existing fixed-terminal and result-checked final release
+also normalize before vanilla draws. Failure cannot authorize a fixed-function draw.
+No implied frame callback or sampler-state leak through Unused rows remains.
+
+Recorder additions mirror the contracts, not private native call counts:
+`shaders.initializeSamplerUnits(program,assignments,previousSelection,result)` retains the
+opaque previous shader-or-fixed selection and closed result; invalid requests append nothing.
+`ScriptedResponses.samplerInitializationFails(programLabel,detail,selectionRestored)` drives
+both failure dispositions; uniformAbsent covers optimized-out names. Default success requires
+a live linked program and mirrors prior-selection restoration. `textures.prepareUnitBindings`
+records the integer mask; existing glError scripting covers normalization failure.
+The zero-argument public shaders.useFixedFunction event remains unchanged. Actual sampler/
+uniform native dispatch counts require P14's separate backend evidence, not facade-event counts.
+
+**Lease issuance — D-P1-58 (R30-1).** `AlphaBlendOverride` is an unsealed engine interface,
+like the existing backend-implemented handle seams. The LWJGL backend in `mod.glue` and
+recorder in `engine.gl.record` each return their own private implementation from
+`StateService.lockAlphaBlend`; neither needs an engine-package constructor or factory.
+The implementation retains its issuing device's private lease identity, saved state and
+consumed flag. No operation accepts a caller-supplied lease to acquire, replace or release
+another device's state. Implementing the interface cannot manufacture that private authority.
+Closing a genuine lease follows the existing thread/lifetime, idempotence, rollback and
+poisoning rules below. No native handle, public issuer or dependency on mod types enters engine.
+
+**Duration override mechanism — D-P1-57.** `lockAlphaBlend` requires non-null optionals;
+empty leaves that aspect ordinary, present disabled state locks OFF. One lease per device,
+including an empty lease; nested acquisition rejects before mutation. Before writing, capture
+the exact real alpha enable/function/reference and blend enable/separate RGB/alpha factors
+for present aspects only. Retain disabled-state factors too. The backend owns private
+render-thread guards and DEFAULT-config cancellable HEAD hooks in `mod.mixin.frame` for
+GlStateManager enableAlpha, disableAlpha, alphaFunc, enableBlend, disableBlend, blendFunc
+(all overloads) and tryBlendFuncSeparate (all overloads). P7 registers these concrete hooks;
+their only decision is delegation to the P1 backend's held-aspect guard. Cancellation occurs
+before cache/native mutation. Ordinary attempts, including immediate facade setters/restore,
+are suppressed, not queued, for held aspects; unlocked aspects proceed normally.
+Acquisition/close use an unforgeable private try/finally bypass depth, invoking GlStateManager,
+not raw writes and not a public bypass API. This bypass skips interception, never cache updates.
+Repair cache from the captured actual state before restoration if necessary so equality skipping
+cannot leave native/cache divergence. Close restores only held aspects to the exact pre-lock
+snapshot, never the last suppressed request; marks consumed and repeated close is harmless.
+No new acquisition is allowed until close completes. A failed acquire rolls back all touched
+aspects before throwing; close tries every held aspect even after one failure. The lease is
+consumed on failed close and the device's shader-state admission is poisoned until safe
+backend recovery, not silently unlocked into shader drawing. Rollback failure likewise poisons.
+Drain native errors within acquire/restore before returning; failure throws IllegalStateException,
+with errors retained for ordinary diagnostics. These transactional non-void/close operations
+are exceptions to the ordinary void-verb batched-error rule.
+`effectiveBlend()` returns the complete effective cached/native-coherent blend value, including
+disabled factors. Existing P7 RETURN observations publish this value, never attempted arguments;
+cancelled HEAD calls do not emit changes. Bypass-owned successful changes notify through the
+same P7 effective-state path before participants/drawing; P4 also samples effectiveBlend before
+its built-in participant. A notification failure prevents successful acquisition/activation and
+uses the same rollback/poison containment. No P6 observer gains lock policy.
+
+Draw-route validation copies the immutable list, rejects nulls, negative/out-of-capability
+attachment indices, duplicate non-None indices and length above maxDrawBuffers before GL.
+Repeated None is legal. The backend alone encodes Attachment as COLOR_ATTACHMENT0+index
+and None as GL_NONE; empty uses the native no-write operation. Restore read/draw bindings.
+Record `framebuffers.drawBuffers(f,slots)` with tagged positional values, and
+`state.lockAlphaBlend(alpha,blend)` / `state.closeAlphaBlendOverride(leaseId)` with exact
+predecessor/effective values and failure outcomes. Recorder models suppression, bypass,
+rollback and poisoning; no-event precondition rejection is preserved.
+
+The concrete mod-only bridge is `com.schmaloogium.mod.glue.AlphaBlendOverrideHooks`:
+`public static boolean suppressAlphaMutation()` and `public static boolean suppressBlendMutation()`
+return held-aspect && privateBypassDepth==0 on the installed device, false before installation;
+`public static void publishEffectiveBlend()` forwards the installed device's effectiveBlend
+to the existing P7→P6 effective-state event path after a successful native/cache change.
+P7 HEAD hooks only cancel when the matching predicate is true; RETURN hooks call
+publishEffectiveBlend only when not suppressed and when the effective value changed.
+P1 acquire/close invokes that same publishing bridge after coherent writes, never by recursively
+calling hook callbacks. The bridge owns no setter, lock values, queue or alternative lifetime.
+It is mod-only and unavailable from engine/conformance; P1 recording models the events directly.
 
 Design rules embedded above, each with a reason:
 
@@ -3436,8 +3832,12 @@ Design rules embedded above, each with a reason:
   `FramebufferStatus`, `BlendState` are engine enums/records; the LWJGL3 backend maps them to `GL_*`.
   A raw `int target` parameter would be the GL-verb layer wearing a costume.
 - **`DebugService` exists in v0.1 as a no-op.** Its implementation is `v0.5` (Phase 14), but its
-  presence now means Phase 4/5's object-creation sites can call `label(handle, "colortex0")` from day
-  one, which is exactly the "architect now, implement later" rule of §G0.3.
+  presence now means Phase 4/5's object-creation sites label from day one, which is exactly the
+  "architect now, implement later" rule of §G0.3. Since D-P1-71 the owned-texture order is
+  label-then-materialize: pass the label to `TextureService.create(debugLabel)` at logical
+  creation, or call `label(handle, "colortex0")` before the first admitted materialization, where
+  it is recorded-only (D-P1-73) and applied by that materialization — never a live
+  `glObjectLabel` against a name that does not exist yet.
 - **Data moves in both directions, and both directions are verbs here.** A facade that can create and
   bind objects but not put data into them or read data out of them is not implementable by its
   dependents: Phase 6's `centerDepthSmooth` readback is a **v0.1** consumer of this section
@@ -3507,6 +3907,196 @@ Design rules embedded above, each with a reason:
   parameters. Thus this operation cannot repair stripped extensions, extension-era built-ins
   left in core source, or conflicting source layouts. Phase 3 must publish the appropriate
   native legacy source first, and Phase 4 must select it explicitly (§5.2/§11.4).
+
+#### 4.7.4a Linked primitive requirements and fullscreen submission (D-P1-48)
+
+R26-1 changes no `fullscreenQuad()` signature and no topology policy of vanilla draws.
+ARB_geometry_shader4 revision 26 §2.16.1/Errors permits TRIANGLES-input geometry with
+TRIANGLES, TRIANGLE_STRIP or TRIANGLE_FAN, **not QUADS**. Its GL-3.2 dependency clause
+distinguishes pre-link ARB parameters from actual linked properties; source layout can
+override each parameter independently. The configured triple alone is therefore not an
+adequate linked-state cache on GL 3.2+.
+
+**Private backend state, render-thread/current-context owned.**
+
+- Issued program metadata retains attached stages, the complete last clean native triple,
+  first-link-attempt state and an immutable successful-link input requirement, keyed by
+  issuance identity rather than a reusable GL integer. Configure is candidate-only and
+  changes no active requirement. Capability/setter failure never produces clean metadata;
+  the mandatory immediate drain/abort transaction remains binding.
+- On successful driver link, a program without a geometry stage records `NO_GEOMETRY`.
+  A geometry program on GL 3.2+ obtains its **effective linked input** once using the core
+  `GL_GEOMETRY_INPUT_TYPE` query inside `link`, not the similarly named ARB parameter query.
+  This covers native extension sources with layout overrides and ordinary core sources.
+  Pre-3.2 native geometry uses the clean configured input committed by that link; source
+  layouts are unavailable there. Unknown/failed metadata acquisition makes `LinkResult`
+  unsuccessful, never a default-QUADS success. Failed link publishes no new executable
+  requirement; Phase 4 deletes that candidate, never restores/reuses a previous executable.
+- `ShaderService.linkedGeometryInput(p)` exposes only that immutable cached successful-link
+  value to the compiler: `Optional.empty()` means **no geometry stage**, never unknown;
+  a present value is the exact `LinkedGeometryInputPrimitive`. The enum contains only
+  POINTS, LINES, LINES_ADJACENCY, TRIANGLES, TRIANGLES_ADJACENCY. It performs no GL
+  call, source scan, selection or allocation of a new metadata object. Null/forged/
+  wrong-device handle gives IllegalArgumentException; wrong thread/context, deleted,
+  never-linked or failed-link handle gives IllegalStateException, all before GL.
+  Failed metadata acquisition already makes `link` unsuccessful. Deletion/context
+  retirement invalidates later inspection, but a copied enum value has no handle authority.
+  P4 maps empty to NONE and present values exactly to its finalized P3-derived input
+  category, comparing **before validate/drawable publication**. Mismatch fails the entire
+  candidate with attributed diagnostics and normal cleanup/fallback; neither side is
+  silently rewritten to match. This is a compile-time cached inspection grant, not
+  an active-program query for P7/P10; those still receive P4's authenticated projection.
+- `use(p)` authenticates this device's live successful-link record before dispatch.
+  The backend confirms the selected native program at this **selection boundary** using
+  `GL_CURRENT_PROGRAM`, then atomically updates its private active identity/requirement.
+  `useFixedFunction()` uses the same path, confirming zero and recording `NO_GEOMETRY`,
+  without creating a zero handle. This is one binding query per actual selection, not per
+  draw and not a source scan; it is an explicit correctness cost, distinct from and not a
+  change to the batched `glGetError` cadence. No query is inserted between countInstances
+  copies. Known failed selection retains the confirmed prior selection; uncertain
+  dispatch/query/context failure marks active state `UNKNOWN` and queues the existing
+  operation-named `GLError`. No speculative requirement becomes active.
+- Deleting an inactive program removes its metadata immediately. Deleting the active
+  program first selects fixed function through that same backend path, then invalidates
+  the issued program and its cached metadata even if native deletion is deferred by GL.
+  A failed deselection leaves active state `UNKNOWN`, never a deleted-handle cache hit.
+  Context teardown drops all records. Driver-name reuse cannot recover old metadata.
+- P4/P7 nested restoration reselects the live predecessor via `use` or `useFixedFunction`,
+  so the requirement is restored with the program, not copied independently from a caller
+  snapshot. `StateService.snapshot/restore` still covers only its declared aspects and
+  does **not** save programs. Backend-internal platform restoration must update/invalidate
+  the same active tracker; arbitrary foreign-program restoration is `UNKNOWN` until an
+  explicit engine selection. Engine-controlled fullscreen execution permits no untracked
+  program mutation between activation and draw. Failure/restoration containment belongs
+  to P4/P7, not a per-draw GL query intended to discover outside mutations.
+
+**Dispatch.** `fullscreenQuad()` reads only that private active record. `NO_GEOMETRY`
+keeps QUADS when supported, otherwise the retained four-vertex triangle strip.
+`TRIANGLES` always uses the retained four-vertex triangle-strip implementation, including
+on compatibility profiles supporting QUADS. Preserve its established vertex/UV ordering,
+coverage and caller-owned ortho/state block; do not invent a triangle-list conversion.
+Point, line or adjacency input, `UNKNOWN`, or an invalidated selected executable cannot
+be served by this fullscreen primitive: queue `GLError("draw.fullscreenQuad", label,
+INVALID_OPERATION, detail)` and issue no native draw. Native dispatch failure follows the
+same drain channel. P7 must observe draw failure before reporting Completed or committing
+flips/post-draw work; no retry with QUADS and no geometry-stage-only disable.
+Any temporary backend vertex/current-value state used by the existing quad/strip implementation
+is restored in finally; caller matrix/viewport/fog/depth/alpha/blend and program selection
+are not changed by the primitive. Restoration failure invalidates admission and follows
+the existing frame-off containment, never a reported successful pass.
+
+**Recorder parity.** Add `LinkedGeometryInputPrimitive` in `engine.gl` with exactly
+`POINTS`, `LINES`, `LINES_ADJACENCY`, `TRIANGLES`, `TRIANGLES_ADJACENCY`, and
+`FullscreenPrimitive` with `QUADS`, `TRIANGLE_STRIP`. They are metadata/log vocabulary,
+not new configurable primitive parameters. Add
+`ScriptedResponses.linkedGeometryInput(String programLabel, LinkedGeometryInputPrimitive input)`.
+The recorder commits the scripted effective input only on a successful link; an unoverridden
+clean native triple supplies its TRIANGLES default. Core geometry without a scripted
+linked input fails metadata acquisition rather than rescanning GLSL or guessing. Tests of
+native source overrides must script the actual effective input, not the configured value.
+Ordinary no-geometry links retain the existing default success.
+
+Existing `glError` scripts for `shaders.use`, `shaders.useFixedFunction`, and
+`draw.fullscreenQuad` drive failed selection/draw; uncertain selection marks `UNKNOWN`.
+The recorder mirrors issuance, selection, deletion and nested re-selection.
+`linkedGeometryInput` reads the same committed recorder record and appends the query-shaped
+`GLCall("shaders.linkedGeometryInput", List.of(p, result))` for a valid request, where
+`result` is the Optional enum value; invalid requests append nothing. It cannot mutate
+active selection or error-drain cadence. Live recording copies the actual cached result.
+For fullscreen submission it appends
+`GLCall("draw.fullscreenQuad", List.of(FullscreenPrimitive.QUADS))` or the corresponding
+`TRIANGLE_STRIP` argument only when that native submission is selected; rejected submission
+records `GLCall("draw.fullscreenQuadRejected", List.of(reason))`, with the closed reason
+name `INCOMPATIBLE_INPUT` or `UNKNOWN_PROGRAM`. Scripted native draw failure retains the
+attempt event and queued error, not a fictional no-draw rollback. No raw integer, source,
+client address or newly allocated geometry reaches the log. P2 must deliberately regenerate
+affected synthetic call-log goldens under its existing explicit-update policy.
+The live recorder observes the actual backend's selected route/outcome; it must not substitute
+an all-success headless response for live metadata or failure.
+
+#### 4.7.4b Mandatory typed color clear — D-P1-67 (P5 R43)
+
+P5 §4.6 owns conversion and timing. The grant is
+`FramebufferService.clearColorAttachment(FramebufferHandle f, int drawBufferIndex, ColorClearValue value)`.
+The shared `engine.gl` sealed value has exactly three immutable four-component records:
+`ColorClearValue.Floating(float r,float g,float b,float a)`,
+`ColorClearValue.Signed(int r,int g,int b,int a)`, and
+`ColorClearValue.Unsigned(long r,long g,long b,long a)`.
+Floating components must be finite; unsigned components are mathematical integers in
+`0..4294967295`, never signed-int reinterpretations in public data/logs.
+
+Authenticate render thread/context, live same-device owned framebuffer and attached
+owned defined storage (contents may be uninitialized: this call initializes them), then nonnull value/range, route and realized numeric class,
+then capability, before mutation. The index is the **position** in that framebuffer's
+established `List<FramebufferDrawSlot>`: require `0 <= index < maxDrawBuffers`,
+within the list, and a non-None slot resolving to one color attachment. It is neither
+logical colortex index nor the attachment ordinal. A hole rejects, not successful no-op.
+Floating serves normalized/floating formats only; Signed/Unsigned serve matching integer
+formats only. A mismatched type is rejected even if native GL would silently accept it.
+Invalid handle/value/route/class uses IllegalArgumentException, expired/wrong-thread/context
+IllegalStateException, unsupported valid request UnsupportedOperationException, with no event.
+The ordinary state.clear(COLOR) path must reject an integer destination; it cannot substitute.
+
+**Native tiers.** On GL>=3.0 use `glClearBufferfv/iv/uiv(GL_COLOR,index,rgba)`
+respectively. On GL2 with `GL_EXT_texture_integer`, signed/unsigned use
+`glClearColorIiEXT/IuiEXT` followed by `glClear(GL_COLOR_BUFFER_BIT)` with a private
+draw route selecting **only the resolved attachment**. Legacy noninteger clears use
+`glClearColor` plus that same single-attachment route. Floating attachment support
+still requires its existing texture/color-buffer-float capability; where clamp control
+exists temporarily disable fragment-color clamping so finite floating values are not
+accidentally clamped. Without GL3 or EXT_texture_integer, integer allocation/clear
+admission fails as unsupported before mutation; no admitted integer format is silently
+downgraded and no engine caller issues raw GL. EXT_framebuffer_object or
+ARB_framebuffer_object alone does not grant core glClearBuffer. These are mandatory
+synchronous backend routes, not optional P14 modernization.
+Normative [EXT_texture_integer §4.2.3](https://registry.khronos.org/OpenGL/extensions/EXT/EXT_texture_integer.txt)
+defines integer setters and undefined float-to-integer clears; the
+[glClearBuffer reference](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClearBuffer.xhtml)
+defines numeric classes, positional indices, masking and core availability from GL3.0.
+
+**Full-extent/restoration transaction.** Before mutation snapshot actual read/draw FBO
+bindings (combined binding on EXT-only contexts), destination route, viewport, scissor
+enable/box, all affected color write masks (indexed only where supported), dithering,
+framebuffer-sRGB, fragment-clamp and rasterizer-discard state where supported. Bind f,
+disable scissor, dither, supported sRGB conversion and supported rasterizer discard,
+enable all color channels for the addressed draw slot, and clear its full attachment
+extent, never depth/stencil. The legacy single-route path enables slot zero's mask.
+Do not change depth/stencil masks, program, texture bindings or alpha/blend locks.
+Unsupported indexed/sRGB/clamp/discard state is neither queried nor changed.
+**D-P1-69:** discard is legal on GL>=3.0 or `GL_EXT_transform_feedback` or
+`GL_NV_transform_feedback`; use that capability-legal enum's actual enable value,
+disable before every native tier and restore its exact predecessor independently in
+finally. A failed save prevents clear; disable/restore errors follow the existing
+failure/poison law. This is private normalization, not a public transform-feedback API.
+The [EXT_transform_feedback “Discarding Rasterization” specification](https://raw.githubusercontent.com/KhronosGroup/OpenGL-Registry/main/extensions/EXT/EXT_transform_feedback.txt)
+explicitly makes Clear ignored under enabled discard; a clean error drain alone
+cannot establish initialized contents without this normalization.
+Snapshot legacy clear-color state **losslessly**: on the legacy
+compatibility path use checked native `glPushAttrib(GL_COLOR_BUFFER_BIT)` before
+changing it and `glPopAttrib` in finally, preserving its original float/signed/unsigned
+representation rather than converting through GetFloatv. Preserve/restore the parallel
+GlStateManager cache exactly; cached setters use its sanctioned path, private native
+push/pop restoration synchronizes its saved cache without reissuing a float clear setter.
+Stack-save failure prevents clear; never pop a failed push.
+Restore every touched state and route in finally on success, GL error or Java failure;
+attempt independent restorations even after one fails, restoring f's route before prior
+FBO bindings. Native restoration failure poisons draw admission. A void return alone
+is not proof: P5 brackets each call with existing error drains, and consumes full-clear
+only after all calls **and restoration** succeed. Existing exceptions/error events are
+contained by P5 into BACKEND_FAILED; no fictional texel rollback.
+
+**Recorder.** Identical handle/route/format/capability admission uses the captured profile
+and authenticated allocation/route metadata. Record
+`GLCall("framebuffers.clearColorAttachment", List.of(f, drawBufferIndex, value))`
+only after admission; no pixels, pointer, raw GL enum or signed wrapping of unsigned
+values. Append `GLCall("framebuffers.clearColorAttachment.restore", List.of(f, restored))`
+with boolean restored from actual backend state or scripted outcome; native attempted
+failure retains the attempted call. Existing
+`glError("framebuffers.clearColorAttachment",fboLabel,kind)` and
+`glError("framebuffers.clearColorAttachment.restore",fboLabel,kind)` script work and
+restoration errors separately; a restoration error records false and poisons admission.
+No script may turn a class mismatch or unsupported request into success.
+
 
 **What the facade deliberately does NOT contain**, so no later phase mistakes an omission for a gap.
 Two kinds, and the distinction matters:
@@ -3591,6 +4181,10 @@ public final class ScriptedResponses {
     public ScriptedResponses linkFails(String programLabel, String driverLog);
     public ScriptedResponses compileFails(String shaderLabel, String driverLog);
     public ScriptedResponses validateFails(String programLabel, String driverLog);
+    public ScriptedResponses samplerInitializationFails(
+        String programLabel, String detail, boolean selectionRestored);
+    public ScriptedResponses linkedGeometryInput(
+            String programLabel, LinkedGeometryInputPrimitive input);
     public ScriptedResponses uniformAbsent(String uniformName);
     public ScriptedResponses framebufferStatus(String fboLabel, FramebufferStatus status);
     /** Canned driver error, returned by the next drainErrors(). What makes §G2.4 rung 2 —
@@ -3641,8 +4235,9 @@ Behavior:
   say "the texture attached at index 2 is the one created third". **Sequence numbers are never
   reused, including after a `delete`** — which is what makes `noUseAfterDelete()` possible here and
   impossible in the LWJGL backend (§4.7.3).
-- Every query-shaped call answers from the `GLCapabilityProfile` or the `ScriptedResponses`. The
-  default responses are all-success, so a test that only cares about call sequence writes none.
+- Every query-shaped call answers from the `GLCapabilityProfile` or the `ScriptedResponses`.
+  Defaults are all-success except geometry links needing explicit effective-input metadata
+  (§4.7.4a); that absence must not become a guessed successful executable.
 - The log's rendered form is stable and deterministic: no timestamps, no identity hash codes, no
   iteration-order dependence. This is what makes it usable as a golden file, and it is a constraint,
   not an implementation note.
@@ -3664,7 +4259,7 @@ public final class ReplayAssertions {
     public ReplayAssertions bindsBalanced();       // every bind has a matching unbind/rebind
     public ReplayAssertions noLeakedObjects();     // every create has a matching delete
     public ReplayAssertions noUseAfterDelete();    // no handle appears in a call after its delete
-    public ReplayAssertions drawBuffersWere(int... attachmentIndices);
+    public ReplayAssertions drawBuffersWere(List<FramebufferDrawSlot> slots);
 }
 ```
 
@@ -3694,6 +4289,455 @@ live context at display init and, under `-Dschmaloogium.debug.dumpCapabilities`,
 §4.7.2 text form. A developer with a given GPU runs the client once and contributes a profile
 fixture. Without this, the recorded profiles Phase 2 replays would have to be hand-written, and
 hand-written capability sets are exactly where wrong assumptions hide.
+
+#### 4.7.6 Bounded vertex input grant — R10-1 (D-P1-50)
+
+The eighth service is `GLDevice.vertexInputs()`. This is the exact requested input-state
+boundary, not buffer ownership, a renderer extension or a new draw API. Public types
+below live in `engine.gl`; `VertexLayout`, `VertexInputPlan` and `VertexGeometryInput`
+are the P10-owned pure `engine.vertex` values, not Minecraft/GL types.
+
+```java
+public interface VertexInputService {
+    VertexBindResult bind(VertexSource source, VertexLayout layout,
+                          VertexInputPlan plan, VertexBindMode mode);
+    void restore(VertexBinding binding);
+}
+public enum VertexBindMode { LIVE_DRAW, LIST_CAPTURE, LIST_REPLAY_GUARD }
+public enum VertexBindRejection {
+    INVALID_SOURCE, STALE_SOURCE, INVALID_LAYOUT, INVALID_PLAN,
+    WRONG_THREAD, OUT_OF_RANGE, UNSUPPORTED_INPUT
+}
+public sealed interface VertexBindResult {
+    record Bound(VertexBinding binding) implements VertexBindResult {}
+    record Rejected(VertexBindRejection reason) implements VertexBindResult {}
+    record Failed(String diagnosticId) implements VertexBindResult {}
+}
+public interface VertexBinding {} // opaque; public implementation is not authority
+public sealed interface VertexSource {
+    non-sealed interface ClientRange extends VertexSource {}
+    non-sealed interface BorrowedVbo extends VertexSource {}
+    non-sealed interface DisplayListReplay extends VertexSource {}
+}
+```
+
+**D-P1-68 — complete conventional participation receipt (P10 D-P10-29/R10-9).**
+Consume P10's exact
+`VertexInputPlan(String layoutFingerprint,List<AttributePointer> pointers,Set<ConventionalInput> conventionalInputs,VertexGeometryInput expectedGeometryInput)`,
+with `ConventionalInput { POSITION,COLOR,UV0,UV1,NORMAL }`. All collections are
+defensively copied immutable/non-null with no null members. The mask derives only
+from authenticated **completed producer** semantics: COLOR/UV1 participate iff the
+producer supplies them, including P10 D-P10-30's authenticated ITEM BakedQuad append
+into BLOCK followed by successful real four-vertex brightness completion. The partial
+ITEM descriptor alone is not final participation; filler or arbitrary union grants none.
+Incomplete/throwing completion cannot issue a sealed source or captured plan.
+NORMAL remains supplied-or-existing-generated quad normal; POSITION/UV0 and all other established behavior are unchanged.
+CLASSIC_56 remains physically56 bytes; padding is not source participation.
+
+LIVE_DRAW receives the whole plan for client and VBO paths, temporarily disabling
+absent COLOR/UV1 arrays without pointer setup or current-value writes, and restoring
+actual enables/selectors/affected state. P10's Forge projection must skip absent setup
+and postDraw reset. LIST_CAPTURE uses the same mask plus its prepared generic union
+as the complete allowlist; absent color/lightmap arrays and baked constants are excluded.
+LIST_REPLAY_GUARD authenticates the captured whole plan and current effective geometry,
+inherits then-current COLOR/UV1 on each playback and never reconstructs expired pointers.
+Complete identity includes layout, ordered pointers, enum-declaration-ordered mask and
+geometry in authenticated saved state/client/VBO/original-and-derived capture products.
+Live generic subsets derive from the same authenticated source but need not equal the
+prepared capture union. Changed mask/plan cannot reuse an incompatible product.
+Existing generic-zero isolation, all-array capture isolation, rollback and exact LIFO
+restoration remain binding; no native allocator/renderer API or ownership is added.
+
+**Source issuance and lifetime.** These marker interfaces expose no GL names, native
+addresses or mutable range getters. The vanilla-owning `mod.glue.vertex` adapter issues
+same-device/context authenticated implementations at an observed prepare/upload/capture
+boundary; it retains immutable range metadata privately. ClientRange retains a live JDK
+ByteBuffer plus byte offset/count/limit and task/epoch identity without copying or owning
+memory. BorrowedVbo retains a vanilla-owned object incarnation, byte range, upload generation
+and epoch, not a public `adopt(int)` capability. DisplayListReplay retains the corresponding
+vanilla-owned list incarnation, captured layout/primitive category and replay-safe state
+metadata. Deletion, reallocation, builder reset, task cancellation or epoch retirement
+invalidates issuance; a reused object name or equal public marker cannot resurrect it.
+No delete/upload/allocation/lifecycle privilege belongs to this input service.
+
+The backend authenticates its private issuer token, source incarnation/range and binding
+stack identity; accepting an arbitrary marker implementation is forbidden. Cross-package
+implementation works because the permitted nested categories are non-sealed; this does
+not add a fifth `GLHandle` category or grant marker implementations trust. P10 observes
+vanilla ownership and issues invalidation notifications inside the mod backend, not through
+a new engine raw-name adoption API. Source bytes and products remain alive and unchanged
+through the entire binding scope and every adjacent instance copy.
+
+**Pre-mutation admission.** `bind` requires the render thread/current context, an authentic
+live source, complete supported layout, exact range/count/stride with overflow-safe bounds,
+valid field offsets/storage/normalization/locations and complete plan/mode compatibility.
+No worker GL is permitted. Wrong thread returns WRONG_THREAD; forged/wrong-device/null source
+INVALID_SOURCE; expired source STALE_SOURCE; invalid layout/plan their named reasons;
+arithmetic/range failures OUT_OF_RANGE; unavailable capability or incompatible mode/input
+UNSUPPORTED_INPUT. Rejected is mutation-free and appends no native call.
+
+P10's `VertexInputPlan.expectedGeometryInput()` is the nonnull
+`VertexGeometryInput {NONE,POINTS,LINES,LINES_ADJACENCY,TRIANGLES,TRIANGLES_ADJACENCY}`.
+P7 delivers the authenticated effective P4 category; the mod adapter maps it exactly into
+this P10 enum. P1 gains no registry dependency. LIVE_DRAW and LIST_REPLAY_GUARD compare
+that expected category to §4.7.4a's actual private linked requirement **before input mutation**.
+Unknown or unequal actual category rejects UNSUPPORTED_INPUT. The prepared native primitive
+must also be compatible with that category. The private native submission adapter repeats
+this in-memory identity/category/lifetime check immediately before issuing the existing
+vanilla draw; no per-draw GL query, source rescan or public geometry-metadata accessor.
+No program transition may intervene between validation and submission.
+
+LIST_CAPTURE accepts only an authenticated prepared-epoch client range and immutable
+capture plan, never derives its geometry category from the currently active shader and
+never uploads instanceId or expands instanceCount. Captured canonical/derived geometry
+is separately keyed by the prepared layout/category under P10's approved topology policy.
+LIVE_DRAW accepts client or VBO sources; LIST_REPLAY_GUARD accepts a matching replay-safe
+list source and performs only its required external guard/current-value state, never
+reconstructs expired client pointers. Other source/mode combinations reject.
+Existing vanilla-owned upload/capture adapters may create P10's authorized derived
+triangle product; this service neither creates it nor chooses its winding/index policy.
+
+**State transaction (D-P1-55, R27-1/NS-1).** The backend owns isolation as part of this
+single `bind`/`restore` operation, not a new P10 array-management API. For LIVE_DRAW
+with conventional positions, temporarily disable generic attribute array zero before
+submission, even if enabled by another renderer and pointing at different valid storage.
+Installing the conventional pointer alone does not give it precedence. Do not overwrite
+generic zero's pointer merely to disable its enable; restore its actual predecessor.
+
+LIST_CAPTURE treats the immutable complete plan as an enabled-array allowlist, not
+just a list of fields to write. Enumerate every array legal in the actual compatibility
+context and disable every enabled array not explicitly admitted, irrespective of owner.
+This includes conventional vertex, normal, primary color, color-index and edge-flag arrays;
+secondary-color and fog-coordinate arrays where supported; texture-coordinate arrays on
+every legal client texture unit, not just units 0/1 or server sampler units; and every
+legal generic location, not just P10 locations 10–12. Capability-gated additional array
+families supported by the context must also be isolated using their documented state.
+Legal limits/entry points come from the backend's capability inventory: never query an
+unsupported enum, nonexistent client unit or generic location. If the backend cannot
+enumerate/isolate a supported array family safely, reject UNSUPPORTED_INPUT before
+mutation rather than leave it enabled or broaden the P10 field vocabulary.
+Each admitted enabled array must have an authenticated source range and plan descriptor;
+unmentioned arrays never borrow admission from the shader's apparent usage. Capture with
+conventional positions excludes generic zero. Conflicting position declarations reject
+INVALID_PLAN; this does not authorize P10 to add generic-position layouts.
+
+The internal snapshot contains actual enables for the isolation set and complete descriptors
+for every array whose descriptor setup can change: component count where applicable,
+storage type, stride, pointer/address-or-offset, per-pointer buffer binding, normalization,
+and capability-legal integer/long interpretation, divisor or other descriptor fields if
+touched. Enable-only isolation leaves descriptors intact; their exact predecessor must
+remain intact too, including generic zero's foreign pointer and buffer association.
+Snapshot the actual array-buffer binding and client-active-texture selector before any
+enumeration that changes them. Restore each changed descriptor with its original buffer
+association, then its enable, then the original global binding/selector; never infer a
+pointer's buffer association from the global binding or substitute buffer zero.
+
+Also snapshot all legally queryable current values that setup, submission or capture can
+change or leave unspecified, not only constants explicitly written by P10: primary and
+secondary color, normal, fog coordinate, color index, edge flag, each affected client-unit
+texture coordinate and each affected nonzero generic attribute (using its legal value
+representation). Include any capability-gated current state affected by an admitted family.
+Restore these values even when the plan used an array rather than a constant. There is
+no current conventional position or current generic-zero value to query/restore; specifically
+never query CURRENT_VERTEX_ATTRIB at zero on the ARB route. Disabled unrelated arrays do
+not authorize reading their vertex memory. Array/current state not perturbed stays untouched.
+Map storage and capability dispatch only in the backend and use GlStateManager for cached
+state it owns. Do not change vertex bytes, matrices, program, primitive order or ownership.
+
+Capture setup/snapshot/isolation runs before vanilla opens its list; successful capture
+closes the list before restoration, and failure closes/abandons the candidate before
+restoration. Neither isolation constants nor predecessor-restoring current-value commands
+may accidentally become commands in the retained list. P10 owns candidate validity and
+discard; P1 owns this transaction. LIST_REPLAY_GUARD remains a separate external guard/
+current-value scope based on authenticated replay metadata: no capture-array enumeration,
+no reinstating expired client pointers and no reconstruction from retired source storage.
+
+Bound transfers one opaque LIFO render-thread
+restoration obligation. `restore` accepts only the same device's live top binding; null,
+forged, wrong-device, out-of-order, already-closed or wrong-thread calls fail before GL
+with IllegalArgumentException for forged/wrong-device/null and IllegalStateException for
+ordering/lifetime/thread violations. Correct restoration restores the exact snapshot in
+finally and consumes the binding once; it never synthesizes a neutral state as predecessor.
+
+Every potentially affected field is snapshotted before its first mutation, including
+selector changes during enumeration; snapshot acquisition failure unwinds any such changes.
+Setup failure after any mutation restores the actual saved predecessor internally before
+returning Failed(diagnosticId); no Bound escapes and no draw/capture is permitted.
+Native/restore errors remain visible through
+the existing drain channel, and failed rollback additionally invalidates the input stack/
+admission so P7 takes shaders-off containment. A consumed binding is never retried.
+Callers drain before setup, after setup and after restore, treat any nonempty result as
+failed evidence and do not submit after setup failure. This does not change batched
+error attribution or silently convert an error into mutation-free Rejected.
+
+**Recorder.** It owns synthetic same-recorder issuance and the identical range/epoch/
+mode/stack checks. Add public recorder-fixture factories
+`VertexSource.ClientRange clientVertexSource(String label, ByteBuffer bytes, int byteOffset, int vertexCount)`,
+`VertexSource.BorrowedVbo borrowedVertexVbo(String label, long byteLength)`, and
+`VertexSource.DisplayListReplay borrowedVertexList(String label, VertexLayout layout, VertexInputPlan capturePlan)`,
+plus `void retireVertexSource(VertexSource source)`. These mint only synthetic recorder
+identities; they are not production adoption or upload verbs. Fixture client bytes are
+borrowed, never logged. VBO byte length permits exact layout/range validation; its source
+range is the whole supplied length. **D-P1-70:** list issuance requires a nonnull
+complete immutable capturePlan, validates its layoutFingerprint against the supplied
+validated layout and every pointer/mask/capability association under the same capture
+admission law, and privately retains the layout and defensive immutable plan before
+returning the synthetic identity. Geometry derives solely from capturePlan.expectedGeometryInput().
+List fixtures represent explicitly supplied replay-safe capture metadata, not a learned
+first replay request. Every replay, including the first, compares against retained
+whole-plan authority; identical physical layouts can carry different captured masks/unions.
+Invalid fixture arguments reject before issuance. The former geometry-only overload
+is removed; no default plan, raw-name adoption or locally minted substitute is permitted.
+
+Use existing `ScriptedResponses.glError` keyed by `vertexInputs.bind` and
+`vertexInputs.restore` for setup/rollback failures, with immutable pre/post input-state
+snapshots in the recorder. Successful setup records
+`vertexInputs.bind(sourceIdentity,sourceKind,layout,plan,mode,bindingIdentity)`;
+partial setup retains that attempt plus `vertexInputs.rollback(bindingIdentity,restoredState)`;
+normal closure records `vertexInputs.restore(bindingIdentity,restoredState)`.
+State summaries contain enable/location/storage/offset/normalization/buffer-identity/current-
+value data, never native names, addresses, ByteBuffer contents or shader source.
+`bindsBalanced` includes these binding identities; borrowed source issuance is not owned
+GL allocation, leak or deletion. Replay detects retired-source use and consumed binding
+reuse separately from the four GLHandle categories. Live recording captures actual native
+outcomes, not fixture defaults. Recorder success cannot prove driver list-capture semantics.
+
+Service/source/recorder and base-layout adapters are v0.1 prerequisites at the earliest
+claimed affected geometry support; CLASSIC56 extended producers/fields remain P10 v0.3.
+Fresh P1/P7/P10 owner/receiver review and live primitive/list/restoration proof remain gates.
+
+#### 4.7.7 Complete owned-texture parameter value (D-P1-52)
+
+`TextureService.setParameters` already exists. This closes its missing public value shape
+for mandatory synchronous use; no new service, object adoption or sampler-object verb.
+All following types live in `engine.gl`, with no dependency on P5/P13 types.
+
+```java
+public record TextureParameters(
+    TextureMinFilter minFilter, TextureMagFilter magFilter,
+    TextureWrap wrapS, TextureWrap wrapT, TextureWrap wrapR,
+    TextureCompareMode compareMode, TextureCompareFunction compareFunction,
+    TextureBorderColor borderColor, float minLod, float maxLod, float lodBias,
+    float maxAnisotropy, int baseLevel, int maxLevel, TextureSwizzle swizzle) {}
+public enum TextureMinFilter {
+    NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, LINEAR_MIPMAP_NEAREST,
+    NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_LINEAR
+}
+public enum TextureMagFilter { NEAREST, LINEAR }
+public enum TextureWrap { REPEAT, CLAMP_TO_EDGE }
+public enum TextureCompareMode { NONE, REF_TO_TEXTURE }
+public enum TextureCompareFunction {
+    NEVER, LESS, EQUAL, LEQUAL, GREATER, NOTEQUAL, GEQUAL, ALWAYS
+}
+public record TextureBorderColor(float red, float green, float blue, float alpha) {}
+public enum TextureSwizzle { IDENTITY, LEGACY_DEPTH_LUMINANCE }
+```
+
+**Closed validation and mapping.** Fields are nonnull; floats finite, negative zero canonicalized
+to positive zero; minLod≤maxLod, 0≤baseLevel≤maxLevel. This scope permits maxAnisotropy=1
+only; explicitly set1 when the anisotropy extension is supported, otherwise native default1 needs no unsupported call. No driver/user-setting inference. Border is exactly
+(0,0,0,0): neither granted wrap mode samples a border, and no unknown integer-border state
+enters a claimed complete mapping. P1 maps enum names to corresponding native constants;
+REF_TO_TEXTURE maps to COMPARE_REF_TO_TEXTURE. Apply S, ST or STR only for 1D, 2D/RECT
+or 3D respectively; unused wrap axes must be CLAMP_TO_EDGE in canonical values.
+Unsupported targets, enum/format/capability combinations or noncanonical values reject before GL.
+RECT requires base=max=0, nonmipmap min filter and CLAMP_TO_EDGE on S/T.
+Signed/unsigned integer storage requires mag NEAREST and min NEAREST or
+NEAREST_MIPMAP_NEAREST. Comparison and LEGACY_DEPTH_LUMINANCE require depth/depth-stencil;
+no color/integer texture may acquire comparison as a workaround.
+
+Sampler state is exactly the prefix through maxAnisotropy. Object-only state is
+baseLevel/maxLevel/swizzle. Storage immutability belongs to allocation, not this setter;
+this call never converts mutable/immutable storage or changes its dimensions/format.
+Depth-stencil sampling remains depth, never stencil; issue no GL4.3-only depth-stencil
+mode setter on older contexts. IDENTITY is the color-texture RGBA mapping; depth values
+use LEGACY_DEPTH_LUMINANCE consistently, including depth copies. It means R,R,R,1:
+use supported swizzle on GL3.3/ARB/EXT texture-swizzle profiles, otherwise compatibility
+GL_DEPTH_TEXTURE_MODE=LUMINANCE. Never issue RED as a GL2 depth-mode value.
+Reject IDENTITY for depth rather than silently giving it different cross-profile meanings.
+Capability checks precede mutation.
+On profiles lacking swizzle, fresh owned color textures already have identity; no unsupported
+swizzle enum is issued. Texture objects are not raw-adopted or externally reparameterized.
+
+**Owner conversion, not a three-field guess.** P13-owned uploads map every min/mag name
+exactly and repeat their single wrap on applicable axes only. Remaining sampler fields are
+NONE/LEQUAL, zero border, min/max LOD -1000/+1000, bias0, anisotropy1. Base is0;
+max is the highest contiguous uploaded/generated mip level in the admitted plan, or0
+for nonmipped sources; swizzle IDENTITY. Missing levels never become drawable merely
+because a sampler object is absent. P13 retains its source-specific baseline, sidecar outcome,
+target/format rejection and parameter fingerprint; foreign-live values are never passed here.
+P5 owns its color/depth/shadow filter decisions, including temporary mipmap work. It supplies
+those exact filters and CLAMP_TO_EDGE axes, the same neutral LOD/border/anisotropy baseline,
+and NONE/LEQUAL except hardware shadow comparison uses REF_TO_TEXTURE/LEQUAL.
+All owned depth/depth-stencil textures use LEGACY_DEPTH_LUMINANCE; color uses IDENTITY.
+P5 sets the planned last level before generating a chain, generates before mip-filter sampling,
+and restores its owner-authored parameter state at the already-contracted moment; the setter
+does not generate levels, change filters on its own, touch custom overrides, or alter flip law.
+
+`setParameters` requires an owned live same-device/context texture and render thread.
+Foreign (including borrowed depth), forged/wrong-origin/null inputs reject with
+IllegalArgumentException before GL; wrong thread/context/deleted handle with IllegalStateException;
+unsupported valid requests with UnsupportedOperationException. The caller drains before/after,
+does not publish/sample on error and uses existing owner cleanup/fallback. Internal active-unit
+and texture bindings are restored in finally via GlStateManager where cached. Object parameters
+intentionally change; only bindings are restored. The last complete accepted value is retained
+privately; partial native failure invalidates that value until complete reapplication or deletion.
+Recorder validates identically, records `textures.setParameters(handleIdentity,parameters)` with
+full immutable value and binding-restoration evidence, and exposes native errors through the
+existing ScriptedResponses/drain mechanism. No per-bind native parameter query.
+
+P14 may derive the entire sampler-state prefix from an authenticated complete value only;
+base/max/swizzle stay on the object, and foreign unknown state still uses sampler0.
+This value grant does not approve A1 execution, async work, new package homes or off-thread use.
+Receiver §5 adoption and fresh reviews are required. Native perturb/set/failure/restoration,
+integer/RECT legality, depth swizzle/compare and full mip-chain checks remain implementation proof.
+`[V:web 2026-09-07]` parameter domains/defaults, object-state distinction and RECT restrictions:
+https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexParameter.xhtml .
+The compatibility depth baseline/allowed mode values are independently specified by
+https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glTexParameter.xml .
+The limited public shape and neutral owner conversion are D-P1-52, not measured G6 parity.
+
+#### 4.7.7a Target-bearing synchronous texture values (D-P1-63)
+
+This mandatory value grant closes P13 R5 C2 together with P5 §4.2/D-P5-42.
+The existing `create`, `allocate`, `upload`, depth-initialize and depth-copy verbs remain;
+there is no async/staging API, direct engine GL, texture query or new parser.
+These are shared closed `engine.gl` values. P5 owns format legality and defaults; P1 owns
+their facade representation/native mapping. P3's parsed enums remain its existing types:
+P13 converts their enumerants one-for-one, never parses names or adds a new format policy.
+`ColorInternalFormat` is P5's 37 App B.4 values plus private `RGBA_COMPAT`;
+`PixelFormat`/`PixelType` are exactly P5 §4.2's complete closed lists, and the existing
+`DepthAttachmentFormat` domain is unchanged. No P3 pack grammar admits `RGBA_COMPAT`.
+The allocation target below is a facade value, not an alternative pack target parser.
+
+```java
+public enum TextureAllocationTarget { TEXTURE_1D, TEXTURE_2D, TEXTURE_3D, RECTANGLE }
+public record TextureExtent(int width, int height, int depth) {}
+public record TextureRegion(int x, int y, int z, int width, int height, int depth) {}
+public enum DepthTransferLayout { DEPTH_COMPONENT_FLOAT, DEPTH_STENCIL_UNSIGNED_INT_24_8 }
+public sealed interface PixelLayout {
+    record Color(PixelFormat format, PixelType type) implements PixelLayout {}
+    record Depth(DepthTransferLayout value) implements PixelLayout {}
+}
+public sealed interface TextureSpec {
+    record ColorTextureSpec(TextureAllocationTarget target, ColorInternalFormat format,
+        PixelLayout.Color allocationLayout, TextureExtent extent, int mipLevels)
+        implements TextureSpec {}
+    record DepthTextureSpec(TextureAllocationTarget target, DepthAttachmentFormat format,
+        PixelLayout.Depth allocationLayout, TextureExtent extent, int mipLevels)
+        implements TextureSpec {}
+}
+public record TextureData(TextureAllocationTarget target, TextureRegion region,
+    int mipLevel, PixelLayout layout, java.nio.ByteBuffer texels) {}
+```
+
+All fields are nonnull. Extents/region sizes are positive, origins and mip index nonnegative,
+and arithmetic is checked before GL. Canonical unused axes are height=depth=1/y=z=0 for
+1D; depth=1/z=0 for 2D/RECT. 3D retains all three axes. DepthTextureSpec admits only 2D;
+color admits all four targets. `mipLevels` is a **count**, initially defined contiguous
+levels `0..mipLevels-1`; valid range is `1..1+floor(log2(max used dimension))`, RECT exactly1.
+At level l each used dimension is `max(1, baseDimension >> l)`; unused dimensions remain1.
+Upload region end coordinates must fit that exact allocated level, never infer a target
+from dimensions. RECT dispatch is native TEXTURE_RECTANGLE, not TEXTURE_2D; the other
+targets map by identical names. Allocation uses target-specific image1D/2D/3D storage
+definition, null data at each admitted level; upload uses corresponding subimage dispatch.
+Allocation also establishes no unpack-PBO binding before a null-pointer definition, so
+null is never interpreted as offset0 in a borrowed PBO. PBO save/clear/restore is issued
+only where that binding is supported; unsupported profiles issue no PBO enum/entry point.
+This defines storage, not initialized/sampleable contents. `generateMipmap` retains its
+capability gate and defines the owner-admitted generated chain from initialized level0;
+the backend updates its authenticated level metadata only on success. RECT generation rejects.
+The first successful allocation fixes an owned object's target; reallocation may change
+extent/format/levels only within that target. Changing target requires a new owned object.
+
+PixelLayout describes tightly packed pixels, not internal channel sizes. Every synchronous
+upload uses unpack alignment1, row-length/image-height0, all unpack skips0 and byte-swap/
+LSB-first false, and no unpack PBO binding. Rows run x fastest, then y, then z. Scalar
+component widths are BYTE/UNSIGNED_BYTE=1, SHORT/UNSIGNED_SHORT/HALF_FLOAT=2,
+INT/UNSIGNED_INT/FLOAT=4; multiply by the format's 1/2/3/4 components. Packed types
+occupy one 1/2/4-byte word per pixel as named, never multiply packed-word size by components.
+P5's legal packed-format combinations remain binding. Depth layouts are respectively
+4-byte float depth or 4-byte packed 24/8 words. `texels.remaining()` equals exactly the
+checked region-volume times bytes-per-pixel. Raw payload bytes are transferred unchanged;
+native scalar/packed-word interpretation is not changed by the Java cursor's byte order.
+Decoded scalar/packed producers explicitly serialize native-order words; RGBA/RGB byte
+producers emit channel bytes directly. No cursor-default endian conversion or channel swap.
+The facade borrows bytes for this synchronous call only, never retains or mutates content,
+position, limit or byte order. Caller keeps them stable through return; recorder retains
+metadata/byte count, not payload. Preparation ownership and source digests remain P13's.
+
+Preflight order is handle provenance/lifetime/thread/context, value shape/target/storage,
+format/transfer compatibility, capabilities/limits, then payload bounds, all before mutation.
+The capability step consumes D-P1-66's actual target-specific captured maxima, rejecting
+zero/over-limit targets before allocation and using the same inputs in the recorder.
+Integer color formats additionally require D-P1-67's GL3 or EXT_integer clear tier;
+this is capability rejection, not the incomplete-framebuffer RGBA fallback.
+Foreign and borrowed-depth destinations are forbidden. Invalid values/origin reject with
+IllegalArgumentException; wrong thread/context/deleted handle with IllegalStateException;
+unsupported valid requests with UnsupportedOperationException. Native errors remain the
+existing drain surface: owner drains around work and never publishes/samples failed storage.
+Partial allocation/upload invalidates that object's usable-content receipt until owner
+rebuild/complete reinitialization, without treating a void return as successful GL.
+Backend restores active unit, target binding, unpack-PBO and every touched unpack setting
+in finally, using GlStateManager where cached. Restore failure poisons drawing admission;
+it cannot become successful fallback. Recorder applies identical admission and records target,
+format/layout, extent/region/mips, byte count and restoration evidence under existing
+`textures.allocate`/`textures.upload` events; native failures use existing scripts/drains.
+
+Existing framebuffer depth-copy semantics are unchanged: both verbs take a 2D region
+`(srcX,srcY,0,width,height,1)`, copy to destination origin(0,0) level0 and require 2D
+owned destination storage (initialization may establish its first target). Initialization
+defines exact source depth/depth-stencil format/extent; steady copy preserves matching
+storage. Existing first-copy tier rules, framebuffer restoration and borrowed source
+permission matrix remain; this grant does not turn color upload into a depth-copy shortcut.
+
+**D-P1-64 — complete object baseline on every successful setter.** Receive P14's
+always-maintained baseline law: even with sampler caching enabled, `setParameters` applies
+the entire latest authenticated owner-equivalent TextureParameters to the owned texture
+object, alongside sampler cache state. base/max/swizzle alone is insufficient. Success
+requires complete baseline application and binding restoration; partial failure invalidates
+the receipt and invokes existing containment. Thus ordinary `useFixedFunction()` all-unit
+sampler clearing cannot expose stale object state; no extra replay callback is needed at
+ordinary boundaries. D-P1-62's demotion replay/check remains a defensive requirement,
+not the first time object parameters become current. Never mutate borrowed textures;
+all-unit normalization and live/retiring ownership accounting are unchanged.
+
+Planned boundary evidence (not executed): distinguish identical-sized 2D/RECT allocations;
+1D unused-axis rejection, 3D mip/region bounds and packed-word byte counts; all 37 raw
+formats without fallback coercion; depth initialize/steady-copy equivalence; borrowed
+destination rejection; failed upload/restoration containment; successful setter A→B with
+sampler caching followed by fixed-function clearing observes B on the object, not A/defaults.
+Fresh owner/receiver review and runtime proof remain required.
+
+#### 4.7.8 P14 debug activity and package grant (D-P1-54)
+
+R-P14→P1-1 is granted: at v0.5 `DebugService.isActive()` is true iff the installed backend
+has actual GL4.3 or GL_KHR_debug capability/entry points and `schmaloogium.debug.glLabels`
+is enabled. Before backend installation or on unsupported profiles it is false.
+A debug context is not a prerequisite for labels/groups; message production on nondebug
+contexts is implementation-dependent, so an empty callback is not proof of no driver errors.
+The existing glLabels-triggered per-call drain cadence, opaque-handle validation and disabled
+no-GL behavior remain. The gate states nothing about object lifetime; D-P1-71's label limb
+(recorded as D-P1-73) does: `DebugService.label` on a live-but-unmaterialized owned texture
+handle is legal and recorded-only — it updates the retained label, issues no GL, appends no
+native-label event and queues no `GLError`, and the retained value — original or updated —
+is applied exactly once by the first admitted materialization, before storage work; it is
+dropped if the handle is deleted while still unmaterialized. Foreign and borrowed handles
+are already materialized objects, so this limb changes nothing for them. No context flags
+change merely to activate this service.
+`[V:web 2026-09-08]` KHR_debug revision17 overview and procedures:
+https://raw.githubusercontent.com/KhronosGroup/OpenGL-Registry/main/extensions/KHR/KHR_debug.txt .
+
+R-P14→P1-2 grants exactly `SamplerKey`, `SamplerTier`, `DsaTier`, `DebugTier`,
+`AsyncCompileTier`, `AsyncReadbackTier`, `GlModernizationPolicy`, `GlModernizationPlan`
+as pure values in `com.schmaloogium.engine.gl`, and helper implementations in
+`com.schmaloogium.mod.glue.gl`. Existing `Lwjgl3GLDevice` stays in its P1-owned
+`mod.glue` home and delegates to those helpers; no second device or hidden ownership transfer.
+No new module edge, platform type in engine, Mixin package or compiled-expression grant.
+R-P14→P1-3's value grant is §4.7.7. These complete missing v0.5 foundation contracts,
+not the optional worker, extra debug-context flag, scoped-group API or per-owner async grants.
+R-P14→P1-4 remains a separately tracked post-v0.5/optional request; recorder confinement
+is not silently weakened. P14 must adopt these §5 surfaces and obtain fresh verification.
 
 ### 4.8 License, headers, and third-party notices (D-7)
 
@@ -3997,20 +5041,31 @@ public sealed interface CompatVerdict {
     record Bail   (String reasonKey, List<Object> args) implements CompatVerdict {}
 }
 
+
 public interface CompatCheck {
     String id();                                  // stable, for logs and for user-facing attribution
     CompatVerdict check(CompatContext ctx);
 }
+
 
 public interface CompatContext {
     boolean isModLoaded(String modId);
     boolean isClassPresent(String binaryName);    // for detecting a replacement that ships unnamed
     GLCapabilityProfile capabilities();           // capability gates are compat checks too
 }
+public interface EarlyCompatContext {
+    boolean isClassPresent(String binaryName); // resource/metadata probe, no class initialization
+}
+
+public interface EarlyCompatCheck extends CompatCheck {
+    CompatVerdict checkEarly(EarlyCompatContext ctx);
+}
+
 
 public final class BailRegistry {
-    public static void register(CompatCheck check);         // during preInit
+    public static void register(CompatCheck check); // early-safe checks before MOD plugin evaluation; others in preInit
     public static CompatEvaluation evaluate(CompatContext ctx);
+    public static CompatEvaluation evaluateEarly(EarlyCompatContext ctx);
 }
 
 public record CompatEvaluation(
@@ -4032,6 +5087,25 @@ public record CompatEvaluation(
    unwind. It is available only for MOD-phase configs, which is precisely where the vertex-pipeline
    compat mixins will live.
 
+**Early class-only grant (D-P1-50).** P10 may register its `EarlyCompatCheck` once before
+the MOD plugin's first evaluation. `evaluateEarly` evaluates only that subset in stable
+registration order; repeated registration of the same object/id is a no-op, but a
+different check reusing an id fails registration. Early probes inspect resource/metadata
+presence without `Class.forName` initialization, Minecraft singletons, Forge mod-list
+assumptions or a GL capability profile. A throwing early check is Bail. Its terminal
+veto is retained for the session and prevents **all** dependent vertex hooks from applying;
+later evaluation cannot undo partial transformation. Diagnostics are retained until normal
+logging/chat/GUI sinks exist, not emitted through an unbootstrapped Minecraft singleton.
+Normal `evaluate(CompatContext)` still evaluates full checks at the two runtime points.
+
+The three existing config files remain: no P1 preinit hook is populated by this grant.
+P10 places its coordinated vertex hook family under `mod.mixin.compat.vertex` in the MOD
+config, with no game/render mutation merely from class loading. Default-format/cache
+attachments must stay inert until P7's approved activation. If concrete target load order
+requires an earlier attachment than MOD allows, P10 must obtain a separately reviewed
+preinit/config placement amendment with target evidence; the grant does not silently
+move the family or bypass early compatibility veto.
+
 **On `Bail`:** shaders are forced off and *stay* off for the session; an `EngineDiagnostic` with
 `severity=ERROR`, `channel=CHAT`, and the check's `reasonKey` goes out; a line lands on
 `schmaloogium.compat`; and the reason is retained so Phase 12's GUI can display it instead of an
@@ -4044,12 +5118,12 @@ the type from day one because OQ-5 is explicitly undecided between "detect and b
 (RESEARCH.md §5.3); a verdict type that can only say "stop" would force Phase 10 to widen the
 mechanism it was told to reuse.
 
-**What Phase 1 ships:** the types above, the registry, the three evaluation points **designed**, the
-diagnostic routing, and **zero registered checks**. Only **point 1 is wired at v0.1** (§12 item 36).
-Points 2 and 3 are `v0.3`: point 2 needs Phase 10's vertex-format change to exist, and point 3 needs
-`SchmaloogiumMixinPlugin`, which ships with the `plugin` key at v0.3 (§4.5.2, §12 items 36b and 37).
-§9's staging table says the same thing, and it is the authority if this paragraph ever drifts from
-it again. `[D-P1-23]` No mod ids are named by this phase —
+**What Phase 1 ships:** the types, registry and all three evaluation mechanisms above.
+Point1 bootstrap and point3 real MOD-plugin early veto are wired at v0.1 before P10's
+geometry-only family can apply (D-P1-53). P10 supplies that bounded detection policy then;
+the full extended policy and point2 vertex-format-transition site remain v0.3.
+§9 and §12 carry this same split; a returns-true plugin is not a completed early veto.
+`[D-P1-23]` No mod ids are named by this phase —
 naming Celeritas or Nothirium here would be Phase 10's policy decision made by the wrong session, and
 RESEARCH.md §2.3 shows the landscape moves (five-plus Vintagium forks, Celeritas source-only). The
 example in the doc is a shape, not a policy:
@@ -4067,7 +5141,8 @@ BailRegistry.register(new CompatCheck() {
 The three template workflows all hardcode root-relative `build/libs` `[V:template]`, which the module
 split breaks — after the split, the mod jar is at `mod/build/libs`.
 
-**`build.yml`.** Java 25 / Gradle 9.6.1 / `actions/*` versions unchanged.
+**`build.yml`.** Java 25 / `actions/*` versions unchanged. Preserve wrapper Gradle **9.7.0**
+and align all three current `setup-gradle` 9.6.1 inputs to it during implementation (§4.2.6a).
 
 **The step order is load-bearing, and it is stated here rather than left implied.** `./gradlew build`
 from the root runs `check` → `test` in **every** subproject, so it already executes all four seam
@@ -4382,12 +5457,14 @@ surface changes the declared interface region and fires its fresh-review trigger
 | Exposed | Detail | Consumed by |
 |---|---|---|
 | **Module layout** | `:engine`, `:mod`, `:conformance` with the incorporated §2.1 package tables; §0.24 adds only the three Phase 13 texture homes. Existing grants and dependency edges are unchanged | all phases |
-| **The seam constraints C-1 … C-4** | §4.3, stated mechanically and enforced by tests | all phases |
+| **The seam constraints C-1 … C-4** | §4.3, stated mechanically and enforced by tests; C-3's confinement is the package tree `com.schmaloogium.mod.glue` and its subpackages | all phases |
 | **Package placement rule** | a phase's code goes in the closed §2.1 package allocation; `.internal` sub-packages are private to `:engine`. The texture grant narrows placement without adding API permissions or weakening C-1 through C-4, facade-only GL, or §4.5.2a config/package agreement | all phases |
 | **Phase 8 package grant** | §2.1 assigns `engine.shadow`, `mod.glue.shadow`, and `mod.mixin.shadow` exactly; C-1 through C-4 and the `.internal` rule apply without exception | **8** |
 | **Phase 7 frame-package grant — R7-8 already granted; unchanged** | §2.1 assigns `engine.frame`, `mod.glue.frame`, `mod.mixin.frame`, and `mod.conformance` exactly. `engine.frame` owns pure policy and closed results; `mod.glue.frame` owns Minecraft/Forge/LWJGL adaptation; `mod.mixin.frame` stays dumb; `mod.conformance` is the capture-agent entry point and does not relax C-4. The normal `.internal` and seam rules apply without exception (`[D-P1-41]`). §0.24 adds no Phase 7 package | **7**, 2 |
 | **Phase 13 texture-package grant — R3 granted** | §2.1 assigns exactly `com.schmaloogium.engine.textures` in `:engine` for pure texture policy/model/results, and `com.schmaloogium.mod.glue.textures` / `com.schmaloogium.mod.mixin.textures` in `:mod` for platform/facade adapters and dumb hooks respectively (`[D-P1-43]`). The existing parent `mod.mixin` grant is preserved. C-1 through C-4, `.internal` privacy, facade-only GL and Mixin config/package agreement remain binding; no texture protocol, dependency API or conformance edge is granted. Verified consumption awaits §0.24's fresh whole-document PASS; unrelated requests remain open (§11.4) | **13**, 7 (composition), 2 (conformance) |
-| **Version pin table + re-pin procedure** | §4.2.6 — every row carries the coordinate its value is re-verified against, and step 3 terminates in one of three rulings (record only / extra verification / block the bump) | all phases; operationally, whoever tags a milestone |
+| **P10 vertex package grant — R10-1** | Exactly §2.1's `engine.vertex` (with private `.internal`), `mod.glue.vertex`, `mod.mixin.compat.vertex`; C-1…C-4, facade-only GL, dumb hooks and config agreement unchanged. Layout/epoch/topology/lifecycle policy stays with P10/P7 | **10**, 7 |
+| **P3 pure-JVM dependency admission — D-P1-49** | §4.2.4b's exact `org.anarres:jcpp` implementation-time verified pin, complete closure/license checks, unchanged C-1 enforcement and once-only runtime packaging are incorporated. No public jcpp types, platform-coordinate exception or new runtime interface | **3**, 2 (headless runtime) |
+| **Version pins and build migration** | §4.2.6 retains July evidence/procedure; §4.2.6a controls current exact wrapper/plugin/loader values, observed CI mismatch and mod-only Buildship/generated-source placement. No pin upgrade or unperformed verification | all phases; operationally, whoever tags a milestone |
 | **Naming** | `mod_id = schmaloogium`, root package `com.schmaloogium`, `Reference` at `com.schmaloogium.Reference` | all phases |
 | **The engine bring-up sequence** | §4.13, `[D-P1-37]`. Three stages, adopted from a proven 1.12.2 reference (PD §16) with one deviation: **(1)** loader-facing setup on the FML lifecycle — log sink at `preInit` (§4.9.1), bail point 1 post-`FMLLoadCompleteEvent` (§4.10) — **not** a `GameSettings` mixin; **(2)** `OpenGlHelper.initializeTextures` at `RETURN` is the **capability-probe moment**, the earliest point at which a GL context exists and vanilla's texture setup has completed; **(3)** `GuiMainMenu.initGui` at `RETURN` is the "loading complete" signal, **recommended and not wired** — Phase 1 has no consumer for it. Exposed here because a dependent placing its own bring-up work relative to ours has to know where ours sits, and because **stage 2 is a requirement on Phase 7's hook catalog while stage 3 is a recommendation Phase 1 does not wire** — neither is a mixin this phase authors (§4.5). The two strengths are not interchangeable: the requirement obliges an App E row at Phase 7's v0.1, the recommendation is Phase 7's to place when its frame driver has a use for it (§9, §11.4, V12-2) | **7** (owns the stage-2 catalog entry, and stage 3's if it chooses to place it), 5, 6, 13 (anything gated on "caps are ready"), 10 |
 | **A `mod.glue` provider for vanilla-owned textures** — `ForeignTextureProvider` | §4.12, `[D-P1-36]`. App B.3's fixed unit map puts the vanilla block atlas at **unit 0** and `lightmap` at **unit 1** on GBUFFERS/SHADOW programs; `TextureService.bindToUnit` takes a `TextureHandle` and §4.7.4 produces one only for textures the engine created. The slot is named here **and its type is declared**: `ForeignTextureProvider` in `com.schmaloogium.engine.gl` (§4.7.3), a `mod.glue` implementation of it installed by `mod.core` at §4.13 stage 2. **Keyed on a pack-facing texture identifier in two disjoint vocabularies** (§4.7.3, V13-2): **(a)** App B.3's sampler names, bare, for the fixed unit map, and **(b)** `minecraft:`-namespaced resource locations, for App F.5's custom-texture forms that name a **live** Minecraft-owned texture (`dynamic/lightmap_1`, atlas paths). They cannot collide — no App B.3 name contains a colon. A `minecraft:` form that is a *static* asset needs no foreign handle and goes through `TextureService.create`/`upload`. **The handles are bind-only and outside §4.7.3's lifetime rule** (V13-3; stated by closure since V14-1): legal to `bindToUnit` and `DebugService.label` and to **nothing else in §4.7.4 that accepts a `TextureHandle`** — illegal to `allocate`/`setParameters`/`upload`/`generateMipmap`/**`delete`** and to `FramebufferService.attachColor`/`attachDepth`/`copyDepthToTexture`, whose `dst` is *written into* (the destructive case) — and they survive Minecraft's own resource reloads because the `mod.glue` handle resolves its object at each use. The shape: `mod.glue` implements `TextureHandle` for these textures so the raw GL name never crosses C-1 — **which is why the four handle sub-interfaces are not `sealed`** (§4.7.3: a *sealed* `engine.gl` type cannot be implemented from `mod.glue` at all, and could not be implemented by `RecordingGLDevice` either). **Contents are shared, and each vocabulary has one owner:** **Phase 5** defines vocabulary (a), the vanilla-owned unit-map set — `DESIGN.md` l. 1488, *"you own which texture object backs each unit per stage"* — **Phase 6** re-points the samplers at those units (l. 1563), and **Phase 13** owns vocabulary (b), which `DESIGN.md` ll. 2269–2271 give it and which l. 2287's *Scope — out* keeps clear of the unit map; §1.2's row is that joint ownership. Phase 1 enumerates neither vocabulary. **No facade verb and no `adopt(int)` is added** — see `[D-P1-36]`; the two declaration changes this row *does* cost are in §5.2's changelog row | **5** (defines vocabulary (a): which texture object backs each unit per stage), **6** (points the sampler uniforms at those units), **13** (defines vocabulary (b): its `minecraft:`-asset custom-texture forms that name a live vanilla texture — *not* the `_n`/`_s` companion atlases, which it builds itself and gets from `TextureService.create`, and *not* static `minecraft:` assets, which it can load and upload) |
@@ -4403,7 +5480,12 @@ authenticated permission matrix is the binding §5.2 row below.
 | Exposed | Detail | Consumed by |
 |---|---|---|
 | `GLDevice` + the seven services | §4.7.4 signatures. **Changed in the §0.5 revision:** `UniformService` gained an `ivec4` overload, `StateService` gained `depthTest`/`fog`, `FramebufferService` gained `copyDepthToTexture`, and `GLDevice` gained `drainErrors()`. **Changed in the §0.6 revision:** `DrawService.fullscreenQuadInstanced(int)` was **removed** (`[D-P1-33]`), `RecordingGLDevice` gained a log-supplying constructor, and the GL-error row's attribution promise was narrowed to what the default cadence delivers. **Changed in the §0.7 revision: nothing in any signature.** Two rows were corrected in prose only — the non-verbs row (the `countInstances` mapping scoped to composite/deferred and the non-composite case handed to Phase 7) and the GL-error row (the drain's cadence, and three preconditions of the rung-2 protocol). **Changed in the §0.8 revision: again nothing in any signature** — the same two rows corrected in prose: the **GL-error row** (the elision bit tracks *facade* calls while the GL flag is per-context, so a non-empty drain does not imply one of Phase 6's uploads failed — V8-1; and property (i) no longer asserts a per-sample halflife premise it had no source for — V8-3), and the **non-verbs row** (the composite `countInstances` loop is **Phase 7's**, not Phase 5's, with Phase 6 named for the `instanceId` upload — V8-2). **Changed in the §0.9 revision: again nothing in any signature** — every service interface, handle type and value type is byte-for-byte what rounds seven, eight and nine all reviewed, and round nine's one edit inside the §4.7.4 block is a **javadoc sentence** on `GLError` and `drainErrors()`, not a declaration (V9-2). The same two rows again, in prose: the **GL-error row** (the frame-level remedy is one of two and carries two limits, not "the only sound remedy" — V9-1; the recurring-foreign replay cost is stated — V9-1; property (i)'s disclaimer is rescoped to what a second evaluation would do — V9-10), and the **non-verbs row** (its header now covers adjacent owners as well as requesters, readmitting **Phase 5** — V9-7; the composite loop carries `DESIGN.md`'s **`[v0.5]`** tag and its Phase 4 citation — V9-8). **Changed in this revision (§0.11): again nothing in any signature — and this time nothing in this row's subject at all.** The seven services, every handle type and every value type are byte-for-byte what rounds seven through **eleven** reviewed. §5 *is* altered this revision, at three places elsewhere: V11-1's deletion from the pixel-transfer row's consumer column, and **two new §5.1 rows** — the engine bring-up sequence (`[D-P1-37]`, §4.13) and the `mod.glue` vanilla-texture provider slot (`[D-P1-36]`, §4.12, which the REV2-mandated PD §2 completeness check produced). Neither new row adds a facade verb, which is exactly why this row is untouched while §5 is not. **Changed in the §0.12 revision — the first revision since §0.5 in which a *declaration* moves, so it is stated first and plainly.** No **verb** is added, removed or changed: the seven services' method lists, the result types and the value types are byte-for-byte what rounds seven through **twelve** reviewed (round twelve swept them member by member and found nothing — its §2 item 7). Two declarations do change, both forced by the round-eleven material rather than chosen. *(a)* The four handle sub-interfaces and `UniformLocation` **lose the `sealed` modifier** (V12-3): with JPMS rejected (§4.3, `[D-P1-6]`) `:engine` compiles into the **unnamed module**, where a sealed type's permitted subtypes must sit in its own **package** — so `Lwjgl3GLDevice`'s handles (`mod.glue`), `RecordingGLDevice`'s (`engine.gl.record`) and `[D-P1-36]`'s `mod.glue` handle were *all* uncompilable as declared. `GLHandle` stays sealed and its `permits` clause is still the enforced "four types, not five" (§12 item 18). *(b)* `engine.gl` gains **`ForeignTextureProvider`** and its installer `ForeignTextures` (V12-4) — the type §5.1's provider row named without declaring. The **non-verbs row** below also gains an entry — binding a framebuffer the engine did not create (V12-6) — and the consumer column names **7** then **5** for it. **No member of any pre-existing type changed and no dependent's call site changes. Changed in §0.15:** `ShaderService` gains `useFixedFunction()`, the first new facade verb since §0.5, to select program zero without exposing a raw integer, null, or sentinel handle. It is the exact Phase 4 §5.4 request and is additive to `use(ProgramHandle)` (`[D-P1-39]`) | 4, 5, 6, 7, 8, 13, 14 |
+| **P14 debug activity and placement — D-P1-54** | §4.7.8 exact installed-backend GL4.3/KHR+glLabels gate without debug-context prerequisite, bootstrap/inactive no-GL behavior; exact eight pure values and mod.glue.gl helper home. Existing device remains mod.glue; optional worker/context-flag operations not granted | **14**, 7 (debug call sites), 2 (recording) |
 | **§0.25 legacy geometry addition** | Incorporates the exact `ShaderService.configureLegacyGeometry(ProgramHandle,LegacyGeometryInputPrimitive,LegacyGeometryOutputPrimitive,int)` declaration and complete §4.7.4 preconditions, ordering, native mapping, errors and mandatory drain/abort transaction. Closed enums contain only `TRIANGLES` and `TRIANGLE_STRIP`. Count is positive and never clamped. No source/strategy ownership or general parameter setter is granted (D-P1-44) | **4** |
+| **R26 linked primitive/fullscreen contract — D-P1-48** | Incorporates complete §4.7.4a: effective linked input acquisition including core/source overrides; issuance/selection/delete/restore/unknown-state lifecycle; no per-draw GL query or source scan; TRIANGLES uses triangle strip even on QUADS-capable profiles, other geometry inputs reject without draw; exact recorder vocabulary/scripts and failure containment. Existing public fullscreen signature remains | **4**, **7**, 10 (backend comparison), 2 |
+| **Vertex input service — R10-1/D-P1-50/D-P1-55** | `GLDevice.vertexInputs()` and complete §4.7.6 signatures, closed sources/results/rejections/modes, authenticated lifetime and geometry comparison incorporated. D-P1-55 requires live conventional-position generic-zero isolation, complete capability-legal capture-array allowlist, actual descriptors/enables/bindings/selectors/current-side-effect restoration and partial-setup rollback; list replay remains a no-pointer-reconstruction guard. Recorder and v0.1 base/v0.3 extended scope unchanged; receiving adoption and live value/restoration proof remain unverified | **10**, 7 (composition), 2 |
+| **Complete owned-texture parameters — D-P1-52** | Exact §4.7.7 TextureParameters and closed enums, sampler/object split, complete P5/P13 conversion, target/format/capability admission, owned-only binding-neutral set/failure/recording and neutral LOD/border/aniso policy incorporated | **5**, **13**, **14** value adoption only |
+| **R32 routes and duration lock — D-P1-57** | Exact FramebufferDrawSlot/positional drawBuffers and ReplayAssertions list signature; StateService.lockAlphaBlend(Optional<AlphaTestState>,Optional<BlendState>) → opaque AutoCloseable AlphaBlendOverride, effectiveBlend() → BlendState; complete interception/bypass/snapshot/error/notification semantics in §4.7.4 | **4**, **5**, **7**, 2/6 observation |
 | **§0.18/§0.19 framebuffer/depth additions** | Facade shape: `BorrowedDepthAttachmentHandle extends TextureHandle`; `FramebufferService.borrowDepthAttachment(platformTexture)`, `attachDepthStencil(f,t)`, and `initializeDepthTextureFromFramebuffer(src,dst,region)`. Issuance accepts a live ordinary foreign handle recognized by the receiving device and returns its opaque, non-owned borrowed handle; rejection is pre-GL. Phase 5 owns format, freshness, attachment/copy cadence, allocation/copy tier, restoration, and Minecraft lifetime (`[D-P1-40]`) | **5**, 7, 8 |
 | **GL-error surface** — `GLDevice.drainErrors()` → `List<GLError>` (`op`, `subjectLabel`, `kind`, `detail`) | §4.7.4. This is the signal §G2.4's **rung 2** acts on — rung 1 is Phase 11's expression isolation and never reaches GL (§6). **Attribution is scoped to the drain window, and this is contract, not implementation detail:** a window holding exactly one mutating **facade** call yields a record naming that call; a window holding several yields **at most one record per driver error flag** — in practice one, carrying `subjectLabel = "(batched, N calls)"` — because GL holds only the first error in a flag until that flag is cleared. The rung-2 protocol is therefore: drain, upload the program's uniform set, drain — and **only if that drain is non-empty**, re-upload the set draining between uploads, so each record names one uniform, then disable those uniforms only (`[D-P1-32]`). **Three properties of that protocol are contract too, because you cannot implement it correctly without them.** (i) The re-upload reuses the values **already computed for this sweep** and never re-evaluates the providers — `glUniform*` is idempotent on the bound program, so re-uploading cached values changes nothing except *which drain window* each upload lands in, which is the replay's entire purpose. Re-running the sweep would instead re-enter your world-state providers, and **this document deliberately asserts no property of what a second evaluation would do** — not that it is safe, and not that it is harmful. Two facts about the surroundings are relayed, and they are statements about the sources rather than about your providers: RESEARCH.md §4.4 places the world-state sampling at frame begin, and `DESIGN.md` puts the time-corrected halflife formula in **your** *Scope — in*. Both are already inputs of your own spec; the design that follows from them is yours, and that is precisely why the protocol is "re-upload" rather than "re-run". (ii) If the replay comes back clean — `OUT_OF_MEMORY` need not recur, and per the cadence note below the error may not have been ours at all — the sweep is **unattributable**, and falls to §6's 3→4 row rather than silently disabling nothing or guessing. (iii) A `GLError` naming a uniform depends on the backend **retaining the name passed to `locate(p, name)`**; `UniformLocation` carries no name in its signature, so this is a stated backend obligation (`[D-P1-34]`), not something a test can catch. The **cadence** that delivers all of it: a drain is a `glGetError` **loop terminating on `GL_NO_ERROR`** (the GL-sanctioned form — a single call leaks a second flag into the next window and misattributes it), and a drain issues **no query at all** when no mutating **facade** call has occurred since the previous drain — which is what makes the two-drain protocol cost **one** query per clean sweep. **That bit tracks *facade* calls, while the GL error flag is per-context**, so a drain window can hold an error this facade did not cause — vanilla's own draws never reach it (§3's second row). **A non-empty trailing drain therefore does not by itself imply that one of your uploads failed**, which is why (ii) is load-bearing in general rather than an `OUT_OF_MEMORY` corner. **Two consequences you should plan for.** First, a *recurring* foreign error re-enters the replay every frame — reproducing nothing, disabling nothing, and costing a re-upload of the whole set — so a replay that repeatedly comes back clean is evidence of foreign GL rather than of a flaky uniform, and is the case to escalate rather than to retry forever. Second, the mitigation is not this facade's: §4.7.4 states the case once and §11.4 hands **Phase 7** a frame-level drain to place, whose two limits are stated there — it bounds only the gap spanning the frame boundary, and it is subject to the same elision, so it is not unconditional at the driver unless a mutating facade call precedes it. It is one remedy among two, not the only sound one: §4.7.4 records that dropping the elision would also bound the window and is rejected on **cost**, not on soundness. This works in the **shipping** configuration; the per-call cadence under a debug context or `-Dschmaloogium.debug.recordGL`/`glLabels` (those two flags only) is an optimisation of it, not a precondition for it. `ScriptedResponses.glError(...)` makes both window shapes testable headlessly | **6** (rung 2 is its v0.1 scope-in), 4, 5, 14 |
 | **Replay-aware GL-error result** — `ReplayAwareGLError(GLError error, boolean attributed)` | There is exactly one result for each `GLError` from the triggering non-empty drain. `attributed=true` only when the caller's replay isolates the named facade call and the error recurs in that call's one-call drain window. A clean replay, a batched/ambiguous window, a foreign-context error, or a non-reproducing error yields `false`; neither `op` nor `subjectLabel` can manufacture `true`. Phase 6 performs the cached-value replay and emits this owner-defined value; Phase 2/7 may serialize or assert it verbatim (`[D-P1-42]`) | **6**, 2, 7 |
@@ -4414,10 +5496,22 @@ authenticated permission matrix is the binding §5.2 row below.
 | **§0.25 recorder and error incorporation** | The preceding recorder and GL-error rows incorporate §4.7.5's exact `shaders.configureLegacyGeometry(p,input,output,maxVerticesOut)` event, no-event precondition rejection, extension gate and existing `glError`/`linkFails` scripts. `drainErrors`, `GLError`, replay APIs, handle type declarations and profile record/serialization signatures are **unchanged**; §4.7.4's narrow pre-link handle checks and mandatory error transaction are added semantics | **4**, 2 |
 | `ReplayAssertions` incl. `bindsBalanced()`, `noLeakedObjects()`, **`noUseAfterDelete()`**, `drawBuffersWere()` | §4.7.5. `bindsBalanced()` sees facade-level calls only; the backend restore obligations on blit, depth attachment, initialization, and steady copy are contracts checked through restored-binding identities in their recorder events. Generic `calledInOrder`/argument inspection distinguishes combined attachment and initialization from depth-only attachment and steady copy. Borrowed handles are never counted as created/leaked/deletable; forged/wrong-origin rejection appends no call. Phase 4's fixed-terminal assertions remain unchanged | 2, **4**, 5, 8 |
 | `CompileResult` / `LinkResult` / `ValidateResult` | never-throwing result types carrying driver logs | 4 |
-| `StateService` state verbs + `snapshot()` / `restore()` | the §G4.6 perturb-and-restore mechanism, over viewport, clears, depth mask, **depth test**, blend, alpha test and **fog** — the composite/final block RESEARCH.md §4.4 requires. `DrawService.fullscreenQuad()` establishes **no** state: the caller sets the block. The backend issues every `GlStateManager`-cached verb through `GlStateManager` (§4.7.4, `[D-P1-29]`). **Phase 4 is a consumer too (V14-2):** the per-program `alphaTest.<prog>`/`blend.<prog>` override values are Phase 4's to apply — its use-program barrier carries the *"per-program alpha/blend lock"* (`DESIGN.md` ll. 1245, 1365) — through `alphaTest(...)`/`blend(...)` here, with Phase 7 invoking the barrier (§3's rows) | **4** (the alpha/blend lock at the use-program barrier, `DESIGN.md` ll. 1245, 1365), 5, 6, **7** |
+| Candidate sampler initialization — D-P1-59 | §4.7.4 exact SamplerUnitAssignment/result and initializeSamplerUnits transaction; P5 policy supplies integers, P4 calls before validate, exact private prior-selection restoration, false restoration poisons admission; recorder/script contracts incorporated | **4**, 5, 2 |
+| Sampler normalization — D-P1-60 | §4.7.4 prepareUnitBindings(occupiedUnitMask) after P5 complete preflight, plus public useFixedFunction normalization before vanilla/terminal draws; NONE has no sampler objects, optional P14 strategy owns native dispatch | **5**, 7, **14**, 2 |
+| Historical P3 schema22 receipt — D-P1-61, superseded by D-P1-65 | D-P3-72 supplied containing/nested/inspection equality and MaterializedSource-v22 at that adoption. BLOCK isolated forced11300 provenance remains P3/P9-owned; current admission is schema23 below, not22 | all receivers retain exact-current admission |
+| Runtime sampler demotion — D-P1-62 | Receive P14 D-P14-26: before NONE drawing, backend replays complete authenticated latest owner parameters to affected owned texture objects through private baseline mapping, with binding/error/restoration checks. Failed/unproven replay contains/rebuilds; no borrowed mutation, enum-only fallback or lost live/retiring accounting | 5, 13, 14 |
+| Target-bearing synchronous values — D-P1-63 | Complete §4.7.7a TextureSpec/TextureData/TextureRegion/TextureExtent/PixelLayout/TextureAllocationTarget and P5-owned closed format vocabulary; distinct 1D/2D/3D/RECT dispatch, exact mips/bytes/ownership/restoration; existing depth-copy verbs unchanged | **5**, **13**, 14 (value reception), 2 (recording), 7/8 (depth consumers) |
+| Complete object baseline — D-P1-64 | Every successful owned setParameters maintains complete latest object state alongside sampler cache; ordinary all-unit fixed-function clearing is safe without deferred replay; §4.7.7a failure/borrowed restrictions incorporated | **5**, **13**, **14**, 7, 2 |
+| Exact-current schema23 — D-P1-65 | CURRENT_SCHEMA_VERSION=23, matching containing/nested IdMappingInput/received inspection and MaterializedSource-v23 before derive/retain/reuse; prior numeric receipts including D-P1-61 are historical. Nine metadata-only trees/projectionVersion1, assets/native/options/parameter contracts unchanged; P3 alone parses range selectors | all receivers |
+| Captured target limits — D-P1-66 | §4.7.2 exact added fields/keys, capability-gated positive-or-unsupported-zero probes, fail-closed capture/parse, target-axis admission and recorder equality; §4.7.7a incorporates them | **2**, **5**, **13** |
+| Mandatory typed color clear — D-P1-67/69 | Complete §4.7.4b ColorClearValue and framebuffers.clearColorAttachment grant, numeric-class/positional-route checks, GL3/EXT/legacy dispatch, full-extent private state restoration including capability-legal actual rasterizer-discard save/disable/finally restore, exact recorder events/scripts and failure retention | **5**, 2; 14 implements behind facade only |
+| Complete conventional participation — D-P1-68/70 | P10 D-P10-29/30 exact complete VertexInputPlan/ConventionalInput receipt in §4.7.6; completed BLOCK producer includes real late UV1 completion, partial ITEM/filler grants none; source-absent COLOR/UV1 inheritance/capture exclusion, whole-plan identity and exact restoration. Recorder borrowedVertexList(String label, VertexLayout layout, VertexInputPlan capturePlan) validates and retains complete immutable authority before first replay; old overload removed | **10**, 7, 2 |
+| Owned texture materialization — D-P1-71 | §4.7.3 logical create retains label only; first admitted exact-target allocation/known2D initialization materializes and labels; `label` on a live-but-unmaterialized owned handle is recorded-only (D-P1-73) — retained/updated with no GL, no queued `GLError` and no native-label event, applied once by the first admitted materialization before storage work, dropped if deleted first, foreign/borrowed handles unchanged; unmaterialized delete issues no native delete; native deletion zeroes affected bindings/cache and never restores deleted names, preserving lease retirement | **5**, **13**, **14**, 2 |
+| **Cached linked geometry inspection — D-P1-48** | `ShaderService.linkedGeometryInput(ProgramHandle)` returns cached `Optional<LinkedGeometryInputPrimitive>` under §4.7.4a's exact successful-link/lifetime checks; empty only no geometry. P4 compares it to finalized P3 effective input before validate/publication, whole-candidate failure on mismatch. No GL/source query or runtime active-program exposure; recorder query event included | **4**, 2 |
+| `StateService` state verbs + `snapshot()` / `restore()` | ordinary §G4.6 perturb/restore for viewport, clears, depth mask/test, blend, alpha and fog through GlStateManager. P4 per-program duration locks instead require D-P1-57 lockAlphaBlend and opaque close; immediate verbs cannot substitute and are suppressed for held aspects. Fullscreen establishes no state | **4**, 5, 6, **7** |
 | **Pixel-transfer verbs** — `FramebufferService.readDepthPixel(f,x,y)`, `initializeDepthTextureFromFramebuffer(src,dst,region)`, `copyDepthToTexture(src,dst,region)`, `TextureService.upload(t, TextureData)`, `UniformService.upload(loc,int,int)` (ivec2) and `upload(loc,int,int,int,int)` (**ivec4**) | §4.7.4; value types `TextureData` / `TextureRegion` / `PixelLayout` / `BlitSpec`. Depth initialization is first-copy exact-format storage definition on an owned destination; steady copy requires matching defined storage. Neither accepts a foreign destination, and both restore framebuffer/texture bindings | **6** (the v0.1 synchronous `centerDepthSmooth` readback; `atlasSize`/`eyeBrightness`; `blendFunc`), **5** (`depthtex1`/`depthtex2` first and steady copies plus formats), **8** (shadow depth→`shadowtex1`), **13** (noise, companion atlases, custom textures) |
 | **The facade's stated non-verbs**, with requesters and adjacent owners | §4.7.4's closing table remains binding: async/PBO and general colour/texture readback, `ivec3`/`mat3`, colour mask, face culling, free-standing pixel-store state, a **general** pre-link parameter setter, instanced draw, and binding Minecraft's own framebuffer. §0.25 serves the legacy geometry triple only; it is no longer an absent operation. Minecraft's FBO is not `bindDefault`'s name 0: Phase 7 must arrange the v0.1 final-to-vanilla bind through vanilla's path, with Phase 5 the second requester if its estate needs that FBO as a copy/blit source (§4.12). `bindsBalanced` cannot prove an internal/vanilla bind. `ivec4` is already served. Fullscreen and approved prepared-submission repetition use P7 v0.5 policy, P6 instance uploads and unchanged P5 estate/flip law; D-P1-47 replaces the gbuffers/shadow open case without granting an instanced draw | **14** async; **13** texture readback; **7** colour mask/anaglyph, face culling, framebuffer bind and repetition policy; **10** existing geometry adapters; **8** single shadow traversal; **6** `instanceId` upload; **5** estate policy and second framebuffer requester; **3** flag ownership and detection; **4** general pre-link requests and instance metadata |
-| **Legacy geometry source gate / adopted consumer migration** | The former mandatory-core-rewrite assumption is withdrawn. §11.4 is incorporated: Phase 3 must grant a legacy-preserving result with same-build options/macros, final declarations, exact source map and fingerprint; current `None` rejects a pair and `Translate` is incomplete. Phase 4's integration amendment conditionally adopts the native verb and its compile/fingerprint/failure transaction. Native source preservation is still ungranted; both owner/receiver remain unverified. Until source grant and fresh reviews, legacy programs remain unavailable with fallback. No new Phase 3 API or reverse dependency | **3**, **4** |
+| **Legacy geometry source grant / consumer migration** | P3 binding §5 and its exact CURRENT_SCHEMA_VERSION retain D-P3-68's GeometrySourceRequest.None/PreserveNative and GeometrySourceForm.None/CoreLayout/NativeLegacy, same-build source/language/maps/catalogs, source-layout precedence and route-bound fingerprints; Translate remains removed. D-P3-69's immutable post-archive PackConfiguration.assets()/PackAssetSnapshot remains P3-owned, not a P1 facade I/O grant or binary artifact permission. D-P1-56 receives D-P3-70 without another version authority. §11.4 incorporates P4 migration; native configure/cached linked-input comparison unchanged. Owner/receiver verification and runtime/integration proof remain required | **3**, **4** |
 | `DebugService` | present in v0.1, active at v0.5 | 4, 5 (call sites), **14** (implementation) |
 | **Approved prepared-submission countInstances boundary; no new facade verb** | §11.4/D-P1-47 incorporates the maintainer's 2026-09-07 v0.5 decision: N adjacent native submissions of already-prepared geometry, IDs `0..N-1`, private synchronous P7 policy/P10 draw adapters beneath authenticated main or shadow scopes; P8 traversal unchanged. No instanced draw, renderer-extension API, compilation-time expansion or world/event replay | **7**, **10**, **8**, **6** |
 
@@ -4461,6 +5555,7 @@ PBO variant is Phase 14's.
 | SRG-targeting policy and the `schmaloogium$` prefix | §4.5.3 | 7, 10, 13 |
 | `SchmaloogiumMixinPlugin` slot on the MOD config | §4.5.2 | 10 |
 | `CompatCheck` / `CompatVerdict` / `CompatContext` / `BailRegistry` | §4.10 | **10** (policy), 7 (the bail hook) |
+| **Early class-only compatibility — D-P1-50** | §4.10's `EarlyCompatContext`, `EarlyCompatCheck`, early registration/evaluation and sticky whole-family MOD veto are incorporated. No pre-GL profile, class initialization, speculative mod-list result or ungated preinit attachment | **10**, 7 |
 | **Mod-dependency declaration mechanics** | §4.2.6 (ModularUI deliberately not pinned — Phase 12 owns the decision), §4.8.4 (both arrangements and the obligations each carries: `contain` jar-in-jar is distribution of the LGPL-3.0 work and brings its notice obligations), §11.3 item 2 (the template declares only `modCompileOnly`/`modRuntimeOnly` — **no `modImplementation` configuration exists**; §12 item 43 is the fix) | **12** |
 | SPDX header convention + `THIRD-PARTY.md` mechanism | §4.8.2, §4.8.3 | all phases; especially any phase incorporating LGPL-3.0 code under D-8 |
 | CI job/step layout + the `conformance` extension point | §4.11 | **2** |
@@ -4479,7 +5574,7 @@ is the invariant every row below serves.
 
 | Failure | Rung | Behavior |
 |---|---|---|
-| **Capability probe fails or returns nonsense** (missing entry point, driver returns 0 for a max) | 4 | `CapabilityProbe` catches, logs on `schmaloogium.gl`, and produces a *conservative* profile (GL 2.1, the spec minimums). The engine then fails its capability gates naturally and turns the pack off with a chat error. It does not guess optimistically, and it does not propagate an exception into display init. |
+| **Capability probe fails or returns nonsense** (missing entry point, query error, nonpositive supported maximum) | 4 | D-P1-66: CapabilityProbe catches and logs on schmaloogium.gl, reports shaders-off with a chat diagnostic, and publishes no usable native profile/device. Never manufacture a conservative GL2.1 profile or target maxima after failed capture. Explicitly labelled synthetic headless fixtures may contain deliberately chosen coherent limits, but are not native capture, runtime fallback or proof of support. No exception escapes display init. |
 | **A capability gate fails at init** (pack needs more draw buffers / attachments / units than the profile offers) | 4 | Pack turns off gracefully; `EngineDiagnostic(ERROR, CHAT)` naming the shortfall; `schmaloogium.gl` line with the profile values. Vanilla rendering is untouched because no GL object was created yet. |
 | **A shader fails to compile / a program fails to link or validate** | 3 | The facade returns a failed `CompileResult`/`LinkResult`/`ValidateResult` — it never throws. Phase 4 deletes the program, emits `EngineDiagnostic(ERROR, SHADER_GUI)` carrying the driver log, and resolves through the backup chain. |
 | **Legacy geometry pre-link configuration is rejected or its immediate drain is nonempty** | 3 | Phase 4 aborts before link, cleans up the entire candidate program and its shaders, reports the geometry source/declaration plus capability/driver diagnostic, and resolves the backup chain. No stage-only disable, clamped count, partial configuration or claimed two-span translation success (§4.7.4) |
@@ -4567,25 +5662,73 @@ the existing GL-error cadence and hot uniform-upload path are unchanged.
 
 ## 8. Testability plan
 
+Attempt-6 planned evidence (D-P1-66/67): round-trip distinct ordinary/3D/rectangle
+maxima; accept equality and reject maximum+1 independently on every used axis;
+unsupported rectangle records0 and issues no enum, advertised-but-broken query fails
+capture, missing/negative/gate-inconsistent serialized keys fail before recording.
+Exercise GL3 and GL2+EXT integer clears of mixed RGBA8/RGBA32F/R32I/R32UI with
+route holes and nonidentity attachment numbering; check exact typed payload and intended
+attachment only, unsupported GL2 integer rejection, UINT_MAX, fractional/negative
+conversion, NaN/infinity rejection. Begin with nondefault FBOs/routes, scissor, indexed
+masks, dither/sRGB/clamp and integer-origin legacy clear state; all-success restores
+exactly, work/restore errors retain failure and block successful full-clear consumption.
+These are unexecuted acceptance cases, not new conformance results.
+P10 receipt evidence (D-P1-68): same physical56 layout with differing original COLOR/UV1
+masks must not share stale state/VBO/list products; compare live client/VBO and cached
+playback under two distinct current colors/lightmaps, changing them between playbacks.
+Absent inputs inherit each draw's current state and capture freezes neither; supplied
+inputs and established generated normals retain their behavior. Verify exact restoration
+and mutation-free forged/stale/mismatched-plan rejection. Planned, not executed.
+Attempt-7 planned cases (D-P1-69/70/71): enter GL2+EXT integer and noninteger clear
+with discard enabled and observe full contents plus exact enabled predecessor afterward;
+repeat core and unsupported-discard contexts, checking no unsupported query/change.
+Inject save/disable/work/restore failures and require no successful full-clear consumption.
+Issue two lists with identical physical layout/geometry but different captured masks and
+generic unions; valid first replays pass, cross-plan first replays reject before mutation,
+caller collection mutation cannot change retained authority, and invalid layout association
+rejects at issuance. Receive P10 ITEM→BLOCK→real brightness completion and missing/throwing
+completion cases; no incomplete product can reach bind. Logical create/delete without
+allocation makes no native texture, all four first targets label only their exact object,
+and deleting a bound materialized texture never resurrects its name. Planned, not executed.
+
 ### 8.1 Headless unit tests owned by this phase
+
+R32 planned proof: routes 0N2, N0, 0N, NN, empty, duplicate attachments and both capacity
+limits preserve output locations or reject before GL. Hold OFF/explicit alpha/blend while
+ordinary vanilla setters attempt all mutations; observe unchanged effective draws/cache,
+ordinary unlocked-aspect behavior and exact pre-lock restoration including disabled factors.
+Inject each acquisition/close/notification failure and assert no active shader admission,
+rollback attempts and idempotent consumed closure. These are planned checks, not execution.
 
 | Test | Module | Asserts |
 |---|---|---|
 | `SeamClasspathTest` | `:engine` | Constraint **C-1**, classpath half — no forbidden coordinate on `main`'s compile or runtime classpath (§4.3 layer 2) |
 | `SeamBytecodeTest` | `:engine` | Constraint **C-1**, bytecode half — no forbidden type referenced by any compiled `:engine` class (§4.3 layer 3). **This is the test the Impl gate names** |
 | `SeamInternalsTest` | `:mod` | Constraint **C-2** — no `:mod` class references `com.schmaloogium.engine.*.internal.*` |
-| `SeamLwjglConfinementTest` | `:mod` | Constraint **C-3** — no `org.lwjgl*` reference outside `com.schmaloogium.mod.glue` (the mechanical half of §G4.6) |
+| `SeamLwjglConfinementTest` | `:mod` | Constraint **C-3** — no `org.lwjgl*` reference outside `com.schmaloogium.mod.glue` and its subpackages (the mechanical half of §G4.6) |
 | `SeamConformanceDependencyTest` | `:conformance` | Constraint **C-4** — no `:mod` artifact on `:conformance`'s classpaths and no `com.schmaloogium.mod.` reference in its classes (§8.2) |
 | `GLCapabilityProfileSerializationTest` | `:engine` | Round-trip `write` → `parse` is identity; output is sorted and deterministic; a hand-written fixture parses to the expected values |
+| `LinkedGeometryInspectionTest` | `:engine` | Empty iff no geometry; successful native/core input equals committed link metadata, failed metadata never yields successful link, invalid/deleted/cross-device inspection rejects, query does not select a program; P4 owns projected-versus-actual mismatch cleanup/fallback proof |
 | `GLCapabilityProfileDerivationTest` | `:engine` | `atLeast`, `hasExtension`, and `supportsMipmapGeneration()` (true at 3.0, false at 2.1 — the RESEARCH.md §4.1 gate) |
 | `RecordingGLDeviceTest` | `:engine` | Calls are logged in order with correct arguments, including distinct `shaders.use`/`shaders.useFixedFunction`, `framebuffers.attachDepth`/`attachDepthStencil`, and initialization/steady-copy events. Handles are distinct and never reused after delete; recorder-issued borrowed-depth handles carry a private device origin and are not leak-counted; copied depth is summarized, not logged; restored read/draw/texture binding identities are present. Scripted compile/link/validate/GL-error paths, bounded-log behavior, supplied-log behavior, and stable rendering remain covered |
 | `FramebufferDepthContractTest` | `:engine` | Exhaustive owned/ordinary-foreign/authenticated-borrowed/forged-marker/wrong-device/deleted matrix for every texture-accepting framebuffer verb; all invalid cases reject pre-GL with an unchanged log. `attachDepth` removes stencil, `attachDepthStencil` accepts only exact packed metadata and attaches the same handle to both points, and both report restored read/draw bindings. Initialization accepts owned destination only and defines exact format/extent; steady copy rejects undefined or mismatched storage and never redefines it; both restore read/draw/texture bindings |
 | `ReplayAssertionsTest` | `:engine` | Each assertion passes on a conforming log and fails informatively on a violation, including balanced binds, leaks, and use-after-delete. Fixed-terminal fixtures distinguish `shaders.useFixedFunction`; depth fixtures distinguish combined attachment and initialization from depth-only/steady operations, assert restored binding identities, and prove borrowed handles are neither created/leaked nor deletable |
 | `LegacyGeometryPreLinkContractTest` | `:engine` | Extension-present configure/clean-drain/link versus GL-3.2-without-extension rejection; exact positive count and closed topology; null/forged/wrong-device/deleted/no-geometry/after-link/wrong-thread rejection without recorder mutation. Parameter-error scripts followed by the required abort emit no link/use and leak no candidate objects; link-failure scripts cover total-output limits. Reconfiguration before link replaces the whole triple; deletion removes its state. Tests of Phase 4's cleanup/backup selection belong to Phase 4, not this facade-only test |
+| `FullscreenGeometryContractTest` | `:engine` | On QUADS-capable profile: native clean configure→link→use draws TRIANGLE_STRIP; ordinary/core TRIANGLES does too; plain/fixed resumes QUADS. Scripted effective POINTS overriding native TRIANGLES rejects fullscreen without submission; unknown core metadata fails link. Failed configure/link never publishes active state, failed/uncertain use does not authorize guessed draw, active deletion invalidates, fresh issuance cannot inherit metadata, nested use/fixed/reselection restores exact previous route; draw/restoration errors cannot appear as clean completion. Recorder failure scripts and route arguments defend these observable outcomes, not source-string assertions |
 | `BailRegistryTest` | `:mod` | `Ok`/`Degrade`/`Bail` aggregation; a throwing check is treated as `Bail`; evaluation is idempotent |
+| `EarlyBailContractTest` | `:mod` | Early-only evaluation requires no GL/mod-list/game initialization; early exception/positive result vetoes the complete family and remains latched; duplicate id rules and delayed sink routing preserve one outcome; full checks still run at runtime points |
+| `VertexInputContractTest` | `:engine` | All source/mode pairs, authentic/forged/foreign/retired sources, bounds/overflow, wrong thread, layout/plan/capability rejection, actual-versus-expected input mismatch before mutation, LIFO nesting and exact predecessor restoration, failed partial setup rollback and failed rollback admission closure; list capture independent of current program, replay requires matching captured category and live source; no owned-handle leak from borrowed issuance |
 | `MixinConfigAgreementTest` | `:mod` | For each config, the `@Mixin`-annotated classes in its declared `package` **minus any sub-package another config declares** are exactly the classes its arrays name (§4.5.2a, `[D-P1-38]`) — the drift insurance taken instead of a class-scan plugin. The sub-package exclusion is required, not optional: the three declared packages are nested (§4.5.2 observation 1) |
 | `LogChannelTest` | `:engine` | Every `LogChannels` constant is unique and starts with `schmaloogium.`; the no-op sink is active before installation |
 | `DiagnosticRoutingTest` | `:mod` | `CHAT`/`SHADER_GUI`/`LOG_ONLY` route correctly; `CHAT` with no player degrades to log; every diagnostic reaches the log |
+
+`VertexInputContractTest` additionally models D-P1-55's distinct enabled generic-zero
+predecessor, unrelated enabled conventional/client-unit/generic capture arrays, capability
+absence and nested bindings. Assert admitted values and complete pre/post state equality,
+including implicit current-value effects; inject failure after isolation, selector movement
+and pointer setup, requiring zero submission and exact rollback. A state-write trace alone
+does not establish which vertices a driver fetched; the live proof below remains required.
+
 
 `:conformance` gets its JUnit wiring, its `:engine` dependency, and a single placeholder test proving
 the module builds and runs. Its content is Phase 2's.
@@ -4676,6 +5819,31 @@ split — the machinery for "per-phase headless tests … against the `engine.gl
 
 ---
 
+**D-P1-48 live proof, planned not run.** At the first shader-capable client milestone,
+compile/link native minimal and ordinary core fixtures on a compatibility context with
+QUADS available. Exercise fullscreen under TRIANGLES, plain/fixed, and incompatible linked
+input; capture the actual primitive/error result and restored caller state. Exercise native
+layout override on GL3.2+ and compare effective link metadata with dispatch, not the ARB
+configured-value query. P2 owns conformance evidence and explicit golden updates.
+P10's separately approved native quad-conversion policy needs its own winding/provoking-
+vertex/primitive-ID and lifetime evidence; fullscreen success proves none of it.
+
+**D-P1-55 native-input proof, planned not run.** On a legal compatibility context,
+use distinct valid position sources A (authenticated conventional client/VBO) and B
+(enabled generic zero). Observe submitted positions from A for both live source routes.
+Capture A with unrelated enabled conventional color/edge-flag, non-plan client texture
+unit and non-plan generic arrays containing distinctive values; replay while varying those
+foreign arrays/current values and observe that no foreign values were captured. Use a
+fixture shader/output or feedback/readback that observes values, not just enable-call logs.
+Compare the complete actual predecessor after live draw, capture, replay and nested scopes:
+descriptors/per-pointer buffer associations, enables, global binding/client selector and
+legal current values, including color/normal/texture/generic capture side effects.
+Inject setup failure after each mutation class, checking no draw/list publication and exact
+restoration; rollback error must close admission and invoke existing P7 containment.
+Exercise capability-absent profiles without unsupported queries, generic zero without a
+current-value query, and list replay after the original client storage is retired.
+Do not interpret recorder success or these planned cases as driver proof.
+
 ## 9. Milestone staging
 
 Per §G4.3, every designed component carries exactly one tag meaning "implemented at that milestone".
@@ -4692,6 +5860,9 @@ Per §G4.3, every designed component carries exactly one tag meaning "implemente
 | `GLCapabilityProfile` + serialization | `v0.1` | |
 | `GLDevice`, `ShaderService`, `UniformService`, `TextureService`, `FramebufferService`, `StateService`, `DrawService` | `v0.1` | Interfaces + the LWJGL3 implementation, including both explicit program-selection modes and the authenticated depth-only/combined depth-stencil attachment operations (`[D-P1-39]`, `[D-P1-40]`) |
 | `configureLegacyGeometry` and closed topology enums | `v0.1` | Native backend plus recorder/error transaction (D-P1-44). Implementation consumption waits for the §5.2 source grant, Phase 4 migration and fresh whole-document reviews; no complete core translator is claimed |
+| Effective linked-input metadata / fullscreen selection / recorder semantics (D-P1-48) | `v0.1` | Both native and ordinary core geometry, selection-bound tracking, no per-draw query; P7 must adopt and pass the live proof before claiming affected fullscreen support |
+| P3 jcpp pin/closure admission (D-P1-49) | `v0.1` | Verified exact dependency/notice/runtime packaging and seam proof before P3 production code |
+| Vertex source/input/recording and early-check mechanism (D-P1-50) | `v0.1` | Base layouts and authenticated native primitive admission precede affected `.gsh` support; P10 extended CLASSIC56 producers remain `v0.3`, not a reason to claim unimplemented early native support |
 | Pixel-transfer verbs (`readDepthPixel`, first-copy `initializeDepthTextureFromFramebuffer`, steady `copyDepthToTexture`, `TextureService.upload`, ivec2 and **ivec4** uploads) + `TextureData`/`TextureRegion`/`PixelLayout`/`BlitSpec` | `v0.1` | Interfaces and LWJGL3 implementation. Phase 5's depthtex1/depthtex2 first copy defines exact storage; later copies preserve it. Phase 6 owns center-depth readback/ivec uploads, Phase 8 consumes the same depth-copy split for shadowtex1, and Phase 13 consumes texture upload |
 | GL-error surface (`GLDevice.drainErrors()`, `GLError`, `GLErrorKind`, `ReplayAwareGLError`) + the backend's `glGetError` policy | `v0.1` | §G2.4 rung 2 is Phase 6's v0.1 scope-in, so both the drained signal and its replay verdict cannot be later than v0.1. The **cadence** ships with it: batched by default with window-scoped attribution — each drain a `glGetError` loop, elided entirely when nothing mutating has happened **through the facade** since the last one — and per call under a debug context or the `recordGL`/`glLabels` flags (`[D-P1-30]`, `[D-P1-32]`, `[D-P1-42]`) |
 | Phase 7 frame package homes | `v0.1` | The packages themselves are architectural slots established at foundation time; Phase 7 fills them without moving policy into mixins or weakening C-1 through C-4 (`[D-P1-41]`) |
@@ -4709,17 +5880,17 @@ Per §G4.3, every designed component carries exactly one tag meaning "implemente
 | `EngineDiagnostic` + routing (`CHAT`, `LOG_ONLY`) | `v0.1` | |
 | `EngineDiagnostic` routing to `SHADER_GUI` | `v0.4` | The sink is Phase 12's screen; the store exists at v0.1 |
 | `MixinConfigs` manifest attribute + `schmaloogium.default.mixin.json` | `v0.1` | The config exists; its contents arrive with Phase 7 |
-| `schmaloogium.preinit.mixin.json` (empty, reserved) | `v0.1` | First tenant expected `v0.3` (Phase 10) |
-| `schmaloogium.mod.mixin.json` (empty, reserved) | `v0.1` | First tenant expected `v0.3` |
-| `SchmaloogiumMixinPlugin` slot | `v0.3` | Reserved in this document at v0.1; the class **and** the `plugin` key in `schmaloogium.mod.mixin.json` both land at v0.3, in the same change (§4.5.2) |
+| `schmaloogium.preinit.mixin.json` (empty, reserved) | `v0.1` | No preinit vertex placement is granted |
+| `schmaloogium.mod.mixin.json` | `v0.1` | Geometry-only MOD hooks and functional early veto; CLASSIC56 hooks v0.3 |
+| `SchmaloogiumMixinPlugin` and MOD `plugin` key | `v0.1` | Ship together with real D-P1-50 early evaluation; not a permissive skeleton (D-P1-53) |
 | Mixin dev flags (`mixin.debug.export`, `mixin.checks.interfaces`) | `v0.1` | |
-| Mixin config ↔ package agreement test | `v0.1` | §4.5.2a, `[D-P1-38]` — the drift insurance taken **instead of** Pintonium's class-scan plugin; ships empty-but-passing at v0.1, since the arrays are empty and so are the packages |
+| Mixin config ↔ package agreement test | `v0.1` | §4.5.2a/D-P1-38; evaluates the actual owner-populated configs, not assumed-empty arrays |
 | Phase 8 package homes (`engine.shadow`, `mod.glue.shadow`, `mod.mixin.shadow`) | `v0.2` | Placement grant only; Phase 8 fills them and the existing seam/config-agreement tests enforce them |
 | Phase 13 package homes (`engine.textures`, `mod.glue.textures`, `mod.mixin.textures`) | `v0.5` | Placement granted now; Phase 13 fills them at its existing milestone. No placeholder classes, new conformance edge, or earlier texture implementation is implied (`[D-P1-43]`) |
 | `CompatCheck`/`CompatVerdict`/`CompatContext`/`BailRegistry` mechanism | `v0.1` | |
-| Registered compat checks (the policy) | `v0.3` | Phase 10 / OQ-5 |
-| `BailRegistry` evaluation point 1 (bootstrap) | `v0.1` | |
-| `BailRegistry` evaluation points 2 (vertex-format change) and 3 (mixin plugin) | `v0.3` | Both need Phase 10 to exist |
+| Registered geometry-only early compat checks and evaluation point3 (MOD plugin) | `v0.1` | Required before the approved native adapter family applies; P10 owns policy |
+| `BailRegistry` evaluation point1 (bootstrap) | `v0.1` | |
+| Full extended checks and evaluation point2 (vertex-format change) | `v0.3` | Requires extended Phase 10; early base subset is not extended readiness |
 | CI: seam test step, artifact path fixes, test-report upload | `v0.1` | |
 | CI: `conformance` job stub | `v0.1` | Empty slot; Phase 2 fills it |
 
@@ -4737,6 +5908,10 @@ now.
 > Current Cleanroom loader vs template's 0.5.17-alpha pin | Alpha drift; daily cadence | build setup
 > | GitHub releases | **RESOLVED 2026-07-24**: 0.6.6-alpha current; **standing item** — re-verify at
 > design time and pin deliberately
+
+**Current-file override:** the following is July history, not today's executable pin.
+§4.2.6a preserves Cleanroom 0.6.10-alpha and the current wrapper/plugin values without
+claiming a new availability check; actual implementation verification remains pending.
 
 **Status at this phase.** Re-verified 2026-07-24 for this document: `0.6.6-alpha` remains current,
 confirmed independently by the GitHub releases API and by `<release>` in
@@ -4993,6 +6168,32 @@ designed for, which is the best available evidence that it is drawn in the right
 | D-P1-45 | Grant Phase 2 R4B consumption of the existing diagnostic types only | P3/P4 source-free evidence uses stable codes, severity, channel and owner-supplied coordinates; no new diagnostic field/channel or source/log redistribution permission (§4.9.4/§5.3). |
 | D-P1-46 | Keep stage-one bootstrap on FML lifecycle; retain the non-fullscreen countInstances authority gate | RC2 expressly permits justified bootstrap deviation; P1 already selected it. Only fullscreen composite/deferred execution has an accepted owner/milestone; metadata publication does not settle gbuffers/shadow traversal semantics. |
 | D-P1-47 | Adopt the maintainer's 2026-09-07 prepared-submission countInstances boundary at v0.5; supersede D-P1-35/46's non-fullscreen authority-open posture only | RESEARCH §3.2 requires N renders; P4 §11.5 records author/OSS evidence limits and explicit maintainer selection of adjacent submission order. P7 policy/P10 adapters use P6's existing event; P8 traverses once; foundation grants no new GL or extension API. |
+| D-P1-48 | Backend-owned effective linked primitive metadata; fullscreen TRIANGLES always selects existing triangle strip, never QUADS; preserve signature and error/restore boundary | R26-1 plus ARB_geometry_shader4 rev26 primitive and GL3.2 query/precedence rules. Core and native geometry covered; no per-draw query/source scan or vanilla topology policy invented |
+| D-P1-49 | Grant P3 §5.4's `org.anarres:jcpp` production dependency conditionally on exact implementation-time pin, pure-JVM closure, license and runtime packaging verification | Existing Apache-2.0 candidate permission is not a build grant; unchanged seam checks need no platform-library exemption |
+| D-P1-54 | Grant P14 R-P14→P1-1/2 exact supported-backend debug gate and pure-value/backend-helper homes | KHR labels/groups need no debug context; full optional execution and post-v0.5 worker/context changes remain their separate owner gates |
+| D-P1-50 | Grant R10-1 exact vertex package homes, bounded borrowed-source input/restore service and class-only early compatibility evaluation | P10 owns layouts, native adapters and P7 lifecycle integration; P1 supplies mechanism/recording, not raw handles, renderer replacement or independent topology authority |
+| D-P1-51 | Preserve executable September pins; relocate current extra.gradle Buildship callback to actual mod/Blossom owner, retain historical July evidence | File-inspected current checkout differs from old examples. Align CI setup with wrapper during implementation; no upgrade, downgrade or fabricated availability/runtime evidence |
+| D-P1-52 | Complete TextureParameters for synchronous owned P5/P13 textures; exact sampler/object split and mapping, no foreign mutation or optional P14 execution grant | Missing type fields block ordinary legal texture upload too; sampler0 cannot substitute for unspecified object state |
+| D-P1-53 | Real MOD-plugin early veto ships with approved geometry-only adapter subset at v0.1; CLASSIC56 and format transitions stay v0.3 | Earliest affected .gsh milestone must include compatibility plumbing; old absent/permissive plugin staging cannot protect already-applied hooks |
+| D-P1-55 | 2026-09-08: isolate generic zero for live conventional positions and all non-admitted enabled capture arrays inside §4.7.6; restore complete actual predecessor/current side effects and partial failure; replay guard remains pointer-free | R27-1 and NS-1 are one owner defect. ARB_vertex_shader precedence/capture semantics require isolation before consumption, not merely restoration afterward; P10 adopts the owner operation without taking foreign-array ownership |
+| D-P1-56 | Receive P3 D-P3-70/schema21 correction while making active schema references defer to P3 §5.3/CURRENT_SCHEMA_VERSION | P1 has no new configuration consumer, binary I/O or facade operation; preserve exact native-source and asset contracts without independently freezing the frontend's schema number |
+| D-P1-57 | R32-1/2: grant positional FramebufferDrawSlot and real backend duration override/interception with private cache-coherent bypass, exact snapshot restore, effective blend notification and poisoned failure containment | P4 owns lifetime/policy, P5 packs only attachments without dropping output holes, P7 registers dumb hooks; §5 awaits fresh review |
+| D-P1-58 | R30-1: make AlphaBlendOverride an opaque backend-implemented interface, issued only by each StateService's private implementation | Both mod.glue and engine.gl.record can issue genuine leases without split packages, reflection, exposed construction state or an engine-to-mod dependency; §5 incorporates the corrected declaration |
+| D-P1-59 | P4 R34 C1: candidate-only fixed sampler initialization with private exact selection restoration and typed safe/fatal failure | P5 remains sole map, P4 initializes before state-dependent GL validation, P6 runtime participants unchanged |
+| D-P1-60 | P14 R1 C2/3: explicit successful-preflight unit-mask dispatch and fixed-function sampler normalization | No implied frame callback, preflight mutation or facade-count claim about private native strategy traffic |
+| D-P1-61 | Receive P3 D-P3-72 schema22/current-constant contract without local parsing | Changed BLOCK provenance belongs to P3/P9; prior numeric receipts and old PASSes cannot certify current dependencies |
+| D-P1-62 | Receive full owned-parameter replay before runtime sampler demotion | Private baseline path avoids recursive optimizing decorators; unknown or failed restoration cannot authorize NONE drawing |
+| D-P1-63 | Grant mandatory target-bearing synchronous allocation/upload values with P5 D-P5-42 and P13 D-P13-36 | Preserve depth/copy semantics; no direct GL/async/parser expansion |
+| D-P1-64 | Receive P14 D-P14-31 complete latest owned-object baseline on every successful setParameters, not only runtime demotion | Preserve all-unit clearing and borrowed restrictions |
+| D-P1-65 | Receive P3 exact-current schema23/MaterializedSource-v23 | Prior numeric receipts historical; nine metadata-only trees/projectionVersion1 unchanged |
+| D-P1-66 | R33 C33-1: captured target-specific maxima, gated native probes, exact mandatory serialization and identical recorder admission | No guessed limits; P2 replay/P13 pure preflight receipts |
+| D-P1-67 | P5 R43: grant exact typed owned-attachment clear with core/EXT native tiers and full-state/error/recorder transaction | P5 owns finite conversion and all-success full-clear policy; no integer downgrade |
+| D-P1-68 | Receive P10 D-P10-29 complete conventionalInputs plan and authenticated source/product identity | Preserve source-absent COLOR/UV1 live inheritance and capture exclusion, physical56 and existing native boundary |
+| D-P1-69 | Resolve R34 C34-1 with capability-legal private discard normalization/restoration in every typed-clear tier | Enabled discard cannot silently defeat full-clear success; no public state API |
+| D-P1-70 | Resolve R34 C34-2 with exact complete capturePlan recorder list issuance before first replay; receive P10 D-P10-30 completed-producer distinction | No physical-layout inference, first-request authority or old overload |
+| D-P1-71 | Receive P14 target-materialization/deletion timing without expanding create inputs | Logical label retention, exact-target first materialization, deletion cannot restore dead names |
+| D-P1-72 | Resolve R35 C1 by stating C-3's LWJGL confinement as the package tree `com.schmaloogium.mod.glue` and its subpackages, restated at §4.3's softer layer, in §8.1's `SeamLwjglConfinementTest` and in §5.1's seam row | Five granted `mod.glue.*` subpackages host platform code; exact-package equality goes red on legal tenants and an unstated prefix match would widen silently |
+| D-P1-73 | Resolve R35 C2 by giving D-P1-71 P14's label limb: `DebugService.label` on a live-but-unmaterialized owned texture handle is legal and recorded-only, queued and applied once by the first admitted materialization, dropped if deleted first; §4.7.4's creation-site instruction becomes label-then-materialize or `create(debugLabel)` | No native call against a not-yet-existing name and no queued `GLError` in the drain P5/P13 bracket their work with; foreign/borrowed handles are already materialized |
 
 ### 11.2 D-1..D-10 disposition
 
@@ -5127,6 +6328,15 @@ not own.
     inventory, the §16 bootstrap sequence and the §16 class-scan plugin — were each re-opened at
     source (§4.12, §4.13, §4.5.2a).
 
+12. **R26 current-file pin mismatch** `[V:repo 2026-09-07]`. Executable wrapper/plugin/
+    loader are 9.7.0/1.4.36-kappa/0.6.10-alpha; the three CI setup inputs still say
+    9.6.1 but invoke the wrapper. D-P1-51 preserves exact executable pins and requires
+    setup-input alignment, not an upgrade or a rewrite of July evidence (§4.2.6a).
+13. **R26 extra.gradle Buildship ownership** `[V:repo 2026-09-07]`. The current script
+    consumes main source-set/template-task model objects. D-P1-51 places it in `:mod`
+    after Unimined/Blossom, not the aggregator; failure on a source-set-free Eclipse root
+    is `[INFERENCE]`, not reproduced execution. Preserve current functionality at migration.
+
 ### 11.4 Items handed onward
 
 **To Phase 2** — the `:conformance` module, its JUnit wiring, and the CI `conformance` job stub are
@@ -5154,9 +6364,9 @@ at v0.1 and implements no behavior behind it, so the dump arrives with your prep
 `GLCapabilityProfile` is the whole GL-side input to RESEARCH.md §3.5's standard macro header, not
 only `extensions()` for `MC_<GL_extension>`: `MC_GL_VERSION`, `MC_GLSL_VERSION`, `MC_GL_VENDOR_*` and
 `MC_GL_RENDERER_*` all read off the profile (§3's macro-header row). The former required-core-rewrite
-assumption is withdrawn by D-P1-44. **Requested, not granted here:** add a closed native-preserving
-materialization choice for a recognized legacy pair, rather than repurpose `None`, which your
-current contract explicitly rejects for that pair (`docs/phase3/v1/PHASE_3_DOC.md:2997-3002`).
+assumption is withdrawn by D-P1-44. **P3 owner-granted/unverified; current schema is its §5.3/CURRENT_SCHEMA_VERSION (native grant D-P3-68):**
+`GeometrySourceRequest.PreserveNative(expected)` supplies the recognized-pair route;
+`None` remains the ordinary/no-legacy request, not a raw-source bypass.
 It must run the existing same-build option/include/jcpp/contribution pipeline, retain the effective
 GLSL version, active ARB extension, `maxVerticesOut` constant and all legacy varying/built-in
 semantics, and publish the final declaration catalog with its identical materialization fingerprint.
@@ -5167,16 +6377,26 @@ text/map, pair/site identity, count and all existing materialization inputs in P
 fingerprinting. Native and transformed results must never alias in caches.
 The source result must distinguish native legacy from ordinary/core materialization without
 downstream reopening or rescanning, and retain any source layout precedence rather than silently
-overriding it with API defaults. Your owner amendment must specify that closed result/request,
-mixed-form handling and schema migration and replace all affected active §§2–5 contracts;
-the two-span path must not remain an advertised complete translator.
-Phase 1 supplies no synthetic `Available`, raw-source bypass or new Phase 3 type by printing this
-request. Until that grant and its fresh review, Phase 4 cannot use the native facade operation
-to compile legacy packs. Separately, `DESIGN.md` makes the **engine-flag ownership map** yours — §4.7.4's
+overriding it with API defaults. P3 §§2.2/4.5/4.10/5.1 now specify that closed request/result,
+mixed-form handling and exact-current schema migration; the incomplete two-span translator is removed.
+`MaterializedSource.geometry()` publishes `None` only for non-geometry stages and otherwise
+`CoreLayout` or `NativeLegacy`, each with `effective().input()` and attributed declarations.
+P4 must adopt that exact owner result and compare it to P1's cached actual linked input.
+Fresh owner/receiver reviews and real compile/link/draw evidence remain required.
+P3 D-P3-69's `PackConfiguration.assets()` is its immutable same-load `PackAssetSnapshot`,
+usable after archive closure. This is P3-owned binary acquisition, not a facade I/O operation,
+new P1 dependency, permission to relabel resource epochs, or permission to serialize pack
+bytes in inspection/artifacts. The original schema19 grant in §0.29 remains dated history.
+Separately, `DESIGN.md` makes the **engine-flag ownership map** yours — §4.7.4's
 face-culling row defers to it rather than pre-empting it. One small thing your `const`-directive scan
 is named for by this document: `countInstances` is a *vertex-stage* directive that a **gbuffers**
 program may carry. Detection feeds the approved prepared-submission contract at v0.5
 (D-P1-47, §11.4's Phase 7 entry), not an optional pack-discovery experiment.
+
+**P3 jcpp request: owner-granted/unverified** by D-P1-49, §§4.2.4b/5.1.
+Adopt the exact implementation-time pin, complete seam/closure/license and runtime packaging
+rules in your §5.4; attribution alone never fulfilled this request. D-P3-68 now fulfills
+the separate native-source owner request above; both grants remain unverified.
 
 **To Phase 4** — your §5.4 fixed-function request is accepted as `[D-P1-39]`.
 `ShaderService.useFixedFunction()` selects program zero without a raw integer, null, or sentinel
@@ -5194,9 +6414,9 @@ independent. This amendment supplies the missing native parameter verb, **not** 
 dual-form path. In your own authorized owner session, migrate active §§3.1/4.6/4.8/5.2–5.4,
 §8.2, fingerprint inputs and failure/implementation ledgers to:
 
-1. Keep ordinary/core-layout geometry on Phase 3's no-legacy path and its existing GL 3.2 gate.
-   For a recognized legacy pair, require the native-preserving result requested above, once granted;
-   never call today's `None`, compile the incomplete `Translate` output, or patch source locally.
+1. Keep `GeometrySourceForm.CoreLayout` on the GL 3.2 route. Recognized legacy pairs request
+   `GeometrySourceRequest.PreserveNative(config)` and consume `NativeLegacy`; ordinary stages
+   use `None`. Never reconstruct removed `Translate` output or patch source locally.
 2. Adapt the validated native legacy configuration into Phase 1's closed
    `LegacyGeometryInputPrimitive.TRIANGLES` / `LegacyGeometryOutputPrimitive.TRIANGLE_STRIP`
    and exact positive count. These are engine enums, not aliases of Phase 3 enums or GL integers.
@@ -5209,8 +6429,8 @@ dual-form path. In your own authorized owner session, migrate active §§3.1/4.6
 4. Include the native strategy discriminator, enum names, exact count, extension capability and
    Phase 3 materialization fingerprint in registry identity; a strategy/count/capability/source
    change invalidates reuse. Phase 1 never hashes caller source or generates registry fingerprints.
-5. Update the consumed §5 interface row and item-1 disposition to distinguish the Phase 1 grant
-   from the still-pending source grant. Replace the current future-only geometry checks with
+5. Update the consumed §5 interface row and item-1 disposition to recognize P3's exact-current
+   owner grant separately from fresh verification. Replace future-only geometry checks with
    source-preservation/built-in/varying fixtures and configure-before-link, absent-extension,
    parameter/total-output-limit, diagnostics, cleanup/fallback and cache-invalidation checks.
    Real driver compilation/linkage of original minimal legacy and core fixtures is required later;
@@ -5218,8 +6438,9 @@ dual-form path. In your own authorized owner session, migrate active §§3.1/4.6
 
 Phase 4's integration amendment migrates to Phase 3's no-option-argument materializer and
 direct per-program projections, and conditionally adopts the native operation. These are
-receiver-adopted/unverified contracts, not implementation proof. Phase 3 native-preserving
-source output remains ungranted; jcpp build/pin/seam permission also remains genuinely open.
+receiver-adopted/unverified contracts, not implementation proof. P3 D-P3-68 supplies the
+native-preserving source grant retained by current P3 §5; P4's exact consumer migration must be reviewed.
+P1's jcpp build/pin/seam permission is granted/unverified by D-P1-49.
 All changed §5 surfaces need fresh whole-document verification. No new Phase 1 dependency
 or broader transformer/library permission is implied.
 
@@ -5228,6 +6449,16 @@ or broader transformer/library permission is implied.
 building the hook catalog on top (§11.3 item 9). `compatibilityLevel` is worth your spot check
 (item 8). The `BailRegistry` bail hook is wired at bootstrap and awaits your frame-driver
 integration.
+
+**R26-1 receiving amendment required (D-P1-48).** Replace P7 §4.6 step 8's caller-side
+"choose QUADS when supported" with `draw().fullscreenQuad()`; the backend alone selects
+the linked-compatible route under §4.7.4a. Adopt that full selection/restoration/error
+contract in P7 §5/§8: no raw per-draw query, private program handle or source rescan.
+Keep existing countInstances/instanceId cadence and caller state restoration. Drain and
+contain draw failure before pass completion/flips; an incompatible or unknown linked input
+cannot be reported as a drawn pass. P4 must also adopt link-metadata acquisition failures
+and activation/restoration tracking without exposing private program handles. Fresh P1/P4/P7
+review remains due; this owner amendment is not receiver adoption or runtime proof.
 
 **To Phase 8** — R8-3 is granted exactly. Put pure policy, camera math, traversal, and the shadow
 transaction in `com.schmaloogium.engine.shadow`; put Minecraft/Forge/LWJGL adapters in
@@ -5414,6 +6645,40 @@ you are not forced to widen a mechanism you were told to reuse. The `Schmaloogiu
 the MOD-phase config is the strongest veto point available (§4.10) — a vetoed mixin never applies, so
 there is no partial instrumentation to unwind.
 
+**R32 owner receipt — 2026-09-08, unverified.** P4 receives D-P1-57 and closes its previous
+AlphaBlendOverride before acquiring the next; P5 receives positional framebuffer slots.
+P7 must integrate all named alpha/blend HEAD interceptions and effective-state observations;
+existing RETURN-only notifications are insufficient. P2 receives tagged recorder routes.
+These grants change §5 and require fresh whole-document review; IR-01/final G5.3 remain open.
+
+**R10-1 owner grant and native-primitive boundary (D-P1-50).** Adopt §2.1/§5.1 exact
+packages, §4.7.6's complete bounded input contract and §4.10 early-check mechanism in your
+own §§2–5/8/9/11. Do not duplicate the facade in P10 or claim live driver/list restoration
+from recorder success. P7 owns lifecycle/generation/active-selection delivery, P10 owns
+layouts/derivative geometry/upload/capture adapters; no raw GL outside the mod backend.
+
+**R-P1→P10-55 — owner-granted / P10 D-P10-20 receiver-adopted, 2026-09-08; unverified.** Adopt D-P1-55's
+complete §4.7.6 operation for client/VBO live draw and list capture, including pre-list setup/
+post-list restoration, conventional-position precedence, all legal non-admitted array
+isolation and current-value effects. P10 references the foundation mechanism; it does not
+implement a second foreign-array owner or limit isolation to locations 10–12. Keep replay
+guard pointer-free and retain P7's existing setup/drain/rollback containment. The P10 owner
+is commissioned concurrently; this request is not evidence of a receiving edit or PASS.
+P7 must receive the clarified failure/ordering obligation without new lifecycle policy.
+No owning API or topology authority remains missing for R27-1; receiver review and actual
+driver value/restoration/rollback proof remain outstanding.
+
+During this fix-up the maintainer explicitly approved **conditional native quad-to-triangle
+submission** where the active geometry input requires TRIANGLES, at the earliest milestone
+claiming the affected `.gsh` support. This supersedes P10's old conversion Scope-out only
+within the separately recorded `docs/decisions/GEOMETRY_PRIMITIVE_COMPATIBILITY.md`
+authorization; it is **not awaiting policy authority**. P7/P10 must adopt exact topology,
+winding, provoking-vertex, primitive-ID, canonical-source retention, draw-order/restoration
+and adjacent-instance semantics, with corresponding conformance proof. No renderer rewrite.
+P1's fullscreen route does not solve native vanilla QUADS, and its package/input grant does
+not certify those adapters. Until exact owner/receiver adoption, fresh review and implementation
+evidence land, do not claim affected native geometry support complete.
+
 **To Phase 13 — R3 package allocation is granted** as `[D-P1-43]` in §2.1 and binding §5.1.
 Use `com.schmaloogium.engine.textures` for pure policy/model/results,
 `com.schmaloogium.mod.glue.textures` for Minecraft/Forge/resource adapters and the facade-backed
@@ -5429,9 +6694,11 @@ The owners now separately publish P3's preliminary macro pair and direct mipmap/
 projections, P6's fixed-resolver/retirement (R7-10/11), and P8's shared-shadow/planning split
 (R7-12/13); coordinated receiving amendments adopt those grants, still unverified. Do not
 call them missing APIs or infer their implementation from package placement.
-Genuinely ungranted: P3 native-preserving legacy source path, jcpp build/pin/seam permission,
-suffix grammar and typed sampling-state publication, and optional P13 post-analysis R4.
-P1's native parameter verb exists and P4 conditionally adopts it; source support does not.
+Still separately gated: P3's commissioned native-preserving source grant/migration and
+optional P13 post-analysis R4. D-P1-49 grants jcpp build/pin/seam permission, unverified.
+U1's approved documented-mechanism correction removes the unspecified suffix-grammar/typed-
+suffix demand; retain numeric discriminators and P13 `.mcmeta`, with no changed defaults.
+P1 native configuration and fullscreen routing exist as owner designs, not complete source/render support.
 Already-granted R7-9 and all changed owner/receiver §5 surfaces still require fresh reviews.
 No package row certifies PBR/shadow/conformance execution.
 
@@ -5479,6 +6746,11 @@ and its cost is the kind that erodes trust in debug tooling rather than breaking
 exactly why it survives in a working engine. `DebugService` is an interface here and an implementation
 there, so this is inheritable only by you; a balanced-groups assertion in your own design is cheaper
 than the warning.
+
+**P14 receiver action (2026-09-08):** §§4.7.7–4.7.8/5 now grant R-P14→P1-1/2/3.
+Adopt the complete TextureParameters split/conversion, exact debug activity gate and package
+homes in your active §5. No remaining mandatory v0.5 request against P1 is hidden as optional;
+R-P14→P1-4's worker recording/context flag/scoped convenience remain separate requests.
 
 **To G8/S5** — §10.3's backend-swap drill is the instrument for judging whether the seam held. Its
 fallback (submitted `RenderPassDescription`s) is the pre-designed coarsening if it did not.
@@ -5546,10 +6818,25 @@ by this session.
 
 ## 12. Implementation checklist
 
+Attempt-6 additions: implement D-P1-66 capability capture/serialization and allocation/
+recorder admission together; implement D-P1-67 typed facade, native tiers, full-state
+restoration and recorder events together. §8's mixed-format/nondefault-state and
+target-boundary cases are required implementation evidence; none has been executed here.
+Implement D-P1-68 as whole-plan receipt in client/VBO/capture/replay paths and recorder
+identity; §8's absent/supplied participation and exact restoration cases gate the cutover.
+Implement D-P1-69/70/71 in the actual clear transaction, exact recorder factory and
+texture lifetime path; §8's enabled-discard/first-replay-mask/completion/materialization
+cases gate implementation. Synchronize P5/P7/P10/P14 and P2 evidence; no execution claimed.
+
 Ordered so that each item is independently actionable and the Impl gate — *"project builds empty
 modules + passes an architecture test proving `:engine` has no MC/loader/mixin/LWJGL classpath; CI
 green"* — is reached at item 15, with the rest completing the phase's scope.
 
+
+R32 implementation prerequisite: land D-P1-57's actual setter interception, guarded bypass,
+transactional acquire/restore and recorder together with positional route encoding; migrate
+all callers and drawBuffersWere assertions, with no int-array or setter-only lock alias.
+Execute the §8 boundary/failure and real vanilla-draw cases before claiming support.
 Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 
 ### Structure and build
@@ -5595,6 +6882,9 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 | 22b | The `mod.glue` ordinary vanilla-texture provider slot (`ForeignTextureProvider` / `ForeignTextures`, `[D-P1-36]`) and per-use object resolution | `v0.1` | Provider compiles from `mod.glue`; seam tests pass; before-install lookup is empty. `FramebufferDepthContractTest` plus live-backend review confirms closure: ordinary values are accepted only by `bindToUnit`/label and rejected by every other texture-accepting verb, including both §0.18 additions; per-use resolution survives vanilla reload |
 | 22c | `Lwjgl3GLDevice` borrowed-depth authentication and framebuffer-depth implementation (`[D-P1-40]`): private same-device/context credential, owned-versus-borrowed matrix, exact combined-format check, first-versus-steady storage state, and binding restoration | `v0.1` | `FramebufferDepthContractTest` exhausts owned/ordinary/borrowed/forged/wrong-origin/deleted cases in the recorder. Live-backend review confirms no public-marker trust, `attachDepth` detaches stencil, combined attachment uses the same packed object twice, initialization maps to exact-format `glCopyTexImage2D`, steady copy never redefines storage, and every exit restores read/draw/texture bindings |
 | 22d | Implement the exact legacy geometry operation and closed enums in `engine.gl`, native mapping in `mod.glue`, and recorder transaction in `engine.gl.record` (D-P1-44); no generic integer parameter API | `v0.1` | `LegacyGeometryPreLinkContractTest` covers the headless boundaries; later backend exercise compiles/links original legacy varying/built-in and core-layout fixtures, checks exact native parameters, capability/limit rejection, cleanup and unchanged current bindings. Phase 3 native output and Phase 4 migration must be granted and freshly verified first; no test or runtime exercise is performed by this architecture amendment |
+| 22e | D-P1-48 effective-link metadata and fullscreen backend/recorder cutover | `v0.1` | `FullscreenGeometryContractTest` and §8 live proof; no QUADS with TRIANGLES input, no source/GL query between adjacent fullscreen copies, correct deletion/restoration/failure behavior; P7 receiving amendment required |
+| 22f | D-P1-49 exact jcpp pin, closure, notices and mod containment | `v0.1` | Resolved compile/runtime graphs remain platform-free in engine; shipped mod loads identical verified library closure; no dependency on incidental Minecraft libraries |
+| 22g | D-P1-50 bounded vertex-input source/service/recorder and early compatibility mechanism | `v0.1` | VertexInputContractTest/EarlyBailContractTest plus live client/VBO/list pointer/current-value restoration and approved topology conformance; P7/P10 adoption required, extended producers remain v0.3 |
 | 23 | `CapabilityProbe` in `mod.glue` + `-Dschmaloogium.debug.dumpCapabilities`, invoked at **`OpenGlHelper.initializeTextures` @`RETURN`** — stage 2 of §4.13's bring-up sequence (`[D-P1-37]`). The hook itself is Phase 7's catalog entry (App E); this item is the probe's placement requirement against it | `v0.1` | Running the client with the flag writes a parseable profile that round-trips through item 17, **and the probe runs after vanilla's texture setup rather than before** — a profile with a plausible `GL_MAX_TEXTURE_IMAGE_UNITS` is the cheap signal |
 | 24 | `-Dschmaloogium.debug.recordGL` decorator wrapping the live device, **with a bounded log** (`GLCallLog.bounded(100_000)` by default, oldest discarded and counted) supplied to the device through `new RecordingGLDevice(profile, responses, log)` (§4.7.5) — the decorator constructs the ring, the device does not — and off unless the flag is set | `v0.1` | Flag produces a `GLCallLog` dump in the same format the tests assert over; a long session does not grow the log without bound, and the dump reports `droppedCallCount()` when it wrapped |
 
@@ -5605,14 +6895,14 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 | 25 | `Log`/`LogSink`/`Logs` + `LogChannels` constants (§4.9.2) | `v0.1` | `LogChannelTest` — uniqueness, prefix, no-op sink before install |
 | 26 | log4j-backed sink installed in `mod.core` at `preInit` | `v0.1` | A `runClient` shows `schmaloogium.boot` lines |
 | 27 | `EngineDiagnostic`/`DiagnosticSeverity`/`UserChannel`/`DiagnosticReporter` + `:mod` routing | `v0.1` | `DiagnosticRoutingTest` — including `CHAT`-with-no-player degradation |
-| 28 | SPDX headers on every source file; `README.md` license statement; `THIRD-PARTY.md` with both standing prohibitions and no entries | `v0.1` | Manual review; a header lint is a candidate, not adopted (§11.4) |
-| 29 | `PINS.md` created with the §4.2.6 table as its first row | `v0.1` | File present; §10.1 step 6 has somewhere to write |
+| 28 | SPDX headers on every source file; README license statement; THIRD-PARTY with standing prohibitions and the verified shipped jcpp closure when admitted | `v0.1` | Notice/license review uses exact resolved artifact versions; no empty-ledger claim after dependency inclusion |
+| 29 | PINS ledger begins with §4.2.6a current executable baseline labeled inspected/unverified, retains July history, then records actual verification and D-P1-49 exact jcpp pin | `v0.1` | Wrapper/plugin/loader are not downgraded; CI setup inputs align to wrapper; no invented runtime/availability result |
 
 ### Mixin wiring
 
 | # | Item | Tag | Test hook |
 |---|---|---|---|
-| 30 | Three mixin config JSONs per §4.5.2, empty `client`/`mixins`/`server`, and **no `plugin` key** (it arrives with item 37) | `v0.1` | Files present at `mod/src/main/resources/`; `runClient` loads all three configs without error |
+| 30 | Three mixin config JSONs per §4.5.2; permanent empty server arrays, owner-populated client arrays; MOD plugin class/key together under item37 | `v0.1` | Packaged configs/classes load on pinned Cleanroom; no absent plugin class |
 | 30-frame | Create the four Phase 7 package roots named by `[D-P1-41]` when Phase 7 first supplies code; do not add placeholder production classes merely to create directories | `v0.1` | Seam/package architecture test assigns every Phase 7 frame class to exactly one of `engine.frame`, `mod.glue.frame`, `mod.mixin.frame`, or `mod.conformance`; C-1 through C-4 remain green |
 | 30-textures | Populate only the three Phase 13 texture homes named by `[D-P1-43]` when Phase 13 supplies its implementation, after the required dependency reviews; no placeholder production classes or new conformance dependency | `v0.5` | Existing C-1 through C-4 and Mixin config/package agreement cover the new tenants; engine texture policy remains headless and adapters consume only published engine APIs |
 | 30a | **Mixin config ↔ package agreement test** in `:mod` (`[D-P1-38]`, §4.5.2a): for each config, the `@Mixin`-annotated classes in its declared `package` **excluding any sub-package another config declares** are exactly the classes its arrays name. **The exclusion is part of the specification, not an implementation liberty** — the three packages are nested (§4.5.2 observation 1), so a subtree-scoped predicate fails on a *correct* config set as soon as PRE_INIT or MOD gains a tenant (V12-9). This is the drift insurance taken **instead of** Pintonium's class-scan plugin, and it is the whole of what the rejection owes | `v0.1` | Passes vacuously at v0.1 (arrays empty, packages empty) and fails informatively when item 33's throwaway mixin is added without a matching array entry — which makes item 33 its first real exercise. A second case is worth writing at the same time, because it is the one the predicate exists for: a mixin in `…mixin.preinit`, listed in `schmaloogium.preinit.mixin.json` only, must leave **all three** configs green |
@@ -5628,7 +6918,7 @@ Tags: `[v0.1]` etc. per §G4.3. Test hooks name the check that proves the item.
 | 35 | `CompatCheck`/`CompatVerdict`/`CompatContext`/`BailRegistry` + `CompatEvaluation` | `v0.1` | `BailRegistryTest` — aggregation, throwing-check-is-bail, idempotence |
 | 36 | Bail evaluation point 1 (pre-bootstrap) wired, with diagnostic routing and the shaders-off terminal state | `v0.1` | A test check returning `Bail` produces the chat diagnostic and the compat log line |
 | 36b | Bail evaluation point **2** (before a vertex-format change) wired at the site Phase 10 creates — listed here so all three §4.10 evaluation points have a checklist home, and tagged `v0.3` because the site does not exist until Phase 10 does. Point **3** is item 37's plugin | `v0.3` | Re-evaluation runs on a pack-triggered vertex-format rebuild; a check flipping to `Bail` between points 1 and 2 is honoured |
-| 37 | `SchmaloogiumMixinPlugin` skeleton (returns true for everything) **and** the `plugin` key added to `schmaloogium.mod.mixin.json` in the same change — never one without the other | `v0.3` | Config loads with the plugin declared; reverting only the class would fail config load, which is why they ship together |
+| 37 | Real `SchmaloogiumMixinPlugin` early-check implementation and MOD `plugin` key together; register P10 geometry-only checks before evaluation, retain whole-family veto | `v0.1` | Config loads; positive/throwing early check vetoes every dependent hook without game/GL initialization; clean path admits only the required subset; runtime target audit proves placement |
 | 38 | `build.yml`: named "Seam architecture test" step running **`:engine:test :mod:test`** (C-1 lives in `:engine`; C-2 and C-3 live in `:mod`), named `:conformance:test` step (which runs C-4), artifact glob `**/build/libs/*.jar`, `if: failure()` test-report upload — and **both named steps placed *before* the `./gradlew build` step**, because `build` runs all four seam tests itself through `check`→`test` and would otherwise fail first and abort the job (§4.11, `[D-P1-24]`) | `v0.1` | CI green on a clean commit; a deliberate violation of **each** of C-1, C-2, C-3 and C-4 turns a *named* step red, none of them surfacing only inside `build` |
 | 39 | `release.yml` artifacts → `mod/build/libs/*`; `release-to-cf-mr.yml` file globs retargeted | `v0.1` | Dry-run inspection of the resolved paths |
 | 40 | `conformance` job stub, `workflow_dispatch`-gated, with the fixture `actions/cache` step | `v0.1` | Workflow parses; job does not run on push |
@@ -5697,7 +6987,9 @@ the **fourteenth** applied round seventeen's sole closing-history correction (§
 Phase 8's three package-home request after round twenty's literal PASS (§0.20); the **eighteenth**
 applied round twenty-one's adjacent-ownership correction (§0.21); the **nineteenth** accepted
 Phase 7's frame-package and replay-evidence requests after round twenty-two's literal PASS (§0.22);
-and the **twentieth** applied round twenty-four's history and interface-coverage corrections (§0.23).
+and the **twentieth** applied round twenty-four's history and interface-coverage corrections (§0.23);
+and the **attempt-8** fix-up applied review thirty-five's two corrections as D-P1-72/73 (§0.35), C-3's
+confinement becoming the `mod.glue` package tree and D-P1-71's label limb its recorded-only form.
 Every finding's disposition is recorded in the review files under `## Resolutions`, including the four
 of round three's proposed fixes and the items of rounds five and six that were deliberately narrowed
 rather than applied as written, and why.
@@ -5713,3 +7005,19 @@ document was edited, and no implementation or complete dual-form support is clai
 *§0.26 integration amendment: P1 diagnostic permission and bootstrap/count/grant-ledger
 reconciliation change §5. Current surface remains unverified; historical reviews are unchanged.
 No implementation, validation or new PASS result accompanies this documentation fix-up.*
+
+**Current §G1.3 status — §0.28.** R26 remains PASS-WITH-CORRECTIONS, not PASS.
+Its separate fix-up and the commissioned jcpp/vertex/current-build grants change binding
+§5 and incorporated semantics. P3 source and P4/P7/P10 receiving integration are separately
+owned; fresh independent whole-document reviews and final integration are still owed.
+No implementation, execution, validation command or conformance result accompanies these edits.
+
+**Current §G1.3 status — §0.35.** R35 returned PASS-WITH-CORRECTIONS; the attempt-8 fix-up
+(§0.35) resolves both corrections as D-P1-72/73 — C-3's confinement restated as the
+`com.schmaloogium.mod.glue` package tree, D-P1-71's label limb given its recorded-only form —
+and the review-36 fix-up appended this record plus §3's two RESEARCH.md coordinate repoints.
+Addenda §0.29–§0.34 — the settled producer receipts, the R27 native-array isolation, the P3
+schema ownership receipt and the attempt-5/6/7 corrections — remain in force with their own
+recorded inputs. `PHASE_1_DOC.md` is **not verified** and is not a valid dependency input
+until a fresh **whole-document** review returns literal PASS. No implementation, validation
+command or conformance result accompanies these edits. `v14` stays.

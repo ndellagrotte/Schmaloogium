@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Phase | 6 — Uniform & sampler system |
-| Document revision | v1, maintained architecture through §0.24 |
+| Document revision | v1, maintained architecture through §0.29 |
 | Date | 2026-07-29 |
 | Governing design | `docs/design/v2.0-RC3/DESIGN.md` |
 | Milestone | v0.1; shadow/celestial values v0.2 |
@@ -92,7 +92,7 @@ this maintenance session.
 
 - Appendix A.3 was read in addition to the assigned RESEARCH sections because the GPU
   `centerDepthSmooth` candidate depends on the declaration-trigger contract:
-  `docs/research/v1/RESEARCH.md:1166` says “`uniform … centerDepthSmooth`” enables the readback.
+  `docs/research/v1/RESEARCH.md:1167` says “`uniform … centerDepthSmooth`” enables the readback.
 - Phase 5 was not read. It is a same-wave sibling, not a declared dependency. This document
   preserves the assigned split: Phase 5 owns the texture object behind each unit; Phase 6 owns
   sampler-uniform integer values.
@@ -203,9 +203,9 @@ surfaces. It does not assume Phase 11 evaluator internals.
 
 The permitted schema and runtime view retain the conservative union already recorded here:
 Appendix D.4 calls its entire five-row table “excluded from custom-uniform expressions”
-(`docs/research/v1/RESEARCH.md:1369`), while Appendix F.6 separately names only
+(`docs/research/v1/RESEARCH.md:1370`), while Appendix F.6 separately names only
 `entityColor entityId blockEntityId fogMode fogColor`
-(`docs/research/v1/RESEARCH.md:1500`–`:1501`). Therefore all five D.4 names plus `fogMode` and
+(`docs/research/v1/RESEARCH.md:1501`–`:1505`). Therefore all five D.4 names plus `fogMode` and
 `fogColor` remain excluded. The conflicting protected-source wording is reported, not claimed
 resolved, and still requires an explicitly authorized RESEARCH-maintainer action.
 
@@ -239,7 +239,7 @@ incorporates §2.2's complete consumer-visible runtime signatures and synchroniz
 ### 0.23 R7-10 sole-sampler-policy adoption (2026-09-07)
 
 This maintainer-authorized architecture-only amendment adopts R7-10 from
-`docs/phase7/v1/PHASE_7_DOC.md:2309-2320`: “The unchanged Phase 6 sampler participant calls it
+`docs/phase7/v1/PHASE_7_DOC.md:4030`: “The unchanged Phase 6 sampler participant calls it
 using binding.samplerLayout and context”. `UniformRuntimeFactory.create` now receives Phase 5's
 `FixedSamplerResolver` immediately after configuration. Active §§1–5/7–9/11–12 consume that sole
 policy instead of publishing or implementing a second map. The `afterBind` signature, three
@@ -272,8 +272,10 @@ builds, tests, verification runs, other documents, or directory rolls are part o
 ### 0.24 R7-11 permanent-runtime retirement adoption (2026-09-07)
 
 This maintainer-authorized architecture-only amendment adopts
-`docs/phase7/v1/PHASE_7_DOC.md:2322-2330`: “UniformRetirementResult retire(UniformRetirementReason reason)”
-and “its owner must reconcile that rule, not add a conflicting alias”. Sections 2.2/4.14/5
+`docs/phase7/v1/PHASE_7_DOC.md:4038-4044`: “UniformRetirementResult retire(UniformRetirementReason
+reason)”. The adoption-time clause “its owner must reconcile that rule, not add a conflicting
+alias” is historical; current bytes state “Phase 6 removed reset(CLOSE); Phase 11's own terminal
+controller CLOSE is distinct and precedes this retirement after final custom use”. Sections 2.2/4.14/5
 now publish non-GL retirement for `UNPUBLISHED_ABORT`, `REPLACEMENT`, and `SHUTDOWN`, with
 `Retired`, `AlreadyRetired`, and `Rejected(WRONG_THREAD|ACTIVE_CALLBACK)` outcomes.
 `CLOSE` is removed from the active reset domain; there is no `reset(CLOSE)` compatibility route
@@ -311,6 +313,42 @@ RC3 remains governing; historical addenda/reviews are preserved. Active §§4/5/
 before implementation consumption. Documentation only; no builds/tests/formatters or PASS claims.
 
 ---
+
+### 0.26 R39 timing-owner and R55 schema receipts (2026-09-08)
+
+Architecture-only D-P6-25 grants the actual accepted-frame timing snapshot to P7/P2;
+D-P6-26 adopts P3 schema21. §5 changed and remains unverified; historical reviews,
+governing RC3 and normal gameplay clocks are unchanged. No execution or PASS is claimed.
+
+### 0.27 R25 replay transport and P8 angular-policy receipt (2026-09-08)
+
+D-P6-27 publishes the required P7-supplied replay observer and immutable ordered report;
+D-P6-28 receives P8's pure angular policy only through P7's mod provider route. D-P6-29
+reconciles active instance bounds and D-P6-30 closes the two authority/tooling notes.
+R25's original review and verdict remain unchanged; its separate Resolutions record these
+fix-ups, not a self-PASS. Changed §5 requires fresh whole-document owner/receiver review.
+P1 R29/P3 R56 PASS and P7 R37 historical PASS are not recertification of these changed bytes;
+P7's receiving change requires R38. Architecture only; no execution is claimed.
+
+### 0.28 Capture-wire receiving amendment (2026-09-08)
+
+D-P6-31 receives P2's current `/4` capture envelope for the unchanged timing and replay
+values. Earlier dated `/3` handoffs record the prior envelope, not an alternate current
+encoding. P6 does not serialize profiles, comparisons or resources; P2 owns those fields
+and P7 copies the P6 values without changing their error law or attribution.
+R26's literal PASS remains evidence for its frozen document, not certification of this
+receiving amendment or the coordinated backend changes. Fresh verification remains required.
+
+### 0.29 R27 active-order and provenance correction (2026-09-08)
+
+D-P6-33 aligns every active flow/table/explanation with P4's close/bind/acquire/effective
+notification/participant order. P6 consumes observed effective state, not a prediction of
+a later lock. D-P6-34 qualifies the historical source label: the independently read
+[pinned root LICENSE](https://raw.githubusercontent.com/Xplodin/Pintonium/9c2fcc1/LICENSE)
+is GPL version 3. The older LGPL input label alone is not a file-specific reuse grant;
+future incorporation must establish applicable per-file licensing and preserve notices.
+No implementation is copied. Original review/authority text remains historical, and
+the changed §5-incorporated choreography requires fresh review.
 
 ## 1. Scope & boundaries
 
@@ -409,8 +447,16 @@ public interface UniformRuntimeFactory {
         UniformPlatformProvider platform,
         CenterDepthSource centerDepth,
         GLDevice gl,
-        DiagnosticReporter diagnostics);
+        DiagnosticReporter diagnostics,
+        UniformReplayErrorSink replayErrors);
 }
+
+public interface UniformReplayErrorSink {
+    void accept(UniformReplayReport report);
+}
+
+public record UniformReplayReport(
+    ProgramUniformCacheKey program, List<ReplayAwareGLError> errors) {}
 
 public sealed interface UniformBuildResult {
     record Success(UniformRuntime runtime) implements UniformBuildResult {}
@@ -422,6 +468,7 @@ public interface UniformRuntime {
         long registryGeneration, UniformResetReason reason);
     FixedExpressionInputSchema fixedExpressionInputSchema();
     FrameBeginResult beginFrame(FrameBeginInput input);
+    Optional<UniformFrameTiming> frameTiming(long registryGeneration, long frameId);
     UniformEventSink events();
     ProgramBindingParticipant samplerParticipant();
     ProgramBindingParticipant builtInParticipant();
@@ -470,6 +517,11 @@ public record FrameBeginInput(
     int priorFramebufferWidth,
     int priorFramebufferHeight) {}
 
+public record UniformFrameTiming(
+    long registryGeneration, long frameId, long worldEpoch, long logicalTick,
+    double smoothingTimeTicks, float frameTimeSeconds,
+    int frameCounter, float frameTimeCounter) {}
+
 public interface UniformEventSink {
     void captureGbufferMatrices(long frameId, Matrix4Value modelView, Matrix4Value projection);
     void updateCelestial(CelestialSample sample);
@@ -497,17 +549,27 @@ floats in the facade's upload order and exposes no mutable array.
 `FixedSamplerPolicies.resolver()`, paired with the same table/schema/fingerprint as the
 `FixedSamplerPolicies.appB3()` policy supplied to Phase 4 compilation. Both factories are
 available before any runtime, registry, estate, or GL object exists
-(`docs/phase5/v1/PHASE_5_DOC.md:2116-2120`, “They share one table/schema”).
+(`docs/phase5/v1/PHASE_5_DOC.md:2441`, “They share one table/schema”).
 Missing resolver input rejects construction through `UniformBuildResult.Failure` without GL;
 there is no default/local-map fallback. The runtime retains this borrowed reference under the
 existing service lifetime and releases it on `Retired`; it never owns or closes Phase 5.
 The new dependency and its owner-review gates are binding in §5.2.
 
+`replayErrors` is required, non-null and P7-supplied/owned; missing input returns
+`UniformBuildResult.Failure` before GL or callbacks. The exact eight-argument factory has
+no old overload, default observer or no-op fallback. P6 owns the sink interface/report in
+`engine.uniforms`; P1 retains `engine.gl.ReplayAwareGLError` and its attribution law.
+The observer is borrowed through successful terminal retirement, including final restoration
+uploads; reset/adoption do not release it. §4.11 specifies synchronous delivery and containment.
+Reports are detached immutable values: non-null handle-free `program`, a defensive immutable
+nonempty list with non-null entries, and the original immutable P1 `GLError` objects unchanged.
+P7 may retain/copy them without retaining a runtime, token, location or borrowed service.
+
 `UniformRuntime` owns no program handle. Phase 4 owns the active linked program and calls the three
 participants in sampler → built-in → custom order
-(`docs/phase4/v1/PHASE_4_DOC.md:1467-1471`, “The three positions are”).
+(`docs/phase4/v1/PHASE_4_DOC.md:1751-1755`, “The three positions are”).
 `BoundProgramUniformAccess` supplies callback-scoped location lookup without revealing that handle
-(`docs/phase4/v1/PHASE_4_DOC.md:1362-1372`, “UniformLocation locate(String exactName)”).
+(`docs/phase4/v1/PHASE_4_DOC.md:1646-1656`, “UniformLocation locate(String exactName)”).
 The current coordinated Phase 4 bytes remain subject to §5.2's fresh-owner-review gate.
 
 ### 2.3 Data flow
@@ -517,11 +579,11 @@ Phase 7 frame-begin hook
   → beginFrame (world/tick/frame sample + previous snapshots + sync center-depth sample)
   → Phase 5 resize/clear may begin
   → later Phase 7 post-camera hook captures current gbuffer matrices (not ordinal-zero clear)
-  → Phase 4 barrier binds effective program
+  → Phase 4 authenticates, invalidates predecessor activity, closes its lease, binds effective program
+      → acquires effective alpha/blend lease and publishes/samples coherent effective blend
       → sampler participant uploads fixed integers resolved by Phase 5 from effective layout/context
       → built-in participant uploads current immutable cells
       → custom participant asks Phase 11 to evaluate from the stable built-in view
-      → Phase 4 applies provider alpha/blend lock
   → per-draw/celestial/fog/atlas hooks replace event cells and, while a Phase-4 activity token
     remains current, immediately upload changed values without rebinding
   → shadow/matrix hooks replace cells for the next activation
@@ -541,7 +603,7 @@ This design separates:
   enabled built-in and sampler, regardless of acquisition cadence.
 
 That separation reconciles “everything refreshes on program switch”
-(`docs/research/v1/RESEARCH.md:1379`) with tick/frame sampling and redundant skipping. “Refresh”
+(`docs/research/v1/RESEARCH.md:1380`) with tick/frame sampling and redundant skipping. “Refresh”
 means participate in the activation sweep; it does not mean resample Minecraft or advance an EMA.
 
 ---
@@ -550,25 +612,25 @@ means participate in the activation sweep; it does not mean resample Minecraft o
 
 | In-scope contract item | Design element | Provenance / disposition |
 |---|---|---|
-| Full Appendix D names, types, and values | §4.4 exhaustive inventory | `[V:doc]`; source inventory begins at `docs/research/v1/RESEARCH.md:1318`, “Built-in uniform inventory” |
-| Everything refreshes on program switch | §4.3 activation sweep and §4.10 participant trace | `[V:observed]`; `docs/research/v1/RESEARCH.md:1379`, “everything refreshes on program switch” |
+| Full Appendix D names, types, and values | §4.4 exhaustive inventory | `[V:doc]`; source inventory begins at `docs/research/v1/RESEARCH.md:1319`, “Built-in uniform inventory” |
+| Everything refreshes on program switch | §4.3 activation sweep and §4.10 participant trace | `[V:observed]`; `docs/research/v1/RESEARCH.md:1380`, “everything refreshes on program switch” |
 | Per-program location cache and redundant skip; matrices always upload | §4.3, §4.10, §4.11 | `[V:observed]`; `docs/research/v1/RESEARCH.md:1380`, “matrices always upload” |
-| Final declaration/type truth without source reopening | Phase 3 catalog → Phase 4 merged effective layout → Phase 6 plan validation, §§4.9–4.10/5.3 | verified dependency contracts at `docs/phase3/v1/PHASE_3_DOC.md:1115` and `docs/phase4/v1/PHASE_4_DOC.md:1373` |
-| Bound lookup and between-activation proof without a program handle | callback-scoped access, generation/provider/layout cache key, and operation-free activity token in §4.10 | verified Phase 4 contract at `docs/phase4/v1/PHASE_4_DOC.md:1374`–`:1375`; D-6 |
+| Final declaration/type truth without source reopening | Phase 3 catalog → Phase 4 merged effective layout → Phase 6 plan validation, §§4.9–4.10/5.3 | verified dependency contracts at `docs/phase3/v1/PHASE_3_DOC.md:1435` and `docs/phase4/v1/PHASE_4_DOC.md:1910` |
+| Bound lookup and between-activation proof without a program handle | callback-scoped access, generation/provider/layout cache key, and operation-free activity token in §4.10 | verified Phase 4 contract at `docs/phase4/v1/PHASE_4_DOC.md:2131`; D-6 |
 | Celestial, shadow, and per-draw event moments | typed `UniformEventSink`, §4.6/§4.12 | `[V:observed]`; exact cadence list at `docs/research/v1/RESEARCH.md:1380` |
-| Custom expressions consume a fixed typed input set and upload `float/int/bool/vec2/vec3/vec4` only after built-ins | versioned schema, conforming runtime view, typed command/disposition algebra, and third barrier participant in §4.13 | `[V:doc]`; declaration types at `docs/research/v1/RESEARCH.md:1494`, “`uniform.<float\|int\|bool\|vec2\|vec3\|vec4>`”; cadence at `docs/research/v1/RESEARCH.md:1382`, “custom uniforms … after built-ins” |
-| Fixed unit map, including stage variants | Phase 5 sole resolver consumed by §4.9; no Phase 6 map | `[V:doc]`; `docs/research/v1/RESEARCH.md:1228`, “packs rely on these numbers”; owner interface at `docs/phase5/v1/PHASE_5_DOC.md:2360`, “same fingerprint, exact spellings and conditional watershadow rule” |
+| Custom expressions consume a fixed typed input set and upload `float/int/bool/vec2/vec3/vec4` only after built-ins | versioned schema, conforming runtime view, typed command/disposition algebra, and third barrier participant in §4.13 | `[V:doc]`; declaration types at `docs/research/v1/RESEARCH.md:1495`, “`uniform.<float\|int\|bool\|vec2\|vec3\|vec4>`”; cadence at `docs/research/v1/RESEARCH.md:1383`, “custom uniforms … after built-ins” |
+| Fixed unit map, including stage variants | Phase 5 sole resolver consumed by §4.9; no Phase 6 map | `[V:doc]`; `docs/research/v1/RESEARCH.md:1228`, “packs rely on these numbers”; owner interface at `docs/phase5/v1/PHASE_5_DOC.md:2726`, “same fingerprint, exact spellings and conditional watershadow rule” |
 | `depthtex1` is unit 11 | shared-resolver upload regression in §8.1 | `[V:doc]` + ruling; `docs/research/v1/RESEARCH.md:1254`, “Treat **11 as authoritative**” |
-| P5/P6 split | Phase 5 alone resolves fixed units and binds objects; Phase 6 locates exact names and writes sampler integers | R7-10 at `docs/phase7/v1/PHASE_7_DOC.md:2316-2320`, “No second map”; Phase 5 owner interface at `docs/phase5/v1/PHASE_5_DOC.md:2360`, “no second map or free-unit allocation” |
-| World state sampled at frame begin | stable `FrameSnapshot`, §4.6 | `[V:observed]`; `docs/research/v1/RESEARCH.md:533`, “frame start” |
+| P5/P6 split | Phase 5 alone resolves fixed units and binds objects; Phase 6 locates exact names and writes sampler integers | R7-10 at `docs/phase7/v1/PHASE_7_DOC.md:4033`, “No second map”; Phase 5 owner interface at `docs/phase5/v1/PHASE_5_DOC.md:2726`, “no second map or free-unit allocation” |
+| World state sampled at frame begin | stable `FrameSnapshot`, §4.6 | `[V:observed]`; `docs/research/v1/RESEARCH.md:534`, “frame start” |
 | Frame-begin sampling completes before resize/clear | ordering rule in §§4.6 and 5.1 | governing REV1 constraint; `docs/design/v2.0-RC3/DESIGN.md:1721-1725`, “before any buffer resize or clear” |
-| Previous camera/matrix snapshots | explicit rotate-before-overwrite rules, §4.6/§4.7 | `[V:observed]`; `docs/research/v1/RESEARCH.md:536`, “snapshot previous-frame camera + matrices” |
+| Previous camera/matrix snapshots | explicit rotate-before-overwrite rules, §4.6/§4.7 | `[V:observed]`; `docs/research/v1/RESEARCH.md:537`, “snapshot previous-frame camera + matrices” |
 | Synchronous center-depth readback when declared | CPU candidate selected in §4.8 | `[V:observed]`; `docs/research/v1/RESEARCH.md:558`, “synchronous center-depth readback” |
 | Exact tick-domain smoothing | `TickEma` / `AsymmetricTickEma`, §4.5 | contract interpretation; RC3 requires “per-tick exponential decay” at `docs/design/v2.0-RC3/DESIGN.md:1733` |
 | Fixed-function matrix capture and inverses | §4.7 | `[V:observed — Pintonium]`; verified source copies vanilla buffers at `reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/org/taumc/celeritas/mixin/shaders/MixinEntityRenderer_Shaders.java:38` |
-| `blendFunc` observation through GlStateManager cooperation | typed producer plus mandatory audit row, §4.12 | `[V:doc]`; App E class row at `docs/research/v1/RESEARCH.md:1415` |
+| `blendFunc` observation through GlStateManager cooperation | typed producer plus mandatory audit row, §4.12 | `[V:doc]`; App E class row at `docs/research/v1/RESEARCH.md:1416` |
 | Every value behind a pure provider/event seam | `UniformPlatformProvider`, `CenterDepthSource`, immutable event records | D-6; assignment at `docs/design/v2.0-RC3/DESIGN.md:1771` |
-| Per-uniform GL upload isolation | immutable upload batch + attributed replay, §4.11 | Phase 1 binding contract at `docs/phase1/v14/PHASE_1_DOC.md:4220`–`:4221` |
+| Per-uniform GL upload isolation | immutable upload batch + attributed replay, §4.11 | Phase 1 binding contract at `docs/phase1/v14/PHASE_1_DOC.md:5475` |
 | PD cadence buckets and cache mechanics | acquisition buckets plus activation sweep | **Adopted as non-contract-visible mechanics**; PD says ONCE/PER_TICK/PER_FRAME/dynamic at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:288`; source confirms dynamic first at `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/program/ProgramUniforms.java:200` |
 | PD sampler queue/dedup mechanics | deterministic unit/name plan and cached integer uploads | **Mechanics adopted; allocation policy rejected**. PD warns its units are dynamic at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:344`; fixed App B.3 wins |
 | PD GPU `centerDepthSmooth` | not populated; CPU path selected | **Contract-visible rejection, D-P6-1**; PD §6.3 at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:312`; §4.8 checks App D, Phase 3's macro placement, and unit map |
@@ -602,7 +664,7 @@ runtime's schema never mutates.
 
 It never holds a source string, parser, Minecraft object, program handle, framebuffer handle, or
 mutable provider. Phase 3 remains the single parse truth
-(`docs/phase3/v1/PHASE_3_DOC.md:1112`, “single validated downstream truth”). The effective
+(`docs/phase3/v1/PHASE_3_DOC.md:3356`, “single validated downstream truth”). The effective
 `ProgramUniformLayout` is deliberately not part of this pack-global configuration; Phase 4 passes
 it with each resolved program binding, and `ProgramCache` retains that immutable per-key layout.
 Sampler routing separately consumes the same effective descriptor's `ProgramSamplerLayout` through
@@ -612,7 +674,7 @@ sampler-name/unit table or a second conditional-alias rule.
 Construction validates every half-life as finite and non-negative. A malformed directive is a
 Phase 3 diagnostic/default matter; an invariant breach arriving here rejects the uniform candidate
 without GL work. Phase 3 already publishes distinct tick fields—for example
-`SmoothingConstants.drynessHalfLifeTicks` (`docs/phase3/v1/PHASE_3_DOC.md:918`)—so Phase 6 performs
+`SmoothingConstants.drynessHalfLifeTicks` (`docs/phase3/v1/PHASE_3_DOC.md:1770`)—so Phase 6 performs
 no parser-side unit conversion. `create` installs the generation from the current Phase 4
 `PublishedRegistry` as the runtime's initial current generation. A new published registry
 generation creates a new program-cache namespace. Old locations and disabled scopes are discarded;
@@ -636,7 +698,7 @@ Lifecycle:
 
 ```text
 NEW
-  → CONFIGURED(configuration, samplerResolver, providers)
+  → CONFIGURED(configuration, samplerResolver, providers, diagnostics, replayErrors)
   → FRAME_READY after first beginFrame
   → ACTIVE through any number of barrier activations/events
   → RESET on world epoch or adopted pack/shaders-off/GL-context-loss generation
@@ -698,6 +760,23 @@ dimensions are non-negative and `frameTimeSeconds` is finite and non-negative.
 finite; `eyeBrightness` components are 0…240; `isEyeInWater` is 0, 1, or 2; effect strengths and
 screen brightness are in `[0,1]`; `farPlane` is non-negative; and `sunAngle` and a present
 `shadowAngle` are in `[0,1)`. `fogFallback` is absent only when no valid frame fallback exists.
+
+**P8 independent celestial receipt (D-P6-37, superseding D-P6-28's Ready-plan prerequisite).**
+P7's `mod.glue.uniforms` provider obtains the existing frame `shadowAngle` from P8's pure
+`CelestialMath.angles(float sunAngle) -> ShadowCelestialAngles` before camera capture.
+That same angular law backs any retained `ShadowCelestialPolicy`; it is available at v0.2
+even when shadows are NotRequested, disabled or unavailable. Angular data is not a frame event.
+After validating the same accepted frame/live main-camera association, P7's H-SKY-02 route uses
+`CelestialMath.sample(ShadowFrameView frame, CameraSnapshot mainCamera, float sunPathRotationDegrees)`
+to supply the unchanged `CelestialSample`. Inputs are the retained sun/sky values, actual
+post-camera main modelView and finite configuration-derived rotation, not current GL state.
+No Ready shadow plan, shadow target, extent, publication or shadow-hook health is required.
+Real P8 camera computation delegates to the same math and still delivers its sample before
+shadow activation; matching accepted frame/camera/rotation permits exact-sample reuse.
+P6 preserves its current-world/nonregressing-frame/finite-value event admission, immediate
+active upload and every-switch cache semantics. It imports no shadow implementation and adds
+no provider/frame/celestial field. Main celestial availability is independent of shadow matrices;
+v0.1 staging remains neutral, but zero shadow-buffer demand cannot excuse neutral v0.2 vectors.
 `CenterDepthRequest` names the completed prior framebuffer: positive dimensions imply
 `pixelX=floor(width/2)` and `pixelY=floor(height/2)` in bottom-left pixel coordinates; zero
 dimensions produce `Unavailable` without calling the source. `CenterDepthResult.Sample.depth` is
@@ -777,7 +856,7 @@ Float comparison uses `Float.floatToIntBits` after normalizing `-0.0f` to `0.0f`
 valid cell. Ints compare exactly. Vectors compare every component. Matrices deliberately ignore
 equality. The last-uploaded value is per **effective linked program**, uniform name, and registry
 generation—not per requested fallback child—because Phase 4 resolves one effective provider and
-does not overlay child state (`docs/phase4/v1/PHASE_4_DOC.md:682`, “one immutable compiled
+does not overlay child state (`docs/phase4/v1/PHASE_4_DOC.md:1016`, “one immutable compiled
 binding”).
 
 `SIGNAL` has two policies. `NEXT_ACTIVATION` only replaces cells (gbuffer/shadow matrices and held
@@ -818,9 +897,9 @@ v0.1 and uploads a documented neutral value until the owning value producer land
 | `screenBrightness` | `float`; video setting clamped 0…1 | frame provider | every switch, skip equal | v0.1 |
 | `hideGUI` | `int`; 1 when GUI hidden, else 0 | frame provider | every switch, skip equal | v0.1 |
 
-These types and meanings are the contract table beginning at `docs/research/v1/RESEARCH.md:1325`; for
+These types and meanings are the contract table beginning at `docs/research/v1/RESEARCH.md:1326`; for
 example, `eyeBrightness` is “x block / y sky light, 0–240”
-(`docs/research/v1/RESEARCH.md:1331`).
+(`docs/research/v1/RESEARCH.md:1332`).
 
 #### 4.4.2 World, time, and weather
 
@@ -841,8 +920,8 @@ example, `eyeBrightness` is “x block / y sky light, 0–240”
 | `skyColor` | `vec3`; sampled current sky RGB | frame provider | every switch, skip equal | v0.1 |
 
 The wrap values are contract, not convenience:
-`docs/research/v1/RESEARCH.md:1345` says `frameCounter` “wraps at 720720”, and
-`docs/research/v1/RESEARCH.md:1347` says `frameTimeCounter` “wraps at 3600”. The exact boundary
+`docs/research/v1/RESEARCH.md:1346` says `frameCounter` “wraps at 720720”, and
+`docs/research/v1/RESEARCH.md:1348` says `frameTimeCounter` “wraps at 3600”. The exact boundary
 mechanics are corroborated by the working reference: the counter uses `(count + 1) % 720720`
 (`reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/uniforms/SystemTimeUniforms.java:49`)
 and elapsed time resets to zero at 3600
@@ -879,7 +958,7 @@ and elapsed time resets to zero at 3600
 | `terrainIconSize` | `int`; documented unused, deterministic `0` | once neutral provider | every switch, skip equal | v0.1 |
 
 Near/far are fixed at “0.05 / renderDistance×16”
-(`docs/research/v1/RESEARCH.md:1359`). The two terrain metrics remain present because the shipped
+(`docs/research/v1/RESEARCH.md:1360`). The two terrain metrics remain present because the shipped
 document declares them but calls them “not used”
 (`reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:169`); zeros preserve linked-program default
 semantics without inventing a Minecraft query.
@@ -895,7 +974,7 @@ semantics without inventing a Minecraft query.
 | `instanceId` | `int`; total N draws IDs0…N−1, saved predecessor restored, outer neutral0 | Phase 7 draw-loop signal | immediate before each prepared draw + every switch | interface v0.1; fullscreen/authenticated non-fullscreen values v0.5 |
 
 All five are excluded from Phase 11's expression-input view. That exclusion is contract-visible:
-`docs/research/v1/RESEARCH.md:1369` calls them “Per-draw dynamics (excluded from custom-uniform
+`docs/research/v1/RESEARCH.md:1370` calls them “Per-draw dynamics (excluded from custom-uniform
 expressions)”.
 
 ### 4.5 Smoothing mathematics
@@ -936,8 +1015,10 @@ casts the final value to float, and advances once per accepted frame. Exact edge
 
 `smoothingTimeTicks` is a monotonic game-time coordinate supplied by `mod.glue`, derived from the
 world tick plus the current render partial tick. It does not advance while game time is paused.
-`frameTime` remains elapsed wall/render seconds and is not reused as the smoothing clock. Separating
-them prevents a stalled frame from being counted as several logical ticks.
+In ordinary gameplay `frameTime` remains elapsed wall/render seconds. Only P7's authenticated
+capture session supplies controlled rendered seconds through the same `FrameBeginInput`;
+P6 neither reads a replacement clock nor knows the capture plan. In both modes seconds are
+never reused as smoothing ticks. A stalled host frame alone cannot advance logical ticks.
 
 #### Wetness
 
@@ -997,7 +1078,7 @@ The center-depth dimensions and depth source refer to the framebuffer containing
 previous image. Width/height ≤0 produce `Unavailable`, not negative coordinates. The source's
 `mod.glue` implementation uses Phase 1's synchronous
 `FramebufferService.readDepthPixel`; the exact verb is published at
-`docs/phase1/v14/PHASE_1_DOC.md:2920`.
+`docs/phase1/v14/PHASE_1_DOC.md:3388`.
 
 Gbuffer matrices are not sampled in `beginFrame` or at ordinal-zero clear. Phase 7 calls
 `captureGbufferMatrices(frameId,...)` exactly once at its later post-camera setup hook.
@@ -1006,6 +1087,23 @@ overwrites current matrices without destroying temporal state.
 A second capture for the same frame is an invariant diagnostic and is ignored; a missing capture
 leaves main-program matrix cells invalid so only those
 uniforms are disabled for that frame.
+
+**Actual timing query (D-P6-25).** `frameTiming(registryGeneration,frameId)` is render-thread
+confined like `beginFrame`; a wrong-thread call throws `IllegalStateException` before reading
+state, including after retirement. Otherwise it returns empty before the first accepted frame,
+after reset/world-epoch invalidation, after adoption until a new frame is accepted, for any
+generation unequal to the adopted current generation, for any frame other than the latest
+accepted frame, and after retirement. A duplicate or rejected begin never changes the report.
+The report copies the exact accepted input identity/tick/seconds and the actual cadence-engine
+`frameCounter`/`frameTimeCounter` cells after that accepted begin's existing counter update.
+It is not recomputed from frameId, capture ordinal, wall time or requested values; counter
+initialization/wrap and accumulation remain §4.4.2's existing semantics.
+An issued record is immutable historical evidence and remains readable after invalidation;
+it cannot authorize a later runtime/frame. P7 authenticates its epoch against its live frame.
+Query performs no provider call, GL, sampling, counter update, reset or second clock work.
+Keep scalar state in the existing accepted snapshot; allocate a report only when queried
+(and optionally reuse that immutable report for repeated queries of that same accepted frame).
+
 
 The Pintonium evidence validates the capture source, not the exact hook contract:
 `reference-src/pintonium-9c2fcc1/forge122/src/main/java/org/taumc/celeritas/mixin/core/terrain/ActiveRenderInfoAccessor.java:11`
@@ -1050,7 +1148,7 @@ Once per frame, synchronously read the center depth through
 `FramebufferService.readDepthPixel`, then advance the CPU tick-domain EMA in §4.5. This is the
 observed contract path: the frame-flow source calls it a “synchronous center-depth readback”
 (`docs/research/v1/RESEARCH.md:558`), and Appendix D exposes a default-block `float`
-(`docs/research/v1/RESEARCH.md:1365`).
+(`docs/research/v1/RESEARCH.md:1366`).
 
 #### Candidate B — rejected for v0.1
 
@@ -1064,7 +1162,7 @@ published contracts:
 
 1. **Declaration contract.** Packs declare `uniform float centerDepthSmooth;`
    (`reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:176`). Phase 3's object-like macro is
-   injected before the first restored pack line (`docs/phase3/v1/PHASE_3_DOC.md:403`) and therefore
+   injected before the first restored pack line (`docs/phase3/v1/PHASE_3_DOC.md:1536-1537`) and therefore
    also substitutes the identifier inside its declaration. With no declaration-aware removal or
    rename operation in Phase 3 §5, the proposed replacement expression turns a legal declaration
    into invalid GLSL.
@@ -1091,7 +1189,7 @@ declaration-safe Phase 3 operation, an explicit sampler/unit contract extension,
 Phase 5 is the sole policy owner. Phase 6 neither publishes nor implements a sampler-name/unit
 map. It consumes `FixedSamplerPolicies.resolver()` through §2.2's required constructor argument.
 The binding policy is Phase 5 §4.12.1, incorporated by its §5.1
-(`docs/phase5/v1/PHASE_5_DOC.md:2360`, “exact complete §2.4 declarations and §4.12.1 table/schema
+(`docs/phase5/v1/PHASE_5_DOC.md:2726`, “exact complete §2.4 declarations and §4.12.1 table/schema
 incorporated”). Appendix B.3 remains the authority
 (`docs/research/v1/RESEARCH.md:1228-1255`, “packs rely on these numbers”).
 
@@ -1109,20 +1207,20 @@ ResolvedSamplerBinding(String exactName, DeclaredGlslType.Sampler shape, int uni
 ```
 
 These are the existing owner types, not Phase 6 redeclarations
-(`docs/phase5/v1/PHASE_5_DOC.md:908-917`, “record ResolvedSamplerBinding”).
+(`docs/phase5/v1/PHASE_5_DOC.md:1021`, “record ResolvedSamplerBinding”).
 The pure resolver uses appB3's same table/schema/fingerprint; Ready rows are immutable, ascending
 unit then fixed-name declaration order, preserving distinct exact names sharing one unit.
 Invalid preserves the complete `SamplerLayoutValidation` evidence, including unsupported
 names/domains/shapes and same-unit incompatible types. Arrays/structs containing samplers are not
 coerced to scalar samplers. Fixed/virtual empty layouts resolve to empty Ready; unsupported shader
 domains never fall back to a fullscreen map
-(`docs/phase5/v1/PHASE_5_DOC.md:2150-2172`, “Invalid retains the complete validation evidence”).
+(`docs/phase5/v1/PHASE_5_DOC.md:2499-2502`, “Invalid retains the complete validation evidence”).
 
 The conditional `shadow` rule is evaluated only by Phase 5 from the effective provider's complete
 sampler layout: a direct sampler-compatible `watershadow` declaration selects unit 5; otherwise
 unit 4. Driver location absence and shadow-buffer count do not affect that declaration rule.
 Both gbuffers bands share the policy, and `tex` remains shadow-only
-(`docs/phase5/v1/PHASE_5_DOC.md:2127-2148`, “Both gbuffers bands share this map”).
+(`docs/phase5/v1/PHASE_5_DOC.md:2478`, “Both gbuffers bands share this map”).
 `depthtex1` remains unit 11, and unit 12 has no gbuffers/shadow sampler; these are consequences of
 the sole owner policy, not a second local table. Phase 6 never infers the alias from
 `ProgramUniformLayout`, scans source, or assigns units to unsupported names.
@@ -1176,7 +1274,7 @@ No fourth participant, unit allocator, texture-bind loop, or independent activat
 
 Phase 4's binding callback retains its exact callable shape, receiving the handle-free effective
 descriptor/layout and a callback-scoped capability over its privately held program
-(`docs/phase4/v1/PHASE_4_DOC.md:1362-1372`, “BarrierParticipantResult afterBind”).
+(`docs/phase4/v1/PHASE_4_DOC.md:1646-1656`, “BarrierParticipantResult afterBind”).
 The published shape consumed here, subject to §5.2's owner-review gate, is:
 
 ```java
@@ -1209,7 +1307,7 @@ Phase 4 mints the capability only after binding its private program. It wraps
 `registryGeneration` changes, while the access object itself may not be retained. The token alone
 may be retained. Phase 4 invalidates it before any later activation (including the same effective
 program), fixed-function release, failed-safe/off transition, ready/off replacement, or teardown
-(`docs/phase4/v1/PHASE_4_DOC.md:1203`–`:1210`). `isCurrent()` is a pure thread-safe epoch
+(`docs/phase4/v1/PHASE_4_DOC.md:1825`–`:1833`, `:1835`–`:1842`). `isCurrent()` is a pure thread-safe epoch
 comparison and performs no GL query. An immediate signal uses already-cached locations and uploads
 only while this token is current.
 
@@ -1218,16 +1316,16 @@ With it, the barrier trace is:
 | Phase 4 step | Phase 6 obligation |
 |---|---|
 | shadow override and backup resolution | accept effective descriptor; never re-resolve |
-| restore prior lock | no action |
-| bind effective shader program | receive bound-only access; never call `use` |
+| invalidate predecessor activity and close prior lease | restoration updates cells but cannot upload to predecessor |
+| bind effective shader program | never call `use`; bound-only access is issued for callbacks |
+| acquire effective alpha/blend lease and publish/sample effective blend | accept actual effective state before callbacks; failed acquisition/notification dispatches no participants |
 | sampler participant | execute §4.9's shared-resolver integer plan; no object binds |
 | built-in participant | snapshot current cells, then execute §4.11 batch |
 | custom participant | invoke §4.13 from the same stable built-in view |
-| apply effective alpha/blend lock | before upload, derive `blendFunc` from the same effective `BlendSpec`: explicit factors override the observed underlying state, explicit OFF yields zeros, absent uses observed state; Phase 4 then applies exactly that lock |
-| participant `Degraded` | name exact disabled uniform/participant scope; keep program active |
+| participant `Degraded` | ordinary isolated upload/custom failure retains the program; replay-delivery failure follows §4.11's no-draw containment, not ordinary degradation |
 
 Phase 4 promises participants run even when the same handle stays active
-(`docs/phase4/v1/PHASE_4_DOC.md:1181`–`:1184`), satisfying the every-switch contract.
+(`docs/phase4/v1/PHASE_4_DOC.md:1813`), satisfying the every-switch contract.
 
 `ProgramCache` is keyed by `ProgramUniformCacheKey` and contains:
 
@@ -1250,24 +1348,22 @@ Every command carries uniform name, type, copied value, location, and upload ope
 executes Phase 1's binding protocol literally:
 
 ```text
-drainErrors()
+retain and deliver any pre-upload cleanup drain as false-attribution evidence before upload
 upload every command in the immutable batch
-errors = drainErrors()
-if errors empty:
+trigger = drainErrors()
+if trigger empty:
     commit last-uploaded values
 else:
-    for each same cached command:
-        drainErrors()
-        upload command
-        attributed = drainErrors()
-        if attributed reproduces: disable only (generation, effective program, uniform name)
-        else: commit that command's last-uploaded value
-    if no command reproduces: report unattributable; disable none
+    replay each same cached command with drains between individual calls
+    disable only names actually isolated by the Phase 1 replay law
+    construct exactly one verdict for each original trigger entry, in drain order
+    deliver its UniformReplayReport and any cleanup-drain reports in observation order
+    return the existing scoped degradation when needed
 ```
 
 The replay never resamples a provider, advances time, rotates a previous snapshot, recomputes an
 inverse, or reevaluates a custom expression. Phase 1 makes this a binding precondition:
-`docs/phase1/v14/PHASE_1_DOC.md:4119` says “reuses the values already computed for this sweep”.
+`docs/phase1/v14/PHASE_1_DOC.md:6139` (D-P1-32; `:3785`/`:5565`) says “the re-upload uses the values **already computed for this sweep**”.
 
 Disable scope is per generation + effective linked program + uniform name. A type error or GL error
 in `fogColor` for one program does not disable `fogColor` in a different linked program, any sibling
@@ -1276,9 +1372,13 @@ uniform, the program, or the pack. Diagnostics are `WARN`/`LOG_ONLY` on
 
 If a batched drain is non-empty but no replay command reproduces it, the error may be foreign GL or
 non-reproducible. The participant returns `Degraded` only for its diagnostic/reporting state, not for
-a guessed uniform. Recurring clean replays are rate-limited per frame/program and handed to Phase
-7/Phase 1's broader 3→4 escalation path; the uniform system does not loop indefinitely or disable an
-innocent value.
+a guessed uniform. Only ordinary WARN/log repetition
+is rate-limited per frame/program. Every typed report still reaches P7 synchronously; P7
+classifies unattributable/recurring-clean results and hands them to the existing P1/mod.core
+3→4 escalation route, including its frame-boundary drain remedy and elision limits. P6's
+per-program recurrence counter resets on an attributable replay or clean attempted batch and
+is diagnostic context, not a new threshold or uniform-disable policy. P7's existing broader
+policy decides escalation; neither a log rate limiter nor P2 capture availability gates the handoff.
 
 Commands that were skipped as equal are not replayed: no GL operation was attempted for them in the
 failed window. Matrices, having no equality skip, are always in the attempted batch when declared.
@@ -1286,6 +1386,62 @@ An `IMMEDIATE_IF_ACTIVE` signal uses the same algorithm over only its changed dy
 checking the activity token immediately before the first upload. Phase 4 invalidates the token
 before rebinding, so a signal can never upload a cached location into fixed function or a different
 program.
+
+**Replay evidence, correlation and delivery (D-P6-27).** For every nonempty triggering drain,
+emit one `UniformReplayReport` with exactly one P1 `ReplayAwareGLError` per original entry.
+The report's `program` is the existing effective cache key under which the attempt was observed,
+not proof that this program or any uniform caused the error. List position preserves exact
+trigger order; separate callbacks preserve drain/batch observation order (sampler, built-in,
+custom, then later immediate operations as actually executed). Equal errors, including equal
+errors in different reports, remain distinct occurrences; no set, key-based deduplication or
+label-based matching is permitted. Replay probes explain the original trigger, not new
+triggering submissions to be counted a second time.
+
+`attributed=true` requires P1's cached replay to reproduce and isolate that original error in
+one named facade call's one-call window. If correspondence to an original occurrence or a unique
+call cannot be established, the verdict is false. An isolated error of a different kind cannot
+turn another triggering error true. Clean, non-reproducing, still-batched, ambiguous and foreign
+windows are false even if `op` or `subjectLabel` names a plausible upload. Pre-upload and
+between-probe cleanup/foreign drains are not silently discarded: retain each nonempty drain as
+its own all-false report, in actual observation order alongside the triggering report. A probe
+window that remains foreign/ambiguous supplies false evidence for the original trigger; it is
+not duplicated as a new submitted batch. No replay recursively replays a replay probe.
+
+Delivery occurs after verdicts are established and **before** the enclosing `afterBind` returns
+or, for an immediate upload, before the void event method returns. A pre-upload cleanup report
+may be delivered before starting the attempt; queued replay cleanup reports follow their earlier
+trigger. No callback is emitted for an empty drain, and no successful path leaves reports queued
+for frame end. The callback runs only on the render thread under the outer operation's
+active-callback guard. It performs no GL, provider calls, lifecycle work, frame mutation,
+recursive uniform entry or reentrant callback dispatch. P7 synchronously copies/classifies the
+detached report into its existing observation/capture route and feeds the existing escalation
+owner; P2 flattens the values into current `/4` `gl_errors`, with every error failing T0.
+P6 adds no frame field, wire variant, P3 schema, facade operation or fourth participant.
+
+**Rejected/failed delivery is not accepted evidence.** The void sink returns normally only after
+accepting the entire report; silent rejection, filtering, overflow or a no-op sink is forbidden.
+P7 first retains the original report in its receiving failure-safe storage; if downstream
+copy/classification/capture storage rejects or throws, it latches capture failure before throwing,
+preserves the accepted prefix and failing original report, and cannot finalize `COMPLETE`.
+If even failure storage is unavailable, it latches explicit evidence loss rather than fabricating
+an empty/successful capture. Logging is not that storage and may never replace typed delivery.
+
+P6 catches sink exceptions separately from provider and GL isolation. It retains the failing
+report and any not-yet-delivered reports from the finite current operation, latches
+`phase6.replay.delivery.failed`, and stops new uploads/replay and observer calls; it never
+retries an ambiguously accepted report or overwrites it with later evidence. The current and
+later barrier positions return existing `Degraded` with that stable diagnostic and
+`"uniform replay evidence delivery"` scope, not a fabricated disabled uniform. P4 contains
+participant exceptions and continues positions (§4.10), so P7 must inspect that degradation
+and its own failure latch before any draw/capture-success claim. An immediate void event throws
+`IllegalStateException` carrying the same diagnostic after retention; P7's existing event/scope
+failure path stops remaining copies, restores the predecessor and closes admission. This is
+delivery-failure containment, not automatic frame abort for an ordinary isolated upload error.
+No new GL attempts occur on the failed runtime until P7's existing recovery disposes/replaces it;
+reset/adoption cannot erase the failure. Final non-upload restoration/retirement remains possible.
+P7 retains borrowed observer/adapters through legal retirement; only terminal retirement releases
+P6's pending reports/references after the failure has been recorded as non-complete. Failure
+to retain any observed evidence is itself explicit capture loss, never successful delivery.
 
 ### 4.12 Notifier-to-producer audit
 
@@ -1302,7 +1458,7 @@ methods; they never assign callbacks into Phase 6.
 | celestial rotation | sun/moon/shadow-light/up vectors | inside sky rotation after FF transforms are established; immediate upload if a shader token is current | Phase 7 invokes; Phase 8 values / v0.2 |
 | shadow camera | four shadow matrices | after Phase 8 installs its shadow FF camera, before shadow draw activation | Phase 8 / v0.2 |
 | fog mode/start/end/density/color | `fogMode`, `fogDensity`, `fogColor` | GlStateManager-facing fog mutation sites plus frame fallback; immediate upload if active | Phase 7 / v0.1 |
-| blend enable/factors | `blendFunc` | every GlStateManager blend mutation updates underlying observation and immediately uploads if active; every activation overlays the effective Phase 4 `BlendSpec` | Phase 7 + Phase 4 descriptor / v0.1 |
+| blend enable/factors | `blendFunc` | successful effective GlStateManager/backend changes only, including P1 override acquisition/release; suppressed attempts emit no event; immediate upload if active and effective Phase 4 `BlendSpec` at activation | Phase 7 + P1 effective state + Phase 4 descriptor / v0.1 |
 | texture bind | `atlasSize`; sampler unit integers do not change | actual authenticated current base texture bind/restoration, never stitch-only availability; adapter below | Phase 7 observer/adapter + Phase 13 query / v0.5 |
 | normal/specular texture change | no built-in value; future custom/texture bridge invalidation | companion-atlas bind/change | Phase 13 / v0.5 |
 | render phase change | no Appendix D `renderStage`; retained as custom-extension signal only | every Phase 4/7 stage transition | Phase 7, Phase 11/G8 consumer later |
@@ -1312,6 +1468,14 @@ methods; they never assign callbacks into Phase 6.
 | instance | `instanceId` | immediately upload IDs0…N−1 before prepared copies; restore saved predecessor, outer zero | Phase 7 / v0.5 fullscreen and authenticated non-fullscreen boundary; no history/expression refresh |
 | held items | four held-item uniforms | tick/inventory change after Phase 9 alias resolution | Phase 9 / v0.3 |
 | atlas size | `atlasSize` | authenticated bind → P13 Known dimensions or Unknown/non-atlas `(0,0)` → `updateAtlasSize`; immediate active upload and reload reset | Phase 7 adapter + Phase 13 value / v0.5 |
+
+**D-P6-32 — enforced blend receiving semantics (2026-09-08).** P1 owns the duration
+override and reports actual effective state through P7's existing `updateBlend` path.
+P6 owns neither suppression nor bypass. An attempted setter on a held aspect causes no
+event or underlying-cache update. Successful acquisition/release notifies the effective
+value before built-in dispatch; P4's existing activity invalidation prevents restoration
+from uploading into the previous program. Existing immediate-event replay delivery and
+failure containment still apply. P6's event type and factory remain unchanged.
 
 **Split timeline and governing milestone (D-P6-19).** Frame sampling/previous snapshots/center
 depth complete before any resize/clear; ordinal-zero clear remains the earlier Phase 7 hook;
@@ -1346,12 +1510,12 @@ producing PD B6. Here the runtime owns the sink before any plan
 is built, so declaring `blendFunc` cannot NPE even before Phase 7 wiring exists; it uploads the
 neutral zeros and emits one missing-producer diagnostic in implementation bring-up.
 
-Phase 4 applies its alpha/blend lock after the three participants
-(`docs/phase4/v1/PHASE_4_DOC.md:1174`–`:1178`). To keep `blendFunc` truthful on that same draw, the built-in
-participant does not wait for a later observer callback: it projects the effective provider's
-published `BlendSpec` onto the last observed underlying state, uploads that projected value, and
-Phase 4 then applies the identical spec. This is pure derivation from the descriptor, not an early
-state mutation or a barrier bypass.
+P4 closes the predecessor lease, binds the retained program and successfully acquires its
+effective alpha/blend lease before dispatching any participant. P1/P7 publish the coherent
+effective blend value first; the built-in participant snapshots that observed cell, and the
+custom participant reads the same stable built-in view. Disabled blend yields zero factors.
+There is no descriptor overlay predicting later state, second state query by P6, early
+P6 mutation or barrier bypass. Acquisition/notification failure cannot reach these callbacks.
 
 The table is the Phase 6 side of the future Phase 7 integration review. Phase 7 must cite each
 producer's actual hook-catalog row rather than saying “GlStateManager somewhere”.
@@ -1439,11 +1603,9 @@ type set is the enum above; `catalogVersion()` equals `UniformConfiguration`'s f
 version and changes whenever any permitted name/type pair changes. Every Appendix D name is
 present except the conservative exclusion union: `entityColor`, `entityId`, `blockEntityId`,
 `blendFunc`, and `instanceId` from the whole D.4 table, plus `fogMode` and `fogColor`. An unknown or
-excluded exact name returns `FixedExpressionInputLookup.Absent`, never null. The D.4 heading and
-F.6 list disagree (`docs/research/v1/RESEARCH.md:1369`, “excluded from custom-uniform expressions”;
-`docs/research/v1/RESEARCH.md:1500`–`:1501`, “Excluded … `entityColor entityId blockEntityId
-fogMode fogColor`”), so this conservative union remains binding here while §11.4 keeps the
-protected-source clarification open.
+excluded exact name returns `FixedExpressionInputLookup.Absent`, never null. Current RESEARCH
+§3.4 and Appendix F.6 explicitly adopt this seven-name union; F.6 states it does not override
+or narrow D.4. The historical discrepancy is resolved upstream, not a pending clarification.
 
 `BuiltInExpressionView` is an immutable snapshot from the same activation as the built-in batch.
 Its `catalogVersion()` equals the construction-time schema version. A runtime
@@ -1551,7 +1713,7 @@ without mutation. For a non-null reason, the following precedence is binding:
    This is idempotent, does not change the original terminal disposition and performs no cleanup.
 3. While a Phase 6 operation/callback is in flight, return `Rejected(ACTIVE_CALLBACK)`.
    This includes any of the three participants, frame/event processing, provider invocation,
-   custom refresh/submission, upload/error replay and reentrant diagnostics within those entries;
+   custom refresh/submission, upload/error replay, replay-observer delivery and reentrant diagnostics within those entries;
    the guard spans the entire outer operation, not just the user callback's body. A rejected
    retirement does not clear caches/references, cancel that operation, or schedule deferred work.
 4. Otherwise mark the runtime terminal and synchronously clear its operational state, then return
@@ -1568,7 +1730,8 @@ Successful retirement drops every cached location (present or absent), sampler/b
 uploaded-value cache, disabled scope, active `(activityToken, ProgramCache)` pair, pending custom
 batch, live value/snapshot/smoother state, and installed custom bridge. It releases all borrowed
 references, including `FixedSamplerResolver`, `UniformPlatformProvider`, `CenterDepthSource`,
-`GLDevice`/derived services and `DiagnosticReporter`; retained sinks/participants must not retain
+`GLDevice`/derived services, `DiagnosticReporter` and `UniformReplayErrorSink`, including pending
+failed-delivery reports after P7 records non-complete failure; retained sinks/participants must not retain
 these indirectly. It owns none of those services and neither closes them nor calls them during
 retirement. There is **no GL, location lookup, error drain, barrier release/activation, token
 invalidation call, unbind or handle deletion**. Phase 4 alone invalidates its activity tokens;
@@ -1581,6 +1744,7 @@ absent-consumer paths, including on previously returned objects:
 |---|---|
 | `adoptRegistryGeneration` with an otherwise valid reason | `REJECTED_RETIRED_GENERATION` for every generation, including the former current value; no reacquisition can revive this instance |
 | `beginFrame` | `REJECTED_GENERATION`, never `DUPLICATE` or `ACCEPTED` |
+| `frameTiming` | empty on the render thread for every frame/generation; wrong-thread throws IllegalStateException first; detached previously issued records remain historical values only |
 | any `UniformEventSink` method, `reset(WORLD_EPOCH)`, or custom-bridge installation | `IllegalStateException`; no cell mutation, sampling or borrowed-service access |
 | any retained sampler/built-in/custom participant's `afterBind` | existing `BarrierParticipantResult.Degraded` with stable `phase6.runtime.retired` diagnostic ID and that participant's scope; never successful/no-op refresh, lookup, resolver/provider access or GL |
 | a retained custom upload sink's `submit` | existing `Rejected("phase6.runtime.retired")`; never enqueues, counts or uploads a command |
@@ -1603,7 +1767,7 @@ custom refresh and all three Phase 6 participants before retirement. Final-use i
 restoration events (for example Phase 9 per-draw resets), not only the last shader draw. No later
 event/callback may be deliberately routed to that instance. These ordered obligations implement
 R7-11's “after final callback and before borrowed services disappear”
-(`docs/phase7/v1/PHASE_7_DOC.md:2325-2327`):
+(`docs/phase7/v1/PHASE_7_DOC.md:4042`):
 
 | Reason | Required caller ordering |
 |---|---|
@@ -1621,7 +1785,7 @@ The publisher may already have deleted old program handles when replacement retu
 cached locations is safe because retirement never dereferences them. This differs intentionally
 from shutdown's retire-before-teardown order and requires no mid-publication callback.
 Phase 4's incorporated publication contract says “invalidate the old activity token” before
-“close the old registry” (`docs/phase4/v1/PHASE_4_DOC.md:1627-1631`, incorporated by §5.1).
+“close the old registry” (`docs/phase4/v1/PHASE_4_DOC.md:1957`/`:1961`, incorporated by §5.1).
 
 Closing Phase 8 or retiring a Phase 13 texture owner/registration in Phase 7's earlier quiescence
 steps is not permission to destroy Phase 6's borrowed provider/service adapters. Keep those
@@ -1644,10 +1808,11 @@ turn a future producer into optional work.
 
 | Exposed contract | Exact content | Consumer(s) |
 |---|---|---|
-| `UniformRuntimeFactory` / `UniformBuildResult` | exact §2.2 callable shape: `create(long initialRegistryGeneration, UniformConfiguration, FixedSamplerResolver samplerResolver, UniformPlatformProvider, CenterDepthSource, GLDevice, DiagnosticReporter) -> UniformBuildResult`; resolver is required immediately after configuration, borrowed from Phase 5's pure `FixedSamplerPolicies.resolver()` and paired with compilation's appB3 policy; no local fallback. Closed `Success(UniformRuntime runtime)` / `Failure(String diagnosticId)`. Creation installs current `PublishedRegistry.generation`; success transfers sole runtime lifecycle, failure has no runtime or GL work; resolver retention/release follows §2.2's existing service lifetime | Phase 7 composition/reload; R7-10 adopted, fresh PASS owed |
+| `UniformRuntimeFactory` / `UniformBuildResult` | exact §2.2 eight-argument callable shape: `create(long initialRegistryGeneration, UniformConfiguration configuration, FixedSamplerResolver samplerResolver, UniformPlatformProvider platform, CenterDepthSource centerDepth, GLDevice gl, DiagnosticReporter diagnostics, UniformReplayErrorSink replayErrors) -> UniformBuildResult`; resolver is required immediately after configuration, borrowed from Phase 5's pure `FixedSamplerPolicies.resolver()` and paired with compilation's appB3 policy; required P7-owned replay observer follows diagnostics, no old overload/default/no-op. Closed `Success(UniformRuntime runtime)` / `Failure(String diagnosticId)`. Creation installs current `PublishedRegistry.generation`; success transfers sole runtime lifecycle, failure has no runtime, GL work or callback; resolver and observer retention/release follow §§2.2/4.14 through successful terminal retirement | Phase 7 composition/reload; R7-10 and R25-1 adopted, fresh PASS owed |
 | `UniformRuntime` / `UniformResetReason` / `RegistryGenerationAdoptionResult` | exact §2.2 callable shape: `adoptRegistryGeneration(long, UniformResetReason) -> RegistryGenerationAdoptionResult`; `fixedExpressionInputSchema() -> FixedExpressionInputSchema`; `beginFrame(FrameBeginInput) -> FrameBeginResult`; `events() -> UniformEventSink`; `samplerParticipant()`, `builtInParticipant()`, and `customParticipant() -> ProgramBindingParticipant`; `centerDepthMacroContributor() -> MacroContributor`; `installCustomUniformBridge(CustomUniformBridge) -> void`; `reset(UniformResetReason) -> void`; `retire(UniformRetirementReason) -> UniformRetirementResult`. Adoption results remain `ADOPTED`, `ALREADY_CURRENT`, `REJECTED_RETIRED_GENERATION`. Reset reasons are exactly `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`, `WORLD_EPOCH`; adoption accepts the first three, direct reset only `WORLD_EPOCH`; invalid pairings/null fail without mutation. Live adoption uses the reacquired accepted generation before new use, equality-only identity and §4.14.1 state scopes. World reset separates final old-world from first new-world use. Custom bridge installation remains non-null, pre-use, first-instance-wins/idempotent; non-terminal transitions retain it, retirement releases it. No `CLOSE`, `reset(CLOSE)` alias or runtime `close()` remains | Phases 7, 8, 9, 11, 13 |
 | `UniformRetirementReason` / `UniformRetirementResult` / `UniformRetirementRejection` | exact §2.2 algebra and complete §4.14 semantics: reasons `UNPUBLISHED_ABORT`, `REPLACEMENT`, `SHUTDOWN`; results `Retired()`, `AlreadyRetired()`, `Rejected(WRONG_THREAD\|ACTIVE_CALLBACK)`. Render-thread-only, terminal/idempotent, synchronous non-GL cleanup without any barrier/provider/service call. Wrong thread precedes already-retired, then active-callback rejection; rejection leaves state/ownership unchanged. Final callback precedes retirement; candidate abort requires no publication, replacement follows actual old-barrier invalidation, shutdown precedes Phase 4 atomic teardown, all precede borrowed-service disposal. Cached locations/plans/values, active token pair, pending batches and all provider/service/bridge references are dropped, not closed/deleted. Every retained operational capability is permanently guarded as §4.14.2 specifies; retirement is never generation adoption or shaders-off reset | Phase 7 composition/abort/replacement/shutdown; R7-11 adopted, fresh PASS owed; all retained-capability consumers |
 | `FrameBeginInput` / `FrameBeginResult` | input schema plus `ACCEPTED`, `DUPLICATE`, `REJECTED_STALE_FRAME`, `REJECTED_GENERATION`; only accepted mutates, duplicate is a safe no-op for a live runtime, rejection forbids shader draw; retired runtime always returns `REJECTED_GENERATION` before duplicate or identity handling | Phase 7 |
+| `UniformRuntime.frameTiming(long registryGeneration,long frameId) -> Optional<UniformFrameTiming>` | exact immutable §2.2 fields and §4.6 current-frame/epoch/generation/retirement/thread semantics; actual accepted input plus actual post-update owner counters, no GL/parallel clock or allocation on unqueried frames | P7 finalized capture view; P2 evidence through P7 |
 | **Frame-begin ordering contract** | `beginFrame` completes sampling, previous snapshots and center-depth read before any Phase 5 resize/clear; distinct later post-camera hook captures current matrices once, never ordinal-zero clear | Phase 7; integration review |
 | `UniformEventSink` and immutable sample records | exact §4.2 schemas; world/frame/tick identity; finite/range validation; copy/absence/fallback rules; held-light old-mode mapping; next-activation vs immediate-if-active policy while live; survives non-terminal reset, but every retained sink rejects after retirement with `IllegalStateException` before mutation or service/GL access (§4.14.2) | Phases 7, 8, 9, 13 |
 | `SamplerRepointParticipant` | exact §4.9 shared-resolver operation/results and plan-reuse rules; unchanged `afterBind(ResolvedProgramDescriptor, BarrierContext, BoundProgramUniformAccess)`; effective `binding.samplerLayout()` plus `context.stage()/band()`, never child state; Ready exact-name/full-shape rows become ascending-unit then fixed-name declaration-order integer uploads; Invalid retains validation evidence and degrades only the effective program's sampler participant without uploads or replacement mapping; existing absent-location, deduplication, cache/activity-token and §4.11 error semantics remain while live; retirement first rejects every retained callback with `Degraded`/`phase6.runtime.retired` without resolver, lookup, upload or service access (§4.14.2), and the stale pipeline must not draw | Phase 4 composition via Phase 7; R7-10; R7-11 terminal guard |
@@ -1659,8 +1824,10 @@ turn a future producer into optional work.
 | `centerDepthMacroContributor` | always `MacroContribution.Empty` under D-P6-1 | Phase 3/4 materialization |
 | Authenticated current-atlas adapter | exact §4.12 P7 `AtlasBindingSink`/opaque evidence → P13 Known/Unknown query → existing `updateAtlasSize(Int2)`; reset/non-atlas `(0,0)`, stale evidence no mutation, immediate active/cached inactive behavior and retired-sink rejection | Phases 7/13, adopted/unverified |
 | Governing `entityColor` producer | §4.12 Phase 7 hurt/flash scoped values at v0.1, immediate update/nested restoration independent of Phase 9 alias IDs; neutral before installation is degraded bring-up, not milestone deferral | Phases 7/9 |
+| `UniformReplayErrorSink` / `UniformReplayReport` | exact §2.2 `void accept(UniformReplayReport report)` and immutable `(ProgramUniformCacheKey program, List<ReplayAwareGLError> errors)`; required final factory input after diagnostics, P7-owned/borrowed through retirement; complete §4.11 cardinality, order, original-error preservation, honest false cases, synchronous barrier/immediate delivery and failed-delivery containment; P1 owns verdict type/law, P6 replay/disable, P7 copies/classifies/escalates, P2 flattens the values into current `/4` `gl_errors` | P7 composition/observation, P2 through P7 |
+| P8 shadow-independent celestial provider receipt — D-P6-37 | §4.2: P7 mod provider uses CelestialMath.angles before camera, then actual associated main camera/current frame/rotation through CelestialMath.sample at H-SKY-02, irrespective of shadow demand/availability; real shadow uses same math before activation, unchanged P6 events | P7/P8 |
 
-The exact external schemas and semantics incorporated above from §§2.2, 4.2, 4.9, 4.13, and 4.14 are
+The exact external schemas and semantics incorporated above from §§2.2, 4.2, 4.9, 4.11, 4.13, and 4.14 are
 binding parts of §5. Every consumer-visible API, schema, or semantic change to those incorporated
 declarations must update the corresponding §5 row in the same document revision; a reference that
 remains textually unchanged does not waive that synchronization requirement.
@@ -1674,7 +1841,7 @@ remains textually unchanged does not waive that synchronization requirement.
 | module layout, C-1…C-4, package placement | pure engine/runtime plus mod.glue providers |
 | `GLDevice.uniforms()` overloads and `UniformLocation.isAbsent()` | all contract-authorized typed uploads and absent-location cache |
 | `FramebufferService.readDepthPixel` | synchronous v0.1 center-depth sample |
-| `GLDevice.drainErrors` and `GLError` | §4.11 attributed replay |
+| `GLDevice.drainErrors`, `GLError`, `ReplayAwareGLError` | §4.11 cached replay and exactly one honest verdict per original triggering error; P1 owns immutable value and true/false attribution law; P6 publishes via required P7 observer without changing GL surface |
 | `RecordingGLDevice`, `ScriptedResponses.depthPixel/glError`, profiles | §8 headless tests |
 | diagnostics/log channel | isolated warnings and escalation |
 
@@ -1684,12 +1851,50 @@ Existing Phase 1 overloads and the readback verb are sufficient for every Phase 
 
 | Phase 3 §5 contract | Use |
 |---|---|
-| `PackConfiguration`, schema/fingerprint discipline | accept exactly `PackFrontEnd.CURRENT_SCHEMA_VERSION` (18 after the IR-03/24 follow-on); reject every other schema, including 17, before derivation, no fabricated defaults or inferred upgrades |
+| `PackConfiguration`, schema/fingerprint discipline | accept exactly `PackFrontEnd.CURRENT_SCHEMA_VERSION`, with equal containing, nested IdMappingInput and inspection schemas; reject every other schema before derivation, no fabricated defaults or inferred upgrades |
 | closed `ResourceRequirements` algebra | center-depth enablement and smoothing half-lives with published defaults/order |
 | `DeclaredUniformCatalog`, `DeclaredUniform`, `DeclaredGlslType`, attributed locations | final post-materialization declaration/type provenance; consumed through Phase 4's merged effective layout without reopening source |
 | reserved `phase6.centerDepthSmoothRedirect` contributor | deliberately returns Empty |
 | `CustomExpressionDecl` | Phase 11 bridge inputs; Phase 6 does not parse |
 | materialization/catalog fingerprints | layout and program-cache provenance through Phase 4 |
+
+**Current schema23 receipt — D-P6-36.** Receive P3's typed-selector amendment and exact current
+containing/nested-ID/inspection schema23 with MaterializedSource-v23 before derivation/reuse.
+Selector ranges and BLOCK alternate provenance remain P3/P9-owned; P6 neither selects nor parses them.
+Nine trees/projectionVersion1, same-load assets, options and native source contracts remain.
+D-P6-35 and other prior numeric receipts are historical, not alternate current admission.
+
+**Historical schema21 receiver receipt — D-P6-26, 2026-09-08 (unverified).** P3 R55 changes
+the nested configuration to payload-free `ScreenProfileEntry()`, exact external
+`TEXTURE_RECTANGLE` mapped to existing `TextureTarget.RECTANGLE` (bare `RECTANGLE` invalid),
+and a usable source configuration surviving mandatory decode/include validation in base OR
+an explicit OVERRIDE; empty disabled folders alone are not usable sources. P6 receives the owner's
+current configuration/materialization identity without parsing those fields or sources.
+Containing/nested/inspection versions all equal CURRENT_SCHEMA_VERSION (=21 for this receipt).
+The following D-P6-24 receipt is historical as to version; its D-P3-69 assets and nine-tree
+metadata meanings remain binding and unchanged.
+
+**Schema20 receiver receipt — D-P6-24, 2026-09-08 (unverified).** Adopt P3
+§0.62/D-P3-69/§5; earlier current-schema assertions and the schema19 receipt below are
+historical version adoptions. Require containing and nested `IdMappingInput` schema20
+before derivation/reuse. The required non-null `assets` after `sources` is the exact
+same-load P3 capability paired with the exact containing `PackIdentity`, never a foreign
+load even if structurally equal. Carry the owner's metadata-derived configuration identity
+unchanged through P4/P7 handoffs, with no dummy fields, empty-manifest upgrade, capability
+reconstruction or resource-epoch relabeling. P6 acquires/decodes no binary assets.
+Center-depth, half-lives, Empty contribution, merged final catalog and event/upload semantics
+are unchanged. Any inspection retains only P3's actual ninth canonical assets metadata
+section, digest strings via TextHash, original eight meanings and projectionVersion=1;
+no bytes/cursors/providers enter it. P13 owns optional owned-sidecar-only recovery;
+other P3 safety/bounds/index/container/source/configuration errors remain fatal.
+Historical authority/reviews stay intact; fresh owner/receiver review and IR-01 remain.
+
+**Schema19 receiver receipt — 2026-09-07:** adopt P3 D-P3-68/§0.61 and §11 migration.
+Containing/nested schema and configuration/materialization identity change; center-depth,
+half-lives, singular Empty contribution, merged final catalog, events and upload ownership
+do not. P6 consumes the effective P4 layout, never native source/topology parsing or old
+translator success. Historical schema18 receipts are superseded only for current consumption;
+fresh producer/receiver reviews and IR-01 remain, with no runtime or PASS claim.
 
 #### Phase 4
 
@@ -1708,7 +1913,7 @@ Existing Phase 1 overloads and the readback verb are sufficient for every Phase 
 
 Phase 6 never bypasses `PublishedRegistry.barrier`. Phase 4 binds its retained selection and invokes
 exactly the three callbacks; no Phase 6 operation selects or activates a program independently
-(`docs/phase4/v1/PHASE_4_DOC.md:1789-1790`, “calls three participants”).
+(`docs/phase4/v1/PHASE_4_DOC.md:1787-1788`, “invoke sampler, built-in, custom in that order”).
 
 For IR-18, P7's v0.5 non-fullscreen adapter sends `updateInstanceId(i)` for each prepared
 native copy and restores the saved preceding value (outer zero), not unconditional zero in
@@ -1728,7 +1933,7 @@ P2 still counts recorded errors against conformance.
 | `FixedSamplerPlanResult` / `ResolvedSamplerBinding` | exact `resolve(ProgramSamplerLayout, StageId, StageBand)` result `Ready(List<ResolvedSamplerBinding> bindings, FixedSamplerPolicyFingerprint policy)` or `Invalid(SamplerLayoutValidation reason)`; row `(String exactName, DeclaredGlslType.Sampler shape, int unit)`; complete §4.9 semantics incorporated, with no Phase 6 unit policy, physical handle selection or texture-binding operation |
 
 These existing Phase-5-owned interfaces are published at
-`docs/phase5/v1/PHASE_5_DOC.md:2360` (“no second map or free-unit allocation”), incorporating
+`docs/phase5/v1/PHASE_5_DOC.md:2726` (“no second map or free-unit allocation”), incorporating
 §§2.4/4.12.1. The user-authorized R7-10 adoption adds this pure policy dependency to the maintained
 Phase 6 architecture; it does not silently change RC3's original declared dependency graph.
 
@@ -1745,7 +1950,8 @@ not edited by this owner.
 
 #### R7-11 adoption and remaining lifecycle gates
 
-R7-11 at `docs/phase7/v1/PHASE_7_DOC.md:2322-2330` (“its owner must reconcile that rule”)
+R7-11 at `docs/phase7/v1/PHASE_7_DOC.md:4038-4049` (the adoption-time quote “its owner must
+reconcile that rule” is historical; current bytes state “Phase 6 removed reset(CLOSE)”)
 is adopted here by §§2.2/4.14/5.1, **pending fresh whole-document Phase 6 PASS**. No new Phase 4
 operation is needed: consume its existing old-token invalidation and actual
 `Accepted`/`Rejected`/`RecoveredOff` publication outcomes under its still-open owner-review gate.
@@ -1755,9 +1961,11 @@ and receiver-adopted/unverified; this coordination does not replace fresh whole-
 
 **Remaining gates:** Phase 8 §§0.7–0.8 now adopts R7-12/R7-13 and Phase 3 §0.55 publishes
 the required companion input. Phase 1 package/native-configure and Phase 3 lossless/direct
-projection grants likewise exist; they are not supplied or verified by retirement. Typed suffix
-authority, jcpp permission, native legacy source preservation and every affected owner's fresh
-verification remain distinct. Phase 7 retains provider/service adapters through final use and
+projection grants likewise exist; they are not supplied or verified by retirement. Adopt the
+2026-09-07 `docs/decisions/U1_TEXTURE_SAMPLING.md` correction: numeric discriminators and
+P13-owned sidecars remain, but no unspecified key-suffix parser or typed suffix grant is required.
+jcpp permission, native legacy source preservation and every affected owner's fresh verification
+remain distinct. Phase 7 retains provider/service adapters through final use and
 Retired/AlreadyRetired even when texture/shadow owners retire earlier; no invented P6 barrier/
 close hook or early disposal breaks that ordering.
 
@@ -1771,7 +1979,7 @@ historical reviews do not certify the current coordinated owner bytes or waive �
    complete immutable `DeclaredUniformCatalog`: exact name, closed structural GLSL type, declaring
    stage, attributed identifier location, and the materialization-linked fingerprint. It excludes
    uniform blocks and never claims driver activity
-   (`docs/phase3/v1/PHASE_3_DOC.md:1115`). Round twenty's literal PASS makes this a valid dependency
+   (`docs/phase3/v1/PHASE_3_DOC.md:1435`). Round twenty's literal PASS makes this a valid dependency
    input (`docs/phase3/reviews/PHASE_3_REVIEW_20.md:58`–`:67`).
 
 2. **Phase 4 — merged layout, lookup, and activity granted.** Phase 4 merges equal structural types,
@@ -1780,7 +1988,7 @@ historical reviews do not certify the current coordinated owner bytes or waive �
    retainable operation-free token. Lookup delegates privately to Phase 1; returned locations live
    only within the publication generation; token invalidation precedes every later activation,
    release/off/replacement/teardown
-   (`docs/phase4/v1/PHASE_4_DOC.md:1373`–`:1375`). Round eighteen's literal PASS verifies the
+   (`docs/phase4/v1/PHASE_4_DOC.md:1910`/`:2131`). Round eighteen's literal PASS verifies the
    changed interface (`docs/phase4/reviews/PHASE_4_REVIEW_18.md:57`–`:70`).
 
 No `ProgramHandle`, source string, or parallel declaration parser is assumed. The provisional
@@ -1811,7 +2019,8 @@ RC3's stated default—Candidate A when the check is inconclusive—without edit
 | uniform layout/type conflicts with Appendix D | 2 | disable only the mismatched uniform; attributed diagnostic; do not coerce |
 | Phase 5 resolver returns `Invalid(SamplerLayoutValidation)` | 3 | retain complete typed evidence in diagnostic; return existing Phase 4 `Degraded` for that effective program's sampler participant; no sampler upload or replacement map, unrelated uniform scopes unchanged |
 | sampler plan maps one location to conflicting units | 3 | sampler participant degrades that program; do not issue ambiguous integer uploads |
-| batched GL drain is non-empty but replay is clean | 3→4 | mark unattributable, disable no uniform, rate-limit; persistent condition handed to broader pack-level escalation |
+| batched GL drain is non-empty but replay is clean | 3→4 | mark unattributable, disable no uniform; rate-limit only ordinary logs, deliver every typed report and hand recurring results through P7 to existing broader escalation |
+| replay observer rejects/throws or receiving storage loses evidence | 5 guard / capture failure | §4.11 retains pending originals, latches `phase6.replay.delivery.failed`, stops new uploads; existing barrier Degraded or immediate exception reaches P7 recovery; no guessed disable, silent loss or COMPLETE |
 | required capability/texture-unit count fails at init | 4 | pack off through existing capability gate; no Phase 6 GL work |
 | provider throws or returns non-finite/out-of-range data | 2/2a | catch at seam, retain last valid affected cell or neutral on first sample, diagnose once; unrelated cells continue |
 | immediate signal arrives with no current Phase 4 activity token | normal | replace the cell but issue no GL call; next activation uploads it |
@@ -1841,6 +2050,7 @@ state itself. Those would violate Phase 4 and §G4.6 ownership.
 | injected Phase 5 fixed-sampler resolver | pure; plan resolution inside render-thread `afterBind` on plan-cache miss, with immutable results reused |
 | `beginFrame`, all event methods, all barrier participants | render thread only |
 | `UniformPlatformProvider` / `CenterDepthSource` production implementation | render thread only |
+| `UniformReplayErrorSink.accept` | synchronous render-thread-only under outer-operation guard, no GL/provider/lifecycle/reentrant work; borrowed through final use and successful retirement |
 | smoothing, inverse, catalog planning in headless tests | test thread; no affinity |
 | custom bridge evaluation | Phase 11 may prepare pure expression plans elsewhere, but activation/evaluation and upload occur on render thread at v0.4 |
 | generation adoption for pack/registry replacement or GL-context loss | render thread after accepted publication and authoritative-generation reacquisition, before replacement use |
@@ -1909,7 +2119,7 @@ Minecraft, LWJGL, display, pack source, or image is needed.
 | `BarrierOrderTest` | sampler → built-ins → customs after recorded program use; fixed-function outcome invokes none |
 | `DynamicSignalUploadTest` | entity/instance/fog changes upload without rebind while token current; invalidated token performs no GL call and next activation catches up |
 | `UploadErrorIsolationTest` | batched failure triggers cached replay, one reproduced name disabled, providers not re-entered, siblings remain |
-| `ForeignGlErrorTest` | non-empty batch followed by clean replay disables nothing and rate-limits |
+| `ForeignGlErrorTest` | non-empty batch followed by clean replay disables nothing; every original error remains false in typed delivery even while WARN logging is rate-limited; recurring reports reach existing broader escalation |
 | `CenterDepthDecisionTest` | macro contributor always Empty; one read at exact center; disabled when undeclared; no read on unavailable dimensions |
 | `NotifierCoverageTest` | every signal enum has a producer-audit row and a non-null sink method; `blendFunc` declaration never needs listener assignment |
 | `FixedExpressionInputSchemaTest` | construction-time immutability; catalog-version change on any name/type change; exact positive type for every permitted Appendix D name; all five D.4 names plus `fogMode`/`fogColor` absent; unknown exact name absent |
@@ -1922,9 +2132,13 @@ Minecraft, LWJGL, display, pack source, or image is needed.
 | `CustomCounterContractTest` | each negative and each ledger-mismatched completed/aborted counter discards every accepted command with zero GL, emits the stable diagnostic and Phase 4 activation-scoped degradation, carries nothing over, and retries only through a fresh next-activation refresh |
 | `ResetLifecycleTest` | initial generation installed; live replacement adoption precedes frame/activation; equality is idempotent only while live; retired generation input rejects; generation/context/world reset scopes match §4.14.1; no stale location use; reset/adoption never retires the runtime |
 | `UniformRetirementTest` | unpublished candidate can retire without publication; old runtime retires after replacement invalidation while new runtime adopts and works independently; shutdown retires before atomic teardown; every reason follows final restoration/callback and precedes borrowed-service disposal; no GL/barrier/provider/diagnostic-service call during retirement; wrong-thread and reentrant active-callback rejection preserve usable state until legal retirement; repeat returns AlreadyRetired without cleanup; old sink, all three participants, current/new-generation adoption, duplicate beginFrame and custom install/submission cannot mutate, upload or revive afterward |
+| `UniformFrameTiming` observable query | before-first/stale/future/mismatched/reset/adopted/retired returns empty; wrong thread fails even retired; accepted report matches values actually uploaded, duplicate query/begin does not advance, wrap boundaries match real cells, detached record survives but cannot authenticate a new epoch; unqueried path allocates no timing record |
+| `UniformReplayEvidenceBoundary` | repeated equal trigger errors survive in exact list/callback order and retain original objects; mixed true/false verdicts correlate per original error, never per batch label; clean/ambiguous/foreign/different-kind replay cannot become true; cleanup drains remain false and probes are not double-counted; barrier and immediate callbacks complete before return; rejecting/throwing/overflowing observer prevents COMPLETE, retains available originals and cannot be swallowed by P4 participant containment; subsequent positions do not upload, retirement rejection retains observer and successful retirement releases it |
+| `CelestialPolicyProviderBoundary` | same retained frame sun/sky values feed pre-camera shadowAngle and later actual main-camera computation; day boundary s=0.5 agrees, translated main modelView does not translate w=0 vectors, stale invocation/camera association rejects before compute; existing P6 sample schemas and sky/shadow publication/restoration moments remain unchanged |
+| `CelestialWithoutShadowDemand` | v0.2 zero shadow minima and disabled/unavailable shadow estate still deliver correct main eye-space sun/moon/light/up vectors; stale frame/camera association rejects, translation alone leaves w=0 values unchanged; no shadow allocation or fabricated Ready plan |
 
 `RecordingGLDevice` is the assigned mechanism
-(`docs/phase1/v14/PHASE_1_DOC.md:4146`, “recorded-GL run”). Scripted depth answers and GL errors
+(`docs/phase1/v14/PHASE_1_DOC.md:3019`/`:5516`/`:5756`, “recorded-GL run”). Scripted depth answers and GL errors
 exercise the two otherwise-driver-shaped paths.
 
 ### 8.2 Conformance coverage
@@ -1938,13 +2152,16 @@ exercise the two otherwise-driver-shaped paths.
   (`docs/design/v2.0-RC3/DESIGN.md:669`).
 - **T2 classic packs:** compare wetness/brightness rounding, previous-frame motion, unit-11 depth,
   and CPU center depth against OptiFine G6 within Phase 2's tolerance.
-- **v0.2 shadow scenes:** cover celestial moment and all four shadow matrices.
+- **v0.2 celestial/shadow scenes:** cover main celestial delivery with zero shadow demand and
+  disabled/unavailable shadows, plus real shadow celestial timing and all four shadow matrices.
 - **v0.3 ID scenes:** held/entity/block-entity scoped values and reset to 0.
 - **v0.4 custom scenes:** compile against the fixed schema before any activation; built-ins are
   visible before custom evaluation; all seven conservative exclusions remain absent; bool values
   encode correctly; a uniform declared in only one linked program accepts there and skips without
   warning in the other.
-- **v0.5 atlas/instance scenes:** atlas-size changes and instance sequence 0…N.
+- **v0.5 atlas/instance scenes:** atlas-size changes and N total prepared copies with IDs
+  `0…N−1`; N=1 is exactly one draw with ID0. Outermost fullscreen restores neutral0;
+  genuinely nested prepared submissions restore their saved parent value on every exit.
 
 No pack or rendered image enters the repository. Derived artifacts follow the hash/provenance policy
 at `docs/design/v2.0-RC3/DESIGN.md:691`.
@@ -2019,7 +2236,7 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
 | D-P6-9 | GL-error disable scope is uniform + effective program + generation | rung 2 says one uniform only; avoids cross-program over-degradation |
 | D-P6-10 | upload matrices unconditionally; exact-bit skip other types | Appendix D cadence contract |
 | D-P6-11 | unused terrain metrics are explicit zero providers | preserves declared types/default behavior without inventing a source |
-| D-P6-12 | `blendFunc` is zeros while blend is disabled; an effective Phase 4 lock is overlaid before upload | makes the value match the state Phase 4 applies after participants despite barrier ordering; matches verified disabled-state shape |
+| D-P6-12 | Historical blend projection before later lock application; superseded by D-P6-33 | Disabled blend still yields zeros; current values come from observed effective state after successful pre-participant acquisition |
 | D-P6-13 | per-draw/celestial/fog/atlas signals upload immediately only under a Phase-4-invalidated activity token | satisfies hook-time cadence and `instanceId` between-draw semantics without retaining a program handle or uploading into a different program |
 | D-P6-14 | seed each temporal smoother from its first valid target | prevents an invented startup/world-transition fade; subsequent samples use the exact tick-domain EMA |
 | D-P6-15 | publish one immutable exact-name fixed-input schema at the Phase 6 catalog version, excluding all D.4 names plus `fogMode`/`fogColor` | gives Phase 11 load-time types without depending on a first activation and preserves the conservative authoritative-source union |
@@ -2031,6 +2248,21 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
 | D-P6-21 | Reconcile R7-10..13 grants and retain permanent retirement after final use with rejection retaining services | IR-04/10; owner-designed is not freshly verified |
 | D-P6-22 | Adopt P3 schema18 and its changed configuration fingerprints through the same P4/P7 handoffs | Locale publication, Internal session options and old-light projection change configuration identity, not P6 event/upload ownership; no schema17 reuse |
 | D-P6-23 | Consume P7's v0.5 prepared-submission instance sequence and saved-parent restoration through the existing immediate event sink | Per-copy instance uploads do not rotate history, sample providers or refresh expressions; P7/P8 retain traversal and failure ownership (IR-18) |
+| D-P6-24 | 2026-09-08: adopt P3 D-P3-69 schema20, matching nested IDs and exact same-load assets/configuration identity in §5.2 | Supersedes older current-version assertions only; no depth/contribution/upload changes, binary acquisition or historical PASS promotion |
+| D-P6-25 | Grant actual accepted-frame timing query to P7/P2, 2026-09-08 | No inferred shader counters, no GL, no second clock; only authenticated P7 capture changes supplied seconds, smoothing remains ticks |
+| D-P6-26 | Adopt P3 R55 schema21 and payload-free profile metadata, 2026-09-08 | Current equality across configuration/nested ID/inspection/materialization; retained assets/nine-tree meanings unchanged |
+| D-P6-27 | 2026-09-08: grant required P7-owned replay sink and immutable per-drain report, synchronous barrier/immediate evidence and failure containment | R25-1; P1 verdict law preserved, no logging loss, inferred attribution, facade verb or extra participant |
+| D-P6-28 | 2026-09-08: receive P8 pure angular result through P7 mod provider and later actual main camera | Pre-camera scalar needs no fabricated frame vectors; existing P6 records and publication/restoration remain unchanged |
+| D-P6-29 | 2026-09-08: all active instance instructions require N total/0…N−1 including N=1 | R25-2; retain fullscreen neutral-zero versus nested saved-parent restoration |
+| D-P6-30 | 2026-09-08: expression union is resolved upstream; verification profiles are retired historical machinery | R25-N1/N2; preserve original claims/receipts while current RESEARCH and §0 govern |
+| D-P6-31 | 2026-09-08: receive P2 `/4` envelope for unchanged timing/replay values, superseding prior dated `/3` wire references | P2 owns profile/comparison encoding; no P6 schema, factory, upload or verdict-law change |
+| D-P6-32 | 2026-09-08 receive P1 D-P1-57/P4 D-P4-34 effective blend observation through the existing P7 bridge | Suppressed setter arguments are not state changes; lock-owned successful changes precede built-ins, with existing activity/replay/failure law |
+| D-P6-33 | R27 C1: synchronize all active traces with P4's pre-participant lease acquisition and actual effective-state receipt | No predictive BlendSpec overlay; predecessor invalidation and failed-acquisition containment remain P4-owned |
+| D-P6-34 | R27 N1: qualify historical LGPL input label against observed pinned GPLv3 root LICENSE | No copied implementation; applicable per-file licence and notices must be established before future reuse |
+| D-P6-35 | Receive P3 D-P3-72 schema22/current-constant admission and materialization identity | No mapping parser or era selection; other P6 algorithms and historical evidence unchanged |
+| D-P6-36 | Receive schema23/current-constant typed-selector identity and MaterializedSource-v23 | No new P6 parser, data provider or sampling algorithm; prior numeric receipts historical |
+| D-P6-37 | Receive P8 D-P8-38 pure CelestialMath and P7 shadow-independent main-sky delivery | Same formula/current-frame main camera, no Ready-plan dependency; real-shadow before-activation timing and unchanged P6 event validation retained |
+| D-P6-38 | Review32 C-1: synchronize the §5.1 `UniformReplayErrorSink`/`UniformReplayReport` row with D-P6-31's current `/4` envelope | §5.1 ledger text repair: "P2 flattens the values into current `/4` `gl_errors`" replaces the retired `/3` clause; no §4.11 semantic, schema, factory, upload or verdict-law change |
 
 ### 11.2 Contradictions and contract gaps found
 
@@ -2053,12 +2285,10 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
 7. **Eye-brightness rounding is under-specified by the published pack document.** D-P6-4 fixes a
    deterministic, reference-supported rule and explicitly leaves T2 able to correct it through a
    Phase 6 fix-up if OptiFine evidence disagrees.
-8. **RESEARCH custom-input lists disagree internally.** Appendix D labels all five D.4 values
-   “excluded from custom-uniform expressions” (`docs/research/v1/RESEARCH.md:1369`), while §3.4/F.6
-   enumerate `entityColor`, `entityId`, `blockEntityId`, `fogMode`, and `fogColor`, omitting
-   `blendFunc`/`instanceId` (`docs/research/v1/RESEARCH.md:301`). This design follows the required
-   Appendix D whole-inventory heading and excludes all D.4 values, plus the separately named fog
-   pair. The discrepancy is requested upstream below rather than hidden.
+8. **RESOLVED UPSTREAM — historical custom-input discrepancy.** Earlier D.4 and §3.4/F.6
+   lists differed; dated §0 records preserve that history. Current RESEARCH §3.4 and F.6
+   explicitly exclude all five D.4 dynamics plus `fogMode`/`fogColor` and state that F.6
+   does not narrow D.4. The existing seven-name schema/view contract is unchanged.
 9. **CLOSED IN CURRENT BYTES, FRESH VERIFICATION OWED — Phase 11 bridge publication.** Phase 11
    identified the absent compile-time schema, boolean command, and normal per-program absence
    outcome (`docs/phase11/v1/PHASE_11_DOC.md:894`–`:910`). Sections 4.13 and 5.1 now publish the
@@ -2080,6 +2310,24 @@ No contradiction with RESEARCH.md's authority was silently resolved.
 
 ### 11.3 Items handed onward
 
+**R39-2 handoff (2026-09-08):** P7 consumes `frameTiming(long,long)` and the exact
+`UniformFrameTiming` record from §§2.2/4.6/5.1. P7 alone installs/restores the harness-only
+time/tick control, supplies real accepted values, validates the current epoch and captures
+the report before its frame view expires. P2 owns the current `/4` fields and comparability per
+D-P6-31/D-P6-38 (the D-P2-39-era `/3` wording is historical); P6 makes no
+claim that a manual G6 oracle has a controlled clock. Fresh owner/receiver reviews remain.
+
+**R25-1 / P8 receiving handoff (2026-09-08, unverified):** P7 supplies the required final
+`UniformReplayErrorSink replayErrors` argument after `DiagnosticReporter diagnostics`, copies
+every report under §4.11 before return, classifies without positive attribution, and routes
+ordinary escalation independently of capture/log suppression. P2 retains all entries in current
+`/4` gl_errors with every error failing T0 (the D-P2-39-era `/3` envelope is retired history);
+rejected/lost/overflowed capture cannot COMPLETE.
+P7 consumes barrier delivery-failure degradation and immediate exceptions before draw success.
+P5's §5.5 full factory request receives this exact arity only; P5 never owns the observer.
+P7/P8 also consume §4.2's pure angular provider route and actual post-camera association.
+Fresh P6 and affected receiver review is owed, including P7 R38; no self-PASS or implementation.
+
 **To Phase 7:** implement frame sampling before resize/clear and distinct post-camera matrix
 capture exactly once; supply frame/fog/blend/entityColor (v0.1), celestial (v0.2) and scoped events;
 compose the three participants in Phase 4's fixed positions; add actual hook coordinates beside every
@@ -2088,12 +2336,13 @@ Inject `FixedSamplerPolicies.resolver()` immediately after configuration in the 
 paired with compilation's appB3 policy. R7-10 and R7-11 are adopted here but are not verified grants.
 Migrate terminal reset callers to `retire(UNPUBLISHED_ABORT|REPLACEMENT|SHUTDOWN)` under §4.14;
 never alias CLOSE, retire the newly adopted runtime as if it were the old one, or treat
-`Rejected` as disposal. Keep providers/adapters alive until `Retired`/`AlreadyRetired`, even when
+`Rejected` as disposal. Keep providers/adapters and the replay observer alive until `Retired`/`AlreadyRetired`, even when
 their texture/shadow owner retires earlier. Current sibling ledgers adopt these contracts;
 fresh whole-document owner verification and §5.2's remaining authority gates still apply.
 
-**To Phase 8:** supply all four shadow matrices and celestial/shadow-light values after shadow-camera
-setup through the v0.1 event interface. A singular inverse disables only that inverse.
+**To Phase 8/P7:** use the single P8 pure celestial math for main-sky delivery even without
+shadow demand. Real shadow work still supplies all four shadow matrices and its celestial
+sample before activation through the existing event interface. A singular inverse disables only that inverse.
 
 **To Phase 9:** supply main/off-hand alias IDs/light values plus scoped entity/TE IDs at v0.3,
 with exact nested restoration and outer 0. Share Phase 7's already-v0.1 color scope without
@@ -2127,12 +2376,9 @@ or `ProgramHandle`.
 
 ### 11.4 Requested upstream changes
 
-- **PENDING — RESEARCH.md authority clarification:** reconcile the custom-expression exclusion
-  lists described in §11.2 item 8.
-  The recommended ruling is the one used here: exclude every value that may change between two
-  program activations, including all Appendix D.4 values. Until the authority is clarified,
-  §4.13's conservative union policy remains in force. Resolution requires an explicitly authorized
-  RESEARCH-maintainer action; this Phase 6 maintenance does not claim it.
+- **RESOLVED UPSTREAM — RESEARCH expression exclusions (receipt 2026-09-08):** current
+  §3.4/Appendix F.6 explicitly exclude all D.4 values plus fogMode/fogColor and do not narrow
+  D.4. Historical discrepancy claims remain historical; no new authority edit or schema change.
 - **PENDING, NON-BLOCKING — next DESIGN candidate:** qualify the rejected GPU center-depth
   Candidate B with §5.4's declaration-safe rewrite and fixed sampler-unit prerequisites. D-P6-1
   already selects the fully specified Candidate A, so no current implementation contract depends
@@ -2151,8 +2397,10 @@ or `ProgramHandle`.
   and 5.1 publish the immutable versioned fixed-input schema, closed exact-name types, runtime-view
   conformance, `Bool1` with Phase-6-owned GL encoding, and ordered accepted/skipped/rejected
   outcomes and counts. The §5 change cannot be consumed until a fresh literal PASS.
-- **GRANTED — verification manifest:** `verification/targets/phase-6.json` is data-only, pinned to
-  RC3 selectors and this `v1` artifact, and has driven the Phase 6 review loop.
+- **HISTORICAL, RETIRED — verification manifest:** `verification/targets/phase-6.json` was
+  data-only and pinned to RC3 selectors/this v1 artifact for earlier review rounds. Profiles
+  and their loop machinery were retired and removed on 2026-08-08; current governance comes
+  from this document's §0, not a recreated profile or executable gate.
 
 This maintenance session does not edit `docs/research/v1/RESEARCH.md`, any `DESIGN.md`, or
 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md`; their bytes and authority remain unchanged.
@@ -2168,7 +2416,7 @@ Ordered so each item has one outcome and one test hook.
 | 1 | satisfy §5.2's current Phase 3/4/5 owner-review gates and fresh Phase 6 whole-document PASS, then consume published declaration/layout/access/resolver contracts; coordinate R7-11 caller migration and current Phase 7 owner verification | v0.1 | literal PASS for current owner surfaces; compile-time API test; no adoption claim for ungranted §5.2 dependencies |
 | 2 | create `engine.uniforms` packages and immutable primitive/vector/matrix records under C-1 | v0.1 | seam tests; mutation/finite validation tests |
 | 3 | implement the catalog containing every §4.4 built-in row, with no sampler-name/unit table | v0.1 | `UniformCatalogCompletenessTest`; sampler behavior covered through the real shared resolver |
-| 4 | adapt Phase 3 configuration without source reopening; inject Phase 5's pure resolver immediately after configuration in the exact §2.2 factory call, paired with compilation's appB3 policy | v0.1 | fingerprint/schema/invariant tests; missing resolver fails without GL or local fallback |
+| 4 | adapt Phase 3 configuration without source reopening; inject Phase 5's pure resolver immediately after configuration and required P7-owned replay observer after diagnostics in exact eight-argument §2.2 factory; retain both borrowed services through retirement | v0.1 | fingerprint/schema/invariant and missing required-service failures without GL, callbacks or fallback |
 | 5 | implement provider SPIs and scripted test providers | v0.1 | provider exception/range isolation tests |
 | 6 | implement `UniformCell`, acquisition revisions, frame/tick/signal buckets | v0.1 | cadence table-driven tests |
 | 7 | implement tick-domain scalar/vector EMA exactly as §4.5 | v0.1 | closed-form and quantization tests |
@@ -2180,18 +2428,18 @@ Ordered so each item has one outcome and one test hook.
 | 13 | implement non-terminal generation adoption and effective-provider/generation ProgramCache, plus §4.14 terminal retire algebra/guards; remove CLOSE callers, retire old/unpublished runtimes at the correct boundary and adopt on the new/surviving runtime | v0.1 | ResetLifecycleTest; UniformRetirementTest, including rejected publication not proving invalidation, final callback/service retention and shutdown-before-teardown |
 | 14 | build/reuse sampler integer plans from the sole Phase 5 resolver and effective descriptor/context inside unchanged afterBind; retain deterministic order, locations, cache keys, tokens and error isolation | v0.1 | `SharedSamplerRepointTest`; real resolver/fallback/Invalid/alias/order/skip/generation cases; no physical texture binds |
 | 15 | implement built-in upload plans, exact skip, and matrix-always rule | v0.1 | recorded GL redundant/matrix tests |
-| 16 | implement immutable activation/dynamic attempted batches and Phase 1 attributed replay | v0.1 | reproduced/unattributable/provider-once/token-invalidated tests |
+| 16 | implement immutable activation/dynamic attempted batches, P1 replay and §4.11 ordered report delivery before barrier/immediate return; preserve false cleanup evidence, no probe double-counting; contain observer failure through existing P7 paths | v0.1 | reproduced/unattributable/provider-once/token-invalidated and UniformReplayEvidenceBoundary cases |
 | 17 | implement typed `UniformEventSink` with scoped reset helpers and no nullable listeners | v0.1 | notifier coverage and B6 regression tests |
 | 18 | implement three Phase 4 participants and default custom bridge | v0.1 | barrier order/fixed-terminal tests |
 | 19 | implement the immutable catalog-versioned `FixedExpressionInputSchema`, closed exact-name types, conforming `BuiltInExpressionView`, and custom sink with distinct `Bool1`, `Accepted` / `SkippedAbsent` / `Rejected`, three exact completed/aborted-prefix refresh counts, invalid-counter whole-batch discard with activation-scoped Phase 4 degradation, and stable definition-order batches; exclude every D.4 name plus `fogMode`/`fogColor`, skip active layout/location absence without GL or warning, reject invalid/type/duplicate commands, and keep boolean 0/1 encoding in Phase 6 | v0.1 interface | schema immutability/version/map tests; view conformance; bool encoding; disposition/count/mismatch/order/no-warning tests |
 | 20 | implement `mod.glue` world/frame/center-depth providers with no MC type crossing C-1 | v0.1 | seam test + scripted integration |
 | 21 | wire Phase 7 frame/fog/blend/entityColor/matrix producers against §4.12 | v0.1 | hook audit + recorded frame run |
 | 22 | run recorded-profile gate and the §8.3 Phase 6 implementation gate | v0.1 | all headless tests green on two profiles |
-| 23 | wire Phase 8 shadow/celestial producers | v0.2 | shadow-scene and matrix tests |
+| 23 | wire P8 pure celestial math through P7 main-sky delivery independently of shadow demand, plus real shadow producers | v0.2 | no-shadow celestial, shadow-scene and matrix tests |
 | 24 | wire Phase 9 held/entity/block-entity producers | v0.3 | scoped-ID conformance tests |
 | 25 | install Phase 11 custom bridge against the verified fixed schema/view/typed-command contract | v0.4 | load-time schema before first activation; built-in-before-custom; mixed accepted/skipped/rejected counts/order; rung-1/rung-2 tests |
 | 26 | wire Phase 13 atlas-size producer | v0.5 | atlas reload/bind tests |
-| 27 | wire Phase 7 composite instance loop to values 0…N and restore 0 | v0.5 | recorded multi-draw sequence |
+| 27 | wire Phase 7 composite/prepared instance loop to N total copies, IDs0…N−1; N=1 is one draw; restore outer fullscreen neutral0 or genuine nested saved parent on every exit | v0.5 | recorded multi-draw and nested failure/restoration sequence |
 | 28 | run T1 camera-path/weather/water scenes and T2 classic uniform/sampler comparisons | v0.1 onward | Phase 2 manifests/diffs; no committed images |
 | 29 | measure synchronous center-depth stall and hand baseline to Phase 14 | v0.5 | profiler ledger with declared/undeclared comparison |
 

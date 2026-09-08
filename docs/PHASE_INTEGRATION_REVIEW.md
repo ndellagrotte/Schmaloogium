@@ -1514,3 +1514,420 @@ IR-01 and the preceding unrelated native-source/jcpp/typed-suffix/P10/optional-U
 Changed phase §5 surfaces still require their applicable fresh whole-document verification
 before implementation consumption; this follow-on neither waives those gates nor rewrites
 the original audit's result.
+
+### 2026-09-07 prerequisite-remediation follow-on — U1 authority correction
+
+The maintainer has now commissioned the prerequisite architecture remediation that the
+earlier IR-02–IR-29 commission excluded: fresh independent phase reviews, separate fix-ups,
+owner/consumer grant reconciliation and a final integration review. This authorizes the
+review work; it does not itself resolve IR-01 or permit implementation consumption.
+
+After an independent published-document investigation, the maintainer separately selected
+**“Correct requirement to documented mechanisms”** for U1. The exact narrow ruling,
+primary-source evidence and limits are recorded in
+`docs/decisions/U1_TEXTURE_SAMPLING.md`. Existing numeric `.0`–`.9` duplicate discriminators
+and `.mcmeta` `blur`/`clamp` remain required. The unspecified filter/wrap property-key
+suffix requirement and its future typed-suffix grant are removed through the previously
+requested authority-correction route. Historical research, design, review and prior
+integration text remain unchanged. This does not ratify unrelated sampling defaults,
+malformed-sidecar behavior or modern features.
+
+Phase 3 §0.60/§5/§11 (D-P3-67) and Phase 13 §0.8/§5/§11 (D-P13-26) adopt this correction.
+Phase 4/5/6/7/8 active §5 and applicable §11 ledgers adopt the same scope. Existing typed
+sources, sidecar references, lossless unknown-key declarations and parser behavior remain;
+schema18 is unchanged by this correction alone. No consumer acquires a suffix parser.
+This closes the **U1 authority requirement**, not the texture implementation or its
+independent conformance obligations. Phase 13 separately records its sampling-default/
+error-policy evidence concern; U1 does not decide it.
+
+Settled documentary checks confirmed all 42 mandatory §1/§5/§11 sections, balanced fences
+and unique phase decision-table IDs across fourteen documents, and preservation of the
+271 pre-existing governing-authority/historical-review files and this review's original
+byte prefix. These are structural/preservation checks, not independent whole-phase PASSes.
+
+The separate fresh Phase 1 review is
+`docs/phase1/reviews/PHASE_1_REVIEW_26.md`, **PASS-WITH-CORRECTIONS**. Its native-geometry
+TRIANGLES-input versus fullscreen-QUADS finding requires an owner/consumer repair and
+fresh verification; the review does not clear Phase 1. Native-source completion, jcpp,
+vertex/lifecycle grants, other affected phase reviews and final integration remain due.
+
+Independent permitted preparation ran the unchanged template's `./gradlew --version`
+and `./gradlew build` with the cached Eclipse Adoptium Java25.0.3 toolchain. Gradle9.7.0
+reported `BUILD SUCCESSFUL`; `test` reported `NO-SOURCE`. The remapped template artifact
+is `build/libs/modid-1.0.0.jar`, with `ModType: CRL` and `FMLAT: modid_at.cfg`.
+No source/build configuration was changed and no client, GL experiment, pack capture,
+T0–T3 verdict or human-approved baseline was produced. This build is not shader support.
+
+### 2026-09-08 prerequisite follow-on — native, texture and runtime evidence
+
+The separately approved geometry and sidecar decisions are recorded in
+`docs/decisions/GEOMETRY_PRIMITIVE_COMPATIBILITY.md` and
+`docs/decisions/TEXTURE_SIDECAR_DEFAULTS.md`. They preserve their narrow scope:
+conditional complete-record submission conversion and explicit source-specific sampling/
+atomic recovery, not a renderer rewrite, guessed property suffixes or measured G6 parity.
+
+Owner amendments now supply P1 R26 linked/fullscreen policy, exact jcpp pin/closure admission,
+R10-1 borrowed-input/early compatibility, full synchronous TextureParameters, and P14
+debug activity/package grants. P3 D-P3-68 supplies schema19 native-preserving source and
+explicit source/API precedence. P4 publishes checked actual effective geometryInput;
+P7 grants R10-2 real-drain/lifecycle/declarations; P10 receives the matching grants.
+P13 publishes source-specific strict sidecar recovery, closed failure vocabulary and
+phase13.parameters/v2 plus phase13.sidecar/v1 identity, received by P5/P7/P14.
+All fourteen current documents have schema19 receipts. These are authored/adopted, **unverified**.
+
+The next independent whole P1 review is R27. Two additional focused provisional audits
+have produced concrete current-contract findings, preserved in
+`docs/build/reviews/NATIVE_LIFECYCLE_SEAM_REVIEW_1.json` and
+`docs/build/reviews/TEXTURE_PARAMETER_SEAM_REVIEW_1.json`:
+
+- NS-1: generic attribute0 can override an admitted conventional vertex source; list capture
+  also needs isolation from unrelated enabled arrays. P1 owns transaction correction; P10 receives it.
+- NS-2: cached ModelRenderer display-list playback bypasses chunk RenderList/uploader guards.
+  P10 owns actual capture/lifetime/playback coverage, P7 its required owner10 health/admission.
+- TS-1: P3 closes archive access while publishing texture/sidecar references but no
+  snapshot-bound binary acquisition operation. P13's valid preparation success path and
+  P7 configuration-preserving resource refresh need an explicit producer/receiver contract.
+
+These reports are not full-phase PASSes. Neither historical findings nor pre-existing gaps
+are excused by calling the review patch-only. Main's settled structural/preservation checks
+passed all 42 mandatory sections, fences and unique decision-table IDs; all 271 pre-existing
+authority/historical-review files, this original review prefix and original R26 text survive.
+
+Independent unchanged-template runtime preparation found working direct NVIDIA RTX3080
+OpenGL4.6 at DISPLAY=:0, then an actual pre-menu client crash in JEI/HEI4.33.0 proxy injection.
+The diagnostic launch proves AppClassLoader loads JustEnoughItems while LaunchClassLoader
+loads ProxyInjector, with duplicate Side and SidedProxy definitions across both loaders.
+The current dependency is declared through forced-classpath modLibrary; the precise trace,
+crash path and build/runtime distinction are in `docs/build/READINESS.md`. No source or
+dependency configuration changed, and no menu, shader, pack tier or human baseline passed.
+
+IR-01, fresh individually eligible phase reviews, separate fixes and final integration
+remain open. The implementation prompt has not been narrowed or cleared by this follow-on.
+
+### 2026-09-08 settled correction wave and fresh foundation PASS
+
+P1 round27 independently identified the same array-isolation defect as NS-1. Its original
+PASS-WITH-CORRECTIONS report is preserved at `docs/phase1/reviews/PHASE_1_REVIEW_27.md`,
+with a separate fix-up Resolutions section. D-P1-55 supplies complete affected-state
+isolation/restoration; P10 D-P10-20 and P7 D-P7-32 receive it. P10 D-P10-21 additionally
+specifies whole-source staged ModelRenderer capture, original scale/incarnation, every
+cached-call geometry guard and paired lifetime. P7 R10-6 explicitly grants all eight
+expanded model capture/playback/replacement/deletion CORE owner10 rows and their
+quiescence/preparation/invalidation/retirement placement. P8 receives root-shadow coverage.
+
+TS-1 now has an actual P3 D-P3-69 owner capability: `PackConfiguration.assets()` immediately
+after sources, with exact Acquired/Missing/Unreadable/InvalidReference results and independent
+read-only cursors over shared immutable same-load bytes. Only positively proven optional
+owned-sidecar-only read failures survive for the approved atomic recovery; safety, bounds,
+index/container and shader/configuration/primary duties remain fatal. P13 D-P13-30 consumes
+the bytes and owns one recovery warning; P7 D-P7-33 retains the exact configuration/assets
+through resource-only NONE, not a later same-path archive. Full load alone obtains new pack bytes.
+
+Current configuration, nested IDs and inspection are **schema20** in all fourteen receiving
+contracts. P3's source-free projection gains a ninth assets-manifest section; P2 D-P2-32
+maps it into `[properties] owner.assets`, using the existing typed codec and TextHash for
+digest strings. P4 D-P4-30 preserves that exact same-load projection through resolution
+enrichment. No binary/cursor/provider enters artifacts; projectionVersion1 and unrelated
+capture/golden grammars are unchanged. Dated schema19 native decisions remain historical.
+P14's stale missing-full-conversion status is corrected to its already granted D-P1-52/
+D-P14-23 receipt; optional execution/equivalence and stageable-upload grants stay separate.
+
+The new independent whole-document foundation review
+`docs/phase1/reviews/PHASE_1_REVIEW_28.md` returns literal **PASS**:
+blocking0, correction0, note0. It reviews current §5, confirms R27-1 architecture correction,
+and explicitly distinguishes that result from driver proof or integration clearance.
+P1 is verified on those reviewed bytes; do not propagate its old unverified footer over
+the actual §G1.3 review state. Fresh P2 R39 and P3 R55 whole-document reviews are commissioned.
+Other phases and final §G5.3 integration still require verification; IR-01 remains open.
+
+Settled checks passed all 42 mandatory §1/§5/§11 sections, balanced fences, unique decision
+table IDs and fourteen schema20 receipts. All 271 pre-existing protected files and original
+integration/R26/R27 report prefixes remain unchanged. These checks are document structure/
+preservation evidence only. Baseline build/client failure and candidate jcpp API inspection
+remain separately recorded in `docs/build/READINESS.md`; no shader milestone or tier passed.
+
+### 2026-09-08 R39/R55 correction receipts and renewed verification
+
+The preceding schema20/R28 snapshot is historical, not current implementation clearance.
+P2 R39 and P3 R55 returned PASS-WITH-CORRECTIONS (five and three corrections respectively).
+Separate fix-up sessions appended Resolutions without changing either original report.
+
+P3 D-P3-70 publishes schema21, exact-current containing/nested inspection/ID equality and
+MaterializedSource-v21; payload-free ScreenProfileEntry() uses the existing definitions/
+inference route. Usable explicit dimension-only overrides survive; documented external
+TEXTURE_RECTANGLE maps to the existing typed rectangle target. Assets and all nine
+source-free trees retain D-P3-69 meanings. All fourteen contracts now receive current P3
+ownership; P1 D-P1-56 changes only its §5 receipt and therefore requires R29 after R28.
+P3 D-P3-71 also receives the complete separate P4 enrichment row without changing its snapshot.
+
+P4 D-P4-31 distinguishes requested-slot ownBuild from effective fallback status and changes
+the registry hash domain.
+P2/P7 migrate capture-plan/3 and run-manifest/3, with required ownBuild in manifest program
+rows; older wire majors are not repaired. P6 D-P6-25 publishes actual accepted frame timing;
+P7 D-P7-34/35 specifies authenticated capture-only tick/clock permits, checkpoint0 origin,
+actual acknowledgments and retained timing evidence. Normal gameplay and real host deadlines
+remain unchanged. Installed Cleanroom hook viability and real capture execution are future
+OQ/runtime evidence, not established by these publications.
+
+P2 D-P2-33–38 separates motion document presence from later mandatory execution, preserves
+full subject provenance while excluding only the authenticated subject from external comparison
+identity, completes all six tolerance fields, and requires independent timing comparability
+for uncontrolled manual G6 oracle evidence. No unavailable baseline, calibration, timer or
+compile evidence may become a tier PASS. Scene/2, golden1 and projectionVersion1 remain separate.
+
+The settled fourteen documents retain substantive numbered §0–§12 sections and balanced
+fences. The 271 pre-existing protected files and original integration/R26/R27/R39/R55 prefixes
+remain unchanged. Fresh independent whole-phase verification is now required on this settled
+contract set before the final integration review. No author receipt, structural check or
+older review closes IR-01 or permits implementation.
+
+### 2026-09-08 recovered reviews and celestial/replay correction receipts
+
+The first fourteen-review attempt returned two actual reports and twelve provider
+`usage_limit_reached` infrastructure failures. Independent smaller retries and one resumed
+worker produced three further complete reports. No empty infrastructure result is a phase
+FAIL or PASS. Exact attempted hashes/rounds and recovery outcomes are in
+`docs/build/reviews/ARCHITECTURE_REVIEW_ATTEMPT_1.json`.
+
+P1 R29 is literal PASS (one receiver-scoped note, no P1 correction); P3 R56 is literal PASS
+(no findings). Their current bytes remain exactly those reviewed. P7 R37 is literal PASS
+with one stale scope-label note; subsequent §5 receiving changes below require R38 and are
+not certified by that PASS. P8 R5 requires one correction; P6 R25 requires two corrections
+and records two notes. All five complete independent reports are preserved at their numbered
+phase review paths, with original verdicts/bodies intact and separate fix-up Resolutions.
+
+P8 D-P8-22 separates pure ShadowCelestialAngles from P6's frame-bound CelestialSample.
+The sole compute call now takes the actual main CameraSnapshot and immutable ShadowPlan
+alongside frame/extent. P7 supplies the existing authenticated invocation association;
+the provider obtains shadowAngle before camera capture from the same pure policy, while
+the later eye-space vectors use the actual post-camera matrix and current frame identity.
+No hidden GL query, new camera identity field or changed P6 event record is granted.
+
+P6 D-P6-27 publishes required UniformReplayErrorSink/UniformReplayReport and the eight-argument
+factory, carrying the existing P1 ReplayAwareGLError values in exact original-drain order.
+Delivery precedes barrier/immediate return, preserves repeated observations, separates logging
+from evidence, and retains failed/pending delivery through explicit non-complete containment.
+P7 D-P7-38 owns the collector and final-callback drain; P2 D-P2-39 flattens unchanged values
+into existing /3 gl_errors and never turns evidence loss into COMPLETE. P5's exact factory
+receipt agrees. No new GL verb, fourth participant, attribution inference or wire/schema bump.
+P6's active instance instructions now use N total values 0…N−1; its authority/tooling notes
+and P7's stale /2 scope label are reconciled without rewriting historical records.
+
+Settled structural checks found all fourteen numbered section sequences, balanced fences
+and unique scanned decision-table IDs; all 271 protected files and recent original report
+prefixes remain preserved. These checks do not prove semantic completeness. Fresh P2/P4/P5/
+P6/P7/P8 reviews precede remaining leaf verification and final integration; IR-01 stays open.
+Independent canonical fixture preparation is recorded source-free in
+`docs/build/reviews/CLASSIC_FIXTURE_PREPARATION_1.json`; archives stay outside the repository.
+No shader implementation, runtime tier or final integration verdict is claimed.
+
+### 2026-09-08 corrected-core reviews and resource/state/evidence repairs
+
+The six reports commissioned on the next frozen core are preserved verbatim at P2 R40,
+P4 R32, P5 R39, P6 R26, P7 R38 and P8 R6. Exact assigned identities, counts and outcomes
+are in `docs/build/reviews/ARCHITECTURE_REVIEW_ATTEMPT_2.json`. P6 R26 returned literal
+PASS with no findings; the other five returned PASS-WITH-CORRECTIONS. P7 R38 is qualified
+investigative evidence only: its search exposed excluded conversational text. No excerpt
+is reproduced or accepted as authority, and that report cannot certify pristine §G1.2
+review. A clean fresh review is required regardless of its correction disposition.
+
+R32 exposes positional DRAWBUFFERS loss and the absence of an enforceable alpha/blend
+duration lock. P1 D-P1-57 and P4 D-P4-33/34 now publish typed attachment/none slots, the
+opaque lock lifetime and concrete backend interception rather than treating immediate
+setters as locks. P5 adopts the positional route and preserves explicit no-output positions.
+P5 R39 additionally requires a legal DefaultRgba baseline, a main-mipmap owner operation,
+honest planned/realized resource evidence, scheduled consumption of degraded depth-copy
+points, and policy-compatible neutral shadow objects. D-P5-30–35 author those mechanisms
+and qualify the historical pinned flip-stub attribution without rewriting authority.
+
+P2 D-P2-41–44 author distinct complete-option-state baselines, authenticated comparison/
+oracle/approval evidence, the `/4` profile-text transport and qualified historical README
+attribution. P7 D-P7-42 receives complete actual option maps and retained plans plus P1's
+canonical profile string; P2 alone owns comparison decisions. P6 D-P6-31/32 and P8 D-P8-25
+receive the corresponding current wire/effective-state/neutral-backend contracts. P7/P8
+also correct depth-write flags, dependency-status inventory and explicit shadow terminal
+release before platform restoration. No speculative hand-event change was adopted.
+
+Final P7 backend-hook/mipmap and P2 resource-wire receiving integration is still in progress.
+All changed contracts require fresh whole-document verification; P6 R26 and P1 R29 remain
+proof only for their prior frozen bytes. Six leaf reviews and final integration remain
+outstanding. IR-01 stays open; no implementation, conformance tier or runtime result follows
+from these architecture fixes.
+
+Independent fixture preparation now includes the canonical SEUS Renewed 1.0.1 archive after
+explicit user EULA authorization. Its external-cache bytes passed ZIP integrity checking;
+the source-free provenance JSON records size/SHA-512 and preserves the earlier unacquired
+state. No shader source, pack archive or rendered image was added to the repository.
+
+### 2026-09-08 renewed core corrections and thirteen-owner review freeze
+
+P1 R30, P2 R41, P4 R33, P5 R40, P6 R27 and P8 R7 returned
+PASS-WITH-CORRECTIONS. Clean P7 R39 returned PASS with a receiver-scoped note.
+Reports remain intact with separate Resolutions; their frozen inputs/outcomes are recorded
+in `docs/build/reviews/ARCHITECTURE_REVIEW_ATTEMPT_3.json`.
+
+P1 D-P1-58 makes the opaque lease backend-implementable. P4 D-P4-35 and P6 D-P6-33
+align active pre-participant lock order and actual effective-state receipt; P4 uses `/4`
+for current evidence. P2 D-P2-47–49 define exact tier domains, complete resolved generation
+identity and sole canonical image layout. P5 D-P5-36/37 add mutation-bearing snapshot failure
+and correct staged comparison/sizing. P8 D-P8-26–28 add minima-derived requested state,
+accepted-estate neutralization before disabled/uninstalled main admission, and explicit
+replay-delivery containment. P7 D-P7-45–47 receive shared consumed-frame state, demand/
+neutralization and pre-load world authentication. P4/P5/P13 receive the three-field P8 input.
+Pinned licence qualifications preserve historical sources without granting future reuse.
+
+Structural verification found all fourteen phase sections/fences valid, all 271 protected
+files unchanged, and original core review bodies plus this integration prefix preserved.
+Fresh frozen whole-owner reviews are now commissioned for P1/P2/P4–P14; P3 R56 remains
+unchanged. The freeze is recorded in ARCHITECTURE_REVIEW_ATTEMPT_4.json. These checks and
+authored fixes are not semantic PASSes. Individual results and final §G5.3 integration remain
+pending; IR-01 stays open and no implementation or runtime result is claimed.
+
+### 2026-09-08 thirteen-owner findings corrected; all-owner re-verification required
+
+The frozen attempt-4 reports are preserved. P1 R31, P5 R41, P6 R28 and P13 R4 returned PASS;
+P2 R42, P4 R34, P7 R40, P8 R8, P9 R1, P10 R1, P11 R11, P12 R5 and P14 R1 required corrections.
+Original bodies/verdicts remain immutable; separate owner resolutions record authored changes.
+
+Current corrections include candidate-only sampler initialization before validation; complete
+sampler normalization/demotion; durable actual preparation/warmup timing; concrete depth-mask
+enforcement; forced shadow traversal/restoration; reachable schema22 alternate BLOCK provenance;
+actual TESR dispatch and sorted FastTESR native ID ranges; full sky/star source/playback/lifetime;
+per-cell smoothing time and typed/source-less diagnostic delivery; complete settings/error view;
+and native-evidence, EMA, producer-flush, quarantine and current-identity modernization fixes.
+P7's actual P11 construction/install/compile/reset/activation/retirement receiver is now explicit.
+Optional async APIs remain ungranted and synchronous baselines remain mandatory.
+
+All fourteen owners changed or received changed dependencies, including P3 after its R56 PASS.
+Fresh whole-owner verification is required on the next frozen set. Structural section/fence/
+decision checks passed; independent P11/P14 arithmetic examples matched; all 271 protected
+files and original review/integration prefixes remain preserved. No native behavior, hook
+application, implementation milestone or final integration PASS is established. IR-01 remains open.
+
+### 2026-09-08 attempt5 completed; selector, population, ingress and allocation corrections
+
+Attempt5's exact frozen inputs and fourteen reports are preserved. P1 R32/P5 R42/P6 R29/
+P7 R41/P9 R2/P11 R12 passed; P2 R43/P3 R57/P4 R35/P8 R9/P10 R2/P12 R6/P13 R5/P14 R2
+required localized corrections. Original verdicts and bodies remain immutable.
+
+Separate owners now author schema23 typed selector alternatives/ranges; a contained optional
+sparse virtual prelude; canonical flattened scalar shadow health and present-estate dispatch;
+source-semantic vertex writers; profile-only commit and reserved-zero programmatic admission;
+actual stitched allocation extent and complete target-bearing synchronous values; complete
+texture-object baselines through ordinary fixed FINAL; and bidirectional upload readiness/
+completion ownership. Main has coordinated the affected P2/P7/P9 and other receiving contracts.
+P13 application health and actual Post acceptance remain distinct; no runtime count overwrites
+a frozen report. P1/P5/P13/P14 share the same allocation and parameter laws.
+
+Independent contract-model checks exercise finite-domain ranges, exact pre/0/5/99 forwarding,
+profile intent despite equal values, and the 59-row shadow catalogue's compensating-count and
+cloud-only boundaries. Structural section/fence/decision checks passed; protected authority and
+original review/integration prefixes remain preserved. These are not implementation/native tests.
+All fourteen current owners changed or received changed dependencies. A renewed whole-owner
+freeze and final eligible G5.3 review remain required; IR-01 is open and no milestone is implemented.
+
+### 2026-09-08 attempt6 completed; typed clears, inherited inputs and lifetime corrections
+
+All fourteen frozen attempt6 reports are preserved with their original verdicts in the
+numbered owner review files and `docs/build/reviews/ARCHITECTURE_REVIEW_ATTEMPT_6.json`.
+P2 R44/P3 R58/P6 R30/P7 R42/P9 R3 passed. P1 R33/P4 R36/P5 R43/P8 R10/P10 R3/
+P11 R13/P12 R7/P13 R6/P14 R3 required twelve corrections in total. Original report
+bodies remain unchanged; separate Resolutions record owner amendments.
+
+P1/P5 now define captured target-specific limits and mandatory typed per-attachment clears
+with finite realized-format conversion, core/EXT routes, lossless restoration, recorder
+events and full-clear failure retention. P10's complete source-authenticated conventional
+participation preserves inherited COLOR/UV1 through client/VBO and cached model playback;
+P1/P7/P2 receive the plan and evidence without changing physical CLASSIC56.
+P4 receives explicit accepted profileSelection and commits evaluated state in
+RegistryFingerprint/profile-selection-v3; P7 forwards accepted intent, while current P2
+inspection deliberately supplies absent intent. All explicit domain receivers are updated.
+P12's immutable pending-profile summary reaches both views independently of inferred display.
+
+P8's exact shadow entity-call outline predicate guard excludes the entire vanilla outline
+subpass before tile entities, adding an independently counted60th row and flattened-v2
+domain. P13's outer loadSprites try/finally encloses Pre/listener/populator failures and
+actual allocation/Post, retaining eight application rows with application-v2 target evidence.
+P2/P7 preserve those exact reports separately from runtime acceptance. P11 now uses exact
+SCC membership, reverse-reader invalidity and prerequisite-first evaluation. P14 corrects
+pack-state isolation, strict UTF-8 label bounds, virtual-group drain and completion-based
+warm-up while keeping optional asynchronous APIs ungranted.
+
+Independent contract models exercised graph order/cycle isolation, typed integer saturation,
+numeric-class separation, target maxima,60-row health completeness/compensating counts,
+UTF-8 bounds and overflow-plus-abort group draining. Fourteen section/fence/decision checks
+passed;271 protected files, fourteen attempt6 original report bodies and this original
+integration prefix remain preserved. These are model/documentary checks, not native tests.
+Eleven owners changed; the three unchanged owners have changed dependency boundaries.
+Renewed whole-owner verification and final eligible G5.3 integration remain required.
+IR-01 is open; no implementation milestone, client/GL success or pack-tier result is claimed.
+
+### 2026-09-08 attempt7 completed; actual input, atlas and native-state corrections
+
+All fourteen frozen reports are preserved in numbered owner files and
+`docs/build/reviews/ARCHITECTURE_REVIEW_ATTEMPT_7.json`. P2 R45/P3 R59/P4 R37/P6 R31/
+P9 R4 passed. P1 R34/P5 R44/P7 R43/P8 R11/P10 R4/P11 R14/P12 R8/P13 R7/P14 R4
+required thirteen corrections. Frozen verdicts/bodies remain unchanged; separate Resolutions
+record the authored fixes, not fresh certification.
+
+P1/P5 normalize capability-legal rasterizer discard around typed clears and retain all three
+existing allocation fallback triggers. P1 recorder lists retain complete capture plans before
+first replay. P10 authenticates partial ITEM ingress and real four-corner BLOCK brightness
+completion before publication; P7/P2 receive full-only H10-BRIGHTNESS-4 health and evidence.
+P8 restores three native translucent sort caches independently on all exits, adding six
+GET/SET observations:66 rows,65 non-CLOUD,37 RESTORE and flattened-v3. P7/P2 receive that
+exact catalogue. P8 public pure celestial math serves actual P7 H-SKY-02 independently of
+shadow planning/estate/health, with unchanged P6 events and real-shadow preactivation delivery.
+
+P11 shares one uniform/variable namespace and dependency graph, converted per-refresh memo,
+exact SCC/error isolation and declaration-order uploads; P2 receives six original vectors.
+P12 publishes prepared session/action/profile availability and rechecks callbacks before any
+preview/intent/I/O/reload. P13 fixes local companion/default sampling and authenticates actual
+accepted base-object association through context-bound leases. P5 selects matching atlas/kind
+after custom precedence or explicit defaults; P7/P8 refresh through the same binder before
+next draw, without root activation replay or restoring over the triggering base binding.
+
+P1/P14 distinguish targetless logical texture issuance from exact-target native materialization/
+label/storage, and lifetime-ending deletion from ordinary binding-neutral operations.
+Affected bindings/cache become zero; unrelated state survives and deleted names are not
+resurrected. P14's stall criterion remains unmet/deferred absent measurement or an explicitly
+adopted governing amendment; safe synchronous fallback cannot certify full implementation PASS.
+
+Independent contract models and documentary checks exercised state/failure transitions,
+capture identity, actual brightness completion, graph isolation/conversion, atlas association,
+native lifecycle ordering/zeroing and66-row health boundaries. All fourteen section/fence/
+decision checks passed;271 protected files, fourteen original attempt7 reports and the original
+integration prefix remain preserved. No implementation/native behavior is proved by these checks.
+Eleven phases changed; P3/P4/P9 have changed dependencies. Renewed whole-owner verification
+and final eligible G5.3 review remain required. IR-01 stays open; no milestone is implemented.
+
+### 2026-09-08 attempt8 completed; fourteen fresh whole-owner reports, corrections authored
+
+The first attempt8 launch returned provider usage-limit failures for all fourteen workers and
+changed no verdict; one partial finding (P14's removed two-argument lease receipt) was corrected
+as D-P14-43 before the retry. Retried in smaller batches on the same frozen hashes, all fourteen
+independent reports completed and are preserved verbatim in the numbered owner files and
+`docs/build/reviews/ARCHITECTURE_REVIEW_ATTEMPT_8.json`: P4 R38, P5 R45, P8 R12 and P9 R5
+PASS; P1 R35, P2 R46, P3 R60, P6 R32, P7 R44, P10 R5, P11 R15, P12 R9, P13 R8 and P14 R5
+PASS-WITH-CORRECTIONS (seventeen findings).
+
+Separate owners authored every correction with append-only Resolutions: D-P1-72/73 (LWJGL
+confinement as a package tree; recorded-only labels on unmaterialized owned texture handles),
+D-P2-72 (R43–R45 incorporation recorded), D-P3-74 (override-target whitelist authoritative,
+reserved intrinsics rejected pre-I/O), D-P6-38 (current /4 replay envelope in §5.1),
+D-P7-76/77/78 (main-estate bind/clear before the vanilla sky site with ESTATE_CLEARED and a
+frame-begin ShadowFrameView reserving the terrain token by head-reading field_175084_ae, plus
+the §3.6 shadow-before-main-clear ruling; plan-independent pre-camera angles; H-SKY-02
+slice-bounded to the sun/moon rotation site), D-P10-31/32 (profile-selection-v3 identity;
+R10-8/9 receipts recorded as received), D-P11-28/29/30 (schema23 current; dependency anchors
+current; shared-graph scope), D-P12-39 (presenter-owned selection survives catalog replacement
+by revalidation; no P7 read-back implied), D-P13-44/45 (schema23 acquisition gate; current
+anchors) and D-P14-44 (five published modernization tiers). Main synchronized two review
+notes: P3's Phase-11 receiver phrase and P6's P5 resolver citations.
+
+Structural section/fence/unique-decision checks passed on all ten changed documents; frozen
+review bodies and verdicts are preserved with append-only Resolutions; the working tree shows
+only the fourteen phase documents and this review modified. These are documentary checks, not
+implementation, native, client or pack-tier evidence. Ten phases changed and P4/P5/P8/P9 have
+changed dependency boundaries, so all fourteen require another frozen whole-owner review
+before the final eligible G5.3 integration. IR-01 remains open; no milestone is implemented.

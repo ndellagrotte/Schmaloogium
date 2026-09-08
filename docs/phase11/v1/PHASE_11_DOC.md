@@ -18,8 +18,9 @@ module map puts that code in `engine.expr` and requires `:engine` to have zero M
 Cleanroom, Mixin, or LWJGL dependencies (`docs/design/v3/DESIGN.md:468`–`:500`).
 
 The historical dependency reviews below record authoring provenance only. Current Phase 3
-schema18 and Phase 6 retirement amendments are adopted provisionally in §5; their current bytes
-and this receiver's amended surface require fresh verification before implementation.
+exact-current schema (23 received by D-P11-25; newest §5.2 receipt governs) and Phase 6
+retirement amendments are adopted provisionally in §5; their current bytes and this receiver's
+amended surface require fresh verification before implementation.
 
 ### 0.1 Inputs actually read
 
@@ -156,6 +157,27 @@ GUI diagnostics, named evaluator conformance and OQ-22 measurement. Active §§4
 D-P11-14…17; prior addenda and Review 10 remain historical evidence. No implementation, test,
 measurement, build or fresh PASS is claimed. Current producer and consumer reviews remain gates.
 
+### 0.14 Frozen-attempt-7 correction — unverified
+
+D-P11-27 resolves C14-1 by admitting both custom declaration kinds into one resolvable graph,
+retaining uniform-only uploads. It explicitly supersedes the historical D-P11-4 inference using
+the shipped author example at lines 421–422; Appendix F.6 never prohibited those references.
+Active §§2/4/5/6/7/8/12 and the original conformance catalog change; fresh whole-owner and P2/P6
+receiving review remains required. No validation command, implementation or runtime proof is claimed.
+Historical Pintonium pin claims remain provenance, not verified current byte identity; Review 14
+N14-1 records their unavailability. This correction relies on the directly read shipped author
+document, not a replacement OSS checkout or unresolved stareval source.
+
+### 0.15 Review-16 contract corrections — unverified
+
+Review 16 (2026-09-08) corrections applied: the D-P11-20 receipt in §5.2 now marks P4's
+`RegistryFingerprint/own-build-v1` as the receipt-time composition identity and names the current
+`RegistryFingerprint/profile-selection-v3` domain (C-1, D-P11-31); the §§4.8/5.3/5.4 Phase 6
+§4.13 citation ranges were recomputed against current Phase 6 bytes after its §0.28/§0.29
+amendments (C-2). C-3 was rejected with evidence: current Phase 2 v2 bytes adopt
+RUN-EXPRESSION-CONFORMANCE at D-P2-28, so §5.6's adoption claim stands. §5 text changed; a fresh
+verification round remains required and §0.13's standing requirement is unchanged.
+
 ---
 
 ## 1. Scope & boundaries
@@ -167,7 +189,8 @@ Phase 11 owns these v0.4 components:
 - the lexer, parser, source spans, typed AST, name resolver, and immutable executable plan;
 - the exact scalar/boolean/vector expression type system and declaration-boundary coercions;
 - every Appendix F.6 operator and function, including lazy `if` and stateful `smooth`;
-- dependency analysis for `variable.*`, cycle/error propagation, and once-per-refresh memoization;
+- dependency analysis for the shared uniform/variable definition graph, cycle/error
+  propagation, and once-per-refresh memoization;
 - a pure interpreter backend plus the backend-neutral evaluator interface;
 - binding Phase 6's fixed built-ins with Phase 11's biome, biome-constant, and view-entity inputs;
 - every-program-switch evaluation after built-ins through Phase 6's one custom bridge;
@@ -181,7 +204,7 @@ This is the full Objective: “grammar, functions, input binding, evaluation cad
 
 - **Phase 3** reads `shaders.properties`, validates declaration keys/types/names, preserves raw
   expression text and source order, and never invokes this grammar
-  (`docs/phase3/v1/PHASE_3_DOC.md:754`–`:756`). Phase 11 never reopens pack files or reparses
+  (`docs/phase3/v1/PHASE_3_DOC.md:2891`–`:2908`). Phase 11 never reopens pack files or reparses
   Java Properties syntax.
 - **Phase 6** owns fixed built-in acquisition, current typed values, the post-built-in custom
   callback, active-program location/type checks, GL uploads, upload replay, and GL-error isolation.
@@ -211,7 +234,7 @@ The following are prohibited within `engine.expr`:
 
 The Appendix F.6 precipitation sentence is explicitly a Phase 7 behavior handoff, not an
 expression-engine feature; Phase 3 records the same ownership
-(`docs/phase3/v1/PHASE_3_DOC.md:757`).
+(`docs/phase3/v1/PHASE_3_DOC.md:1726`–`:1729`).
 
 ---
 
@@ -258,9 +281,10 @@ At pack load, `CustomExpressionCompiler` performs one deterministic transaction:
 1. accept the Phase 3 ordered declaration snapshot and its pack fingerprint;
 2. bind the Phase 6 fixed-input schema plus the immutable `BIOME_*` catalog and view-boolean
    schema;
-3. lex, parse, type-check, and constant-fold each declaration independently;
-4. build a graph of variable dependencies, reject cycles, and propagate invalid dependencies;
-5. retain only variables reachable from at least one valid uniform;
+3. register the shared definition namespace (§4.1), then lex, parse, resolve, type-check and
+   constant-fold declarations without changing symbol ownership;
+4. build the uniform/variable definition graph, reject exact SCC cycles, and propagate invalidity;
+5. retain definitions reachable from at least one valid upload-designated uniform;
 6. assign stable definition, memo-slot, diagnostic, random-site, and smooth-site identities;
 7. compile the typed graph through the selected evaluator backend;
 8. return an immutable plan plus all load diagnostics. A plan may be useful even when some
@@ -268,9 +292,9 @@ At pack load, `CustomExpressionCompiler` performs one deterministic transaction:
 
 At each successful program activation, Phase 6 calls the installed controller after built-ins.
 The controller snapshots the non-Phase-6 context exactly once, opens one evaluation epoch, advances
-the refresh clock at most once for the Minecraft frame, evaluates reachable variables once in
-precomputed topological order into memo slots, evaluates valid uniforms, and submits successful
-values in original declaration order.
+the refresh clock at most once for the Minecraft frame, evaluates retained definitions once in
+precomputed prerequisite-first order into converted memo slots, then submits successful uniform
+values in original declaration order without reevaluation.
 One expression failure never aborts unrelated definitions. This matches the required cadence:
 customs refresh “on every program switch after built-ins”
 (`docs/research/v1/RESEARCH.md:1380`–`:1383`).
@@ -295,8 +319,8 @@ record SmoothKey(long value) {}
 record ExpressionPlanFingerprint(String value) {}
 ```
 
-`INT` is a declaration and variable type, not a second arithmetic dialect. Numeric operators and
-functions evaluate in finite `FLOAT`; fixed integer inputs and `INT` variables promote exactly to
+`INT` is a definition type for either kind, not a second arithmetic dialect. Numeric operators and
+functions evaluate in finite `FLOAT`; fixed integer inputs and `INT` definitions promote to
 float when read. An `INT` definition converts its final finite scalar toward zero after a range
 check. This follows the shipped description of `biome`, `temperature`, `rainfall`, and fixed scalar
 uniforms as float parameters (`reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:341`–`:351`),
@@ -309,13 +333,13 @@ members as `FLOAT` because Appendix F.6 provides only `vec2/vec3/vec4`, not `ive
 ### 2.4 Invariants
 
 1. A published plan is immutable, fingerprinted, and independent of render programs and GL state.
-2. Every enabled uniform has one declared type, one typed root, and zero or more variable edges.
-3. Variables are not submitted; a reachable variable is evaluated no more than once per refresh.
+2. Every definition has one declared type, one typed root, and zero or more definition edges.
+3. Uniforms and variables share memoization; only the independent `UNIFORM` designation submits.
 4. Uniform submissions preserve Phase 3 declaration order, not dependency order.
 5. The built-in snapshot, biome/view snapshot, refresh epoch, and random stream seen by one refresh
    cannot change mid-evaluation.
 6. No non-finite scalar enters a plan, leaves an evaluator, or reaches Phase 6.
-7. An expression-local failure changes only that definition and uniforms that depend on it.
+7. An expression-local failure changes only that definition and its reverse-reachable readers.
 8. Smooth state is keyed by plan fingerprint plus `SmoothKey`, never by active program.
 9. A repeated switch in one frame has zero elapsed time but is still a new evaluation epoch.
 10. The v0.4 backend is replaceable without changing parsing, typed AST, state semantics,
@@ -431,7 +455,7 @@ runtime errors for the one uniform that reaches them; Phase 11 never invents zer
 Appendix F.6 authoritatively excludes every D.4 per-draw dynamic—`entityColor`, `entityId`,
 `blockEntityId`, `blendFunc`, and `instanceId`—plus `fogMode` and `fogColor`, and expressly says it
 does not narrow D.4 (`docs/research/v1/RESEARCH.md:1501`–`:1505`). Phase 6's verified schema matches
-that seven-name rule (`docs/phase6/v1/PHASE_6_DOC.md:1266`–`:1267`). The stale five-name restatement
+that seven-name rule (`docs/phase6/v1/PHASE_6_DOC.md:1602`–`:1606`). The stale five-name restatement
 in the Phase 11 design row (`docs/design/v3/DESIGN.md:2300`–`:2303`) is reported in §11.
 
 ### 3.4 Pintonium do-not-inherit disposition
@@ -503,15 +527,25 @@ unknown future variant appears. Inputs and returned lists are non-null immutable
 has a non-empty diagnostic list and no plan, while success may have none and partial has at least
 one diagnostic. Plans expose metadata only, own their backend executable graph privately, and are
 thread-safe immutable values.
+Both entry points validate backend selection before declaration adaptation/parsing, even for an
+empty list. Pre-plan failures use `ExpressionDiagnosticLocation.SourceLess`; neither entry point
+requires request attribution or borrows an arbitrary declaration's coordinates (§4.9/§4.11).
 
 `sourceOrdinal` is Phase 3 property order and is stable within the configuration fingerprint.
-Declaration names use the already validated Phase 3 grammar. Phase 11 additionally rejects a
-variable name that collides with a fixed input, `BIOME_*`, one of the fourteen booleans, `pi`,
-`true`, `false`, or a function name. Duplicate variables use first-valid-wins for resolution and
-disable each later duplicate. Uniform output names need not enter the expression namespace and
-cannot be referenced by other expressions. A duplicate uniform name similarly leaves the first
-valid declaration active and disables later definitions, agreeing with Phase 6's first-command
-rule.
+**D-P11-27:** uniform and variable declarations share one exact case-sensitive namespace.
+Before resolving expressions, register the earliest source-ordinal occurrence of each name;
+its declared type and `kind` are fixed independently of expression success. Every later occurrence,
+including a different kind or type, is disabled with `DUPLICATE_NAME`; it cannot upload or become a
+fallback if the owner fails parsing, typing, cycle checks or evaluation. This explicit first-owner
+rule supersedes the former ambiguous first-valid duplicate policy and avoids circular winner selection.
+Reject either kind colliding with fixed inputs, context names (`biome`, `temperature`, `rainfall`,
+`BIOME_*`, fourteen booleans), excluded built-in/per-draw names, `pi`, `true`, `false`, or function
+names; diagnose `DUPLICATE_NAME`, never shadow or expose an excluded input as a custom definition.
+An invalid owner stays a resolvable failed definition so readers get `INVALID_DEPENDENCY`,
+not `UNKNOWN_NAME`. Only names with no registered owner or permitted input produce `UNKNOWN_NAME`.
+The private graph stores source identity, declared type, typed expression, distinct dependencies
+and `CustomExpressionKind`; `UNIFORM` independently designates an upload root, `VARIABLE` never
+does. No graph node or extra production API is exported.
 
 Compilation is deterministic for request bytes, schemas, and backend ID. Diagnostics do not alter
 the plan fingerprint. The plan fingerprint hashes the source fingerprint, exact schema versions,
@@ -560,7 +594,7 @@ The checker has these rules:
 
 - `BOOL` never converts to or from a numeric type.
 - Expression arithmetic consumes `FLOAT`. A fixed `Int1`, vector integer member, or `INT`
-  variable promotes to float on read.
+  definition (uniform or variable) promotes to float on read.
 - `INT` declaration boundary accepts a finite numeric scalar, rejects values outside
   `[-2147483648, 2147483647]`, and truncates toward zero.
 - `FLOAT` accepts a finite numeric scalar.
@@ -568,14 +602,16 @@ The checker has these rules:
   scalar splat, widening, truncation, or vector arithmetic.
 - `BOOL` requires a boolean result.
 - Every vector component must be finite.
-- `if` value branches may mix `INT` variables/fixed inputs and numeric expressions because both
+- `if` value branches may mix `INT` definitions/fixed inputs and numeric expressions because both
   are read as float; other branch types must be identical.
 - `==`, `!=`, and `in` compare bool with bool or numeric with numeric. Vectors are not comparable.
 
-Declaration-boundary conversions happen before a variable is memoized and before a uniform upload
-command is built. Thus a `variable.int` is evaluated and converted once, and every reference sees
-the same stored integer. A mismatch disables that declaration at load and propagates a named
-dependency diagnostic to uniforms that require it.
+Declaration-boundary conversion happens exactly once for either definition kind, before its memo
+slot becomes `VALUE`. Every reference reads that converted value; a uniform's later command uses
+the same stored value without reevaluation or a second conversion. Thus `uniform.int.a=2.75`
+stores/uploads integer 2 and `a+0.5` reads promoted 2, yielding 2.5, not 3.25.
+Static mismatches disable the declaration at load; dynamic range/non-finite failures use §4.9.
+Both propagate only through reverse-reader edges.
 
 ### 4.4 Name resolution and input schema
 
@@ -585,11 +621,13 @@ Resolution order is fixed and independent of declaration order:
 2. exact `BIOME_*` constants;
 3. exact `biome`, `temperature`, `rainfall` and fourteen view booleans;
 4. exact permitted Phase 6 built-in names;
-5. exact valid `variable.*` names.
+5. exact registered custom-definition names, of either kind.
 
-Uniform names never resolve as expression inputs. Variables may refer forward to other variables,
-which is why the graph phase follows parsing. A collision is diagnosed rather than resolved by
-shadowing.
+Uniforms and variables may reference either kind, forward or backward, including their own name
+(a self-cycle, not an unknown identifier). Resolution uses declared types before expression
+validation; invalid registered owners retain their identity for dependency diagnostics. Collision
+rejection in §4.1 makes this order unambiguous. The published `screenDark3` reads `screenDark`
+as a custom definition, not a Phase 6 built-in or a GL value (shipped author example, lines 421–422).
 
 `FixedExpressionInputSchema` is a closed exact-name/type view supplied alongside Phase 6's runtime
 value view. It distinguishes scalar, vector width/component kind, and mat4. Compilation rejects an
@@ -609,21 +647,44 @@ Numeric biome IDs are not assumed contiguous.
 
 ### 4.5 Dependency graph, reachability, and memoization
 
-The graph has one vertex per first-valid variable and one directed edge `A -> B` when A reads B.
-Uniforms are roots but not graph symbols. A deterministic Kahn traversal uses source ordinal as its
-tie-break. Vertices left after traversal form one or more cycles; each cycle member is disabled,
-then invalidity propagates to dependent variables and uniforms with a diagnostic path.
+The graph has one vertex per registered definition of either kind and one distinct directed
+edge `A -> B` when A reads B. Upload designation is independent of graph membership.
+**D-P11-26, extended by D-P11-27:** this is reader-to-dependency orientation; ordinary incoming-edge
+Kahn ordering would incorrectly visit readers first. Resolve all syntactic references before
+constant folding, including lazy branches, so folding cannot hide unknown names, cycles or errors.
 
-After diagnostics, reverse reachability begins from every valid uniform and removes variables that
-cannot affect an upload. This is load-time dead-definition elimination only. It never assumes which
-programs declare a custom uniform and never suppresses diagnostics for malformed source.
+At load time compute strongly connected components with bounded explicit work stacks. Exactly
+a component with more than one vertex, or a singleton with a self-edge, is cyclic. Only those
+members receive `CYCLE`. Propagate cycle and other declaration invalidity through reverse
+dependency-to-reader edges; otherwise-valid reached definitions receive `INVALID_DEPENDENCY`.
+Preserve a declaration's own primary error rather than replacing it with a dependent error.
+An acyclic prerequisite read by a cycle is not a cycle member or an invalid dependent and remains
+available to independent roots. A traversal residual is never cycle-member evidence. Visit
+components, members and alternative diagnostic paths deterministically by source ordinal.
 
-Each refresh allocates no graph objects. Pre-sized memo slots have states `UNVISITED`,
-`EVALUATING`, `VALUE`, or `ERROR`. The epoch reset changes slot generation counters rather than
-clearing objects. The controller visits all reachable variables once in the precomputed topological
-order; `EVALUATING` remains an invariant guard even though cycles were rejected. A variable is
-converted to its declared type before its slot becomes `VALUE`. If it becomes `ERROR`, each
-dependent uniform fails independently while unrelated roots continue.
+After diagnosing every source declaration, follow reader-to-dependency edges from every valid
+`UNIFORM` root; discard unreachable variables from execution, not diagnostics. Every valid uniform
+is itself a root whether or not referenced by another definition or present in the active program.
+For each retained vertex count distinct retained dependencies. Put zero-count vertices in a
+source-ordinal priority queue; emit the earliest, decrement each reverse-edge reader, and enqueue
+newly ready readers. Prerequisites always precede readers; source order only breaks ready-set ties.
+All retained vertices must emit; a residual after invalidity removal is a corrupt-plan invariant.
+
+Pre-sized per-definition memo slots have `UNVISITED`, `EVALUATING`, `VALUE`, or `ERROR` and epoch
+generations; no graph objects allocate during refresh. Visit retained enabled definitions once in
+the precomputed order. A previously failed definition or reverse-dependent reader stays disabled
+until reset/new activation; readers of an `ERROR` do not execute their AST. Every successful
+definition converts once, commits its smooth overlay once and stores `VALUE`. Repeated references
+and later uniform submission only read the slot, never repeat random/smooth effects. Independent
+prerequisites and roots still execute. After evaluation, submit only successful `UNIFORM` slots in
+original declaration order. Sink absence/rejection cannot invalidate a stored value or its readers.
+
+Definition scheduling remains eager, as in the prior variable graph: a statically reachable
+definition executes even when its reference occurs only in another definition's unselected branch.
+Within each definition, §4.6 lazy AST branches still skip their own nodes/effects/errors; static
+invalidity is never branch-dependent. Random order is prerequisite-first with ready-source ties,
+then left-to-right within each definition; no rewind on failure. A successfully committed
+prerequisite's smooth state is not undone by a later reader or sink failure.
 
 ### 4.6 Operator and stateless function semantics
 
@@ -674,16 +735,16 @@ from a runtime object hash.
 Each cell is:
 
 ```java
-record SmoothCell(boolean initialized, float value, long lastClockEpoch) {}
+record SmoothCell(boolean initialized, float value, double lastCommittedEvaluationSeconds) {}
 ```
 
 State is plan-wide and survives every program switch. It is not keyed by `ResolvedProgramDescriptor`.
-The state transition for target `t`, rise time `fadeIn`, fall time `fadeOut`, and frame delta `dt`
-is exact:
+The state transition for target `t`, rise time `fadeIn`, fall time `fadeOut`, and cell elapsed time
+`dt = controllerSeconds - lastCommittedEvaluationSeconds` is exact:
 
 1. Reject non-finite target or fade. Reject negative fade. A missing fade is `1.0`; a missing
    `fadeOut` equals `fadeIn`.
-2. If uninitialized, store and return `t` without a startup ramp.
+2. If uninitialized, stage `t` and the current controller time, and return `t` without a startup ramp.
 3. Choose `fadeIn` when `t > value`; otherwise choose `fadeOut`.
 4. If `dt <= 0`, return the stored value unchanged. If selected fade is zero or `dt >= fade`, snap
    to `t`.
@@ -693,24 +754,33 @@ is exact:
    `k = clamp(dt / fade * correction, 0, 1)`;
    `value = value + (t - value) * k`.
 6. Reject a non-finite intermediate/result; the owning uniform takes the runtime-error path and the
-   cell does not commit a partial transition.
+   cell does not commit a partial transition. On success stage both the resulting value and current
+   controller time, including unchanged/snap cases; commit only with the owning definition.
 
 This is a behavior-only restatement of the allowed digest, which records the same correction and
 separate up/down times (`reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md:597`–`:601`).
 It is not derived from decompiled class or method structure.
 
-The controller derives `dt` from Phase 6's same-activation `frameCounter` and `frameTime`. The first
-refresh whose frame counter differs from the last committed counter advances by validated
-`frameTime`; later program switches with the same counter use zero. Inequality, not ordering,
-handles the documented counter wrap. A frame-counter reset is paired with a lifecycle reset.
-Consequently program switching cannot make fades run faster, while every switch still reevaluates
-targets and variables as required.
+The controller maintains finite binary64 `controllerSeconds`, initially zero, and a last-observed
+frame counter. After validating same-activation Phase 6 `frameCounter`/finite nonnegative
+`frameTime`, the first refresh in an activation establishes the counter at time zero; each later
+different counter adds that frameTime exactly once. Same-counter switches leave the clock unchanged.
+Inequality handles counter wrap; counter reset requires lifecycle reset. Invalid time or clock
+overflow is a provider protocol failure before clock mutation. This clock observation commits
+before context sampling and is not undone by a later provider/definition failure, so retrying the
+same frame cannot add time twice.
+Each reached initialized cell subtracts its own last successful committed evaluation time. A
+skipped lazy site does not write its timestamp and therefore retains all elapsed time until reached.
+Elapsed comparison with fade occurs before conversion to binary32; when `0 < dt < fade`, convert
+dt to binary32 for the published equation. Underflow to zero leaves value unchanged. A successful
+second evaluation in the same frame sees zero; a first late evaluation sees its full accrued time.
+No lazy branch is evaluated eagerly and switches still reevaluate targets/variables.
 
-All smooth-cell writes for one definition are transactional: evaluate against an overlay, then
-commit only if that variable or uniform produces a valid final value. If two definitions attempt
-the same explicit smooth id, the uniqueness rule prevents order-dependent sharing. A variable's
-successful update commits once when its topological evaluation fills the memo slot; a later
-uniform error does not undo an already valid intermediate.
+All smooth-cell value and timestamp writes for one definition are transactional: evaluate against
+an overlay, then commit both only if that variable or uniform produces a valid final value.
+If two definitions attempt the same explicit smooth id, uniqueness prevents order-dependent sharing.
+A definition's successful update commits once when its topological evaluation fills its memo slot;
+a later reader or upload error does not undo that already valid prerequisite.
 
 Smooth state resets on pack replacement, shaders-off, world epoch, framebuffer resize, GL-context
 loss, or close. It does not reset on program fallback, stage change, repeated activation, or an
@@ -719,7 +789,7 @@ ordinary Phase 6 redundant-upload skip.
 ### 4.8 Program-switch cadence and Phase 6 bridge
 
 One `CustomExpressionController` is installed through Phase 6 before first use and retained for the
-runtime lifetime, as Phase 6 requires (`docs/phase6/v1/PHASE_6_DOC.md:1253`–`:1259`). It holds an
+runtime lifetime, as Phase 6 requires (`docs/phase6/v1/PHASE_6_DOC.md:1588`–`:1591`). It holds an
 atomic current-plan slot changed only by composition lifecycle calls.
 
 On `refresh(program, values, uploads)`:
@@ -729,12 +799,12 @@ On `refresh(program, values, uploads)`:
 3. resolve `frameCounter`/`frameTime` from `values` and open the controller's next refresh/memo
    epoch;
 4. issue one `ExpressionContextRequest` carrying that epoch and `frameCounter`; accept its
-   synchronous result only while that controller-issued epoch remains current, then establish `dt`;
-5. evaluate every reachable variable once in precomputed topological order;
-6. visit valid uniform roots in original declaration order, convert each result, and submit one
-   typed command;
-7. on expression failure, permanently disable only that uniform until the next plan/reset, warn
-   once, omit its command, and continue;
+   synchronous result only while that controller-issued epoch remains current; the controller clock
+   was advanced once in step 3, while each reached cell computes its own elapsed time;
+5. evaluate retained enabled definitions of both kinds once in §4.5 order, converting into memo slots;
+6. visit successful `UNIFORM` slots in original declaration order and submit their stored typed values;
+7. on expression failure disable the failing definition and reverse-dependent readers until reset/new
+   activation, warn once per affected uniform, omit their commands, and continue independent roots;
 8. on sink `Accepted`, `SkippedAbsent`, or `Rejected`, increment the matching authoritative
    `accepted`, `skippedAbsent`, or `rejected` counter and continue;
 9. return `Completed(accepted,skippedAbsent,rejected)` with all three counters equal to the sink
@@ -743,7 +813,7 @@ On `refresh(program, values, uploads)`:
 Expression-local errors never produce `Aborted`. `Aborted` is reserved for a corrupt plan,
 generation mismatch, provider protocol failure, or backend invariant that makes the remainder
 unsafe. Phase 6 commits any already accepted prefix exactly as its contract states, subject to the
-invalid-counter branch that supersedes it (`docs/phase6/v1/PHASE_6_DOC.md:1325`–`:1334`).
+invalid-counter branch that supersedes it (`docs/phase6/v1/PHASE_6_DOC.md:1659`–`:1668`).
 Every `Aborted(diagnosticId,accepted,skippedAbsent,rejected)` reports those same three counters for
 the submitted prefix before the structural failure; Phase 11 never estimates or resets the ledger.
 
@@ -777,15 +847,21 @@ enum DiagnosticSeverity { WARNING, ERROR }
 
 enum DiagnosticChannel { CHAT_AND_LOG, LOG_ONLY }
 
+sealed interface ExpressionDiagnosticLocation {
+    record Declaration(String declarationName, SourceAttribution attribution, SourceSpan span)
+        implements ExpressionDiagnosticLocation {}
+    record SourceLess() implements ExpressionDiagnosticLocation {}
+}
 record ExpressionDiagnostic(
     String stableId,
     ExpressionDiagnosticKind kind,
     DiagnosticSeverity severity,
     DiagnosticChannel channel,
-    String declarationName,
-    SourceAttribution attribution,
-    SourceSpan span,
+    ExpressionDiagnosticLocation location,
     String summary) {}
+public interface ExpressionDiagnosticSink {
+    void report(ExpressionDiagnostic diagnostic);
+}
 ```
 
 Both domains are Phase 11-owned and closed. `ERROR` marks a diagnostic that disabled a uniform or
@@ -798,15 +874,42 @@ fingerprint, declaration ordinal, and source span; message prose is not hashed. 
 `UNSUPPORTED_BACKEND` diagnostic instead uses the pack fingerprint and requested backend ID exactly
 as §4.11 specifies. Raw expressions and paths are sanitized before chat. Load diagnostics are
 aggregated so one bad line does not hide later errors.
+All record fields are non-null immutable values. `Declaration` preserves the real declaration
+name, original attribution and actual span; source-less pre-plan/controller failures use `SourceLess`,
+never invented paths, zero coordinates, or an arbitrary first declaration. Declaration stable-ID
+inputs remain unchanged. Structural active-plan failures without a declaration use kind, active
+plan fingerprint and stable reason code; rejected activation uses candidate fingerprint and reason.
+The provider's supplied diagnosticId remains authoritative for an Unavailable result and its emitted
+record. IDs never hash prose or fabricated locations.
 
-- A uniform lex/parse/type/name/arity error disables that uniform at load and emits one chat-visible
-  warning plus a detailed log record.
-- A variable load error disables the variable and every dependent uniform. Chat reports each
-  affected uniform once; the detailed dependency path is log-only.
+The factory requires a real `ExpressionDiagnosticSink` after its metrics sink. It receives each
+new runtime/activation diagnostic synchronously on the serialized controller caller thread before
+that operation returns, preserving the exact immutable typed record and stableId. Ordinary errors
+still return `Completed` with the actual upload counters; structural failures emit their typed
+record and return `Aborted` with that record's ID and actual prefix counters; rejected activation
+emits before `Rejected` with the same ID. `NoCustoms` emits nothing. Coalescing is once per stableId
+per activation, cleared on reset; no global reporter or implicit constructor injection exists.
+Compile diagnostics are returned in PlanBuildResult only (also accessible from a produced plan),
+not emitted by the controller; composition forwards that returned list once through its same sink.
+
+Normal `report` return acknowledges synchronous receipt, not chat display or persistence. A sink
+RuntimeException is caught without recursion, retry, new expression diagnostic, disabling evaluation,
+changing upload counts/results, or rolling back already committed expression state. That delivery
+is lost; subsequent distinct diagnostics still attempt delivery. The controller marks the attempted
+ID coalesced even on failure, preventing repeated-switch spam. The owner of the sink is responsible
+for recording/reporting its own delivery failures through its independent host logging route;
+P2's collector marks a failed collection as a failed run, never a successful empty observation.
+The controller borrows the sink for its lifetime, never closes it, retains it across nonterminal
+resets, and releases it on terminal close; no callbacks occur after close. The sink may retain
+immutable records but may not reenter controller lifecycle/evaluation.
+
+- A declaration lex/parse/type/name/arity/cycle error disables that owner and reverse-dependent
+  readers at load, regardless of kind. Chat reports each affected uniform once; primary error and
+  exact dependency paths remain in detailed diagnostics, with dependency paths log-only.
 - A runtime domain, zero-divisor, absent-input, non-finite, int-range, or evaluator error disables
-  the affected uniform for the active plan, emits one chat-visible warning, and continues. If a
-  failing variable is shared, each dependent uniform is disabled independently; unrelated uniforms
-  continue.
+  that definition and all reverse-dependent readers for the active plan. The owner keeps the
+  primary error; affected readers receive `INVALID_DEPENDENCY`. Chat warns once per affected
+  uniform; independent definitions continue, including prerequisites also read by the failed owner.
 - A partial smooth change made while evaluating a failed definition is rolled back. Already
   consumed `random()` samples remain consumed under §4.6's deterministic order.
 - A sink rejection is Phase 6's error and is not relabeled as an expression failure.
@@ -838,10 +941,10 @@ P11 owns this pure projection and vocabulary. Inputs are non-null, fingerprints 
 identities, serial positive, and entries immutable defensive copies in declaration/diagnostic
 order, deduplicated by stableId. Invalid caller arguments throw `IllegalArgumentException` before
 publication; no partial view results. Output contains no raw expression, source path/span,
-attribution, dependency chain, pack resource/handle or exception text. Declaration name is a
-validated identifier or empty for a pre-plan error; summary is generated from a fixed
-kind/severity template, never copied from diagnostic summary or arbitrary pack text. Stable
-identities/fingerprints are opaque equality keys, not text to decode into source.
+attribution, dependency chain, pack resource/handle or exception text. Declaration name is taken
+from `location.Declaration` and validated as an identifier, or empty for `location.SourceLess`;
+summary is generated from a fixed kind/severity template, never copied from diagnostic summary
+or arbitrary pack text. Stable identities/fingerprints are opaque equality keys, not text to decode into source.
 
 P7 owns publication at the final composition outcome, not compiler completion: ACCEPTED means
 the final pipeline/configuration was admitted (possibly with expression errors/NoCustoms);
@@ -938,8 +1041,9 @@ JIT-specific plan is a Phase 11 dependency.
 The canonical v0.4 interpreter semantic ID is `schmaloogium:typed-ast-interpreter-v1`. Both compiler
 entry points accept exactly that ID in v0.4. Any other ID deterministically returns
 `PlanBuildResult.Failure` with one `UNSUPPORTED_BACKEND` error diagnostic whose stable ID derives
-from the diagnostic kind, pack fingerprint, and requested backend ID; it uses compile-request
-attribution and an empty source span. No declarations are parsed and no plan is produced.
+from the diagnostic kind, pack fingerprint, and requested backend ID; its location is
+`ExpressionDiagnosticLocation.SourceLess()`, severity ERROR and channel CHAT_AND_LOG.
+No declarations are adapted/parsed and no plan is produced, including for an empty declaration list.
 
 The interpreter has dense node arrays, pre-resolved symbol/function ordinals, primitive memo
 storage, and no steady-state allocation after plan activation. Every refresh records aggregate
@@ -980,7 +1084,8 @@ public interface CustomExpressionController extends CustomUniformBridge, AutoClo
 }
 
 public interface CustomExpressionControllerFactory {
-    CustomExpressionController create(ExpressionMetricsSink metricsSink);
+    CustomExpressionController create(ExpressionMetricsSink metricsSink,
+                                      ExpressionDiagnosticSink diagnosticSink);
 }
 
 sealed interface PlanActivationResult {
@@ -1005,7 +1110,7 @@ consistent with v3's explicit permission for expression compilation
 (`docs/design/v3/DESIGN.md:410`–`:415`).
 
 Every reset atomically deactivates the complete plan/provider/random tuple and invalidates memo
-generations, runtime-disabled-uniform flags, clock tracking, and smooth cells; dropping the sole
+generations, runtime-disabled-definition flags, clock tracking, and smooth cells; dropping the sole
 tuple reference discards the old random stream. Until a later successful `activate` supplies a new
 `RandomSource`, `refresh` returns `NoCustoms`. `PACK_REPLACEMENT` and every nonterminal reason permit
 later activation; `CLOSE` is terminal. Repeated same-reason reset is idempotent. Reset never calls
@@ -1045,22 +1150,22 @@ be installed into the replacement runtime.
 
 | Exposed contract | Exact content | Consumer |
 |---|---|---|
-| `CustomExpressionCompiler` / `CustomExpressionCompileRequest` | exact `compile(request)` and `compilePhase3(...)`; deterministic partial-success build; ordered declarations, exact schemas, backend semantic ID; no pack I/O | Phase 7 composition/reload, Phase 2 harness |
+| `CustomExpressionCompiler` / `CustomExpressionCompileRequest` | exact compile entry points; D-P11-27 shared uniform/variable namespace with first-owner duplicate/collision law, forward resolution and exact SCC/reverse-reader isolation (§§4.1–4.5); deterministic partial-success build; no pack I/O or P3 schema change | Phase 7 composition/reload, Phase 2 harness |
 | `PlanBuildResult` | closed `Success(plan,diagnostics)`, `Partial(plan,diagnostics)`, `Failure(diagnostics)`; diagnostics never null/empty on failure; build disposition is not pipeline acceptance | Phase 7, Phase 2; GUI receives §5.5 projection only |
-| `CustomExpressionPlan` | immutable fingerprint and metadata accessors, valid-uniform declaration order, schema/backend semantic IDs, load diagnostics; private executable graph; no runtime state | controller, Phase 2 |
-| `CustomExpressionControllerFactory` / `CustomExpressionController` | non-null metrics sink, sole lifecycle, single P6 bridge; exact §4.12 atomic activation, reset and terminal CLOSE; accepted versus rejected publication determines P6 UNPUBLISHED_ABORT/REPLACEMENT/SHUTDOWN after final use; rejected retirement retains dependencies | Phase 6 installation, Phase 7 lifecycle |
+| `CustomExpressionPlan` | immutable metadata and valid-uniform declaration order; private shared definition graph with independent upload designation, prerequisite-first once-per-refresh converted memo values/effects, declaration-order uniform-only submission (§§4.3–4.8); no program/GL state | controller, Phase 2 |
+| `CustomExpressionControllerFactory` / `CustomExpressionController` | `create(ExpressionMetricsSink, ExpressionDiagnosticSink)` requires both non-null, typed diagnostic sink borrowed until close; synchronous delivery/failure containment in §4.9; sole lifecycle, single P6 bridge; §4.12 activation/reset/CLOSE and exact P6 retirement ownership remain binding | Phase 6 installation, Phase 7 lifecycle, Phase 2 collector |
 | `ExpressionContextSchema` | immutable `BIOME_*` name→id map and fixed fourteen view-boolean names | `mod.glue`, compiler |
 | `ExpressionContextProvider` / request/result/snapshot | one loader-neutral biome/weather/view snapshot per refresh; closed available/unavailable result | `mod.glue`, scripted tests |
-| backend selection | compile request carries `schmaloogium:typed-ast-interpreter-v1`; any other ID returns `Failure` with one pre-plan `UNSUPPORTED_BACKEND` error whose stable ID uses kind, pack fingerprint, and requested ID as specified in §4.11; backend graph/build/value/frame/memo types remain implementation-private | v0.4 interpreter; Phase 14 candidate implemented inside Phase 11 SPI |
+| backend selection | both compile entry points reject noncanonical IDs before adaptation/parsing with Failure and one ERROR/CHAT_AND_LOG SourceLess UNSUPPORTED_BACKEND; stable ID uses kind, pack fingerprint, requested ID (§4.11), including empty declarations; graph/build/value/frame/memo types remain private | v0.4 interpreter; Phase 2; Phase 14 internal candidate |
 | `RandomSource` | `nextFloat()` in `[0,1)`; injectable, activation-tuple-lifetime stream discarded on every reset and freshly supplied by later activation | `mod.glue`, tests |
 | `ExpressionMetricsSink` / `ExpressionMetrics` | synchronous non-null immutable aggregates; no-op default; sink failure disables metrics only; no pack data or node callbacks | Phase 14 OQ-22 ledger |
-| `ExpressionDiagnostic` / GUI projection | internal chat/log diagnostics remain P11-owned; §4.9.1 projector emits source-free immutable ExpressionDiagnosticGuiSnapshot with final P7 attempt outcome/identity, never raw diagnostic delivery to GUI | Phase 7 diagnostics/publication, Phase 12 direct display |
+| `ExpressionDiagnosticSink` / `ExpressionDiagnostic` / GUI projection | exact typed `report(ExpressionDiagnostic)`, Declaration or SourceLess location; §4.9 delivery/coalescing/failure/lifetime/result rules; compiler returns load records, controller emits runtime/activation records; §4.9.1 projects both locations without source to final-attempt GUI snapshot | Phase 7 collector/P1 adaptation, Phase 2 recording; Phase 12 direct safe display only |
 | `ExpressionConformanceVectors` / `ExpressionConformanceCase` | exact §5.6 original vector/provider/expected-effect contract, using existing compiler/controller/P6 bridge; no harness dependency in engine | Phase 2 RUN-EXPRESSION-CONFORMANCE, Phase 14 conditional differential evaluation |
 
 All types above are pure Java. Consumers may retain immutable plans, schemas and source-free
 GUI/conformance value snapshots; they may not retain a live callback view or mutable controller internals.
 
-The exact consumer-visible declarations and semantics in §§2.3, 4.1, and 4.9–4.12 are incorporated
+The exact consumer-visible declarations and semantics in §§2.3, 4.1–4.5, and 4.8–4.12 are incorporated
 into this §5 publication and are binding, including record fields, closed variants/enums, callable
 shapes, lifecycle, ownership, and error semantics. Every consumer-visible change to an incorporated
 API, schema, variant, lifecycle, ownership rule, or semantic must update the corresponding §5 row
@@ -1088,23 +1193,68 @@ for Phase 11 diagnostics, and every record field and the ordered list participat
 projection without reopening pack files or reinterpreting Properties syntax
 (Phase 3 §§2.2/5.1 custom-expression declaration algebra and §5.3 schema discipline).
 Before extracting declarations, composition accepts exactly current `CURRENT_SCHEMA_VERSION`
-(18 after the IR-03/24 follow-on), rejects 17 and every other version, never upgrades older configurations or manufactures missing declarations.
+(23 adopted by D-P11-25), including matching current nested IdMappingInput; reject every other version/mismatch, never upgrade older configurations or manufacture missing declarations.
 The compile adapter copies this same configuration's ordered list and fingerprint unchanged;
 it neither materializes a different option catalog nor uses stale pack declarations with new macros.
+
+**Schema23 receiver receipt — D-P11-25, 2026-09-08 (unverified).** Admission uses the
+current constant, now23, for containing/nested/inspection schemas and same-configuration identity
+before extraction, compilation or reuse; MaterializedSource-v23 remains opaque. D-P11-21 and
+older numeric receipts are historical. P3's typed selector ranges alter upstream identity, not
+expression parsing. Carry the current fingerprint unchanged; ordinary/CLASSIC and alternate rules,
+same-load assets/native/option contracts, nine source-free trees and projectionVersion=1 remain
+unchanged. No binary authority, extra source parsing or inferred registry translation is granted.
+
+**Historical schema21 receiver receipt — D-P11-20, 2026-09-08 (unverified).** Adopted P3
+§0.63/D-P3-70/§5.3. Containing configuration and nested `IdMappingInput` each satisfy
+`schemaVersion == PackFrontEnd.CURRENT_SCHEMA_VERSION` and agree before declaration extraction,
+compilation, retention or plan reuse; 21 is the dated adopted value. Any received inspection
+snapshot must match the same current schema/configuration identity before reporting. Reject
+old/future/mismatched values without relabeling, deleting a profile component or synthesizing
+old defaults/empty fields. The schema20/19 receipts below are historical, not admission gates.
+Carry the current configuration fingerprint into existing compile/plan identity unchanged.
+`MaterializedSource-v21` is upstream cache invalidation, not an expression input or source parser.
+P4 D-P4-31's `RegistryFingerprint/own-build-v1` was the opaque composition identity at receipt;
+the current domain is P4 D-P4-43's `RegistryFingerprint/profile-selection-v3`. P11 neither
+parses/repairs either opaque token nor requires new registry getters or resolution evidence.
+D-P3-69 same-load assets/nine source-free trees, declarations/ordering/duplicates, expression
+semantics, actual context/random provider and P6/controller lifetimes remain unchanged.
+No binary acquisition or timing API is granted; fresh owner/receiver reviews remain required.
+
+**Historical schema20 receiver receipt — D-P11-19, 2026-09-08 (unverified).** Adopted P3
+§0.62/D-P3-69/§5; earlier current-version assertions and the schema19 receipt below are
+historical. Require containing/nested schema20 before extracting declarations, compilation
+or plan reuse. Required non-null `assets` after `sources` is the exact same-load P3 capability
+paired with the exact containing `PackIdentity`; foreign-load pairing is invalid even if
+structurally equal. Carry the owner's metadata-derived configuration fingerprint unchanged
+into existing compile/plan identity, not a new expression input. No dummy field, fabricated
+empty manifest, capability reconstruction, old-schema or resource-epoch upgrade is allowed.
+Expression declarations/ordering/duplicates, evaluator and P6 lifecycle remain unchanged;
+P11 acquires/decodes no binary assets. Source-free inspection preserves the actual P3 ninth
+canonical assets metadata section, digest strings via TextHash, original eight meanings and
+projectionVersion=1, not bytes/cursors/providers. P13 owns optional owned-sidecar-only recovery;
+other P3 safety/bounds/index/container/source/configuration failures remain fatal.
+Fresh owner/receiver whole-document review and IR-01 remain; no prior PASS covers this edit.
+
+**Historical schema19 receiver receipt — 2026-09-07:** adopted P3 D-P3-68/§0.61 and §11 migration
+for containing/nested schema and same-build fingerprint identity only. Expression list,
+ordering, duplicates, evaluator and P6 lifecycle contracts are unchanged; no materialized
+native text or translator success enters compilation. Prior schema18 decisions remain
+historical; current producer/receiver reviews and IR-01 are not closed by this receipt.
 
 ### 5.3 Phase 6 contract consumed
 
 Phase 11 adopts the current, unverified Phase 6 §5 contracts:
 
 - one `CustomUniformBridge.refresh(ResolvedProgramDescriptor, BuiltInExpressionView,
-  CustomUniformUploadSink)` (`docs/phase6/v1/PHASE_6_DOC.md:1200`–`:1205`);
+  CustomUniformUploadSink)` (`docs/phase6/v1/PHASE_6_DOC.md:1535`–`:1540`);
 - exact-name `Present(ExpressionValue)` / `Absent` lookup and the closed scalar/vector/mat4
-  runtime values (`:1207`–`:1225`);
-- typed immutable upload submission and closed refresh result (`:1226`–`:1250`);
+  runtime values (`:1542`–`:1560`);
+- typed immutable upload submission and closed refresh result (`:1561`–`:1585`);
 - built-ins-first execution on every successful activation, with Phase 11 owning expression errors
-  and Phase 6 owning GL uploads (`:1283`–`:1286`);
+  and Phase 6 owning GL uploads (P6 §4.13);
 - definition-order submission, finite values, type/location checks, duplicate rejection, and
-  accepted-prefix semantics (`:1296`–`:1329`).
+  accepted-prefix semantics (§4.13, `:1521`–`:1673`).
 - permanent `retire(UNPUBLISHED_ABORT|REPLACEMENT|SHUTDOWN)` and exact
   `Retired|AlreadyRetired|Rejected(WRONG_THREAD|ACTIVE_CALLBACK)` lifetime/final-use rules
   in P6 §4.14; P11's own CLOSE remains terminal but is never forwarded as a P6 enum value.
@@ -1120,22 +1270,31 @@ also consumes `CustomUploadCommand.Bool1(name,boolean)`, with Phase 6 owning lin
 validation and 0/1 GL encoding. The sink's closed outcomes are `Accepted`, normal no-warning/no-GL
 `SkippedAbsent`, and `Rejected(stableDiagnosticId)`; only actual invalid names, type mismatches, and
 duplicates reject. These grants and their three authoritative refresh counters are binding in
-Phase 6 §5 (`docs/phase6/v1/PHASE_6_DOC.md:1389`–`:1391`). Phase 6 retains ownership of active-layout
+Phase 6 §4.13 (`docs/phase6/v1/PHASE_6_DOC.md:1521`–`:1673`). Phase 6 retains ownership of active-layout
 validation, GL encoding, diagnostics, and upload isolation.
 
 ### 5.5 Composition handoff without a Phase 7 dependency
 
 Later composition must:
 
-1. create one controller and install it into Phase 6 before first activation;
+1. create one controller with `create(metricsSink, diagnosticSink)` using a P7-owned real typed
+   collector/reporting adapter, then install it into Phase 6 before first activation;
 2. compile a plan from the exact accepted Phase 3 configuration and Phase 6 schema;
 3. construct the `mod.glue` context provider and a fresh random source for each activation;
 4. activate the complete tuple before the corresponding registry/uniform runtime is used;
 5. forward every lifecycle event through §4.12's binding map and ordering; successful fresh
    activation must precede custom participation in new-state use, while failed/absent activation
    leaves `NoCustoms` and does not block Phase 6 lifecycle progress;
-6. route existing chat/log diagnostics through the established Phase 1 diagnostic mechanism;
-   separately publish only §5.5.1's safe direct GUI projection at final attempt outcome.
+6. forward returned load diagnostics once and receive runtime/activation diagnostics through
+   `ExpressionDiagnosticSink.report(ExpressionDiagnostic)` (§4.9), preserving typed records/IDs;
+   adapt to P1 `DiagnosticReporter.report(EngineDiagnostic)` with P11 WARNING→P1 WARN,
+   ERROR→ERROR, CHAT_AND_LOG→CHAT and LOG_ONLY→LOG_ONLY. Use registered fixed message keys
+   per kind, sanitized safe arguments, bounded real attribution/span in log-only detail when
+   present and explicit absent detail for SourceLess; logChannel uses the registered expression
+   channel. P1 handles client-thread delivery/no-player logging. Stable-ID coalescing remains
+   in the typed collector/controller, since EngineDiagnostic has no stableId field.
+   Separately publish only §5.5.1's safe direct GUI projection at final attempt outcome;
+   neither GUI nor P2 conformance recovers typed records by reverse-converting EngineDiagnostic.
 
 These are Phase 11's published requirements, not assumptions about Phase 7 internals.
 
@@ -1175,10 +1334,12 @@ sealed interface ExpressionConformanceStep {
 enum ExpressionConformanceBuild { SUCCESS, PARTIAL, FAILURE }
 record ExpressionConformanceObservation(
     List<CustomUploadCommand> commands, List<ExpressionDiagnosticKind> diagnosticKinds,
-    List<String> stableDiagnosticIds, CustomRefreshResult refreshResult,
+    List<String> stableDiagnosticIds, List<ExpressionDiagnosticLocation> diagnosticLocations,
+    CustomRefreshResult refreshResult,
     int contextSamples, int randomSamples) {}
 record ExpressionConformanceExpected(
     ExpressionConformanceBuild build, List<ExpressionDiagnosticKind> loadDiagnosticKinds,
+    List<String> loadStableDiagnosticIds, List<ExpressionDiagnosticLocation> loadDiagnosticLocations,
     List<ExpressionConformanceObservation> refreshes) {}
 enum ExpressionConformanceVerdict { PASS, FAIL, UNSUPPORTED }
 record ExpressionConformanceCaseResult(
@@ -1188,8 +1349,13 @@ record ExpressionConformanceCaseResult(
 ```
 
 These are conformance-facing original fixtures, not new production evaluator entry points.
-Lists and scripted views are deeply immutable, non-null, stable ordered snapshots. P6 owns
-`CustomSubmitResult`, `CustomUploadCommand`, `CustomRefreshResult` names and closed algebras.
+Lists and scripted views are deeply immutable, non-null, stable ordered snapshots.
+Diagnostic kind/ID/location lists have identical lengths and matching order. Original fixtures may
+contain their own synthetic Declaration locations; observations compare them exactly or compare
+SourceLess exactly. These fixture locations are never copied into committed run reports. P2's
+adapter checks both compiler entry points for build equivalence from the same original declaration
+data before proceeding, and reports a mismatch rather than selecting the favorable result.
+P6 owns `CustomSubmitResult`, `CustomUploadCommand`, `CustomRefreshResult` names and closed algebras.
 The adapter calls existing `compile`, controller `activate/reset/close`, and bridge `refresh`;
 it uses a P6-conforming scripted view and recording sink and an authentic synthetic P4/P6
 activation context/descriptor, not a forged production credential or real GL. On each Activate,
@@ -1201,8 +1367,11 @@ vector. All traces include explicitly scripted frameCounter/time values; no wall
 Expected command values compare raw binary32 bits and exact boolean/int values, ordered names,
 diagnostic kinds/stable identities and refresh counts. `refreshes` contains one observation per
 Refresh, including NoCustoms after a nonterminal reset. Close is terminal and last; no fixture
-refreshes a closed controller as if it were live. Runtime diagnostics are captured through the
-established recording diagnostic destination, not inferred from command omissions.
+refreshes a closed controller as if it were live. Runtime diagnostics are captured from the exact
+`ExpressionDiagnosticSink` supplied to `create(metricsSink, diagnosticSink)`, in callback order;
+P2 records typed kind/ID/location before reporting, never infers errors from omitted commands.
+Load diagnostics come from PlanBuildResult; compare their kinds, IDs and location variants directly.
+Collector failure makes the vector FAIL with a source-free delivery-failure mismatch path.
 Load failure cases have no Activate/Refresh; every case's expected data is authored independently
 from §3/§4 semantics, never generated by the evaluator under test.
 
@@ -1215,7 +1384,7 @@ rise/fall/reset traces and provider schema/availability failure. This evaluates 
 not merely Properties parsing or successful shader loading.
 
 The original catalog includes these fixed receiving vectors (all declarations are project-owned
-synthetic fixtures, with unique names/ordinals and the current schemas):
+synthetic fixtures, with unique ordinals and current schemas; duplicate-name cases are explicit):
 
 | caseId | Input / scripted sequence | Independent observable expectation |
 |---|---|---|
@@ -1224,7 +1393,24 @@ synthetic fixtures, with unique names/ordinals and the current schemas):
 | EXPR-MATRIX/row-column | `a=gbufferModelView.2.1`; scripted MAT4 has logical element `[row 2][column 1]=9` and every other element 0 | a=`9` (`41100000`), not transposed zero; separately absent matrix disables only a with INPUT_ABSENT and no submission |
 | EXPR-ERROR-ISOLATION/divide | ordered `a=1/temperature`, `b=2`; scripted temperature=0, Accepted sink for b | load Success; runtime DIVIDE_BY_ZERO disables a only; b alone submits `2` (`40000000`), Completed(1,0,0); subsequent refresh omits disabled a until reset |
 | EXPR-SMOOTH/same-frame-reset | `a=smooth(7,temperature,1,2)`; contexts target 0 at frame 1, target 1 at frame 1 again, target 1 at frame 2 with frameTime=1; reset WORLD_EPOCH, refresh, fresh activation target 0.25 | a=`0`, `0`, `1` in the first three refreshes; reset refresh NoCustoms/zero provider calls; fresh activation initializes at `0.25`, not old 1; context sampled once per active refresh |
+| EXPR-SMOOTH/lazy-late-use | `a=if(is_in_water,smooth(7,temperature,1),0)`; frame1 true/target0; frame2 false then true/target1; frame3 false then true/target0; all later frames frameTime=1 | clock 0,1,1,2,2; outputs 0,0,1,0,0; cell committed times 0,0,1,1,2; each reached late site gets dt=1 and snaps, never dt=0 from the earlier skipped branch; all Completed(1,0,0), no diagnostics |
+| EXPR-SMOOTH/late-first-use | same expression; frame1 false; frame2 false then true/target0.25; frame3 false then true/target1; frameTime=1 | clock 0,1,1,2,2; outputs 0,0,0.25,0,1; cell uninitialized through first two refreshes, initializes at time1 with no startup ramp, then advances at time2; raw bits 00000000,00000000,3e800000,00000000,3f800000 |
+| EXPR-ERROR-ISOLATION/unsupported-empty | both compile entry points, empty declarations, backend `schmaloogium:unsupported-test` | Failure, exactly one UNSUPPORTED_BACKEND ERROR/CHAT_AND_LOG with SourceLess and ID(kind, pack fingerprint, requested ID); no plan, parsing, Activate or Refresh; projector emits empty declarationName and fixed safe summary |
 | EXPR-PROVIDER/unavailable | valid `a=temperature`; context script Unavailable with a stable project-owned diagnostic ID | Aborted with (0,0,0), no commands, one context sample; unrelated program remains usable |
+| EXPR-OPERATORS/uniform-reference | source order: `uniform.vec3.tint=vec3(level,bridge,level)`, `variable.float.bridge=level+0.25`, `uniform.float.level=0.5`; one refresh; all sinks Accepted | Success, no UNKNOWN_NAME/other diagnostic; Float3 tint=(0.5,0.75,0.5) then Float1 level=0.5; bridge never submits; Completed(2,0,0); dependency evaluation does not reorder uploads |
+| EXPR-OPERATORS/uniform-conversion-memo | source order: `uniform.float.reader=count+count+0.5`, `uniform.int.count=2+random()`; random script [0.75,0.25]; two refreshes in the same frame; sink script [Accepted,SkippedAbsent] each refresh | Success; exactly one sample per refresh; reader=4.5 (40900000), count=integer 2 offered in that order each time; Completed(1,1,0) twice; no diagnostics; absence does not erase count's converted memo value |
+| EXPR-OPERATORS/definition-lazy-effects | source order: `uniform.float.a=if(false,hidden,if(false,random(),0.25))`, `variable.float.hidden=random()`, `uniform.float.b=random()`; random script [0.75,0.5] | Success; eager hidden consumes 0.75 once but never uploads; a's inner lazy branch consumes none; ordered a=0.25,b=0.5; exactly two samples; Completed(2,0,0), no diagnostics |
+| EXPR-ERROR-ISOLATION/uniform-cycle | source order: `uniform.float.a=b+c`, `variable.float.b=a`, `uniform.float.reader=a`, `uniform.float.c=temperature`, `uniform.float.good=c+1`; temperature=0.5 | Partial; exactly a,b are CYCLE, reader INVALID_DEPENDENCY; c is neither; only c=0.5 then good=1.5 submit, Completed(2,0,0); no runtime diagnostics |
+| EXPR-ERROR-ISOLATION/uniform-runtime | source order: `uniform.float.reader=bad+1`, `uniform.float.bad=base/temperature`, `variable.float.base=2`, `uniform.float.good=base+1`; refresh temperature=0 then 1; all actual sinks Accepted | Success at load; first refresh bad DIVIDE_BY_ZERO, reader INVALID_DEPENDENCY; good alone submits 3 (40400000), Completed(1,0,0); second refresh still only good=3 and no repeated diagnostics until reset/new activation; base remains valid |
+| EXPR-ERROR-ISOLATION/shared-namespace | source order: `variable.float.shared=0.5`, `uniform.int.shared=2`, `uniform.float.reader=shared+0.25`, `uniform.float.failed=missingName`, `variable.float.failed=1`, `uniform.float.dependent=failed`, `uniform.float.good=2` | Partial; DUPLICATE_NAME on later shared/failed, UNKNOWN_NAME on first failed, INVALID_DEPENDENCY on dependent; no fallback to later failed; only reader=0.75 then good=2 submit, Completed(2,0,0); variables and disabled duplicate uniform never submit |
+
+For these six D-P11-27 vectors, Refresh uses frameCounter=1/frameTime=0 (both refreshes for the
+two-refresh cases), one Available context per refresh, empty random scripts unless listed, and
+Accepted for every actual sink call unless a row overrides it. Other referenced schema inputs
+are present with the stated values; use current closed schemas.
+The existing original-fixture diagnostic identity/location and exact-command comparison rules
+apply. No production GL lookup, active-layout query, `glGetUniform`, or alternate upload path is
+permitted. P2 receives all six cases through the unchanged §5.6 adapter; no P3 schema bump follows.
 
 These named examples do not replace exhaustive §3/§8 coverage. Every completed vector fixes a
 single expected build/runtime disposition; a permissive either-result oracle is prohibited.
@@ -1242,13 +1428,13 @@ real-pack result is claimed by this architecture amendment.
 
 | Failure | Detection | Local disposition | Ladder |
 |---|---|---|---|
-| malformed token/grammar/limit | plan build | disable one declaration; propagate only through variable dependencies; chat warning for affected uniforms | rung 1 analogue at load |
+| malformed token/grammar/limit | plan build | disable one declaration; propagate only through reverse definition dependencies; chat warning for affected uniforms | rung 1 analogue at load |
 | unknown/colliding name or wrong type/arity | plan build | same as parse failure | rung 1 analogue at load |
-| variable cycle | plan build | disable cycle and transitive dependent uniforms; keep unrelated roots | rung 1 analogue at load |
+| definition cycle (either kind) | plan build | exact SCC members CYCLE, reverse readers INVALID_DEPENDENCY; preserve independent prerequisites/roots | rung 1 analogue at load |
 | duplicate smooth id | plan build | first occurrence owns; disable later owning declaration/dependents | rung 1 analogue at load |
-| fixed input absent or schema/value mismatch | refresh | disable only each reaching uniform; no neutral value | rung 1 |
-| divide/remainder by zero | refresh | discard that definition's smooth overlay, disable only affected uniform | rung 1 |
-| NaN/infinity/domain/int-range result | every node/boundary | discard that definition's smooth overlay, disable only affected uniform | rung 1 |
+| fixed input absent or schema/value mismatch | refresh | disable failing definition and reverse-dependent readers; no neutral value | rung 1 |
+| divide/remainder by zero | refresh | discard failing definition's smooth overlay; disable it and reverse-dependent readers only | rung 1 |
+| NaN/infinity/domain/int-range result | every node/boundary | discard failing definition's smooth overlay; disable it and reverse-dependent readers only | rung 1 |
 | context provider unavailable/throws | refresh boundary | catch, return `Aborted`, omit remaining customs, keep program | feature-level 2a |
 | interpreter invariant/corrupt plan | refresh boundary | return `Aborted`, disable custom-expression feature until reset | feature-level 2a |
 | sink rejects name/type/duplicate | Phase 6 sink | count and continue; Phase 6 owns diagnostic/GL decision | rung 2 boundary |
@@ -1256,10 +1442,12 @@ real-pack result is claimed by this architecture amendment.
 | custom GL upload error | Phase 6 | disable that custom uniform for effective program/generation | rung 2 |
 | plan fingerprint/generation mismatch | activation/refresh | refuse tuple or abort refresh; old consistent plan remains or no customs | feature-level 2a |
 | close/reset races | thread assertion/state machine | reject illegal caller before mutation; never throw through render callback | feature-level 2a |
+| diagnostic destination throws | report boundary | contain RuntimeException; attempted record lost/coalesced, no recursive report/retry, evaluation/ledger/result unchanged; later distinct records attempted; P7 owns independent failure logging, P2 fails collection | reporting-only |
 
 There is no whole-program failure path in Phase 11. Chat warnings are coalesced by stable diagnostic
-ID, and repeated program switches cannot spam. Detailed logs retain the declaration name, source
-attribution, source span, error kind, and dependency path, but not an unbounded expression dump.
+ID, and repeated program switches cannot spam. Detailed logs retain actual declaration name/source
+attribution/span when present, or explicit source absence; never manufacture coordinates or emit
+an unbounded expression dump.
 
 ---
 
@@ -1291,8 +1479,8 @@ The hot path performs:
 
 - one context snapshot call;
 - at most one Phase 6 lookup for each distinct referenced built-in per refresh;
-- at most one evaluation for each reachable variable;
-- one evaluation and at most one sink call per enabled uniform;
+- at most one evaluation/conversion/effect commit for each retained enabled definition of either kind;
+- at most one sink call per successful uniform, reading its memoized value in declaration order;
 - no scan over unused variables and no per-program plan construction.
 
 Redundant GL upload elimination remains Phase 6's concern. Phase 11 must still evaluate on every
@@ -1316,9 +1504,15 @@ backend remains a compatible Phase 14 experiment, not a v0.4 requirement.
 
 - one golden parse tree and source-span test for every grammar production and precedence boundary;
 - table tests for every legal/illegal declaration type conversion;
-- unknown/reserved/colliding/duplicate identifiers;
-- forward variables, diamonds, long chains, self-cycle, multi-node cycle, multiple disjoint cycles,
-  invalid-dependency propagation, and unused-variable elimination;
+- shared namespace: same-kind/cross-kind/type duplicates, invalid first owner without fallback,
+  reserved/input/excluded collisions, forward uniform→uniform, uniform→variable and variable→uniform;
+- diamonds, long chains, mixed-kind/self/disjoint cycles, exact SCC membership, reverse-reader
+  invalidity, independent shared prerequisites, and unused-variable elimination;
+- reader-before-dependency declaration `a=b+1; b=temperature` emits `b,a` and uploads the expected
+  value; source ordinal only orders simultaneously ready definitions;
+- `a=b+c; b=a; c=temperature`, with separate uniforms reading `a` and `c`: only `a,b` are
+  `CYCLE`, the first uniform is `INVALID_DEPENDENCY`, and the independent `c` uniform still uploads;
+  duplicate reads do not duplicate graph dependencies or evaluation;
 - parser limits and adversarial deep/wide inputs without stack overflow or client exception;
 - fingerprint determinism under identical input and changes to text/order/schema/backend semantic ID.
 
@@ -1335,7 +1529,7 @@ vectors include:
 - `between` endpoints, negative epsilon, and `in` matches at first/middle/last position;
 - vec2/3/4 arity, member/color aliases, rejected `.w/.a`, and every matrix row/column;
 - every smooth overload, explicit/automatic key stability, duplicate ids, rise/fall, zero/default
-  fade, repeated switches in one frame, counter wrap, and reset reasons.
+  fade, repeated switches in one frame, lazy skipped/late-first-use §5.6 tables, counter wrap, and reset reasons.
 
 The smooth trace test computes the published equation independently from tabulated inputs; it does
 not call the implementation helper to generate its expected values.
@@ -1346,12 +1540,17 @@ not call the implementation helper to generate its expected values.
   permitted name, all exclusions, unknown, absent, and schema mismatch;
 - scripted context providers cover every boolean, biome constant, temperatures/rainfall, provider
   unavailability, and world-schema replacement;
-- shared variable is counted once per refresh even when many uniforms reference it;
-- uniform submission order is declaration order after dependency-order evaluation;
-- one parse failure, one shared-variable runtime failure, one direct uniform failure, and one sink
-  rejection leave unrelated uniform commands intact;
-- failed definitions rollback smooth effects while random consumption follows the specified
-  left-to-right rule; successful smooth definitions commit exactly once;
+- shared variable or uniform is evaluated/converted once per refresh even with many readers;
+- uniform submission order is declaration order after dependency-order evaluation; only uniforms
+  submit, and an absent/rejected uniform remains usable as a memoized expression dependency;
+- parse failures, shared-definition runtime failures, direct uniform failures and sink rejection
+  leave independent commands intact; §5.6 fixes eager-definition versus lazy-AST effect behavior;
+- failed definitions rollback both smooth value and last-committed timestamp while random consumption
+  follows the specified left-to-right rule; successful definitions commit both exactly once;
+- typed runtime sink observations precede Completed/Aborted/Rejected, preserve IDs/real or absent
+  locations, and throwing-destination containment leaves evaluation and counters unchanged;
+- unsupported backend with empty/nonempty declarations fails source-less before parsing through
+  both compile entry points; GUI projection never invents declaration/source data;
 - absent active-program uniform produces a normal skip and no chat warning;
 - bool maps only through the verified Phase 6 bool command;
 - controller installation/activation/reset/close state transitions and late/duplicate calls;
@@ -1380,11 +1579,11 @@ The implementation gate is:
 |---|---|---|
 | clean-room grammar, spans, limits, typed AST | v0.4 | all Appendix F.6 tokens/operators parse and type-check |
 | fixed/biome/view input schemas and provider SPI | v0.4 | complete catalog and exclusion tests pass |
-| variable graph, cycles, reachability, memoization | v0.4 | graph/isolation vectors pass |
+| shared definition graph, cycles, reachability, memoization | v0.4 | mixed uniform/variable graph/isolation vectors pass |
 | complete function registry and lazy semantics | v0.4 | every §3.2 golden vector passes |
-| smooth/random state and refresh clock | v0.4 | state-machine trace/reset/cadence vectors pass |
+| smooth/random state and controller/per-cell clock | v0.4 | independent late-use/lazy/rollback/reset/cadence vectors pass |
 | interpreter backend and Phase 6 bridge | v0.4 | scripted program-switch commands pass |
-| diagnostics, controller lifecycle, metrics sink | v0.4 | failure ladder and lifecycle tests pass |
+| typed diagnostic sink/location/projection, lifecycle, metrics | v0.4 | P7/P2 delivery, source-less build, sink-failure and lifecycle vectors pass |
 | real-pack Phase 2 extension | v0.4 | matrix declarations receive complete dispositions |
 | compiled MethodHandle/bytecode backend candidate | v0.5 / Phase 14, conditional | OQ-22 evidence shows need and semantic differential suite passes |
 
@@ -1461,6 +1660,19 @@ session does not run the spike or update RESEARCH.md.
 | D-P11-16 | P11 original vectors/providers are the exact RUN-EXPRESSION-CONFORMANCE receiving contract, with P2-owned adapter and source-free reports | IR-20; function/smooth evaluation and effects, not Properties parsing, determine conformance |
 | D-P11-17 | P14 accepts OQ-22 method/metrics and measured decision while P11 retains semantics/SPI | IR-15; interpreter remains the baseline absent a demonstrated real-pack miss |
 | D-P11-18 | Adopt P3 schema18 same-load declarations and fingerprint cutover, superseding D-P11-14's schema17 reference only | Locale/session-option/old-light changes invalidate configuration-derived plans; evaluator and P6 lifecycle semantics are unchanged |
+| D-P11-19 | 2026-09-08: adopt P3 D-P3-69 schema20, matching nested IDs and exact same-load assets/configuration identity in §5.2 | Supersedes previous current-version assertions only; no expression semantic change, acquisition authority or historical review clearance |
+| D-P11-20 | 2026-09-08: adopt P3 D-P3-70 exact-current schema21/nested-ID and current configuration/materialization identity in §5.2; opaque P4 D-P4-31 registry identity stays composition-owned | Earlier schema receipts remain history; evaluator/provider/lifetime semantics unchanged, no extra evidence getters or binary authority; fresh review required |
+| D-P11-21 | 2026-09-08: receive P3 schema22/current-constant and unchanged same-load/inspection contracts in §5.2 | Supersedes older numeric receipts only; BLOCK dual-era semantics remain upstream; no implementation clearance |
+| D-P11-22 | R11-C1: advance one controller clock per observed frame; each cell accrues from its last successful committed evaluation time; transactional value/timestamp pair | Lazy branches do not spend elapsed time, same-frame successes do not double-advance; independent late-use tables in §5.6 |
+| D-P11-23 | R11-C2: require typed ExpressionDiagnosticSink after metrics at factory construction, with synchronous delivery and contained destination failure | P7 real collector/P1 adaptation and P2 recording consume the same exact records; result counters and evaluation are independent of delivery |
+| D-P11-24 | R11-C3: closed Declaration/SourceLess location instead of fabricated compile-request attribution | Both compile entry points reject unsupported IDs before parsing even empty lists; preserve declaration provenance/IDs and source-free GUI projection |
+| D-P11-25 | Receive schema23/current-constant typed-selector identity and MaterializedSource-v23 | No expression grammar, provider or diagnostic change; no new parser or schema upgrade |
+| D-P11-26 | R13-C13-1: reader-to-dependency edges use exact SCC cycle membership and reverse-reader invalidity; unresolved dependency counts produce prerequisite-first order | Preserve independent prerequisites shared with cycles and deterministic ready-source ties; internal planning correction, no schema, SPI or §5 shape change |
+| D-P11-27 | C14-1: supersede D-P11-4's uniform-reference prohibition and D-P11-5/26's variable-only graph scope; both kinds share first-owner resolution, declared-type converted memo values and exact SCC/reverse-reader isolation; only UNIFORM designates upload | Shipped author example explicitly reads screenDark from screenDark3 (lines 421–422), disproving the old inference; original §5.6 vectors pin cycles/errors/effects/order. Duplicate ownership is fixed before expression validation, with no fallback. P6 remains sole upload owner; no P3 schema bump or GL lookup; architecture unverified |
+| D-P11-28 | C15-1: state the current Phase 3 admission constant as 23 received by D-P11-25 in the §0 header and the §5.2 body, deferring to the newest §5.2 receipt; D-P11-21 and older numeric statements are historical | Textual consistency with D-P11-25 and current P3 bytes; no schema bump, admission-gate or grammar change |
+| D-P11-29 | C15-2: repoint §§1.2/1.3/3.3/4.8/5.3/5.4 dependency anchors to current P3 declaration-capture/algebra/precipitation bytes and current P6 §4.13 coordinates, section-level where the review verified no sub-range | Coordinates only; the bullets' incorporated semantics already match the verified endpoints; no §5 grant content or receiver change |
+| D-P11-30 | C15-3: restate §1.1 dependency-analysis scope as the shared uniform/variable definition graph per D-P11-27 | Closes the §1 cutover residue; §§4.1/4.4/4.5 and the incorporated §5.1 compiler row already define one shared namespace |
+| D-P11-31 | C16-1: the §5.2 D-P11-20 receipt marks P4 D-P4-31's own-build-v1 as the receipt-time opaque composition identity; the current domain is D-P4-43's RegistryFingerprint/profile-selection-v3 | P4 :1937–:1938 supersedes positional-route-v2 two generations past own-build-v1; supersedes D-P11-20's present-tense identity statement only; opacity treatment and scheme-23 admission logic unchanged |
 
 ### 11.2 Contradictions, gaps, and rulings
 
@@ -1503,8 +1715,9 @@ No change to RESEARCH.md, any DESIGN.md, PD, or a dependency document is perform
 
 - [ ] **v0.4 — dependency gate:** consume the verified Phase 3 and Phase 6 §5 contracts. **Hook:**
   their newest reviews remain literal PASS for the binding documents read by implementation.
-- [x] **v0.4 — verification setup:** Phase 11's v3 target profile, successful dry-run preflight,
-  and MOVES adoption record exist. **Hook:** each fresh round revalidates the v3 selectors.
+- [ ] **v0.4 — document review:** review current owner and dependency/receiver contracts against
+  the header-selected v3 authority. **Hook:** fresh whole-owner review; retired profile/preflight
+  machinery remains historical provenance only, per MOVES.
 - [ ] **v0.4 — language core:** implement the clean-room lexer/parser, spans, limits, typed AST,
   and semantic version. **Test:** §8.1 grammar/span/limit vectors.
 - [ ] **v0.4 — operations:** implement exact precedence, all operators, and every §3.2 function—no
@@ -1513,21 +1726,23 @@ No change to RESEARCH.md, any DESIGN.md, PD, or a dependency document is perform
   zero-divisor checks. **Test:** type matrix plus every §8.2 error vector.
 - [ ] **v0.4 — inputs:** implement the exact fixed input schema, exclusions, biome constants, and
   fourteen booleans. **Test:** exhaustive catalog/presence/schema tests in §8.3.
-- [ ] **v0.4 — variables:** implement the dependency graph, deterministic cycle diagnostics,
-  reachability, and memo slots. **Test:** §8.1 graph cases and once-per-refresh counters.
+- [ ] **v0.4 — shared definitions:** implement §§4.1–4.5 shared namespace/first-owner policy,
+  both-kind graph, exact SCC/reverse-reader isolation, reachability and converted memo slots.
+  **Test:** §5.6 uniform references/cycles/errors/effects/conversion plus §8.1 graph cases.
 - [ ] **v0.4 — stateful functions:** implement deterministic left-to-right random consumption and
   the exact transactional §4.7 smooth state machine/clock/reset behavior. **Test:** independent
-  smooth traces, random-consumption, and smooth-rollback tests.
+  lazy/late-first-use tables, random-consumption, and paired value/timestamp rollback tests.
 - [ ] **v0.4 — plans:** implement immutable plan build and partial-success diagnostic results.
-  **Test:** fingerprint determinism, mixed-validity build, and attribution tests.
+  **Test:** fingerprint determinism, mixed-validity build, real declaration and source-less pre-plan attribution through both entry points.
 - [ ] **v0.4 — backend:** implement the typed-AST interpreter behind `EvaluatorBackend` with
   source-span errors. **Test:** backend semantic/golden suite and parser-fuzz corpus.
 - [ ] **v0.4 — Phase 6 integration:** implement the single bridge with declaration-order commands
   and rung-1 isolation. **Test:** scripted sink order/skip/reject/error integration cases.
 - [ ] **v0.4 — lifecycle:** implement context provider SPI, controller activation/reset/close, and
   lifecycle assertions. **Test:** every legal/illegal state transition and provider outcome.
-- [ ] **v0.4 — diagnostics:** implement stable chat/log routing and rate limiting. **Test:** stable
-  IDs, coalescing across switches, sanitation, and dependency-path logging.
+- [ ] **v0.4 — diagnostics:** implement required typed factory sink, P7/P2 collection, P1 adaptation
+  and source-free projection. **Test:** stable IDs, source-less/real locations, delivery failure
+  containment, lifecycle release, coalescing, sanitation and dependency-path logging.
 - [ ] **v0.4 — headless conformance:** add every §8 golden vector, including independent smooth
   traces and effect rollback. **Hook:** Phase 11 pure-JVM test task.
 - [ ] **v0.4 — matrix conformance:** extend Phase 2 scripted/matrix-pack runs without committing

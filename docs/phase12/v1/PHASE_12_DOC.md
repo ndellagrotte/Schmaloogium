@@ -11,11 +11,26 @@ session was assigned v3 and its Part II Phase 12 spec at ll. 2357–2432).
 **Current amendment (2026-09-07):** architecture-only IR-03/05/06/07/08/16/17/24/25
 consumer cutover. §5 and its incorporated active contracts changed; this document is
 **unverified** and prior reviews certify historical bytes only. Current consumption uses
-Phase 3 §5 schema18 (including catalog-bound state, lossless declarations and the approved
+Phase 3 §5 schema23 (including catalog-bound state, lossless declarations and the approved
 IR-03/24 locale/session/old-light amendment), Phase 4 generation ownership, Phase 7 reload/atlas orchestration and
 Phase 11 direct diagnostics. No implementation, validation or fresh PASS is claimed.
-The original reading/status records in §§0.1–0.7 are historical; current adoption/gates are
+The original reading/status records in §§0.1–0.8 are historical; current adoption/gates are
 §§5/11. Additional authority read: RESEARCH §§0–1 and DESIGN v3 Phase 12/13 scopes.
+
+**Attempt-6 correction (2026-09-08), D-P12-37:** Review 7 C1 publishes the independent
+pending-profile summary through the existing options-view model. §§2/4/5/8/12 are amended
+together; historical evidence/confidence and fresh-review/implementation gates remain unchanged.
+
+**Attempt-7 correction (2026-09-08), D-P12-38:** Review 8 C1 publishes presenter-owned
+profile applicability and session mutation/reset/action availability through the existing
+options seam, with callback rechecks and prepared reasons. This is architecture only;
+§5 changes remain unverified, with no new source/runtime evidence or gate waiver.
+
+**Attempt-8 correction (2026-09-08), D-P12-39:** Review 9 C1 restates session-selection
+(re)initialization P12-locally: the presenter-owned edit/selection model survives catalog
+replacement retaining the committed explicit selection, revalidated against the new catalog's
+`profiles()`; initialization never uses inferProfile and never needs a P7 read-back. The §5
+row restatements are textual; unverified, with no new source/runtime evidence or gate waiver.
 
 ### 0.1 Inputs actually read
 
@@ -34,8 +49,8 @@ The original reading/status records in §§0.1–0.7 are historical; current ado
 
 | Doc | Verified state at read time | Extent read |
 |---|---|---|
-| `docs/phase1/v14/PHASE_1_DOC.md` | **verified** — `docs/phase1/reviews/PHASE_1_REVIEW_25.md` l. 61 literal `PASS`, l. 63 `Interface changed: no`; round 25 is the latest Phase 1 round | §2.1 package tables (ll. 1527–1563), §4.9.4 diagnostics (ll. 3776–3797), §4.2.6/§4.8.4 dependency mechanics as reached from §5.3, §5 whole (ll. 4175–4283), §10.2 OQ-12 (ll. 4580–4610), §11.3 item 2 and §11.4's "To Phase 12" block (ll. 5167–5171), §9 row for `SHADER_GUI` (l. 4513) |
-| `docs/phase3/v1/PHASE_3_DOC.md` | **NOT verified** — latest round is `docs/phase3/reviews/PHASE_3_REVIEW_36.md` l. 270 `PASS-WITH-CORRECTIONS`, l. 272 `Interface changed: yes`, with a §5 change outstanding. Ledger below | §2.2 public shape (ll. 335–641), §3.1 flag-ownership map (ll. 688–718), §3.2 rows for sliders/profiles/screens (ll. 740–745), §4.3 (ll. 907–955), §4.8 (ll. 1203–1300), §5 whole (ll. 1420–1689), §6 (ll. 1690–1706), §7 (ll. 1707–1729), §11.4 (ll. 2026–2046), §11.5 (ll. 2048–2053) |
+| `docs/phase1/v14/PHASE_1_DOC.md` | **verified** — `docs/phase1/reviews/PHASE_1_REVIEW_25.md` l. 61 literal `PASS`, l. 63 `Interface changed: no`; round 25 is the latest Phase 1 round | §2.1 package tables (ll. 1707–1780), §4.9.4 diagnostics (ll. 4970–5012), §4.2.6/§4.8.4 dependency mechanics as reached from §5.3, §5 whole (ll. 5420–5549), §10.2 OQ-12 (ll. 5937–5966), §11.3 item 2 and §11.4's "To Phase 12" block (ll. 6713–6717), §9 row for `SHADER_GUI` (l. 5865) |
+| `docs/phase3/v1/PHASE_3_DOC.md` | **NOT verified** — latest round is `docs/phase3/reviews/PHASE_3_REVIEW_36.md` l. 270 `PASS-WITH-CORRECTIONS`, l. 272 `Interface changed: yes`, with a §5 change outstanding. Ledger below | §2.2 public shape (ll. 671–1588), §3.1 flag-ownership map (ll. 1660–1690), §3.2 rows for sliders/profiles/screens (ll. 1712–1717), §4.3 (ll. 2037–2275), §4.8 (ll. 2809–2991), §5 whole (ll. 3343–4357), §6 (ll. 4359–4386), §7 (ll. 4388–4411), §11.4 (ll. 5130–5279), §11.5 (ll. 5281–5312) |
 
 **Phase 3 is a hard dependency (DESIGN.md §G5.1 l. 624), it is not verified, and this session
 consumed it anyway.** That is recorded here as a breach, not argued away.
@@ -78,7 +93,7 @@ dependency, and this document claims no such sanction. Therefore:
 |---|---|
 | candidate-003 — `ColorAttachmentRequirement.clearColorOverride`; **the configuration schema is now 4** (`PHASE_3_REVIEW_36.md` l. 304) | §5.2's `PackConfiguration` row and the I-3 schema gate (§4.1, §4.2); the `ResourceRequirements` aggregate |
 | candidate-004 — Phase 3 no longer consumes Phase 1's `:conformance` extension | §8.2 only; Phase 2 still owns the harness, so nothing here moves |
-| candidate-006 — §2.2's public declarations are incorporated into their §5.1 rows (P3 §5.1 ll. 1446–1452) | §5.2's `PackFrontEnd.discover`, `PackFrontEnd`/`PackLoadRequest`/`PackLoadResult` and `EngineOptionData` rows; it does **not** cover the `OptionConfiguration` row, so §5.4 request 1(a) stands |
+| candidate-006 — §2.2's public declarations are incorporated into their §5.1 rows (P3 §5.1 ll. 3373–3380) | §5.2's `PackFrontEnd.discover`, `PackFrontEnd`/`PackLoadRequest`/`PackLoadResult` and `EngineOptionData` rows; it does **not** cover the `OptionConfiguration` row, so §5.4 request 1(a) stands |
 | candidate-008 — recognized terminal filter/wrap property-key suffixes stripped and ignored | nothing consumed here (Phase 13's surface) |
 | candidate-009 — an active `gdepth` mandates `colortex1 RGBA32F` | the `ResourceRequirements` aggregate only |
 | candidate-010 — `DrawRouting` is `AllUsed \| Explicit` | the `ResourceRequirements` aggregate only |
@@ -184,6 +199,21 @@ that review's `## Resolutions`.
 
 Notes F-2 and F-3 were not ordered and are not applied.
 
+### 0.8 Attempt-9 correction (2026-09-08) — Round-10 evidence re-pin
+
+Applied from `docs/phase12/reviews/PHASE_12_REVIEW_10.md` (`PASS-WITH-CORRECTIONS`, 0 blocking,
+1 correction, 4 notes); reasoning is in that review's `## Resolutions`.
+
+1. C-1 — the P1/P3 line coordinates cited across §§0.2/1.2/2.1/3/4/5/6/8/11 were resolved against
+   the 2026-08-09 dependency layouts and drifted when `PHASE_1_DOC.md` (its §0.24–§0.34 addenda)
+   and `PHASE_3_DOC.md` (its §0.55–§0.65 addenda; schema now 23) grew on 2026-09-07/08. Every
+   flagged locator was re-resolved against the dependency docs' current bytes, with the cited
+   content verified at each recomputed target before repointing. Three quotes the owners' current
+   text no longer carries were re-quoted faithfully from it: §4.3.3's `*`-counting sentence
+   (P3 §4.3 ll. 2270–2271), §4.4.2's out-of-list sentence (P3 §4.3 ll. 2209–2210) and §4.7.1's two
+   ownership sentences (P3 §4.3 l. 2262; P3 §11.4 l. 5175). No semantic edit, no §5 change, no new
+   decision; notes N-1…N-4 were not ordered and are not applied.
+
 ---
 
 ## 1. Scope & boundaries
@@ -210,7 +240,7 @@ Notes F-2 and F-3 were not ordered and are not applied.
 | Concern touched here | Owned by |
 |---|---|
 | Option discovery, same-file confirmation, WCC merge, ambiguity, value lists, source rewriting | **Phase 3** (§4.3, §4.8) |
-| Persistence **formats** and both codecs (`OptionPersistenceCodec`, `GlobalShaderOptionsCodec`), ISO-8859-1 escaping, atomic write mechanics | **Phase 3** (§4.3 ll. 938–944). We own only *when* they are invoked (P3 §4.3 l. 946) |
+| Persistence **formats** and both codecs (`OptionPersistenceCodec`, `GlobalShaderOptionsCodec`), ISO-8859-1 escaping, atomic write mechanics | **Phase 3** (§4.3 ll. 2260–2262). We own only *when* they are invoked (P3 §4.3 l. 2262) |
 | `ScreenModel`/`ProfileModel`/`SliderSet`/`LangDecorations` parsing and column formula | **Phase 3 §5.1**; GUI consumes the exact ordered typed projections |
 | Profile inference (`OptionConfiguration.inferProfile`) | **Phase 3 §5.1**; preview Inferred/InvalidState result |
 | What a reload *does* internally — recompilation, buffer teardown, uniform rebind | **Phases 4–6** |
@@ -239,14 +269,14 @@ be headless-testable while the view is a thin adapter. That is realized as a har
 both halves of which Phase 1 has already granted:
 
 ```
-:engine  com.schmaloogium.engine.config      ← P1 §2.1 l. 1534 assigns this package "Phase 3 (+12)"
+:engine  com.schmaloogium.engine.config      ← P1 §2.1 l. 1736 assigns this package "Phase 3 (+12)"
            OptionPresentationModel            the whole tree: screens, entries, bindings, labels
            OptionEditSession                  pending changes, apply/discard/reset
            ReloadRequest / ReloadLifecycle    the classified request value + its merge algebra
            PackSelectionModel / PackSelectionActions   the selection view model + its intents
          (pure JVM; no Minecraft, Forge, Mixin, LWJGL, and no GL facade use at all)
 
-:mod     com.schmaloogium.mod.gui            ← P1 §2.1 l. 1556 assigns this package "Phase 12"
+:mod     com.schmaloogium.mod.gui            ← P1 §2.1 l. 1765 assigns this package "Phase 12"
            OptionScreenView (interface)       what a view must do; both adapters implement it
            VanillaOptionScreens               GuiScreen-based view — the OQ-9 fallback
            ModularUiOptionScreens             ModularUI-based view — adopted only if OQ-9 succeeds
@@ -256,7 +286,7 @@ both halves of which Phase 1 has already granted:
 ```
 
 No new package grant is requested: both packages exist in Phase 1's §2.1 tables with Phase 12
-named. The `.internal` rule and seam constraints C-1…C-4 (P1 §5.1 l. 4200) apply without exception.
+named. The `.internal` rule and seam constraints C-1…C-4 (P1 §5.1 l. 5445) apply without exception.
 
 The layer split is what makes the OQ-9 fallback cheap: **the entire contract surface — every App
 F.3/F.4 construct, every label, every value transition, every reload classification — is decided in
@@ -274,7 +304,20 @@ Illustrative signatures; implementations stay private under `.internal`.
 public record OptionPresentationModel(
     PresentationScreen mainScreen,
     Map<ScreenId, PresentationScreen> subScreens,
-    List<EngineDiagnostic> diagnostics) {}
+    List<EngineDiagnostic> diagnostics,
+    Optional<PendingProfileSummary> pendingProfileSummary,
+    OptionSessionAvailability availability) {}
+
+public record PendingProfileSummary(
+    Optional<ProfileName> selection,   // present = named intent; empty = cleared intent
+    String displayText) {}             // prepared by presenter, never reconstructed by views
+
+public record OptionActionAvailability(boolean enabled, Optional<String> disabledReason) {}
+public record OptionSessionAvailability(
+    OptionActionAvailability mutation,
+    OptionActionAvailability reset,
+    OptionActionAvailability apply,
+    OptionActionAvailability done) {}
 
 public record PresentationScreen(
     ScreenId id,                       // null-free; ScreenId.MAIN for the root
@@ -292,7 +335,8 @@ public sealed interface PresentationEntry {
                         List<String> allowedValues, int valueIndex,
                         Tooltip tooltip, boolean interactive) implements PresentationEntry {}
     record ProfileCycle(String label, Optional<ProfileName> current,
-                        Tooltip tooltip) implements PresentationEntry {}
+                        Tooltip tooltip, boolean applicable,
+                        OptionActionAvailability availability) implements PresentationEntry {}
     record SubScreenLink(ScreenId target, String label, Tooltip tooltip) implements PresentationEntry {}
     record Blank() implements PresentationEntry {}                     // `<empty>`
 }
@@ -308,9 +352,9 @@ public interface OptionEditSession {
     void cycle(OptionId id, int step); // value options and sliders; step is +1/-1
     void setValueIndex(OptionId id, int index);
     void cycleProfile();
-    boolean isDirty();
-    int pendingChangeCount();
-    ApplyOutcome apply();              // writes changed-only, then yields a ReloadRequest
+    boolean isDirty();                 // commit-needed: option delta OR changed explicit profile intent
+    int pendingChangeCount();          // differing option values + one iff profile intent differs
+    ApplyOutcome apply();              // accepts options and profile intent, then one ReloadRequest
     void discard();
     ApplyOutcome resetToPackDefaults();
 }
@@ -341,12 +385,15 @@ public record EngineSettingsModel(List<EngineSettingEntry> entries) {}
 
 public sealed interface EngineSettingEntry {
     String key();                      // the stable optionsshaders.txt-equivalent key
-    record Toggle(String key, String label, boolean value, Tooltip tooltip)
+    boolean interactive();             // presenter-owned behavior/ladder availability
+    record Toggle(String key, String label, boolean value, Tooltip tooltip,
+                  boolean interactive) implements EngineSettingEntry {}
+    record TriState(String key, String label, TriStateValue value, Tooltip tooltip,
+                    boolean interactive) implements EngineSettingEntry {}
+    record Choice(String key, String label, String rawValue, List<String> allowedValues,
+                  int valueIndex, Tooltip tooltip, boolean interactive)
         implements EngineSettingEntry {}
-    record TriState(String key, String label, TriStateValue value, Tooltip tooltip)
-        implements EngineSettingEntry {}
-    record Choice(String key, String label, List<String> allowedValues, int valueIndex,
-                  Tooltip tooltip) implements EngineSettingEntry {}
+    // Lists are immutable; rawValue is decoded owner text, never reconstructed from the index.
 }
 
 public enum TriStateValue { DEFAULT, ON, OFF }   // DEFAULT defers to the pack's App F.1 flag
@@ -373,15 +420,20 @@ public interface PackSelectionActions {   // the closed set of intents a view ma
     void refresh();                                   // explicit re-discovery
     void openPackFolder();
     void openOptions();                               // only for a loadable non-`Off` row
+    ApplyOutcome setEngineToggle(String key, boolean value);
+    ApplyOutcome setEngineTriState(String key, TriStateValue value);
+    ApplyOutcome setEngineChoice(String key, String rawValue);
     void close();
 }
 
 // ---------- mod.gui : the view seam ----------
 
 public interface OptionScreenView {
-    void showPackSelection(PackSelectionModel model, PackSelectionActions actions);
+    void showPackSelection(PackSelectionModel model, EngineSettingsModel settings,
+                           PackSelectionActions actions);
     void showOptions(OptionPresentationModel model, ScreenId screen, OptionEditSession session);
-    void showErrors(List<EngineDiagnostic> shaderGuiDiagnostics);
+    void showErrors(List<EngineDiagnostic> shaderGuiDiagnostics,
+                    Optional<ExpressionDiagnosticGuiSnapshot> expressionDiagnostics);
     void close();
 }
 ```
@@ -414,14 +466,14 @@ Phase 12 never re-parses.
 |---|---|---|---|
 | F3-1 | Switch `#define NAME // tooltip` — default ON | `SwitchOption` with `value=true` from `OptionState`; toggle flips it (§4.4.1) | `[V:doc]` App F.3 l. 1456 |
 | F3-2 | `// #define NAME // tooltip` — default OFF | same entry kind; the default originates in P3's catalog, never re-derived here | `[V:doc]` App F.3 ll. 1456–1457 |
-| F3-3 | Recognized only when the same file `#ifdef`/`#ifndef`s it | Not re-checked: the presentation model is built from P3's confirmed catalog only (P3 §4.3 ll. 913–914) | P3 §4.3 |
+| F3-3 | Recognized only when the same file `#ifdef`/`#ifndef`s it | Not re-checked: the presentation model is built from P3's confirmed catalog only (P3 §4.3 ll. 2043–2044) | P3 §4.3 |
 | F3-4 | Tooltips split on `". "` | `TooltipBuilder.split` produces one `TooltipLine` per segment (§4.3.5) | `[V:doc]` App F.3 l. 1457 |
-| F3-5 | Lines ending `"!"` render **red** | `TooltipSeverity.WARNING` → red in both views; P3 sets the severity (§4.3 l. 926), Phase 12 chooses the colour (§4.3.5) | `[V:doc]` App F.3 l. 1458; P3 §4.3 l. 926 |
+| F3-5 | Lines ending `"!"` render **red** | `TooltipSeverity.WARNING` → red in both views; P3 sets the severity (§4.3 l. 2105), Phase 12 chooses the colour (§4.3.5) | `[V:doc]` App F.3 l. 1458; P3 §4.3 l. 2105 |
 | F3-6 | Variable `#define NAME <value> // tooltip [v1 v2 v3]` | `ValueOption` cycling the ordered `allowedValues` list (§4.4.2) | `[V:doc]` App F.3 l. 1459 |
 | F3-7 | Default auto-added to the value list | Consumed as given; Phase 12 never inserts or removes a value | `[V:doc]` App F.3 l. 1459; P3 §3.2 |
 | F3-8 | Const options, explicit whitelist | Rendered as `ValueOption`/`SliderOption` when visible; the whitelist is P3's | `[V:doc]` App F.3 ll. 1460–1466 |
 | F3-9 | Const visible **only** when carrying a value list or referenced by a slider/profile/screen | The visibility predicate is applied at model-build time and is what makes a const eligible for `*` (§4.3.3) | `[V:doc]` App F.3 ll. 1465–1466 |
-| F3-10 | Ambiguous options (conflicting defaults) are **disabled** | Rendered with `interactive=false`, label suffixed with the ambiguity marker, tooltip carrying P3's reported locations; excluded from `*` expansion (§4.3.3, `[D-P12-4]`) | `[V:doc]` App F.3 l. 1467; P3 §4.3 ll. 921–923, §6 l. 1696 |
+| F3-10 | Ambiguous options (conflicting defaults) are **disabled** | Rendered with `interactive=false`, label suffixed with the ambiguity marker, tooltip carrying P3's reported locations; excluded from `*` expansion (§4.3.3, `[D-P12-4]`) | `[V:doc]` App F.3 l. 1467; P3 §4.3 ll. 2052–2054, §6 l. 4367 |
 | F3-11 | Lang `option.<NAME>` | Label resolution step 1 (§4.3.5) | `[V:doc]` App F.3 l. 1468 |
 | F3-12 | Lang `option.<NAME>.comment` | Tooltip source (§4.3.5) | `[V:doc]` App F.3 l. 1468 |
 | F3-13 | Lang `value.<NAME>.<val>` | `displayValue` resolution (§4.3.5) | `[V:doc]` App F.3 l. 1468 |
@@ -431,23 +483,23 @@ Phase 12 never re-parses.
 | F3-17 | Lang `profile.<NAME>.comment` | `ProfileCycle` tooltip (§4.3.5) | `[V:doc]` App F.3 l. 1469 |
 | F3-18 | Lang `screen.<NAME>` | `PresentationScreen.title` and `SubScreenLink.label` (§4.3.5) | `[V:doc]` App F.3 l. 1469 |
 | F3-19 | Lang `screen.<NAME>.comment` | `SubScreenLink` tooltip (§4.3.5) | `[V:doc]` App F.3 l. 1469 |
-| F3-20 | `sliders=<option list>` renders listed **variable** options as sliders | `SliderOption` emitted instead of `ValueOption` for members of P3's `SliderSet`; unknown/non-variable entries are diagnosed by P3 and simply do not become sliders (§4.4.3, `[D-P12-5]`) | `[V:doc]` App F.3 l. 1470; P3 §3.2 l. 740 |
+| F3-20 | `sliders=<option list>` renders listed **variable** options as sliders | `SliderOption` emitted instead of `ValueOption` for members of P3's `SliderSet`; unknown/non-variable entries are diagnosed by P3 and simply do not become sliders (§4.4.3, `[D-P12-5]`) | `[V:doc]` App F.3 l. 1470; P3 §3.2 l. 1712 |
 
 ### 3.2 RESEARCH Appendix F.4 — profiles and screens
 
 | # | Contract item (App F.4, ll. 1472–1480) | Design element | Provenance |
 |---|---|---|---|
-| F4-1 | `profile.NAME=` tokens `OPTION` / `!OPTION` / `OPTION:value` / `OPTION=value` | Applied as a batch into the pending set on profile click (§4.5.2), from P3's expanded constraint list | `[V:doc]` App F.4 ll. 1474–1475; P3 §3.2 l. 741 |
-| F4-2 | `profile.OTHER` copy, cycle-guarded | Consumed post-expansion; P3 ignores the cyclic edge and diagnoses (§6) | `[V:doc]` App F.4 l. 1475; P3 §4.8 l. 1249 |
-| F4-3 | `!program.<name>`, optionally dimension-prefixed | **Not actuated here** — Phase 4 consumes disabled programs. Phase 12 applies only the *option* constraints of a profile and never mutates program state (§4.5.2) | `[V:doc]` App F.4 ll. 1475–1476; P3 §3.2 l. 741 |
-| F4-4 | Current profile inferred from option values; otherwise **"Custom"** | `OptionConfiguration.inferProfile` over the same-catalog pending preview; Inferred/InvalidState, never runtime source evaluation (§4.5.1) | Phase 3 §5.1; App F.4 |
+| F4-1 | `profile.NAME=` tokens `OPTION` / `!OPTION` / `OPTION:value` / `OPTION=value` | Applied as a batch into the pending set on profile click (§4.5.2), from P3's expanded constraint list | `[V:doc]` App F.4 ll. 1474–1475; P3 §3.2 l. 1713 |
+| F4-2 | `profile.OTHER` copy, cycle-guarded | Consumed post-expansion; P3 ignores the cyclic edge and diagnoses (§6) | `[V:doc]` App F.4 l. 1475; P3 §4.8 ll. 2917–2918 |
+| F4-3 | `!program.<name>`, optionally dimension-prefixed | **Not actuated here** — retain explicit profile intent independently of options; P7 evaluates P3's new-configuration program state and P4 consumes it. No GUI registry mutation (§4.5.2) | `[V:doc]` App F.4 ll. 1475–1476; P3 §3.2 l. 1713 |
+| F4-4 | Current profile inferred from option values; otherwise **"Custom"** | `OptionConfiguration.inferProfile` over the same-catalog pending preview; Inferred/InvalidState, never runtime source evaluation. §4.5.1 separately presents absent definitions as non-applicable, not actionable Custom; §4.4.4 supplies action gates | Phase 3 §5.1; App F.4 |
 | F4-5 | `screen=<entries>` main screen | `PresentationScreen` with `ScreenId.MAIN` (§4.3.1) | `[V:doc]` App F.4 l. 1478 |
 | F4-6 | `screen.NAME=<entries>` subscreens | `subScreens` map, keyed by declared name (§4.3.1) | `[V:doc]` App F.4 l. 1478 |
 | F4-7 | Entry: option names | `SwitchOption`/`ValueOption`/`SliderOption` (§4.3.2) | `[V:doc]` App F.4 l. 1479 |
 | F4-8 | Entry: `[SUBSCREEN]` | `SubScreenLink` + navigation stack (§4.3.2, §4.6.2) | `[V:doc]` App F.4 l. 1479 |
 | F4-9 | Entry: `<profile>` | `ProfileCycle` (§4.5) | `[V:doc]` App F.4 l. 1479 |
 | F4-10 | Entry: `<empty>` | `Blank` — occupies a grid cell, never interactive (§4.3.2) | `[V:doc]` App F.4 l. 1479 |
-| F4-11 | Entry: `*` — all unplaced options | **Phase 12's** deferred expansion, specified completely in §4.3.3 (`[D-P12-1]`, `[D-P12-2]`, `[D-P12-3]`) | `[V:doc]` App F.4 l. 1479; deferred to us by P3 §4.3 ll. 953–955 and §4.8 ll. 1251–1252 |
+| F4-11 | Entry: `*` — all unplaced options | **Phase 12's** deferred expansion, specified completely in §4.3.3 (`[D-P12-1]`, `[D-P12-2]`, `[D-P12-3]`) | `[V:doc]` App F.4 l. 1479; deferred to us by P3 §4.3 ll. 2270–2272 and §4.8 ll. 2919–2920 |
 | F4-12 | `screen[.NAME].columns=N`, default 2 | Positive N is configured floor; invoke owner resolvedColumns after expansion (§4.3.4) | Phase 3 §5.1; App F.4 |
 | F4-13 | Auto-widens beyond 18 | max(configured floor, ceil(expandedSlotCount/9)); every retained option/profile/subscreen/empty slot counts, including star results | Phase 3 §5.1 |
 
@@ -455,16 +507,16 @@ Phase 12 never re-parses.
 
 | # | Contract item | Design element | Provenance |
 |---|---|---|---|
-| C-1 | App F.2 `version.<mcver>=<edition>` → pack-list warning | Candidate row renders `CompatibilityStatus.REQUIRES_NEWER_EDITION` as a warning badge + tooltip; the pack stays off (§4.6.1) | `[V:doc]` App F.2 l. 1452; P3 §4.8 ll. 1208–1211, §6 l. 1699 |
-| C-2 | §4.7 "only changed options persist to `shaderpacks/<pack>.txt`" | `apply()` writes exactly the changed set through `OptionPersistenceCodec`; Phase 12 computes the change set, Phase 3 owns the format (§4.7.2) | `[V:observed]` §4.7 ll. 603–605; P3 §4.3 ll. 938–944 |
-| C-3 | §4.7 "global engine settings in `optionsshaders.txt`" | The seven entries round-trip through `GlobalShaderOptionsCodec` → `EngineOptionData`, with their exact wire text bound in §4.6.3 | `[V:observed]` §4.7 l. 605; P3 §5.1 ll. 1601–1604 |
+| C-1 | App F.2 `version.<mcver>=<edition>` → pack-list warning | Candidate row renders `CompatibilityStatus.REQUIRES_NEWER_EDITION` as a warning badge + tooltip; the pack stays off (§4.6.1) | `[V:doc]` App F.2 l. 1452; P3 §4.8 ll. 2845–2846, §6 l. 4370 |
+| C-2 | §4.7 "only changed options persist to `shaderpacks/<pack>.txt`" | `apply()` writes exactly the changed set through `OptionPersistenceCodec`; Phase 12 computes the change set, Phase 3 owns the format (§4.7.2) | `[V:observed]` §4.7 ll. 603–605; P3 §4.3 ll. 2260–2262 |
+| C-3 | §4.7 "global engine settings in `optionsshaders.txt`" | The seven entries round-trip through `GlobalShaderOptionsCodec` → `EngineOptionData`, with their exact wire text bound in §4.6.3 | `[V:observed]` §4.7 l. 605; P3 §5.1 ll. 3454–3461 |
 | C-4 | §4.7 GUI: pack list | `PackSelectionModel` over `PackFrontEnd.discover` (§4.6.1) | `[V:observed]` §4.7 l. 608 |
 | C-5 | §4.7 GUI: engine options — **8 minus AA/AF = 7** | The seven entries of §4.6.2; AA/AF are absent by construction | `[V:observed]` §4.7 ll. 608–609; `[D-2]` §1.2 l. 80; DESIGN.md l. 2374 |
 | C-6 | §4.7 GUI: screens generated from `screen.*` config with sliders/subscreens/profiles | §4.3–§4.5 in full | `[V:observed]` §4.7 ll. 609–610 |
 | C-7 | §4.7 GUI: tooltips from lang files | §4.3.5's resolution chain | `[V:observed]` §4.7 l. 610 |
 | C-8 | §4.7 "F3+R / `/reloadShaders` reload" | §4.8.1 (chord observation) and §4.8.2 (client command); both classify to lifecycle `FULL` (§4.7.3) | `[V:observed]` §4.7 l. 611; `[V:mcp]` platform symbols, §4.8 |
-| C-9 | §4.7 failure handling: invalid programs **delete themselves and fall back through backup chains** | **Not actuated here** — Phase 4 deletes the program and walks the backup chain (P1 §6 l. 4294). Phase 12's obligation is the §G4.5 GUI channel: the per-program compile/link/validate diagnostics Phase 4 emits accumulate in Phase 1's `SHADER_GUI` store and are rendered by §4.9, driver log included | `[V:observed]` §4.7 ll. 612–614; DESIGN.md §G4.5 ll. 584–585 (per-program compile errors → the shader GUI, "per RESEARCH.md §4.7") ; P1 §4.9.4 l. 3790, §6 l. 4294 |
-| C-10 | §4.7 failure handling: capability gate → chat error | Not ours — `UserChannel.CHAT`. The GUI additionally shows the resulting shaders-off state (§4.9) | `[V:observed]` §4.7 ll. 612, 615; P1 §4.9.4 l. 3797 |
+| C-9 | §4.7 failure handling: invalid programs **delete themselves and fall back through backup chains** | **Not actuated here** — Phase 4 deletes the program and walks the backup chain (P1 §6 l. 5563). Phase 12's obligation is the §G4.5 GUI channel: the per-program compile/link/validate diagnostics Phase 4 emits accumulate in Phase 1's `SHADER_GUI` store and are rendered by §4.9, driver log included | `[V:observed]` §4.7 ll. 612–614; DESIGN.md §G4.5 ll. 584–585 (per-program compile errors → the shader GUI, "per RESEARCH.md §4.7") ; P1 §4.9.4 l. 4983, §6 l. 5563 |
+| C-10 | §4.7 failure handling: capability gate → chat error | Not ours — `UserChannel.CHAT`. The GUI additionally shows the resulting shaders-off state (§4.9) | `[V:observed]` §4.7 ll. 612, 615; P1 §4.9.4 l. 5004 |
 | C-11 | §4.7 interlock matrix "ceases to exist" | No interlock logic exists anywhere in this design | `[V:observed]` §4.7 ll. 617–618; §1.2 ll. 82–86 |
 | C-12 | §4.8 "Options/profiles/screens/lang, per-pack persistence" → **Keep** | Kept verbatim; nothing is "improved" (§G4.2) | `[V:doc]` §4.8 l. 632 |
 | C-13 | §4.8 "Hand-rolled GUI on 2012-era screens" → **Skip**, ModularUI candidate | Both views designed; adoption gated on OQ-9 (§10) | `[V:doc]` §4.8 l. 649; §7.6 ll. 873–878 |
@@ -488,9 +540,9 @@ abbreviates the full coordinates stated once in §0.1 —
 
 | Mechanism | Disposition | Evidence |
 |---|---|---|
-| Lang fallback chain: current game language → `en_us` → literal fallback | Adopt P3 schema18 locale catalog and per-key presence semantics (§4.3.5); no consumer file reader | `[V:observed — Pintonium forge122/…/gui/VintageShaderPackOptionsScreen.java:324-345]`; P3 §4.3 |
+| Lang fallback chain: current game language → `en_us` → literal fallback | Adopt P3 current-schema locale catalog and per-key presence semantics (§4.3.5); no consumer file reader | `[V:observed — Pintonium forge122/…/gui/VintageShaderPackOptionsScreen.java:324-345]`; P3 §4.3 |
 | Name prettification (`_`/`.`/`-` → space, lowercase, capitalize each word) as the last-resort label | **Adopted** (§4.3.5) | `[V:observed — …VintageShaderPackOptionsScreen.java:347-367]` |
-| Pending-change queue keyed by option id, Apply enabled only when non-empty | **Adopted** as the edit-session model (§4.5) | `[V:observed — …VintageShaderPackOptionsScreen.java:138,203,212,376]` |
+| Pending-change queue keyed by option id, Apply enabled only when non-empty | **Adapted**: retain the option queue but enable Apply for changed explicit profile intent too (§4.5, D-P12-34); reference observation does not close program-only actions | `[V:observed — …VintageShaderPackOptionsScreen.java:138,203,212,376]` |
 | Escape / back-at-root **clears** the queue (discard); Done applies then closes | **Adopted** as the apply/discard UX (`[D-P12-9]`, §4.5.3) | `[V:observed — …VintageShaderPackOptionsScreen.java:137-141,170,237]` |
 | Profile click writes the profile's whole option set into the queue | **Adopted** (§4.5.2) | `[V:observed — …VintageShaderPackOptionsScreen.java:215-223]` |
 | `<empty>` rendered as a present-but-disabled cell | **Adopted** (§4.3.2) | `[V:observed — …VintageShaderPackOptionsScreen.java:95]` |
@@ -499,7 +551,7 @@ abbreviates the full coordinates stated once in §0.1 —
 | `sliders=` support | **Absent from the reference — do not inherit a gap.** Neither GUI file contains a slider element type; the option screen dispatches over exactly four element kinds plus `EMPTY` (ll. 199–233). This confirms PD §7.4's "functionally dead" statement at the source. Sliders are designed from App F.3 alone (§4.4.3) | PD §7.4; `[V:observed — …VintageShaderPackOptionsScreen.java:199-233]` |
 | "Lang-file **tooltips** with `en_us` fallback" (PD §14 l. 712) | **Correction, not adoption.** Neither file renders a hover tooltip; the `en_us` chain feeds *labels*, and `option.getComment()` is used as a label fallback (ll. 320–322), not as tooltip text. The tooltip contract stands on App F.3 alone. Reported in §11.3 item 1 | PD §14 l. 712 vs `[V:observed — …VintageShaderPackOptionsScreen.java:288-345]` |
 | Engine-settings block in the selection screen | **No reference.** Pintonium's selection screen has no equivalent of OF's engine options (whole file). Designed from RESEARCH §4.7 alone, consistent with §G11.5 l. 985 listing render-quality multipliers under "No help available" | `[V:observed — …VintageShaderPackSelectionScreen.java]` (absence) |
-| `(internal)` pack entry | **No reference.** Pintonium hardcodes `isInternal()` false (PD §7.1) and its list is a plain directory scan (ll. 230–248). We render P3's `PackCandidateKind.INTERNAL` sentinel from `discover` (§4.6.1) | PD §7.1; P3 §5.1 ll. 1575–1576 |
+| `(internal)` pack entry | **No reference.** Pintonium hardcodes `isInternal()` false (PD §7.1) and its list is a plain directory scan (ll. 230–248). We render P3's `PackCandidateKind.INTERNAL` sentinel from `discover` (§4.6.1) | PD §7.1; P3 §5.1 l. 3354; §2.2 l. 734 |
 | PD §18 divergence table | **Not engaged.** Every row (attribute locations, dynamic unit map, dimension-folder semantics, `Random(0)` noise, 16-colortex allocation, missing `version.<mcver>` gate, missing `(internal)` pack) is outside this subsystem, except the last two — and both are *satisfied* here: `version.<mcver>` is displayed (C-1) and the `(internal)` sentinel is listed (§4.6.1) | DESIGN.md §G11.4 ll. 952–957 |
 | PD §17 bug catalogue B1–B13 | **Not engaged.** No B-row lies in the GUI/persistence subsystem; the GUI-adjacent risk PD names is the dead `sliders=` (§7.4), handled above | PD §17 |
 
@@ -512,20 +564,20 @@ abbreviates the full coordinates stated once in §0.1 —
 The presentation model is built from exactly two published artifacts and nothing else:
 
 - `PackConfiguration.options()` — Phase 3's `OptionConfiguration`: the `OptionCatalog`, the
-  immutable `OptionState`, and the profiles / screens / sliders / lang models (P3 §5.1 l. 1436);
+  immutable `OptionState`, and the profiles / screens / sliders / lang models (P3 §5.1 l. 3363);
 - `PackConfiguration.compatibility()` and `PackConfiguration.pack()` — for the selection screen's
-  status row (P3 §5.1 l. 1432).
+  status row (P3 §5.1 l. 3358).
 
 Four invariants follow, and every algorithm below is written to preserve them.
 
 - **I-1 — no re-parsing.** Phase 12 never opens a pack file, never rescans directives, never
-  reinterprets properties, and never bypasses the materializer. P3 §5.1 l. 1621 states this as a
+  reinterprets properties, and never bypasses the materializer. P3 §5.1 l. 3989 states this as a
   binding consumer rule; the presentation model is a pure function of the published configuration.
 - **I-2 — no mutation.** `PackConfiguration` and `OptionState` are deeply immutable (P3 §7
-  l. 1714). An edit produces a *pending overlay*, never an in-place change. A reload publishes a
-  new configuration (P3 §5.1 l. 1622).
+  l. 4395). An edit produces a *pending overlay*, never an in-place change. A reload publishes a
+  new configuration (P3 §5.1 l. 3990).
 - **I-3 — schema and fingerprint gating.** Admit only
-  `schemaVersion == PackFrontEnd.CURRENT_SCHEMA_VERSION` (18 in the current owner amendment);
+  `schemaVersion == PackFrontEnd.CURRENT_SCHEMA_VERSION` (23 adopted 2026-09-08);
   reject every other schema before deriving or retaining state, with no inferred upgrade.
   Retain presentation state only while schema, configuration fingerprint and locale match.
   A changed configuration replaces its catalog and invalidates pending catalog-issued preview
@@ -566,7 +618,7 @@ its entry is rendered as a disabled link rather than dropped, so a pack author s
 instead of a silently missing row `[D-P12-6]`.
 
 **Subscreen cycles** cannot occur in the model: P3 ignores the cyclic edge and diagnoses it
-(P3 §6 l. 1697). The navigation stack is additionally depth-bounded at 32 as a defence in depth;
+(P3 §6 l. 4368). The navigation stack is additionally depth-bounded at 32 as a defence in depth;
 exceeding it refuses the push and warns.
 
 #### 4.3.2 Entry kinds
@@ -575,19 +627,24 @@ Declared entries map one-to-one onto `PresentationEntry` variants (§3.2 rows F4
 `<empty>` becomes `Blank`, which **occupies a grid cell** and is never interactive — the layout
 device pack authors use it for. An option entry naming an id absent from the catalog is diagnosed
 and dropped (it is not a placement, so the id — being absent — cannot reappear via `*` either).
+The literal `<profile>` is P3's payload-free `ScreenProfileEntry()`, mapped to the existing
+`ProfileCycle`. The P3 entry contains no profile identity or selection accessor. Definitions come only
+from `OptionConfiguration.profiles()`; §4.5 derives selected/Custom anew from preview inference
+when profiles exist, or the distinct non-applicable no-profiles presentation when empty.
+Never freeze a selected profile into a screen entry. Retain either profile row as one grid slot.
 
 #### 4.3.3 `*` expansion — Phase 12's deferred obligation
 
 App F.4 l. 1479 defines `*` as "all unplaced options". Phase 3 explicitly defers it: *"`*`
 expansion is intentionally deferred to Phase 12 because it depends on placement across screens"*
-(P3 §4.8 ll. 1251–1252), and *"Phase 12 retains ownership of deferred `*` expansion; options
-produced by that expansion do count before Phase 12 evaluates the formula"* (P3 §4.3 ll. 953–955).
+(P3 §4.8 ll. 2919–2920), and *"Phase 12 expands `*` first, then passes the complete retained
+screen-array length as `expandedSlotCount`"* (P3 §4.3 ll. 2270–2271).
 App F.4 does not close three questions; each is decided here and recorded.
 
 **Eligibility.** An option is a candidate for expansion when it is (a) in the catalog, (b) *visible*
 per App F.3 — switch and variable options always, const options only when they carry a value list
 or are referenced by a slider, profile, or screen (App F.3 ll. 1465–1466) — and (c) **not
-ambiguous**. Ambiguous options are disabled by Phase 3 (P3 §4.3 ll. 921–923); auto-placing a
+**ambiguous**. Ambiguous options are disabled by Phase 3 (P3 §4.3 ll. 2052–2054); auto-placing a
 permanently non-interactive row into every pack's main screen is noise, so `*` skips them, while an
 *explicitly* placed ambiguous option still renders as a disabled row with its locations in the
 tooltip `[D-P12-4]`.
@@ -682,8 +739,8 @@ not the widget, owns canonical true/false persistence. Label shows the state.
 `[V:observed — Pintonium …/VintageShaderPackOptionsScreen.java:206-214]` and extending it with a
 backward step (right-click / shift-click in the views).
 
-**Out-of-list current values.** Phase 3's codec "never constrains a syntactically safe current
-value to the UI's advertised list" (P3 §4.3 l. 942). A pack option can therefore legitimately hold
+**Out-of-list current values.** Phase 3's codec keeps "Values outside a non-empty `allowedValues`
+list" valid "with one warning, per D-P3-14" (P3 §4.3 ll. 2209–2210). A pack option can therefore hold
 a value that is not in `allowedValues`. The rule `[D-P12-7]`: such a value is *displayed*
 (decorated as usual, marked with the out-of-list indicator in the tooltip) and is **retained until
 the user cycles it**; the first cycle from an out-of-list value moves to index 0 of the list. It is
@@ -711,17 +768,58 @@ The design is therefore the minimal reading of the contract `[D-P12-5]`:
   identical payload to `ValueOption`. **A view that cannot draw a slider may render it as a value
   option with no loss of contract fidelity** — which is precisely what makes the OQ-9 fallback
   complete (§10.1 part 4).
-- `sliders=` naming an unknown or non-variable option is diagnosed by Phase 3 (P3 §3.2 l. 740) and
+- `sliders=` naming an unknown or non-variable option is diagnosed by Phase 3 (P3 §3.2 l. 1712) and
   simply yields no slider; other entries in the list are unaffected.
 
 #### 4.4.4 Non-interactive rows
 
-`interactive=false` applies to ambiguous options and unshipped behavior owners. Internal
-pack options use the same widgets/profile/reset operations once the P7 session committer is
-installed (§5.3(E)); the screen labels their durability **session only; restart restores defaults**.
-An empty Internal catalog simply has no editable pack rows. No filesystem target is requested.
-Missing committer disables only Internal pack mutation with a reason; global controls remain
-available. Rejections/failures preserve the pending preview and never claim persistence.
+Ordinary option `interactive` is the conjunction of its existing owner/list/ambiguity gates
+and the session mutation gate below; the presenter supplies the disabled gate's prepared reason
+in its tooltip, without replacing pack comments or their empty-preserving resolution.
+Internal pack options use the same widgets/profile/reset operations once the P7 session
+committer is installed (§5.3(E)); the screen labels their durability **session only; restart
+restores defaults**. An empty option catalog has no ordinary editable rows, but may still have
+program-only profiles and resettable explicit selection. No filesystem target is requested.
+
+**Presenter-owned availability `[D-P12-38]`.** Every `present(screen)` builds a fresh immutable,
+non-null `OptionSessionAvailability` in `OptionPresentationModel`, including on empty screens
+and subscreens without profile rows. `OptionActionAvailability.disabledReason` is non-null,
+absent iff enabled and present iff disabled; its text is prepared by the presenter in the
+model's frozen locale. Reasons (“Internal option editing unavailable”, “No profiles available”,
+“No pending changes”, or the existing owner-specific gate) are GUI messages, not new pack-language
+keys. Use existing GUI localization and §4.3.5's absence-versus-explicit-empty policy; views
+render supplied text verbatim and never invent raw-name fallbacks or reasons. A present empty
+reason remains disabled. Multiple gates use session-unavailable first, then action-specific
+gates; the profile's no-definitions reason takes precedence for a non-applicable row.
+
+The presenter computes the session mutation gate from current session/catalog admission and
+the installed acceptance route. For Internal, a missing `InternalOptionCommitter` disables it
+regardless of ordinary-widget count, profile constraints or dirtiness. Filesystem sessions
+retain their existing admission/safe-target rules; availability is not a promise that I/O will
+succeed. Reset has the mutation gate (not a dirty or ordinary-option-count gate); Apply has
+mutation AND `isDirty()`; Done is enabled when clean, otherwise has the mutation gate.
+Profile applicability is separately `!configuration.profiles().isEmpty()`; profile action
+availability is applicability AND mutation. A program-only profile is applicable.
+Do not derive these flags in either view or infer availability from a summary, profile label,
+inference, widget count or a persistence receipt.
+
+Every `toggle`, `cycle`, `setValueIndex`, `cycleProfile`, dirty `apply`/Done and
+`resetToPackDefaults` callback recomputes current gates before any catalog update, preview or
+selection mutation, persistence, capture or reload submission. Ordinary edits also recheck
+their existing entry/list/value gates. Old enabled snapshots grant no authority. Disabled void
+edit/profile callbacks are no-ops; disabled commit/reset calls return `REJECTED` with the
+existing diagnostic route and empty reload, preserving both baselines, preview, explicit intent,
+dirty/count and summary. Clean Apply returns `UNCHANGED` with no effects; clean Done may close.
+No-profile cycling never selects a nonexistent first element or creates Custom selection intent.
+Preflight-disabled reset is not an attempted reset: unlike an admitted reset whose acceptance
+later fails, it must not replace preview or clear pending selection.
+
+Refresh the supplied model after every callback and when availability changes, even if values,
+inference or dirty state are unchanged. Later committer installation reenables eligible actions
+on the same valid session without an automatic edit, reset, commit or replay of rejected clicks;
+catalog replacement still follows I-3. Losing availability preserves pending intent and its
+summary for retry/discard. Back, subscreen navigation, root Escape/discard and global settings
+remain usable independently of this pack gate (global settings retain their own gates).
 
 ### 4.5 Profiles
 
@@ -733,17 +831,23 @@ The preview is issued by the same `OptionCatalog`, built via `updateState`/`cons
 without fabricating a profile or partial state. The owner chooses first exact match in
 descending expanded-constraint count/source order. Runtime evaluation and materialization
 never consume this preview; only a new load's finalized state may affect programs.
+With no definitions, `ProfileCycle.applicable=false`, `current=Optional.empty()` and disabled
+availability carry the prepared no-profiles reason; label uses the GUI's localized no-profiles
+message, not `profile.Custom`. With definitions, applicability is true and inference retains the
+named/Custom law above even when mutation is temporarily disabled. Thus actionable Custom is
+distinct from no profiles without extending P3's payload-free selector.
 
 #### 4.5.2 Click-to-cycle
 
-Activating a `<profile>` entry advances to the next profile and writes **that profile's whole
+After §4.4.4's current applicability/mutation preflight succeeds, activating a `<profile>` entry advances to the next profile and writes **that profile's whole
 expanded option constraint set** into the pending set — the reference's behavior
 `[V:observed — Pintonium …/VintageShaderPackOptionsScreen.java:215-223]`. Only the *option*
 constraints are applied: `!program.<name>` tokens are Phase 4's input, not a user-editable value,
 and Phase 12 never touches program state (row F4-3).
 
-The cycle order is the profile declaration order, with the entry after the last wrapping to the
-first. When the current state is `Custom`, the first click selects the **first declared** profile.
+The cycle order is profile declaration order, wrapping after the last. Its cursor is the
+pending explicit selection when present, otherwise the inferred display selection; Custom
+with neither selects the first declared profile. Thus equal-option profiles remain cycleable.
 
 Phase 3 §5.1 incorporates `OptionConfiguration.profiles()` in source order and each
 `ProfileModel.constraints()` expanded typed option list. Apply the complete batch through
@@ -751,30 +855,107 @@ the catalog; any invalid constraint rejects the whole batch. Preserve the profil
 for Phase 7's new-configuration program-state evaluation, including its `disabledPrograms`;
 the GUI never mutates a registry. No missing-profile-publication assumption remains.
 
+**Independent selection intent `[D-P12-34]`.** The session holds committed and pending
+`Optional<ProfileName>` explicit selection separately from committed options and preview.
+Initialize the committed baseline from the presenter-owned edit/selection model — the same
+P12-owned edit/selection model P7 freezes from at drain — not inferProfile and not any P7
+read-back: the model survives catalog replacement retaining the committed explicit selection,
+which the committed baseline adopts after revalidating the name against the catalog's
+`profiles()` and dropping it only if the name no longer resolves (`D-P12-39`); the pending
+baseline starts empty.
+A valid profile batch atomically replaces preview and pending selection; invalid constraints
+change neither. Ordinary option edits preserve this explicit selection even if inference
+changes to Custom; inference is display only and never implicitly creates, clears or replaces
+program-disabling intent. `ProfileCycle.current` continues to show owner inference, which may
+remain A while explicit B is pending; the unsaved summary identifies the separate profile
+selection change so that this is not hidden. No new field is added to ScreenProfileEntry.
+Compare selection identity, not option equality or disabled-list equality: a changed explicit
+selection requires program reevaluation even with zero differing options. Returning to the
+committed selection and option values makes the session clean again.
+
+**Pending selection presentation `[D-P12-37]`.** `OptionEditSession.present(screen)` builds
+`OptionPresentationModel.pendingProfileSummary` from the same session state and frozen locale
+as the screen tree. The outer Optional is non-null and present **iff pending explicit selection
+differs from committed explicit selection**; absence means no pending selection change, not
+Custom or a cleared selection. A present immutable `PendingProfileSummary` contains non-null
+`Optional<ProfileName> selection` and non-null prepared `String displayText`. Its inner Optional
+is the exact pending named identity, or empty for an explicit clearing of the committed selection.
+No `ProfileModel`, option delta, disabled-program list or inferred value substitutes for that identity.
+This is session presentation data, not a new P3 selector payload, programmatic map key, persistence
+key or runtime evaluation input.
+
+The presenter prepares named text as the UI's localized “Pending profile selection: {name}”
+message, resolving the name by §4.3.5's `profile.<NAME>` per-key requested-locale→en_us→prettified
+fallback in the model's frozen locale. A present-empty name decoration suppresses the name
+fragment and its separator, never triggers raw-name/prettified fallback; the localized pending
+selection marker remains. Cleared selection uses the UI's localized “Pending profile selection:
+cleared” message, never `profile.Custom`. These are GUI messages, not new pack-language keys.
+Identity remains in `selection` even when localized names are empty or equal. Views display
+`displayText` verbatim (wrapping as needed), do not localize/fill it themselves or recover a name
+from identity, and keep the summary separate from both `ProfileCycle.label/current` and the
+aggregate unsaved count. Summary presence is not a second change and never increases the count.
+
+Every options present/refresh delivers the current snapshot through existing
+`OptionScreenView.showOptions(model, screen, session)`, including on subscreens without a
+`<profile>` row. After each session action, the presenter refreshes this model before the next
+view render; unchanged option values or unchanged inference may not suppress that refresh.
+Cached static screen derivation cannot cache this summary by configuration/option values alone.
+
+| Transition | Summary recomputation / clearing |
+|---|---|
+| Valid profile cycle | Atomically update preview and pending identity, then recompute from pending-versus-committed selection; B then C produces different named summaries even if options and inference remain A. Returning to committed A clears it. |
+| Ordinary valid option edit | Recompute using unchanged explicit identities; keep the pending summary even if inference changes to Custom, and keep it absent for option-only edits. |
+| Invalid option/profile batch | Retain prior preview and pending identity; recomputation yields the same summary, never the attempted rejected identity. |
+| Discard / root Escape or Back | Restore both committed baselines; publish absent summary. Subscreen navigation alone preserves it. |
+| Admitted Reset | Set defaults and empty pending selection before commit; publish a present cleared summary iff committed selection was named. Already-empty committed selection yields absence even with option changes. |
+| Rejected or failed acceptance | Preserve the desired pending state, including reset's cleared selection; retain/recompute its summary for retry without a queue. |
+| Successful PERSISTED / SESSION_ACCEPTED | Advance both baselines atomically; publish absence. Clean UNCHANGED likewise stays absent. Later load/render failure does not recreate an unsaved summary or roll back accepted intent. |
+| Catalog replacement | Invalidate old preview, unaccepted intent and summary together under I-3. The presenter-owned edit/selection model survives replacement retaining its committed explicit selection; revalidate the retained name against the new catalog's `profiles()` and initialize the new session's committed identity from it, dropping it only if the name no longer resolves (`D-P12-39`) — never inferProfile, never a P7 read-back. Pending identity starts empty, so the first valid new model has absent summary. Never transplant old summary text/identity or show an old pending selection as new-catalog intent. |
+| Locale change | Rebuild prepared text using the new frozen locale without changing either identity, dirty/count, persistence or reload effects. |
+| Availability loss/gain or disabled/stale callback | Preserve both identities and preview; retain exactly the prior summary presence/identity/text in the same locale. Rebuild availability without auto-replaying an action. Disabled reset does not manufacture cleared intent. |
+
 #### 4.5.3 Apply, discard, reset
 
-For Internal, every commit action in the table below uses §5.3(E) instead of the filesystem
-codec: SESSION_ACCEPTED clears pending and queues REPUBLISH exactly once; REJECTED/FAILED
-retains pending. Reset captures `catalog.defaultState()` and has the same session durability.
-Done closes only for UNCHANGED/PERSISTED/SESSION_ACCEPTED, not for a failed commit.
-`ApplyOutcome.reload` describes the already-submitted effect; views never submit it again.
-`PERSISTED` means filesystem commit; `SESSION_ACCEPTED` is deliberately not disk durability.
+For Internal, every commit action below uses §5.3(E) instead of the filesystem codec.
+§4.4.4 preflight precedes every mutating step below. Missing committer or another closed gate
+returns/no-ops before altering desired state; only an admitted action reaches acceptance.
+SESSION_ACCEPTED advances both baselines and queues REPUBLISH exactly once; REJECTED/FAILED
+retains both pending values and selection intent. Done closes only for
+UNCHANGED/PERSISTED/SESSION_ACCEPTED. `ApplyOutcome.reload` describes the already-submitted
+effect; views never submit it again. PERSISTED means filesystem option commit, not durable
+profile-name storage or render success; SESSION_ACCEPTED is deliberately not disk durability.
 The edit session retains its exact catalog, its issued baseline and a catalog-issued preview.
 Pending differences are typed `OptionValue`s (`BooleanOptionValue` for switches,
 `TextOptionValue` otherwise), not consumer-constructed `OptionState`s. Each edit uses
 `updateState`; batch/profile operations use `constructState` over the complete known-name map.
-Invalid results retain the prior preview. Dirty count compares preview with the baseline.
+Invalid results retain both prior preview and intent. `isDirty()` means commit-needed:
+option preview differs from baseline OR pending explicit selection differs from committed.
+`pendingChangeCount()` is differing option count plus one for changed selection intent.
 
 | Action | Effect | Lifecycle (§4.7) |
 |---|---|---|
-| **Apply** | Validate the same-catalog preview and safe target, invoke the option codec, and only on `COMMITTED` clear pending and submit one request; `FAILED` retains edits and emits no reload | `REPUBLISH` |
-| **Done** | Apply if dirty; close only on successful commit or when clean, otherwise retain open edit session and failure | `REPUBLISH` after successful dirty apply, otherwise `NONE` |
-| **Escape / Back at the root screen** | Discard: clear pending, no write, no reload | `NONE` |
-| **Reset** | Use `catalog.defaultState()` as the preview and commit it through the same safe codec; the codec emits an empty changed set, and only `COMMITTED` submits a request | `REPUBLISH` |
+| **Apply** | If clean return UNCHANGED without write/queue. Otherwise validate preview, selection and safe target; filesystem codec writes the complete desired changed-only state even for a profile-only action. Only COMMITTED accepts both baselines and freezes selection with one P7 request. Failure retains both, queues nothing | `REPUBLISH` on acceptance |
+| **Done** | Apply if commit-needed, including zero-option profile-only intent; close only on acceptance or when clean, otherwise keep session and failure open | `REPUBLISH` on acceptance, otherwise `NONE` |
+| **Escape / Back at the root screen** | Restore preview and pending explicit selection from both committed baselines; no write or queue. Already accepted intent is not undone | `NONE` |
+| **Reset** | Replace preview with catalog.defaultState() and pending explicit selection with empty (clear explicit disables); commit via the same route, including when options already equal defaults but intent differs. Filesystem codec writes an empty changed-only set; Internal captures complete defaults | `REPUBLISH` on acceptance |
 
-Done-applies / Escape-discards is `[D-P12-9]`, adopted from the reference (ll. 137–141, 170, 237)
-and made explicit in the UI: the Apply control is enabled only when dirty (reference l. 376), and a
-dirty session shows an unsaved-change count so Escape is never a surprise. There is **no**
+Reset remains an explicit commit even when both baselines already match: it records the
+filesystem empty changed set or accepts Internal defaults and submits once. A preacceptance
+rejection/write failure retains the reset preview and cleared pending intent for retry.
+After acceptance, load/render failure does not roll back either accepted baseline or resend
+the request: P7 reports failure/compensated Off and retains accepted intent for explicit retry.
+Selection is session transport only, never a new Properties key or materializer argument.
+It is scoped to exact pack identity; accepted Internal intent follows the existing preference
+lifetime across Off/filesystem switches, failure, shutdown/bundle replacement and restart.
+Filesystem intent likewise is not restart-durable; the accepted-selection freeze stays
+one-directional and never infers a replacement from option equality. A new catalog
+invalidates unaccepted preview/intent together under I-3; the presenter-owned edit/selection
+model retains the committed explicit selection across replacement and revalidates its name
+against the new catalog's `profiles()` (`D-P12-39`), never an old ProfileModel transplanted
+as runtime authority.
+
+Done-applies / Escape-discards is `[D-P12-9]`, adapted by D-P12-34/38: Apply is enabled only
+when commit-needed **and** mutation is available; the unsaved count includes a distinct profile-selection change. There is **no**
 write-on-every-click: the Phase 12 Scope-in "Persistence round-trip" requirement of
 "write-through on change" (`docs/design/v3/DESIGN.md` l. 2381; §4.7.2) is satisfied at apply time,
 which is the change the user committed. Reset writes an empty changed set rather than deleting the
@@ -785,25 +966,25 @@ file, so the pack's persistence state is explicit rather than inferred from abse
 #### 4.6.1 The candidate list
 
 Populated from `PackFrontEnd.discover`, which Phase 3 states we invoke to populate and refresh
-selection UI (P3 §5.1 ll. 1583–1584). Consumed properties, all of them Phase 3's:
+selection UI (P3 §5.1 l. 3354). Consumed properties, all of them Phase 3's:
 
 - Result ordering is already correct: `Off` and `Internal` first, then filesystem candidates in
-  Phase 3's deterministic order (P3 §5.1 l. 1575). **Phase 12 does not re-sort.**
-- `PackCandidateKind` is closed — `OFF`, `INTERNAL`, `DIRECTORY`, `ARCHIVE` (P3 §5.1 l. 1576) — and
+  Phase 3's deterministic order (P3 §5.1 l. 3354). **Phase 12 does not re-sort.**
+- `PackCandidateKind` is closed — `OFF`, `INTERNAL`, `DIRECTORY`, `ARCHIVE` (P3 §2.2 l. 734) — and
   each gets a distinct row icon/prefix.
 - `PackCandidateStatus` is closed — `AVAILABLE`, `UNREADABLE`, `UNSAFE`, `LIMIT_EXCEEDED`
-  (P3 §5.1 l. 1577). Non-`AVAILABLE` candidates render disabled with the status and the candidate's
+  (P3 §2.2 l. 735). Non-`AVAILABLE` candidates render disabled with the status and the candidate's
   attributed diagnostics in the tooltip.
-- Display names are sanitized by Phase 3 and are **never** accepted back as paths (P3 §5.1
-  ll. 1578–1579). The view keeps them as display strings only.
+- Display names are sanitized by Phase 3 and are **never** accepted back as paths (P3 §4.1 l. 1838;
+  §5.1 ll. 3419–3420). The view keeps them as display strings only.
 - `PackCandidateId` is opaque and is valid only against the latest discovery generation for that
-  directory; a later discovery supersedes it (P3 §5.1 ll. 1579–1582). The selection screen holds
+  directory; a later discovery supersedes it (P3 §5.1 l. 3354, ll. 3397–3399). The selection screen holds
   the `DiscoveryGeneration` it rendered. Before refreshing a filesystem selection, retain its
   `FilesystemCandidateReference`, re-run discovery, then use the closed resolver (§4.6.3) to
   obtain a **new** current id; never forward the displayed stale id to `load` `[D-P12-8]`.
   A `Refresh` control follows the same rule.
 - A `LOAD` that fails returns exactly one `Failed` and leaves the caller in shaders-off (P3 §5.1
-  l. 1619). The screen shows the sanitized summary and stays open with `(off)` selected.
+  ll. 3981–3982). The screen shows the sanitized summary and stays open with `(off)` selected.
 
 The `(off)` sentinel is always present, always enabled, always selectable — this is the GUI's half
 of §G2.4 rung 5 ("shaders-off must always be a reachable state").
@@ -811,7 +992,7 @@ of §G2.4 rung 5 ("shaders-off must always be a reachable state").
 `CompatibilityStatus.REQUIRES_NEWER_EDITION` — the `version.<mcver>` outcome — renders as a warning
 badge on the candidate row plus a tooltip naming the required edition. The pack remains selectable
 and remains off; Phase 3 keeps the configuration inspectable and Phase 7 keeps shaders off
-(P3 §4.8 ll. 1208–1211, §6 l. 1699), so the user can read the reason rather than face a silent
+(P3 §4.8 ll. 2845–2846, §6 l. 4370), so the user can read the reason rather than face a silent
 no-op (row C-1).
 
 The screen also offers `Open folder` and a link into the options screen, enabled only when a
@@ -821,7 +1002,7 @@ loadable non-`Off` pack is selected — the reference's gating shape
 #### 4.6.2 The seven engine settings
 
 Phase 12 owns controls and apply timing, not a second codec. Phase 3 §5.1 is the sole
-canonical key/domain/default authority, now schema18; schema17's codec spellings remain `[D-P12-21]`.
+canonical key/domain/default authority, now schema23; schema17's codec spellings remain `[D-P12-21]`.
 The seven user controls are:
 
 | Setting | Canonical key | Domain / absent-key value | Behavior owner |
@@ -849,6 +1030,36 @@ above (hand depth is **not** an identity multiplier). Do not rewrite a valid out
 value on open. A missing ladder prevents GUI edits, not reading a valid codec value.
 All controls remain inert until their behavior milestone ships; the independent companion
 controls are Phase 13 v0.5. No ladder, AA feature or compatibility alias is invented.
+
+**Complete setting intents `[D-P12-32]`.** `showPackSelection` always receives all seven
+entries in the table order. Toggle and TriState carry their decoded typed values;
+Choice.rawValue carries the exact decoded current token independently of valueIndex
+(exact token match in allowedValues, otherwise -1, including an empty ladder).
+The presenter sets interactive only when the behavior is available and, for Choice,
+an owner-published nonempty ladder is available. The tooltip explains any disabled gate.
+Neither adapter infers enablement from valueIndex or substitutes a ladder/default for rawValue.
+
+The three `PackSelectionActions.setEngine*` methods are exact-value intents, not codec or
+reload calls. Toggle accepts only the two toggle keys, TriState only the two old-light keys,
+and Choice only the three multiplier keys with an exact token in the currently published
+ladder. The presenter rechecks key/variant/interactive and current ladder membership on
+every action (including stale adapter callbacks); unknown, mismatched, disabled or invalid
+intents return REJECTED without changing pending/committed state, writing or queuing.
+Adapters send the selected boolean, enum or undecorated owner token; a cycle from index -1
+selects the first current ladder token. No arbitrary float parsing or availability decision
+is delegated to a view.
+
+Valid intents update the presenter-owned global pending overlay, map boolean/tri-state to
+§4.6.3's exact wire tokens, and invoke its existing complete-data validation and all-entry
+write-through path. An unchanged committed value without pending edits returns UNCHANGED.
+Only COMMITTED advances the baseline and returns PERSISTED; the presenter classifies the
+committed delta under §4.7.3 and submits its request exactly once. ApplyOutcome.reload is
+the receipt, never permission for a second adapter submission. Validation rejection returns
+REJECTED; failed persistence returns FAILED, retains pending values for retry and queues
+nothing. The presenter re-presents settings plus lastActionSummary/diagnostics after each
+outcome; failed pending values stay visible, distinguished from the committed baseline by
+the failure summary. Retrying the same intent retries the retained write. Internal pack
+session durability does not change global disk persistence or yield SESSION_ACCEPTED here.
 
 #### 4.6.3 Global persistence and the exact wire spellings
 
@@ -903,9 +1114,9 @@ Off/Internal sentinels never request a filesystem target.
 #### 4.7.1 What Phase 3 owns, restated
 
 Formats, escaping, atomic-write mechanics, symlink refusal, and stable ordering are Phase 3's
-(P3 §4.3 ll. 938–944). *"Phase 3 owns codecs and file models. Phase 12 owns when a user applies/
-discards and invokes writes"* (P3 §4.3 l. 946), and *"Phase 12 must define apply/discard timing and
-global setting UX without changing the codecs"* (P3 §11.4 l. 2044). This section is the answer to
+(P3 §4.3 ll. 2260–2262). *"Phase 12 owns apply/discard timing; codecs never mutate a published
+configuration"* (P3 §4.3 l. 2262), and *"It owns discard timing and global-setting UX"*
+(P3 §11.4 l. 5175). This section is the answer to
 exactly that.
 
 #### 4.7.2 When a write happens
@@ -955,7 +1166,7 @@ configuration's finalized state and retained same-build macros. No runtime patch
 | **Resource-manager reload** (F3+T, resource-pack change) | `NONE` | no | **yes** | Preserve PackConfiguration; Phase 7 quiesces bindings/ID readers, refreshes resource-derived P13/P9 state and atlas validity without P3 load/discovery |
 | **Pack selection changed** (incl. → `Off`, → `(internal)`) | `FULL` | **yes** | no | Also writes the global file. `Off` additionally routes through Phase 7's shaders-off path |
 | **Option apply / Done-while-dirty** | `REPUBLISH` | if bake-set changed | no | §4.5.3 |
-| **Profile applied** | `REPUBLISH` | if bake-set changed | no | A profile is an option batch; nothing is special about it after the batch lands in pending |
+| **Profile applied** | `REPUBLISH` | if bake-set changed | no | Accepted option batch plus independent explicit selection; empty option delta never suppresses program reevaluation |
 | **Reset to pack defaults** | `REPUBLISH` | if bake-set changed | no | §4.5.3 |
 | **Engine setting: `normalMapEnabled` / `specularMapEnabled`** | `REPUBLISH` | no | **yes** | Independent decoded preferences enter P13 preliminary policy before P3 load/jcpp; disabled kinds allocate no companion, macros retain the same-build pair |
 | **Engine setting: `renderResMul` / `shadowResMul`** | `REPUBLISH` | no | no | Phase 7 dispatches Phase 5/8 resize with the current owner reason |
@@ -1085,9 +1296,9 @@ but cannot substitute for or bypass H-RESOURCE-01's lifetime gate (`[D-P12-12]`,
 
 Phase 1 already provides the store: `EngineDiagnostic` carries a `UserChannel` of
 `CHAT | SHADER_GUI | LOG_ONLY`, and `SHADER_GUI` "accumulates into a per-pack error store that
-Phase 12's screen renders" (P1 §4.9.4 ll. 3776, 3790). P1 §5.3 l. 4268 names Phase 12 as the
-channel consumer and §11.4 l. 5167 states plainly: *"the `SHADER_GUI` diagnostic channel and its
-per-pack error store exist; your screen is the sink."* P1 §9 l. 4513 tags the routing `v0.4` with
+Phase 12's screen renders" (P1 §4.9.4 ll. 4983, 4997). P1 §5.3 l. 5536 names Phase 12 as the
+channel consumer and §11.4 ll. 6713–6714 states plainly: *"the `SHADER_GUI` diagnostic channel and its
+per-pack error store exist; your screen is the sink."* P1 §9 l. 5865 tags the routing `v0.4` with
 the store existing at v0.1 — the milestones line up exactly.
 
 Design:
@@ -1095,9 +1306,9 @@ Design:
 - The pack-selection and options screens both carry an **issues indicator** showing the count and
   worst severity in the current pack's store; it is absent when the store is empty.
 - Activating it opens a scrollable diagnostics panel: severity, subsystem, message, and — for
-  per-program compile/link/validate failures — the driver log Phase 4 attached (P1 §6 l. 4294).
+  per-program compile/link/validate failures — the driver log Phase 4 attached (P1 §6 l. 5563).
   Long driver logs are scrollable and selectable, never truncated to a single line.
-- A **capability-gate** failure is `ERROR`/`CHAT` (P1 §4.9.4 l. 3797), so it does not reach this
+- A **capability-gate** failure is `ERROR`/`CHAT` (P1 §4.9.4 l. 5004), so it does not reach this
   panel. The GUI's contribution is to show the resulting state honestly: the pack row reads as
   off, with the chat message quoted in its tooltip.
 - Phase 12 **renders** diagnostics; it never creates, mutates, filters by policy, or clears them.
@@ -1106,7 +1317,9 @@ Design:
 **Direct expression diagnostics** `[D-P12-24]`: Phase 11 additionally publishes the immutable,
 source-free `ExpressionDiagnosticGuiSnapshot(packFingerprint, configurationFingerprint,
 attemptSerial, outcome, entries)`, outcome `ACCEPTED|REJECTED`; each entry carries
-`stableId, kind, severity (WARNING|ERROR), declarationName, summary`. Phase 11 constructs
+`stableId, kind, severity (WARNING|ERROR), declarationName, summary`. The exact P11
+`String declarationName` is empty for source-less entries and a validated identifier otherwise;
+the empty string suppresses the declaration label, not the entry. Phase 11 constructs
 summary from its whitelist kind template, never raw expression/source/span/path/dependency-chain
 text. Both existing P11 channels (`CHAT_AND_LOG`, `LOG_ONLY`) are eligible; this is a direct
 view input, not a conversion to SHADER_GUI or a fourth channel. Phase 7 publishes once for the
@@ -1114,6 +1327,13 @@ final load attempt and exposes the immutable snapshot to this panel. Selection/e
 clears it; a same-pack rejected attempt remains labelled REJECTED, never as active-plan data.
 Identity and attempt serial prevent an old pack's late result from replacing current diagnostics.
 The panel combines displayed counts/severities with P1 issues without mutating either producer.
+The presenter delivers the P1 list and the unchanged optional P11 snapshot together through
+`OptionScreenView.showErrors`; the same input supplies the issues indicator on either screen.
+The optional's absence clears only the displayed expression section, never the P1 producer
+store. An empty-entry snapshot still displays its producer identity, attempt and outcome.
+Source-less entries display the P11 summary/kind/severity without a declaration label when
+attribution is absent; no invented declaration, source coordinate or expression text is added.
+Adapters retain producer-separated sections and records even when combining display counts.
 
 ### 4.10 The view adapters
 
@@ -1124,6 +1344,23 @@ resolved models — labels localized, tooltips split and severity-tagged, column
 already expanded — and reports intents back to `OptionEditSession` / `PackSelectionActions`. **A
 view makes no contract decision.** That sentence is the OQ-9 hedge in one line, and §8.1's tests
 enforce it by covering every App F.3/F.4 row with no view present.
+The settings argument and three exact-value engine intents are part of this same closed seam.
+`showErrors` directly carries both producer inputs, including source-less P11 entries; no
+adapter-defined model extension or SHADER_GUI conversion is permitted.
+All supplied lists/models are deeply immutable snapshots; expressionDiagnostics contains the
+exact P11 presentation record, not a P12 copy or a raw ExpressionDiagnostic. The adapters
+must not inspect P11's runtime location/source attribution to reconstruct GUI content.
+`showOptions` also delivers `model.pendingProfileSummary()` from §4.5.2. Both vanilla and,
+if adopted, ModularUI render its prepared text in a dedicated unsaved-profile status line beside
+the existing unsaved count, independently of grid/profile-row presence; absence removes that line.
+Neither adapter reconstructs intent from inference, count, option equality or private session state.
+Both adapters also render `model.availability()` and every `ProfileCycle.applicable/availability`
+from §4.4.4: Reset/Apply/Done use their supplied enabled flags and disabled reasons, ordinary
+entries use their supplied interactive/tooltip, and profiles use their own supplied applicability,
+label and action availability. Show session mutation reason in the options status area even with
+no ordinary widgets or profile row; action reasons remain accessible for disabled controls.
+Do not infer gates from dirty/count or committer access. Preserve Back/discard/navigation and
+independent global settings, and refresh availability without hiding or rewriting pending summary.
 
 #### 4.10.2 The vanilla `GuiScreen` view — the OQ-9 fallback, designed in full
 
@@ -1137,12 +1374,19 @@ labels trimmed with an ellipsis to the button width; a status line for the last 
 compatibility badges per row (ours, not the reference's). `doesGuiPauseGame()` returns `false` so
 the world keeps rendering while the user changes packs — which is what makes live pack switching
 usable `[V:observed — Pintonium …/VintageShaderPackSelectionScreen.java:163-165]`.
+The selection screen also renders all seven `settings.entries()` with supplied decoded values,
+labels, tooltips and interactive flags. Toggle/tri-state buttons send the selected typed value;
+choice buttons cycle supplied tokens (index -1 starts at zero) through the exact-value intents.
+Both screens render `showErrors` as scrollable producer-separated P1 and P11 sections, preserving
+P11 identity/outcome and omitting absent declaration labels, with the shared issues indicator.
 
 *Options.* Grid of `resolvedColumns` buttons per row, sized from the column count; the row window
 and scroll offset computed from screen height; up/down plus wheel; `Back`, `Reset`, `Apply`, `Done`
-along the bottom, with `Apply` enabled only when dirty; hover renders the tooltip through vanilla's
+along the bottom, using the supplied Reset/Apply/Done availability and reasons (§4.10.1); hover renders the tooltip through vanilla's
 hover-text facility with `WARNING` lines in red (this is ours — the reference draws no tooltips,
 §3.4); Escape backs out of a subscreen and discards at the root.
+The options status area renders the supplied optional pending-profile summary exactly as
+§4.10.1 requires, separate from the aggregate count and inferred profile button.
 
 Two deliberate departures from the reference, both already justified in §3.4: **columns are not
 clamped to 3** (App F.4's widening contract), and **sliders exist** — drawn as a track with
@@ -1170,15 +1414,24 @@ CleanroomMC/ModularUI corpus):
   discrete slider is composable from the primitives; if not, the slider degrades to a cycling
   button (§4.4.3) and ModularUI still passes on the other two criteria.
 
+The ModularUI adapter binds the same seven settings argument entries to buttons/selectors,
+honors interactive and rawValue independently of index, and emits only the three published
+exact-value intents. Its issues indicator and scrollable panel consume the two `showErrors`
+arguments directly, with the same identity/outcome, absent-attribution and separated-record
+rendering as vanilla. Widget framework events never validate, persist or submit reloads.
+Its actual options panel also binds §4.10.1's supplied session/action/profile availability,
+disabled reasons and independent pending-summary status line, including program-only Internal
+profiles with no ordinary widgets. No ModularUI event bypasses session preflight.
+
 **Dependency arrangement `[D-P12-14]`: ModularUI is an ordinary mod dependency, not bundled.**
 Phase 1 deliberately left it unpinned and handed the decision here (P1 §4.2.6 as indexed by §5.3
-l. 4274). Of the two arrangements P1 §4.8.4 describes, the mod-dependency form is **mere
+l. 5543). Of the two arrangements P1 §4.8.4 describes, the mod-dependency form is **mere
 aggregation** and carries no LGPL-3.0 redistribution obligation, whereas `contain` jar-in-jar *is*
 distribution of the LGPL-3.0 work and brings notice, modification-marking and relink obligations
 with it — plus a version-collision risk against a user-installed copy. It is also the fallback P1
-already designed for exactly this case (P1 §10.2 l. 4604). **Blocking defect, restated:** the
+already designed for exactly this case (P1 §10.2 ll. 5960–5961). **Blocking defect, restated:** the
 template declares only `modCompileOnly`/`modRuntimeOnly` — *no `modImplementation` configuration
-exists* — and P1 §12 item 43 is the fix (P1 §11.3 item 2, §5.3 l. 4274). P1 §11.4 l. 5169 predicted
+exists* — and P1 §12 item 43 is the fix (P1 §11.3 item 2, §5.3 l. 5543). P1 §11.4 l. 6715 predicted
 this "will likely bite you first". §5.4 request 4 restates it as a dependency.
 
 If the spike fails, **no ModularUI dependency is declared at all** and the vanilla view ships —
@@ -1193,18 +1446,20 @@ the arrangement decision then costs nothing.
 | Exposed contract | Content | Consumer(s) |
 |---|---|---|
 | `OptionPresentationModel`, `PresentationScreen`, `PresentationEntry` (5 variants + `Blank`), `Tooltip`, `TooltipLine`, `ScreenId`, `OptionId` | Immutable screen tree, resolved columns and per-key locale→en_us→entry fallback with empty-preserving semantics; deterministic under I-4; §4.3.5 | view adapters; Phase2 source-free presentation projection |
-| `OptionEditSession`, `ApplyOutcome`, `OptionApplyStatus` | Same-catalog preview; filesystem codec commit or Internal session committer; exact §4.5.3 outcomes, at most one submitted reload and no published-state mutation | view adapters |
+| `OptionEditSession`, `ApplyOutcome`, `OptionApplyStatus` | Same-catalog preview plus independent committed/pending Optional<ProfileName> selection; isDirty is option delta OR selection delta, count includes selection; §4.4.4 current-gate preflight before every mutation, present supplies availability, disabled edits no-op and commit/reset REJECTED without effects; §4.5.3 admitted acceptance/discard/reset/failure rules, one REPUBLISH even for profile-only intent; selection freezes one-way into P7's single REPUBLISH (P7 publishes no selection read-back; §4.5.2's presenter-owned model retains the committed selection across catalog replacement, `D-P12-39`), no GUI program mutation | view adapters; Phase 7 |
+| `PendingProfileSummary` / `OptionPresentationModel.pendingProfileSummary` | Exact §2.2 declarations and §4.5.2 presence, named/cleared identity, empty-preserving prepared text and complete transition rules are incorporated here. `OptionEditSession.present` produces the immutable Optional; existing `showOptions` delivers it to both adapters under §4.10.1, independently of inference/count. No P3 payload, programmatic key or nine-tree inspection change | vanilla and conditional ModularUI options views |
+| `OptionActionAvailability`, `OptionSessionAvailability`, `OptionPresentationModel.availability`, `ProfileCycle.applicable/availability` | Exact §2.2 values and §4.4.4 producer, reason, preflight, refresh and no-op/rejection laws are incorporated; §4.5.1 distinguishes no definitions from Custom. Model delivery uses existing present→showOptions; §4.10 binds actual buttons/status in both views even without ordinary widgets. Session/reset gates do not depend on option count; Back/discard/global settings and pending summary survive | vanilla and conditional ModularUI options views; existing OptionEditSession callbacks |
 | `ReloadLifecycle`, `ReloadRequest`, `ReloadCause`, `ReloadRequest.merge` | Exact §2.2 values and §4.7 max-lifecycle/independent-OR algebra; cause is diagnostic only | Phase 7 adapter/drain |
 | `ReloadCoordinator` — `void submit(ReloadRequest request)` | Phase 7 implements and installs this `engine.config` seam; RS-1 means one drain/final outcome, not one P4 bump; RS-2 requires quiescence | Phase 7 |
-| `EngineSettingsModel`, `EngineSettingEntry`, `TriStateValue` | Seven controls consuming schema18 canonical keys and §4.6 domains/defaults, ratified user-over-pack old-light rule and reserved-zero AA; no aliases | Phases 5/7/8/9/10/13 |
-| `PackSelectionModel`, `PackSelectionRow`, `PackSelectionActions` | The selection screen's view model over `PackDiscoveryResult` — kind badge, status, compatibility badge, per-candidate diagnostics, current selection, last-action summary — plus `PackSelectionActions`, the **closed** set of intents a view reports back: select-candidate (by `PackCandidateId`), refresh, open-folder, open-options, close. **All three are declared in §2.2**, so a view adapter implements `showPackSelection` from the published shape and invents nothing. Contains no path, no root, no archive lease, and no unsanitized name (P3 §5.1 ll. 1578–1579, 1582) | the view adapters |
+| `EngineSettingsModel`, `EngineSettingEntry`, `TriStateValue` | Seven ordered controls supplied to showPackSelection; decoded typed/raw value independent of index, explicit interactive and gate tooltip; exact §4.6.2 intents use existing validation/global persistence/reload | view adapters; behavior Phases 5/7/8/9/10/13 |
+| `PackSelectionModel`, `PackSelectionRow`, `PackSelectionActions` | Discovery model plus closed select/refresh/open-folder/open-options/close and setEngineToggle(String,boolean), setEngineTriState(String,TriStateValue), setEngineChoice(String,String) intents, each edit returning ApplyOutcome; exact §2.2/§4.6.2 rejection, commit and single-submit rules. No path/root/lease or unsanitized name | view adapters |
 | Persisted pack selection — `shaderPack` | §4.6.3 exact Off/Internal tokens or Phase-3 `FilesystemCandidateReference.canonicalValue()`; fresh discovery and all five closed resolver outcomes before safe-target acquisition | Phase 7 restart/selection |
 | `OptionScreenView` | The entire view seam (§2.2, §4.10.1). Implementing it is the whole cost of swapping UI frameworks — this is the OQ-9 hedge stated as an interface | `mod.gui` implementations only |
-| Direct `ExpressionDiagnosticGuiSnapshot` input | Phase 11 shape and source-free policy in §4.9; Phase 7 publishes the final attempt and owns pack-scoped lifetime; no SHADER_GUI conversion/new channel | Phase 12 panel |
+| Direct `ExpressionDiagnosticGuiSnapshot` input | showErrors(List<EngineDiagnostic>, Optional<ExpressionDiagnosticGuiSnapshot>) carries separate immutable P1/P11 producers through the final adapter, retaining P11 identity/outcome/absent attribution; P7 final-attempt lifetime, no SHADER_GUI conversion/new channel | Phase 12 panel |
 | Programmatic option adapter | §5.3(D) applies the same catalog validation, explicit safe persistence, classification and queue as GUI, without rendering a view | Phase 2 through Phase 7 |
 
 Nothing here exposes a Minecraft, Forge, Mixin or LWJGL type: every row above `OptionScreenView`
-lives in `:engine` and satisfies seam constraints C-1…C-4 (P1 §5.1 l. 4199).
+lives in `:engine` and satisfies seam constraints C-1…C-4 (P1 §5.1 l. 5444).
 
 ### 5.2 Consumed from Phase 3 — current owner-designed, receiver-adopted, unverified
 
@@ -1216,30 +1471,84 @@ This inventory replaces the old open publication/merge assumptions. Consume the 
 | `PackFrontEnds.create()` / `PackFrontEndServices` | One bundle/authentication domain supplies front end and codecs; only bundle-issued safe access, no consumer implementation or mixed receivers |
 | Discovery/reference/target | Preserve owner ordering and limits; IDs/generations nonserializable; §4.6.3 adopts durable canonical reference, five resolution outcomes, acquisition rejection and exact target/catalog pairing |
 | `PackLoadRequest` / `PackLoadResult` | REPUBLISH loads, FULL discovers/resolves/loads; required companion pair follows engineOptions; required non-null internalOptions Optional follows internalPackSource, empty for filesystem, accepted session snapshot for Internal. Off short-circuits; no older operation fallback |
-| `PackConfiguration` / source materializer | CURRENT_SCHEMA_VERSION (=18), reject 17/all other versions before derivation; same-build finalized option/macros and configuration/materialization fingerprints |
+| `PackConfiguration` / source materializer | Exact CURRENT_SCHEMA_VERSION equality (23 adopted 2026-09-08), including matching nested IdMappingInput and PackDecisionSnapshot when received; reject 22/all other versions before derivation/reuse; MaterializedSource-v23, same-build finalized options/macros and owner-provided fingerprints |
 | `OptionDefinition` / `OptionCatalog` / `OptionState` | Definition source order, typed Boolean/text values, availability/default/allowed list/tooltip/occurrences; catalog-issued complete defaults and construct/update/validate with closed failures; safe out-of-list values warn and survive |
 | `OptionConfiguration` / profiles | `profiles()` source order, expanded `constraints()` and `disabledPrograms()`; preview `inferProfile` returns Inferred/InvalidState; GUI changes options only, P7 runtime evaluates the new configuration and selected profile |
-| `ScreenModel` / `SliderSet` / locale catalog | Ordered entry algebra, all-slot configured column floor; `localizedDecorations()` is the sole locale-keyed immutable publication; P3 §4.3 acquisition/normalization/order/collision/missing/empty semantics consumed in §4.3.5 |
+| `ScreenModel` / `SliderSet` / locale catalog | Payload-free ScreenProfileEntry() maps to ProfileCycle via profiles()/inferProfile(previewState)/ProfileInference, never an entry profile field; otherwise unchanged ordered entry algebra and all-slot configured column floor; localizedDecorations() remains the sole locale authority with §4.3.5 semantics |
 | Option persistence | Validate access domain, target's exact catalog pack credential and state's exact catalog identity before I/O. InvalidRequest has no state; Completed ABSENT/FAILED retains validated baseline. Writer computes changed-only against catalog defaults. GUI reload only after COMMITTED |
 | Global persistence / `EngineOptionData` | §4.6.3 owner baseline-overlay/result matrix, last-valid duplicate, all-entry writing and exact codec domains; GUI owns no alternate parsing |
 | Requirements / flags / compatibility / failure | Same-build vertex sets; P10 resolved lighting/AO bake policy; compatibility warning; P3 closed failures and primary sanitized diagnostic, never caller path/exception prose |
 
 The older R1 option-model and R2 load-merge requests are **fulfilled architecturally** by
-current P3 §5; this document adopts them, unverified. The IR-03/24 follow-on requires
-schema18; neither schema17 nor any earlier data is silently upgraded.
+current P3 §5; this document adopts them, unverified. The current schema23 cutover requires
+exact CURRENT_SCHEMA_VERSION equality; schema22 and every other version are rejected without upgrade.
 Fresh owner and receiver whole-document reviews remain required before implementation consumption.
+
+**Schema23 receiver receipt — D-P12-36, 2026-09-08 (unverified).** Receive P3's
+range-capable selector shape with exact containing/nested/inspection schema23 and
+MaterializedSource-v23 identity. P12 does not expand selector ranges or resolve registries;
+P9 alone performs registry resolution. The nine metadata-only trees and projectionVersion=1,
+same-load assets, native ownership, locale, option and parameter domains remain unchanged.
+All prior numeric receipts, including schema22 below, are historical, not admission alternatives.
+No binary acquisition, parser, optional grant, implementation or fresh review clearance follows.
+
+**Schema22 receiver receipt — D-P12-33, 2026-09-08 (unverified).** Adopt the coordinated
+P3 BLOCK forced11300Rules extension: ordinary state/CLASSIC rules unchanged; isolated alternate
+bytes/environment differ only by MC_VERSION=11300, with MODERN provenance. P9 alone selects
+nonempty alternate BLOCK rules for PRESENT_EMPTY, never merges/overrides ordinary rules.
+P12 carries the owner's changed containing/nested/inspection schema and identity without
+reinterpreting mapping provenance. projectionVersion=1 and the nine-tree structure remain.
+All earlier numeric receipts below, including schema21/20/19, are historical, not admission
+alternatives. Their same-load asset, native ownership, option, locale, session and exact NONE
+retention contracts remain; no new binary access or optional grant is implied.
+
+**Schema21 receiver receipt — D-P12-31, 2026-09-08 (unverified).** Adopt P3
+§0.63/D-P3-70/§5. Earlier dated schema20/19 receipts below are historical provenance only.
+Require exact containing/nested CURRENT_SCHEMA_VERSION equality before presentation or reuse,
+including inspection snapshots; no relabeling, empty fields or old-entry constructor/accessor shim.
+Consume the payload-free selector through §§4.3.2/4.5's existing profile-cycle/edit/Apply route.
+A usable explicit OVERRIDE alone can load successfully with an empty base; presentation does
+not reject it or merge base roots, and an absent world key still selects that empty base.
+D-P12-30's same-load assets, exact NONE retention, nine source-free projection trees and
+projectionVersion=1 meanings remain unchanged; only current identity uses schema21 and
+MaterializedSource-v21. Carry P4's opaque RegistryFingerprint/own-build-v1 identity and
+invalidate older registry-sensitive caches without recomputing dispositions or changing fallback.
+No binary acquisition, runtime/timing API or optional grant is added. Fresh reviews and IR-01 remain.
+
+**Schema20 receiver receipt — D-P12-30, 2026-09-08 (unverified).** Adopt P3
+§0.62/D-P3-69/§5; earlier current-version assertions and the schema19 receipt below remain
+historical. Require containing/nested schema20 before presentation derivation, editing or
+reuse. Required non-null `assets` after `sources` stays the exact same-load P3 capability
+paired with the exact containing `PackIdentity`; reject foreign-load pairing even under
+structural equality. Carry the owner's metadata-derived configuration identity unchanged.
+Resource-only NONE keeps that exact configuration/assets through P7, not a new asset epoch
+or P3 load. No dummy fields, empty-manifest upgrade, reconstructed capability or schema relabeling.
+P12 acquires/decodes no binary assets; locale catalog/per-key empty-preserving fallback,
+seven controls, persistence, reload algebra and authenticated Internal session semantics
+are unchanged. Source-free inspection keeps P3's actual ninth canonical assets metadata
+section, digest strings via TextHash, original eight meanings and projectionVersion=1,
+never bytes/cursors/providers. P13 owns optional owned-sidecar-only recovery; other P3
+safety/bounds/index/container/source/configuration failures retain fatal handling.
+Fresh owner/receiver reviews and IR-01 remain; no older PASS certifies these bytes.
+
+**Schema19 receiver receipt — 2026-09-07:** adopt P3 D-P3-68/§0.61 and §11 migration.
+Only containing/nested schema and same-build identity change here; complete locale catalog,
+per-key empty-preserving fallback, seven controls, persistence and authenticated Internal
+session/capture/rebinding remain unchanged. P12 never calls a removed geometry translator,
+parses source, or fabricates new native metadata. Historical schema18 grant/adoption records
+remain evidence; this receipt supersedes their current version, not their semantics or reviews.
 
 ### 5.2b Consumed from Phase 1 — owner-designed, receiver-adopted, unverified
 
 | Phase 1 §5 row | Use here |
 |---|---|
-| Module layout + §2.1 package table (§5.1 l. 4198) | `engine.config` is granted to "Phase 3 (+12)" (l. 1534) and `mod.gui` to Phase 12 (l. 1556) — §2.1. No new package is requested |
-| Seam constraints C-1…C-4 and the package-placement/`.internal` rule (§5.1 ll. 4199–4200) | The model/view split in §2.1 |
-| `EngineDiagnostic`, `DiagnosticSeverity`, `UserChannel`, `DiagnosticReporter` (§5.3 l. 4268, which names **12** as "GUI is a channel consumer") | §4.9 — the `SHADER_GUI` store is our sink |
-| `Log` / `Logs` / the fixed channel list (§5.3 ll. 4266–4267) | GUI-side warnings during model build and persistence |
-| Mod-dependency declaration mechanics (P1 §5.3 l. 4274, which indexes P1 §4.2.6, P1 §4.8.4 and P1 §11.3 item 2) | `[D-P12-14]` in §4.10.3 and request 4 below |
-| Naming: `mod_id = schmaloogium`, root package `com.schmaloogium` (§5.1 l. 4204) | Type placement throughout |
-| SPDX header convention + `THIRD-PARTY.md` mechanism (§5.3 l. 4275) | Applied to any incorporated LGPL-3.0 view code (§0.5) |
+| Module layout + §2.1 package table (§5.1 l. 5443) | `engine.config` is granted to "Phase 3 (+12)" (l. 1736) and `mod.gui` to Phase 12 (l. 1765) — §2.1. No new package is requested |
+| Seam constraints C-1…C-4 and the package-placement/`.internal` rule (§5.1 ll. 5444–5445) | The model/view split in §2.1 |
+| `EngineDiagnostic`, `DiagnosticSeverity`, `UserChannel`, `DiagnosticReporter` (§5.3 l. 5536, which names **12** as "GUI is a channel consumer") | §4.9 — the `SHADER_GUI` store is our sink |
+| `Log` / `Logs` / the fixed channel list (§5.3 ll. 5534–5535) | GUI-side warnings during model build and persistence |
+| Mod-dependency declaration mechanics (P1 §5.3 l. 5543, which indexes P1 §4.2.6, P1 §4.8.4 and P1 §11.3 item 2) | `[D-P12-14]` in §4.10.3 and request 4 below |
+| Naming: `mod_id = schmaloogium`, root package `com.schmaloogium` (§5.1 l. 5452) | Type placement throughout |
+| SPDX header convention + `THIRD-PARTY.md` mechanism (§5.3 l. 5544) | Applied to any incorporated LGPL-3.0 view code (§0.5) |
 
 **No GL service, handle, or facade verb is consumed.** The presentation model has no GL surface at
 all, and the views draw through vanilla/ModularUI, not through `engine.gl`.
@@ -1285,6 +1594,9 @@ P7 installs `ExpressionDiagnosticGuiSource.current() -> Optional<ExpressionDiagn
 into the P12 diagnostics presenter at construction. The presenter reads it on present/refresh
 with `ReloadOutcomeSource`, not from a new per-frame participant. Empty clears its view.
 It rejects different-pack/older-serial values; shutdown clears as explicit Off does.
+The present/refresh call forwards the accepted optional directly to `showErrors` alongside the
+separate P1 list, including empty entries and source-less diagnostics. No snapshot is rebuilt,
+channel-converted, attributed to the active plan, or dropped for lacking a declaration.
 
 **(D) Phase 2 programmatic bridge through Phase 7.** P7 exposes
 `ProgrammaticOptionBridge.current() -> Optional<ProgrammaticOptionSnapshot>` with immutable
@@ -1293,9 +1605,13 @@ configuration exists; `apply(PipelineIdentity expected,Map<String,String> packOp
 Map<String,String> engineOptions) -> ProgrammaticApplyResult`.
 P12 implements the validation/apply adapter behind it. Exact case-sensitive pack names resolve
 through the current catalog; switch text decodes only true/false, other values become safe
-TextOptionValue, batch construction validates the complete state. Engine edits accept only
-the canonical user-control keys in §4.6.2; no aliases/AA/unknown-key control. P7 checks expected
-current pipeline identity before accepting the batch. Closed results are
+TextOptionValue, batch construction validates the complete state. Engine edits admit the eight
+canonical programmatic/storage keys: the seven §4.6.2 control keys plus reserved
+`antialiasingLevel`. Validate through P3's existing domain: the latter accepts exact untrimmed
+`"0"` only, already-zero is UNCHANGED, nonzero or any other token is INVALID_VALUE.
+Unknown keys/legacy aliases remain UNKNOWN_ENGINE_KEY. Reserved zero has no GUI action,
+EngineSettingsModel entry, runtime effect or MC_FXAA_LEVEL macro (`[D-P12-35]`).
+P7 checks expected current pipeline identity before accepting the batch. Closed results are
 `Queued(ReloadToken token,OptionPersistenceReceipt persistence)`,
 `Rejected(INVALID_REQUEST|STALE_CONFIGURATION|UNKNOWN_OPTION|INVALID_VALUE|UNKNOWN_ENGINE_KEY|SHUTTING_DOWN)`
 or `FailedPersistence(FailureId failure,OptionPersistenceReceipt persistence)`.
@@ -1309,6 +1625,12 @@ Failure keeps the complete pending overlay and reports each domain's committed/f
 state, performs no reload and makes no cross-file atomicity/rollback claim. Retrying writes the
 same complete desired values. P2 uses isolated copied game/shaderpacks roots and polls the
 returned token/final receipt. A P3 new load, never the preview, produces same-build sources.
+Programmatic maps carry no new profile selector: ordinary map edits preserve P7's accepted
+explicit selection. An unchanged complete eight-key map, including reserved zero, adds no
+REPUBLISH; the existing NONE token/receipt path remains legal. In contrast a GUI profile-only
+commit is not an unchanged batch: P7 must freeze the accepted selection with its single
+REPUBLISH even when pack/global value dispositions are UNCHANGED. P2 observes that intent
+through the resulting program decisions and final receipt, not by inferring from option maps.
 
 **(E) Internal session commit — owner-issued, receiver-adopted.** P7 exposes and installs
 `InternalOptionCommitter.commit(PipelineIdentity expected,OptionState preview,
@@ -1335,6 +1657,18 @@ Restart starts defaults. Reset submits complete catalog defaults, not a fabricat
 No PackOptionsTarget, durable filename or serialized token exists. Global settings retain their
 ordinary durability. The programmatic bridge and GUI call this same committer; views never
 submit a second ReloadRequest or pass a preview to source materialization.
+The same acceptance boundary includes §4.5's pending explicit profile selection, frozen
+one-way into the single REPUBLISH at drain; P7 publishes no selection read-back, and the
+presenter-owned edit/selection model retains the committed selection across catalog
+replacement (`D-P12-39`). Do not add it to the captured OptionState or token format.
+An intent-only Internal action still captures/validates the exact preview and atomically
+accepts selection plus one REPUBLISH. Value-domain persistence receipts may say UNCHANGED;
+the GUI action nevertheless returns SESSION_ACCEPTED because the independent selection was
+accepted. Failed global write/rejected capture preserves prior accepted selection and pending
+intent. Reset clears selection at acceptance; no-value-change optimization may suppress it.
+Before this committer route, GUI callbacks enforce §4.4.4's published availability preflight;
+missing installation rejects/no-ops before capture, preview/selection changes or effects.
+Availability is presenter state in the existing options model, not a new P7 runtime API.
 
 ### 5.4 Dependency request disposition
 
@@ -1347,7 +1681,7 @@ in §5.3(A), not an outstanding request to create a counter.
 
 **Request 4 — Phase 1: land the `modImplementation` fix.** P1 §11.3 item 2 records that the
 template declares only `modCompileOnly`/`modRuntimeOnly` — *no `modImplementation` configuration
-exists* — and P1 §12 item 43 is the fix; P1 §11.4 l. 5169 anticipated that it "will likely bite you
+exists* — and P1 §12 item 43 is the fix; P1 §11.4 l. 6715 anticipated that it "will likely bite you
 first". `[D-P12-14]`'s mod-dependency arrangement needs it. This is a restatement of an
 already-recorded Phase 1 work item, not a new interface request; no Phase 1 §5 row changes.
 
@@ -1371,18 +1705,20 @@ shaders-off is always reachable from every screen.**
 |---|---|---:|
 | Malformed / unresolvable screen entry, unknown option name in a screen, `[SUBSCREEN]` naming an undeclared screen | Warn on the `schmaloogium.config` channel; render an unresolved link as **disabled** and drop an unknown option entry; every other entry on the screen survives. The model build never fails (§4.2) | 2a |
 | More than one `*`, or `*` on a screen whose expansion set is empty | First occurrence wins and later ones expand to nothing, each diagnosed (§4.3.3). No duplication, no crash | 2a |
-| Ambiguous option | Rendered non-interactive with its reported locations in the tooltip, excluded from `*` (§4.3.3). Phase 3 already disabled it (P3 §6 l. 1696) | 2a |
-| Cyclic profile or subscreen reference | Phase 3 ignores the cyclic edge and retains the rest (P3 §6 l. 1697); the navigation stack is additionally depth-bounded at 32 (§4.3.1) | 2a |
+| Ambiguous option | Rendered non-interactive with its reported locations in the tooltip, excluded from `*` (§4.3.3). Phase 3 already disabled it (P3 §6 l. 4367) | 2a |
+| Cyclic profile or subscreen reference | Phase 3 ignores the cyclic edge and retains the rest (P3 §6 l. 4368); the navigation stack is additionally depth-bounded at 32 (§4.3.1) | 2a |
 | Locale/key absent or explicit empty | Per-key requested→en_us→entry fallback only on absence; explicit empty suppresses fallback. Invalid requested locale uses en_us then entry fallback; no pack-file reader | 2a |
 | Current option value is not in the advertised list | Displayed and retained; first cycle moves to index 0 (`[D-P12-7]`). Never silently rewritten | 2a |
-| **Per-pack or global persistence write fails** | Warn; **retain the in-memory state**; keep the pending set intact so the user can retry; never turn the pack off, never lose the edit. Matches P3 §6 l. 1701 | 2a |
+| **Per-pack or global persistence write fails** | Warn; **retain the in-memory state**; keep the pending set intact so the user can retry; never turn the pack off, never lose the edit. Matches P3 §6 l. 4380 | 2a |
+| Disabled/mismatched engine-setting intent or stale ladder token | REJECTED before mutation/I/O/queue; preserve decoded value and show disabled reason or rejection. Persistence failure retains pending global value for explicit same-intent retry; §4.6.2 | 2a |
+| P11 source-less diagnostic or empty-entry final snapshot | Render producer summary and identity/outcome directly, with no invented attribution; absent snapshot clears only the P11 display, not P1 records | 2a |
 | `PackFrontEnd.load` returns `Failed` | P7 owns final Failed/compensated-Off outcome; display its sanitized failure and Off state, never continue the prior pipeline as active. An inspectable detached prior model carries no runtime authority | 4 |
 | Internal capture/commit rejected or global write failed | Preserve pending preview and prior session preference; report closed failure, no reload. After queue acceptance, load/render failure follows P7 Off and retains accepted preference for retry | 2a/4 |
-| Discovery returns no candidates, or the shaderpacks directory is invalid | The list shows `(off)` and `(internal)` only, plus the attributed diagnostic; `discover` never throws (P3 §5.1 ll. 1571–1574) | 4 |
+| Discovery returns no candidates, or the shaderpacks directory is invalid | The list shows `(off)` and `(internal)` only, plus the attributed diagnostic; `discover` never throws (P3 §5.1 l. 3354) | 4 |
 | Stale `PackCandidateId` (a later discovery superseded the generation) | Re-run `discover` before acting (`[D-P12-8]`); a stale id that still reaches `load` fails as `INVALID_SELECTION` and is reported, not retried blindly | 4 |
-| `version.<mcver>` unmet | Warning badge, pack stays off, configuration remains inspectable (row C-1; P3 §6 l. 1699) | 4 |
-| Per-program compile/link/validate failure | Not ours to handle — Phase 4 deletes the program and resolves through the backup chain (P1 §6 l. 4294). Ours is to **display** the `SHADER_GUI` record with its driver log (§4.9) | 3 (displayed) |
-| Capability gate fails at init | `ERROR`/`CHAT` (P1 §4.9.4 l. 3797). The GUI shows the resulting off state honestly (§4.9) | 4 |
+| `version.<mcver>` unmet | Warning badge, pack stays off, configuration remains inspectable (row C-1; P3 §6 l. 4370) | 4 |
+| Per-program compile/link/validate failure | Not ours to handle — Phase 4 deletes the program and resolves through the backup chain (P1 §6 l. 5563). Ours is to **display** the `SHADER_GUI` record with its driver log (§4.9) | 3 (displayed) |
+| Capability gate fails at init | `ERROR`/`CHAT` (P1 §4.9.4 l. 5004). The GUI shows the resulting off state honestly (§4.9) | 4 |
 | `ReloadCoordinator` absent or not yet installed at bootstrap | Reload triggers are inert and log once; `/reloadShaders` replies with that inert-trigger message rather than an acknowledgement (§4.8.2); the GUI still opens, still reads, still persists. A GUI that cannot reload is degraded, not broken | 2a |
 | View-layer exception (either adapter) | Caught at the view boundary, logged, and the screen closes to the parent rather than propagating into vanilla's GUI stack | 5 |
 | ModularUI absent at runtime | The vanilla view is used. It has no dependencies beyond vanilla and Forge, so the GUI is always reachable (§4.10.2) | 2a |
@@ -1396,9 +1732,9 @@ shaders-off is always reachable from every screen.**
 | `OptionPresentationModel`, `OptionEditSession`, `EngineSettingsModel`, `ReloadRequest` | Pure values and pure logic. Deeply immutable except the edit session's pending map, which is confined to the client thread. No GL affinity, no Minecraft affinity — this is what makes §8's headless tests possible |
 | Both view adapters | **Client thread only** (vanilla `GuiScreen` and ModularUI are both client-thread constructs) |
 | Key-input, command, and resource-listener bindings | Client thread; build a request and call `ReloadCoordinator.submit`. Resource callbacks are notifications inside P7 §4.8.1's separately owned synchronous replacement gate, not its prelude or permission to replace resources |
-| `PackFrontEnd.discover` / `load` | **Not Phase 12's choice.** Phase 3 states both may run off the render thread and that `load` has no GL affinity (P3 §7 ll. 1709–1711); publication is the caller's atomic reference operation (l. 1715). Phase 7 owns which thread executes a drained request |
-| Persistence writes | Serialized per pack identity by Phase 3 (P3 §7 l. 1716); a writer never mutates the active configuration |
-| `SHADER_GUI` diagnostics | Phase 1 hops `CHAT` and `SHADER_GUI` deliveries to the client thread (P1 §7 l. 4319); the panel reads an already-client-thread-confined store |
+| `PackFrontEnd.discover` / `load` | **Not Phase 12's choice.** Phase 3 states both may run off the render thread and that `load` has no GL affinity (P3 §7 ll. 4390–4392); publication is the caller's atomic reference operation (l. 4396). Phase 7 owns which thread executes a drained request |
+| Persistence writes | Serialized per pack identity by Phase 3 (P3 §7 ll. 4397–4398); a writer never mutates the active configuration |
+| `SHADER_GUI` diagnostics | Phase 1 hops `CHAT` and `SHADER_GUI` deliveries to the client thread (P1 §7 l. 5589); the panel reads an already-client-thread-confined store |
 
 **Performance posture** (§G2.5: clean code first, optimize with evidence):
 
@@ -1468,6 +1804,51 @@ All tests are headless `:engine` JUnit tests unless marked otherwise. None needs
 - `profile_clickAppliesWholeOptionConstraintSet`.
 - `profile_clickNeverTouchesProgramState` — `!program.*` tokens are inert here (row F4-3).
 - `profile_cycleWrapsAndCustomSelectsFirstDeclared`.
+- `profile_sameOptionsDifferentDisabledProgramsCommits` — active explicit A requires FOO=true;
+  B requires FOO=true plus !program.gbuffers_water. Click B: option delta zero, inferred label
+  may stay A, pending count one, Apply enabled. Apply or Done accepts B and one REPUBLISH;
+  P7 evaluates B against the new configuration and water is disabled. Reapplying is UNCHANGED.
+- `profile_programOnlyIntentDiscardResetAndFailure` — program-only profile becomes actionable;
+  discard restores prior intent without effects, reset at default options clears committed
+  disables through one accepted reload, invalid batch and filesystem/global failure retain
+  pending intent without queue, successful retry submits once. Internal SESSION_ACCEPTED with
+  UNCHANGED value receipt remains a real intent commit; postacceptance Off does not undo it.
+- `profile_explicitCursorIndependentOfInference` — equal-option profiles cycle onward from
+  pending intent, manual option edits can display Custom without dropping selection, and
+  returning both intent and values to their committed baselines restores clean state.
+- `profile_summaryDeliveredForEqualOptionABC` — committed explicit A and equal-option A/B/C
+  all infer A: actual `showOptions` models receive absent, named B, named C, then absent on
+  return to A, while count is 0/1/1/0. With distinct decorations B/C render distinct prepared
+  text in both adapters, including on a subscreen without a profile row; inference stays A.
+- `profile_summaryTransitionLifetime` — ordinary edit preserves pending B despite Custom
+  inference; invalid batch preserves B, discard clears, failed reset retains a present cleared
+  summary, failed Apply retains named intent, successful filesystem/Internal acceptance clears,
+  postacceptance Off does not recreate it, and catalog replacement discards stale pending text.
+- `profile_summaryLocaleAndEmptyDecoration` — requested/en_us/fallback and present-empty
+  names preserve §4.3.5 semantics; equal or empty labels still carry distinct B/C identities.
+  Views render prepared text without raw-name fallback; cleared differs from Custom, locale
+  refresh changes text only, option-only edits never produce a selection summary.
+- `profile_emptyCatalogIsNotCustom` — retained `<profile>` with zero definitions has
+  applicable=false, disabled action and prepared no-profiles reason/label, still counts one
+  slot; cycling changes neither preview nor selection and performs no I/O/reload. Nonempty
+  profiles with unmatched option values instead expose actionable Custom when mutation is open.
+- `profile_internalProgramOnlyMissingCommitter` — Internal has a program-only profile and
+  zero ordinary widgets: applicable=true, but profile/mutation/reset disabled with prepared
+  reasons; Apply/dirty Done cannot accept. Cycle/reset preserve all preview/intent/summary
+  state, emit no persistence/capture/reload, while Back/discard and global controls remain usable.
+- `options_staleEnabledCallbackRechecks` — capture enabled model with pending named B, remove
+  committer, then invoke old option/profile/Apply/Reset/dirty-Done callbacks: no catalog update,
+  intent change, write/capture/queue or close; commit/reset return REJECTED, refreshed gates
+  disabled, named B summary and count unchanged. Discard still restores baselines.
+- `reset_availabilityBeforePreviewMutation` — unavailable reset keeps pending named B intact;
+  after same-session committer installation reset becomes enabled without any automatic effect,
+  even at default options/zero widgets. Explicit reset clears selection and submits once on
+  acceptance; an admitted acceptance failure retains cleared pending summary, unlike preflight
+  rejection. Reset remains enabled when clean if mutation is available.
+- `options_availabilityRefreshPreservesSummary` — availability loss/gain changes supplied flags
+  and reasons but not pending/committed identity, dirty/count, inferred label or summary text in
+  the same locale. No automatic replay; the next explicit valid profile action can proceed.
+  Frozen-locale/explicit-empty reason rendering follows §4.3.5 without altering enabled state.
 
 **Edit session and persistence**
 - `apply_writesChangedOnlySet` and `apply_optionReturnedToDefaultIsRemovedFromFile` — the
@@ -1506,30 +1887,48 @@ All tests are headless `:engine` JUnit tests unless marked otherwise. None needs
 - `selection_staleCandidateIdTriggersRediscoveryBeforeLoad` (`[D-P12-8]`).
 - `selection_nonAvailableStatusRendersDisabledWithDiagnostics`.
 - `selection_requiresNewerEditionShowsWarningAndStaysOff` — row C-1.
-- `selection_modelCarriesNoPathRootLeaseOrUnsanitizedName` and
-  `selection_actionSurfaceIsExactlyTheFivePublishedIntents` — the §2.2 `PackSelectionModel` /
-  `PackSelectionActions` shapes a view adapter is entitled to rely on.
+- `selection_engineIntentsUseCurrentAvailability` — all seven settings render through the same
+  selection call; a delayed disabled/mismatched intent or removed ladder token is rejected
+  without writes/reload or changed decoded value.
 - `engineSettings_sevenEntriesExactlyAndNoAaOrAf` — the count and the absence, asserted literally.
 - `engineSettings_triStateDefaultDefersToPackFlag` (`[D-P12-10]`).
 - `engineSettings_roundTripThroughGlobalCodec` and
-  `engineSettings_unknownKeyIsPreservedForRoundTrip` — P3 §5.1 ll. 1602–1604.
+  `engineSettings_unknownKeyIsPreservedForRoundTrip` — P3 §5.1 ll. 3492–3498.
 - `engineSettings_missingLadderPreservesDecodedCurrentValue` — inert display keeps valid current
   float text and handDepthMul absent default0.125; no identity rewrite.
+- `engineSettings_viewEditsCommitBeforeSingleReload` — each typed intent follows canonical
+  validation and global write-through; failed write keeps pending value, same-intent retry
+  commits once, and adapter receipt does not cause another submission.
+- `engineSettings_enabledOutOfLadderCycleStartsAtFirstToken` — rawValue remains visible at -1;
+  explicit user cycle selects the first owner token, never an implicit write during display.
 - `engineSettings_ownerCodecRoundTripAndDuplicatePrecedence` — explicit tri-state wire,
   invalid duplicate does not erase valid prior value, unknown-safe entries survive all-entry write.
 - `selection_durableReferenceOutcomesNeverChooseFirstCollision` — all resolver outcomes, same
   sanitized label with distinct reference, stale snapshot and kind change retain shaders off.
 - `programmatic_partialPersistenceDoesNotQueueReload` — pack commit/global failure reported,
   pending overlay retained, no false rollback; retry commits and polls final P7 result.
+- `programmatic_reservedZeroIsValidUnchanged` — a complete canonical eight-key unchanged map,
+  including antialiasingLevel="0", is admitted with UNCHANGED global disposition and no AA/
+  REPUBLISH effect; nonzero, padded or alternate zero spellings reject INVALID_VALUE before
+  writes/queue. Both adapters still expose only seven controls and reject AA GUI intents.
 - `diagnostics_expressionRejectedAttemptIsNotActiveSuccess` — selected-pack/attempt replacement,
   no source leakage, no extra channel, and explicit Off clears direct projection.
+- `diagnostics_viewReceivesDirectSourceLessAndEmptyAttempt` — both adapters receive unchanged
+  P1 records beside exact P11 identity/outcome and absent-attribution entries; an empty-entry
+  REJECTED snapshot remains visible, Optional.empty clears only P11, no channel conversion.
 - `reload_compensatingOffInvalidatesBothRegistryGenerations` — observe Ready then Off events
   without equating them to two configurations or suppressing the second invalidation.
 
 **Structural**
-- `model_schemaVersionMismatchIsRejectedBeforeDerivation` — I-3, P3 §5.3 ll. 1644–1645.
-- `model_schemaGateRejectsPreviousSchema` — CURRENT_SCHEMA_VERSION18 accepted, 17 and all
-  other schemas rejected before retaining state; no fabricated locale/session/codec defaults.
+- `model_schemaVersionMismatchIsRejectedBeforeDerivation` — I-3, P3 §5.3 ll. 4162–4163.
+- `model_schemaGateRejectsPreviousSchema` — exact CURRENT_SCHEMA_VERSION equality (23 adopted
+  2026-09-08), matching nested ID/inspection schemas; reject 22/all others before retaining state,
+  with no fabricated locale/session/codec defaults or relabeled identity.
+- `model_payloadFreeProfileSelectorTracksPreview` — ScreenProfileEntry() reaches ProfileCycle;
+  declaration-order cycling applies whole constraints, re-inference follows edits to selected/Custom,
+  invalid foreign preview rejects without an invented entry profile, and Apply retains existing ownership.
+- `model_overrideOnlyConfigurationAccepted` — usable explicit override with empty base presents
+  options without requiring base sources, merging roots or redirecting absent-world selection.
 - `model_buildNeverThrowsOnAnyMalformedScreenConfiguration` — a fuzz test over screen blocks
   (`[D-P12-18]`).
 - `model_isDeterministicAcrossBuilds` — I-4, byte-identical model snapshots.
@@ -1551,6 +1950,13 @@ All tests are headless `:engine` JUnit tests unless marked otherwise. None needs
 Only the view adapters, and only their drawing. The OQ-9 spike (§10) is the manual/dev-environment
 procedure that exercises ModularUI; the vanilla view is exercised by the same manual checklist.
 Neither view contains a contract decision, so neither is on the critical path for conformance.
+The actual vanilla and conditional ModularUI checklist exercises all §8.1 availability cases:
+empty-profile disabled row versus actionable Custom, program-only Internal with zero ordinary
+widgets and missing committer, stale enabled callbacks, preflight-disabled versus admitted-failed
+reset, and later same-session enablement. Observe supplied button/status reasons and unchanged
+pending-summary line/count through gate loss/gain; exercise Back/discard and independent global
+settings while pack mutation is unavailable. These are future acceptance obligations, not
+executed UI evidence or OQ-9 adoption.
 
 ---
 
@@ -1570,10 +1976,10 @@ and "options round-trip persistence" in v0.4. The table splits *architected now*
 | Edit session: apply / discard / reset | `v0.4` | |
 | Per-pack changed-only persistence | `v0.4` | The v0.4 exit criterion |
 | Pack-selection screen incl. sentinels, status, `version.<mcver>` badge | `v0.4` | |
-| Seven engine-settings entries and global round-trip | `v0.4` | Independent normalMapEnabled/specularMapEnabled behavior lands at P13 v0.5; entries are inert before behavior availability |
+| Seven engine-settings entries and global round-trip | `v0.4` | Complete settings/view/intents seam; explicit inert gates preserve decoded values until behavior/ladder availability, including P13 independent controls at v0.5 |
 | Reload triggers: F3+R, `/reloadShaders`, resource listener | `v0.4` | |
 | Reload classification + merge algebra + `ReloadCoordinator` call | `v0.4` | Execution is Phase 7's, at Phase 7's milestone |
-| `SHADER_GUI` diagnostics panel | `v0.4` | Matches P1 §9 l. 4513 (store at v0.1, routing at v0.4) |
+| P1 `SHADER_GUI` and direct P11 diagnostics panel | `v0.4` | Separate immutable producer inputs through showErrors, including source-less entries and final identity/outcome; no channel conversion |
 | Vanilla `GuiScreen` view | `v0.4` | Always present; the zero-dependency floor |
 | ModularUI view + the dependency declaration | `v0.4`, **conditional on OQ-9** | Not built if the spike fails |
 | Presentation-model goldens in `:conformance` | `v0.4` | Needs the Phase 2 harness |
@@ -1663,17 +2069,17 @@ re-open OQ-12.
 | `D-P12-1` | `*` placement is by **declaration**, not reachability | App F.4 defines screens by declaration and is silent on reachability; the alternative silently duplicates an orphaned screen's options into the main screen, changing what the author wrote. Orphans are diagnosed instead | §4.3.3 |
 | `D-P12-2` | Exactly one `*` wins — the first in build order; later ones expand to nothing, diagnosed | Splitting the set has no contract definition; duplicating it would place an option twice | §4.3.3 |
 | `D-P12-3` | Consume OptionCatalog.definitions() source order without fallback sort | Current P3 owner publishes the exact ordering | §4.3.3 |
-| `D-P12-4` | Ambiguous options are excluded from `*` but render disabled when explicitly placed | Phase 3 disables them (§4.3 ll. 921–923); auto-placing permanently inert rows in every pack's main screen is noise, while an author who *placed* one should see it and its locations | §4.3.3 |
+| `D-P12-4` | Ambiguous options are excluded from `*` but render disabled when explicitly placed | Phase 3 disables them (§4.3 ll. 2052–2054); auto-placing permanently inert rows in every pack's main screen is noise, while an author who *placed* one should see it and its locations | §4.3.3 |
 | `D-P12-5` | A slider is a **discrete selector over `allowedValues`** — no interpolation, no numeric parsing; identical payload to a value option | App F.3 l. 1470 is the only contract text and treats values as an opaque ordered list (const options include non-numeric forms). The payload equivalence is what makes the OQ-9 fallback complete. **No working reference exists** — PD §7.4 confirmed at the source (§3.4) | §4.4.3 |
 | `D-P12-6` | An unresolved `[SUBSCREEN]` link renders **disabled**, not dropped | A silently missing row hides the authoring error; a disabled row surfaces it | §4.3.1 |
-| `D-P12-7` | An out-of-list current value is displayed and retained; the first cycle moves to index 0 | P3 §4.3 l. 942 forbids constraining a safe current value to the advertised list. Rewriting it on open would persist a change the user never made | §4.4.2 |
-| `D-P12-8` | Re-run `discover` before acting on any selection | `PackCandidateId` is valid only against the latest generation (P3 §5.1 ll. 1579–1582); the alternative is an avoidable `INVALID_SELECTION` | §4.6.1 |
-| `D-P12-9` | **Done applies; Escape/Back-at-root discards; Apply is enabled only when dirty** | Adopted from the working reference (§3.4) and made legible with an unsaved-change count, so a destructive Escape is never a surprise | §4.5.3 |
-| `D-P12-10` | Engine settings that shadow an App F.1 flag are **tri-state** (`DEFAULT`/`ON`/`OFF`, wire `default`/`true`/`false`) | App F.1 l. 1448 gives the in-game setting priority "where both exist", and P3 §3.1 l. 693 leaves the resolution to the behavior owner. Tri-state is that rule made executable, so the owner needs no private convention | §4.6.2, §4.6.3 |
-| `D-P12-11` | `worldRendererReload` is **predicated** on the bake-set, not unconditional | The reference reloads renderers on every apply and every selection (§3.4) — correct but coarse. Chunk re-meshing is the most expensive act a shader GUI can trigger, nothing contract-visible depends on it (§G4.2), and the predicate is written generally so it survives P3 §11.5 item 2 (ll. 2052–2053) being revisited | §4.7.3 |
+| `D-P12-7` | An out-of-list current value is displayed and retained; the first cycle moves to index 0 | P3 §4.3 l. 2210 forbids constraining a safe current value to the advertised list. Rewriting it on open would persist a change the user never made | §4.4.2 |
+| `D-P12-8` | Re-run `discover` before acting on any selection | `PackCandidateId` is valid only against the latest generation (P3 §5.1 l. 3354, ll. 3397–3399); the alternative is an avoidable `INVALID_SELECTION` | §4.6.1 |
+| `D-P12-9` | **Done applies; Escape/Back-at-root discards; Apply requires dirty state and current mutation availability** | Adopted from the working reference (§3.4), with D-P12-34's intent-aware unsaved count and D-P12-38's presenter-owned gates; dirty Done shares the gate, clean Done can close | §§4.4.4/4.5.3 |
+| `D-P12-10` | Engine settings that shadow an App F.1 flag are **tri-state** (`DEFAULT`/`ON`/`OFF`, wire `default`/`true`/`false`) | App F.1 l. 1448 gives the in-game setting priority "where both exist", and P3 §3.1 l. 1665 leaves the resolution to the behavior owner. Tri-state is that rule made executable, so the owner needs no private convention | §4.6.2, §4.6.3 |
+| `D-P12-11` | `worldRendererReload` is **predicated** on the bake-set, not unconditional | The reference reloads renderers on every apply and every selection (§3.4) — correct but coarse. Chunk re-meshing is the most expensive act a shader GUI can trigger, nothing contract-visible depends on it (§G4.2), and the predicate is written generally so it survives P3 §11.5 item 2 (ll. 5285–5286) being revisited | §4.7.3 |
 | `D-P12-12` | Resource reload preserves PackConfiguration; additive quiescent resource/ID refresh only | F3+T is not shader-pack rediscovery/recompilation; P7 owns reader draining and coherent resource replacement | §§4.7/5.3 |
 | `D-P12-13` | F3+R is observed via `InputEvent.KeyInputEvent`, gated on the engine being active; a **separate, rebindable** `KeyBinding` opens the screen | 1.12.2's `KeyBinding` cannot express a chord `[V:mcp]`, and App E.2 l. 1427 forbids a vanilla injection for hook need 11. Gating means the mod never shadows a combination it is not using | §4.8.1 |
-| `D-P12-14` | **ModularUI is an ordinary mod dependency, not jar-in-jar** | Mere aggregation carries no LGPL-3.0 redistribution obligation, while `contain` is distribution of the LGPL-3.0 work with notice/modification/relink obligations plus a version-collision risk. It is also the arrangement P1 §10.2 l. 4604 already designed as the fallback. Operator-confirmed at session start | §4.10.3 |
+| `D-P12-14` | **ModularUI is an ordinary mod dependency, not jar-in-jar** | Mere aggregation carries no LGPL-3.0 redistribution obligation, while `contain` is distribution of the LGPL-3.0 work with notice/modification/relink obligations plus a version-collision risk. It is also the arrangement P1 §10.2 ll. 5960–5961 already designed as the fallback. Operator-confirmed at session start | §4.10.3 |
 | `D-P12-15` | Historical decoration-context freeze; R-P12-5 gate superseded by D-P12-27 | No consumer parser was permitted under the older single-map shape | §§4.2/4.3.5 |
 | `D-P12-16` | Reset writes an **empty changed set** rather than deleting the file | Makes "user reset this pack" an explicit persisted state instead of one inferred from a missing file | §4.5.3 |
 | `D-P12-17` | Coalescing is a **single-slot merge**, not an unbounded queue | The merge algebra makes "N clicks ⇒ one reload" a provable property (§8.1) and makes RS-1 structural rather than a discipline | §4.7.4 |
@@ -1689,6 +2095,16 @@ re-open OQ-12.
 | `D-P12-27` | Adopt schema18 complete locale publication, per-key empty-preserving fallback and full-catalog source-free identity | P3 parses; locale switches affect presentation only | §§4.3.5/5.2/8 |
 | `D-P12-28` | Adopt maintainer-approved session-only Internal edits through P7 commit and P3 fresh-catalog load | Exact outcomes distinguish acceptance from persistence and render success; no fake target | §§4.5/5.3(E) |
 | `D-P12-29` | Adopt ratified effective old-light shader macros and option-only superSamplingLevel/no-AA scope | 2026-09-07 maintainer choices, P3/P5 evidence; broader renderer identity OQ-7 remains separate | §§4.6/11.4 |
+| `D-P12-30` | 2026-09-08: adopt P3 D-P3-69 schema20/matching nested IDs and same-load assets/configuration identity | Supersede earlier current versions only; preserve locale/session/persistence and exact NONE retention, no binary acquisition | §5.2 |
+| `D-P12-31` | 2026-09-08: adopt P3 D-P3-70 schema21, nested/inspection identity and payload-free selector through the existing ProfileCycle route | D-P12-30 assets/nine-tree meanings unchanged; old schemas rejected, opaque P4 identity refreshed, no new grant or PASS | §§4.3.2/5.2/8 |
+| `D-P12-32` | Complete settings and direct diagnostics through the closed view seam | Review 5 C1: exact typed edit intents, decoded value independent of index, explicit availability, source-less P11 and P1 records remain separate | §§2.2/4.6/4.9/4.10/5/8 |
+| `D-P12-33` | Adopt schema22 containing/nested/inspection identity; older numeric receipts historical | Coordinated P3/P9 isolated BLOCK alternate provenance changes schema, not projectionVersion=1/nine trees or unrelated owner contracts | §§4.1/5.2/8 |
+| `D-P12-34` | Explicit profile intent is independent pending/committed state; isDirty includes selection delta and one REPUBLISH reevaluates programs with empty option delta | Review 6 C1, App F.4 option inference remains display-only; complete acceptance/reset/discard/failure boundaries | §§4.5/5.1/5.3/8 |
+| `D-P12-35` | Seven GUI controls versus eight canonical programmatic/storage keys; exact reserved AA zero is valid unchanged input | Review 6 C2, P3 domain and P2/P7 receiver; no runtime/UI AA or new macro | §§4.6/5.3(D)/8 |
+| `D-P12-36` | Adopt schema23 exact containing/nested/inspection and MaterializedSource-v23; earlier numeric receipts historical | P3 range-capable selector owner change; nine metadata-only trees/projectionVersion1 unchanged, no P12 registry parser | §§4.1/5.2/8 |
+| `D-P12-37` | Publish immutable optional pending-profile identity and prepared text through OptionPresentationModel → existing showOptions | Review 7 C1: actual vanilla/conditional ModularUI inputs distinguish named/cleared pending intent independently of inferred label and option count, with complete lifetime and empty-preserving localization; no P3 payload/programmatic key | §§2.2/4.5.2/4.10/5.1/8/12 |
+| `D-P12-38` | Presenter publishes profile applicability and session mutation/reset/Apply/Done availability plus prepared reasons through existing options model; callbacks recheck current gates | Review 8 C1: distinguish empty profiles from Custom, cover program-only Internal without ordinary widgets, reject stale actions before state/effects, preserve summary and independent navigation/global settings; no P3 payload/P7 API change | §§2.2/4.4.4/4.5/4.10/5/8/12 |
+| `D-P12-39` | The presenter-owned edit/selection model survives catalog replacement retaining the committed explicit selection, revalidated against the new catalog's `profiles()` and dropped only if the name no longer resolves; session initialization never uses inferProfile and never needs a P7 read-back | Review 9 C1: P7 publishes no accepted-selection read-back (D-P7-60: ProgrammaticOptionSnapshot carries no profile field) — its transport is the one-way drain freeze; P12-local restatement, no P7 §5 change, no schema bump | §§4.5.2/4.5.3/5.1/5.3(E) |
 
 ### 11.2 Binding-decision disposition (D-1 … D-10)
 
@@ -1714,7 +2130,7 @@ the contract and a change to a non-contract internal.
    §11.5 item 2.
 2. **Dependency history is not current clearance.** The older consumption breach and its
    review quotations remain in §0.2. Current P3 §5 closes the model/merge surface and is
-  re-derived in §5.2 with schema18; its newer meaning and this receiving amendment remain
+  re-derived in §5.2 with current schema23; its newer meaning and this receiving amendment remain
    unverified. Historical PASS cannot certify these bytes or waive implementation gates.
 3. **Sliders: §G11.5 vs the Phase 12 doc gate.** §G11.5 l. 978 records sliders as "Answered by
    gated Oculus evidence"; the Phase 12 doc gate ll. 2426–2427 says slider handling has **no**
@@ -1729,6 +2145,22 @@ the contract and a change to a non-contract internal.
 
 ### 11.4 Open items and hand-offs
 
+- **Attempt-5 C1/C2 receipts — P7/P2, D-P12-34/35:** P7 must retain pending/accepted explicit
+  profile selection independently of value deltas, atomically freeze it on filesystem/Internal
+  acceptance, and keep one REPUBLISH for intent-only changes/reset with UNCHANGED value
+  receipts. Preserve inferred display, existing selected-profile transport and accepted-versus-
+  final-load failure distinction. P2 must receive the same-options/different-disabled-programs
+  boundary and eight-key zero-only AA admission/no-AA effect cases; option equality alone
+  cannot prove no program reevaluation. No new profile-map field or health ID is introduced.
+  Main owns these reciprocal receiver edits and integration records; fresh review remains due.
+- **Schema23 receiving receipt — D-P12-36:** exact current containing/nested/inspection schema
+  and MaterializedSource-v23 received; older receipts historical, nine metadata-only trees and
+  projectionVersion1 retained. Main owns cross-phase readiness and verification, not this owner.
+- **Attempt-6 C1 receipt — D-P12-37:** existing `OptionEditSession.present` → model →
+  `OptionScreenView.showOptions` carries the new optional `PendingProfileSummary` to both
+  views; §5.1 incorporates its full contract. P7 accepted-selection transport is unchanged.
+  P2's nine inspection trees and P3 schema23/payload-free selector remain unchanged; no
+  programmatic selection key or optional-UI adoption is granted. Fresh owner review is due.
 - **IR-03/16/25 — Phase 3:** §5.2 adopts current catalog-issued state, profiles, expanded-slot
   resolver, same-build options and safe persistence/reference outcomes. Current owner and
   receiver whole-document verification remain required; no open old-shape fallback.
@@ -1782,7 +2214,8 @@ implementation consumption. Historical reviews and resolved old publication requ
 
 1. `[v0.4]` Stand up `com.schmaloogium.engine.config` Phase-12 types: `ScreenId`, `OptionId`,
    `Tooltip`/`TooltipLine`, `PresentationEntry` variants, `PresentationScreen`,
-   `OptionPresentationModel`. Assert C-1…C-4 still hold with no Minecraft/Forge/LWJGL import.
+   `OptionPresentationModel`, `PendingProfileSummary`, `OptionActionAvailability`,
+   `OptionSessionAvailability`. Assert C-1…C-4 still hold with no Minecraft/Forge/LWJGL import.
    Hook: the Phase 1 seam test, plus `model_isDeterministicAcrossBuilds`.
 2. `[v0.4]` Implement the model builder's schema/fingerprint gate and the never-fails posture.
    Hook: `model_schemaVersionMismatchIsRejectedBeforeDerivation`,
@@ -1796,16 +2229,22 @@ implementation consumption. Historical reviews and resolved old publication requ
 6. `[v0.4]` Implement switch/value/slider entries and their transitions, including the out-of-list
    rule and the slider's discrete-only guarantee. Hook: `valueOption_*`, `slider_*`, `sliders_*`.
 7. `[v0.4]` Implement the profile entry: inference display over pending state, click-to-cycle,
-   option-constraints-only application. Hook: every `profile_*` test.
-8. `[v0.4]` Implement `OptionEditSession` — pending overlay, apply/discard/reset, changed-only
-   computation, and the write-before-submit ordering. Hook: `apply_*`, `discard_*`, `done_*`,
+   complete option batch plus independent explicit selection intent, and presenter-produced
+   optional summary with §4.5.2's full transitions/localization, explicit applicability and
+   prepared disabled reasons. Hook: every `profile_*` case.
+8. `[v0.4]` Implement `OptionEditSession` — option/selection baselines and pending state,
+   commit-needed/count, apply/discard/reset, changed-only writes and atomic intent/single-submit
+   acceptance including empty option delta. Hook: `apply_*`, `discard_*`, `done_*`,
    `reset_*`, `persistenceWriteFailure_*`, `roundTrip_optionsSurviveWriteThenReload`.
+   Publish §4.4.4 availability independently of widget count; preflight all callbacks before
+   preview/intent/effects and refresh on gate changes. Hook: every `options_*` availability case.
 9. `[v0.4]` Implement `ReloadLifecycle`/`ReloadRequest`/`merge` and the §4.7.3 classification table
    as data, so an unclassified trigger is a compile-or-test failure rather than a silent `NONE`.
    Hook: `reload_triggerMatrixIsTotal` and every `reload_*` / `bakeSetPredicate_*` test.
-10. `[v0.4]` Implement `EngineSettingsModel` with the seven entries, the tri-state semantics, the
-    §4.6.3 wire spellings (`[D-P12-19]`), and the global round-trip through
-    `GlobalShaderOptionsCodec`. Hook: every `engineSettings_*` test.
+10. `[v0.4]` Implement the complete seven-entry EngineSettingsModel with typed/raw decoded values,
+    independent index and interactive gate; pass it through showPackSelection and route all three
+    exact-value intents through §4.6 validation/global write-through/single reload. Preserve failed
+    pending edits and retry semantics. Hook: every `engineSettings_*` case.
 11. `[v0.4]` Implement `PackSelectionModel`/`PackSelectionRow` over `discover` and the
     `PackSelectionActions` intent surface (§2.2), including sentinel ordering (consumed, not
     re-derived), status/kind badges, the `version.<mcver>` badge, and the stale-generation guard.
@@ -1814,15 +2253,18 @@ implementation consumption. Historical reviews and resolved old publication requ
     any ModularUI work. Hook: a build-configuration test that the dependency resolves at both
     compile and runtime without a double declaration.
 13. `[v0.4]` Implement `mod.gui`'s `OptionScreenView` seam and the **vanilla `GuiScreen` view** in
-    full (§4.10.2). Hook: manual checklist; no contract test, by construction.
+    full (§4.10.2), rendering pending-profile prepared text independently of count/inference;
+    require the same receipt in the conditional ModularUI adapter. Hook: manual checklist
+    plus §8's actual-view summary/availability scenarios, including program-only Internal with
+    no ordinary widgets; bind all supplied flags/reasons with no adapter-side reconstruction.
 14. `[v0.4]` Implement the three platform bindings: the `InputEvent.KeyInputEvent` F3+R observer
     with its active-engine gate, the rebindable open-screen `KeyBinding`, the
     `ClientCommandHandler` registration for `/reloadShaders` including its §4.8.2 reply, and the
     `ISelectiveResourceReloadListener`. Hook: `reload_resourceReloadRequestsReacquireOnly`,
     `command_reloadShaders*`, plus a manual chord check.
-15. `[v0.4]` Render P1 SHADER_GUI and the separate P11 direct immutable projection, with P7
-    final-attempt/scoping lifetime and no fabricated routing channel. Hook: selected-pack and
-    rejected-attempt diagnostic cases in §8.
+15. `[v0.4]` Render showErrors' separate P1 list and exact optional P11 snapshot in both adapters,
+    including source-less and empty-entry attempts, P7 final identity/outcome/scoping lifetime,
+    and absence clearing only P11 display; no channel conversion. Hook: §8 diagnostic cases.
 16. `[v0.4]` Wire P7 reload/programmatic bridges, persistence receipts and every P4 generation
     invalidation; prove one drain/final composition outcome and resource-only configuration
     preservation, including Ready-then-compensating-Off. Hook: §8 reload/programmatic cases.

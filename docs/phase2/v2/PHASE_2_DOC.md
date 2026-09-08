@@ -20,12 +20,19 @@
 | `docs/research/v1/RESEARCH.md` §0, §1, §8, §9, App G, §5.1 RenderBook bullet, §12.5 RenderBook row | assigned extents | source of truth and v3 Phase 2 required inputs |
 | `docs/research/v1/RESEARCH.md` §3.1/§3.2/§3.5, §4.1/§4.3–§4.5, App A.1–A.3, App B.1, App H, §10.3, §11 OQ-8/OQ-10/OQ-11 | inherited claim extents re-audited where affected | scene, tier, golden, licensing, vocabulary, and spike provenance retained from v1 |
 | `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md` (`PD`) §§4, 7, 19 | whole sections | required reference gaps, seven-pack parse calibration, and temporal blurring evidence; evidence only under §G11 |
-| `Pintonium/README.md`; `Pintonium/forge122/src/shaders/java/org/taumc/celeritas/mixin/shaders/{MixinEntityRenderer_Shaders,MixinRenderGlobal_Shaders}.java` | targeted verification of revision, bug statement, and hook inventory only | §G11.4 provenance check for the load-bearing PD §4/§19 claims; no mechanism or source structure adopted |
+| `Pintonium/README.md`; `Pintonium/forge122/src/shaders/java/org/taumc/celeritas/mixin/shaders/{MixinEntityRenderer_Shaders,MixinRenderGlobal_Shaders}.java` | historical targeted provenance/hook check | N40-1 qualifies the earlier README claim: temporal blurring is historical PD §19.1 evidence, not independently authenticated text in the README at `9c2fcc1a4814cafc0242370757e9e05ea83c5be3`; the narrow hook inventory remains separate |
 | `docs/phase1/v14/PHASE_1_DOC.md` | §5 whole, with cited §2/§4/§8 detail followed as needed | current verified dependency contract: modules, facade, profiles, recording, diagnostics, CI, and capture package grant |
 | `docs/phase2/v1/PHASE_2_DOC.md` | whole inherited architecture | immutable historical source for this v2 rebuild |
 | `docs/phase2/reviews/PHASE_2_REVIEW_36.md` | whole | FAIL authorization and all four rebuild dispositions; remains unresolved historical review evidence |
 | `.github/workflows/{build,release,release-to-cf-mr}.yml` | whole | current CI ground truth |
 | Historical web/MCP observations recorded in v1 §0.1 | retained as dated provenance, not refreshed claims | this rebuild does not change the RenderBook API, Modrinth response shape, or vanilla screenshot symbol contracts |
+| `docs/phase2/reviews/PHASE_2_REVIEW_40.md` | findings C40-1/2/3 and N40-1 plus review provenance | 2026-09-08 documentation repair D-P2-41–44; accepted pinned-README observation without re-running its source check |
+| `docs/phase2/reviews/PHASE_2_REVIEW_41.md` | C41-1/2/3 and affected procedures/receipts | 2026-09-08 architecture repair D-P2-47–49; original review preserved, fresh review pending |
+| `docs/phase2/reviews/PHASE_2_REVIEW_42.md` | C42-1 and whole-owner assessment | D-P2-50 durable timing correction; original review preserved |
+| `docs/phase2/reviews/PHASE_2_REVIEW_43.md` | C43-1 required correction, N43-1/N43-2, and whole-owner assessment | C43-1 repaired as D-P2-54 with coordinated D-P2-55–60 receiving receipts; original review and PASS-WITH-CORRECTIONS verdict preserved |
+| `docs/phase2/reviews/PHASE_2_REVIEW_44.md` | whole-owner assessment of the frozen attempt6 owner | PASS with zero required corrections and one nonblocking provenance note; historical verdict, not certification |
+| `docs/phase2/reviews/PHASE_2_REVIEW_45.md` | whole-owner assessment of the frozen attempt7 owner | PASS with zero corrections and one informational note; historical verdict, not certification |
+| `docs/phase2/reviews/PHASE_2_REVIEW_46.md` | whole-owner assessment of the frozen attempt8 owner | PASS-WITH-CORRECTIONS with required provenance correction C46-1 (header inputs and closing history stopping at R42), repaired as D-P2-72 and extended to R46 itself as D-P2-73; historical verdict, not certification |
 
 ### 0.2 Dependency PHASE docs consumed
 
@@ -219,7 +226,7 @@ the exact artifact Review 36 assessed, while this file adopts `docs/design/v3/DE
 
 The rebuild applies all four Review-36 dispositions as one coherent contract change: real
 frame-indexed camera motion replaces the static-path narrowing; capture-plan and run-manifest schema
-majors advance to `/2` with no `/1` compatibility reader; the golden update workflow and all
+majors historically advanced to `/2` with no `/1` compatibility reader; the golden update workflow and all
 reporting become explicit verification interface regions; and v3's Pintonium reference-gap and
 seven-pack parse-calibration requirements become mapped runs and evidence. It also audits v1.1-era
 governance, resolved upstream requests, §G2.4 rung 2a, §G6 derived-artifact rules, and §G11
@@ -235,8 +242,8 @@ Corrected the tier contract so per-call drain cadence narrows diagnostic windows
 IR-02/20/29 architecture-only fix-up reads the integration findings/ledger, V3 Phase 2 and
 §G1.3, P1 diagnostic permission, P3's complete inspection/acquisition/provenance contract,
 P4 same-request enrichment, P5 pure planning/resource acquisition, and P11 §5.6 evaluator
-vectors/providers/results. P7 §4.13 now
-adopts `/2`; D-P2-27 records the receiver receipt without treating design adoption as a run.
+vectors/providers/results. P7 §4.13
+historically adopted `/2`; D-P2-27 records that receipt, not a run or current wire grant.
 D-P2-28 adopts `RUN-EXPRESSION-CONFORMANCE`; D-P2-29 closes the source-free snapshot route.
 Changed §5 and receiving owner contracts remain **unverified pending fresh whole-document
 review**. No implementation, validation, real-pack result or historical PASS upgrade is claimed.
@@ -400,7 +407,7 @@ In `:mod`, at the requested `com.schmaloogium.mod.conformance`:
  registry (committed)                scene/*.scene (committed)
         │                                     │
         ▼                                     ▼
- FixtureResolver ──► cache/packs/…      SceneParser ──► CapturePlan (temp)
+ FixtureResolver ──► cache/packs/…      SceneParser ──► RunRegistry selection/domain ──► CapturePlan
         │                                     │
         ├──────────── context A ──────────────┤
         │                                     │
@@ -409,14 +416,14 @@ In `:mod`, at the requested `com.schmaloogium.mod.conformance`:
         │                                     CaptureRunner ═══► [ separate JVM: client ]
         │                                                        CaptureAgent
         ▼                                                        │
- golden/*.golden (committed, no pack source)      cache/runs/<id>/<capture>/<sample>.png + run.manifest
+ golden/*.golden (committed, no pack source)      cache/runs/<runId>/… + manifest.manifest
                                                                  │
                                      context A ◄─────────────────┘
                                                  │
-                        ImageDiffer ◄── baselines (cache) + baseline manifest (committed)
+                        ImageDiffer ◄── canonical option/raster-addressed baseline or oracle (§§4.7–4.8)
                                                  │
                                                  ▼
-                                      TierLedger ──► ConformanceReport
+                    authenticated domain + evidence closure ──► TierLedger ──► ConformanceReport
 ```
 
 The `═══►` is the only edge that leaves the JVM, and **every arrow crossing between contexts is a
@@ -512,8 +519,8 @@ Their absence from that reference never narrows App E or D-3 coverage.
 
 All six rendered families are classified **motion-sensitive**. That is intentionally conservative:
 temporal post-processing can consume the completed image, previous matrices, depth history, or
-motion vectors regardless of which gbuffers family supplied the pixels (PD §19.1;
-`[V:observed — Pintonium/README.md]`). Each committed
+motion vectors regardless of which gbuffers family supplied the pixels (historical PD §19.1
+report; not independently verified pinned README text, N40-1). Each committed
 scene therefore contains at least one `/2` `[path]` satisfying §4.3.4; a static shot never
 substitutes for its motion gate.
 
@@ -544,10 +551,16 @@ Run definitions — inputs, procedure, pass condition, artifacts, where they exe
 | **v0.5** | "Full classic matrix at T3" | `RUN-T3[classic × all scenes]` |
 | **post-v0.5** | "Modern-matrix progression" | `RUN-T0[dual-spec]`, then `RUN-T1-REGRESS[dual-spec]` |
 
-V3's motion doc gate is independent of those milestone rows: `RUN-MOTION-PATHS[all six families]`
-must pass before Phase 2 closes and joins every local/pre-release release gate once capture exists.
-The v3 parse-calibration requirement is `RUN-PINTONIUM-PARSE-CALIBRATION[all seven packs]`; it is
-headless and belongs to the week-one/fixture-dependent surface, not to a rendering milestone.
+Each T2 scene-set row resolves only its declared static SHOT selection and every selected ordinal
+under §4.2.5. T0/T1/T3 resolve their distinct full domains there; these are not interchangeable
+coverage claims, and none substitutes for the separately mandatory six-family motion run.
+
+V3's motion **doc gate** requires the specified dense moving scenes in all six families and
+their schema/coverage design, not rendered execution. `RUN-MOTION-PATHS[all six families]`
+remains mandatory at the later local/pre-release runtime acceptance gate once capture and
+human-approved baselines exist; it is not a Phase 2 architecture-closure prerequisite.
+`RUN-PINTONIUM-PARSE-CALIBRATION[all seven packs]` is headless, fixture-dependent week-one
+implementation work, not an assertion that architecture review ran calibration.
 
 Appendix G separately requires dual-spec T0/T1 **through v0.5**, conflicting with §9's
 post-v0.5 progression. Pending upstream clarification (§11.3 item 10), the provisional schedule
@@ -633,8 +646,9 @@ consequences:
 #### 4.2.2 T1 — renders plausibly
 
 Requires an **approved baseline** for the exact `(packId, packVersion, sceneId, captureKind,
-captureId, sampleOrdinal, toleranceProfile, machineClass)` tuple (§4.7). The evaluation is one
-`ImageDiffer` call per captured sample against its same-ordinal baseline.
+captureId, sampleOrdinal, optionStateSha256, toleranceProfile, machineClass)` tuple (§4.7).
+The evaluation is one `ImageDiffer` call per sample against its same-ordinal, same-option-state
+baseline, followed by authenticated comparison publication (§4.2.6); a numeric diff alone is not PASS.
 
 Outcomes are four-valued, and the third exists specifically so a missing oracle can never read as
 success: `PASS` · `FAIL` · **`NO_BASELINE`** · `SKIPPED(reason)`. `NO_BASELINE` is not a pass and is
@@ -647,8 +661,9 @@ by `RunRegistry` as a configuration error rather than skipped.** §8.2 is explic
 behaviour on OF-1.12.2 is not a defined baseline; a silent skip would let a report imply the run was
 attempted. The refusal names §8.2 in its message.
 
-T2's inputs are the oracle images produced by §4.8's manual protocol plus a same-machine requirement
-recorded in both manifests. Tolerance profile: `CROSS_ENGINE` (§4.6.3).
+T2's inputs are exactly the named run's static SHOT/sample domain (§4.2.5), the oracle images
+produced for that domain by §4.8's manual protocol, and the same-machine requirement recorded in
+both manifests. Tolerance profile: `CROSS_ENGINE` (§4.6.3). No PATH oracle is required or inferred.
 
 #### 4.2.4 T3 — feature-complete
 
@@ -667,36 +682,91 @@ feature = shadows.soft
             differ beyond SAME_MACHINE tolerance, and both pass T1 against their own baselines
 ```
 
+Each automated feature also requires `offOptionStateSha256` and `onOptionStateSha256`,
+computed from the complete resolved OFF/ON option maps by §4.7.2, and those complete maps
+as source-free feature metadata. They must be distinct, valid states of the same pack/version.
+The runner constructs separate immutable plans for those states; `FEATURE_OFF|FEATURE_ON`
+are association labels, never substitutes for option identity. Both same-state T1 comparisons
+and the OFF-versus-ON `FEATURE_DELTA` comparison must be authenticated under §4.2.6.
+
 The `observe` form above is the general one: a feature "behaves" when toggling it changes the frame
 *and* both states are individually stable. That is weaker than "looks correct" — which no automated
 oracle can decide — and stronger than "the option parsed", which is what a naive T3 would check.
 Features whose observable cannot be expressed this way are recorded with `observe = manual` and a
 human sign-off field; the report distinguishes automated from attested rows and never merges them.
 
-**Clause 2 — "no fallback program silently masking a failure"** becomes an assertion:
-`[D-P2-13]` for every program slot where the pack **ships a source file**, the run manifest must
-record `SOURCED`. A slot recorded `CHAIN` while its source exists means the source failed to compile
-and the backup chain hid it — a T3 failure, reported with the slot name and the driver log. A slot
-recorded `CHAIN` with **no** source is correct behaviour (App A.2's inheritance) and passes. This is
-the reason §4.5.4's manifest carries a per-slot resolution record at all, and the reason §5.4 asks
-Phase 4 to expose it.
+**Clause 2 — "no fallback program silently masking a failure"** uses P4's independent
+`ProgramOwnBuildDisposition`, not inference from `sourcePresent` plus `CHAIN`.
+`[D-P2-13, corrected by D-P2-35]` Every requested slot must have an owner-issued `ownBuild`.
+`FAILED` fails T3 even if a valid ancestor yields `CHAIN`; report the slot and available
+sanitized owner detail. `DISABLED` is intentional profile/property disablement and does
+not fail this clause, including sourced `CHAIN` or legitimate `ABSENT`. `NO_SOURCE` and
+`NOT_APPLICABLE` preserve legitimate absence/virtual/fixed behavior; `SUCCEEDED` records
+successful own build. Existing final status and T0 still apply. Missing/inconsistent owner
+evidence cannot pass; P2 never labels capability/build errors intentional disablement.
 
 #### 4.2.5 The ledger, and the evidence rule
 
-`TierLedger` holds one row per `(packId, packVersion, tier, sceneSetId, sceneSetSha256)` with:
-outcome, artifact directory, date, machine class, and `evidenceIndexSha256`. The referenced
-`evidence.index` is canonical sorted text with dense records
-`{sceneId,captureKind,captureId,sampleOrdinal,featureId,variant,runId,manifestSha256,
-attestationSha256}`, sorted uniquely by
+`[D-P2-47]` `TierLedger` holds one row per
+`(packId, packVersion, tier, sceneSetId, sceneSetSha256, evidenceDomainSha256)` with:
+outcome, artifact directory, date, machine class, and `evidenceIndexSha256`. The domain is the
+runner-resolved expected evidence, not a set inferred from whichever artifacts succeeded.
+The referenced `evidence.index` is canonical sorted text with dense records
+`{sceneId,captureKind,captureId,sampleOrdinal,featureId,variant,optionStateSha256,runId,
+manifestSha256,attestationSha256,comparisonSha256,featureDeltaSha256}`, sorted uniquely by
 `(sceneId,captureKind,captureId,sampleOrdinal,featureId,variant,runId)`, where `captureKind` is
 `SHOT|PATH` (or empty only for a capture-free manual attestation) and `variant` is
 `PRIMARY|FEATURE_OFF|FEATURE_ON|MANUAL`. One `PRIMARY` record (empty `featureId` and
-`attestationSha256`) is required for every captured sample declared by every constituent scene, and
-no record may name a capture/sample outside the scene schema; this separately enforces exact
-scene-set and motion-window coverage while permitting additional evidence.
+`attestationSha256`) is required for each sample in the domain's PRIMARY set below; no record
+may name a sample outside the retained scene schema or a role/state outside that domain.
+Exact set equality, not a subset/record-count check, establishes completeness.
+
+**Required domains by named run.** A selected capture executes its complete authored warm-up
+and dense sample sequence even when only its bounded window contributes image evidence.
+Every selected scene and required capture set is nonempty; each listed window includes every
+authored captured ordinal. Capture selection cannot shorten a PATH or omit its preceding history.
+
+| Named run / tier | Required PRIMARY domain | Other required evidence / image decision kind |
+|---|---|---|
+| `RUN-T0` / T0 | all SHOT and PATH windows in every constituent scene | full plan/frame/program/GL predicates for each manifest; comparison hashes empty, no baseline/oracle/comparison prerequisite |
+| `RUN-T1-REGRESS` / T1 | all SHOT and PATH windows in every constituent scene | authenticated T1 comparison for every PRIMARY |
+| `RUN-MOTION-PATHS` / T1 motion | every PATH window in all six §3.4 scenes, including each named mandatory path | two fresh complete executions per path with matching actual poses/counts/timing; both manifests retained, one PRIMARY and T1 comparison per captured sample per execution |
+| `RUN-T2-PILOT` / T2 | explicitly named nonempty `terrain-day` SHOT selection, every selected shot ordinal | authenticated T2 comparison and independently comparable manual oracle for each PRIMARY; no PATH |
+| `RUN-T2` / T2 | milestone's explicit nonempty SHOT selection in every constituent scene, every selected shot ordinal | authenticated T2 comparison and independently comparable manual oracle for each PRIMARY; no PATH |
+| `RUN-T3` / T3 | all SHOT and PATH windows in every constituent scene at the declared primary option state | T1 comparison per PRIMARY, plus every feature row's exact OFF/ON sample/state pair with two T1 children and FEATURE_DELTA, or its MANUAL attestation; ownBuild/T0 predicates on every contributing capture run |
+
+`RUN-T1-APPROVE` uses the T1 PRIMARY domain for its contact sheet and human approval, but
+produces approvals, not a tier PASS or preexisting-baseline comparisons.
+`RUN-SCENE-SELFCHECK` requires all scene SHOTs expanded to three samples and all PATH windows,
+executed twice with every same-ordinal IDENTICAL comparison and actual timing/pose evidence;
+it produces selfcheck evidence, not a T1 approval. All other §4.9 runs are non-tier runs with
+their catalogue's headless/GL/vector/calibration domains and no tier index or image prerequisite.
+They cannot produce T0–T3 rows through an empty capture domain.
+
+Before execution `RunRegistry` freezes a canonical `evidence.domain` beneath the row's artifact
+directory: capture-wire scalar/sorting rules, schema `schmaloogium.evidence-domain/1`, required
+`runKind`, `tier`, `packId`, `packVersion`, `sceneSetId`, `sceneSetSha256`, `scenes.count`,
+dense `scenes.<n>.{id,sha256}`, `featuresSha256` (empty except T3), `records.count`, and dense
+`records.<n>.{sceneId,captureKind,captureId,sampleOrdinal,featureId,variant,optionStateSha256,
+executionOrdinal,runId}`. Scene records sort uniquely by id; evidence records sort uniquely
+by the index key above. executionOrdinal distinguishes the two motion runs (0/1), otherwise 0.
+Capture-free MANUAL uses empty capture strings and sampleOrdinal 0, never a PRIMARY sentinel.
+All other field domains equal the index's; PRIMARY option identity is the selected complete
+state. SHA-256 of exact UTF-8 bytes is evidenceDomainSha256, required in the index header and
+ledger row. Retain the exact scene-set/scenes, feature catalogue and named-run selection bytes
+at `<artifact-directory>/inputs/<sha256>.sceneset|.scene|.features|.run-selection`; the selection
+identifies runKind, tier, scene-set hash, chosen SHOT ids (T2 only), primary option state and
+execution-to-run-id bindings, all hashed by required `selectionSha256` in evidence.domain.
+The ledger resolves these through the same no-follow/hash checks as its other inputs, rebuilds
+the expected domain using this table, and joins each execution's retained plan and manifest.
+Missing/changed selection, scene, feature or domain cannot authorize dropping required evidence.
+Evidence from a broader run does not enlarge this row: retain it in its own index/report.
+For motion's two executions, runId distinguishes PRIMARY records in the existing index key.
 Automated T3 rows require one `FEATURE_OFF` and one `FEATURE_ON` record for their declared feature
-and capture sample. Each points to the run manifest whose pinned options and named capture sample
-establish that state and whose T1 result passed. Manual T3 rows require one `MANUAL` record whose non-empty
+and capture sample. Each carries the matching feature-declared `optionStateSha256` and points
+to its run manifest and authenticated T1 `comparisonSha256`. Both records carry the same
+`featureDeltaSha256` linking their authenticated OFF/ON delta. Manual T3 rows require one
+`MANUAL` record whose non-empty
 `attestationSha256` identifies the sign-off artifact; its manifest fields are empty only when no
 capture applies. Its bytes are the regular file
 `<artifact-directory>/attestations/<attestationSha256>.attestation`. The trusted run-output root is
@@ -709,18 +779,110 @@ attestation path without following links, requires directory components and a re
 and rejects missing, escaping, linked, or replaced components. It verifies the index against
 `evidenceIndexSha256`, each manifest against its record's `manifestSha256`, and each attestation
 against the lowercase hash in its filename before deciding the row. All non-manual records require
-a run id and manifest hash. The index SHA-256 covers its exact UTF-8 bytes. It is rendered to
-`conformance/TIERS.md` (human) and
-`conformance/tiers.state` (machine, sorted, §4.1's rule); both show the scene-set id and hash,
-evidence-index hash, and every evidence pointer.
+a run id and manifest hash. The index SHA-256 covers its exact UTF-8 bytes.
+The two comparison hashes are lowercase SHA-256 or the required empty string when inapplicable.
+`comparisonSha256` is required exactly for the table's image-bearing PRIMARY and
+FEATURE_OFF/FEATURE_ON records: T2 kind only for T2 PRIMARY, T1 kind for T1/motion/T3
+PRIMARY and T3 FEATURE records. `featureDeltaSha256` is required only for FEATURE_OFF/
+FEATURE_ON and otherwise empty. T0 and all MANUAL records have empty comparison hashes;
+MANUAL with captures retains run/option identity without claiming an automated image decision.
+Each non-manual option hash must equal its run manifest.
+Comparison artifacts and their complete transitive inputs are validated by §4.2.6 before
+rendering effective ledger outcomes. Old index records missing these fields are unsupported.
+The index is rendered to `conformance/TIERS.md` (human) and
+`conformance/tiers.state` (machine, sorted, §4.1's rule); both show named run, tier, exact
+scene/sample/feature domain, scene-set and domain hashes, evidence-index hash and every pointer.
 
 `[D-P2-19]` **The evidence rule: a tier is recorded only with an evidence pointer.** A tier with no
 complete, hash-valid evidence index is `NOT_ATTEMPTED`, never a remembered pass. Changing the
-scene-set id, its file hash, or its membership invalidates the row; a missing/mismatched constituent
-manifest does too. The stored row remains auditable but its effective outcome is `NOT_ATTEMPTED`,
-and both renderers identify the stale field or scene. The report also flags *inconsistent* ledgers
-within the same pack, version, and scene-set identity — a T2 pass sitting above a T0 failure is
+scene-set id, its file hash, membership, named selection or expected domain invalidates the row;
+a missing/mismatched required constituent manifest, comparison, policy, oracle, timing evidence
+or external raster does too. Requirements are tier-specific: T0 needs no image decision and
+T2 needs no PATH oracle. The stored row remains auditable but its effective outcome is
+`NOT_ATTEMPTED`, with the broken required pointer named. Empty required domains never PASS.
+The report also flags inconsistent ledgers within the same pack/version and overlapping
+authenticated execution domain — a T2 pass sitting above a T0 failure is
 either a harness bug or a stale row, and saying so is cheaper than trusting it.
+
+#### 4.2.6 Authenticated comparison evidence
+
+`[D-P2-42]` Every image decision is an immutable canonical metadata artifact at
+`<artifact-directory>/comparisons/<comparisonSha256>.comparison`, beneath the established
+run root. Its SHA-256 covers exact UTF-8 bytes, excluding no fields; it has no self-hash.
+Schema first line is `schema = schmaloogium.comparison/1`; subsequent keys are sorted,
+use the capture wire scalar rules, and reject duplicate/unknown/missing keys and other majors.
+The required scalar keys and conditional dense blocks are:
+
+| Keys | Domain / binding |
+|---|---|
+| `kind`, `packId`, `packVersion`, `sceneId`, `captureKind`, `captureId`, `sampleOrdinal`, `featureId` | kind is T1, T2 or FEATURE_DELTA; exact pack/capture identity; featureId is nonempty only for FEATURE_DELTA (T1 child association comes from the index/parent, not a second identity) |
+| `candidate.{runId,manifestSha256,optionStateSha256,pixelSha256,width,height}` | exact selected manifest/image record; dimensions positive; run manifest determines the canonical external image path |
+| `reference.{kind,manifestSha256,recordKey,optionStateSha256,pixelSha256,width,height}` | kind is BASELINE, ORACLE or RUN matching T1/T2/FEATURE_DELTA; recordKey is the canonical JSON array `[captureKind,captureId,sampleOrdinal,optionStateSha256,toleranceProfile,machineClass]` encoded as one JSON string for BASELINE, the same array's first four members for ORACLE, or the OFF run ID for RUN |
+| `policy.{profile,sha256,text}` | effective §4.6 policy name, digest of decoded canonical text, and that text as one JSON string; contains all six thresholds, calibration provenance and effective ignore rectangles/reasons, colour-model and alpha rules; includes escalation reason (empty when none), never only a profile label |
+| `comparability.{status,reason,evidenceSha256,text}` | status `ESTABLISHED|UNAVAILABLE|MISMATCH`; nonempty reason; canonical source-free evidence text and its decoded-text hash bind both actual timing histories, clock schedules, pose/window/world/external-environment and machine checks, and T2's independent observations/measurements; never candidate target values masquerading as oracle observations |
+| `result.{outcome,reason,metricsAvailable}` | outcome `PASS|FAIL|NO_BASELINE|SKIPPED`; nonempty reason; boolean metricsAvailable |
+| `result.{differingFraction,maxChannelDelta,rmse,largestClusterArea,clusterCount,unmaskedPixels}` | required exactly when metricsAvailable; §4.6 metric domains; positive unmaskedPixels |
+| `children.count`, `children.<n>.comparisonSha256` | zero for T1/T2; exactly two for FEATURE_DELTA, OFF T1 then ON T1 |
+
+Policy text is a canonical flat document using §4.5 scalar rules, schema
+`schmaloogium.effective-comparison-policy/1`, with exactly `profile`, the six
+§4.6.3 threshold keys, `calibratedOn`, `calibrationEvidence`, `escalationReason`,
+`colourModel`, `alphaRule`, `ignore.count` and dense `ignore.<n>.{x,y,width,height,reason}`.
+Strings are JSON strings; uncalibrated provenance is explicitly empty, never omitted.
+Ignore rectangles use §4.6.4 pixel coordinates in their effective ordered list.
+Comparability text is canonical flat schema `schmaloogium.comparability-evidence/1`,
+with exactly `candidateTiming`, `referenceTiming`, `checks`, `independentEvidence`,
+`operator` and `observationProvenance`, all JSON strings containing complete source-free
+evidence rather than paths. `candidateTiming`, and `referenceTiming` for BASELINE/RUN, contain
+the canonical `schmaloogium.run-timing/1` document defined in §4.5.4: exact selected clock,
+owner-issued origin and every actual preparation/warm-up/sample timing record. The
+publisher extracts these from authenticated retained run manifests, not live client state.
+Checks records each required identity/pose/environment/machine comparison and its result.
+T2 referenceTiming/independentEvidence/operator/observationProvenance instead copy the oracle's
+actual independently recorded timing/observation/measurement and attribution; no P7 checkpoint
+is invented for G6. For T1/FEATURE_DELTA the last three fields are empty.
+When a required run/oracle timing source is unavailable, its timing string is explicitly
+empty and comparability.status=UNAVAILABLE with a nonempty reason; no target-derived
+substitute or ESTABLISHED comparison is legal. Available but mismatching observations
+remain fully embedded and produce MISMATCH.
+No field silently defaults; both inner documents reject duplicates/unknown/missing keys.
+FEATURE_DELTA compares equal pack/world/scene/capture/schedule/external environments,
+allowing only its explicitly feature-declared OFF/ON option difference. T1 requires
+equal optionStateSha256; T2 requires independently established matching effective settings,
+not fabricated equality of unsupported OptiFine engine options.
+
+All hashes are 64 lowercase hex. If a reference was unavailable at decision time,
+reference.manifestSha256/recordKey/optionStateSha256/pixelSha256 are required empty strings,
+reference.width/height are zero, metricsAvailable=false, and only NO_BASELINE/SKIPPED is legal.
+No valid image-tier PASS has an absent reference. Policy and comparability blocks are always
+present, including explicit unavailable evidence and a non-pass reason. FEATURE_DELTA candidate
+is ON and reference RUN is OFF; both child T1 artifacts must pass for those exact run/image/
+option identities. Its PASS requires the §4.6 SAME_MACHINE numeric comparison to **fail**
+(observable change), not to pass; T1/T2 PASS requires numeric agreement. Uncalibrated policy,
+unavailable comparability, non-COMPLETE/T0-failing run or missing evidence prevents PASS.
+
+Before ledger publication the runner freezes exact selected committed baseline/oracle manifest
+bytes into `<artifact-directory>/inputs/<manifestSha256>.baseline|.oracle`, using the suffix
+matching reference.kind. These are immutable evidence copies, not alternative approvals;
+the runner checks them against §4.7/§4.8's selected committed record and human approval.
+RUN references resolve to `<recordKey>/manifest.manifest`. Plans for every candidate/reference
+run are retained at `<runId>/capture.plan` and verified against run.planHash. Baseline
+approval run/plan/timing evidence is retained and followed through its runId/runManifestSha;
+T2's independently recorded timing material is embedded completely in the oracle manifest
+and comparison evidence text, never an unhashed external link.
+
+Every path uses §4.10.3's retained-root/no-follow/regular-file checks. Baseline and oracle PNGs
+resolve only to §4.7.2/§4.8.2's canonical cache paths; candidate/other-run PNGs resolve only to
+the selected image record beneath that run. Decode and hash every external raster using §4.5.3;
+match dimensions, record identities and manifest hashes. Snapshot policy and comparability
+text, cross-check them against authenticated source manifests/approval and recompute the
+§4.6 metrics and decision from those inputs. Hashes bind evidence, not the truth of a human
+observation; only explicit named approval/independent timing evidence meets those predicates.
+Retained snapshots preserve the exact historical oracle if the current approval later changes.
+Missing/replaced snapshots, unavailable external images, changed pixels, stale timing,
+policy-content mismatch, cyclic/foreign children or decision mismatch invalidate the complete
+ledger row to NOT_ATTEMPTED with the broken pointer named, never retain a tier PASS.
+Reports expose comparison hash and all input hashes/reasons. No images or pack source enter Git.
 
 ### 4.3 The scene specification
 
@@ -767,7 +929,7 @@ value. The v1 scene form is historical and no `/1` compatibility reader is requi
 | | `look` | `yaw pitch` doubles | camera orientation, exact |
 | | `heldMain`, `heldOff` | item spec | `gbuffers_hand`, `heldItemId` |
 | | `warmupFrames` | int | §4.4's convergence rule |
-| | `captureFrames` | int, default `1` | `>1` captures consecutive frames and asserts they are identical — the cheapest possible detector for a nondeterminism leak |
+| | `captureFrames` | int, default `1` | consecutive samples; compare same ordinals across fresh executions; within-shot IDENTICAL requires demonstrated time-insensitivity |
 | | `note` | string | why this pose |
 | `[path <name>]` | `heldMain`, `heldOff` | item spec, same domains as `[shot]` | held state is fixed for this path; use another path to change it |
 | | `warmupFrames` | int | rendered at the first sample pose before sample ordinal 0 |
@@ -800,8 +962,8 @@ archive.
 
 `[D-P2-24]` **supersedes `[D-P2-3]`: a camera path is real frame-to-frame motion represented by
 dense explicit samples, never by interpolation or wall-clock time.** Static shots remain valuable
-and retain `[shot]`, but do not satisfy the v3 motion gate (PD §19.1;
-`[V:observed — Pintonium/README.md]`).
+and retain `[shot]`, but do not satisfy the v3 motion gate (historical PD §19.1 evidence,
+not independently verified pinned README text; N40-1).
 
 Execution is exact. The agent sets the first pose and renders `warmupFrames` there. It then iterates
 sample ordinals `0..samples.count-1`: immediately before each rendered frame it installs that
@@ -812,9 +974,9 @@ planned previous state. There is no interpolation, easing, tick-rate conversion,
 condition, or "advance until close" loop. The capture window is contiguous, explicitly bounded,
 contains at least two samples, and contains at least one non-zero pose delta.
 
-This makes temporal state deterministic rather than avoiding it: a path's inputs are a finite
-frame-indexed sequence, and §4.5.4 records both planned and actual current/previous poses for every
-sample. A diff remains keyed by sample ordinal, so two executions compare the same temporal input.
+This fixes pose history rather than pretending poses fix time: §5.1.1's controlled clock
+independently fixes tick/elapsed inputs. Same-ordinal executions compare equivalent temporal
+inputs; different ordinals, even at static poses, may legitimately differ.
 
 ### 4.4 The determinism ledger
 
@@ -830,14 +992,14 @@ consult when a T1 diff is flaky.
 | Random ticks (growth, fire, leaf decay) | block states change between runs | `randomTickSpeed=0`, `doFireTick=false`, `mobGriefing=false` | none |
 | Item/entity drops | new entities | `doTileDrops=false`, `doEntityDrops=false` | none |
 | Particles | additive geometry through `gbuffers_textured` | `[client] particles` pinned; particle-bearing families pin the tick too | particle systems seeded from `Random` — detected by repeated SHOT samples and same-ordinal two-run PATH comparison |
-| Animated textures (water, lava, fire, portal) | atlas contents change per client tick | capture at a fixed **frame ordinal** after scene application, so the tick index is fixed | a stall during load shifting the tick — the manifest records world tick and partial tick, so a shift is diagnosable rather than mysterious |
-| Partial ticks | interpolation between ticks | same fixed-ordinal rule; the manifest records `partialTicks` | if a family proves flaky, the additive request to Phase 7 is a fixed-partial-tick override (§5.4) |
-| Smoothed uniforms — `wetness`/`dryness`, `eyeBrightnessSmooth`, `centerDepthSmooth` | exponential decay toward a target over the pack's declared halflives (§3.2, App A.3) | **the warm-up rule:** `warmupFrames ≥ max(60, 8 × the largest halflife in ticks the pack declares)`, read from the front-end's parsed constants at plan time | a pack declaring an extreme halflife makes a scene slow — visible as run duration, not as a wrong answer |
-| Previous-frame camera/matrix uniforms | TAA, bloom, motion vectors, depth history (PD §19.1) | `/2` paths provide an exact pose per rendered frame; first-pose warm-up establishes sample 0 history; manifest records planned and actual current/previous poses | a producer sampling at the wrong lifecycle point; detected as a pose mismatch before image diff |
-| Camera-path scheduling | a variable render cadence could select a different pose | one rendered frame per dense sample ordinal; no interpolation, wall-clock waits, or tick-rate conversion; bounded capture window | a skipped/duplicated sample; manifest `actual` count and dense ordinals fail the run |
-| `frameCounter`, `frameTimeCounter` | monotonic per-frame values packs may sample | deterministic only because the frame ordinal is; both recorded in the manifest | a pack using wall-clock-derived values — none exist in the G6 contract; the Iris-only `currentDate`/`currentTime` (§3.6.6) are post-v0.5 and are recorded here so they are not reintroduced silently |
+| Animated textures (water, lava, fire, portal) | atlas contents advance per actual client animation tick | P7 harness-only controlled client/integrated-server and animation stepping, acknowledged at every step (§5.1.1) | missing control/acknowledgment fails capture; frames are not ticks |
+| Partial ticks | interpolation between ticks | required `clock.partialTicks` supplied by P7 and read back from actual capture report | mismatch fails before COMPLETE |
+| Smoothed uniforms — `wetness`/`dryness`, `eyeBrightnessSmooth`, `centerDepthSmooth` | tick-based exponential decay | `warmupFrames >= max(60, ceil(8 * largestHalfLifeTicks / clock.ticksPerFrame))`; P3 typed half-lives retain units; seconds-based values are converted using the owner's specified tick unit, never rendered frame seconds | extreme half-life remains slow; overflow/nonfinite schedule rejects |
+| Previous-frame camera/matrix uniforms | TAA, bloom, motion vectors, depth history | dense paths and first-pose warm-up; actual current/previous pose reports | wrong lifecycle point fails pose equality |
+| Camera-path scheduling | variable render cadence could select a different pose | one frame per dense ordinal and controlled clock step; no interpolation or wall-clock waits | skipped/duplicated/unplanned accepted shader frame fails |
+| `frameCounter`, `frameTime`, `frameTimeCounter` | accepted frame count, last-frame seconds, accumulated rendered seconds | required fixed elapsed input and P6 actual timing snapshot via P7, not ordinal inference (§5.1.1) | real host duration is separate; unavailable/stale/mismatched owner timing fails, never echoed targets |
 | Noise texture | `noiseTextureResolution²` xorshift-generated RGB (§4.6 of RESEARCH.md) | deterministic by construction; resolution recorded in the manifest | a pack-supplied `texture.noise` — recorded by hash |
-| World generation | terrain, structures, ores | fixed `seed` **and** a fixed mod set: the manifest records every mod id and jar hash, and a mod-set change invalidates baselines (§4.7.4) | a mod with nondeterministic worldgen; detectable because the world save is cached and re-copied (§4.5.5) rather than regenerated per run |
+| World generation | terrain, structures, ores | canonical resolved generation descriptor: seed, worldType, generateStructures, MC version and external mod identity (§4.5.5); full subject inventory remains provenance | nondeterministic generation detected through retained pre-run save hash; never regenerated per subject-only rebuild |
 | Resource packs / language | atlas contents, text | pinned by the mod-set and client blocks | none |
 | Window vs framebuffer size (HiDPI) | buffer sizing, `viewWidth`/`viewHeight` | `[client] width/height`, `fullscreen=false`; the manifest records both the window and framebuffer size | **OQ-3 is open and owned by Phase 7**; a platform where they differ would need the scene to pin the framebuffer size instead. Recorded, not solved here |
 | GPU, driver, and driver version | everything | not suppressible | handled by tolerance profiles (§4.6.3) and by the `machineClass` field in every baseline manifest |
@@ -854,31 +1016,34 @@ points, which are Phase 7's.
    restriction, and freezes the registry-owned acquisition mode and licence plus the SHA-512 of the
    verified archive. These
    three values are runner facts; neither scene nor pack content can supply them.
-2. It resolves the world save for `(seed, mcVersion, modSetHash)` from the cache, generating it once
-   if absent (§4.5.5), then **copies** it into the run directory. A run never mutates its input.
-3. `CaptureRunner` resolves **every** scene default, expands each static shot into explicit repeated
-   samples, preserves each path's explicit samples, and writes the complete default-free
-   `CapturePlan` (§4.5.2), including the three immutable runner facts, into a run directory.
+2. Resolve all scene defaults and authenticate launch inventory before cache selection. Build
+   §4.5.5's complete generation descriptor, select its digest-addressed cache entry, generate
+   on a genuine miss, verify its receipt, then copy and hash its immutable save per run.
+3. `CaptureRunner` resolves §4.2.5's named-run domain before expanding selected SHOTs and
+   retaining selected PATHs' full sequences. It writes the default-free `CapturePlan` (§4.5.2),
+   including world descriptor/save identities, fixture provenance and complete option maps/digest,
+   at `<runId>/capture.plan` beneath the established run root; retain those exact bytes.
 4. It launches the client as a **separate process** — the dev-run configuration the module already
    has — with `-Dschmaloogium.conformance.plan=<plan>`, `-Dschmaloogium.conformance.out=<runDir>`,
    `-Dschmaloogium.debug.recordGL` (`[D-P2-2]`), and a hard wall-clock timeout.
 5. The client boots; `CaptureAgent` arms itself only because the plan property is present, and does
    nothing otherwise.
-6. The agent loads the copied world, applies `[world]` and `[client]` state, installs the shader pack
-   and its pinned options, and waits `prepTicks`.
+6. Before loading, the agent authenticates the copied save and generation descriptor against the
+   plan (§5.1.1); it then loads that save, applies runtime `[world]`/`[client]` state and pinned
+   pack options, and performs controlled preparation. It never regenerates terrain to apply settings.
 7. Per resolved capture, in file order: apply held state and the first pose, render the exact warm-up
    count there, then process every dense sample as §4.3.4 specifies — one pose application and one
    rendered frame per ordinal, grabbing only the bounded capture window. Static `SHOT` samples are
    repeated identical poses; `PATH` samples are authored motion.
-8. At the frame-end capture point the agent obtains Phase 7's immutable pose report, records
-   `SHOT|PATH`, capture id, sample ordinal, and planned/actual current and previous poses for every
-   post-warm-up frame, and copies the three plan provenance facts verbatim into its temporary
-   `RunManifest` (§4.5.4). It never reads provenance from the installed pack or accepts a
-   pack-provided claim.
-9. `:conformance` reads the temporary manifest and first compares all three values byte-for-byte
-   with the authoritative plan. Missing or unequal values reject the agent artifact; only an exact
-   match may be atomically published. It then reads the images, evaluates the requested tiers, and
-   writes the report (§4.13).
+8. At every preparation, warm-up and sample after-final callback the agent obtains Phase 7's
+   actual `timingReport()`, validates it while live and retains §4.5.4's dense timing evidence.
+   It records poses and the existing `frames` row only for post-warm-up samples, and copies
+   the plan's authenticated pack/environment/clock facts into its temporary manifest.
+   Target values, images, and `SceneApplier` do not manufacture actual owner counters.
+9. `:conformance` reads the temporary manifest and compares pack facts, all clock/environment
+   fields, descriptor/save hashes and accepted option maps against the authoritative plan
+   (§5.1.1). Missing/unequal values reject it. Only exact matches publish atomically. It evaluates
+   exactly the frozen domain, publishes comparison/input closure before its index, and reports.
 10. On any failure before the runner atomically publishes a complete manifest, `CaptureRunner`
     writes the canonical failure manifest defined in §4.5.4 using the plan's authoritative pack
     facts. Thus every attempted run is `FAILED` or `SKIPPED` with a serialized reason — never absent,
@@ -895,14 +1060,17 @@ trivial keeps the rich parser, validator, default resolution, and error messages
 only a complete resolved value; it performs no defaulting. `CapturePlanReader` in `:mod` splits on
 `=`, performs no defaulting, and aborts on an unknown or absent key.
 
-**Canonical schema `schmaloogium.capture-plan/2`.** The first line is
-`schema = schmaloogium.capture-plan/2`; subsequent lines are `<key> = <value>`, sorted
-lexicographically by key. Keys are ASCII dotted identifiers. Strings use JSON string escaping;
+**Canonical schema `schmaloogium.capture-plan/4`.** The first line is
+`schema = schmaloogium.capture-plan/4`; subsequent lines are `<key> = <value>`, sorted
+lexicographically by key. Keys are ASCII dotted identifiers (segments admit `_` for `profile_text`). Strings use JSON string escaping;
 booleans are `true|false`, integers are base-10, and finite doubles use §4.1's fixed decimal form.
 Required scalar keys are `run.id`, `scene.id`, `scene.hash`, `pack.id`, `pack.version`,
-`pack.acquisitionMode`, `pack.archiveSha512`, `pack.licence`,
+`pack.acquisitionMode`, `pack.archiveSha512`, `pack.licence`, `pack.optionStateSha256`,
 `world.path`, every non-repeated resolved `[world]`, `[client]`, and `[pack]` field from §4.3.2,
-and `captures.count`. Repeated entries use a required count and dense zero-based indices:
+`clock.{frameTimeNanos,ticksPerFrame,partialTicks}`, `environment.{subjectModId,subjectJarSha256,
+modSetSha256,externalModSetSha256,minecraftVersion,worldGenerationSha256,worldSha256}`, and `captures.count`. The plan also carries the required
+dense `environment.mods.<n>.{id,sha256}` inventory with `environment.mods.count` (§5.1.1).
+Repeated entries use a required count and dense zero-based indices:
 `world.gamerules.<n>.{name,value}`, `world.entities.<n>.{type,pos,nbt}`,
 `pack.options.<n>.{name,value}`, `pack.engineOptions.<n>.{name,value}`, and each
 `captures.<n>.{kind,id,heldMain,heldOff,warmupFrames,samples.count,captureStartSample,
@@ -911,20 +1079,20 @@ captureSampleCount,note}`. `kind` is exactly `SHOT|PATH`. Every capture has dens
 expands the authored pose into `captureFrames` identical samples, with capture start zero and count
 equal to the sample count. For `PATH`, the records are the authored samples unchanged, and its
 window obeys §4.3.3. `heldMain`, `heldOff`, and `note` are required JSON strings (empty means
-absent); every other listed field is required. Capture order is authored block order; sample order
-is ordinal order.
+absent); every other listed field is required. Capture order is authored block order filtered by
+the authenticated named-run selection; sample order is ordinal order, with no PATH truncation.
 `pack.acquisitionMode` is exactly `MODRINTH|MANUAL`; `pack.archiveSha512` is exactly 128 lowercase
 hexadecimal digits; and `pack.licence` is a non-empty JSON string. `CaptureRunner` derives these
 values from the resolved `PackFixture` and verified archive, and the plan hash covers their exact
 serialized bytes. `CapturePlanWriter` accepts them only from the runner-owned fixture resolution;
 the scene model, pack options, archive contents, and agent expose no alternate write path.
-Consequently schema `/2` has no `internal`/`OFF` sentinel form: preflight rejects those scene
+Consequently schema `/4` has no `internal`/`OFF` sentinel form: preflight rejects those scene
 selections before a plan is written.
 Indices must cover `0..count-1` without gaps, and capture index is execution order. Duplicate,
 missing, malformed, unknown, or out-of-version keys abort before world load; schema major versions
-other than `2` are unsupported. `/1` is historical evidence and no compatibility reader or migration
-path is required. A canonical fixture in
-`conformance/src/test/resources/wire/capture-plan-v2.plan` must parse and re-render byte-identically.
+other than `4` are unsupported. `/1`, `/2` and `/3` are historical evidence; no compatibility reader
+or migration path is admitted. A canonical fixture in
+`conformance/src/test/resources/wire/capture-plan-v4.plan` must parse and re-render byte-identically.
 
 #### 4.5.3 The frame grab
 
@@ -961,33 +1129,36 @@ makes a tier claim defensible months later (§4.2.5), and what makes a flaky dif
 |---|---|
 | `run` | run id, scene id + scene-file hash, plan hash, start/end wall clock (provenance fields), exit status |
 | `environment` | OS, JVM, MC version, Cleanroom loader version, mod list with ids and jar hashes, resource-pack list |
-| `gl` | `GLCapabilityProfile` in §4.7.2-of-Phase-1's text form — vendor, renderer, GL and GLSL version, the max-* probes, extensions |
+| `gl` | required `available` boolean plus, exactly when true, sole `profile_text` JSON-string scalar containing P1 canonical `GLCapabilityProfile.write` text |
 | `pack` | pack id, version key, acquisition mode, archive SHA-512, licence line copied from the registry (§3.1), the option values pinned by the scene |
-| `programs` | per program slot: `SOURCED` \| `CHAIN(from=<slot>)` \| `ABSENT` \| `FAILED(log)`, plus whether the pack shipped a source file for it — the pair that makes §4.2.4's clause 2 decidable |
-| `resources` | the sizing decisions the engine made: colour-buffer count and formats, depth textures, shadow buffers and resolution, `centerDepthSmooth` on/off, noise resolution — the live counterpart of §4.11's `SIZING` golden |
+| `programs` | final per-slot resolution plus independent `sourcePresent` and `ownBuild`; §5.1.1 defines their distinct meanings |
+| `resources` | P5's accepted live REALIZED resource evidence, including requested formats, actual allocation/origin and declarative clear policy; §4.11's pure SIZING golden is PLANNED, never an allocation claim |
 | `hooks` | the complete frozen Phase 7 hook-application report: every primary row plus every nested owner subreport, including Phase 8's immutable health rows when installed; never a capability reconstruction |
 | `captures` | per capture: `SHOT|PATH`, id, planned/actual warm-up and sample counts, and bounded capture window |
-| `frames` | one record per post-warm-up sample: capture kind/id, sample ordinal, captured bit, planned/actual current and previous camera poses, world tick, `partialTicks`, `frameCounter`, entity count, duration |
+| `timing` | availability/completeness/restoration, owner-issued origin summary and dense validated actual preparation/warm-up/sample steps; §4.5.4 defines the canonical durable projection |
+| `frames` | each post-warm-up sample's poses, actual owner timing/counters, world and animation ticks, partial tick, controlled step, entity count and real duration (§5.1.1) |
 | `gl_errors` | all `GLError` records (op, subject, kind, detail, attributed); the reported unattributable count is the number whose `attributed=false` (§4.2.1) |
 | `images` | per captured sample: capture kind/id, sample ordinal, path, dimensions, pixel-raster SHA-256 |
 | `diagnostics` | Phase-2-owned wire records with `code`, `severity`, `channel`, `file`, and `line` |
 
-**Canonical schema `schmaloogium.run-manifest/2`.** It uses the same line, scalar, escaping, sorting,
+**Canonical schema `schmaloogium.run-manifest/4`.** It uses the same line, scalar, escaping, sorting,
 duplicate-key, and major-version rules as the capture plan. The first line is
-`schema = schmaloogium.run-manifest/2`; blocks above become dotted key prefixes. Every scalar
+`schema = schmaloogium.run-manifest/4`; blocks above become dotted key prefixes. Every scalar
 named in the table has the table's lower-camel dotted name and is required except
 `run.startedAt`/`run.endedAt`, which are optional provenance strings. The required run/environment
 scalars are
 `run.{id,sceneId,sceneHash,planHash,exitStatus,failureReason,uncaughtException,compatVerdict,
 shadersActiveThroughout,hangCeilingMillis,timedOut}`,
 `frontEnd.{completed,packConfigurationProduced}`, and
-`environment.{os,jvm,minecraftVersion,cleanroomVersion,worldSha256,modSetSha256}`, plus
+`environment.{os,jvm,minecraftVersion,cleanroomVersion,worldSha256,modSetSha256,subjectModId,
+subjectJarSha256,externalModSetSha256,worldGenerationSha256}`, `clock.{frameTimeNanos,ticksPerFrame,partialTicks}`, plus
 `gl.available`, `resources.available`, and `hooks.available`.
-The required pack scalars are JSON strings `pack.{id,version,acquisitionMode,archiveSha512,licence}`.
+The required pack scalars are JSON strings `pack.{id,version,acquisitionMode,archiveSha512,licence,optionStateSha256}`.
 `pack.id`, `pack.version`, and `pack.licence` are non-empty; `pack.acquisitionMode` is exactly
 `MODRINTH|MANUAL`; and `pack.archiveSha512` is exactly 128 lowercase hexadecimal digits.
-The last three are a direct projection of the capture plan's runner-owned facts. Before atomic
-publication, `CaptureRunner` requires exact equality for all three; absent or mismatched values
+`pack.acquisitionMode`, `pack.archiveSha512` and `pack.licence` are direct projections of
+the capture plan's runner-owned fixture facts. Before atomic publication, `CaptureRunner`
+requires exact equality for those three; absent or mismatched values
 produce a runner-synthesized failure manifest carrying the plan values. Agent or pack self-report
 never overrides them (`[D-P2-23]`).
 The schema describes client-capture attempts only; because preflight admits only registry-backed
@@ -998,7 +1169,7 @@ the completion/availability fields are booleans while `hangCeilingMillis` is a n
 integer. Repeated records use a required
 `<block>.count` plus dense zero-based
 `<block>.<n>.<field>` keys: `environment.mods{id,sha256}`, `environment.resourcePacks{id,sha256}`,
-`pack.options{name,value}`, `programs{slot,status,from,sourcePresent,driverLog}`,
+`pack.options{name,value}`, `pack.engineOptions{name,value}`, `programs{slot,status,from,sourcePresent,ownBuild,driverLog}`,
 `captures{kind,id,plannedWarmupFrames,actualWarmupFrames,plannedSamples,actualSamples,
 captureStartSample,captureSampleCount}`,
 `frames{captureKind,captureId,sampleOrdinal,captured,plannedCurrent.posX,plannedCurrent.posY,
@@ -1006,13 +1177,113 @@ plannedCurrent.posZ,plannedCurrent.yaw,plannedCurrent.pitch,plannedPrevious.posX
 plannedPrevious.posY,plannedPrevious.posZ,plannedPrevious.yaw,plannedPrevious.pitch,
 actualCurrent.posX,actualCurrent.posY,actualCurrent.posZ,actualCurrent.yaw,actualCurrent.pitch,
 actualPrevious.posX,actualPrevious.posY,actualPrevious.posZ,actualPrevious.yaw,
-actualPrevious.pitch,worldTick,partialTicks,frameCounter,entityCount,durationMillis}`,
+actualPrevious.pitch,worldTick,partialTicks,frameCounter,logicalTick,animationTick,
+smoothingTimeTicks,frameTimeSeconds,frameTimeCounter,clockStep,entityCount,durationMillis}`,
 `gl_errors{op,subject,kind,detail,attributed}`,
 `images{captureKind,captureId,sampleOrdinal,path,width,height,pixelSha256}`, and
 `diagnostics{code,severity,channel,file,line}`. `from` is non-empty only for `CHAIN`; `driverLog`
-only for `FAILED`; otherwise both are required empty strings. When `gl.available=true`, the `gl`
-prefix embeds exactly the canonical Phase 1 `GLCapabilityProfile` fields; when false, those fields
-must be absent.
+only for `FAILED`; otherwise both are required empty strings. When `gl.available=true`,
+`gl.profile_text` is required and is the **only** profile transport field. P7 writes P1's
+canonical `GLCapabilityProfile.write(Writer)` output into one JSON string, escaping every
+embedded newline, quote and backslash; no literal inner line is an outer manifest record.
+The outer parser splits each line only at the first ` = ` delimiter, decodes exactly one
+complete JSON string (no trailing tokens, invalid escapes, control characters or unpaired
+surrogates), then passes its decoded text unchanged to P1 `GLCapabilityProfile.parse(Reader)`.
+P1 alone owns the standalone grammar, required profile fields and extension ordering.
+The receiver re-writes the parsed profile through P1 and requires byte equality to the
+decoded UTF-8 text, rejecting noncanonical/duplicate/unknown/missing inner content rather
+than accepting normalization or inventing a second profile parser. `gl.available=false`
+requires profile_text absent, never an empty/fabricated profile. Duplicate gl.available/
+gl.profile_text and every other gl.* key reject; old flattened gl fields, extension lists,
+alternate spellings or `/3` aliases are unsupported. Outer duplicate keys are rejected before
+map insertion; unknown core keys reject and missing conditional/required keys fail closed.
+
+**D-P2-50 — durable controlled timing, core `/4` fields.** This completes the current
+major, not an extension or a reinterpretation of `frames`. Required scalars are
+`timing.{available,complete,failureReason,restoration}` and `timing.steps.count`.
+The first two are booleans; failureReason is a required JSON string, empty only without
+a timing failure; restoration is `NOT_REACHED|PENDING|RESTORED|FAILED`, projecting the
+actual P7 close state (NOT_REACHED before any close result). `available` means an actual
+owner-issued origin was obtained, not that the execution completed.
+
+Exactly when available, require
+`timing.origin.{checkpointId,clockStep,worldTick,logicalTick,animationTick,clientTicks,
+serverTicks,acceptedFrames,finalizedFrames,frameCounter,frameTimeCounter,quiescent,
+freshRuntime,frameTimingAbsent}` and `timing.identitiesUnchanged`.
+`checkpointId` is a nonempty JSON string, an opaque run-local token issued by P7's private
+checkpoint owner and retained with its session/world/runtime/publication/resource binding.
+It is not a serialized capability, a caller-selected identity or a token compared across runs.
+The remaining fields are P7's source-free summary of actual checkpoint observations:
+clockStep/logicalTick/animationTick/clientTicks/serverTicks/acceptedFrames/finalizedFrames
+are nonnegative signed-long values and must be zero at the admitted origin; worldTick is
+the actual signed-long applied world time. frameCounter is P6's actual nonnegative int
+creation counter and frameTimeCounter its finite nonnegative float creation counter, both
+zero. quiescent/freshRuntime/frameTimingAbsent are actual owner-observed booleans, all
+true at admission. They certify both owner-thread checkpoint acknowledgments and the
+fresh final runtime with no accepted frame or available frameTiming, not a fabricated frame0.
+`identitiesUnchanged` is P7's final private-ledger equality result for that exact origin's
+session/world/runtime/publication/resource identities through the retained prefix; true
+is required for complete timing. No private identity is inferred from matching counters.
+
+Every dense `timing.steps.<n>` has exactly
+`{phase,captureIndex,ordinal,validation,registryGeneration,frameId,worldEpoch,logicalTick,
+smoothingTimeTicks,frameTimeSeconds,frameCounter,frameTimeCounter,worldTick,animationTick,
+partialTicks,clockStep,clientTicks,serverTicks,acceptedFrames,finalizedFrames}`.
+phase is `PREPARATION|WARMUP|SAMPLE`; captureIndex is -1 only for PREPARATION, otherwise
+the zero-based capture index in the retained plan. ordinal is nonnegative and dense within
+each phase/capture (preparation is one run-global phase). These three fields label the
+owner-controlled phase boundary, not manufacture an observation. validation is exactly
+`VALID`, copied only after existing P7 `validate(checkpoint,report)` returned VALID for
+that exact live issued report. All eight UniformFrameTiming fields are copied unchanged;
+registryGeneration/frameId/worldEpoch retain P6's signed-long identity domains. The other
+FrameTimingReport fields retain §5.1.1's domains. clientTicks/serverTicks/acceptedFrames/
+finalizedFrames are nonnegative signed-long cumulative actual P7 acknowledgment-ledger
+counts since the origin; no count is derived from a schedule target.
+
+Order is actual receipt order: preparation, then each capture's warm-up followed by its
+samples in plan order. At complete=true, N equals prepTicks/ticksPerFrame plus the sum
+of every planned warmupFrames and samples.count, steps.count=N, and step n has
+clockStep=n+1. Observed clientTicks/serverTicks and animationTick advancement must equal
+clockStep*ticksPerFrame, and acceptedFrames=finalizedFrames=clockStep; logical/world tick,
+smoothing/elapsed and counter progression must satisfy the P6/P7 owner clock/reset/wrap
+rules and actual origin. Checked arithmetic rejects overflow. These are validations of
+copied observations, never their construction. Each SAMPLE step joins exactly one existing
+frames row by plan capture identity and ordinal; every overlapping timing field must be
+equal after canonical normalization. PREPARATION and WARMUP never enter frames/images,
+never change sampleOrdinal or image-window domains, and never reset P6.
+
+The P7 private checkpoint owner supplies this summary from its existing ledger, and the
+capture writer copies every exact live-validated report before callback expiration.
+This is a required mod.conformance producer handoff under existing checkpoint/validate/close,
+not new public P1/P6 APIs or getters on the opaque checkpoint. The owner retains origin,
+phase boundaries, acknowledgments and validated records until the writer has persisted
+them; sample artifact acknowledgment retains its existing commit-before-ack rule.
+After the final report, close/restoration and all late-failure drains settle before manifest
+publication. complete=true requires exact total coverage, unchanged identities, RESTORED,
+no incomplete/unvalidated step, and no latched timing/delivery failure. A failed run may
+retain an available origin and contiguous validated prefix with complete=false and a
+nonempty failureReason. Never serialize invalid/unissued reports as VALID or fill gaps.
+Unavailable origin requires available=false, complete=false, nonempty failureReason,
+steps.count=0 and all origin/identitiesUnchanged keys absent. Runner-synthesized failures
+use that form when trustworthy origin/prefix evidence cannot be recovered. Malformed,
+duplicate, unknown, missing, noncanonical, nonfinite, non-dense or inconsistent timing
+rejects publication; transport/storage loss and cleanup failure latch FAILED, never COMPLETE.
+
+The full canonical manifest hash covers every timing field. The retained capture.plan is
+checked against run.planHash; no second unhashed timing sidecar or verdict-bearing x.* key
+exists. For comparison text, `schmaloogium.run-timing/1` is a canonical flat document with
+that schema first line, then exactly run.id, run.planHash, all three clock.* keys and all
+timing.* keys copied from the manifest using the same sorted-key/scalar rules. It has no
+self-hash; its complete UTF-8 text is the candidateTiming/referenceTiming JSON-string
+payload inside the already hashed comparability evidence. Publisher and later ledger
+reader independently regenerate it from the authenticated manifest and require byte equality,
+then recheck coverage, sample joins, origin and progression against the retained plan.
+Retain manifests/plans for every candidate, OFF/ON run and baseline approval run for the
+entire lifetime of the comparison/ledger closure, not merely until client exit. Hashes
+authenticate retained producer evidence, not malicious-client truth. Missing/tampered
+timing, including historical `/4` files lacking these now-required keys, cannot be repaired
+from targets/counts: publication fails closed, absent valid approval is NO_BASELINE, and a
+broken required closure invalidates an existing ledger row to NOT_ATTEMPTED.
 
 Capture records occur in plan order and use exactly the plan's `kind` and `id`; frame records are
 sorted by `(capture index, sampleOrdinal)` and cover every planned post-warm-up sample exactly once
@@ -1032,11 +1303,25 @@ Every diagnostic field is required. `code`, `severity`, `channel`, and `file` ar
 non-negative decimal integer, with `0` meaning unavailable; a positive line requires a non-empty
 `file`. These are Phase-2 wire domains, not consumption of Phase 1's diagnostic domain types.
 
-When `resources.available=true`, these keys are required and are the complete resource wire block.
-Counts and resolutions are non-negative decimal integers; booleans are `true|false`; formats and
-program/name fields are JSON strings. `resources.colorBuffers.count` governs dense
-`resources.colorBuffers.<n>.{format,clear,clearColorR,clearColorG,clearColorB,clearColorA}` records;
-clear colours are finite JSON numbers even when `clear=false`.
+When `resources.available=true`, the complete resource wire block requires
+`resources.evidence_stage=PLANNED|REALIZED`. Counts and resolutions are non-negative decimal
+integers; booleans are `true|false`; formats and program/name fields are JSON strings.
+`resources.colorBuffers.count` governs dense ascending colortex records. Each
+`resources.colorBuffers.<n>` requires `requested_format`, `clear`, and `clear_policy`.
+`requested_format` is `"DEFAULT_RGBA"` for P3 `DefaultRgba`, otherwise the canonical explicit
+pack-format name (including `"RGBA8"`); these requests are distinct.
+`clear_policy=FOG_RGB_ALPHA_ONE|CONSTANT` is required even when `clear=false`.
+CONSTANT requires exactly `clear_color_r`, `clear_color_g`, `clear_color_b`, `clear_color_a`,
+all finite JSON numbers using §4.1 normalization; FOG_RGB_ALPHA_ONE forbids all four.
+No fog sample is serialized: P5 resolves that policy from the executing frame's ClearRequest.
+REALIZED requires every color row's `allocated_format` JSON string and
+`allocation_origin=REQUESTED|RGBA_FALLBACK`. The format is the owner's successfully allocated
+canonical internal-format name (`"RGBA"` for plain RGBA), not queried channel precision.
+PLANNED forbids both allocation keys; absence is not null, empty text or an inferred default.
+Whole-estate fallback retains each request and emits `"RGBA"`/RGBA_FALLBACK for every color
+row, including rows whose request was already plain RGBA. Neither side nor provenance is lost.
+Old `format`/`clearColorR`/`clearColorG`/`clearColorB`/`clearColorA` aliases, unknown enum
+variants, missing conditional fields and keys forbidden by either variant reject the block.
 `resources.depthTextures.count`, `resources.shadow.{depthTextures,colorTextures,resolution}`,
 `resources.centerDepthSmooth.enabled`, and `resources.noise.resolution` are scalars.
 The three shadow property sets are dense boolean records governed by the corresponding texture
@@ -1047,11 +1332,16 @@ count: `resources.shadow.depth.<n>.{hardwareFiltering,mipmap,nearest}` and
 `{program,count}` records. Vertex-attribute records are sorted uniquely by `(program,name)`;
 instance records are sorted uniquely by `program`, and instance counts are positive integers.
 `resources.capabilityGate` is exactly `OK|SHORTFALL`;
-`resources.capabilityShortfalls.count` is zero for `OK`, otherwise governs dense
-`{limit,required,available}` records sorted by `limit`, where `limit` is exactly
-`maxDrawBuffers|maxColorAttachments|maxTextureImageUnits` and the values are non-negative integers.
-When `resources.available=false`, every other `resources.*` key is absent. A complete agent manifest
-requires all three availability flags true; a runner-synthesized failure manifest may use false.
+`resources.capabilityShortfalls.count` is zero iff the gate is `OK`, otherwise positive and governs
+dense `{limit,required,available}` records with unique limits in P5 `CapabilityLimit` order:
+`maxDrawBuffers`, `maxColorAttachments`, `maxTextureImageUnits`; values are non-negative integers.
+When `resources.available=false`, every other `resources.*` key, including evidence_stage, is
+absent. Available means complete for its stage, not capability success or runtime readiness.
+A complete agent manifest requires all three availability flags true and resource stage REALIZED
+from the paired accepted ready estate. A PLANNED block cannot satisfy live capture completeness.
+Failed attempts may retain authentic accepted REALIZED evidence; otherwise resources are unavailable,
+never filled from a pure plan, failed candidate or earlier estate. Runner-synthesized failures
+have no accepted resource observation and emit resources.available=false.
 
 When `hooks.available=true`, `hooks.rows.count` governs the complete dense primary report in its
 source list order. Every `hooks.rows.<n>` has required
@@ -1072,16 +1362,46 @@ fallback exactly; it neither sorts the report into a new identity nor drops dorm
 and `rows.count` is positive. Its dense rows require
 `{catalogId,expectedCount,actualCount,disposition}`, are sorted by unique non-empty `catalogId`, and
 use only `HEALTHY|FEATURE_DISABLED`. Owner phase 8, when present, is a byte-for-value projection of
-Phase 7's nested `ShadowHookHealth` report: all eight rows, their existing IDs, expected/actual
-counts, dispositions, canonical fingerprint, and aggregate enabled bit. Missing owner phase 8 is
-explicit absence, never healthy shadow capability. `hooks.available=false` requires every other
+Phase 7's nested `ShadowHookHealth` report: the complete current P8 canonical flattened scalar
+row catalogue in owner order, exact IDs/expected/actual/dispositions, fingerprint and aggregate enabled bit.
+**D-P2-67:** P8 D-P8-37's `ShadowHookHealth/flattened-v3` law governs the complete
+66-row scalar catalogue, including first-in-ASCII-order H-SHADOW-OUTLINE-01 and six separate
+GET/SET observations for prevRenderSortX/Y/Z. Every row expects one;65 non-CLOUD rows
+determine the aggregate, while CLOUD gates separately. Preserve owner ASCII order, exact
+observations/dispositions and fingerprint. Reject old flattened-v1/v2 or incomplete evidence;
+runtime rebuild or sorting outcomes never replace frozen application counts.
+Missing owner phase8 is explicit absence, never healthy shadow capability. `hooks.available=false` requires every other
 `hooks.*` key to be absent. No manifest producer or consumer may infer a row, count, disposition,
-fingerprint, or enabled bit from a successful frame, image, selected program, bound resource,
-diagnostic, or any other runtime behavior; the sole source is Phase 7's frozen
-`HookApplicationReport`.
+fingerprint or enabled bit from a frame, image, program, resource, diagnostic or other runtime
+behavior; the sole source is Phase7's frozen `HookApplicationReport`.
+**D-P2-59 / D-P2-63 owner13 receipt:** when installed, P7's ownerPhase13 subreport carries its eight
+ordered P13 atlas/sprite FEATURE IDs and `TextureHookHealth/application-v2` fingerprint
+unchanged, seven active plus dormant SPRITE02. Preserve exact P7 expected/actual count
+semantics, dispositions and atlas-feature aggregate; absence is not capability. Runtime
+extent acceptance/failure remains separate catalog/diagnostic/Unknown evidence, never a new
+hook field or mutated frozen count. Original adapter cases cover actual padded atlas extent,
+map/epoch isolation, missing/duplicate allocation, changed mip count, Post-without-Pre,
+exceptional/no-Post exit and reload failure. ATLAS06 is the outer
+`TextureMap.func_174943_a(Lnet/minecraft/client/resources/IResourceManager;Lnet/minecraft/client/renderer/texture/ITextureMapPopulator;)V`
+try/finally lifetime, enclosing Pre/listeners and sprite population before the inner atlas load.
+Pre-listener/populator throws, direct unscoped inner loads and nested conflicts fail closed;
+normal outer completion can accept one matching Post. Reject application-v1 target evidence.
+Only matching accepted Post permits Known size; runtime outcomes never modify application health.
 `gl_errors.count` counts all dense records, every record's `attributed` field is a required boolean,
 and the unattributable-error count is derived only as
 `count(gl_errors.<n>.attributed == false)`; no separate scalar encodes it.
+The dense GL-error sequence is P7's actual synchronous collector receipt order, preserving
+P6 report groups and each triggering drain's internal order. Flatten each original
+`ReplayAwareGLError` to `op=error.op`, `subject=error.subjectLabel`, `kind=error.kind`,
+`detail=error.detail`, `attributed=attributed`, using the existing wire scalar/escape rules.
+Repeated equal errors remain separate records; no sort, grouping-by-value or deduplication.
+P6's report program/cache context is retained internally by P7, not added to `/4` fields,
+used to rewrite the error subject, or treated as attribution evidence. Genuine non-replayed
+foreign/cleanup errors are false-only; P6 replay probes are not additional submissions.
+The raw recording log is not a second submission of the P6-owned triggering window.
+Delivery/storage/overflow/final-callback-drain failure uses existing `run.exitStatus=FAILED`
+and failureReason/diagnostics, preserving safely received records without fabricated omissions
+as success. Every recorded true or false error still fails T0; no logging throttle can remove it.
 Before either copy or hash, the cache tree is walked without following links. Only directories and
 regular files are admitted; every symbolic link, socket, device, FIFO, or other entry is a hard
 containment failure, including a link whose target would remain inside the cache root. The copy
@@ -1090,16 +1410,19 @@ preserves the admitted relative tree and bytes, and the digest is computed from 
 hashes, for each file, its UTF-8 path, one zero byte, its base-10 byte length, one zero byte, and its
 bytes. `environment.modSetSha256` applies the same
 framing to the `environment.mods` records sorted by `(id,sha256)`, using `id` as path and the
-lowercase hexadecimal jar digest as content. Both are lowercase SHA-256 and are the sole identities
-used by §4.7 baseline approval and invalidation.
+lowercase hexadecimal jar digest as content. These lowercase SHA-256 values retain full
+provenance. `externalModSetSha256` uses precisely the same algorithm excluding only the
+authenticated subject record (§5.1.1). World-generation descriptor identity, copied world hash
+and external hash govern world-environment/baseline identity, never the full subject-bearing hash.
 
 T0 is derived without live state: `parses` requires `frontEnd.completed`,
 `frontEnd.packConfigurationProduced`, and no `FATAL`/`ERROR` diagnostic; stable-frame-loop requires
 `exitStatus=COMPLETE`, empty `uncaughtException`, `compatVerdict=Continue`,
 `shadersActiveThroughout=true`, `timedOut=false`, exact plan/manifest capture coverage, exact
 planned/actual warm-up and sample counts, exact normalized planned/actual current and previous poses,
-and every `durationMillis <= hangCeilingMillis`. Program and GL predicates use their existing blocks, and T0
-also requires all three availability flags true. Hook availability proves evidence completeness;
+and every `durationMillis <= hangCeilingMillis`. Program and GL predicates use their existing blocks.
+T0 also requires gl/resources/hooks availability and timing.available=true, timing.complete=true
+with the exact validated origin/step/sample coverage above. Hook availability proves evidence completeness;
 individual hook dispositions affect T0 only through existing engine outcomes such as
 `shadersActiveThroughout`, never through a Phase-2 capability guess.
 `CaptureRunner` validates the agent's temp file and atomically publishes it; if launch, timeout,
@@ -1109,16 +1432,43 @@ schema-valid manifest from the plan and runner observations with `exitStatus=FAI
 and zero counts for unavailable repeated blocks. Such a manifest deterministically fails T0.
 Unknown core keys fail; extension keys under `x.<producer>.*` are preserved and reported, and never
 affect a verdict. A canonical full-block fixture at
-`conformance/src/test/resources/wire/run-manifest-v2.manifest` must round-trip byte-identically;
-truncation or a missing required count/field names the incomplete block. Schema `/1` is historical;
-the `/2` reader rejects it and no compatibility reader or automatic migration is required.
+`conformance/src/test/resources/wire/run-manifest-v4.manifest` must round-trip byte-identically;
+truncation or a missing required count/field names the incomplete block. `/1`, `/2` and `/3` are
+historical; the `/4` reader rejects all three, with no compatibility reader or automatic migration.
 
 #### 4.5.5 Worlds
 
-Generated once per `(seed, mcVersion, modSetHash)` into the cache, then copied per run. Generation is
-the slowest and least deterministic step in the pipeline; doing it once and hashing the result turns
-"did worldgen change?" into a cheap comparison instead of a mystery. The canonical world and
-mod-set hashes are recorded in the manifest and are baseline-invalidation triggers (§4.7.4).
+`[D-P2-48]` Resolve generation inputs before lookup. The canonical descriptor is UTF-8 text
+with first line `schema = schmaloogium.world-generation/1\n`, then exactly the sorted keys
+`externalModSetSha256`, `generateStructures`, `minecraftVersion`, `seed`, `worldType`, using
+§4.5 scalar rules and final newline. `seed` is signed long; generateStructures is boolean;
+worldType is the canonical admitted vanilla identifier after scene default resolution;
+minecraftVersion is the exact launch version, externalModSetSha256 the authenticated hash.
+Its exact-byte SHA-256 is `environment.worldGenerationSha256`.
+These are all admitted generation settings: generator options/presets or mod generation knobs
+are not admitted independent scene inputs; admitting one later requires adding its resolved
+value to this descriptor before lookup. Dimension selects a dimension in the save; time,
+weather, difficulty, gamemode, gamerules, entities and prepTicks are post-load scene state,
+not generation inputs. Client/capture/clock/pack settings and subject-only builds are excluded.
+
+The sole entry is `<cache>/worlds/<worldGenerationSha256>/`, containing `generation.worldgen`
+(exact descriptor), `receipt.world` and `save/` (immutable generated save). Generation receives
+the exact descriptor values, not unresolved scene defaults. Generate into a private temporary
+entry and atomically publish only after completion and no-follow tree hashing. receipt.world
+uses canonical scalar rules with exactly `worldGenerationSha256` and `worldSha256`; the latter
+hashes save/ by §4.5.4. On a cache hit require descriptor byte equality to the resolved request,
+digest/directory equality and receipt/save hash equality before copying. A malformed, absent
+or mismatched receipt in an existing entry fails closed, not a cache miss or automatic replacement.
+After no-follow copying save/ into the run, require the copied pre-load hash equal the receipt;
+put both hashes and minecraftVersion in the /4 plan and retain descriptor/receipt at
+`<runId>/generation.worldgen` and `<runId>/world.receipt`. The runner and agent authenticate
+these before load/publication (§5.1.1). Runtime mutations affect only the per-run copy.
+Different worldType or generateStructures values therefore select different entries regardless
+of request order. Subject-only rebuild reuses the entry; external changes select a new one.
+Descriptor, pre-run world and external identity all bind approval/oracle environment comparisons.
+World creation uses fixed harness initialization for post-load state and vanilla defaults for
+unexposed generator options; it never forwards those excluded scene fields into generation.
+Thus changing difficulty/gamemode or a capture-only field cannot change the cached initial save.
 
 #### 4.5.6 The agent's own failure posture
 
@@ -1165,19 +1515,33 @@ a perceptual metric can be added as an additional **reported** number before it 
 Named, committed in `conformance/fixtures/tolerances.profile`, and cited by every verdict — a diff
 result without a named profile is not reproducible.
 
-| Profile | Used by | `channelTolerance` | `maxDifferingFraction` | `maxDelta` | `maxClusterArea` |
-|---|---|---|---|---|---|
-| `IDENTICAL` | repeated SHOT samples and same-ordinal repeated PATH runs; golden-adjacent uses | 0 | 0 | 0 | 0 |
-| `SAME_MACHINE` | T1 regression on one machine | 1 | 0.0005 | 8 | 64 |
-| `CROSS_DRIVER` | T1 after a driver or GPU change | 3 | 0.005 | 24 | 512 |
-| `CROSS_ENGINE` | T2 vs OptiFine G6, same machine | 6 | 0.02 | 48 | 4096 |
-| `ADVISORY` | cross-vendor comparisons | — | — | — | — |
+| Profile | Used by | `channelTolerance` | `maxDifferingFraction` | `maxDelta` | `maxRmse` | `maxClusterArea` | `maxClusters` |
+|---|---|---|---|---|---|---|---|
+| `IDENTICAL` | repeated comparable samples / same-ordinal runs | 0 | 0 | 0 | 0 | 0 | 0 |
+| `SAME_MACHINE` | T1 on one machine | 1 | 0.0005 | 8 | 1 | 64 | 1024 |
+| `CROSS_DRIVER` | T1 after driver/GPU change | 3 | 0.005 | 24 | 3 | 512 | 4096 |
+| `CROSS_ENGINE` | comparable static G6 T2 | 6 | 0.02 | 48 | 6 | 4096 | 16384 |
+| `ADVISORY` | report-only comparisons | — | — | — | — | — | — |
 
-**These numbers are starting points, and this document says so rather than implying they are
-measured.** No frame has ever been rendered by this engine; §4.6.5 is the procedure that replaces
-them with evidence, and the profile file carries a `calibratedOn` provenance field that is empty
-until it runs. `ADVISORY` deliberately has no thresholds: it produces a full report and **never a
-verdict**, because a cross-vendor pixel comparison is information, not a gate.
+Every gating profile requires **all six** numeric fields. `channelTolerance` and `maxDelta`
+are integers in `[0,255]`; `maxDifferingFraction` is finite in `[0,1]`; `maxRmse` is finite
+in `[0,255]`; `maxClusterArea` and `maxClusters` are integers in `[0,2147483647]`.
+No omission means zero, infinity or a disabled predicate. Missing/duplicate/unknown fields,
+wrong types, nonfinite/out-of-range values and unknown profile names fail before diff.
+Metrics use unmasked pixels' sRGB RGB channels (alpha must match the agreed colour model):
+RMSE is `sqrt(sum(delta²)/(3*unmaskedPixelCount))`, differing fraction divides the differing
+pixel count by that same unmasked pixel count; all-masked input is invalid. Empty differing
+masks have zero clusters/area. Threshold equality passes; all L2/L3 predicates are required.
+The profile file uses `[profile <name>]` blocks and `key = value` rows, `#` comments and
+blank lines as in §4.3.1; unique name, six numeric fields and JSON-string `calibratedOn` are
+required. `calibratedOn` is empty for unmeasured rows, otherwise dated evidence
+provenance. `ADVISORY` is the sole report-only variant: it forbids threshold fields and never
+yields a verdict. No new defaults or automatic profile escalation to ADVISORY are permitted.
+
+**These complete initial numbers are unmeasured**, executable for synthetic diff evaluation,
+not calibration evidence or a release-tier grant. `IDENTICAL` is exact by definition; the
+other gate profiles require §4.6.5 measured calibration before tier acceptance. Reports
+identify uncalibrated results as provisional, not ledger PASS. No rendered result is claimed.
 
 #### 4.6.4 Ignore masks
 
@@ -1195,8 +1559,10 @@ a small admission of defeat and should be visible as one.
    `CROSS_DRIVER` floor.
 3. For `CROSS_ENGINE`, diff OptiFine G6 against itself across two captures first (isolating capture
    noise from engine difference), then against our render.
-4. Write the observed maxima × a stated safety factor into the profile file, with
-   `calibratedOn = <date, GPU, driver>`.
+4. Record all six observed metrics and all six final thresholds with a stated safety factor;
+   round integer limits upward and enforce their domains. Publish dated GPU/driver, input
+   hashes, timing comparability and human calibration review in `calibratedOn` provenance.
+   Calibration never bypasses baseline approval or manufactures a comparable G6 clock.
 
 ### 4.7 Baselines: storage, versioning, approval
 
@@ -1218,14 +1584,32 @@ derived-artifact posture binding across phases rather than leaving it as a Phase
 #### 4.7.2 Layout
 
 Cache (never committed):
-`<cache>/baselines/<packId>@<version>/<sceneId>/<captureKind>/<captureId>/<sampleOrdinal>.png`.
+`<cache>/baselines/<packId>@<version>/<sceneId>/<optionStateSha256>/<captureKind>/<captureId>/<sampleOrdinal>/<pixelSha256>.png`.
 Repo (committed): `conformance/baselines/<packId>@<version>/<sceneId>.baseline`, one file per scene,
-sorted, containing one record per captured sample:
+sorted uniquely by `(captureKind,captureId,sampleOrdinal,optionStateSha256,toleranceProfile,machineClass)`.
+Multiple option states coexist; content-addressed raster leaves also retain superseded approvals.
+
+`[D-P2-41]` `optionStateSha256` is a 64-lowercase-hex SHA-256 over UTF-8 canonical
+`schema = schmaloogium.option-state/1\n` followed by the sorted exact lines for
+`pack.options.count`, `pack.options.<n>.{name,value}`, `pack.engineOptions.count` and
+`pack.engineOptions.<n>.{name,value}`, with §4.5 scalar escaping and final newline.
+Each map is complete resolved effective state, including defaults, sorted by name in UTF-8
+byte order with unique nonempty names and canonical owner-encoded JSON-string values.
+P3/P12 remain owners of option resolution/encoding; P2 hashes those results, not a sparse
+override file, display/profile name or engine configuration fingerprint. No build, jar,
+run ID, feature label, machine or timestamp enters this hash. Same effective maps give
+the same identity after subject-only rebuild; changed option state selects another baseline.
+Plan and manifest require the digest and both complete maps; P7 applies exactly those maps
+and reports effective accepted values. P2 recomputes the hash and requires plan/manifest
+equality before publication. Failure keeps authoritative plan maps, not invented acceptance.
+Approval records include both complete maps and digest, preserving their run association.
+Historical records without this identity are NO_BASELINE, never upgraded by guessing defaults.
 
 ```
 captureKind     = PATH
 captureId       = terrain-pan
 sampleOrdinal   = 3
+optionStateSha256 = <hash of complete resolved maps>
 pixelSha256     = 3f0a…
 width           = 1920
 height          = 1080
@@ -1236,20 +1620,28 @@ approvedOn      = 2026-08-03
 runId           = RUN-T1-APPROVE
 runManifestSha  = 9c21…
 sceneSha256     = 71bd…
+worldGenerationSha256 = <hash of resolved generation descriptor>
 worldSha256     = a0e4…
-modSetSha256    = 5512…
+externalModSetSha256 = 5512…
+subjectModId    = schmaloogium
+subjectJarSha256= 42ab…
+modSetSha256    = 88cd…
 ```
 
-#### 4.7.3 The approval workflow (human, once per pack version)
+#### 4.7.3 The approval workflow (human, per pack version and option state)
 
 1. Run `RUN-T1-APPROVE`, which captures every selected SHOT and every bounded PATH sample and writes
    a **contact sheet** — an HTML index of every image at review size, grouped by capture and ordinal,
    with the run manifest inline.
 2. A human looks at every image and decides whether the pack is *rendering plausibly* — §8.2's own
    words, and a judgement no automation makes.
-3. On acceptance the harness promotes the images into the baseline cache and writes the baseline
-   manifest with the run manifest's `environment.worldSha256` and
-   `environment.modSetSha256` unchanged, plus the approver and date.
+3. On acceptance the harness promotes images only to §4.7.2's canonical option/raster-addressed
+   paths and writes the baseline manifest with unchanged worldGenerationSha256, worldSha256
+   and externalModSetSha256, all full-inventory/subject provenance, exact clock schedule and
+   observed timing evidence, complete option maps/digest, approver and date.
+   Promotion replaces only the matching full record key; OFF cannot replace ON or vice versa.
+   Both feature states require separate review. Preserve immutable approval run/plan evidence
+   and raster leaves for §4.2.6's later authentication; approval is not an automatic T1 PASS.
 4. The manifest is committed. From that point the images are a regression oracle and §4.2.2 applies.
 
 **Approval is never automatic, and specifically never automatic in CI.** There is no
@@ -1261,10 +1653,12 @@ own baselines has no oracle at all.
 | Trigger | Detected by | Effect |
 |---|---|---|
 | Pack version changed | registry pin / archive SHA-512 | baselines for the old version stay; the new version starts at `NO_BASELINE` |
+| Effective option state changed | recompute optionStateSha256 from both complete maps | retain old state and select distinct state baseline or NO_BASELINE; never overwrite another state |
 | Scene file changed | `sceneSha256` | `NO_BASELINE` for that scene; re-approval required |
-| World or mod set changed | compare the current run manifest's `environment.worldSha256` / `environment.modSetSha256` to the baseline fields | `NO_BASELINE`, with the changed field named |
+| Generation request, world or external mod set changed | compare environment.worldGenerationSha256 / worldSha256 / externalModSetSha256 to baseline and retained approval plan | NO_BASELINE naming changed field; subject-bearing hash is not this predicate |
 | Machine class changed | manifest comparison | not invalid — the profile escalates to `CROSS_DRIVER` and the report says so |
 | Engine behaviour changed | *not* auto-detected | deliberate: an engine change that alters the image is exactly what T1 exists to catch. A change believed to be an improvement is re-approved by a human, and the manifest's `approvedOn` records that it was |
+| Clock schedule changed or required timing evidence absent/mismatched | exact schedule and §5.1.1 comparison | no comparable baseline (`NO_BASELINE`); never relax tolerance to hide time differences |
 
 ### 4.8 The T2 protocol — capturing OptiFine G6 oracle renders
 
@@ -1278,28 +1672,48 @@ involved is the differ that consumes its output.
 |---|---|
 | A **separate** Forge 1.12.2 installation with **OptiFine HD_U G6_pre1** — the exact reference build (§0.3 of RESEARCH.md) | Any other OF build is a different oracle |
 | **The same machine, GPU and driver version** as the candidate capture, recorded in both manifests | §4.6.3's `CROSS_ENGINE` profile assumes it; cross-vendor T2 is `ADVISORY` only |
-| The same world save, copied from the harness cache (§4.5.5) | Same terrain, same everything |
+| The same receipt-authenticated pre-run save, copied from the descriptor-addressed cache (§4.5.5) | Same generation request and bytes; never select only by seed |
 | The same pack archive, verified by SHA-512 against the registry | A different pack version is a different oracle |
 | Vanilla video settings matching the scene's `[client]` block exactly | Every one of those settings changes pixels |
 | **OptiFine's own features neutralised**: antialiasing off, anisotropic filtering off, fast render off, render quality 1.0, shadow quality 1.0, and the normal/specular-map and hand-depth/old-lighting/old-hand-light toggles set to the values the scene pins | §1.2 records that OF's interlock matrix exists *because* it bundles AA/AF/fast-render and that Schmaloogium has none of them. Leaving them on compares our engine against a different renderer |
 
 #### 4.8.2 Procedure, per scene's selected static shots
 
-1. Copy the cached world save into the OF instance; launch; open the save in singleplayer.
+1. Verify the candidate's retained generation descriptor and cache receipt (§4.5.5), copy the
+   same save into the OF instance and verify its pre-load hash; record worldGenerationSha256,
+   worldSha256 and externalModSetSha256 in the oracle manifest. Launch and open that copy.
 2. Apply the scene's world state by command, using the scene file's own values verbatim:
    `/gamerule doDaylightCycle false`, `/gamerule doWeatherCycle false`, `/time set <ticks>`,
    `/weather <clear|rain|thunder> <weatherTicks>`, `/difficulty peaceful`, `/gamemode <mode>`, plus
    each `gamerule.<name>` row.
 3. Select the pack in OF's shader GUI and set the pack options the scene pins.
-4. For each selected `[shot]`: `/tp @p <x> <y> <z> <yaw> <pitch>` with the scene's exact decimals, set the held
+4. For each SHOT and sample ordinal selected by the frozen T2 domain: `/tp @p <x> <y> <z> <yaw> <pitch>` with the scene's exact decimals, set the held
    items, hide the HUD (F1), ensure the debug overlay is off, wait for the pack's smoothed values to
-   settle — the same wall-clock the warm-up rule implies (§4.4) — then take one screenshot.
-5. Move the screenshots into
-   `<cache>/oracle/<packId>@<version>/<sceneId>/SHOT/<shotId>/0.png`.
+   settle, recording actual wait/observations; this manual wait is not the controlled candidate
+   schedule or evidence of matching frame seconds, accumulated seconds, ticks or partial tick.
+5. Acquire a separately identified screenshot and timing/comparability evidence for every required
+   SHOT ordinal (not only ordinal 0); manual ordinals label selected samples, not controlled replay.
+   If any ordinal cannot be comparably observed, that required comparison is non-pass.
+   Move screenshots only to the canonical oracle grammar:
+   `<cache>/oracle/<packId>@<version>/<sceneId>/<optionStateSha256>/SHOT/<shotId>/<sampleOrdinal>/<pixelSha256>.png`.
 6. Run the oracle-manifest tool: it hashes each image's **pixel raster** (§4.5.3), records the OF
    build, GPU, driver, date and operator, and writes
-   `conformance/oracle/<packId>@<version>/<sceneId>.oracle` — **committed, manifest only, no images**
+   `conformance/oracle/<packId>@<version>/<sceneId>.oracle` — **committed, manifest only, no images**;
+   records are unique by capture kind/id/ordinal/optionStateSha256 and retain complete resolved
+   pack/engine-option maps under §4.7.2, exact settings, raster dimensions/hash and timing evidence
    (§4.7.1's policy applies identically here).
+
+The oracle manifest requires `timing.control = "UNCONTROLLED"` for this manual protocol,
+`timing.evidence` (non-empty operator observation/measurement description, or explicit
+`"UNAVAILABLE"`), and `timing.comparability = "ESTABLISHED"|"UNAVAILABLE"` with non-empty
+`timing.comparabilityReason`. Never copy candidate target values into oracle actual timing.
+ESTABLISHED requires independently recorded evidence that the selected static shot's observed
+pixels are time-insensitive over the relevant sampling range or independently measured
+equivalent temporal inputs; manual waiting alone is insufficient. Unavailable/uncontrolled
+comparison without that evidence produces a report and `SKIPPED("timing not comparable")`,
+not T2 PASS, even when the numeric image diff is under CROSS_ENGINE. The ledger retains the
+hashed oracle evidence and reason through §4.2.6's canonical comparison and frozen input snapshot. Static-only classic scope and separate installation/C-4
+remain; no oracle clock-control implementation is assumed.
 
 #### 4.8.3 Properties of the protocol worth stating
 
@@ -1322,7 +1736,8 @@ involved is the differ that consumes its output.
 ### 4.9 The named harness runs
 
 The catalogue §3.5 and §5.3 both point at. Each run is a `HarnessRun` value in `conformance.run`
-with these fields, so that "which runs gate v0.3?" is a query and not a document search.
+with the catalogue fields below plus §4.2.5's immutable selection and required evidence domain,
+so that milestone/domain resolution is a query, not inference from successful output.
 
 | Run id | Context | Inputs | Pass condition | Where it runs |
 |---|---|---|---|---|
@@ -1331,14 +1746,14 @@ with these fields, so that "which runs gate v0.3?" is a query and not a document
 | `RUN-GOLDEN-MATRIX` | A + fixtures | the 7 matrix packs × a 3-profile subset | as `RUN-GOLDEN-CORE` | CI `conformance` job (network) |
 | `RUN-PINTONIUM-PARSE-CALIBRATION` | A + fixtures + prior local observation records | the exact 7 matrix archives + one source-text-free Pintonium observation each | all observations present/hash-matching and Schmaloogium parses all seven; Pintonium outcome equality is reported, never required | CI `conformance` job after explicit local calibration capture |
 | `RUN-OPTIONS-ROUNDTRIP` | A + fixtures | matrix packs' option sets | parse → mutate → persist → re-parse yields an identical model, and the persisted file contains only changed options (§4.7 of RESEARCH.md) | CI `conformance` job |
-| `RUN-SCENE-SELFCHECK` | B (client) | one pack, all scenes, three-sample static shots plus every path | repeated static samples compare `IDENTICAL`; two fresh executions of each path compare same-ordinal images `IDENTICAL`; both manifests pass pose/count reconstruction | local / pre-release |
-| `RUN-MOTION-PATHS` | B (client) | one registry-backed pack × the required moving path in all six families | every path's full sample sequence executes twice; manifests match `/2` plan/current/previous pose semantics; every captured ordinal passes T1 against its approved same-ordinal baseline | local / pre-release and Phase 2 close gate |
-| `RUN-T0` | B | pack × scene set | §4.2.1's four predicates | local / pre-release |
+| `RUN-SCENE-SELFCHECK` | B (client) | one pack, all scenes, three-sample shots and all paths | two fresh runs compare every same-ordinal SHOT/PATH image IDENTICAL with matching actual timing/poses/counts; within-shot equality only for independently time-insensitive shots | local / pre-release |
+| `RUN-MOTION-PATHS` | B (client) | one registry-backed pack × all PATHs in all six families, including every mandatory named path | full sequences execute twice; both manifests match poses/counts and actual controlled timing; every captured ordinal of both runs passes T1 against approved same-ordinal baseline | mandatory later local / pre-release runtime gate, not architecture closure |
+| `RUN-T0` | B | pack × scene set, every SHOT/PATH sequence | §4.2.1's four predicates with exact domain coverage; no image comparisons | local / pre-release |
 | `RUN-T1-APPROVE` | B + C (human) | pack × scene set | contact sheet produced; a human approves; manifests written | local, once per pack version |
 | `RUN-T1-REGRESS` | B | pack × scene set + approved baselines | every selected SHOT and bounded PATH sample passes at its profile; `NO_BASELINE` is not a pass | local / pre-release |
-| `RUN-T2-PILOT` | B + C | one classic pack, `terrain-day`, oracle present | `CROSS_ENGINE` pass | local, v0.2 |
-| `RUN-T2` | B + C | classic packs × the milestone's declared static SHOT set, oracles present | `CROSS_ENGINE` pass on every selected static shot; moving coverage is the separate T1 `RUN-MOTION-PATHS` gate | local, v0.3+ |
-| `RUN-T3` | B | pack × scene set + `<packId>.features` + run manifest | every automated feature row observed; every attested row signed; **zero `CHAIN`-with-source slots** (§4.2.4) | local, v0.4+ |
+| `RUN-T2-PILOT` | B + C | classic pack, explicit terrain-day SHOT selection and every selected ordinal, oracle present | §4.8 comparability and calibrated CROSS_ENGINE for every required ordinal; no PATH oracle | local, v0.2 |
+| `RUN-T2` | B + C | classic packs × milestone's explicit SHOT selection and every selected ordinal | every required sample meets §4.8 comparability and calibrated CROSS_ENGINE; separate mandatory T1 motion domain unchanged | local, v0.3+ |
+| `RUN-T3` | B | pack × scene set + complete feature catalogue + primary and feature-state manifests | all §4.2.5 PRIMARY T1 comparisons, every automated/attested feature row and ownBuild/T0 predicates; no masked own FAILED, legitimate DISABLED accepted | local, v0.4+ |
 | `RUN-GL-SMOKE` | B′ (`:mod` test JVM) | none | a compatibility-profile GL context ≥ 2.1 is created and a GLSL 120 shader compiles | the OQ-10 spike's subject (§10) |
 | `RUN-EXPRESSION-CONFORMANCE` | A (headless), v0.4 evaluator gate | `ORIGINAL_VECTORS`: P11 §5.6 original catalog, scripted providers/recording sink; optional `LOCAL_MATRIX`: acquired declarations with same providers | every original case's independently authored observable matches; FAIL and UNSUPPORTED prevent run PASS; matrix without independent oracle is disposition-only | hermetic CI once P11 exists; local matrix uses fixture acquisition gate |
 
@@ -1356,9 +1771,29 @@ a P6-conforming immutable scripted built-in view, `CustomSubmitResult` scripts a
 sink. This adds no production evaluator API or engine dependency on a test/harness framework.
 Every `ExpressionConformanceExpected` build disposition/load-diagnostic list and per-refresh
 observation is independent expected data: ordered `CustomUploadCommand`s (binary32 bits,
-exact integers/booleans), diagnostic kinds/stable IDs, `CustomRefreshResult` counts and
+exact integers/booleans), diagnostic kinds/stable IDs/typed locations, `CustomRefreshResult` counts and
 context/random consumption. Exhausted/unused scripts fail rather than cycle/default.
 Close is terminal and last; frame/time inputs are scripted, not wall-clock waits.
+
+The adapter obtains the controller with
+`CustomExpressionControllerFactory.create(metricsSink, diagnosticSink)`: the required
+`ExpressionDiagnosticSink` follows `ExpressionMetricsSink`; its `report(ExpressionDiagnostic)`
+receives the exact typed diagnostic, not metrics, GUI projections or P2 channel conversions.
+The recording collector preserves actual runtime order and attribution; build/load
+diagnostics remain their separate actual result list. The adapter receives P11 §5.6's
+`Observation.diagnosticLocations` immediately after stableDiagnosticIds and
+`Expected.loadStableDiagnosticIds`, `Expected.loadDiagnosticLocations` immediately after
+loadDiagnosticKinds, comparing each parallel kind/ID/location sequence in exact order.
+`ExpressionDiagnosticLocation` is the owner's closed `Declaration(declarationName,
+attribution,span)|SourceLess()` distinction. Unsupported pre-plan backend cases require
+SourceLess, never invented declaration IDs/files/lines; declaration cases retain real
+attribution. Original synthetic locations remain fixture-only, never committed reports.
+Both existing compile entry points must produce equivalent build observations.
+P11 contains sink RuntimeException without retry/recursion: that diagnostic remains
+coalesced, evaluation results/counts remain unchanged, and later distinct delivery is
+attempted. P2's collector separately latches FAIL on its own failure, never mistakes lost
+delivery for an empty successful list or hides it behind a metrics no-op. Optional matrix
+reports remain source-free. This receives the owner seam rather than defining a second one.
 
 Mandatory families are `EXPR-OPERATORS`, `EXPR-FUNCTIONS`, `EXPR-MATRIX`,
 `EXPR-ERROR-ISOLATION`, `EXPR-SMOOTH`, `EXPR-PROVIDER`, and `EXPR-LIFECYCLE`, covering every
@@ -1438,12 +1873,16 @@ through the replacement.
 
 ```
 <cache>/packs/<packId>/<versionKey>/<archive>          + .sha512 + SOURCE.txt
-<cache>/worlds/<mcVersion>/<seed>-<modSetSha>/
+<cache>/worlds/<worldGenerationSha256>/                  (generation.worldgen, receipt.world, save/; §4.5.5)
 <cache>/runs/<runId>/manifest.manifest                  (canonical run manifest)
 <cache>/runs/<runId>/…                                  (plan, images, diff reports)
-<cache>/baselines/<packId>@<version>/<sceneId>/<captureKind>/<captureId>/<sampleOrdinal>.png
-<cache>/oracle/<packId>@<version>/<sceneId>/SHOT/<shotId>/<sampleOrdinal>.png
+<cache>/baselines/<packId>@<version>/<sceneId>/<optionStateSha256>/<captureKind>/<captureId>/<sampleOrdinal>/<pixelSha256>.png
+<cache>/oracle/<packId>@<version>/<sceneId>/<optionStateSha256>/SHOT/<shotId>/<sampleOrdinal>/<pixelSha256>.png
 ```
+
+`[D-P2-49]` These image entries are exactly §§4.7.2/4.8.2's grammars, used by promotion,
+manual oracle placement, cache readers and §4.2.6 closure. No single-ordinal PNG fallback,
+option-less layout, compatibility lookup or silent migration exists.
 
 `SOURCE.txt` is written next to every downloaded archive and records the pack's licence line, the
 source URL and the never-redistribute rule — so a developer who finds the file in six months knows
@@ -1523,28 +1962,31 @@ shaders/gbuffers_terrain.vsh = lines=412 sha256=…
 …
 
 [programs]
-gbuffers_terrain  = SOURCED drawBuffers=0,1,2,3 alphaTest=default blend=default
-gbuffers_water    = SOURCED drawBuffers=0,2
+gbuffers_terrain  = SOURCED routing=Explicit[Attachment(COLORTEX,0),Attachment(COLORTEX,1),Attachment(COLORTEX,2),Attachment(COLORTEX,3)] alphaTest=default blend=default
+gbuffers_water    = SOURCED routing=Explicit[Attachment(COLORTEX,0),None,Attachment(COLORTEX,2)]
 gbuffers_hand     = CHAIN(from=gbuffers_textured_lit)
 …
 
 [sizing]                        ← §4.11.3
 [options]                       ← discovered switches, variables, const options, ranges
-[properties]                    ← shaders.properties model: flags, profiles, screens, per-program state
+[properties]                    ← owner pack/dimensions/properties/idMappings/assets trees (§4.11.4)
 [macros]                        ← the standard macro header this profile produces (names + values)
 [diagnostics]                   ← code, severity, file, line — never the line's text
 ```
 
 #### 4.11.3 The `[sizing]` section — §8.3's "resource-sizing decisions … with no GL context"
 
-The section the spec names explicitly. It records the decisions §3.2's *implicit resource
-declaration* rule produces from source scanning:
+This section copies P5's pure PLANNED owner projection, not a second directive scanner.
+It uses exactly §4.5.4's resource scalar/index/conditional grammar with the `resources.` prefix
+removed inside `[sizing]`; `available=true` and `evidence_stage=PLANNED` are required for completeness.
+REALIZED and either allocation key are forbidden here. P3's separate typed nine-tree resources
+projection remains unchanged. The following table summarizes meanings, not alternate key spellings:
 
 | Key | Contract row it reflects |
 |---|---|
-| `colorBuffers.count`, `colorBuffers.<n>.format` | §3.2 `colortexN` declaration raising the count; `colortexNFormat` (App A.3, App B.4) |
-| `colorBuffers.1.format = RGBA32F` when `gdepth` is declared | §3.2's "declaring `gdepth` upgrades buffer 1's format" |
-| `colorBuffers.<n>.clear`, `.clearColor` | App A.3's `colortexNClear` / `colortexNClearColor`; App B.1's default clear rules |
+| `evidence_stage=PLANNED`, `colorBuffers.count`, `colorBuffers.<n>.requested_format` | P5 planned inventory and P3 request distinction: DEFAULT_RGBA is not explicit RGBA8 |
+| `colorBuffers.1.requested_format` | P3's conditional gdepth resolution is preserved verbatim; do not unconditionally overwrite an explicit format |
+| `colorBuffers.<n>.clear`, `.clear_policy`, conditional `.clear_color_r/g/b/a` | App A.3 clear declarations and P5 ResourceClearPolicy: default colortex0 fog policy, colortex1 constant ones, other defaults constant zeros; no fabricated frame fog |
 | `depthTextures.count` | §3.2's `depthtex0/1/2` allocation |
 | `shadow.depthTextures`, `shadow.colorTextures`, `shadow.resolution`, `shadow.hardwareFiltering`, `shadow.mipmap`, `shadow.nearest` | App A.3's shadow directive block |
 | `centerDepthSmooth.enabled` | §3.2's "declaring `centerDepthSmooth` enables the center-depth readback" |
@@ -1567,22 +2009,54 @@ non-Off field, including explicit companion preferences and non-null `internalOp
 (empty for filesystem, matching engine-issued session token or empty for Internal). The result is closed
 `Off|Failed(failure,diagnostics)|Inspected(configuration,snapshot,archiveSha512)`.
 Folder and archive loading use existing pure-JVM acquisition; internal fixtures use the
-bounded internal provider. Configuration schema must equal current P3 **18**, including nested
-IdMappingInput; reject 17 and every other schema before projection/reuse. Snapshot
-`projectionVersion` remains **1**, with no inferred old-schema defaults.
+bounded internal provider. Configuration schema must equal `PackFrontEnd.CURRENT_SCHEMA_VERSION`
+(**23**, current receipt; preceding numeric receipts are historical), including nested `IdMappingInput` and `PackDecisionSnapshot.schemaVersion`; snapshot
+schema/fingerprint must match the returned configuration. Reject every other schema or mismatch
+before projection, enrichment, serialization or derived reuse. Snapshot `projectionVersion`
+remains **1**, with no inferred old-schema defaults.
 
 `PackDecisionSnapshot` carries schema/configuration fingerprint, ordered source path/line-count/
-SHA-256 rows, the exact eight-section `DecisionValue` projection and structured source-free
+SHA-256 rows, the exact nine-section `DecisionValue` projection and structured source-free
 diagnostics. P3's recursive allowlist/hash/absence/ordering rules are incorporated in full.
 All arbitrary text—including option/range text, expressions, tooltips/lang strings, texture
 declarations and nonstandard macro replacements—is hashed; approved identifiers, paths,
 typed values and standard numeric macro replacements retain the owner's projection.
 `GoldenProjectionAdapter` alone maps these values to `GoldenDocument`; it neither opens
 parser-private code nor accesses original logical lines, source dumps, diagnostic args/detail
-or raw driver logs. Snapshot fields map `[sources]`, `[options]`, `[properties]`, `[macros]`,
-`[diagnostics]` and `[sizing]`; numeric half-life values in resources remain directly readable.
-Hashed option/range equality is retained without reproducing arbitrary pack expressions.
-The schema18 `[options]` tree preserves P3's entire normalized `localizedDecorations` catalog,
+or raw driver logs. All nine owner sections have the following lossless consumer mapping;
+the section-local `owner.*` namespace contains complete typed `DecisionValue` trees, not
+flattened summaries or replacements for the existing P4/P5 enriched rows:
+
+| P3 `sections` key | Golden section and tree key |
+|---|---|
+| `pack` | `[properties] owner.pack` |
+| `dimensions` | `[properties] owner.dimensions` |
+| `options` | `[options] owner.options` |
+| `properties` | `[properties] owner.properties` |
+| `programStates` | `[programs] owner.programStates` |
+| `resources` | `[sizing] owner.resources` |
+| `macros` | `[macros] owner.macros` |
+| `idMappings` | `[properties] owner.idMappings` |
+| `assets` | `[properties] owner.assets` |
+
+The snapshot's separate `sources` and `diagnostics` lists map to `[sources]` and
+`[diagnostics]` respectively; schema, projection version and configuration fingerprint are
+recorded as `input.configurationSchema`, `input.projectionVersion` and
+`input.configurationFingerprint`. The runner's archive identity remains separate.
+Each tree retains every typed variant, `$type`, record component, ordered map-entry sequence,
+list element and explicit `Absent`; no tree key collides with an enriched program/sizing key.
+Owner ordering is preserved inside values; §4.1 sorts outer section keys. No owner graph is
+reconstructed from a rendered summary. Numeric half-life values in resources remain directly
+readable; hashed option/range equality survives without reproducing arbitrary expressions.
+**D-P2-58 typed-ID projection receipt:** the owner idMappings tree retains
+`MetadataConstraint.alternatives`, `IntegerRange.lowerInclusive/upperInclusive`,
+`PropertyValueConstraint.Literal.value`, `IntegerInterval.range` and typed
+`PropertyPredicate.acceptedValues`, including variant tags and authored order. Endpoints are
+IntegerValue; property/literal/selector text remains TextHash under P3's codec. No range
+expansion, raw reparse, flattened predicate summary or extra tree is permitted. The leaves
+metadata set, reeds integer interval and conjunctive case plus invalid/overflow/no-expansion
+boundaries are original P3/P9 conformance inputs; nine trees/owner.assets/projectionVersion1 remain.
+The current `[options]` tree preserves P3's entire normalized `localizedDecorations` catalog,
 all nine typed maps, winning collision/empty distinctions and source-free TextHash leaves.
 It is not a selected-locale `lang` map. P3's exact projection codec governs ordering and hashes;
 P2 never reparses language files or serializes translated strings. P12's presentation checks
@@ -1592,6 +2066,63 @@ Internal inspection authenticates same bundle/exact PackIdentity and fresh-catal
 values before projection. Opaque session handles are never golden fields or persisted inputs.
 Absent token and captured-default token with equal finalized state yield equal semantic output.
 
+**Historical schema19 native metadata receipt — 2026-09-07 (P3 D-P3-68/§0.61).**
+The following receipt records that amendment, not today's schema check (D-P2-32 below).
+The existing projectionVersion=1 recursive codec preserves `resources.programs`' optional
+`LegacyGeometryConfig(root,extension,maxVertices,site)` with provenance-only
+`LegacyGeometrySite(root,extensionSpan,maxVerticesSpan)`, not the removed rewrite-site type.
+Each SourceSpan retains `(SourceId source,startOffset,endOffset,startLine,startColumn)`;
+included spans may name different physical sources, and macro-origin coordinates retain
+P3's meaning, not a promise of root-local editable spans. Fields/variant names, enums,
+typed integral coordinates and approved canonical paths use the existing source-free
+allowlist; arbitrary strings remain TextHash. No translator plan/success token is synthesized.
+`MaterializedSource.language/geometry`, source-map token ranges/expansion text and GLSL
+are operational materialization output, not new snapshot sections or golden inputs.
+P4's same-request resolution enrichment is unchanged; it supplies no invented linked-geometry
+inspection API. At that amendment all eight snapshot sections and nested IdMappingInput used
+schema19, rejecting schema18/mismatched nested data before projection or derived reuse.
+It superseded historical schema18 adoption without changing the pure codec, capture `/2`,
+golden format or claiming runtime geometry/conformance evidence; fresh reviews remained.
+
+**Historical schema20 immutable-asset receipt — 2026-09-08 (D-P2-32; P3 D-P3-69/§0.62/§5.3).**
+`PackConfiguration.assets` is required immediately after `sources` and is issued by P3 from
+the same load; missing/null/foreign-load capabilities are invalid, even for equal structural
+pack identities. P2 retains the exact configuration for existing P4/P5 inputs; it never
+constructs assets from metadata, adds a reader alias, or synthesizes an empty manifest.
+The ninth owner section maps in full to `[properties] owner.assets`, exactly the generic
+`Sequence` projection of `configuration.assets().manifest()` in unsigned UTF-8 canonical-path
+order. Each entry is `Fields` with `$type=PackAssetMetadata` and declaration-order components
+`path`, `availability`, `byteCount`, `sha256`: canonical path token; exact
+`AVAILABLE|MISSING|UNREADABLE` token; `IntegerValue` or `Absent`; and `TextHash` or `Absent`.
+AVAILABLE includes a nonnegative byte count (zero remains present) and a TextHash of the exact
+UTF-8 lowercase SHA-256 **digest string**, as required by the generic String-leaf codec.
+MISSING and UNREADABLE both have absent count/hash, but distinct availability tokens.
+This is not a new raw-digest allowlist exception; the separate `DecisionSource.sha256`
+field retains its existing owner meaning. P2 copies the projected hash, never rehashes a path,
+opens a host file, calls `assets.acquire`/`openCursor`, or emits bytes, buffers, providers,
+capability identities or binary-derived text. Manifest membership comes solely from P3's
+surviving owned PNG/raw/noise declarations and adjacent sidecar domain; invalid references,
+Minecraft resources, generated noise and shadowed declarations never become invented rows.
+
+P3 §4.10 binds `seq(atom("PackAssetSnapshot"), atom(schemaVersion), encode(assets.manifest()))`
+exactly once into configuration identity using its producer fingerprint codec, not the
+inspection TextHash codec. Successfully read original-byte digests also remain the existing
+`PackIdentity.contentHashes` values; missing/unreadable paths have no invented content hash.
+The manifest distinguishes their outcomes. No capability identity or fingerprint back-reference
+enters the acyclic bytes → identity/manifest → configuration → materialization chain.
+Only positively proven optional owned-sidecar-only read failures may appear as UNREADABLE;
+safety/bounds/index/container/source/configuration/primary failures retain P3 fatal handling.
+P13 alone owns sidecar interpretation, recovery warning and recovery fingerprint; manifest
+metadata is neither a P13 recovery verdict nor runtime texture evidence.
+
+Golden `schema=1` is retained: the nine typed owner trees are section-local named values
+inside the existing golden structure, not a new section, scalar grammar, or reinterpretation
+of existing fields. As with §11.2 D-4's extensible program keys, added keys change content;
+the active `CURRENT_SCHEMA_VERSION` plus exact nine-tree inventory gates completeness; older
+goldens cannot count as current. `projectionVersion=1`, golden schema1, scene `/2` and
+calibration `/1` remain; capture-plan/run-manifest move independently to `/4`.
+Explicit regeneration and diff review remain; no historical evidence upgrade is authorized.
+
 Archive provenance is a checked join, not a relabelled content hash: P3 hashes the actual
 bounded immutable archive bytes consumed by that load; P2 requires this digest equal its
 independently verified `PackFixture.archiveSha512` before any matrix verdict. Folder/internal
@@ -1600,13 +2131,21 @@ mode/licence and the golden `input.packSha512`; `PackIdentity`/configuration/sou
 remain distinct identities. Missing/mismatched archive digest fails provenance.
 
 For `[programs]`, P2 keeps the exact returned `Inspected.configuration` solely as the
-`RegistryBuildRequest.configuration` input to P4's synchronous build, with the same profile,
-dimension, contribution and sampler policy. It retains the snapshot association through that
-call, not an invented view fingerprint accessor or an arbitrary published `current()` lookup.
+`RegistryBuildRequest.configuration` input to P4's synchronous build. **D-P2-64:** pass explicit
+`Optional.empty()` as `profileSelection` immediately after configuration, with the same
+GL capability profile, dimension, contribution and sampler policy. Retain this same-request
+absent-selection/snapshot association through that call, not an invented view fingerprint
+accessor or arbitrary published `current()` lookup. Current inspection does not select a named
+profile; do not infer intent from option equality or introduce a named-profile inspection grant.
 `Ready(candidate)` supplies `candidate.view().resolutions()`; close caller-owned candidates
 in `finally`, with no runtime publication. Each `ProgramResolutionProjection` preserves
-`slot,status,from,sourcePresent,driverLog` using P4's closed status/absence rules and sanitized
+`slot,status,from,sourcePresent,ownBuild,driverLog` using P4's closed status/absence rules and sanitized
 projection detail only. `ShadersOff(failure)` cannot fabricate complete resolution rows.
+P4 `RegistryFailureKind.INVALID_PROGRAM_STATE` is registry-wide ShadersOff with empty
+programFailures and sanitized reason; it cannot become complete fabricated/disabled slot rows.
+P4's opaque `RegistryFingerprint/profile-selection-v3` commits selection and evaluated state.
+Consume its actual current identity unchanged; reject stale domain evidence, never recreate or
+rehash it locally. No `/4` row grammar, P3 schema23 or nine-tree change follows.
 Headless execution uses P1's recording device with P4's owner-conforming scripts, never a live
 GL claim. The source-bearing configuration/candidate never reaches the golden writer.
 A complete matrix golden requires successful P3, actual P4 enrichment and P5's complete
@@ -1615,8 +2154,11 @@ cannot yield `RUN-GOLDEN-MATRIX` PASS.
 
 P2 acquires `BufferArchitectures.create()` from P5 §5.1 (D-P5-25), then calls only its pure
 `plan(BufferPlanRequest(configuration,view,view.fingerprint(),capabilities,runtime))`.
-Configuration/view/profile are the same inspection/P4 build inputs; no inferred view fingerprint
-accessor exists. Original headless golden fixtures use explicit display extent `1280×720`,
+Configuration/view/profile are the same inspection/P4 build inputs. `view.fingerprint()` is
+P4's exact published accessor; its owner-issued `RegistryFingerprint/profile-selection-v3`
+identity is opaque to P2. No local fingerprint codec, inferred accessor, old-domain cache upgrade,
+or default-filled selector is permitted. Ordered None holes and route lengths retain P4 identity.
+Original headless golden fixtures use explicit display extent `1280×720`,
 and render/shadow quality from canonical P3 `renderResMul`/`shadowResMul` parsed as float then
 widened to double (default `1.0`). These three planning values are recorded as golden inputs;
 a deliberately varied fixture records its explicit values rather than reading client state.
@@ -1624,20 +2166,27 @@ No call to buffer `create`, main-depth acquisition, publication, binding or live
 The P4 recorder uses the test thread as its designated render thread, not a real client.
 
 Both `BufferPlanResult.Valid(plan,Available)` and `Invalid(failure,resources)` are consumed.
-P5 `BufferResourceSnapshot.Available` supplies the complete `[sizing]` projection, including
-`CapabilityGate.OK|SHORTFALL` and exact ordered `CapabilityShortfall(limit,required,available)`
-rows (`maxDrawBuffers`, `maxColorAttachments`, `maxTextureImageUnits`). A complete expected
-SHORTFALL is legitimate negative conformance evidence, not a successful allocation.
-`Unavailable(reason)` means the sizing section is incomplete and blocks a complete golden.
+P5 `BufferResourceSnapshot.Available` must have `ResourceEvidenceStage.PLANNED` here and
+supplies the complete `[sizing]` projection, including exact requested formats, declarative clear
+policy, `CapabilityGate.OK|SHORTFALL` and ordered `CapabilityShortfall(limit,required,available)`
+rows. Both Valid and Invalid with Available preserve the complete PLANNED evidence; Invalid
+remains a failed planning outcome, not Ready. A complete expected SHORTFALL is legitimate negative
+conformance evidence, not allocation success. Invalid with Unavailable remains incomplete.
+`Unavailable(reason)` blocks a complete golden; its reason stays engine-only, never a wire sentinel.
+Equal planning inputs give equal PLANNED evidence. Successful candidate creation independently
+produces REALIZED; candidate and its accepted ready estate carry identical REALIZED evidence.
+Full-value equality is stage-specific and requires matching inputs: cross-stage comparison may
+compare declared fields only, never call runtime fallback equal to the plan. No P2 allocation probe,
+fog reconstruction, capability diagnostic inference or plan-to-live conversion is permitted.
 IR-12 adopts the maintainer's 2026-09-07 option-only superSamplingLevel scope: P5 sizing is
 `BufferSizing(Extent2i mainExtent,Optional<Extent2i> shadowExtent)` without a sampling member.
 No engine sample/accumulation/resolve projection is invented; source-selected option values
 remain in hashed options/source decisions. Ordinary render/shadow quality and depth/flip
-planning stay unchanged. Capture `/2` still means one ordinary rendered frame per dense sample,
+planning stay unchanged. Capture `/4` still means one ordinary rendered frame per dense sample,
 with existing actual-current/previous pose evidence; no SSAA sample count or capture sentinel.
 Neither P3 minima, P4 CAPABILITY failure nor rendered behavior substitutes for these fields.
-P3 parsed directives/half-lives remain distinct from P5 resolved formats/counts/clear values;
-the adapter copies both owner projections without overwriting a requested value with a fallback.
+P3 parsed directives/half-lives remain distinct from P5 requested formats/counts/clear policies.
+The adapter preserves both owner projections; only live REALIZED evidence carries allocation facts.
 
 Until Phase 3 lands, `GoldenWriter`, `GoldenComparer`, the format and every one of their tests are
 exercised against a hand-built `GoldenDocument` — which is why the golden machinery is in the
@@ -1650,6 +2199,9 @@ behaviour and **fails the build afterwards** if anything changed, so an update c
 accident of a normal run. The diff is then reviewed by a human like any other diff — which is the
 entire point of a sorted, readable, source-text-free format. A golden update that a reviewer cannot
 explain is a defect report, not a rebase.
+Updates require current PLANNED stage/variant fields, explicit planning inputs and current opaque
+P4 identity. Historical single-stage or numeric-fog goldens must be regenerated and reviewed,
+not upgraded by defaulting. Runtime REALIZED fallback evidence cannot replace a SIZING oracle.
 
 #### 4.11.6 The hermetic corpus — packs we own
 
@@ -1669,7 +2221,7 @@ be. Two sources, both ours and both GPL-3.0-or-later:
 | `mp-options` | `#define` switches, `#define` variables with ranges, `const` options, `sliders`, `screen.*`, profiles, `lang/*.lang` (§3.3, App F.3/F.4) |
 | `mp-properties` | the `shaders.properties` surface: tri-state flags, per-program `alphaTest`/`blend`/`scale`/`flip`, custom textures, custom uniforms (App F) |
 | `mp-dimension` | `world-1/` and `world1/` folders, including the empty-folder-disables case (§3.1) |
-| `mp-broken` | a slot whose source fails to compile — the §G2.4 rung 3 path and §4.2.4's `CHAIN`-with-source detection |
+| `mp-broken` | source failing own build, including `ownBuild=FAILED` behind successful CHAIN; paired intentional-disablement case must not fail T3 |
 
 These are test fixtures, not shader packs: they need not render anything beautiful, and several need
 not render at all.
@@ -1729,7 +2281,7 @@ its §8.3 gives: `:conformance` and `:mod` reach them through
 
 | Profile id | Origin | Why it is in the set |
 |---|---|---|
-| `minimum-gl21` | synthetic | the conservative profile `PHASE_1_DOC.md` §6 says `CapabilityProbe` produces when probing fails; `supportsMipmapGeneration()` is false here (the §4.1-of-RESEARCH.md GL 3.0 gate) |
+| `minimum-gl21` | synthetic | explicitly declared minimum GL2.1 test input, including a positive chosen3D limit and unsupported rectangle0 absent a rectangle extension; never substituted for failed live capability capture; supportsMipmapGeneration() remains false |
 | `baseline-gl30` | synthetic | the first profile where mipmap generation is guaranteed |
 | `typical-gl33` | synthetic | GL 3.3 — sampler objects available (§6.2), the era most 1.12.2 players actually have |
 | `nvidia-gl46` | captured | a modern discrete GPU |
@@ -1748,6 +2300,19 @@ profiles are labelled as such and are allowed to be exactly what they need to be
 index row, and opens a change. Nothing is auto-refreshed: a profile changing under CI would silently
 change what every golden asserts.
 
+**D-P2-61 target-limit receipt:** the P1-owned text grammar now requires
+`max.3DTextureSize` and `max.rectangleTextureSize`, preserving captured
+`max3DTextureSize` and `maxRectangleTextureSize` exactly through `gl.profile_text`,
+parse/write and recorder construction. 3D support is GL>=1.2; rectangle support is GL>=3.1
+or ARB/EXT/NV_texture_rectangle. Unsupported targets carry0 without a probe; supported targets
+require positive actually captured maxima, and probe/entrypoint failure is failed capture,
+not0 or a synthetic substitute. 1D/2D use maxTextureSize,3D checks every axis against its
+own maximum, and rectangle checks width/height against its own maximum.
+P2 delegates validation to P1, rejecting missing, negative or gate-inconsistent profile values
+before replay. Never derive these limits from ordinary texture size/version or fill old fixtures
+with guessed defaults. Regenerate synthetic fixtures explicitly with declared values and refresh
+captured fixtures from real capture; retain provenance and explicit golden-update requirements.
+
 ### 4.13 Reporting
 
 One `ConformanceReport` per invocation, rendered three ways by `ReportRenderer`:
@@ -1759,7 +2324,7 @@ One `ConformanceReport` per invocation, rendered three ways by `ReportRenderer`:
 - **JUnit XML** — so a CI run surfaces per-pack, per-scene rows in the normal test UI rather than as
   a wall of log output.
 
-Three reporting rules, each of which exists because its absence is a way for a harness to lie:
+Reporting rules prevent a report from implying unsupported coverage:
 
 1. **Every outcome is one of `PASS` / `FAIL` / `SKIPPED(reason)` / `NO_BASELINE` / `NOT_ATTEMPTED`.**
    There is no "n/a" and nothing is omitted for being uninteresting.
@@ -1767,9 +2332,11 @@ Three reporting rules, each of which exists because its absence is a way for a h
    SHA-512 `<hash>`, from `<url>`".
 3. **The summary line counts skips separately from passes.** "7 packs, 5 pass, 2 skipped" is the
    truth; "5/5 passing" is not.
-4. **Temporal rows never collapse to a scene-level green.** Reports print `SHOT|PATH`, capture id,
-   sample ordinal, the plan/manifest pose verdict, and the baseline verdict; one missing or failed
-   bounded PATH sample keeps its family red.
+4. **Print the authenticated named-run/tier domain.** T0 prints manifest predicates without a
+   baseline verdict; T2 prints only its required static SHOT/ordinal comparisons and explicitly
+   does not discharge motion. T1/T3 image rows print kind/id/ordinal, pose and comparison verdict.
+   The separate all-six-family motion matrix remains incomplete if any required PATH sample
+   or repeated execution is absent/non-pass; a static T2 result cannot turn that matrix green.
 5. **Reference calibration is labelled evidence-only.** The report distinguishes missing
    observation, Pintonium `SUCCESS|FAILURE`, and Schmaloogium parse outcome; it never presents a
    Pintonium match as conformance or a Pintonium failure as an exemption from D-3.
@@ -1849,24 +2416,203 @@ is inert without its system property.
 
 | Exposed | Detail | Consumed by |
 |---|---|---|
-| **The tier definitions** — T0–T3 with their decision procedures | §4.2. A phase claiming a tier claims *these* predicates; every recorded GL error fails T0 regardless of attribution. Ledger evidence uses §4.2.5's canonical index, manifest, and attestation paths beneath §4.10.3's established run root, with no-follow containment and digest validation | all behavioural phases |
-| **The named-run catalogue** — `RunId`, `HarnessRun`, `RunRegistry` | §4.9. **This is the vocabulary every impl gate should cite**; §5.3 says how | all behavioural phases; whoever tags a milestone |
+| **The tier definitions** — T0–T3 with their decision procedures | §§4.2.5–4.2.6 exact authenticated evidence domains: T0 manifest-only decisions, T1 full SHOT/PATH, mandatory six-family repeated motion, T2 static selection only, T3 primary plus full feature domains. Each required image decision authenticates its full closure; missing evidence means NOT_ATTEMPTED, empty domains never PASS | all behavioural phases |
+| **The named-run catalogue** — `RunId`, `HarnessRun`, `RunRegistry` | §4.9 with §4.2.5 selection/domain hash and exact role/sample/comparison-kind rules. Impl gates cite both named run and domain; static T2 never substitutes for mandatory motion | all behavioural phases; whoever tags a milestone |
 | **The `/2` scene format and initial scene set** | §4.3, §3.4. Stable scene/capture ids, static SHOTs, dense frame-indexed PATH samples, and at least one moving path in every one of the six motion-sensitive families | 7, 8, 9, 10, 13 |
 | **The determinism ledger** | §4.4. A phase adding a new time- or randomness-dependent input must add a row, or it has silently broken every baseline | all |
 | **The golden document format + adapter input requirements** | §4.11.1–§4.11.4. P3 owns acquisition/source-free snapshot, P4 same-request resolution enrichment and P5 pure resource/capability projection; complete real goldens require all three | **3**, **4**, **5** |
-| **The `[sizing]` golden section** — the concrete list of resource-sizing decisions the headless harness validates | §4.11.3 | **3**, **4**, **5** |
+| **The `[sizing]` golden section** — pure PLANNED resource evidence | §4.11.3–4; §4.5.4 grammar without resources prefix, conditional clear components and no allocation keys; REALIZED is live-only | **3**, **4**, **5** |
 | **The `GLCapabilityProfile` fixture set + `profiles.index`** | §4.12. Phase 1 owns the type and format; this is the *set* your "recorded-GL run" impl gates run against | **4**, **5**, **6**, 14 |
-| **The run manifest wire schema** | §4.5.4, schema `schmaloogium.run-manifest/2`, canonically stored at `<cache>/runs/<runId>/manifest.manifest`, including complete `captures.*`, frame pose/history, `resources.*`, and `hooks.*` grammars. Every frame identifies `SHOT|PATH`, capture id and sample ordinal and carries planned/actual current/previous poses. Client capture admits only registry-backed packs; runner-owned provenance, world identity, T0/T3 evidence, GL attribution, and frozen hook reports retain their v1 guarantees. `/1` is historical and has no compatibility reader | **3** (front-end and pack configuration), **4** (per-slot program resolution), **5** (immutable live resource snapshot), **7** (capture, pose report, frozen hook report, and serialization using R4A) |
-| **The capture-agent contract + capture-plan wire schema** — what `:mod` must implement and what Phase 7 must hook | §4.5, schema `schmaloogium.capture-plan/2`, §5.4 R11–R14 and R17–R19. The runner resolves all scene defaults before serialization; the plan writer, agent reader, and manifest reader perform no defaulting. Dense samples, bounded windows, and runner-owned pack provenance are immutable inputs. `/1` is historical and no compatibility reader is required | **7** |
+| **The run manifest wire schema** | `schmaloogium.run-manifest/4`, §4.5.4 and §5.1.1: dense poses/timing/ownBuild/environment, complete option maps/digest and sole `gl.profile_text` profile scalar; canonical `<cache>/runs/<runId>/manifest.manifest`; `/1`–`/3` unsupported history | **3**, **4**, **5**, **6**, **7**, reporting |
+| **The capture-agent contract and plan** | `schmaloogium.capture-plan/4`, §4.5 and §5.1.1, R11–R14/R17–R19: default-free immutable inputs, complete option maps/digest, clocks/provenance; `/1`–`/3` unsupported history | **7** |
 | **Runner-owned pack-provenance bridge** | Acquisition mode and licence originate in the fixture registry; archive SHA-512 originates in post-resolution verification. They cross the client process only through the immutable capture plan and return only as verbatim manifest values. Pack content, scene text, agent rediscovery, and rendered behavior are not evidence for any of the three | **7**, CI/reporting |
 | **Headless archive-provenance bridge** | §4.11.4 consumes P3 same-read archive SHA-512 and compares to runner-verified PackFixture; content/configuration hashes are never archive provenance | **3**, **4**, CI/reporting |
-| **Evaluator run and adapter** | `RUN-EXPRESSION-CONFORMANCE`, §4.9/P11 §5.6; original vector/provider/expected-observable catalog, closed per-case outcomes, source-free optional matrix mode | **11**, 14 |
-| **IR-03/12/18/24 receiving cutover** | §§4.11.4/5.4 adopt P3 schema18 locale/Internal/old-light shapes and P5 option-only sizing. P7/P8/P10 v0.5 prepared-submission repetition changes draws within a frame, not `/2` samples, traversal/hook counts or capture provenance. No runtime PASS derives from metadata retention | **3**, **4**, **5**, **7**, **8**, **10**, **12** |
-| **The fixture registry, cache API and never-rehost rules** | §4.10 | anyone adding a pack; CI |
+| **Evaluator run and adapter** | `RUN-EXPRESSION-CONFORMANCE`, §4.9/P11 §5.6; original vectors, required typed runtime diagnostic sink after metrics in factory invocation, source-less pre-plan diagnostics, closed outcomes | **11**, 14 |
+| **Current schema23 receiver receipt — D-P2-55** | Exact current containing/nested ID/inspection schema and MaterializedSource-v23; P3-owned typed selector ranges retained without reparse. BLOCK alternate selection remains P9-owned; nine trees/projectionVersion1 and unrelated asset/native/option contracts retained | **3**, **4**, **5**, **7**, **8**, **10**, **12**, **13** |
+| **The fixture registry, cache API and never-rehost rules** | §4.10: descriptor-addressed worlds (§4.5.5), sole option-state/raster-addressed baseline and oracle paths (§§4.7.2/4.8.2), no legacy resolver | anyone adding a pack; CI/reporting |
 | **Tolerance profiles** | §4.6.3, calibrated by §4.6.5 | anyone reading a diff verdict |
 | **The CI task split** — hermetic `test` vs fixture-dependent `conformanceTest`, and the tag policy | §4.14 | anyone adding a test to `:conformance` |
 | **The micro-pack corpus** | §4.11.6 — eight tiny GPL packs, each aimed at one contract mechanism | **3**, 4, 5 (they are front-end test inputs as much as harness inputs) |
 | **The Pintonium parse-calibration record and run** | §4.11.7. Seven exact archive identities, Pintonium revision/outcome, sanitized diagnostics, and environment; source-text-free and evidence-only. Missing observations fail calibration, while D-3 still requires Schmaloogium to parse every pack | **3**, CI/reporting |
+| **2026-09-08 P6 R25/P8 R5 receiver receipt** | §5.1.2: actual required-sink reports through P7's ordered collector into current `/4` gl_errors, failure-before-COMPLETE and explicit pure shadow fixture inputs | **6**, **7**, **8** |
+| **R40 stable option-state and comparison evidence** | §§4.2.5–4.2.6/4.7.2: same-state baseline lookup/approval and T3 OFF/ON association; comparison hashes and full transitive evidence required, never subject-build keyed | **7**, **12**, reporting and all tier consumers |
+| **R32/R39 resource and recorder receipt, identity superseded by D-P2-64** | D-P2-45/46: P5 staged /4 resource variants, same-stage equality and truthful whole-estate fallback; P1 typed positional recorder assertions and current P4 opaque profile-selection-v3 identity | **1**, **4**, **5**, **7**, reporting |
+
+#### 5.1.1 R39/R55 exact receiving contract — 2026-09-08
+
+This table and lifecycle are binding additions to §§4.5.2/4.5.4. Both wire majors are `/4`;
+scene `/2`, golden schema1 and source-free nine-tree projectionVersion1 remain independent.
+The runner owns a named capture clock profile outside the scene grammar, resolves it before
+plan construction, and hashes its explicit values in the plan. Initial authored profiles
+all choose `50000000` nanoseconds, `1` tick and `0` partial tick. No parser supplies defaults.
+
+| Required keys | Domain and producer/receiver meaning |
+|---|---|
+| Plan and manifest `clock.frameTimeNanos` | positive signed-64-bit integer; elapsed input per accepted frame, converted once to finite positive float seconds (`nanos / 1000000000.0`); reject unrepresentable schedule arithmetic |
+| Plan and manifest `clock.ticksPerFrame` | positive signed-32-bit integer; actual client/integrated-server/animation ticks advanced per controlled step, never a frame-count alias |
+| Plan and manifest `clock.partialTicks` | finite number `[0,1)`; P7 supplies this render partial and reports actual value |
+| Manifest `frames.<n>.logicalTick` | signed-64-bit actual P6 accepted logical tick |
+| Manifest `frames.<n>.animationTick` | signed-64-bit actual P7 animation tick |
+| Manifest `frames.<n>.smoothingTimeTicks` | finite double, exact P6 accepted smoothing time; comparison uses owner logical tick + partial semantics, not accumulated frame seconds |
+| Manifest `frames.<n>.frameTimeSeconds` | finite nonnegative float, exact P6 accepted elapsed input; controlled frames require the normalized positive plan seconds |
+| Manifest `frames.<n>.frameTimeCounter` | finite nonnegative float, actual P6 accumulated counter with owner's wrap/reset rules; never recomputed by writer |
+| Manifest `frames.<n>.clockStep` | positive signed-64-bit controlled step ordinal since checkpoint0; dense across preparation/warm-up/sample execution, not dense within the sample-only frame block |
+| Retained `frames.<n>.worldTick`, `.partialTicks`, `.frameCounter`, `.durationMillis` | actual P7 signed-long world tick, finite `[0,1)` partial tick, P6 nonnegative int frame counter with owner wrap rules, and finite nonnegative real monotonic duration milliseconds respectively; host deadlines/hang ceiling remain real time |
+| Manifest `programs.<n>.ownBuild` | exact `NOT_APPLICABLE|NO_SOURCE|DISABLED|SUCCEEDED|FAILED`, immediately after `sourcePresent` in record declaration order; P4 requested-slot disposition before fallback |
+| Plan and manifest `environment.subjectModId` | non-empty exact authenticated engine-under-test mod ID `schmaloogium`; not a pack/scene-chosen exclusion |
+| Plan and manifest `environment.subjectJarSha256` | exact 64 lowercase hex digest of tested engine jar; runner hashes verified launch artifact and authenticates its loader mod identity before cache lookup |
+| Plan and manifest `environment.modSetSha256`, `.externalModSetSha256` | exact 64 lowercase hex full inventory hash and same framed hash excluding only authenticated subject record (§4.5.4) |
+| Plan and manifest `environment.mods.count`, `.mods.<n>.{id,sha256}` | complete loader inventory, dense records sorted `(id,sha256)`; nonempty unique mod IDs and 64 lowercase hex jar hashes; exactly one subject-ID record must equal subject jar hash |
+| Plan `environment.minecraftVersion`, plan and manifest `environment.worldGenerationSha256`, plan `environment.worldSha256` | exact launch version and lowercase SHA-256 descriptor/pre-run-save identities (§4.5.5); manifest retains existing minecraftVersion/worldSha256. Runner resolves before lookup; P7 verifies copied save before load and descriptor against plan world.seed/worldType/generateStructures plus version/external hash, then projects identities unchanged |
+| Plan and manifest `pack.optionStateSha256`, complete `pack.options` and `pack.engineOptions` | §4.7.2 stable effective-state digest, exact owner-encoded maps; P7 checks/applies accepted state, P2 recomputes and joins before publication |
+| Manifest `gl.profile_text` | required exactly when gl.available=true; one JSON string of P1 canonical write output, strict outer decode then P1 parse/write equality; no flattened profile fields or old aliases |
+| Manifest `resources.evidence_stage` and color-row variant keys | required/forbidden exactly by §4.5.4 and P5 §4.1.1; complete live capture requires accepted REALIZED, pure SIZING requires PLANNED; no allocation or fog inference |
+| Manifest `timing.*` | D-P2-50 §4.5.4 is the exact required core `/4` producer/consumer contract: opaque-issued origin summary, all dense actual validated steps and final restoration/completeness; mandatory after client exit, never x.* or reconstructed targets |
+
+All records retain canonical §4.1 fixed-decimal wire normalization, strings use JSON escaping,
+and missing/invalid fields fail closed. Runner launch inventory is authenticated from actual
+artifacts and loader identity, not a free exclusion list. P7 matches actual loaded inventory
+against the immutable plan before capture, and the runner checks all clock/environment fields
+and full inventory byte-for-byte before publication, recomputing both hashes. Mismatched,
+missing, duplicate or unverifiable subject identity aborts, never silently excludes another mod.
+If launch has not reached inventory observation, failure manifests preserve authenticated plan
+facts only and unavailable repeated runtime evidence stays empty; no fabricated actual counters.
+World-cache lookup uses the canonical complete generation descriptor digest (§4.5.5), never
+the seed/external tuple alone. P7 reads retained generation.worldgen/world.receipt beneath the
+run root without following links, recomputes descriptor and pre-load save hashes, and requires
+all values match the /4 plan before loading. P2 rechecks those retained inputs and manifest
+identity before publication; worldSha256 describes the pre-load copy, not the mutated live save.
+Baseline/oracle environment comparisons require descriptor, pre-run-world and external hashes,
+retaining full inventory and subject jar as provenance. Subject-only rebuild selects the same
+world/baseline; changed worldType, generateStructures or external identity selects another world
+and requires new approval. Historical evidence missing these identities is NO_BASELINE, never
+retrospectively authenticated by guessing generation settings or excluding an arbitrary mod.
+
+P4 owns classification: virtual/fixed slots→NOT_APPLICABLE; real missing source→NO_SOURCE;
+present intentionally profile/property-disabled→DISABLED; attempted own success/failure→
+SUCCEEDED/FAILED. Capability/build errors cannot masquerade as DISABLED. Final status/from/
+sourcePresent/driverLog keep owner meanings, including empty driverLog on CHAIN; failure detail
+availability does not determine ownBuild. Golden enrichment copies actual same-request P4
+resolutions; runtime P7 copies accepted resolutions. Recording-script goldens are not runtime
+compiler evidence. T3 rejects actual own FAILED even behind CHAIN, not source presence itself.
+
+**Controlled lifecycle.** P7 establishes checkpoint0 after world/scene/options/runtime readiness
+and before any accepted shader frame. It authenticates actual world/animation and P6 lifecycle
+origin under its §5 owner checkpoint contract; unsupported control fails capture. `prepTicks`
+must be nonnegative and divisible by ticksPerFrame. Execute `prepTicks/ticksPerFrame` preparation
+steps, then every capture's warm-up and dense samples in order. Every step advances exactly
+ticksPerFrame actual ticks and accepts exactly one shader frame with fixed partial/elapsed input.
+First accepted step is1. No hidden readiness/preview/inter-capture shader frames are admitted.
+Plan totals and step arithmetic are checked before launch. Every preparation/warm-up/sample
+report is observed and validated live by the existing P7 private checkpoint protocol.
+P7 exports its actual origin summary and acknowledgment ledger into §4.5.4's exact timing.*
+wire before private disposal, and P2 authenticates its complete manifest/plan closure after
+client exit. P6 owns origin/reset/wrap; P7 rejects inability to establish or acknowledge it.
+Host stalls alter duration, not inputs.
+At each after-final hook, `FrameCaptureView.timingReport()` returns immutable `FrameTimingReport`
+holding actual `UniformFrameTiming` plus actual worldTick/animationTick/partialTicks and step.
+P6 `UniformRuntime.frameTiming(registryGeneration,frameId)` supplies Optional actual accepted
+input/counters, no GL/parallel clock, no allocation unless queried; empty/stale/mismatched/
+retired or wrong lifecycle is not a target echo. Wrong thread follows owner confinement.
+P7 owns exact validation/report signatures and checkpoint lifecycle; P2 copies the above fields
+only after owner acknowledgment and validates against schedule and actual origin. Missing
+report/control/acknowledgment, unexpected epoch/generation/reset, skipped/extra frame or
+counter/tick/partial/elapsed mismatch fails before COMPLETE/T0/image diff. Normal gameplay
+is unchanged. Same-ordinal repeated-run images compare equivalent clock steps; successive
+static samples with advancing shader time need not be identical unless proven time-insensitive.
+
+Ledger evidence hashes complete `/4` manifests and retained plans, plus §4.2.6 comparisons
+and all transitive inputs under the amended §4.2.5 index grammar.
+Each PRIMARY/FEATURE state must pass timing validation and baseline clock comparison. Manual
+G6 oracles use §4.8's separate uncontrolled timing evidence; unavailable comparability or
+uncalibrated tolerance cannot become T2 or ledger PASS.
+
+**P3 receipt — D-P2-55:** active `PackFrontEnd.CURRENT_SCHEMA_VERSION` is23, including
+IdMappingInput and inspection, with MaterializedSource-v23. Typed selector alternatives/ranges
+remain P3-owned; earlier numeric receipts are historical. The isolated forced11300Rules branch includes BLOCK as well as ENTITY:
+identical copied bytes/environment, only MC_VERSION replaced with11300, ordinary file state
+unchanged. P9 selects alternate BLOCK rules only for PRESENT_EMPTY with nonempty alternate,
+never merges/overrides ordinary rules; alternate provenance is MODERN, CLASSIC unchanged.
+No ID/name heuristic is admitted. projectionVersion1, nine trees and all unrelated asset,
+native and option contracts are retained. P2 adopts payload-free
+`ScreenProfileEntry()` (selector, not a name-bearing entry), external `TEXTURE_RECTANGLE`
+mapping to existing `TextureTarget.RECTANGLE` (bare external `RECTANGLE` invalid), and structural
+load acceptance for usable base **or explicit dimension override**, including explicit empty
+override's disable meaning. P2 consumes normalized owner configuration/inspection, never
+parses source to recreate these decisions. All D-P3-69 asset and nine-tree meanings remain.
+P4 §5.1/§5.6 D-P4-31 and P7 §4.13/§4.13.1 D-P7-34 owner amendments are architecturally
+received here, including a fresh final P6 runtime with actual creation counters0, no accepted
+frame before checkpoint0, and P7 opaque checkpoint validation/close. P3/P6/P7/P4 contracts
+remain unverified; fresh whole-document reviews and final integration remain. No implementation.
+
+#### 5.1.2 P6 R25/P8 R5 receiving receipt — 2026-09-08
+
+P6 publishes immutable `UniformReplayReport(ProgramUniformCacheKey program,
+List<ReplayAwareGLError> errors)` to required
+`UniformReplayErrorSink.accept(UniformReplayReport report) -> void`; P7 owns/installs that
+collector before P6 creation with `replayErrors` immediately after `diagnostics`. No previous
+overload/default/no-op remains. P1 owns the existing error/verdict type and attribution law;
+P6 alone replays and disables isolated uniforms. P7 copies/classifies, P2 serializes/evaluates.
+Report errors are nonempty, original GLError objects unchanged, exactly one owner verdict per
+triggering error in triggering-drain order. Repeated equal reports/errors are not duplicates.
+The handle-free effective program key is observation context, not proof of causation.
+
+P7's §5.1 D-P7-38 collector is the concrete receiving route, including candidate, active
+and retiring runtime endpoints in one synchronous render-thread receipt sequence. Reports
+arrive before barrier-participant and immediate-upload calls return, including nested
+color/ID/instance/atlas restoration. The collector atomically copies the whole report and
+key into owned storage without GL, provider calls, reentrant lifecycle or replay work.
+It forwards the exact ordered error sequence to the P2-schema manifest writer under
+§4.5.4; no reconstruction from diagnostics or labels, no value-equality collapse and no
+loss via logging rate limits. Ordinary-mode classification retains the actual P7/P1
+broader escalation handoff without a new uniform-disable policy.
+
+Collector rejection/storage/overflow/throw latches capture failure before throwing. P7
+first stages the original report/key in failure-safe storage before any downstream
+copy/classification/spool risk, preserving the accepted prefix and failing original on failure.
+P6 contains callback failure, retains the failing and all not-yet-delivered reports of the
+finite current operation without automatic retry, stops further uploads/replay/observer calls,
+and exposes `phase6.replay.delivery.failed` through current/later barrier Degraded or immediate
+event IllegalStateException. Reset/adoption cannot erase it. P7 checks that evidence and its
+own latch at the outer return,
+closes admission/contains through existing failure paths, and prevents sample acknowledgment.
+P2 never treats that degradation as complete evidence or synthesizes missing verdicts.
+If report/failure storage itself is unavailable, the runner uses its existing failed-process/
+missing-manifest synthesis; an empty error block cannot rescue COMPLETE.
+P6 terminal retirement releases its retained failed-delivery evidence only after P7 records
+non-complete failure. P7's detached evidence/failure latch survives for truthful failed-run
+publication. P6's nonempty pre-upload/between-probe cleanup drains arrive as separate
+all-false reports in observation order; they are preserved, not generated again by a raw-log
+adapter. A queued cleanup report follows its earlier triggering report.
+
+H-CAPTURE-01 copies pixels and actual timing while its view is live; acknowledgment waits
+for artifact commit and later final reset/restoration/fixed-function-release callbacks and
+their collector receipts. Final shutdown keeps collectors through every final callback
+and successful P6 retirement (candidate abort/replacement/shutdown retain their exact
+R7-11 ordering). Rejected retirement retains borrowed services, storage and closed admission.
+Only after the final callback drain and successful retirement may P7 seal the detached
+ledger for P2 publication. Delivery/storage/overflow/lost evidence/unfinished cleanup never
+yields COMPLETE, even if all images already exist. Retirement invokes no callback or GL drain.
+Genuine non-replayed/foreign cleanup drains stay visible as false-only values under P1's
+law; drain ownership/window sequencing, never labels/equality, prevents the raw log or
+replay probes from double-counting P6's original triggering submission.
+
+P2's headless fixtures also consume P8's pure
+`ShadowCelestialAngles(boolean day,float shadowAngle,double thetaRadians)` from
+`ShadowCelestialPolicy.sample(float sunAngle)` and sole
+`ShadowCameraMath.compute(ShadowFrameView frame,CameraSnapshot mainCamera,ShadowPlan plan,
+Extent2i shadowExtent) -> ShadowCamera`. Fixtures supply explicit immutable frame and
+main-camera inputs and the same plan; no GL or P6-provider/world dependency is introduced
+into pure math. P7's live invocation owner, not caller-made camera fields, authenticates
+runtime association. The provider samples the shared policy before camera capture and
+retains the same sun/sky frame sample; the later post-camera call creates unchanged P6
+CelestialSample with world/frame identity and w=0 eye-space vectors.
+
+These are architecture receipts, not executed fixture/runtime results or integration
+clearance. Current capture-plan/4 and run-manifest/4 supersede those receipts' historical `/3`;
+the receipts' then-current P3 schema21 admission is historical (superseded by D-P2-55's
+schema23); golden schema1 and all nine source-free projectionVersion1 trees remain unchanged.
+Existing source-free permissions, no pack-source/bytes in golden output, and T0-all-errors requirements remain binding.
 
 ### 5.2 What Phase 2 consumes from Phase 1
 
@@ -1878,9 +2624,15 @@ document names Phase 2 explicitly for the first four.
 | Module layout, package placement rule, and the `:conformance` module with its `:engine` edge and JUnit wiring | §2.1, §4.2.4a | §2.3 |
 | **Constraint C-4** (`:conformance` depends on `:engine`, never on `:mod`) | §4.3, §8.2 | §2.2 — the constraint that produces `[D-P2-1]` |
 | `GLCapabilityProfile` — the record and its derivations | §4.7.2 | §4.11, §4.12 |
-| **`GLCapabilityProfile`'s text serialization** (`parse`/`write`) | §4.7.2; §5.2 names this row "**2** (this is 'recorded `GLCapabilityProfile`s')" | §4.12, and the manifest's `gl` block (§4.5.4) |
+| **`GLCapabilityProfile`'s standalone text serialization** (`parse`/`write`) | §4.7.2; §5.2 names this row "**2** (this is 'recorded `GLCapabilityProfile`s')" | §4.12 and sole JSON-string `gl.profile_text` transport (§4.5.4); standalone grammar remains entirely P1-owned |
+| D-P1-66 target-specific maxima — D-P2-61 | §4.7.2 exact fields/text and backend/recorder admission | §4.12 actual captured maxima, unsupported0, strict replay and deliberate fixture refresh; no private conformance probe or guessed fallback |
 | Fixture *placement*: `engine/src/testFixtures/resources/profiles/`, reached by `testImplementation testFixtures(project(':engine'))` | §8.3 | §4.12 |
-| `RecordingGLDevice`, `GLCallLog` (incl. `bounded`/`droppedCallCount`), `GLCall`, `ScriptedResponses`, `ReplayAssertions` | §4.7.5 | the harness does not use these directly; it *depends on their format stability* for `recordGL` capture (§4.2.1) and hands them to Phases 4/5/6 as the mechanism their gates name |
+| `RecordingGLDevice`, `GLCallLog` (incl. `bounded`/`droppedCallCount`), `GLCall`, `ScriptedResponses`, `ReplayAssertions` | §4.7.5 and D-P1-57 | P4 headless enrichment uses recording scripts; capture retains stable owner logs. Exact `ReplayAssertions.drawBuffersWere(List<FramebufferDrawSlot> slots)` consumes tagged Attachment(int index)/None() positions; no int-array sentinel overload |
+| P1 D-P1-67 mandatory typed clears — D-P2-65 | §4.7.4b exact ColorClearValue.Floating/Signed/Unsigned and work/restoration events | Record `framebuffers.clearColorAttachment(f,index,value)` and `framebuffers.clearColorAttachment.restore(f,boolean)` with matching separate glError scripts; unsigned channels remain mathematical long values, not signed wrapping or payload bytes |
+| P1 D-P1-68/P10 D-P10-29 complete input identity — D-P2-65 | §4.7.6 whole source/plan authentication and recorder parity | Preserve layout, ordered pointers, enum-declaration-ordered conventionalInputs and geometry; physical56 equality cannot erase COLOR/UV1 participation. Record source-free identity/admission only; actual changing-current-input model playback needs separate native evidence |
+| P1 complete recorder list issuance and clear discard scope — D-P2-66 | `borrowedVertexList(String label,VertexLayout layout,VertexInputPlan capturePlan)` retains full immutable fixture plan before replay; no geometry-only overload or first-request authority. Typed clears privately normalize/restore capability-legal rasterizer discard | Fixture replay must distinguish identical physical layouts with different captured masks/unions; only native clear-state evidence can prove discard-disabled execution, never a clean error drain alone |
+| P1 D-P1-71/P14 D-P14-40–41 native texture lifecycle — D-P2-70 | Targetless logical issuance retains label; first admitted exact-target allocation/known2D depth initialization materializes then labels a native object; never-allocated deletion emits no native delete | Native evidence separately distinguishes logical create, target admission, materialization, label and storage, including failed-name cleanup. Deletion is lifetime-ending: affected texture/FBO bindings and cache become zero, unrelated state/active unit survives and no deleted name is rebound; recorder calls cannot certify this native ordering |
+| P13 D-P13-42/43/P5 D-P5-50/P7 D-P7-73/P8 D-P8-39 companions — D-P2-71 | Exact accepted-atlas sampling and context-bound lease; required third AtlasBindingEvidence argument, INVALID_BASE_BINDING/STALE_BASE_BINDING, BaseAtlasContext and lease baseAtlasContext/baseTexture/atlasContext observations | Owner-backed cases authenticate actual winning unit0 object association, not dimensions/name/ordinal; compatible custom precedence, matching atlas/kind companion or explicit DefaultFill. Main/nested/shadow transitions refresh through the existing P5 binder before next draw without activation replay; no fabricated evidence or new P2 report schema |
 | **`GLCallLog.render()`'s stability guarantee** — no timestamps, no identity hashes, no iteration-order dependence | §4.7.5 | §4.1's determinism rule generalises it; a `recordGL` log captured during a conformance run is an artifact of the run |
 | `-Dschmaloogium.debug.recordGL` (per-call `glGetError` cadence, bounded ring) and `-Dschmaloogium.debug.dumpCapabilities` | §4.9.3; §5.3 names both for "**2** … the fixture and call-log capture path your harness drives" | `[D-P2-2]`, §4.12's refresh workflow |
 | `CapabilityProbe` as the fixture-production mechanism | §4.7.5, §5.2's note to Phase 2 (*"Do not design a capture path; drive these"*) | §4.12 — and this document does not design one |
@@ -1889,6 +2641,14 @@ document names Phase 2 explicitly for the first four.
 | CI job/step layout and the `conformance` extension point | §4.11; §5.3's last row names Phase 2 as its consumer | §4.14 |
 | The version pin table and its re-pin procedure | §4.2.6 | §4.10's refusal to add a dependency coordinate without one |
 | `EngineDiagnostic`, `DiagnosticSeverity`, `UserChannel`, `DiagnosticReporter` | P1 §5.3 / §4.9.4 D-P1-45 | R4B adopted/unverified; code/severity/channel only, coordinates from P3 attributed projection; never infer locations from diagnostic text |
+
+Positional call evidence is P1 `framebuffers.drawBuffers(f,slots)`: preserve each
+`FramebufferDrawSlot.Attachment` or `None` and its position. Empty means no writes, never
+preserve-current; holes are not packed away. P5 alone maps logical routing to packed physical
+attachments. Assert the owner-issued typed list, not a reconstructed logical-index array or raw
+GL_NONE/-1 value. P4 logical `DrawRoutingSlot` and P1 physical `FramebufferDrawSlot` are distinct.
+P4 duration override evidence preserves lock/close and failure outcomes from P1, not setter-only
+lock inference; P2 introduces neither a state policy nor an independent fingerprint encoder.
 
 Phase 1's four-field `GLError` alone does **not** supply the manifest's `attributed` boolean. Phase 1
 has accepted and exposed the R4A grant as `[D-P1-42]`; its `ReplayAwareGLError` is consumable and
@@ -1908,6 +2668,8 @@ expressed as Phase-2-defined harness runs". The mechanism:
 - A gate that names a **tier and a pack class** resolves through §3.5's milestone table to a run id.
   §G5.1 gives each phase its milestone, so the chain phase → milestone → exit criterion → run is
   complete without any phase reading another phase's spec.
+  Resolve and authenticate §4.2.5's complete expected domain before execution; a milestone's
+  static T2 selection does not erase its independent all-six-family runtime motion obligation.
 - A gate that says **"a recorded-GL run"** — which `PHASE_1_DOC.md` §5.2 notes is the wording of
   Phases 4, 5 and 6's gates — is Phase 1's mechanism (`RecordingGLDevice` + `ReplayAssertions`), run
   against **this phase's profile fixture set** (§4.12). Phase 2 supplies the profiles and nothing
@@ -1918,6 +2680,14 @@ expressed as Phase-2-defined harness runs". The mechanism:
 - P11 §5.6 R11-2 is now adopted as `RUN-EXPRESSION-CONFORMANCE` (§4.9), not substituted
   with a Properties or shader-load run. Original evaluator coverage is distinct from matrix
   dispositions and from real-pack render tiers.
+  **D-P2-69:** the actual evaluator catalog includes P11's shared uniform/variable graph
+  vectors `EXPR-OPERATORS/uniform-reference`, `EXPR-OPERATORS/uniform-conversion-memo`,
+  `EXPR-OPERATORS/definition-lazy-effects`, `EXPR-ERROR-ISOLATION/uniform-cycle`,
+  `EXPR-ERROR-ISOLATION/uniform-runtime`, and `EXPR-ERROR-ISOLATION/shared-namespace`.
+  Execute the owner-defined original declarations/inputs and compare converted values,
+  evaluation/effect counts, ordered uniform submissions and isolation outcomes. A uniform
+  used as an input remains resolvable even when its upload is absent; no glGetUniform,
+  second parser, source-free report expansion or P3 schema23 change is introduced.
 
 **This phase's own impl gate**, from the spec: *"fixture downloader + headless golden-run skeleton +
 scene-spec parser implemented and green in CI before Phase 7's implementation lands (D-10)"*. §9.2's
@@ -1925,10 +2695,32 @@ week-one subset is scoped to satisfy it with room to spare, and §12's ordering 
 those three.
 
 ### 5.4 Requests — flagged, never assumed
+**D-P2-60 synchronous value evidence receipt:** P1 D-P1-63/P5 D-P5-42/P13 D-P13-36
+define exact allocation target, all dimensions, mip-count/level, Color/Depth transfer layout
+and upload region. Recording evidence preserves those typed values, checked byte count and
+restoration/failure disposition, never payload bytes. Original 1D/2D/3D/RECT and depth cases
+distinguish equal-shaped 2D/RECT targets, packed/scalar lengths, zero-origin depth destination
+and first/steady copies. This is the existing recorder/test route, not raw driver proof or
+a new inspection tree, capture wire, texture query or optional async grant.
 
 Per §G1.1, what this phase needs and does not own is stated as a request. Accepted requests are
 marked fulfilled and consumed only from the owning document's binding §5; the rest are not treated
 as existing.
+
+**D-P2-53 native evidence receipt.** P14's experiment summaries keep facade calls, actual
+native observations/fault injection, and controlled numerical replay distinct. P1's recorder
+cannot prove counts of private glTexParameter/glBindSampler/native copy strategy traffic.
+Receive source-free measured summaries and provenance only; no shader/pack bytes or raw
+driver capture is repository evidence. EMA comparisons retain actual raw inputs/timing/age
+under P14's corrected oracle; existing P6 CenterDepthSource/FrameBeginInput suffice.
+This adds no public observation API, capture verdict extension, or unexecuted optimization win.
+**D-P2-57 modernization evidence receipt:** retain distinct source-free native evidence for
+successful sampler use→ordinary owned-colortex0 fixed FINAL→resumed shader without demotion,
+including complete effective object parameters/output. Isolated upload evidence must prove
+main-allocation readiness fence/main flush before worker access and the separate worker
+completion fence/flush before render use, without a later main swap/flush supplying progress.
+Both-sync cancellation/quarantine cases remain separate from facade/model evidence. No
+unexecuted native win, public observation API or optional upload grant is inferred.
 
 **To Phase 1** (a dependency; these are requested changes to `PHASE_1_DOC.md`):
 
@@ -1954,15 +2746,37 @@ protocol; §4.7.4's absent-verbs table is not touched.
 | R8 — adopted | Snapshot `resources` projection includes all four named half-lives as typed values, preserving producer units/defaults for warm-up calculation |
 | R9 — adopted | `DecisionDiagnostic(code,severity,channel,Optional<SourceAttribution>)`; exact owner-attributed coordinates or absence, never quoted lines or inference from P1 args/detail |
 
+**Historical 2026-09-07 schema19 receiver receipt:** R5–R9 incorporated §4.11.4's native
+provenance projection through unchanged `projectionVersion=1`; at that amendment schema and
+nested IDs both had to equal 19 before projection/reuse. Schema18 records remained history,
+not a compatibility reader. P3 D-P3-68/§5/§11 migration was adopted, unverified.
+P4 §5.6's settled same-request receipt is also adopted: `LINK/GEOMETRY_INPUT_MISMATCH`
+retains only expected/actual enum evidence in the existing sanitized FAILED detail; an
+available ancestor masks failure to CHAIN and ShadersOff remains incomplete. No new golden
+column follows from detached ProgramStateBundle.geometryInput. P1 owner-conforming
+`ScriptedResponses.linkedGeometryInput` and cached-inspection/fullscreen recorder events
+support original synthetic cases only; explicit golden regeneration never proves live drawing.
+
+**Historical 2026-09-08 schema20 adoption (D-P2-32):** at that amendment R5–R9 required
+P3 schema20 for configuration, `IdMappingInput` and `PackDecisionSnapshot` before any
+derivation. P3 §§5.1.1/5.3 supply all nine trees; §4.11.4 maps the complete ninth manifest
+to `[properties] owner.assets` without binary acquisition or a new golden-format major.
+Original eight tree meanings and native same-request enrichment remain intact. Missing assets,
+older schemas and mismatched nested data reject rather than default; P13 recovery and P7
+same-configuration retention remain their owners' contracts. Adoption is unverified architecture.
+
 **From Phase 4:** R10 — owner-designed/receiver-adopted, unverified: use the exact same-request
 `Ready(candidate).view().resolutions()` route in §4.11.4 and P4 §5.6. Each closed resolution
-status is paired with independent source presence; sanitized failure detail is never raw driver
-text. Runtime manifests use the accepted view; complete golden enrichment never fabricates it.
+status is paired with independent source presence and requested-slot `ownBuild` immediately
+after it. Sanitized detail is not raw driver text. Runtime uses the accepted view; recording
+goldens use the same-request owner build and never certify real compiler/drawing behavior.
 
-**From Phase 5:** R10A — owner-designed/receiver-adopted, unverified: runtime P7 copies the
-canonical `resources.*` snapshot; headless P2 acquires `BufferArchitectures.create()` and
-uses pure `plan` on the same P3/P4 build with explicit runtime/profile inputs (§4.11.4).
-`Available` includes exact complete SHORTFALL; `Unavailable` blocks complete golden evidence.
+**From Phase 5:** R10A — owner-designed/receiver-adopted, unverified: P5 §2.2/§4.1.1 exact
+`BufferResourceProjection`, `ResourceEvidenceStage`, `ColorBufferResource`,
+`RealizedColorAllocation`, `ColorAllocationOrigin` and `ResourceClearPolicy` variants are
+consumed by §4.5.4. P2 acquires `BufferArchitectures.create()` and pure `plan` for PLANNED
+SIZING; P7 copies paired accepted estate REALIZED evidence for live capture. Available includes
+complete SHORTFALL; Unavailable blocks complete evidence. No cross-stage full-value equality.
 
 **To Phase 7:**
 
@@ -1970,11 +2784,11 @@ uses pure `plan` on the same P3/P4 build with explicit runtime/profile inputs (�
 |---|---|
 | R11 | A frame-end hook after the engine's `final` pass has written the vanilla framebuffer and before it is presented, at which the capture agent may grab one frame (§4.5.3) |
 | R12 | A readiness signal — "engine active, pack loaded, N frames rendered without error" — so the agent can distinguish "warming up" from "wedged" |
-| R13 | *Conditional:* a fixed-`partialTicks` override, **only if** §4.4's residual risk on animated textures materialises in practice. Not requested now; recorded so it is a known additive route rather than a surprise |
+| R13 — mandatory, architecture receipt pending owner reconciliation | P7 harness-only deterministic client/integrated-server/animation ticks, render partial tick and supplied frame seconds; actual P6 timing via P7 report, controlled origin/checkpoints and fail-closed acknowledgment (§5.1.1). Normal gameplay unchanged; no conditional timing fallback |
 | R14 | A clean programmatic shutdown after the last capture sample, so a capture run terminates without a timeout kill |
 | R17 | Capture and serialize every accepted R4A replay-aware result, copying its boolean verbatim to `gl_errors.<n>.attributed`; preserve single-call, batched, replay-clean, and foreign-error records, and never derive attribution from `GLError.op` or `subjectLabel` |
-| R18 | Capture and serialize the complete frozen `HookApplicationReport` defined by Phase 7: preserve every primary catalog ID/target/order/count/class/deferred-owner/fallback and every nested owner-phase/fingerprint/enabled/row field exactly. Include Phase 8's eight-row nested report when present; represent absence as absence; never infer hook health or capability from runtime behavior |
-| R19 — **receiver-adopted `/2`, unverified** | P7 §4.13 now incorporates P2 §§4.5.1–4.5.4 end-to-end: rejects `/1`, dense sample execution after first-pose warm-up, actual current/previous frame-camera report, after-final capture, complete exact capture/frame/image/provenance serialization and shutdown. Architectural receipt only; P2/P7 require fresh review before implementation consumption; historical `/1` evidence is not a compatibility path |
+| R18 — D-P2-54 | Capture and serialize the complete frozen P7 HookApplicationReport: preserve every primary row and nested owner-phase/fingerprint/enabled/scalar-row field exactly. P8 contributes its complete canonical flattened catalogue, including forcing/rebuild and individual traversal/accessor observations, in owner order; top-level group labels impose no eight/nine-row wire limit. Absence stays absent; no inferred health |
+| R19 — `/4` required; owner/receiver reconciliation unverified | P7 consumes §5.1.1/§4.5 exactly, rejecting historical `/1`–`/3`; retains dense poses/windows, actual timing, complete effective option maps/digest and sole P1-text JSON profile scalar, after-final capture and shutdown. No compatibility path or inferred evidence |
 
 **To Phase 12:** R15 — programmatic get/set of pack options and engine options, for the scene format's
 `[pack] option.*` and `engine.*` blocks, plus a validation hook so §4.3.3 can reject an unknown
@@ -1999,6 +2813,16 @@ Scene preflight consumes the same P3 canonical inventory/domains without a mutat
 call; the active-client bridge revalidates before apply. An unimplemented adapter is a named
 unavailable prerequisite, never silent acceptance of unvalidated engine keys.
 
+**D-P2-56 P12 receiving boundary:** the seven GUI controls remain distinct from eight
+canonical programmatic/storage keys. Exact reserved `antialiasingLevel="0"` is accepted and
+UNCHANGED when already zero; nonzero/noncanonical values reject before write/queue. A complete
+unchanged map needs no REPUBLISH; an ordinary NONE receipt is permitted. No UI/runtime AA follows.
+The existing original option-adapter scenario also covers A/B profiles with identical FOO=true
+but B disabling gbuffers_water: accepted selection intent yields exactly one REPUBLISH and actual
+P3 disabled-program evaluation despite empty option delta. It is a presenter/commit scenario,
+not a new profile field in the programmatic map. Include reset/discard, failed acceptance,
+Internal value-UNCHANGED versus GUI SESSION_ACCEPTED and accepted-then-Off/retry distinctions.
+
 ---
 
 ## 6. Failure modes & degradation
@@ -2017,7 +2841,7 @@ adjacent behavior is the shipped-but-inert capture agent at rung 5.
 | A pack feature's GL call fails, but neither one uniform nor the whole program failed | **2a** | Owning phase disables only that feature. Manifest/report preserve the feature diagnostic; Phase 2 never relabels it as rung 2 or 3 and never treats continued rendering as a pass |
 | A pack program fails compile/link/validate | **3** | Engine deletes it and resolves through the backup chain. Harness records the per-slot result and driver log; T0/T3 decide from it. `mp-broken` keeps the path permanent |
 | A capability gate fails at init | **4** | Pack turns off gracefully with a chat error. `RUN-CAPS-GATE` asserts this headlessly against `minimum-gl21` and `hostile-4db` |
-| The capture agent or any shader-engine boundary would otherwise crash/corrupt vanilla | **5** | Capture failures are caught, agent disarms, state is restored, and the client remains usable; runner emits a failed `/2` manifest. Shaders-off remains reachable |
+| The capture agent or any shader-engine boundary would otherwise crash/corrupt vanilla | **5** | Capture failure disarms/restores state; runner emits failed `/4` manifest; client remains usable and shaders-off reachable |
 
 ### 6.2 The harness's own failures — not rungs, and never silently green
 
@@ -2035,8 +2859,9 @@ is claimed without evidence** (§4.2.5).
 | Candidate and baseline dimensions differ | Hard failure, not a large diff (§4.6.1) |
 | Client process times out or exits non-zero | Run `FAILED`; the partial manifest, the client log and any images already written are preserved in the run directory. A timeout is never a skip |
 | Hook report missing, mutable, malformed, filtered, or unavailable | The agent cannot publish a complete manifest; runner fallback writes `hooks.available=false`, omits all other `hooks.*` keys, and T0 fails. No observed rendering is used to reconstruct the report |
-| Repeated SHOT samples or same-ordinal repeated PATH runs are not `IDENTICAL` | Run `FAILED` with a determinism-leak message pointing at §4.4's ledger. Consecutive samples within a moving path are expected to differ and are never compared to one another as a self-check |
-| `/2` capture count, ordinal, window, or planned/actual current/previous pose mismatch | Run `FAILED` before image diff; a rendered image cannot repair non-reconstructible temporal execution |
+| Same-ordinal repeated SHOT/PATH executions are not IDENTICAL | FAILED with determinism reason; successive samples with different actual times are not presumed identical, even at static poses |
+| `/4` capture count/ordinal/window/pose/timing/provenance/option identity/profile mismatch | FAILED before image diff; pixels cannot repair missing actual execution evidence |
+| Comparison/reference/policy/timing/approval evidence or external raster missing or mismatched | invalidate effective ledger row to NOT_ATTEMPTED (§4.2.6); no remembered image-tier PASS |
 | Any of the seven Pintonium observation records is missing, stale, wrong-revision, wrong-archive, malformed, or contains forbidden source/message text | `RUN-PINTONIUM-PARSE-CALIBRATION` fails with the pack and field named. A Pintonium `FAILURE` observation itself is valid evidence; a Schmaloogium parse failure still fails D-3 |
 | Golden mismatch | Test failure showing the unified diff of two sorted text documents. Never auto-updated: `-PupdateGoldens` is explicit and fails the build after writing (§4.11.5) |
 | Scene file invalid | Refused at parse with the rule that was violated; the run does not start (§4.3.3) |
@@ -2091,8 +2916,8 @@ All in `:conformance` unless noted; all in the hermetic `test` task (§4.14) unl
 | `SceneParserRejectionTest` | each §4.3.3 rule fails with a message naming it — wrong major, unknown/missing key, id mismatch, duplicate capture, missing pose, non-dense/out-of-bound samples, short/escaping window, no non-zero captured delta, warm-up below floor, missing gamerule |
 | `SceneRoundTripTest` | parse → write → parse is identity, and the written form is sorted and byte-stable (§4.1) |
 | `SceneCorpusTest` | every committed scene parses/validates and all six §3.4 ids contain at least one valid moving PATH; a SHOT-only replacement fails the corpus |
-| `CapturePlanTest` | `CaptureRunner` resolves all scene defaults and expands SHOT samples before constructing `/2`; `CapturePlanWriter` and `CapturePlanReader` reject an incomplete/default-dependent value and perform no defaulting; dense capture/sample fields and runner-owned provenance round-trip byte-identically; `/1`, gaps, malformed/unknown fields, and bad provenance abort; any byte changes the plan hash |
-| `MotionPathSchedulerTest` | first pose receives the exact warm-up; every dense ordinal causes exactly one pose application and one rendered frame; only the bounded window captures; no interpolation or clock read occurs; planned previous pose is first pose for ordinal 0 and prior sample thereafter |
+| `CapturePlanTest` | /4 default-free selected captures with full dense PATH sequences; missing clock/subject/external/option/world-generation/save identities and historical /1–/3 reject; nondivisible prepTicks/overflow reject before launch |
+| `MotionPathSchedulerTest` | full controlled prep/warmup/sample schedule, one actual frame per step and actual tick increments; pose history/window retained; no host-clock scheduling |
 | `ImageDifferTest` | identical images → zero differing pixels; a single altered pixel is found at the right coordinate; a diffuse ±1 noise field passes `SAME_MACHINE` and fails `IDENTICAL`; a 40×40 solid block **fails** `SAME_MACHINE` on L3 while passing L2 — the case `[D-P2-7]` exists for; dimension mismatch throws rather than scoring |
 | `ClusterAnalysisTest` | 4-connectivity, largest-area and count on hand-built masks, including a diagonal chain that must *not* merge |
 | `TolerancePolicyTest` | profiles load from the committed file; an unknown profile name fails; `ADVISORY` produces a report and refuses to yield a verdict |
@@ -2103,18 +2928,40 @@ All in `:conformance` unless noted; all in the hermetic `test` task (§4.14) unl
 | `GoldenWriterDeterminismTest` | byte-identical output across repeated runs, across `Locale.ROOT` vs a comma-decimal locale, across two timezones, and across two different input iteration orders |
 | `GoldenComparerTest` | equal documents pass; a single changed value produces a diff naming section, key, expected and actual |
 | `GoldenCorpusTest` | **every committed golden parses into the document model and re-renders byte-identically.** This is the structural proof of `[D-P2-5]`: a golden that contained free source text could not round-trip through a model that has no field to hold it |
-| `RunManifestReaderTest` | canonical `run-manifest-v2.manifest` round-trips with SHOT/PATH captures, dense ordinals, captured/image bijection, planned/actual current+previous poses, T0 state, hashes, GL errors, hooks, and Phase 8 subreport; `/1`, gaps, pose omissions, bad windows/keys/orders/types, and unsupported versions abort; `x.<producer>.*` is preserved-and-reported |
-| `TierEvaluatorTest` | reconstructs each T0 failure independently, including capture/sample count, ordinal, image-bijection, and current/previous pose mismatches; derives unattributable counts solely from `attributed=false`; covers per-sample T1 `NO_BASELINE`, T2 dual-spec refusal, and T3 sourced/unsourced `CHAIN` without capability inference |
-| `RunManifestFailureTest` | launch failure, timeout, crash, truncated output, missing hook/pose report, missing provenance, every plan-provenance mismatch, and every `/2` temporal mismatch produce a canonical runner-synthesized failure manifest with authoritative plan facts and deterministically fail T0; pack-authored provenance is ignored |
-| `HookManifestEvidenceTest` | serialization copies the complete current frozen Phase 7 report field-for-field, including H-RESOURCE-01; projection never rewrites IDs/order or derives counts from behavior. A catalog amendment requires new evidence, not mutation of historical reports. An owner-phase-8 subreport preserves exactly eight IDs/counts/dispositions and its fingerprint/enabled bit; absence stays absent |
-| `BaselineIdentityTest` | world and mod-set hashes are invariant to traversal/record order, change with any input byte or identity, flow unchanged into approval manifests, and a mismatch yields `NO_BASELINE`; world copy/hash rejects an internal link, an escaping link, FIFO, socket, and representative device entry without following it |
-| `TierLedgerTest` | scene-set identity and exact captured-sample coverage, including every bounded PATH ordinal; missing/hash-mismatched/stale evidence → `NOT_ATTEMPTED`; contained path/digest/attestation rules remain enforced; inconsistent ledgers are flagged and renderings remain stable |
+| `RunManifestReaderTest` | `/4` round-trip with sole JSON-string P1 profile: nonempty extensions, newlines, quotes/backslashes survive; malformed escape/duplicate/unknown/missing profile or flattened aliases and `/1`–`/3` reject; x extensions never affect verdict |
+| `TierEvaluatorTest` | every independent T0 failure; T1 NO_BASELINE, T2 dual-spec refusal/unavailable-clock non-pass; intentional DISABLED accepted and own FAILED behind CHAIN rejected |
+| `RunManifestFailureTest` | launch/timeout/truncation/missing reports or provenance and every `/4` mismatch produce FAILED from authoritative plan facts, never fabricated actual counters |
+| `HookManifestEvidenceTest` | Copy the current frozen P7 report field-for-field, including H-RESOURCE-01 and P8's complete canonical flattened scalar catalogue/fingerprint/enabled bit. Reject omitted, duplicated, reordered or altered anchor rows, including compensating under/overmatches; no fixed eight/nine-row limit or inferred runtime health. Absent owner stays absent; catalogue changes require new evidence, never mutation of historical reports |
+| `BaselineIdentityTest` | OFF/ON approvals and superseded raster leaves coexist through canonical writer/reader/closure paths; changed option/descriptor/world/external identity selects another baseline; subject-only rebuild does not; old option-less/ordinal-only paths cannot satisfy evidence, no-follow copying rejects links |
+| `TierLedgerTest` | static-only T2 selection completes without PATH oracle, T0 without comparison; missing selected SHOT ordinal fails completeness; T1 full SHOT/PATH and both six-family motion executions cannot drop a sample; T3 PRIMARY/feature/manual exact domains and child kinds/joins required; empty/shrunken/changed domains reject; loss/substitution of required comparison/oracle/approval/timing/policy/raster invalidates effective outcome to NOT_ATTEMPTED |
 | `PintoniumParseCalibrationTest` | exactly seven source-text-free records; exact registry archive identity and configured Pintonium revision/environment; missing/stale/malformed records fail; forbidden messages/source/absolute paths fail; Pintonium success/failure deltas report, while any Schmaloogium parse failure fails D-3 |
-| `ReportRendererTest` | snapshot of all three renderings; skips separate from passes; PATH rows never collapse by scene; all seven Pintonium/Schmaloogium comparisons are labelled evidence-only; every non-pass carries a reason |
-| `HarnessRunRegistryTest` | every §4.9 id resolves; every §3.5 exit criterion maps to a run; the v3 motion and parse-calibration gates map specifically to `RUN-MOTION-PATHS` and `RUN-PINTONIUM-PARSE-CALIBRATION` |
+| `ReportRendererTest` | T0 has no invented baseline requirement, T2 labels static-only coverage, mandatory motion remains separately incomplete on any absent sample/execution; skips separate from passes; all seven parse comparisons evidence-only; every non-pass has reason |
+| `HarnessRunRegistryTest` | each named run resolves exactly §4.2.5's nonempty domain before capture; non-tier runs cannot emit vacuous tier rows; motion scene presence is doc gate, repeated motion runtime mandatory, T2 selection cannot shorten PATH or discharge motion |
 | `LocaleProjectionContractTest` | Original two-locale inputs preserve sparse per-key fallback, present-empty suppression, deterministic collision winner and all nine hashed maps; locale selection leaves configuration unchanged, changing an unselected locale changes it. Full matrix golden still requires P3/P4/P5, not this synthetic projection |
 | `InternalOptionSessionTest` | Exact-catalog acceptance followed by fresh-catalog load preserves selected source behavior across Off/filesystem switch; foreign/wrong-identity token rejects, restart defaults, global-write failure no session acceptance, accepted-load failure no default retry; no filesystem pack target |
 | `PreparedInstanceContractTest` | At v0.5 original diagnostic geometry observes A0,A1,B0,B1, effective fallback N, nested restoration and shadow root admission; one traversal/setup/reset, N submissions, no capture-time/N² expansion. Failure stops remaining copies; source-free draw evidence cannot substitute for actual runtime coverage |
+| `AssetProjectionContractTest` (planned, not executed) | active-schema same-load snapshot survives archive deletion with no I/O; full nine trees preserve zero-byte AVAILABLE/MISSING/UNREADABLE and TextHash meanings without binary/provider output |
+| `InspectionSchemaContractTest` (planned, not executed) | current configuration/nested IDs/snapshot schemas and fingerprint required; older/mismatched/missing/foreign assets fail; payload-free profile selector, rectangle spelling and usable-base/explicit-override distinctions survive owner projection |
+| `ControlledClockContractTest` (planned) | ticksPerFrame>1 uses ceil warm-up, prep divisibility and actual step evidence; host stalls leave shader time identical but real timeout still fails; stale/missing P6/P7 reports, extra frame, reset and target-echo counters fail |
+| `ExternalEnvironmentContractTest` (planned) | same seed/version/external inventory with different worldType or generateStructures selects separate worlds in either request order; explicit/default-equivalent resolved descriptors reuse; receipt/descriptor/copied-save mismatch fails; subject-only rebuild changes provenance not world/baseline; external changes invalidate; post-load/capture-only scene state does not fragment generation cache |
+| `CompleteToleranceContractTest` (planned) | all six numeric predicates independently fail, including RMSE-only and cluster-count-only boundaries; missing/nonfinite/out-of-range/duplicate values and all-masked input reject; initial unmeasured results cannot claim calibrated tier PASS; ADVISORY never verdict |
+| `ArchitectureGateContractTest` (planned) | six-family scene presence is doc closure; rendered twice/approved baselines remain later runtime gates; no architecture/client gate cycle |
+| `ReplayCollectorManifestContractTest` (planned, unexecuted) | P6 report→P7 collector→P2 preserves mixed verdicts, report/drain order, original fields and repeated equal errors for barrier and immediate restoration paths; false foreign cleanup remains, probes are not new submissions; every error fails T0 |
+| `ReplayCollectorFailureContractTest` (planned, unexecuted) | reject/throw/overflow at receipt, post-pixel-copy reset error, candidate rollback/replacement/shutdown and rejected retirement prevent acknowledgment/COMPLETE; accepted evidence survives until final publication, no throttle/dedup loss |
+| `ShadowCelestialInputContractTest` (planned, unexecuted) | explicit same-plan frame/main-camera inputs: day boundaries and matching provider/camera shadowAngle, camera rotation changes eye-space vectors, translation leaves w=0 vectors unchanged; no old overload or GL query, unchanged P6 event shape |
+| `ResourceEvidenceStageContractTest` (planned, unexecuted) | pure Valid/Invalid Available preserve PLANNED without allocations; Unavailable prevents complete golden; live accepts paired REALIZED only; DEFAULT_RGBA differs from RGBA8, whole-estate fallback marks every row while retaining requests, same-input planned equality and candidate/estate realized equality do not imply cross-stage equality |
+| `ResourceEvidenceVariantTest` (planned, unexecuted) | missing stage, planned allocation keys, realized missing allocation, fog numeric components, constant missing/nonfinite components, old aliases and unavailable extra keys reject; clear=false retains policy; changing frame fog does not fabricate resource numbers |
+| `PositionalRecorderEvidenceTest` (planned, unexecuted) | typed drawBuffersWere list distinguishes empty, None-only and shifted holes; P5 physical attachment mapping is not logical index identity; old registry-domain candidates/selectors cannot become current via a local codec |
+| `TargetLimitProfileContractTest` (planned, unexecuted) | Distinct ordinary/3D/rectangle maxima survive sole profile-text transport; each target's max/max+1 boundary differs correctly; missing/negative/gate-inconsistent keys and failed supported-target probe cannot replay as a guessed profile |
+| `RegistryProfileAssociationContractTest` (planned, unexecuted) | Current inspection passes explicit absent selection with its exact configuration; unrelated accepted GUI intent cannot alter golden enrichment; INVALID_PROGRAM_STATE never yields fabricated complete rows and stale registry-domain evidence rejects |
+| `ShadowOutlineEvidenceContractTest` (planned, unexecuted) | Complete66-row/65non-CLOUD flattened-v3 evidence rejects omitted outline/sort-cache observations and old domains; glowing/retained-outline and moved-camera/main-only-transparent-chunk scenarios preserve rendering separately from frozen counts, including thrown shadow traversal |
+| `AtlasOuterEvidenceContractTest` (planned, unexecuted) | Eight-row application-v2 binds outer loadSprites target; Pre-listener/populator throws and unscoped inner attempts cannot publish Known extent; normal matched Post works without changing application counts |
+| `TypedClearEvidenceContractTest` (planned, unexecuted) | Mixed floating/signed/unsigned realized attachments preserve distinct typed values and positional route indices; rejected preflight emits neither event, attempted failure remains, restoration false/error prevents full-clear success; exact unsigned4294967295 survives recording without signed wrap. Native entered-discard-enabled GL2+EXT and core cases prove full texels/exact restoration, unsupported tiers perform no illegal query, and save/disable/work/restore failure never consumes fullClear |
+| `CapturedPlanFixtureContractTest` (planned, unexecuted) | Explicit captured plans with equal physical layout but different conventional masks/generic unions remain distinct before first replay; wrong first request cannot define its own authority. Real scoped ITEM→BLOCK append plus four actual brightness writes produces eligible completed input; missing/throwing/wrong-scope completion remains ineligible, cached arrays unchanged and OLDMODEL still inherits current input |
+| `MainCelestialWithoutShadowContractTest` (planned, unexecuted) | P8 pure angles/sample route supplies P6 at v0.2 H-SKY-02 with zero shadow minima or disabled/unavailable shadows; same live frame/main camera/rotation gives correct eye vectors without targets, stale association rejects and real-shadow pre-activation delivery remains |
+| `FullVertexHealthEvidenceContractTest` (planned, unexecuted) | Complete full-v0.3/v0.5 owner10 evidence includes CORE expected-one H10-BRIGHTNESS-4 wrapping BufferBuilder.func_178962_a(IIII)V; omission/zero/duplicate cannot admit full compatibility. Base-v0.1/v0.2 catalogue remains unchanged |
+| `NativeTextureLifetimeEvidenceContractTest` (planned, unexecuted) | Each supported DSA/fallback tier verifies exact-target create/materialize/label/storage order, known2D depth and never-materialized deletion; bound multiunit textures and read/draw FBO deletion zero affected native/cache state without resurrection or unrelated-state loss, with owned error-drain evidence |
+| `CompanionAssociationEvidenceContractTest` (planned, unexecuted) | Mipped atlas min NEAREST_MIPMAP_LINEAR versus level-zero NEAREST, mag NEAREST/wrap REPEAT and standalone NEAREST baseline agree across preparation/fingerprint/setters. Equal-shape atlas A→B selects matching objects, nonatlas/unavailable or missing compatible companion selects kind defaults and custom precedence remains. Foreign/stale evidence rejects; before-draw refresh uses same open snapshot/selection, stale serial or non-Bound suppresses next draw and independent cleanup preserves the triggering base binding |
 
 Already owned by Phase 1 and running in this task: `SeamConformanceDependencyTest` (C-4,
 `PHASE_1_DOC.md` §8.1) and `:conformance`'s placeholder test, which §12 replaces with real content.
@@ -2153,10 +3000,10 @@ here is `v0.1` even though the behaviour it will eventually measure is not.
 | Scene `night-shadows` + `shadow-parallax` | authored `v0.1`, shadow result first gated `v0.2` | motion/schema gate exists at v0.1; shadow rendering arrives at v0.2 |
 | Scene `entities-blocks` + `entity-orbit` | authored `v0.1`, separately reported with the `v0.3` Phase 9/10 implementation gates | per-entity/TE id uniforms are v0.3; not part of the terrain-scene exit criterion |
 | Scene `weather-rain` + `rain-track` | authored `v0.1`, weather result first gated `v0.5` | motion/schema gate exists at v0.1; depthtex2 behavior arrives at v0.5 |
-| Capture plan `/2` + default-free writer/reader (§4.5.2), including dense samples and runner-owned pack provenance | `v0.1` | Runner alone resolves scene defaults before serialization |
+| Capture plan `/4` + default-free writer/reader (§4.5.2/§5.1.1), dense samples and authenticated clock/environment/options | `v0.1` | runner resolves inputs before serialization |
 | `CaptureAgent`, `SceneApplier`, `FrameGrabber`, `RunManifestWriter` (§4.5) | `v0.1` | designed now, runnable the moment v0.1 renders — the spec's own phrasing |
-| Run manifest `/2` + reader (§4.5.4), including frame pose history and complete hook evidence | `v0.1` | T0/T3 and motion reconstruction decide from it; `/1` is unsupported history |
-| World generation cache (§4.5.5) | `v0.1` | |
+| Run manifest `/4` + reader (§4.5.4/§5.1.1), poses/timing/ownBuild/environment/options/profile text/full hooks | `v0.1` | durable origin and every prep/warm-up/sample observation survive client exit; `/1`–`/3` unsupported history |
+| Complete generation-descriptor cache and receipt (§4.5.5) | `v0.1` | all accepted generation settings resolved before lookup; subject build excluded |
 | Image differ, tolerance profiles, cluster analysis, ignore masks (§4.6) | `v0.1` | testable against synthetic images with no renderer |
 | Tolerance calibration (§4.6.5) | `v0.1` | first real captures replace the starting numbers |
 | Baseline storage, manifests, approval workflow (§4.7) | `v0.1` | |
@@ -2376,11 +3223,11 @@ framebuffer size.
 | `D-P2-10` | An absent manual fixture is `SKIPPED` **with its remedy printed**, never a pass, and skips are counted separately in every summary | §4.13's three reporting rules |
 | `D-P2-11` | The hermetic corpus is packs **we own**: the internal default pack + eight micro-packs | matrix packs can never be committed, and CI needs something to chew on from week one (§4.11.6) |
 | `D-P2-12` | A T2 request for a dual-spec pack is **refused** as a configuration error, not skipped | §8.2 says T2 is classic-only; a skip would let a report imply it was attempted (§4.2.3) |
-| `D-P2-13` | T3's "no fallback silently masking a failure" is asserted from the manifest's per-slot `SOURCED`/`CHAIN` record paired with source presence | it is the only clause of §8.2's T3 that can be made mechanical (§4.2.4) |
+| `D-P2-13` | Historical source-presence T3 predicate, superseded by D-P2-35 | ownBuild distinguishes intentional disablement from masked failure |
 | `D-P2-14` | The scene format is hand-parsed; **no new dependency coordinate** | §4.2.6's pin table is Phase 1's, and the grammar is smaller than the request (§4.3.1) |
 | `D-P2-15` | GL-context tests live in `:mod`'s **test** source set | C-1 and C-3 scan `main`; `:conformance` has no LWJGL at all (§10.2) |
 | `D-P2-16` | Image identity is a hash of the **pixel raster**, not of the file bytes | an encoder change must never look like a rendering change (§4.5.3) |
-| `D-P2-17` | Warm-up floor: `max(60, 8 × the largest declared halflife in ticks)` | the smoothed uniforms (§3.2's `wetnessHalflife` family) are the slowest-converging inputs in the frame (§4.4) |
+| `D-P2-17` | Historical one-tick-per-frame warm-up expression, corrected by D-P2-34 | tick half-lives require division by actual ticksPerFrame |
 | `D-P2-18` | A sixth scene, `entities-blocks`, beyond the five families the spec names | Phases 9 and 10 need a scene where per-draw identity is visible; separately reported with their implementation gates, not the v0.3 terrain-scene exit criterion (§3.4) |
 | `D-P2-19` | The evidence rule: a tier is recorded only with a run id and a manifest hash | a remembered pass is not a pass (§4.2.5) |
 | `D-P2-20` | Registry version IDs and hashes are **left unfilled** here and populated by the implementation effort; an empty pin is a hard failure, never "latest" | App G gives version names, not pins; a fabricated pin is one CI would trust (§4.10.1) |
@@ -2388,13 +3235,81 @@ framebuffer size.
 | `D-P2-22` | Hook evidence is serialized only as a complete direct projection of Phase 7's frozen primary/nested application report | application facts have stable owners and IDs; rendered behavior cannot authenticate whether an injection applied |
 | `D-P2-23` | Pack acquisition mode, verified archive SHA-512, and licence are immutable runner facts transported through the capture plan and validated before manifest publication | The runner owns fixture resolution and integrity. Letting the pack or agent rediscover or self-report provenance would make the manifest attest to untrusted input rather than to the artifact actually executed (§0.17, §4.5). |
 | `D-P2-24` | Camera paths are dense explicit frame-indexed samples with first-pose warm-up, one rendered frame per sample, and a bounded ≥2-sample capture window containing motion | Deterministic temporal input exposes the `previous*`/depth/motion-vector/TAA/bloom defect class without interpolation or wall-clock races (§4.3.4; PD §19.1) |
-| `D-P2-25` | Scene, capture-plan, and run-manifest current majors are `/2`; capture plan and manifest `/1` are unsupported history | Motion changes the process-boundary meaning and requires reconstructible sample and pose fields; silently reading `/1` would fabricate absent temporal evidence |
+| `D-P2-25` | Historical `/2` scene/plan/manifest migration; plan/manifest superseded by D-P2-34, scene retained | dense motion/poses retained, no old-wire evidence upgrade |
 | `D-P2-26` | Pintonium parse outcomes are complete source-text-free calibration evidence, never a conformance oracle | V3 requires the comparison, while D-3 requires Schmaloogium to parse all seven regardless of competitor outcome (§4.11.7) |
-| `D-P2-27` | Receive P7's explicit `/2` migration as architecture, not capture evidence | P7 §4.13 now names dense samples, warm-up, actual pose/history and exact serialization; both §5 surfaces remain unverified |
+| `D-P2-27` | Historical P7 `/2` receiver receipt, superseded by D-P2-34 | dense pose/window meanings retained, not capture evidence |
 | `D-P2-28` | Adopt P11 original-vector evaluator run with source-free matrix disposition mode | Language/smooth/provider effects must execute; generic front-end parsing is not evaluator coverage |
 | `D-P2-29` | Use P3 one-load source-free inspection and checked archive join, with P4 same-request enrichment | No parser-private access, reverse dependency, inferred configuration/archive identity, or synthetic complete golden |
-| `D-P2-30` | Adopt P3 schema18 locale/Internal/old-light projection and P12/P7 validated session adapter | No duplicate parser, old-schema upgrade, translated text golden or fabricated Internal archive provenance |
-| `D-P2-31` | Accept approved option-only sampling scope and prepared-submission count policy without changing `/2` frame/provenance wire | 2026-09-07 maintainer choices, P5/P4 evidence; ordinary capture and full P3/P4/P5 golden completeness remain |
+| `D-P2-30` | Historical schema18 locale/Internal/old-light receipt, superseded numerically by schema19 and D-P2-32; P12/P7 validated session adapter retained | No duplicate parser, old-schema upgrade, translated text golden or fabricated Internal archive provenance |
+| `D-P2-31` | Historical `/2` wire receipt for approved option-only sampling/prepared counts, wire superseded by D-P2-34 | 2026-09-07 policy remains; ordinary capture and full P3/P4/P5 completeness retained |
+| `D-P2-32` | Historical 2026-09-08 schema20/ninth-asset receipt, schema superseded by D-P2-38 and capture wire by D-P2-34 | all D-P3-69 assets/nine-tree semantics remain, golden schema1/projectionVersion1 unchanged, no runtime evidence |
+| `D-P2-33` | 2026-09-08 R39-1: scene presence closes architectural motion requirement; mandatory execution stays later | no client/doc gate cycle |
+| `D-P2-34` | 2026-09-08 R39-2: capture-plan/run-manifest `/3`, required controlled clocks and actual P6/P7 evidence; tick-based warm-up | no frames=ticks, synthetic actual counters or uncontrolled G6 PASS |
+| `D-P2-35` | 2026-09-08 R39-3: independent P4 requested-slot ownBuild in runtime and golden evidence | intentional disablement accepted; actual FAILED behind CHAIN fails T3 |
+| `D-P2-36` | 2026-09-08 R39-4: authenticated subject/full provenance separated from external baseline/world identity | engine regressions use existing oracle; no arbitrary exclusions |
+| `D-P2-37` | 2026-09-08 R39-5: all six finite thresholds complete, fail-closed profiles, unmeasured/calibrated distinction | executable synthetic comparisons are not calibration or human approval |
+| `D-P2-38` | 2026-09-08 R55 receipt: current schema21 selector/dimension/rectangle cutover; D-P3-69 assets unchanged | exact owner normalization/materialization domain, nine source-free trees, no duplicate parser |
+| `D-P2-39` | 2026-09-08 P6 R25-1 receiving receipt: actual owned P7 collector delivers ordered exact P1 verdicts into unchanged `/3` gl_errors | callback-before-return and final drain prevent report loss, repeated-equality collapse or COMPLETE after delivery/storage failure; every error fails T0 |
+| `D-P2-40` | 2026-09-08 P8 R5-1 receiving receipt: explicit pure angular result and main-camera/frame/plan math fixtures | no camera-state inference, P6 event enlargement, source permission change or schema bump |
+| `D-P2-41` | C40-1: stable complete effective option-map identity governs approval/cache/lookup and OFF/ON run association | independent of subject build; two durable baselines, no guessing defaults |
+| `D-P2-42` | C40-2: content-addressed comparison and frozen oracle/policy/timing evidence, with external raster reauthentication, bind every image-tier decision | no hash-valid remembered PASS after loss/substitution of deciding inputs |
+| `D-P2-43` | C40-3: current capture-plan/run-manifest `/4`; gl.profile_text is sole JSON-string embedding of P1 canonical text | P1 standalone grammar unchanged; no `/3` alias or invented flattened profile parser |
+| `D-P2-44` | N40-1: qualify temporal-blurring attribution as historical PD §19.1, not verified pinned README text | review's recovered README does not authenticate quotation; normative v3 motion requirement stands |
+| `D-P2-45` | R39 C3 / P5 D-P5-32 receiving cutover: required /4 PLANNED/REALIZED stage, requested format and clear-policy variants, realized-only allocation/origin | Pure inspection cannot attest driver fallback or dynamic fog; full evidence equality is same-stage/same-input only |
+| `D-P2-46` | R32 / P1 D-P1-57 and P4 D-P4-33/34 receiving cutover: typed positional recorder assertions and opaque positional-route-v2 identity | Holes/length remain meaningful, no raw sentinel, second encoder or setter-only duration policy |
+| `D-P2-47` | C41-1: named-run/tier-specific authenticated expected evidence domains, exact role/sample/comparison kinds, no empty PASS | static T2 is supplyable without manual PATH oracles; T0 stays manifest-only; full T1/T3 and mandatory repeated six-family motion remain |
+| `D-P2-48` | C41-2: all resolved admitted generation settings key immutable saves, checked receipts and /4 world identities | worldType/structures cannot alias; subject rebuild and runtime-only scene state stay excluded |
+| `D-P2-49` | C41-3: single option-state/content-addressed image grammar across cache, approval, oracle capture and reconstruction | no stale layout, compatibility fallback or silent migration |
+| `D-P2-50` | C42-1: mandatory core /4 origin summary and complete dense actual timing transport, hashed with retained manifest/plan and exactly reconstructed comparison text | private live checkpoint validation is not durable evidence; sample-only frames and existing verdict domains remain unchanged |
+| `D-P2-51` | schema22/current-constant admission and isolated alternate BLOCK provenance; older numeric receipts historical | nine-tree projectionVersion1 and unrelated assets/native/options unchanged; no ID/name heuristics |
+| `D-P2-52` | P11 required typed runtime diagnostic sink after metrics in controller factory; independent source-less pre-plan expectations | runtime diagnostics cannot disappear into metrics or fabricated declaration coordinates; P11 owns containment |
+| `D-P2-53` | Receive distinct native/facade/controlled-replay source-free experiment evidence | Facade counts cannot certify private native strategy behavior; no new observation API or claimed measurement |
+| `D-P2-54` | R43 C1/P8 R9: receive complete canonical flattened scalar hook evidence, not a hard-coded group count | Existing dense /4 grammar carries every independent observation without sum-based loss |
+| `D-P2-55` | Receive schema23/current-constant and MaterializedSource-v23 typed-selector identity | P3 owns parsing and canonical inspection; nine trees/projectionVersion1 remain |
+| `D-P2-56` | Receive independent profile-intent commit and reserved-zero programmatic domain | Option equality does not erase program selection; no profile-map field or AA feature |
+| `D-P2-57` | Receive ordinary fixed-transition and two-direction upload dependency evidence | Source-free native observations remain separate from facade/model traces; optional grants remain gated |
+| `D-P2-58` | Receive P3 D-P3-73 complete typed ID-tree projection | Typed endpoints remain numeric, arbitrary text hashed, provenance/order retained without expansion |
+| `D-P2-59` | Receive P7/P13 exact atlas application catalogue and separate extent acceptance evidence | No runtime-count substitution, invented dimensions or new capture wire field |
+| `D-P2-60` | Receive exact target/layout/dimensions/mip/region/count and restoration evidence | Payload bytes remain excluded; facade evidence does not substitute for native target execution |
+| `D-P2-61` | Receive exact target-specific capability maxima and strict profile-text replay | Unsupported0 differs from failed capture; no ordinary-limit substitution or fabricated captured fixtures |
+| `D-P2-62` | Receive P8 outline guard and complete flattened-v2 health evidence | All60 rows/59non-CLOUD, exact source observations; old catalogue cannot attest the new guard |
+| `D-P2-63` | Receive P13 outer loadSprites target and application-v2 evidence | Pre and population exceptions are inside attempt lifetime; runtime acceptance remains separate |
+| `D-P2-64` | Pass explicit absent profileSelection in current P4 inspection enrichment | Preserve exact configuration/snapshot association, opaque profile-selection-v3 identity and closed INVALID_PROGRAM_STATE failure; no named-profile inspection grant |
+| `D-P2-65` | Receive P1/P5 exact typed clear work/restoration evidence and P10 complete source-participation identity | Unsigned values stay mathematical, invalid preflight creates no attempt and failed attempts remain; recorder evidence alone cannot prove native clears or inherited model input |
+| `D-P2-66` | Receive complete capture-plan recorder issuance and private rasterizer-discard clear scope | No first-replay authentication or clean-drain no-op proof; original completed-product authority stays distinct from partial ingress |
+| `D-P2-67` | Receive P8 complete66-row/65non-CLOUD flattened-v3 catalogue | Six sort-cache GET/SET observations retain independent counts; old domains cannot certify restored main sorting |
+| `D-P2-68` | Receive P8/P7/P6 shadow-independent main celestial delivery | P8 owns pure math, P7 authenticates frame/camera and P6 consumes unchanged event; zero demand does not imply valid neutral vectors |
+| `D-P2-69` | Execute P11 shared uniform/variable graph vectors in actual expression conformance | Converted memo values, once-per-refresh effects, ordered uploads and exact cycle/error isolation; no P3 schema change |
+| `D-P2-70` | Distinguish logical texture issuance, native materialization and lifetime-ending deletion evidence | P1/P14 exact-target creation/label ordering and affected-binding zeroing are native observations, not blanket binding-neutral claims inferred from recorder logs |
+| `D-P2-71` | Receive concrete companion sampling, accepted-base association and before-draw refresh evidence | P13/P5/P7/P8 remain owners; no atlas inference from equal dimensions, candidate order or string identity, no second binder and no new P2 projection schema |
+| `D-P2-72` | C46-1: record R43–R45 incorporation in §0.1 inputs and the closing history | provenance truth: R43's required C43-1 repair (D-P2-54 with coordinated D-P2-55–60 receiving receipts) and the R44/R45 historical PASS verdicts are already embodied in the body; no contract, §5 or schema change |
+| `D-P2-73` | C47-1: record R46 incorporation in §0.1 inputs and the closing history | provenance truth: R46's whole-owner PASS-WITH-CORRECTIONS verdict over the frozen attempt8 owner, with its required C46-1 already repaired as D-P2-72, is now recorded in the provenance surfaces; no contract, §5 or schema change |
+
+**2026-09-08 R40 repair receipt:** D-P2-41–44 amend §§4/5/8/12 and supersede
+the capture-wire portion of D-P2-34/39, not their clock/error semantics. P7 must receive
+`/4`, stable option maps/digest and strict profile embedding; all tier/report consumers
+must receive the expanded index and authenticated comparison closure. P12's existing
+owner codec supplies effective option values, not a new P2 encoder. P1 profile ownership,
+P3 schema21 and nine-tree goldens remain unchanged. The separately recorded D-P2-45/46
+receiving amendment below now incorporates the settled backend/resource owner result.
+Separate C40-1/2/3 and N40-1 Resolutions preserve R40's original verdict. Fresh review,
+cross-owner receiving integration, IR-01 and final §G5.3 remain open; no implementation,
+validation, runtime comparison, calibration or approval is claimed.
+
+**2026-09-08 current R32/R39 receiving receipt — D-P2-45/46, unverified.** P5 §2.2/§4.1.1
+and D-P5-30/32, P1 D-P1-57 and P4 D-P4-33/34 are received in §§4/5/8/11/12.
+SIZING is PLANNED; accepted live snapshots are REALIZED; requests, allocation provenance and
+declarative fog remain distinct. No earlier review body or authority is rewritten. C40 complete
+option identity, authenticated comparison closure and sole gl.profile_text /4 transport remain
+binding unchanged. This receipt is not a new verdict, validation, implementation clearance or
+runtime evidence; fresh review, IR-01 and final §G5.3 remain open.
+
+**2026-09-08 Review41 architecture repair — D-P2-47–49, unverified.** §§4/5/8/9/11/12
+now bind exact named-run evidence domains, complete generation selection/receipts and canonical
+image placement. Existing /4 wire majors remain; required world identities are corrected within
+that unimplemented contract. Separate Resolutions preserve Review41's original body and verdict.
+P7 receiving integration and fresh whole-document review remain required; IR-01 and final §G5.3
+remain open. No validation, implementation, capture, approval, calibration or PASS is claimed.
 
 ### 11.2 Disposition of `D-1` … `D-10`
 
@@ -2414,6 +3329,13 @@ framebuffer size.
 ### 11.3 Input contradictions, gaps, and open items
 
 Reported, not smoothed over (§G1.1).
+
+**2026-09-08 receiving status — D-P2-39/40:** preserved P6 R25 and P8 R5 corrections
+are adopted in §§4/5/8 with P7 D-P7-37/38's concrete lifecycle/collector route.
+P7 R37's original PASS remains intact, N37-1 is independently resolved, and its separately
+changed §5 requires R38. P2 and changed P6/P8 owner/receiver surfaces also require fresh
+whole-document review; no old PASS, P1 R29/P3 R56 unchanged PASS, authored acceptance case
+or this receipt clears runtime, implementation, OQ or final integration.
 
 1. **Sildur's Vibrant: Modrinth or author site?** RESEARCH.md §8.3 states that *"BSL, Complementary,
    Sildur's have stable Modrinth version IDs via the Modrinth API"*; App G's row for Sildur's gives
@@ -2464,14 +3386,21 @@ Reported, not smoothed over (§G1.1).
 same-load source-free snapshot and checked archive-provenance join. P1 R4B is also granted.
 Fresh reviews and implementation remain gates, not missing producer APIs. The eight original
 micro-packs remain available as front-end fixtures, never pack redistribution.
+The historical D-P2-32 asset receipt remains; current D-P2-38 adopts schema21, nested IDs,
+same-load assets and all nine inspection trees. P3's canonical manifest has an explicit
+source-free golden consumer; no new reader/acquisition grant or golden-format major is requested.
+P4/P5 still receive the exact returned configuration; P7 retains it for resource-only NONE,
+and P13 alone interprets owned bytes and records sidecar recovery. §8.1's archive-deletion,
+metadata-distinction and strict-schema cases are planned, not runtime evidence.
 
-**To Phase 4** — R10. §4.2.4's clause-2 assertion is the only mechanical part of T3, and it needs
-`(resolution status, source present)` as a **pair**. A status alone cannot distinguish App A.2's
-legitimate inheritance from a compile failure the backup chain absorbed.
+**To Phase 4** — R10 consumes `(status,from,sourcePresent,ownBuild,driverLog)` from the
+same-request headless or accepted runtime view. Intentional disablement is not failure;
+actual own FAILED remains T3 failure behind CHAIN. P4 owns classification, not P2 source parsing.
 
-**From Phase 5** — R10A adopted via P5 §5.1 pure planner acquisition and canonical resource
-projection (§4.11.4); complete source-free goldens require this third owner in addition to
-P3/P4. Runtime manifests still copy the live immutable resource snapshot through P7.
+**From Phase 5** — R10A adopted via P5 §5.1 pure planner and §4.1.1 staged resource projection:
+complete source-free goldens require P3/P4 plus P5 PLANNED evidence. Runtime P7 transports
+only paired accepted REALIZED snapshots. D-P2-45 preserves requests, clear policy and actual
+allocation/origin, including whole-estate fallback; cross-stage full equality is prohibited.
 
 **To Phase 7** — R11–R14 and R17–R19. R11 is the one that gates every image tier: without a defined moment after
 `final` and before present, the capture agent has no correct place to grab a frame. Capture and
@@ -2479,8 +3408,11 @@ serialize Phase 3's front-end/pack evidence, Phase 4's program-resolution eviden
 R10A snapshot; R17 consumes Phase 1's accepted R4A result. R18 requires a complete direct
 copy of the frozen primary/nested application report, including Phase 8 when present, with no
 renamed IDs or inferred capability. R19 is architecturally adopted at P7 §4.13, including
-actual current/previous camera reporting and strict `/2`; fresh review and executable capture
-evidence remain required. R13 is conditional, not implied by the `/2` migration.
+actual current/previous camera reporting. The current `/4` timing/disposition/environment/options/profile cutover
+requires the matching P7 owner receipt and fresh review; R13 is mandatory, not conditional.
+D-P2-48 additionally requires the exact pre-load generation descriptor/save receipt checks and
+unchanged /4 world identity projection in §5.1.1; named-run selection filters capture blocks only,
+never a selected PATH's dense history. P2 owns ledger/domain reconstruction, not the agent.
 
 **From Phase 11** — R11-2 is adopted through §4.9's named evaluator run and exact P11 §5.6
 vector/provider/result shapes. Original-vector and local-matrix reporting remain separate;
@@ -2537,7 +3469,7 @@ Every item names its milestone tag and its test hook.
 | 2 | Add the JUnit tag configuration and the `conformanceTest` task to `conformance/build.gradle`; default `test` excludes `fixtures` and `gl` (`[D-P2-8]`, request R3) | `v0.1` | a `@Tag("fixtures")` test is absent from `test` and present in `conformanceTest` |
 | 3 | `/2` `SceneSpec` + parser/validator + dense `PathCapture` scheduler (§4.3) | `v0.1` | `SceneParserTest`, `SceneParserRejectionTest`, `SceneRoundTripTest`, `MotionPathSchedulerTest` |
 | 4 | Author the six scene files of §3.4, each with its required moving `[path]` and bounded ≥2-sample window | `v0.1` | `SceneCorpusTest` |
-| 5 | `/2` `CapturePlan`: runner resolves all scene defaults and dense SHOT/PATH samples before construction; writer and reader perform no defaulting; runner-owned acquisition mode/archive SHA-512/licence are frozen (§4.5.2) | `v0.1` | `CapturePlanTest`, `MotionPathSchedulerTest` |
+| 5 | /4 CapturePlan with default-free selected dense sequences, complete clock/environment/options and generation/save identities (§5.1.1) | `v0.1` | CapturePlanTest; no missing identity or shortened PATH |
 | 6 | `packs.registry` format + `PackFixtureRegistry`; **populate every App G row except the pins** | `v0.1` | `RegistryTest` |
 | 7 | **Verify Sildur's Vibrant is on Modrinth** and fix its mode if not (§11.3 item 1) | `v0.1` | `RegistryTest` asserts mode/URL consistency |
 | 8 | **Read Modrinth's rate-limit and User-Agent documentation** and record the figures in the transport's javadoc (§11.3 item 8) | `v0.1` | — (a documentation step, deliberately listed) |
@@ -2549,30 +3481,30 @@ Every item names its milestone tag and its test hook.
 | 14 | Synthetic `GLCapabilityProfile` fixtures (`minimum-gl21`, `baseline-gl30`, `typical-gl33`, `hostile-4db`) + `profiles.index` (§4.12) | `v0.1` | consumed by items 12 and 16; index validated by `RegistryTest`'s sibling |
 | 15 | `ImageDiffer`, `TolerancePolicy`, `ClusterAnalysis`, `IgnoreMask`, `DiffReportWriter` (§4.6) | `v0.1` | `ImageDifferTest`, `ClusterAnalysisTest`, `TolerancePolicyTest`, `IgnoreMaskTest` |
 | 16 | `RUN-GOLDEN-CORE` and `RUN-CAPS-GATE` wired as real tests over items 12–14 | `v0.1` | both green in `:conformance:test` **with no renderer in existence** |
-| 17 | `Tier`, `TierOutcome`, evaluators, `TierLedger`, `TIERS.md` renderer (§4.2) | `v0.1` | `TierEvaluatorTest`, `TierLedgerTest` |
+| 17 | Tier evaluators/ledger/renderers with exact authenticated run domains, comparison-kind constraints and transitive input/raster closure | `v0.1` | TierEvaluatorTest/TierLedgerTest; T0 no diff, static T2 no PATH, missing mandatory motion/feature samples cannot pass |
 | 18 | `ConformanceReport` + the three renderers, incl. the skip-counting rule (§4.13) | `v0.1` | `ReportRendererTest` |
 | 19 | `HarnessRun` / `RunRegistry` with §4.9's catalogue | `v0.1` | `HarnessRunRegistryTest` — including the §3.5 traceability assertion |
 | 20 | Fill the CI `conformance` job (§4.14); add the fixture cache step | `v0.1` | a `workflow_dispatch` run resolves fixtures and runs `conformanceTest` |
 | 21 | **Run the OQ-10 spike** (§10.3) and record the outcome in RESEARCH.md §11 + an addendum here | `v0.1` | the spike's own criteria S1–S6 |
 
-**As soon as Phase 3 and Phase 4 land**
+**As soon as Phase 3, Phase 4 and Phase 5 land**
 
 | # | Item | Tag | Test hook |
 |---|---|---|---|
-| 22 | Implement `GoldenProjectionAdapter` against Phase 3's engine-owned snapshot API plus Phase 4's R10 enrichment; approve the first complete golden corpus by review | `v0.1` | `RUN-GOLDEN-CORE` produces complete real content |
-| 23 | `RUN-GOLDEN-MATRIX` over the seven fixtures × three profiles; unavailable before both inputs land | `v0.1` | `conformanceTest` |
+| 22 | Implement GoldenProjectionAdapter against same-load P3, same-request absent-selection P4 with opaque profile-selection-v3 identity, and P5 pure PLANNED resource variants; review regenerated complete corpus | `v0.1` | RUN-GOLDEN-CORE; staged/conditional evidence and typed positional assertion cases |
+| 23 | RUN-GOLDEN-MATRIX over seven fixtures × three profiles; unavailable before all three owner inputs land | `v0.1` | conformanceTest; no plan/allocation equality substitution |
 | 23a | Capture and review the seven exact Pintonium observations at revision `9c2fcc1a4814cafc0242370757e9e05ea83c5be3`; implement the source-text-free record validator/comparer and `RUN-PINTONIUM-PARSE-CALIBRATION` | `v0.1` | `PintoniumParseCalibrationTest`; all seven Schmaloogium parses required |
 
 **As soon as v0.1 renders**
 
 | # | Item | Tag | Test hook |
 |---|---|---|---|
-| 24 | Migrate Phase 7's `/1` consumer to `/2` (R19), then implement `CaptureAgent`, no-default `CapturePlanReader`, `SceneApplier`, `FrameGrabber`, and `/2` `RunManifestWriter`, including frame-end actual current/previous pose reports and R18 hook evidence | `v0.1` | `MotionPathSchedulerTest`, `RUN-SCENE-SELFCHECK`, `HookManifestEvidenceTest`; Phase 7 fresh verification required before consumption |
-| 25 | `/2` `CaptureRunner` + world cache + timeout handling + byte-exact provenance, capture-window, ordinal, count, and pose validation before atomic publication (§4.5.1, §4.5.5, `[D-P2-23]`) | `v0.1` | complete reconstructible run directory; every missing/mismatch case yields runner-authored failure manifest |
-| 26 | `RUN-SCENE-SELFCHECK` and `RUN-MOTION-PATHS` across all six scenes — **the determinism and v3 motion acceptance tests** | `v0.1` | repeated SHOT and same-ordinal PATH runs `IDENTICAL`; all `/2` pose/count/window checks pass |
+| 24 | Implement current /4 P7 capture reader/agent/writer, durable timing origin and every actual prep/warm-up/sample step, complete option state, sole gl.profile_text and accepted REALIZED resource variants | `v0.1` | fresh owner verification; client-exited comparison/ledger reconstruction; missing/tampered origin, step, join or restoration cannot pass; reject old majors/planned-as-live evidence |
+| 25 | /4 CaptureRunner: resolve complete generation descriptor before digest-addressed world lookup; retain/verify receipt and pre-load copy, real timeout and prepublication checks | `v0.1` | ExternalEnvironmentContractTest; different worldType/structures never alias, subject-only rebuild reuses; mismatch yields truthful FAILED |
+| 26 | RUN-SCENE-SELFCHECK and mandatory RUN-MOTION-PATHS across six scenes at runtime, not architecture closure | `v0.1` | same-ordinal two-run clock/pose/count/window match and approved T1 samples |
 | 27 | Calibrate `SAME_MACHINE` and `CROSS_DRIVER` (§4.6.5) and write `calibratedOn` | `v0.1` | the profile file stops carrying placeholder numbers |
 | 28 | `RUN-T0` across the classic matrix — **v0.1's second exit criterion** | `v0.1` | §4.2.1's predicates |
-| 29 | `RUN-T1-APPROVE` for one classic pack; commit the baseline manifests — **v0.1's first exit criterion** | `v0.1` | contact sheet reviewed and signed |
+| 29 | RUN-T1-APPROVE per option state; retain distinct OFF/ON approvals, immutable raster/approval-run evidence and committed manifests | `v0.1` | reviewed contact sheets; BaselineIdentityTest; v0.1 T1 gate unchanged |
 | 30 | `RUN-T1-REGRESS` in the pre-release checklist | `v0.1` | |
 | 31 | Implement dual-spec `RUN-T0` / `RUN-T1-REGRESS`; execute them at every v0.1–v0.5 release gate, provisionally pending §11.3 item 10 | `v0.1` | §4.2.1 and §4.2.2 predicates |
 
@@ -2580,20 +3512,64 @@ Every item names its milestone tag and its test hook.
 
 | # | Item | Tag |
 |---|---|---|
-| 32 | T2: the §4.8 procedure written up as a runbook, the oracle-manifest tool, the T2 evaluator, `RUN-T2-PILOT` | `v0.2` |
+| 32 | T2 runbook/oracle-manifest tool/evaluator/RUN-T2-PILOT: independently comparable image per selected SHOT ordinal at the sole canonical option/raster path | `v0.2` |
 | 33 | Calibrate `CROSS_ENGINE` per §4.6.5 step 3 | `v0.2` |
-| 34 | `RUN-T2` over the milestone's declared scene set | `v0.3` |
+| 34 | RUN-T2 over milestone's authenticated static SHOT/ordinal selection; independent mandatory T1 motion domain remains | `v0.3` |
 | 35 | `RUN-OPTIONS-ROUNDTRIP` (R16) | `v0.4` |
-| 36 | T3 evaluator + author `conformance/features/<packId>.features` for the classic tier | `v0.4` |
+| 36 | T3 feature catalogue with complete OFF/ON states and stable digests; evaluator requires two authenticated same-state T1 passes plus FEATURE_DELTA evidence | `v0.4` |
 | 37 | Scenes for the dual-spec modern-pass families | `post-v0.5` |
+| 38 | RUN-EXPRESSION-CONFORMANCE adapter receives P11 create(metricsSink,diagnosticSink), actual typed runtime collection and source-less unsupported-backend expectations | `v0.4` |
 
 ---
+*Review36 FAIL, Review37 PASS-WITH-CORRECTIONS and Review38 literal PASS remain historical.
+Review39 returned PASS-WITH-CORRECTIONS with five findings; this separate fix-up is unverified
+until fresh whole-document review. No historical review is upgraded by authored resolutions.*
 
-*Review round 36 returned **FAIL** against the v3 surface and remains immutable without a
-`## Resolutions` section. Review round 37 returned **PASS-WITH-CORRECTIONS** against the
-maintainer-authorized v2 rebuild; §0.37 applies its sole correction. This artifact is **not
-verified** pending the required fresh whole-document Review 38.*
-
-*§0.38 integration reconciliation additionally changes §5: `/2` receiver receipt, named
+*Historical §0.38 integration reconciliation changed §5: `/2` receiver receipt, named
 evaluator conformance, P1 diagnostic permission, and P3/P4/P5 source-free inspection chain.
 All are unverified architectural contracts. No validation or real-pack result is claimed.*
+
+*Historical 2026-09-08 D-P2-32 changed §5 to schema20 and complete nine-tree
+source-free consumption. Historical schema19 receipts remain dated history. This amendment
+requires fresh whole-document verification and grants no implementation clearance or PASS.*
+
+*2026-09-08 R39 fix-up: all five corrections authored in D-P2-33–37 and P3 R55/schema21
+received in D-P2-38. R38's literal PASS and R39's PASS-WITH-CORRECTIONS remain historical
+reviews; neither certifies this amendment. Matching P3/P4/P6/P7 owner receipts, fresh
+whole-document reviews and final integration remain required. No validation, implementation,
+pack acquisition, rendered/calibration/OQ result or approval was performed.*
+
+*2026-09-08 D-P2-39/40: P6 replay-report/P7 collector and P8 pure celestial-input
+receipts change §5 without changing any wire/schema/projection version. Fresh review
+remains required. No builds, tests, formatting, validation or runtime execution performed.*
+
+*2026-09-08 Review41 D-P2-47–49 repair changes §5; fresh whole-document review and P7
+receipt integration pending. Original review preserved. No validation commands, execution or
+PASS claim; IR-01 and final §G5.3 remain open.*
+
+*2026-09-08 R42 D-P2-50–52: core `/4` durable owner timing, schema22 admission and P11
+typed diagnostic receiving seam amend §§4/5/9/11/12. R42's original review body is preserved.
+Matching P7 producer integration and fresh owner/receiver review remain required; no validation
+commands, implementation, capture result, PASS or implementation clearance is claimed.*
+
+*D-P2-50's identitiesUnchanged covers admitted controlled execution through its retained
+prefix; normal terminal revocation/restoration is not an unexpected runtime reset or an
+identity mismatch. RESTORED separately authenticates cleanup. Historical schema21 receipts,
+including D-P2-38 and the R40 prose, describe their dated amendment only; current admission
+is exclusively schema23/current-constant equality under D-P2-55.*
+
+*R43 returned PASS-WITH-CORRECTIONS with one required correction: C43-1 is repaired as
+D-P2-54 (complete canonical flattened scalar hook evidence, H8-REBUILD-01 included) with the
+coordinated D-P2-55–60 receiving receipts, and the later attempt6/attempt7 receiving repairs are
+recorded as §5.2 receipt rows D-P2-65–71. R43's original verdict remains historical; the repair
+is unverified until fresh whole-document review.*
+
+*R44 (frozen attempt6 owner) and R45 (frozen attempt7 owner) each returned PASS. Both are
+historical architecture verdicts over the bytes they read: neither certifies the current
+document, grants implementation clearance, or supersedes fresh whole-document review.*
+
+*R46 (frozen attempt8 owner) returned PASS-WITH-CORRECTIONS with one required provenance
+correction: C46-1 (header inputs and closing verification history stopping at R42) was
+repaired as D-P2-72, and this fix-up records R46 itself in §0.1 and here as D-P2-73. R46's
+verdict is a historical architecture verdict over the bytes it read: it does not certify the
+current document, grant implementation clearance, or supersede fresh whole-document review.*

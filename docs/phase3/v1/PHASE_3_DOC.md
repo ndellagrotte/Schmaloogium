@@ -3,7 +3,7 @@
 ## 0. Header
 
 **Phase:** 3 — Pack front-end: ingestion, preprocessing, and configuration model
-**Date:** 2026-08-03 · **Last revised:** 2026-09-07 (§0.59)
+**Date:** 2026-08-03 · **Last revised:** 2026-09-08 (§0.66)
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 3
 specification only. RC3 governs this phase only; this document does not change the Phase 1 or
 Phase 2 governance pins.
@@ -465,6 +465,152 @@ Research preceded decisions: RC3 Phase 3, RESEARCH §§3.5/4.7/7.5/App F, shippe
 docs and the narrowly identified licensed language reader were read. §11 records evidence and
 limits; OQ-7 is not self-ratified. Historical addenda/reviews remain unchanged; fresh review is required.
 
+### 0.60 U1 documented-mechanism adoption — 2026-09-07
+
+The maintainer selected **“Correct requirement to documented mechanisms”** in
+`docs/decisions/U1_TEXTURE_SAMPLING.md`. D-P3-67 adopts that narrow authority correction for
+Phase 3 under its otherwise unchanged RC3 pin. Active requirements retain `.0`–`.9` duplicate
+discriminators and Phase-13-owned `.mcmeta` blur/clamp, and no longer require unspecified
+filter/wrap property-key suffixes or a future typed sampling-state grant. Historical addenda,
+decision evidence, research/design text and reviews remain unchanged; their former U1 pending
+statements describe their dated surfaces, not an additional active gate after this adoption.
+
+Inputs read for this adoption: the complete Phase 3 document; RC3 Part I §G0–§G12 and the
+Phase 3 specification; RESEARCH §§0–1, 3.1–3.3, 3.5, 3.7, 4.1, 4.7, 7.5, Appendix A.3,
+Appendix F in full and Appendix H; and the published
+[OptiFine custom-texture block](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.properties)
+and [Iris `.mcmeta` section](https://shaders.properties/current/reference/buffers/custom_textures/#mcmeta-file).
+OptiFine explicitly says `.0`–`.9` avoid duplicate property keys and `.mcmeta` configures
+wrap/filter. Iris documents `blur`/`clamp` and excludes shader-provided sidecars for resource/
+atlas textures. This evidence supports the selected mechanism, not modern features, a blanket
+source-kind default, or ratification of Phase 13's existing defaults/error policy.
+
+The published parser, typed source specs, sidecar references, lossless declarations, dispositions,
+duplicate reduction and fingerprint payload are **unchanged**; schema **18** remains current
+under §5.3. No shim, synthesized schema, or sampling API is introduced. This is authority
+adoption, not runtime evidence or a PASS. Changed §5 requires fresh independent whole-document
+review; IR-01, other owner grants and implementation gates remain in force.
+
+### 0.61 Native-preserving geometry owner grant — 2026-09-07
+
+D-P3-68 answers the complete native-source request in Phase 1 §11.4 and Phase 4 §5.4 item 1.
+The two-span translator is removed from the active contract, not relabeled successful.
+`GeometrySourceRequest` selects ordinary source or explicit native preservation; each successful
+source publishes its language, closed geometry form, effective source-over-API layout and complete
+attributed declaration catalog. This is **schema 19**: the nested source/site/map/result graph
+and its meaning change. No schema-18 value may be relabeled or upgraded by inference.
+Locale, Internal-session, U1, option/old-light and texture semantics are unchanged.
+
+Inputs actually read for this amendment: complete current Phase 3; RC3 Part I and full Phase 3
+specification; RESEARCH §§0–1, 3.1–3.2, 3.5 and Appendix A.3; shipped G6_pre1 author
+`doc/shaders.txt` Geometry Shader Configuration; Phase 1 §5 and its full §11.4 native-source
+request and migration, supporting §4.7.2; Phase 4 §§4.7–4.8 and §§5.2–5.4 as the assigned
+requester, not a new dependency. Additional published author specifications, needed to close
+the unresolved language/linkage gap, were read at their exact revisions:
+[ARB_geometry_shader4](https://registry.khronos.org/OpenGL/extensions/ARB/ARB_geometry_shader4.txt),
+revision 26, last modified 2011-01-21 (GLSL amendments and OpenGL 3.2 interactions);
+[GLSL 1.20](https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.1.20.pdf), revision 8,
+2006-09-07, §3.3; and [GLSL 1.50](https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.1.50.pdf),
+revision 11, 2009-12-04, §§3.2–3.3 and 4.3.8. These are specification evidence, not OSS
+implementation licenses. ARB carries Khronos copyright 2008–2013 and its linked
+[specification-use terms](https://registry.khronos.org/speccopyright.html) (August 2015);
+GLSL 1.50's copyright page permits implementing the functionality; GLSL 1.20 carries
+3Dlabs copyright 2002–2006 and restrictive redistribution terms. This amendment cites and
+independently specifies behavior; it copies no implementation or specification body.
+No prohibited transformer, unresolved library, reference implementation code or transcript was read.
+
+The published-spec facts below carry `[V:web 2026-09-07]`; the request/result design and error
+classification are `[D-P3-68]`, not observed target-engine behavior. P4's already-recorded
+TRIANGLES/TRIANGLE_STRIP API strategy is retained, not newly inferred from an author specification.
+Native source preservation does not solve R26 fullscreen submission or P10 vanilla-QUADS
+compatibility. The maintainer separately authorized a conditional quad-to-triangle adapter at
+the earliest milestone claiming affected `.gsh` support; P7/P10 own its exact preservation,
+topology/provoking-vertex/primitive-ID policy and conformance, not this source grant. Scope
+permission is not completed owner/runtime evidence. Those gates, P1 jcpp admission/pinning,
+fresh independent owner/consumer reviews and final integration still gate BUILD. No PASS is granted.
+
+### 0.62 Same-load binary acquisition owner grant — 2026-09-08
+
+D-P3-69 addresses TS-1 in `docs/build/reviews/TEXTURE_PARAMETER_SEAM_REVIEW_1.json`.
+The existing eager bounded snapshot is now an actual public binary capability:
+`PackConfiguration.assets()` immediately follows `sources`. Schema **20** replaces schema 19;
+matching nested ID and inspection schema are mandatory. §§2.2/4.1/4.10/5/8 specify acquisition,
+closed absence/rejection, read-only shared storage, same-load identity and source-free metadata.
+P13 is explicitly granted PNG/raw/noise/adjacent-sidecar acquisition from that capability; P7
+passes and retains the exact loaded configuration, including assets, across resource-only `NONE`.
+This grants no host-path reopening, resource-epoch relabeling, sampling default, U1 syntax,
+geometry change, implementation clearance or PASS. Historical addenda remain historical.
+The approved `docs/decisions/TEXTURE_SIDECAR_DEFAULTS.md` policy is preserved: authenticated
+optional owned-sidecar-only read failures are retained as typed outcomes for P13's atomic
+baseline recovery, one warning and fingerprinting. Safety, bounds, index/container, configuration
+and primary-source failures stay fatal. P13 D-P13-30 and P7 D-P7-33 receive acquisition/retention; fresh reviews remain.
+
+### 0.63 Round 55 fix-up — 2026-09-08
+
+D-P3-70 corrects structural usability to accept a usable base **or explicit override**, maps
+the documented external `TEXTURE_RECTANGLE` token to the existing typed `RECTANGLE`, and
+publishes payload-free `ScreenProfileEntry()`. The nested screen shape requires schema **21**,
+matching containing/ID/inspection schemas and the current materialization identity domain.
+Assets, sidecar handling and the nine-tree projectionVersion=1 codec retain D-P3-69 meanings.
+§§5/11 publish receiving obligations, not completed receiver receipts. R55's original verdict
+is preserved with separate Resolutions; changed §5 requires fresh independent whole-document
+review. No implementation clearance, self-PASS, build, test or validation evidence is claimed.
+
+### 0.64 BLOCK dual-era producer grant — 2026-09-08
+
+D-P3-72 resolves the producer gap identified by P9 review 1 C1: present BLOCK requests now
+publish the same isolated forced-11300 alternate already defined for ENTITY. This is an
+explicit local dual-era compatibility decision, not a claim of classic RESEARCH §3.7 behavior
+or inferred source-branch provenance. Only the private alternate environment changes;
+ordinary state/rules, item/layer behavior and all unrelated parser policies remain unchanged.
+Changed component meaning advances the current schema to **22**, including nested IDs,
+inspection and materialization identity. Older numeric addenda and D-P3-71's schema21
+statement are historical; §5.3 supersedes their current-version assertions only.
+
+Inputs read: this owner's header, parser/schema/identity contracts and affected plans; RC3
+§§G0/G1/G4 and Phase 3; RESEARCH §§0–1/3.6.8/3.7; P9 review 1 C1 and owner §§4.6/5.4.
+The prior passing P3 R56 review is untouched and does not certify this changed §5.
+Receiver obligations are §§5.3/11.4; fresh independent review remains required. This is
+architecture only, with no implementation, validation or clearance claim.
+
+### 0.65 R57 range-capable selector correction — 2026-09-08
+
+D-P3-73 resolves C57-1 with bounded immutable metadata sets of inclusive intervals and typed
+literal/integer-range property alternatives. One rule per selector, source order/provenance,
+dual-era isolation and registry ownership remain unchanged. The changed nested rule shape and
+meaning require **schema23**, including containing/nested/inspection identity and
+`MaterializedSource-v23`; all prior numeric receipts describe historical surfaces.
+The nine metadata-only inspection trees and `projectionVersion=1` remain unchanged.
+
+Inputs read for this correction: the owner contract and R57; RC3 §§G0/G1.3/G4 and the full Phase 3
+specification; RESEARCH §§0–1/3.6.8/3.7; shipped G6 `doc/shaders.txt:535–568` and its explicit
+`doc/properties_files.txt:82–122` block-matcher reference; P9 §4.5 as the affected receiver,
+not a verified dependency. No implementation source or forbidden transcript was needed.
+The examples are author-document evidence; exact typed encoding, normalization, bounds and
+ambiguity/rejection rules below are local API decisions, not newly claimed reference behavior.
+R57's original verdict and N57-1 source/license limitations remain intact. Changed §5 requires
+fresh independent producer/receiver review; no implementation, runtime, validation or clearance
+is supplied by this documentation-only correction.
+
+### 0.66 R60 override-target whitelist correction — 2026-09-08
+
+This addendum supplies the amendment-ledger entry the R60 C1 fix-up lacked. D-P3-74 makes
+§4.4's per-pack override target whitelist authoritative: protected targets are exactly
+non-version identity/capability names, so §4.5's reserved intrinsic namespace (`__VERSION__`,
+`__FILE__`, `__LINE__`, `GL_core_profile`, `GL_compatibility_profile`,
+`GL_ARB_geometry_shader4`) and every other non-whitelisted name are rejected with the same
+pre-I/O `INVALID_REQUEST`, closing the blocklist/whitelist conflict. §§4.4/5.1/8.1 state the
+one ruling identically; there is no `PackConfiguration` component, meaning, fingerprint or
+schema change, so no identity receipt moves.
+
+Inputs read for this record: this owner's §4.4 whitelist action matrix, §4.5's reserved
+intrinsic namespace, §5.1's `MacroConfiguration` row, §8.1's override gate and the decision
+log, plus review 61 correction 1; no implementation source or forbidden transcript was needed.
+No build, test, Gradle, GL, capture or network command ran, and no historical addendum,
+review verdict or receipt was rewritten. §8.1's named gate and a fresh independent
+whole-document review remain required. This is documentation only: no implementation, runtime
+evidence, fresh PASS or implementation clearance is claimed.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 3 owns
@@ -490,9 +636,9 @@ Phase 3 owns the complete pure-JVM path from a selected pack location to one imm
 - all Appendix A.3 directive recognition and aggregation into requirements/configuration data;
 - the complete Appendix F `shaders.properties` model;
 - lossless, source-ordered texture-property declarations before normalization or winner selection,
-  including unresolved key extensions; Phase 3 alone owns their eventual semantic decoding;
+  including unresolved key extensions under existing `UNRESOLVED_KEY` handling;
 - schema-versioned unresolved ID-mapping inputs, per-file presence, entry/tag and era provenance,
-  ordinary/forced-11300 entity parses, and layer rules;
+  ordinary/forced-11300 block and entity parses, and layer rules;
 - per-pack/global persistence formats;
 - processed-source debug dumping; and
 - validation, diagnostics, and the atomic publication of `PackConfiguration`.
@@ -574,7 +720,7 @@ public final class PackFrontEndServices {
 }
 
 public interface PackFrontEnd {
-    int CURRENT_SCHEMA_VERSION = 18;
+    int CURRENT_SCHEMA_VERSION = 23;
     DiscoveryLimits discoveryLimits();
     PackDiscoveryResult discover(PackDiscoveryRequest request);
     FilesystemCandidateResolution resolveFilesystemCandidate(
@@ -728,6 +874,7 @@ public record PackConfiguration(
     CompatibilityStatus compatibility,
     Map<DimensionKey, DimensionConfiguration> dimensions,
     SourceCatalog sources,
+    PackAssetSnapshot assets,
     OptionConfiguration options,
     MacroConfiguration macros,
     ShaderPropertiesModel properties,
@@ -742,6 +889,27 @@ public record PackConfiguration(
     }
 }
 public record ConfigurationFingerprint(String value) {}
+
+public sealed interface PackAssetSnapshot permits PackAssetSnapshotImpl {
+    PackIdentity pack();
+    List<PackAssetMetadata> manifest();
+    PackAssetAcquisition acquire(NormalizedPackPath path);
+}
+public record PackAssetMetadata(
+    NormalizedPackPath path, PackAssetAvailability availability,
+    OptionalInt byteCount, Optional<String> sha256) {}
+public enum PackAssetAvailability { AVAILABLE, MISSING, UNREADABLE }
+public sealed interface PackAssetAcquisition {
+    record Acquired(PackAssetBytes bytes) implements PackAssetAcquisition {}
+    record Unreadable(NormalizedPackPath path) implements PackAssetAcquisition {}
+    record Missing(NormalizedPackPath path) implements PackAssetAcquisition {}
+    record InvalidReference(PackAssetReferenceFailure reason) implements PackAssetAcquisition {}
+}
+public enum PackAssetReferenceFailure { NULL_PATH, NOT_DECLARED }
+public sealed interface PackAssetBytes permits PackAssetBytesImpl {
+    PackAssetMetadata metadata();
+    java.nio.ByteBuffer openCursor();
+}
 
 public record MacroConfiguration(
     MacroIdentityPolicy identityPolicy,
@@ -880,7 +1048,7 @@ public sealed interface ScreenEntry
             ScreenEmptyEntry, ScreenAllOptionsEntry {}
 public record ScreenOptionEntry(String optionName) implements ScreenEntry {}
 public record ScreenSubscreenEntry(String screenName) implements ScreenEntry {}
-public record ScreenProfileEntry(ProfileName profile) implements ScreenEntry {}
+public record ScreenProfileEntry() implements ScreenEntry {}
 public record ScreenEmptyEntry() implements ScreenEntry {}
 public record ScreenAllOptionsEntry() implements ScreenEntry {}
 public record ScreenModel(OptionalInt explicitColumns, List<ScreenEntry> entries) {
@@ -1111,6 +1279,8 @@ public record IdMappingFileInput(
     List<MappingRule> ordinaryRules,
     List<MappingRule> forced11300Rules,
     IdMappingFileFingerprint fingerprint) {}
+// D-P3-72: BLOCK/ENTITY may publish forced11300Rules; ITEM/LAYER never do.
+// State is ordinary-derived; only alternate rules are MODERN (§4.9).
 // All declarations above are consumer-visible. Collections are defensively copied and enums are
 // exhaustive. Candidate IDs, generations, targets, and file access have package-private final
 // implementations beside the front end in `com.schmaloogium.engine.pack`. `OptionCatalog`,
@@ -1153,7 +1323,7 @@ public record IdRule(
     int shaderId,
     SelectorKind selectorKind,
     String selectorToken,
-    OptionalInt legacyMetadata,
+    Optional<MetadataConstraint> legacyMetadata,
     List<PropertyPredicate> propertyPredicates,
     MappingEra era,
     MappingOrigin origin,
@@ -1164,14 +1334,21 @@ public record LayerRule(
     RequestedRenderLayer layer,
     SelectorKind selectorKind,
     String selectorToken,
-    OptionalInt legacyMetadata,
+    Optional<MetadataConstraint> legacyMetadata,
     List<PropertyPredicate> propertyPredicates,
     MappingEra era,
     MappingOrigin origin,
     int sourceLine,
     int selectorOrdinal) implements MappingRule {}
 
-public record PropertyPredicate(String propertyName, List<String> acceptedValues) {}
+public record IntegerRange(int lowerInclusive, int upperInclusive) {}
+public record MetadataConstraint(List<IntegerRange> alternatives) {}
+public sealed interface PropertyValueConstraint {
+    record Literal(String value) implements PropertyValueConstraint {}
+    record IntegerInterval(IntegerRange range) implements PropertyValueConstraint {}
+}
+public record PropertyPredicate(
+    String propertyName, List<PropertyValueConstraint> acceptedValues) {}
 
 public sealed interface MappingOrigin permits PackMappingOrigin, ModMappingOrigin {}
 public record PackMappingOrigin(PackIdentity pack, NormalizedPackPath source)
@@ -1246,7 +1423,7 @@ public interface SourceMaterializer {
     MaterializationResult materialize(
         SourceKey root,
         MacroContribution contribution,
-        GeometryTranslationRequest geometryTranslation);
+        GeometrySourceRequest geometry);
 }
 
 public sealed interface MaterializationResult {
@@ -1254,17 +1431,22 @@ public sealed interface MaterializationResult {
     record Unavailable(SourceKey root, List<EngineDiagnostic> diagnostics)
         implements MaterializationResult {}
 }
-public record SourceMap(Map<Integer, SourceId> files) {
+public record SourceMap(Map<Integer, SourceId> files, List<SourceMapping> mappings) {
     public Optional<SourceId> sourceForFileNumber(int fileNumber) {
         return Optional.ofNullable(files.get(fileNumber));
     }
 }
+public record SourceMapping(
+    int startOffset, int endOffset, AttributedSourceLocation location,
+    List<AttributedSourceLocation> expansionTrace) {}
 public record MaterializationFingerprint(String value) {}
 public record MaterializedSource(
     SourceKey root,
     String transformedText,
     SourceMap sourceMap,
     DeclaredUniformCatalog declaredUniforms,
+    ShaderLanguage language,
+    GeometrySourceForm geometry,
     List<EngineDiagnostic> diagnostics,
     MaterializationFingerprint fingerprint) {}
 
@@ -1321,7 +1503,7 @@ public record SourceSpan(
     int startLine,
     int startColumn) {}
 public enum LegacyGeometryExtension { GL_ARB_GEOMETRY_SHADER4 }
-public record LegacyGeometryRewriteSite(
+public record LegacyGeometrySite(
     SourceKey root,
     SourceSpan extensionSpan,
     SourceSpan maxVerticesSpan) {}
@@ -1329,18 +1511,31 @@ public record LegacyGeometryConfig(
     SourceKey root,
     LegacyGeometryExtension extension,
     int maxVertices,
-    LegacyGeometryRewriteSite rewriteSite) {}
+    LegacyGeometrySite site) {}
 
 
-public record GeometryTranslationPlan(
-    SourceKey root,
-    GeometryInputPrimitive input,
-    GeometryOutputPrimitive output,
-    int maxVertices) {}
-
-public sealed interface GeometryTranslationRequest {
-    record None() implements GeometryTranslationRequest {}
-    record Translate(GeometryTranslationPlan plan) implements GeometryTranslationRequest {}
+public record ShaderLanguage(
+    int version, boolean explicitVersion, Optional<GlslProfile> explicitProfile,
+    List<ShaderExtensionDirective> extensions) {}
+public enum GlslProfile { CORE, COMPATIBILITY }
+public enum ExtensionBehavior { REQUIRE, ENABLE, WARN, DISABLE }
+public record ShaderExtensionDirective(
+    String name, ExtensionBehavior behavior, AttributedSourceLocation location) {}
+public record GeometryLayout(
+    GeometryInputPrimitive input, GeometryOutputPrimitive output, int maxVertices) {}
+public record GeometryLayoutDeclaration(
+    Optional<GeometryInputPrimitive> input, Optional<GeometryOutputPrimitive> output,
+    OptionalInt maxVertices, AttributedSourceLocation location) {}
+public sealed interface GeometrySourceRequest {
+    record None() implements GeometrySourceRequest {}
+    record PreserveNative(LegacyGeometryConfig expected) implements GeometrySourceRequest {}
+}
+public sealed interface GeometrySourceForm {
+    record None() implements GeometrySourceForm {}
+    record CoreLayout(GeometryLayout effective, List<GeometryLayoutDeclaration> declarations)
+        implements GeometrySourceForm {}
+    record NativeLegacy(LegacyGeometryConfig config, GeometryLayout effective,
+        List<GeometryLayoutDeclaration> declarations) implements GeometrySourceForm {}
 }
 
 public enum GeometryInputPrimitive { POINTS, LINES, LINES_ADJACENCY, TRIANGLES, TRIANGLES_ADJACENCY }
@@ -1397,13 +1592,18 @@ encoding with the other §4.10 materialization inputs, then embeds the completed
 equal. The declarations above are canonical; the binding data contract is the closed type algebra,
 immutable declaration order, source attribution, canonical payload exclusion, and fingerprint
 equality. Widths, matrix dimensions, array extents, sampler combinations, and recursively frozen
-struct fields are validated against the source's effective GLSL version. `ArrayExtent` is either a
-positive constant extent or the closed `UNSIZED` variant; no expression text or mutable syntax
+struct fields are validated against the source's effective GLSL version and active extensions.
+Array extents retain their validated positive constant extent or the closed `UNSIZED` variant; no expression text or mutable syntax
 node escapes.
 All catalog documents, include edges, maps, diagnostics, and materialized values remain valid after
 the input lease closes; no published value retains filesystem or mutable provider storage. A
 successful materialization is therefore a self-contained snapshot that Phase 4 may retain only
 with its `MaterializationFingerprint`.
+`Available` means preprocessing, geometry classification and the **complete** declaration catalog
+succeeded; it does not claim GLSL compile/link success or draw compatibility. The exact algorithms,
+closed-form invariants and attribution of the new language/geometry/map values are §4.5,
+incorporated by §5.1. The removed `GeometryTranslationRequest`, `GeometryTranslationPlan` and
+`LegacyGeometryRewriteSite` have no aliases or successful compatibility path in schema `CURRENT_SCHEMA_VERSION`.
 
 ### 2.3 Load pipeline
 
@@ -1414,7 +1614,8 @@ The selection-first, pre-I/O request validation in §5.1 precedes step 1, includ
 
 1. enumerate and resolve the selected candidate;
 2. open one bounded `PackInput` lease, locate the effective `shaders/` root, index files, read
-   immutable bytes, and close the folder/archive lease;
+   privately owned immutable bytes or bounded per-file read-failure markers, and close the
+   folder/archive lease. No deferred reopening occurs; §4.1 classifies markers before publication;
 3. build base and `world-128`…`world128` source sets using OF dimension semantics;
 4. decode sources, allocate stable source IDs, parse includes, and build the directed include
    graph;
@@ -1430,6 +1631,8 @@ The selection-first, pre-I/O request validation in §5.1 precedes step 1, includ
 8. preprocess `shaders.properties` exactly once with A–G only and parse it, capturing decoded
    texture declarations before collapse; derive known specs and validate profiles/screens/textures/
    custom declarations/program state while preserving unresolved/invalid texture occurrences.
+   Classify retained read failures against actual source duties and freeze the declared-reference
+   `PackAssetSnapshot` view under §4.1; perform no new input access or copying of payloads.
    Resolve D-P3-64's old-light booleans from those parsed flags and global preferences, then
    finalize `MacroConfiguration` before any shader jcpp. Acquire every locale under §4.3;
    Option discovery above reads original source declarations and include topology, not shader
@@ -1443,7 +1646,7 @@ The selection-first, pre-I/O request validation in §5.1 precedes step 1, includ
    with jcpp, preserving any attributed legacy geometry pair without translating it;
 10. scan directives/declarations and fold them into immutable `ResourceRequirements`;
 11. snapshot each pack ID-map file's presence, preprocess/parse it with standard A–G macros only,
-    and for a present entity file also produce the isolated forced-`MC_VERSION=11300` parse;
+    and for present block and entity files also produce isolated forced-`MC_VERSION=11300` parses;
 12. validate cross-field invariants, compute a fingerprint containing the finalized option state,
     both companion booleans, and the complete retained texture-declaration payload, then atomically
     publish `PackConfiguration`; final-source debug dumping occurs only on later successful
@@ -1461,9 +1664,10 @@ equals its containing key. Phase 7 performs selection, while Phase 12 may inspec
 ```text
 PackInputSnapshot
   ├─ SourceCatalog ─ IncludeGraph ─ OptionCatalog ─ SourceMaterializer
+  ├─ PackAssetSnapshot ─ declared paths + shared immutable bytes / missing / unreadable outcomes
   ├─ ShaderPropertiesModel ─ Option/Profile/Screen/Texture/Expression/ProgramState models
   ├─ DirectiveScan ─ ResourceRequirements
-  └─ IdMappingInput (four file states + ordinary/forced entity rules)
+  └─ IdMappingInput (four file states + ordinary/forced block and entity rules)
                          ↓ validate/freeze
                   PackConfiguration
                          ↓ only downstream input
@@ -1533,8 +1737,8 @@ No Appendix F item is left to an implicit “miscellaneous” parser.
 | `texture.<gbuffers\|deferred\|composite>.<sampler>[.0-9]` pack-relative PNG path | `CustomTextureSpec.PackPath`; under D-P3-38's explicit interpretation of App F.5, the normalized final segment must have a non-empty stem and literal lowercase `.png` suffix, while the duplicate discriminator remains separate from the sampler | Phase 13 | App F.5 (pack-relative PNG path only); D-P3-38 (extension-case/stem interpretation); `texture_packPathPngCaseAndLastValid` |
 | same key, `minecraft:` asset/live texture | `CustomTextureSpec.MinecraftResource`; keeps `_n`/`_s` and dynamic/atlas identity as text | Phase 13 | App F.5; `texture_minecraftDynamicAndCompanionSuffix` |
 | same key, raw form | `CustomTextureSpec.Raw` with type, internal format, exact dimensions, pixel format/type; malformed arity or an unknown/incompatible format token warns and omits only the executable effect while retaining an `INVALID_VALUE` declaration | Phase 13 | App F.5; `texture_rawAllFourTypesAndArity`, `texture_rawFormatDomainsAcceptedRejected`, `texture_rawIntegerTransferCompatibility` |
-| terminal filter/wrap suffixes reported by REV1 evidence | every decoded occurrence survives in `textureDeclarations` as `UNRESOLVED_KEY` until authority defines its grammar; no stripping, base-binding alias, or invented sampling state. Retention is not honoring conformance; §§5.4/11.5 U1 gates remain | Phase 3 parsing; Phase 13 behavior after grant | `docs/design/v2.0-RC3/DESIGN.md:1411-1412` ("stripped and ignored" is a gap), `:2441-2443` ("ours must honor them"); D-P3-59; `texture_declarationsLosslessBeforeReduction`, `texture_unresolvedNeverAliasesBase` |
-| same texture's `.mcmeta` blur/clamp | `TextureSidecarRef` is retained without loading it; this documented sidecar contract is not evidence for any property-key suffix grammar | Phase 13 | App F.5; `texture_sidecarReferencePreserved` |
+| `.0`–`.9` duplicate discriminators; extra/unknown `texture.*` key segments | Numeric suffixes avoid duplicate property keys, never request filter/wrap. Extra/unknown keys retain exact `UNRESOLVED_KEY` declarations and warnings without executable specs, stripping or base-key aliasing. D-P3-67 removes the unspecified sampling-suffix requirement, not lossless capture | Phase 3 parsing; Phase 13 consumes existing specs | App F.5; `docs/decisions/U1_TEXTURE_SAMPLING.md`; D-P3-59/D-P3-67; `texture_declarationsLosslessBeforeReduction`, `texture_unresolvedNeverAliasesBase` |
+| same texture's `.mcmeta` blur/clamp | `TextureSidecarRef` is retained without interpreting it; `assets()` acquires its already-snapshotted bytes, not a reopened path. This is not evidence for property-key suffix grammar | Phase 13 | App F.5; `texture_sidecarReferencePreserved` |
 | stage mapping | `GBUFFERS` applies to gbuffers+shadow, `DEFERRED` to deferred, `COMPOSITE` to composite+final | Phases 4/13 | App F.5; `texture_stageExpansion` |
 | multiple texture types on one unit | preserve `(stage,sampler,duplicateDiscriminator)` keys; Phases 4/13 derive sampler type from program declarations and later validate one type per unit per program | Phases 4/13 | App F.5; `texture_sharedUnitSamplerTypeDerivedLater` |
 | `texture.noise=<pack path>` | `NoiseTextureSpec.Override`; otherwise generated-noise requirement remains | Phase 13 | App F.5; `texture_noiseOverride` |
@@ -1565,7 +1769,7 @@ without clearing a previously valid value.
 |---|---|---|
 | `attribute … mc_Entity / mc_midTexCoord / at_tangent` (`.vsh` only) | per-program `VertexRequirements.attributes`, directly exposed to Phase 4 for declared pre-link attribute binding and retained for Phase 10 vertex layout (§5.1) | `directive_extendedAttributeOptIns`, `directive_attributeWrongStageIgnored`, `resource_programProjectionSnapshotAndIdentity` |
 | `const int countInstances=N` (`.vsh` only) | per-program `instanceCount` (positive integer) | `directive_countInstances`, `directive_countInstancesWrongStageIgnored` |
-| `#extension GL_ARB_geometry_shader4` + `maxVerticesOut` (`.gsh` only) | one validated `LegacyGeometryConfig` pair plus its attributed `LegacyGeometryRewriteSite`; materialization executes Phase 4's separate `GeometryTranslationPlan` and emits deterministic transformed core-form source | `directive_legacyGeometryPair`, `directive_geometryPairWrongStageIgnored`, `geometryRewrite_pairCardinalityAndSpans`, `geometryRewrite_deterministicAttributedOrUnavailable` |
+| `#extension GL_ARB_geometry_shader4` + `maxVerticesOut` (`.gsh` only) | one validated `LegacyGeometryConfig` and attributed `LegacyGeometrySite`; explicit `PreserveNative(expected)` retains extension/version/constant/built-ins and publishes `NativeLegacy`, with source-layout precedence; no two-span core translation | `directive_legacyGeometryPair`, `directive_geometryPairWrongStageIgnored`, `geometryNative_pairCardinalityAndIncludes`, `geometryNative_preservationAndMixedLayouts` |
 | `uniform … shadow/shadowtex0/shadowtex1/watershadow` | `shadowDepthBuffers` minimum 1/2 | `directive_shadowDepthUniformSizing` |
 | `uniform … shadowcolor/shadowcolor0/shadowcolor1` | `shadowColorBuffers` minimum 1/2 | `directive_shadowColorUniformSizing` |
 | `uniform … depthtex0/1/2`, `gdepthtex` | `mainDepthTextures` minimum 1/2/3 | `directive_mainDepthUniformSizing` |
@@ -1628,12 +1832,12 @@ smoothing formula; this phase does not import an alternate unit.
 | Source identity and compiler attribution | `SourceCatalog` publishes ordered stage roots and one distinct ascending dimension/name `executablePrograms` projection; `SourceMap` and materializer retain attribution | RESEARCH §§3.2/4.2 and App A.2 source presence; `sourceCatalog_programProjectionStagesDimensionsAndAbsence`, `sourceMap_numericLookupAndMaterializedLifetime` |
 | Global compute-source recognition (`post-v0.5`) | For each known non-gbuffers program `p`, P3-C19 indexes only base-folder `p.csh` and `p_a.csh`…`p_z.csh`; the `SourceKey` uses associated name `p`, stage `COMPUTE`, and the distinct physical `SourceId`, then materializes through the same include/source-map path. Dimension folders remain `.vsh`/`.fsh` only | RESEARCH §§3.1/3.6.2; `sourceCatalog_computeRootsApplicabilityAndDimensions` (`post-v0.5`) |
 | Standard macro identity families | `MacroConfiguration` closes OF A–G plus the exact shader-only option set `MC_NORMAL_MAP`, `MC_SPECULAR_MAP`, `MC_RENDER_QUALITY`, `MC_SHADOW_QUALITY`, `MC_HAND_DEPTH`, `MC_OLD_HAND_LIGHT`, `MC_OLD_LIGHTING`, `MC_FXAA_LEVEL`, and the separately named capability-feature, engine-identity, override, and reserved-contributor families; it adopts PD's version/parser shape but rejects enumerate-all extension emission | RESEARCH §3.5; PD §7.6 `[V:observed — Pintonium common-shaders/src/main/java/net/irisshaders/iris/gl/shader/StandardMacros.java]`; D-P3-9; `macro_standardAndShaderPayloadFamiliesClosed`, `macro_optionFamilyMembershipAndValues`, `macro_optionNumericSerializationAliasesAndThresholds` |
-| Companion option-macro input | `CompanionOptionMacros` is captured before load-time shader jcpp, retained in `MacroConfiguration`, and reused by same-build materialization with both booleans hashed | RESEARCH §3.5; `docs/phase13/v1/PHASE_13_DOC.md:1343-1347` requests "every same-build materialization" and "Include both booleans"; D-P3-58; `macro_companionTypedStateBeforeJcpp`, `macro_companionMissingNonOffAndOffShortCircuit`, `macro_companionSameBuildAndFingerprints` |
+| Companion option-macro input | `CompanionOptionMacros` is captured before load-time shader jcpp, retained in `MacroConfiguration`, and reused by same-build materialization with both booleans hashed | RESEARCH §3.5; `docs/phase13/v1/PHASE_13_DOC.md:846-852` states the preliminary demand — the required pair supplied before load/jcpp and retained by Phase 3 §5.1 in `MacroConfiguration`, same-build materialization and both fingerprints — with the R1 adoption record at `docs/phase13/v1/PHASE_13_DOC.md:1940-1944` and its §11.5 R1 row at `:2430`; D-P3-58; `macro_companionTypedStateBeforeJcpp`, `macro_companionMissingNonOffAndOffShortCircuit`, `macro_companionSameBuildAndFingerprints` |
 | Conditional preprocessing and substitution | jcpp adapters implement define/undef/if-family/defined/substitution for shaders and properties | RESEARCH §3.5; `preprocess_completeConditionalGrammarAllInputs` |
 | Public discovery/load and identity values | sealed tokens, explicit invalid generations, durable references, snapshot lifecycle, closed resolver/load outcomes, identity, and fingerprints | §2.2/§5; `discovery_invalidGenerationOrderingAndPublication`, `discovery_referenceRestartResolutionOutcomes` |
-| Block/item/entity short, namespaced, property, and legacy `id:meta` entry rules | schema-v18 `IdMappingInput` retains typed entry rules, selector order, file state, origin, and classic era for Phase 9 | RESEARCH §3.7; `idMap_allDocumentedRuleForms` |
-| `%namespace:path` tag-selector interpretation | Under D-P3-47/D-P3-49, schema-v18 `IdMappingInput` uses `%` plus the exact provisional lower-case ASCII grammar in §§4.9/5.1 to retain `SelectorKind.TAG`; Phase 9 supplies the 1.12 shim and entries-before-tags priority | RESEARCH §3.6.8 supplies generic shim/priority only; concrete grammar remains local pending clarification; `idMap_selectorKindEntryAndTag`, `idMap_tagIdentifierGrammarBoundaries` |
-| Entity compatibility preprocessing extension | a present entity file publishes ordinary A–G results and a separate result made by replacing only `MC_VERSION` with `11300`; no selection or merge occurs here | RESEARCH §3.7 supplies the preprocessing base; DESIGN.md Phase 9 §Scope and PD §8.1; `idMap_entityForced11300Isolated` |
+| Block/item/entity short, namespaced, property, and legacy `id:meta` entry rules | D-P3-73 current-schema typed metadata interval unions and Literal/IntegerInterval property alternatives, one rule per selector with unchanged source order/state/origin/era; bounded matching is P9-only | RESEARCH §3.7; shipped `doc/shaders.txt:544` → `doc/properties_files.txt:97–122`; `idMap_allDocumentedRuleForms`, `idMap_typedMetadataSetsAndPropertyRanges`, `idMap_rangeBoundariesNoExpansionOrOvermatch`, `idMap_rangeIdentityAndInspection` |
+| `%namespace:path` tag-selector interpretation | Under D-P3-47/D-P3-49, current-schema `IdMappingInput` uses `%` plus the exact provisional lower-case ASCII grammar in §§4.9/5.1 to retain `SelectorKind.TAG`; Phase 9 supplies the 1.12 shim and entries-before-tags priority | RESEARCH §3.6.8 supplies generic shim/priority only; concrete grammar remains local pending clarification; `idMap_selectorKindEntryAndTag`, `idMap_tagIdentifierGrammarBoundaries` |
+| Block/entity compatibility preprocessing extension | present BLOCK/ENTITY inputs publish ordinary A–G results and a separate result made by replacing only `MC_VERSION` with `11300`; no selection or merge occurs here | RESEARCH §3.7 supplies the unchanged classic base; D-P3-72 explicitly extends the existing ENTITY bridge to BLOCK for P9 R1 C1; `idMap_entityForced11300Isolated`, `idMap_blockForced11300SameSource` |
 | Mod-provided ID-map contributions | public pure `IdMappingParser` accepts optional bounded bytes, mapping kind, the published parser environment, and `MappingOrigin` from Phase 9 | RESEARCH §3.7; `idMap_modContributionOriginPreserved` |
 | `layer.solid/cutout/cutout_mipped/translucent` and opaque-solid exclusion | typed `LayerRule` with the same selector/era provenance plus deferred resolution constraint | RESEARCH §3.7; `idMap_layersAndOpaqueSolidExclusion` |
 
@@ -1701,6 +1905,107 @@ lifecycle discipline without a global static filesystem
 Unreadable/corrupt candidates remain list entries with a diagnostic; selecting one returns
 `PackLoadResult.Failed(failure)` and leaves shaders off. No archive error escapes to the client.
 
+**D-P3-69 — immutable binary acquisition (2026-09-08; binding through §5.1).**
+The §2.2 types live in `com.schmaloogium.engine.pack`; permitted implementations are
+package-private final classes in that package, with no public constructors. P3 alone issues them.
+`PackConfiguration.assets` is required, non-null and from the very same load snapshot as
+`pack`/`sources`/`properties`; its `pack()` is that exact immutable `PackIdentity`. Configuration
+construction rejects foreign-load pairing even if structural identities happen to compare equal.
+The private issuance association is not a digest input and has no public token or epoch.
+
+After property validation and last-valid duplicate reduction, the declared lookup domain is
+the union of every surviving `PackPath.image`, `Raw.bytes`, and noise `Override.image`, plus
+each one's canonical string with literal `.mcmeta` appended **even when absent**. Only these
+normalized paths are admitted. Minecraft resources/atlases, generated noise, unresolved or
+invalid declarations and shadowed specs add no paths. Paths use exactly the existing
+`NormalizedPackPath` grammar and selected-root coordinate system, not host paths or a new
+normalizer. Unsafe appended paths still obey the existing fatal safety/length bounds.
+Structural path equality, not object identity, controls lookup. Repeated references share one
+entry; `manifest()` is deep immutable and ordered by unsigned UTF-8 canonical path bytes.
+
+`acquire(null)` returns `InvalidReference(NULL_PATH)`; an otherwise valid normalized path outside
+that domain returns `InvalidReference(NOT_DECLARED)` before checking index existence. Malformed
+strings cannot construct `NormalizedPackPath` under its existing constructor contract; they
+are never repaired, treated as missing, or used for I/O. An admitted path without an indexed
+regular file (including a directory at that path) returns `Missing(path)`. An admitted indexed
+regular file returns `Acquired(bytes)`, including a zero-byte file, except a proven sidecar-only
+read failure returns `Unreadable(path)` under the classification below. Every manifest row has
+`AVAILABLE` with present nonnegative `byteCount` and SHA-256 of exactly those bytes, or
+`MISSING`/`UNREADABLE` with both optionals empty. All fields/optionals are non-null. Each acquired
+byte view's `metadata()` equals the manifest row; repeated lookup is deterministic and does no I/O.
+There is no hidden input provider, filename resolver, exception-bearing result, or deferred retry.
+`PackAssetMetadata` construction enforces that closed availability/optional matrix and exactly
+64 lowercase hexadecimal digits for a present digest. Result records reject null components.
+Snapshot and byte-view capabilities are nonserializable, identity-equal issuer objects; metadata
+and closed results use structural record equality. These capability identities are excluded from
+all fingerprints. Per-load path/metadata count is bounded by the existing indexed-entry and
+validated declaration bounds, including at most one adjacent absent row per distinct primary path.
+
+`PackAssetBytes.openCursor()` returns a fresh **read-only heap `ByteBuffer`**, position zero,
+limit/capacity equal to `metadata().byteCount().getAsInt()`, byte order `BIG_ENDIAN`.
+Its backing payload is P3-private: writes/array exposure through the buffer or derived views
+are prohibited by Java read-only-buffer semantics. Cursor position/limit/order are caller-local;
+duplicates/slices share immutable storage, never a mutable alias. Consumers may decode via
+buffer reads or copy into their own storage, but no API publishes a mutable byte array or
+accepts mutable storage back. Views are immutable/thread-safe; individual cursors follow
+ordinary caller-confined `ByteBuffer` cursor rules. No cursor owns a file/archive handle.
+The existing inbound `ImmutableBytes.copy()` is not this outgoing capability; Internal input
+is defensively copied exactly once into P3-owned storage and is never trusted as immutable.
+
+Every indexed regular-file payload is attempted in step 2 before the lease closes, within the
+existing finite `PackInputLimits` and parser/source bounds. Count actual uncompressed bytes
+with overflow-checked arithmetic, enforcing limits before allocation/growth; each file must
+also fit `Integer.MAX_VALUE` for the declared buffer domain. A filesystem excess is
+`INPUT_LIMIT_EXCEEDED`; any Internal provider/recount/domain violation is
+`INTERNAL_SOURCE_INVALID`. Bounds apply even to unused files and sidecars. Assets share one
+owned payload per path with the private load snapshot; the view/manifest adds only bounded
+per-entry metadata, not whole-pack or per-reference copies. Released parsing scratch and
+inspection's container bytes are not retained by assets. The bundle maintains no global
+asset cache: configuration/derived holders retain only the snapshots they actually need.
+Dropping all such references and cursors releases their heap storage; a cursor may keep its
+own payload alive, never an archive or the whole snapshot. No close/invalidation operation
+can make an already issued immutable view unreadable.
+
+Failure precedence retains unsafe-before-bounds-before-unreadable and all existing fatal
+candidate/index/container/configuration/primary-source failures. D-P3-69's only exception is
+the approved optional owned-sidecar recovery: step 2 records a bounded path/UNREADABLE marker
+for an individually indexed, containment-checked regular file whose read fails. Discard partial
+bytes and exception detail, count bytes already consumed, and continue only if enumeration and
+the enclosing archive remain trustworthy. Missing/unknown size or failed integrity information
+that prevents establishing the existing bounds is fatal, not an exempt sidecar. Container
+corruption, index failures and unavailable candidates still fail `INPUT_UNREADABLE`; safety and
+limits are never demoted. Internal input has no failure-marker variant: its provider throws/
+invalid bytes/manifest still fail `INTERNAL_SOURCE_INVALID` under the existing inbound contract.
+
+After reading the original source/include topology and the single A–G properties parse,
+classify each marker against **all** P3 duties, not merely its extension. It qualifies only
+if its path is the adjacent sidecar of a surviving owned spec and is not a shader/root/include,
+properties/configuration/lang/ID-map input, or any surviving primary PNG/raw/noise source.
+Include duties include every statically discovered include edge, not just active branches.
+Any unresolved duty/failed prerequisite preventing that proof makes the marker fatal. A path
+with both sidecar and non-sidecar duties is fatal; an unreadable unused file also retains the
+old fatal rule. Required reads consult markers and fail rather than silently treating them
+as absent. This is private staged classification before publication, not parsing partial data;
+no shader materialization/public configuration escapes pending classification.
+Each proven sidecar-only marker becomes immutable `UNREADABLE` metadata and
+`PackAssetAcquisition.Unreadable(path)`. Its indexed regular-file existence still makes the
+associated `TextureSidecarRef` present. Its unknown contents have no fabricated hash/size.
+P13 alone emits the approved one recovery warning per sidecar outcome, fingerprints it and
+atomically retains the usable source with its PNG/raw/noise-specific baseline; P3 emits no
+duplicate recovery warning. This is a reachable successful-load path, not post-close I/O.
+
+A missing sidecar has an empty reference Optional and adjacent `Missing`; malformed/empty
+successfully read sidecars have present references and `Acquired` for P13's atomic JSON recovery.
+Malformed primary PNG/raw bytes likewise remain Acquired for P13 source validation; primary
+**read failure** is fatal P3 input failure, never converted to sidecar fallback. P13 preserves
+its approved source-before-sidecar decode/legality and diagnostic precedence.
+
+Deleting/replacing the ZIP or folder after `Loaded` cannot affect any acquisition or identity.
+Resource-only `NONE` retains and reuses the same configuration/assets; a Minecraft resource
+epoch does not replace or relabel pack bytes. A later **full load** obtains a new snapshot
+under the normal discovery/request rules; retained old configurations stay unchanged.
+
+
 ### 4.2 Dimensions, source identities, and includes
 
 The source index has a base set plus every physical `world<id>` directory for `id ∈ [-128,128]`.
@@ -1734,9 +2039,11 @@ active path would exceed ten include edges. Include guards do not waive either c
 expansion precedes preprocessing.
 
 Expansion is memoized by the immutable source snapshot and root; option state is excluded because
-expansion precedes option rewriting. Before included lines, expansion emits
-`#line 1 <includedFileNumber>`; after them it emits
-`#line <nextParentLine> <parentFileNumber>`. Every captured option occurrence is then rewritten in
+expansion precedes option rewriting.
+Before included lines and after them, expansion emits numeric `#line` directives selecting the
+included file's first line and the parent's next line, respectively, under §4.5's effective-language
+line convention (for GLSL 1.20/1.50, write the desired next line minus one).
+Every captured option occurrence is then rewritten in
 this expanded attributed stream, including occurrences originating in included files.
 `MaterializedSource.sourceMap()` maps the numbers to immutable `SourceId` values and lets Phase 4
 attribute driver logs without filesystem access.
@@ -2015,9 +2322,15 @@ Each macro name is a valid preprocessor identifier; each `MacroDefinition` repla
 and newline-free. The base merge order is standard A–G, option, capability-feature, then
 engine-identity macros; a duplicate across those families is `INVALID_REQUEST`. Overrides apply in
 unsigned-UTF-8 name order after that merge and before the reserved Phase 6 contribution.
-`MacroOverride` requires a replacement for `ADD`/`FORCE` and forbids one for `SUPPRESS`. Overrides
-cannot target standard A–G, `SCHMALOOGIUM_VERSION`, option macros, or the reserved contributor
-namespace. For every other valid name, the complete action matrix is:
+`MacroOverride` requires a replacement for `ADD`/`FORCE` and forbids one for `SUPPRESS`. The
+protected-target check enforces the override-target whitelist: override targets are exactly non-version
+identity/capability names, so overrides cannot target standard A–G, `SCHMALOOGIUM_VERSION`, option
+macros, the reserved contributor namespace, or §4.5's reserved intrinsic namespace (`__VERSION__`,
+`__FILE__`, `__LINE__`, `GL_core_profile`, `GL_compatibility_profile`, `GL_ARB_geometry_shader4`).
+"Every other valid name" in the action matrix means exactly every name admitted by that whitelist;
+anything else — including every reserved intrinsic and any arbitrary non-identity/capability
+name — is rejected with the same pre-I/O `INVALID_REQUEST`. For every admitted name, the complete
+action matrix is:
 
 | Action | Name absent after base merge | Name present in capability/identity family |
 |---|---|---|
@@ -2026,8 +2339,9 @@ namespace. For every other valid name, the complete action matrix is:
 | `FORCE` | insert the supplied replacement | replace with the supplied replacement |
 
 Validation rejects a null map first; then a null key/value; then visits remaining keys in
-unsigned-UTF-8 order and checks identifier grammar, action/replacement shape, protected target, and
-`ADD` collision in that order. The first defect yields non-`Off`
+unsigned-UTF-8 order and checks identifier grammar, action/replacement shape, protected target
+(the whitelist above, so reserved intrinsics and other non-identity/capability names fail here),
+and `ADD` collision in that order. The first defect yields non-`Off`
 `Failed(INVALID_REQUEST)` before pack or persistence I/O and publishes no partial macro map. These
 rules close the macro component without choosing OQ-7; the policy switch remains a configuration
 change for G8/S3.
@@ -2150,41 +2464,147 @@ Processing order:
 7. collect the active version and extension markers, preserve extension source order, and rebuild:
    `#version`, active `#extension` lines, the logical macro-header boundary, then the processed
    body with a restored root `#line`;
-8. when a root has no attributed legacy geometry pair,
-   `GeometryTranslationRequest.None` succeeds without a geometry rewrite. For a `.gsh` legacy
-   pair, require `Translate(plan)` and apply its immutable plan at the attributed rewrite sites;
-   applicability requires the same root, one recognized legacy pair, a positive `maxVertices`
-   equal to the recognized declaration, and a closed input/output enum.
-   Phase 3 removes the legacy extension and replaces the attributed declaration with the core
-   input/output layout declarations generated from those fields. `None` for a recognized pair, or
-   a mismatched, unsupported, overlapping, or out-of-range plan, returns `Unavailable` with
-   source-local diagnostics rather than exposing untransformed ARB source;
-9. retain transformed text, `SourceMap`, rewrite diagnostics, and plan fingerprint in
-   `MaterializedSource`, making equal inputs byte-identical.
+8. classify the final active source and validate the `GeometrySourceRequest` using the exact
+   algorithm below. Preserve native source; perform **no** extension removal, constant deletion,
+   builtin rename, varying conversion, version/profile upgrade or generated layout insertion;
+9. scan the complete final default-block declaration catalog, freeze exact text/map/language/
+   geometry/diagnostics, and compute §4.10's route-distinct fingerprint before publishing
+   `Available`. Failure at any step returns only `Unavailable`, never a partial successful source.
 
-Rewrites are applied in source-span order and may touch only the two spans in
-`LegacyGeometryRewriteSite`; pack text supplied through a plan is impossible. The plan fingerprint
-is Phase-3-generated canonical encoding of the plan schema, root, enum names, positive vertex
-count, and rewrite-site identities/spans—not caller hashing or object identity. Equal sites and
-fields therefore produce equal transformed bytes and fingerprints.
-`LegacyGeometryConfig` is the load-time record for exactly one recognized
-`GL_ARB_GEOMETRY_SHADER4` extension plus one positive `maxVerticesOut` declaration on a `.gsh`
-root. Its `rewriteSite` contains exactly the extension and declaration spans; `SourceSpan` uses
-zero-based UTF-16 offsets with an exclusive end and one-based start line/column, with
-`0 <= startOffset < endOffset` and positive coordinates. Both spans must belong to the same root
-source, be ordered and non-overlapping, and the site root and config root must agree. Absence is
-represented by `Optional.empty()` in `ProgramRequirements`; an unmatched or duplicate pair makes
-that root unavailable with an attributed diagnostic rather than publishing raw ARB text.
-The config and site are Phase-3-owned values in the configuration fingerprint. The separate
-Phase-4 `GeometryTranslationPlan` supplies only closed input/output primitives and the positive
-vertex count; its materialization fingerprint is generated by Phase 3 from the plan, config, and
-site, never supplied by the caller.
+**Native-preserving source algebra (D-P3-68; binding via §5.1).** The pipeline above is used for
+every VERTEX, GEOMETRY and FRAGMENT root of the selected program, with the same load's finalized
+options, include snapshot, complete macro snapshot and singular Phase 6 contribution. Each root
+keeps its own language and extensions; a native geometry choice does not patch its adjacent stages.
+`None` is a request for ordinary processing, **not** a request to discard geometry. Classification
+is over active post-jcpp tokens, not filenames alone, comments, inactive branches or original
+unexpanded text:
 
-Load-time analysis uses the same deterministic pipeline through directive discovery but stops
-before step 7's geometry rewrite. It records the attributed pair and scan results in the published
-configuration; it neither calls `SourceMaterializer` nor requires a translation request.
-Plan-dependent materialization begins only after Phase 4 receives that configuration and selects
-`None` or `Translate(plan)`.
+1. Non-GEOMETRY roots publish `GeometrySourceForm.None` for request `None`. Geometry configuration
+   directives there warn/ignore as engine directives, without deleting GLSL text or enabling
+   a geometry stage. `PreserveNative` on any non-GEOMETRY root is unavailable.
+2. On a GEOMETRY root, recognize the existing pair: one active explicit ARB geometry extension
+   activation and one top-level `const int maxVerticesOut = N;` with the positive integer value
+   accepted by the existing directive grammar after ordinary macro substitution. The active
+   activation may use `enable`, `require` or `warn`, whose language-enable meanings come from
+   GLSL §3.3; `disable` is not an activation. Effective extension state is folded in source
+   order, initially disabled, including `all : disable|warn`. Require one explicit activation
+   site and a final non-disabled ARB state; `all : warn` alone is not the documented pair.
+   Repeated activation sites, repeated declarations, one missing member, invalid/nonpositive/
+   overflowing N, or later effective disable with a declared pair is source-local unavailable.
+   Retain all witnesses in diagnostics. No `Optional.empty()` may hide a malformed pair as
+   ordinary source. Inactive occurrences do not count. A core shader with neither member has
+   pair absence; a stray `maxVerticesOut` without activation is still unmatched, not an API default.
+3. Pair spans belong to their original physical `SourceDocument`s, which may be **different
+   included files** reached by this root. `SourceSpan` remains zero-based half-open UTF-16 offsets
+   and one-based original line/column, bounded by that document. `site.root == config.root`;
+   both span sources must be in this root's expansion. There is no same-file, source-offset-order
+   or root-file-only restriction. Repeated expansion of a physical member still counts as repeated
+   active occurrences and fails cardinality. These are provenance sites, no longer rewrite ranges.
+4. Parse geometry interface layout declarations from final global-scope `layout(...) in;` and
+   `layout(...) out;` tokens under GLSL 1.50 §4.3.8's grammar: one input primitive; output primitive,
+   `max_vertices = integer-constant`, or both; separate/repeated equal declarations are allowed.
+   For a macro-generated declaration that has no contiguous physical declaration span, the site
+   is its outermost pack macro invocation span; final token mappings retain definition/expansion
+   provenance. Never construct a span across files or across noncontiguous source pieces.
+   Ordinary macro expansion precedes recognition. Normalize the specification's case-insensitive
+   layout identifiers to the existing closed primitive enums, retaining original text unchanged.
+   Each `GeometryLayoutDeclaration` retains the optional fields explicitly present and the
+   `layout` token location; at least one field is present, input cannot coexist with output/max
+   in one declaration, and every present count is positive and fits int. List order is final
+   token order; equal redeclarations are retained. Unequal declarations for the same property,
+   malformed layout or a geometry layout not representable by this published grammar returns
+   source-local unavailable, not last-wins or an inferred layout. Other stages' layout syntax
+   is not geometry configuration. No modern invocation/stream feature is granted by this parser.
+5. With no pair, require request `None` and a complete source input/output/max triple for
+   `CoreLayout`; missing properties make the GEOMETRY root unavailable, not `None`. Core-layout
+   syntax requires effective language version at least 150 and P4's GL 3.2 gate. A native request
+   when no pair exists fails. With a pair, require `PreserveNative(expected)`, structurally equal
+   in **every** field to this configuration's recognized config and to final rediscovery after
+   contribution. Wrong root/site/extension/count or contribution-induced disagreement is unavailable.
+   `None` with a pair remains unavailable, now with a real preserving alternative.
+6. With a valid pair, publish `NativeLegacy(config,effective,declarations)`. Let
+   `A = (TRIANGLES, TRIANGLE_STRIP, config.maxVertices)` be the existing P4 native API triple
+   and `S` the unique per-property source layout values. For each property `p`,
+   **`effective[p] = S[p] if present, otherwise A[p]`**. Any source layout requires language
+   version ≥150 and, at P4, GL ≥3.2 as well as the actual ARB extension. No layout means
+   `effective=A`. Partial layouts are valid on the native route; complete layouts with the ARB
+   pair remain native (not an excuse to skip extension gating/configuration). Source values
+   differing from A are retained, never overwritten, clamped or called a pair mismatch.
+   P4 passes **A**, not `effective`, to the narrow P1 operation; the linker applies source
+   precedence. P4/backend must use the effective linked input for drawing. These existing enum
+   domains describe source, not permission to convert terrain or draw arbitrary primitives.
+
+The algebra deliberately removes `Translate`: no complete translator or proof token is offered.
+Native preserving `Available` requires the above source contract, **not** successful GL compilation.
+P4 gates `NativeLegacy` on `hasExtension("GL_ARB_geometry_shader4")`, not GL version alone,
+and retains its drain/configure/drain/link/validate/whole-binding-fallback sequence. Invalid
+native/core combinations, unsupported language features, incompatible adjacent stage versions or
+varying interfaces and hardware limits can still fail compilation/linking. Preserve those inputs
+and source-local diagnostics; never retry a rewritten core program or omit only the `.gsh`.
+In particular, GLSL 1.50 §3.3 does not promise linkage with arbitrary 1.20 adjacent stages;
+preservation is not an era bridge or OQ-18 resolution.
+
+**Language and attribution invariants.** `ShaderLanguage.version` is the effective source
+version, not `MC_GLSL_VERSION` (driver capability). `explicitVersion=false` means no directive,
+version 110 and empty profile; otherwise retain the exact declared numeric value and optional
+explicit `core|compatibility` as the enum. The emitted version/profile tokens are never changed;
+absence is not filled with 150 or a compatibility qualifier. An omitted profile on version 150
+retains the language's core default even in a compatibility context. The existing strict
+first-significant-token rule and duplicate/conflicting-version rejection still apply.
+`extensions` contains every active extension directive in order with exact case-sensitive name
+(including `all`), closed behavior and original location; malformed directives fail locally.
+Preserve all active extension lines and their order through the marker protocol, not only ARB.
+Do not hoist a directive across ordinary GLSL tokens to make an invalid shader valid: the reviewed
+GLSL/ARB shader-scope extensions must precede non-preprocessor tokens. Diagnose such misplaced
+directives instead. No macro substitution occurs inside `#version` or `#extension`.
+For a version-150 source on the retained compatibility baseline, the wrapper also supplies
+`GL_core_profile=1` and `GL_compatibility_profile=1`, describing supported profiles rather than
+rewriting the requested profile. The native grant does not add an arbitrary modern intrinsic
+macro namespace. GLSL intrinsic handling is shader-source-only; the existing properties A–G,
+ID-map environments, option/companion and singular contribution contracts remain unchanged.
+
+The jcpp wrapper supplies GLSL's `__VERSION__` from the root's effective version and evaluates
+`__LINE__`/`__FILE__` using the attributed logical line/numeric source-ID cursor, never jcpp's
+host filename or a generated header line. It supplies `GL_ARB_geometry_shader4=1` iff the retained
+profile actually advertises that extension, even when its language use is disabled; unsupported
+means undefined, not `0`. This intrinsic is distinct from existing on-demand `MC_GL_*` macros.
+Reserved intrinsic names cannot be overridden/undefined by pack or contribution input. These
+intrinsic values enter the same load-time analysis and materialization environment **before**
+conditional evaluation, including nested macro expansion; they are not an after-jcpp patch.
+GLSL variables/functions such as `gl_VerticesIn`, `gl_PositionIn`, `gl_TexCoordIn`,
+`gl_FrontColorIn`, `gl_ClipVertexIn`, `EmitVertex`, `EndPrimitive`, user `varying in/out` arrays,
+and every adjacent-stage varying remain tokens for the native compiler, never host-evaluated,
+renamed, array-resized or synthesized. `maxVerticesOut` remains in executable source because pack
+code may read it. Existing option rewrites/macros may naturally substitute tokens, but the selected
+geometry strategy itself changes none. This supplies native preservation without a shader AST.
+
+`SourceMap.files` keeps stable positive canonical file numbers; zero remains the driver's original
+single emitted source string, not a fabricated physical include. `mappings` is a frozen list
+of non-overlapping `[startOffset,endOffset)` UTF-16 ranges in **exact transformedText**, in ascending
+offset order. Each significant output token and each retained header directive has an origin
+mapping; whitespace/generated `#line` scaffolding need not. Each `location` is the original
+token/marker location; an expanded macro uses its invocation location and `expansionTrace`
+lists original include call sites outermost-first followed by macro invocation/definition sites
+outermost-first, including the source of contributed replacement as its root invocation anchor.
+A missing representable origin fails catalog/geometry publication, never guesses an include.
+All offsets/coordinates are range-validated; list/trace copies are immutable. Driver numeric
+`#line` logs use `sourceForFileNumber`; emitted-string/header errors use final offset mappings.
+Without a parseable driver coordinate, P4 retains root attribution plus sanitized log and never
+claims a precise token location. The new map changes no diagnostic channel or public P1 type.
+For GLSL 1.20/1.50, emitted `#line n f` selects next line `n+1`, hence desired next line L is
+encoded with `n=L-1`; jcpp's own line cursor is adapted, not blindly copied. Pack-supplied
+numeric `#line` changes are tracked separately from immutable physical provenance; unknown
+file numbers remain unknown, never rebound to an arbitrary file. Deterministic wrapper markers/
+nonces never escape source, maps, diagnostics or fingerprints.
+
+Load-time analysis follows this same pipeline through active pair/layout discovery with
+`MacroContribution.Empty`, but invokes no materializer and chooses no caller request. It publishes
+the recognized pair through `ProgramRequirements.legacyGeometry`; private root-failure state
+is retained for later `Unavailable`. Resource collection is still load-time, while every
+successful materialization rescans its final default-block declarations after the actual
+contribution. All records are non-null, structurally equal, defensively immutable snapshots;
+old catalogs/materializers remain readable and deterministic after reload or lease closure.
+No GL object, parser, callback, filesystem or mutable provider is retained by a source result.
 
 The marker namespace includes a generated nonce plus a fixed prefix checked before rewriting.
 Unknown/spoofed markers are fatal for that source, not trusted as header material. NUL characters
@@ -2283,10 +2703,10 @@ from `.vsh`, and the legacy geometry pair only from `.gsh`. A recognized directi
 stage is ignored and emits one source-attributed warning; it cannot alter a previously valid value.
 For a `.gsh` root, exactly one recognized extension and one matching `maxVerticesOut` declaration
 form the pair; zero is absence, while an unmatched or repeated member is a structural source
-failure. The scanner retains the exact `LegacyGeometryRewriteSite` spans and publishes them only
-inside the matching `LegacyGeometryConfig`. It does not choose topology or other translation
-policy. Phase 4 owns that strategy and supplies the plan, while Phase 3 alone performs the source
-rewrite before publication to GL.
+failure. The scanner retains `LegacyGeometrySite` provenance under §4.5, including members
+from included files. P4 selects `PreserveNative(expected)` for the pair; P3 validates it and
+publishes native source with source-layout precedence. P3 never chooses a different API
+topology or translates the source to core form.
 
 
 `ResourceRequirements` contains:
@@ -2384,8 +2804,8 @@ rules are normative at §3.3 and §4.7. Builders and mutable accumulators remain
 
 The load-time declaration recognizer above answers only resource-requirement questions. Every
 successful `materialize` also runs a distinct token-grammar declaration pass over the final
-post-jcpp, post-contribution, post-geometry-rewrite stream. It recognizes every top-level
-default-block `uniform` declarator, including comma-separated names, arrays, and named/inline
+post-jcpp, post-contribution, geometry-classified stream, under its effective version/extensions.
+It collects every active default-block `uniform` declarator, including comma-separated names, arrays, and named/inline
 struct shapes; it excludes uniform-block declarations and block members. Inactive conditional
 branches and comments are already absent. The exact identifier token supplies the source-map
 location, and the root supplies `ShaderSourceStage`. One immutable `DeclaredUniform` is retained
@@ -2401,6 +2821,8 @@ after link. Neither Phase 4 nor Phase 6 may reopen materialized source to recons
 
 Malformed directive handling is uniform: emit `WARN/LOG_ONLY` on
 `schmaloogium.preprocess`, ignore the occurrence, retain the prior/default value, and continue.
+The structural geometry failures in §4.5 are the explicit source-local exception: they make the
+affected root unavailable and feed P4 rung 3, never abort the pack or silently remove `.gsh`.
 No malformed directive aborts a pack.
 
 ### 4.8 `ShaderPropertiesModel`
@@ -2449,6 +2871,17 @@ duplicate discriminator, source kind, typed raw format values, and sidecar locat
 grammar validation, source parsing, normalization, or duplicate reduction, the same dispatcher
 captures every active decoded `texture.*` occurrence as `TexturePropertyDecl`. The binding §5.1
 defines its exact fields, ordering, closed dispositions, reducer, and non-execution boundary.
+The exact case-sensitive raw source form is
+`<path> <target> <internalFormat> <dimensions> <pixelFormat> <pixelType>`.
+External targets map only as follows: `TEXTURE_1D` → `TextureTarget.TEXTURE_1D` (one dimension),
+`TEXTURE_2D` → `TextureTarget.TEXTURE_2D` (two), `TEXTURE_3D` → `TextureTarget.TEXTURE_3D`
+(three), and `TEXTURE_RECTANGLE` → `TextureTarget.RECTANGLE` (two). Thus total token counts
+are respectively 6, 7, 8 and 7; each dimension is a positive integer. Bare `RECTANGLE`,
+case variants, unknown targets, missing/extra dimensions or trailing operands are invalid.
+These failures use `INVALID_VALUE` and do not erase an earlier valid complete-key spec.
+A surviving `Raw` contributes its normalized bytes path and associated sidecar to D-P3-69's
+existing declared asset domain; P13 acquires those same-load bytes and consumes the typed
+target, never reparsing external tokens. This is not an enum, suffix or upload-algebra redesign.
 This includes unresolved key extensions with their original decoded value and attribution; it
 does not invent a suffix grammar. Unknown keys produce a warning and no executable spec, but
 their declaration is never omitted or rewritten into a known key. An unresolved property cannot
@@ -2457,17 +2890,17 @@ The ordinary `PackPath` form is accepted only when the already-normalized
 path's final segment has at least one code point before a literal, case-sensitive lowercase `.png`
 suffix. `.PNG`, `.Png`, a bare `.png`, a trailing suffix, and a non-PNG path warn and omit only
 that occurrence's executable effect; the last valid complete-key value is not erased.
-This is lexical validation only: Phase 3 does not open or decode the image. An invalid source
+This is lexical validation only: Phase 3 snapshots image bytes but does not decode the image. An invalid source
 value remains an `INVALID_VALUE` declaration while leaving the prior valid executable spec intact.
 The immutable list is semantic losslessness after the existing preprocessing/Properties decoding,
 not retention of inactive branches, comments, physical escape spellings, or undecodable lines.
 Input-size bounds and safe-path validation still apply; retained raw values grant no file access.
-Authority must close suffix semantics before Phase 3 can publish a typed executable sampling
-request; §§5.4/11.5 route that dependency rather than handing parsing to Phase 13.
+Under D-P3-67, the required sampling mechanism is Phase-13-owned `.mcmeta` blur/clamp, not
+property-key suffix parsing. No new typed sampling publication or future U1 grant is required.
 `TextureSidecarRef(path)` rejects null and exposes that exact normalized path through `path()`.
 For `PackPath`, `Raw`, or noise `Override`, its optional is present iff the indexed pack contains
 the regular file at the associated image/bytes canonical string plus literal `.mcmeta`; the record
-holds exactly that adjacent path. Phase 3 neither opens nor interprets it. `Raw.internalFormat` uses
+holds exactly that adjacent path. Phase 3 snapshots but never interprets it. `Raw.internalFormat` uses
 the same `ColorInternalFormat` enum as colortex directives: exactly the 37 names in RESEARCH Appendix
 B.4. `PixelFormat` is exactly `RED`, `RG`, `RGB`, `BGR`, `RGBA`, `BGRA` and their `_INTEGER`
 forms. `PixelType` is exactly `BYTE`, `SHORT`, `INT`, `HALF_FLOAT`, `FLOAT`, `UNSIGNED_BYTE`,
@@ -2504,6 +2937,12 @@ Profile includes use a recursion stack and return a partial valid profile with t
 ignored and diagnosed. Screen models preserve entry order and validate references without
 constructing widgets. `*` expansion is intentionally deferred to Phase 12 because it depends on
 placement across screens.
+The literal `<profile>` produces `ScreenProfileEntry()` with no operand, profile identity or
+selected-state payload. It is retained even with no profile definitions and regardless of
+whether current option values infer a named profile or `Custom`; reference validation applies
+to actual named references, not this selector. Definitions remain in `profiles()` and current
+or preview selection comes only from the existing `inferProfile(candidate)` / `ProfileInference`
+contract. P12 owns widget applicability and cycling, not producer invention of a profile.
 
 `OptionConfiguration.inferProfile(OptionState)` returns `InvalidState(NULL_INPUT)` for null and
 otherwise validates against its catalog, returning `InvalidState(failure)` without inference on
@@ -2572,7 +3011,7 @@ receives only the eligible projected/virtual-pre flip map.
 
 ### 4.9 Schema-versioned ID-mapping input
 
-`PackConfiguration.idMappings()` is the schema-v18 `IdMappingInput` in §2.2, not a flattened list.
+`PackConfiguration.idMappings()` is the current-schema `IdMappingInput` in §2.2, not a flattened list.
 Its four `IdMappingFileInput`s have exactly matching `MappingKind`s and immutable source order.
 For pack input, paths are exactly `shaders/block.properties`, `shaders/item.properties`,
 `shaders/entity.properties`, and `shaders/block.properties`'s `layer.*` family: block rules and
@@ -2599,23 +3038,51 @@ Properties syntax.
 `MappingFileState` is derived solely from the ordinary parse: no bytes is `ABSENT`; present bytes
 with zero valid ordinary rules is `PRESENT_EMPTY`; present bytes with at least one valid ordinary
 rule is `PRESENT_RULES`. Whitespace/comments, a conditionally empty file, and a file whose every
-line is invalid are all present-empty. State never depends on the forced parse, so a present entity
-file with no ordinary rule and one forced rule remains `PRESENT_EMPTY`—the distinction Phase 9
-needs for its conditional retry. Block, item, and layer inputs always have an empty
-`forced11300Rules` list.
+line is invalid are all present-empty. State never depends on the forced parse, so a present BLOCK
+or ENTITY input with no ordinary rule and one forced rule remains `PRESENT_EMPTY`. ITEM and LAYER
+inputs always have empty `forced11300Rules`, including LAYER parsed from the same block-file bytes.
 
-For a present `ENTITY` request the parser runs twice from the same copied bytes. The ordinary run
-uses `parserEnvironment` unchanged. The alternate run makes a private copy and replaces exactly
-the `MC_VERSION` macro value with integer `11300`; every other macro, parser option, source byte,
-origin, and bound is identical. The results are never merged or selected in Phase 3. Ordinary
-rules carry `MappingEra.CLASSIC`; alternate rules carry `MappingEra.MODERN`. An invalid alternate
-run is diagnosed and represented by an empty alternate list without changing the ordinary result.
-For an absent entity file neither run occurs. `IdMappingFileFingerprint` hashes schema version,
-kind, state, origin identity, exact source bytes/presence, canonical parser environment, both
-ordered rule lists, and diagnostics that affect rule acceptance; this Phase-3 fingerprint does not
-encode which list Phase 9 later selects.
-The isolated forced-11300 alternate is the Phase 9/PD §8.1 entity-era bridge, not a claim that
-classic RESEARCH §3.7 requires a second parse; selection and merge remain Phase 9.
+For every present `BLOCK` or `ENTITY` request the parser runs twice from one owned defensive byte
+copy. The ordinary run uses `parserEnvironment` unchanged. The alternate run uses a private
+environment copy replacing exactly the `MC_VERSION` macro value with integer `11300`; every other
+macro, parser option, source byte, origin and bound is identical. Fresh isolated preprocessor state
+for each run prevents source `#define`/`#undef` or parse failure from leaking into the other.
+No file/provider is reopened or called for the second run. The results are never merged or
+selected in Phase 3, even when ordinary rules are nonempty or byte-identical to the alternate.
+Ordinary rules carry `MappingEra.CLASSIC`; alternate rules carry `MappingEra.MODERN`. MODERN
+means membership in this explicit dual-era alternate, not proof about a particular conditional,
+name, shader ID, filename, pack identity or adjacent token. Ordinary rules never become MODERN.
+
+Both lists retain the actual original `MappingOrigin`, original logical `sourceLine` and
+left-to-right `selectorOrdinal` under the existing properties attribution mapping, not positions
+in injected macro text or the shortened preprocessed output. Diagnostics use that same source
+attribution; a failure without a source line uses the existing absent-location representation,
+never a fabricated coordinate. Ordinary diagnostics precede alternate diagnostics in deterministic
+run order. Parser state and accepted rule storage are separate; each run has the same finite
+source/line/token/rule/diagnostic limits, so the operation has at most two bounded runs and two
+bounded result lists, with no retry or unbounded diagnostic multiplication. Invalid selectors
+still warn and omit only themselves; a run-level decode/preprocess/parse/bounds failure yields
+that run's valid empty list and attributed diagnostic. Alternate failure cannot erase ordinary
+rules or change ordinary state. Ordinary failure yields `PRESENT_EMPTY` and does not suppress
+the independently bounded alternate. Pre-copy invalid requests yield the existing empty
+diagnosed result without either run; existing pack acquisition safety/bounds failures remain
+fatal under §5.1, not reclassified as recoverable parser failures. Absent inputs run neither pass.
+
+`IdMappingFileFingerprint` hashes current schema version, kind, ordinary-derived state, origin
+identity, exact source bytes/presence, canonical ordinary parser environment, both ordered rule
+lists (including era and attribution), and diagnostics that affect rule acceptance, using §4.10's
+canonical codec. The alternate environment is determined solely by D-P3-72's fixed replacement,
+not a second caller input; schema binds that algorithm. An alternate-only accepted-rule change
+therefore changes the file and containing configuration fingerprints even if ordinary state/rules
+stay equal. Equal copied bytes/origin/environment/results have equal fingerprints across callers
+and service instances. No mutable parser identity, branch-selection history or later Phase 9
+selection enters this fingerprint; BLOCK and LAYER remain distinct by kind and payload.
+
+D-P3-72 extends the existing ENTITY bridge to BLOCK without changing classic RESEARCH §3.7.
+Phase 9 selects a BLOCK alternate only when ordinary state is `PRESENT_EMPTY` and the alternate
+is nonempty; otherwise it uses ordinary rules. It never merges alternates into or overrides
+nonempty ordinary rules. The same rule applies independently to each bounded mod contribution;
+pack/mod precedence, registry resolution and the later derived selection fingerprint remain P9.
 
 One property line may contain multiple selector tokens. The parser emits one `IdRule` or
 `LayerRule` per occurrence, with `selectorOrdinal` preserving left-to-right order after
@@ -2636,7 +3103,7 @@ membership resolution. Every rejected token warns and contributes no rule. Phase
 valid tags through its 1.12 shim.
 
 `IdRule` retains the substitute full signed integer shader ID, canonical unresolved selector,
-optional legacy metadata, ordered property predicates, era, origin, line, and selector ordinal.
+optional `MetadataConstraint`, ordered typed property predicates, era, origin, line, and selector ordinal.
 `LayerRule` carries the same selector/provenance fields and exactly one of `SOLID`, `CUTOUT`,
 `CUTOUT_MIPPED`, or `TRANSLUCENT`. Unknown namespaces/names are not errors here. Invalid numeric
 keys, malformed/overflowing predicates, or invalid layer names warn and omit only that selector;
@@ -2645,13 +3112,85 @@ a Phase 9 resolution constraint because Phase 3 has no registry snapshot. Phase 
 alternate selection, pack/mod/entry/tag precedence, registry lookup, unknown-name diagnostics, and
 aliases; Phase 7 owns render-layer dispatch.
 
-Each `PropertyPredicate` is one parsed `property=value` constraint in source order.
-`propertyName` is the non-empty lower-case registry property identifier; `acceptedValues` is the
-non-empty, immutable, comma-order list of distinct non-empty value tokens after grammar whitespace
-is removed. A predicate matches only when the resolved state exposes that property and its
-canonical value equals one listed token; predicates on a rule are ANDed. Invalid names, empty or
-duplicate values, an empty list, or duplicate property names within one selector invalidate that
-selector as described above; Phase 3 never publishes a predicate it cannot interpret this way.
+**D-P3-73 — exact entry grammar and typed constraint semantics.** After the existing
+Properties unescape/preprocessing, ASCII whitespace separates selector occurrences; it is never
+removed from inside a selector to repair a malformed token. An ENTRY is
+`identity [":" metadata] (":" property "=" alternatives)*`. Identity is a short `path`,
+`namespace ":" path`, or a legacy unsigned decimal numeric ID. Namespace/path obey the exact
+lower-case ASCII namespace and slash-segment grammar above; short paths gain `minecraft:`.
+An unnamespaced all-digit identity is legacy numeric, canonicalized to unsigned decimal in
+`selectorToken`, not `minecraft:<digits>`.
+Legacy numeric IDs fit `0..2147483647`; shader-ID keys retain the existing full signed-int domain.
+To disambiguate the optional namespace, take the first two colon components as namespaced identity
+only if the second is neither a property component (contains `=`) nor a numeric-list candidate
+(begins with a digit, `+`, `-`, or comma). Otherwise take the first as short/numeric identity and
+validate every remaining component as a constraint. Thus `leaves:3,7` and `leaves:3` are short
+metadata, `minecraft:leaves:3,7` is namespaced metadata, `123:foo` is explicitly namespaced,
+and `38:6` / `38:0-3:age=0-3` are legacy numeric forms. Numeric-list candidates never become
+named paths after failed validation; an ambiguous all-digit second component is metadata,
+not a namespaced numeric path. This ENTRY disambiguation does not alter TAG's separately
+specified acceptance of `%minecraft:123`. No namespace fallback, case folding, empty component,
+stray colon, second metadata component,
+metadata after a property, or trailing operand is accepted. TAG grammar remains exactly D-P3-47/
+D-P3-49 and permits neither metadata nor properties.
+
+Metadata is a nonempty comma list of unsigned decimal `n` or `lo-hi`; every endpoint is in
+`0..15`. Each atom becomes one `IntegerRange`: `n` becomes `(n,n)`, and `lo-hi` keeps both
+inclusive endpoints with `lo <= hi`. Leading zeroes normalize through checked integer parsing;
+signs, overflow, descending/open/multi-hyphen ranges and empty alternatives invalidate the
+whole selector. `legacyMetadata=Optional.empty()` means unrestricted metadata; a present
+`MetadataConstraint` has a nonempty immutable `alternatives` list, never an empty-as-wildcard set.
+Its set is the union of those intervals, tested directly against a captured state's metadata.
+
+Each `PropertyPredicate` is one source-ordered `property=alternatives` constraint.
+`propertyName` matches `[a-z0-9_]+`; literal alternatives match `[a-z0-9_]+`, without whitespace,
+case folding or escape syntax beyond the preceding Properties decoding. A digits-only literal
+is checked in `0..2147483647` and canonicalized to decimal in `Literal.value`; other literals
+retain exact tokens. A numeric `lo-hi` instead becomes
+`PropertyValueConstraint.IntegerInterval(new IntegerRange(lo,hi))`, with unsigned decimal
+endpoints in `0..2147483647` and `lo <= hi`. No signed/open/descending/overflowing range or
+hyphenated fallback literal is accepted. These lexical closures are D-P3-73 local policy.
+`acceptedValues` is nonempty, immutable and in comma order. Preserve interval boundaries and
+author alternative order: do not sort, coalesce, enumerate range members or expand one selector
+into rules. Reject duplicate normalized alternatives (including metadata `3` versus `3-3`)
+and duplicate property names; distinct overlapping intervals remain valid union alternatives.
+A property literal and a singleton integer interval remain different typed alternatives.
+
+P9 matches a literal by exact equality to the resolved state's canonical value; an integer
+interval matches only a canonical nonnegative decimal state value (`0|[1-9][0-9]*`, checked int)
+between its endpoints. This numeric state conversion is registry-value interpretation, not
+selector reparsing. Alternatives are ORed; metadata and all property predicates are ANDed.
+Missing properties, unknown literal values, an interval with no value in that property's finite
+live value domain, or no matching state warn and match nothing for the entire selector. P9 checks
+only actual finite registry values; a range may include integers absent from that domain without
+being invalid when at least one domain value lies within it. Invalid constraints are never dropped
+to broaden a rule. P3 rejects malformed syntax before publication; P9 alone performs the live
+domain checks. ITEM/ENTITY constraints use this same typed publication but remain unsupported
+at P9: warn and match nothing, never strip them.
+
+All new records reject null/invalid components, use structural equality/hash and defensive list
+copies. `IntegerRange` always has `0 <= lowerInclusive <= upperInclusive <= 2147483647`;
+`MetadataConstraint` additionally enforces endpoints <=15. Existing finite per-run byte/line/
+token/rule limits bound the number of alternatives and predicates before allocation, with one
+stored interval per authored range and no endpoint-width-dependent work or allocation. Existing
+run-level bound failure remains an attributed empty result, never truncation or partial widening.
+This identical grammar, normalization, bounds and matching algebra applies to pack and mod
+requests, ordinary and forced BLOCK parses and ordinary LAYER rules; origin, sourceLine,
+selectorOrdinal, mapping era, file-state derivation and ITEM/LAYER empty alternates are unchanged.
+
+Exact selector payload examples (each occurrence yields one rule, retaining its original
+shader ID/layer, origin, line and ordinal):
+
+| Input selector | `selectorToken` | `legacyMetadata` | `propertyPredicates` |
+|---|---|---|---|
+| `minecraft:leaves:3,7,11,15` | `minecraft:leaves` | Present `MetadataConstraint([(3,3),(7,7),(11,11),(15,15)])` | `[]` |
+| `minecraft:reeds:age=0-3` | `minecraft:reeds` | Absent | `[PropertyPredicate("age",[IntegerInterval(IntegerRange(0,3))])]` |
+| `minecraft:reeds:0-3:age=0-3` | `minecraft:reeds` | Present `MetadataConstraint([IntegerRange(0,3)])` | `[PropertyPredicate("age",[IntegerInterval(IntegerRange(0,3))])]` |
+
+The first row's pair notation abbreviates `IntegerRange` records, not expanded metadata rules.
+Short `leaves`/`reeds` forms produce the same identity/constraints; original bytes still enter
+file identity. Leaves matches metadata 3/7/11/15 only; reeds matches age 0/1/2/3, not literal
+text `0-3`; the combined selector requires both filters on the same state.
 
 `MappingOrigin` is closed. Pack loading alone constructs
 `PackMappingOrigin(selected PackIdentity, normalized mapping-file path)`. Phase 9 alone constructs
@@ -2669,14 +3208,18 @@ Validation has three levels:
 1. field validation already applied per line;
 2. cross-model validation (screen/profile references, texture uniqueness, option ambiguity,
    source availability, dimension modes, requirement bounds);
-3. structural validation (safe root, readable source index, at least one usable base or explicit
-   dimension mode, bounded resource use).
+3. structural validation (safe root, readable source index, at least one source configuration
+   surviving mandatory decode/include validation in the base **or an explicit OVERRIDE**,
+   bounded resource use). Empty `DISABLED` folders alone do not satisfy source usability.
 
 Only level 3 may fail the pack load. Levels 1–2 produce defaults/partial models and diagnostics.
+A valid dimension-only pack therefore loads with its empty base entry and usable override;
+unusable roots remain source-local and cannot invalidate an unrelated surviving set. This does
+not merge sources, require link success, or change §5's ordered safety/bounds/read failures.
 The immutable configuration fingerprint hashes pack bytes, normalized paths, the finalized
 default-plus-persistence option state, load-time macro policy, both companion booleans,
 renderer-feature availability, capability identity fields, parser schema version, the computed
-`CompatibilityStatus` as its exact enum name after all minimum-edition rules are evaluated, and the canonical schema-v18
+`CompatibilityStatus` as its exact enum name after all minimum-edition rules are evaluated, and the canonical current-schema
 `IdMappingInput` including every file state and ordinary/forced rule-list fingerprint.
 Hidden domain, pack-key, catalog-identity, and discovery token identities are excluded from
 canonical fingerprints; their authenticated semantic values and the complete option value map are
@@ -2704,6 +3247,27 @@ attachment format is exactly `DefaultRgba` with no payload or `Explicit` followe
 `ColorInternalFormat` name. Equivalent maps/sets yield identical bytes regardless of insertion
 history, while any published leaf mutation changes the payload. This is producer canonicalization,
 not a portable digest or downstream wire-format promise.
+The canonical ID rule encoding uses this same record/variant/component/list/optional codec.
+`legacyMetadata` encodes Absent or Present `MetadataConstraint` with every ordered `IntegerRange`
+endpoint; `PropertyPredicate.acceptedValues` encodes each exact `Literal` or `IntegerInterval`
+tag and its payload in authored order. No raw-selector reparse, interval expansion, sorted union
+or registry-derived match enters file/configuration identity. Endpoint, variant, order, predicate,
+provenance or alternate-list changes therefore change the canonical payload. Fingerprints retain
+exact source bytes as before, so equivalent normalized constraints need not equate different files.
+The current schema additionally includes
+`seq(atom("PackAssetSnapshot"), atom(schemaVersion), encode(assets.manifest()))` exactly once.
+Only `PackAssetMetadata` record/enum/path/optional/count/hash leaves enter this payload, using
+the codec above; available digests are SHA-256 of same-load original bytes, absent/unreadable rows
+have no invented digest. `PackIdentity.contentHashes` uses those same SHA-256 values for successfully
+read files (and the same byte-hashing rule for other indexed regular files); missing/unreadable
+paths have no content-hash entry. The manifest binds their distinct outcomes into configuration
+identity. Hashes remain opaque to ordinary consumers. Successfully acquired whole-pack bytes/identity
+already participate in the established configuration input; this additional payload binds the
+declared-domain/absence/unreadable distinction, not another binary copy. No snapshot/cursor object identity,
+lookup history, public capability graph, or containing configuration fingerprint is encoded.
+There is no asset fingerprint back-reference: hash bytes → identity/manifest → configuration
+fingerprint → materialization fingerprint, never recursion. Inspection projects these same
+metadata leaves without rehashing a pathname or serializing a byte view.
 The locale payload is exactly
 `seq(atom("localizedDecorations"), atom(schemaVersion), encode(options.localizedDecorations()))`.
 The existing codec encodes all nine `LangDecorations` record components in declaration order,
@@ -2759,28 +3323,41 @@ base-10 `sourceOrdinal`, attribution path
 collapse, or name/type sort is permitted, so changing declaration order, multiplicity, text, type,
 kind, ordinal, or attribution deterministically changes the configuration fingerprint. This payload
 uses the same length-prefixed canonical scalar/string/list framing defined above. It excludes
-downstream macro contributions and geometry plans; each `MaterializedSource` fingerprint includes
-the contribution and canonical plan actually used. It also includes the deterministic canonical
-encoding of `CanonicalDeclaredUniformPayload(schemaVersion, declarations)`: fixed field order,
-declaration token order, and exact record/variant/enum names as tags. Every scalar is its canonical
-base-10 ASCII form or UTF-8 string, prefixed by its decimal byte length and `:`; every list is
-prefixed by its decimal element count and `[`, with length-prefixed elements, then `]`. The
-encoding excludes `DeclaredUniformCatalog.materialization`. A parser/schema change therefore
-cannot reuse a stale linked layout even when emitted source text is equal, and no fingerprint
-input contains the result. Phase 3 hashes these inputs first and then embeds the one result in the
-materialized source and catalog. The configuration fingerprint is the reload/change detector.
-The configuration fingerprint also canonicalizes each dimension key/mode/base link and ordered
-source-root list, plus every published legacy geometry extension, positive vertex count, and span.
-Materialization fingerprints add the selected contributor and Phase-4 plan over that Phase-3-owned
-site data, so changing a site or plan cannot reuse a prior materialized result.
+downstream macro contributions and geometry requests. Each materialization uses a separate
+domain-tagged canonical payload:
+`seq(atom("MaterializedSource-v23"), atom(schemaVersion), encode(root),
+encode(configurationFingerprint), encode(contribution), encode(geometryRequest),
+encode(language), encode(geometryForm), atom(transformedText), encode(sourceMap),
+encode(CanonicalDeclaredUniformPayload(schemaVersion,declarations)), encode(diagnostics))`.
+The `encode`/`atom`/`seq` rules above apply recursively, with exact record/variant names and
+declaration-order components; `OptionalInt` uses the same Absent/Present tags and canonical integer.
+`SourceId`/normalized paths use canonical path strings, maps have ascending numeric file-number
+order, mappings and traces retain published order. Compute SHA-256 over these exact payload bytes,
+exposing lowercase 64-hex `MaterializationFingerprint.value`, then embed that one result in both
+`MaterializedSource.fingerprint` and `DeclaredUniformCatalog.materialization`. Neither embedded
+result is an input; the uniform payload has no back-reference. Diagnostics use the existing exact
+six-component codec. No nonce, object identity, GL handle, host path, query result or mutable state
+enters the payload. This materialization digest is a local cache identity, not a new wire format.
+
+The configuration fingerprint still includes original pack bytes/paths, complete same-build
+macro/capability/option inputs, dimensions/modes/base links and source-root order, plus every
+published `LegacyGeometryConfig` field and both physical-or-invocation site spans. The current schema
+invalidates earlier interpretation even when bytes are identical. Materialization adds its
+**closed request and result forms**, the recognized native pair, effective/source-declared layout
+fields, source version/profile/extension order, exact final text/map, complete attributed catalog
+and diagnostics. Thus route, count, site, layout, version, macro, source-map or declaration changes
+cannot share the same payload; native and ordinary/core are distinct even if text happens to match.
+A private lookup cache keys the immutable containing configuration/root plus canonical contribution
+and request, and verifies/returns the immutable fingerprint-bound result; it never reuses a result
+by text alone. No caller-supplied plan or raw source scan participates.
 
 When `schmaloogium.debug.saveSources` is true, the materializer writes final sources plus a
 source-ID manifest under a sanitized runtime `shaderpacks/debug/<pack-id>/` tree. A dump failure
 warns and does not change the configuration. Dumps are local developer artifacts containing pack
 source and must never be committed, placed in conformance goldens, or uploaded as reports.
 
-No mutable builder, `Path` rooted inside a pack, zip filesystem, reader, or output stream is
-reachable from the published configuration.
+No mutable builder, `Path` rooted inside a pack, zip filesystem, host reader, or output stream is
+reachable from the published configuration. D-P3-69 grants only caller-local read-only heap cursors.
 
 ## 5. Cross-phase interfaces
 
@@ -2794,24 +3371,32 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 |---|---|---|
 | `PackFrontEnds.create` / `PackFrontEndServices` | dependency-free public acquisition of one immutable, thread-safe, final bundle with no public constructor; it exposes four readable receivers plus typed acquisition of bundle-owned safe persistence access, and owns one bounded authentication lifetime, the published finite discovery-retention policy, and no open handles | Phases 7, 9, 12 |
 | `PackFrontEnd.discover` / `discoveryLimits` / `resolveFilesystemCandidate` / `PackDiscoveryRequest` / `PackDiscoveryResult` / `DiscoveryLimits` / `PackCandidate` / `FilesystemCandidateReference` / `FilesystemCandidateResolution` | deterministic immutable discovery snapshots; exact candidate/byte overflow result; completion-LRU bounded directory retention; directory-keyed or explicit non-directory-keyed invalid generations; exact sentinel, supersession, eviction, and invalid-snapshot behavior; durable references and closed resolution outcomes | Phase 7 bootstrap/reload; Phase 12 selection UI |
-| `PackFrontEnd` / `CURRENT_SCHEMA_VERSION` / `packOptionsTarget` / `PackOptionsTargetAcquisition` / `PackOptionsTargetRejection` / `PackLoadRequest` / `PackLoadResult` | atomic schema18 load; canonical §2.2 request includes required companion pair and non-Off non-null `internalOptions` Optional. §4.3/§5 bind every selection-first validation, target rejection and safe filesystem persistence rule, plus D-P3-65 Internal fresh-catalog rebinding. Off short-circuits all other fields. No old-shape load fallback | Phase 7 bootstrap/reload; Phase 12 selection; Phase 2 inspection |
+| `PackFrontEnd` / `CURRENT_SCHEMA_VERSION` / `packOptionsTarget` / `PackOptionsTargetAcquisition` / `PackOptionsTargetRejection` / `PackLoadRequest` / `PackLoadResult` | atomic current-schema load; canonical §2.2 request includes required companion pair and non-Off non-null `internalOptions` Optional. §4.3/§5 bind every selection-first validation, target rejection and safe filesystem persistence rule, plus D-P3-65 Internal fresh-catalog rebinding. Off short-circuits all other fields. No old-shape load fallback | Phase 7 bootstrap/reload; Phase 12 selection; Phase 2 inspection |
 | `PackConfiguration` | single validated downstream truth, immutable and fingerprinted; its evaluator takes no option state and uses exactly `options().state()` finalized by the same atomic load; nested `macros()` retains the load's companion pair unchanged, while `properties()` now includes the lossless texture declaration stream. Both booleans and §4.10's complete declaration payload participate in the configuration fingerprint | Phases 4–13 as listed below |
+| `PackConfiguration.assets`, `PackAssetSnapshot`, `PackAssetMetadata`, `PackAssetAvailability`, `PackAssetAcquisition`, `PackAssetReferenceFailure`, `PackAssetBytes` | required same-load immutable acquisition capability immediately after `sources`; exact §2.2 signatures and complete §4.1 D-P3-69 declared-domain, failure, read-only-cursor, bounds/provenance/lifetime rules; §4.10 metadata-only acyclic fingerprint | Phase 13 acquires PNG/raw/noise/sidecar bytes; Phase 7 passes/retains exact configuration across resource-only NONE; Phase 2 projects metadata only |
 | `PackIdentity`, `CompatibilityStatus`, `DimensionKey`, `DimensionConfiguration`, `DimensionMode` | `PackIdentity` is `(NormalizedPackPath selectedRoot, Map<NormalizedPackPath,String> contentHashes)` with immutable canonical-path order; `CompatibilityStatus` is the closed `COMPATIBLE`/`REQUIRES_NEWER_EDITION` result, and dimensions are the ordered base/override/disabled map; absent world keys select the base entry, overrides expose only their own source roots, and disabled entries expose none | Phases 7, 12 |
 | `PackSelection`, `PackCandidateId`, `DiscoveryGeneration`, `RuntimeIdentityData`, `RendererFeatureData`, `PackInputLimits`, `PackLoadFailure`, `PackLoadFailureCode`, `PackCandidateKind`, `PackCandidateStatus`, `ConfigurationFingerprint` | exhaustive selection/failure/value domains; runtime identity accepts exactly MC `(1,12,2)`, the bounded edition grammar, and bounded canonical decimal engine version; the fingerprint includes final `CompatibilityStatus`, so compatibility-changing edition comparisons invalidate retained state, and §4.10's companion payload; renderer-feature shape remains unchanged but no longer gates companion emission; each failure has the exhaustive cause/precedence mapping below and one immutable Phase-1 primary diagnostic, with exact-once delivery only when a non-null reporter exists; permitted token classes and their package-private issuer share `com.schmaloogium.engine.pack` under the unnamed module, authenticate owning instance and generation kind, use identity equality/hash, and are nonserializable | Phases 7, 12 |
-| `SourceCatalog`, `SourceDocument`, `SourceKey`, `SourceId`, `IncludeEdge`, `SourceMap`, `MaterializedSource`, `MaterializationFingerprint`, `SourceMaterializer`, `MaterializationResult`, `SourceSpan`, `LegacyGeometryConfig`, `LegacyGeometryRewriteSite`, `GeometryTranslationRequest`, `GeometryTranslationPlan` | one `SourceId`/document/graph node per indexed physical path and one edge per physical include location; only roots carry dimension/program/stage `SourceKey` context; immutable roots/edges; `executablePrograms()` is the distinct ascending dimension/name projection of all `.vsh`/`.fsh`/`.gsh` roots, excluding virtual-pre and including partial stage sets; materialization takes no option or companion state and uses the containing configuration's finalized option state and macro snapshot, including both booleans before jcpp and in its fingerprint | Phase 4; Phase 7; Phase 12 |
-| `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, `IdMappingMacroEnvironment`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, `MappingOrigin` | schema-v18 canonical §2.2/§4.9 declarations and complete immutable ordering, fingerprints, provenance and isolated forced-11300 parsing; all existing D-P3-47/D-P3-49 tag grammar and numeric boundary rules remain binding. Mapping semantics unchanged except containing schema | Phase 9; resolved layer results to Phase 7 |
-| `MacroConfiguration`, `CompanionOptionMacros`, `MacroDefinition`, `MacroOverride`, `MacroContributor`, `MacroContribution`, reserved `phase6.centerDepthSmoothRedirect` slot | immutable §2.2/§4.4 graph, exact A–G projection, eight-name option family, required independent companion pair and D-P3-64 cycle-free effective old-light macros; reserved zero AA emits no FXAA. Full merge/override validation/action order and same-build fingerprints in §§4.4/4.10 remain binding. Singular Phase 6 contribution is unchanged; no consumer-supplied later macro/option state | Phase 6 contributor; Phase 4 materialization; Phase 7 inputs; Phase 12 global settings; Phase 13 preliminary policy through Phase 7; G8/S3 |
-| `OptionConfiguration`, sealed `OptionCatalog` / `OptionState`, `OptionDefinition`, option values/enums, `OptionStateResult`, `OptionStateValidation`, `OptionStateFailure`, profiles/screens/sliders/decorations | catalog-issued complete default/constructed/updated states with closed failures and safe out-of-list warnings; profile inference returns `Inferred` or `InvalidState`; `ScreenModel.resolvedColumns(expandedSlotCount)` treats configured columns (default two) as a floor, counts the retained array after `*` expansion including ordinary option, applicable profile/subscreen, and empty slots, and raises the floor to `ceil(expandedSlotCount/9)` | Phase 4; Phase 12 |
+| `SourceCatalog`, `SourceDocument`, `SourceKey`, `SourceId`, `IncludeEdge`, `SourceMap`, `SourceMapping`, `MaterializedSource`, `MaterializationFingerprint`, `SourceMaterializer`, `MaterializationResult`, `SourceSpan`, `LegacyGeometryConfig`, `LegacyGeometrySite`, `GeometrySourceRequest`, `GeometrySourceForm`, `GeometryLayout`, `GeometryLayoutDeclaration`, `ShaderLanguage`, `ShaderExtensionDirective`, their closed enums | canonical physical-file/root/edge identities and immutable executable-program projection remain; §§2.2/4.5 define the exact current-schema native-preserving request, final language/geometry/map/result algebra, mixed source-layout precedence, same-load options/macros/contribution, source-local failure, complete final declaration catalog and §4.10 route-distinct fingerprint. No Translate alias, caller option state or source reparse | Phase 4; Phase 7; Phase 12; Phase 2 source-free inspection only |
+| `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, `IdMappingMacroEnvironment`, mapping rule/state/kind/era/selector types, `MetadataConstraint`, `IntegerRange`, `PropertyValueConstraint`, `PropertyPredicate`, `MappingOrigin` | complete §2.2/§4.9 D-P3-73 immutable typed metadata unions/literal-or-integer-interval predicates, exact grammar, ordering, conjunction, bounds/no-expansion, invalid-selector no-overmatch, canonical identity and pack/mod/ordinary/alternate/layer symmetry; one rule per occurrence. D-P3-72 isolated BLOCK/ENTITY alternates remain MODERN, ordinary CLASSIC/state unchanged, ITEM/LAYER alternates empty; P9 alone selects PRESENT_EMPTY/nonempty alternate and resolves finite registries, never reparses selectors. D-P3-47/D-P3-49 TAG grammar unchanged | Phase 9; Phase 2 source-free inspection; resolved layer results to Phase 7 |
+| `MacroConfiguration`, `CompanionOptionMacros`, `MacroDefinition`, `MacroOverride`, `MacroContributor`, `MacroContribution`, reserved `phase6.centerDepthSmoothRedirect` slot | immutable §2.2/§4.4 graph, exact A–G projection, eight-name option family, required independent companion pair and D-P3-64 cycle-free effective old-light macros; reserved zero AA emits no FXAA. Full merge/override validation/action order and same-build fingerprints in §§4.4/4.10 remain binding: the protected-target check enforces §4.4's whitelist exactly — override targets are non-version identity/capability names, and §4.5's reserved intrinsics (`__VERSION__`, `__FILE__`, `__LINE__`, `GL_core_profile`, `GL_compatibility_profile`, `GL_ARB_geometry_shader4`) plus any other non-whitelisted name are rejected with pre-I/O `INVALID_REQUEST`. Singular Phase 6 contribution is unchanged; no consumer-supplied later macro/option state | Phase 6 contributor; Phase 4 materialization; Phase 7 inputs; Phase 12 global settings; Phase 13 preliminary policy through Phase 7; G8/S3 |
+| `OptionConfiguration`, sealed `OptionCatalog` / `OptionState`, `OptionDefinition`, option values/enums, `OptionStateResult`, `OptionStateValidation`, `OptionStateFailure`, profiles/screens/sliders/decorations | catalog-issued complete default/constructed/updated states with closed failures and safe out-of-list warnings; profile inference returns `Inferred` or `InvalidState`; `ScreenModel.resolvedColumns(expandedSlotCount)` treats configured columns (default two) as a floor, counts the retained array after `*` expansion including ordinary option, applicable profile/subscreen, and empty slots, and raises the floor to `ceil(expandedSlotCount/9)` | Phase 4; Phase 12; Phase 2 inspection |
 | `PersistenceRootConfiguration`, safe-access/target types, both persistence codecs, and their request/result/failure types | exact direct-child files and safe-write lifecycle; option operations authenticate domain and same-pack target/catalog pairing plus exact state/catalog identity before I/O; global operations authenticate access and implement §4.3's baseline-overlay/result matrix, §5.1 value-domain invariant, and exact all-entry output | Phase 7 load; Phase 12 standalone settings |
 | `ShaderPropertiesModel`, `EngineFlags`, `MinimumEditionRule`, `UnknownProperty`, `EngineOptionData` | closed immutable Appendix F model includes `List<TexturePropertyDecl> textureDeclarations` immediately after `textures`, with §5.1's exact capture/classification/reduction semantics; decoded `texture.*` occurrences are excluded from `unknownProperties`, whose other-key retention is unchanged. The separate eight-known-setting/unknown-safe global domain now uses D-P3-61 tri-state/zero-only semantics; pack engine flags are unchanged. `MinimumEditionRule` accessors retain exact decoded suffix/value text; source order, canonical map order and nested collections are frozen | behavior owners in §3.1; Phase 12 persistence/UI; Phase 13 texture publication |
-| `ProgramStateModel`, `ProgramKey`, state value types, `ProgramStateEvaluationResult`, `EvaluatedProgramStates`, `EvaluatedProgramState` | schema-v18 declarations; state-free evaluation uses finalized containing configuration; one state per executable catalog key, no source-absent raw properties, only eligible/virtual-pre flips. Complete §2.2/§4.8 and binding rules below remain unchanged apart from containing schema | Phase 4; Phase 5 flip state |
-| `ResourceRequirements` | schema-v18 immutable closed graph and complete leaf/default/fold/ordering rules below and §4.7; includes positional DrawSlot and explicit/unsized format distinction, gdepth RGBA32F force, direct per-program mipmap/vertices projections and full §4.10 codec. D-P3-66 removes `WorldRenderConstants.superSamplingLevel`; all other resource semantics remain unchanged | Phase 4 routing/instances/legacy geometry/mipmap/vertices; Phase 5 sizing/formats/clear/mipmap; Phase 6 depth/smoothing; Phase 8 shadow; Phase 13 noise; Phase 7 execution; Phase 10 vertices |
-| `CustomTextureSpec`, `NoiseTextureSpec`, `TexturePropertyStage`, `TextureBindingKey`, `TextureTarget`, `ColorInternalFormat`, `PixelFormat`, `PixelType`, `TextureSidecarRef`, `TexturePropertyDecl`, `TexturePropertyDisposition` | canonical §2.2 declarations and the exact §5.1 capture/reduction contract are binding. `properties().textureDeclarations()` retains all decoded active occurrences before collapse, including unresolved requests; executable `textures()`/`noise()` remain separate projections. The existing raw format domains, PNG rule, stage mapping, and sidecar retention remain unchanged. §4.10 hashes every declaration; retention does not claim suffix support or permit downstream parsing | Phase 13 specs and declaration diagnostics; Phase 3 alone owns semantic decoding |
+| `ProgramStateModel`, `ProgramKey`, state value types, `ProgramStateEvaluationResult`, `EvaluatedProgramStates`, `EvaluatedProgramState` | current-schema declarations; state-free evaluation uses finalized containing configuration; one state per executable catalog key, no source-absent raw properties, only eligible/virtual-pre flips. Complete §2.2/§4.8 and binding rules below remain unchanged apart from containing schema | Phase 4; Phase 5 flip state |
+| `ResourceRequirements` | current-schema immutable closed graph and complete leaf/default/fold/ordering rules below and §4.7; includes positional DrawSlot and explicit/unsized format distinction, gdepth RGBA32F force, direct per-program mipmap/vertices projections and full §4.10 codec. D-P3-66 removes `WorldRenderConstants.superSamplingLevel`; D-P3-68 replaces the nested legacy rewrite site with provenance-only `LegacyGeometrySite`; other resource semantics remain unchanged | Phase 4 routing/instances/legacy geometry/mipmap/vertices; Phase 5 sizing/formats/clear/mipmap; Phase 6 depth/smoothing; Phase 8 shadow; Phase 13 noise; Phase 7 execution; Phase 10 vertices |
+| `CustomTextureSpec`, `NoiseTextureSpec`, `TexturePropertyStage`, `TextureBindingKey`, `TextureTarget`, `ColorInternalFormat`, `PixelFormat`, `PixelType`, `TextureSidecarRef`, `TexturePropertyDecl`, `TexturePropertyDisposition` | Canonical §2.2 payload with unchanged typed enum and reducer; D-P3-70 corrects exact external raw target spellings, raw formats, PNG rule, stage mapping, sidecar retention and §4.10 fingerprint. D-P3-67 adopts documented numeric discriminators and P13 `.mcmeta` sampling only; all decoded active texture occurrences remain lossless, including unknown keys, without invented suffix support or a new sampling API | Phase 13 existing typed specs, sidecar references and declaration diagnostics; Phase 3 owns property-key parsing |
 | `InternalPackSource` / `InternalPackReadException` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; `snapshot` may raise only the declared provider-only checked exception, which is reduced to an attributed failure; defensive byte copies and the canonical path projection are binding | Phase 7 supplies content and consumes the projection |
 | `PackFrontEnd.inspect`, `PackInspectionResult`, `PackDecisionSnapshot`, `DecisionValue`, `DecisionSource`, `DecisionDiagnostic` | §5.1.1's complete one-load acquisition, allowlisted source-free projection and same-read archive provenance; P4 same-request resolution and P5 pure sizing/capability are separate required enrichments for a complete golden | **Phase 2** |
 | `InternalOptionSnapshot`, `InternalOptionCaptureResult`, `InternalOptionFailure`, `OptionCatalog.captureInternalOptions` | D-P3-65's opaque same-bundle/exact-Internal-identity snapshot, closed capture failures and fresh-catalog atomic-load rebinding; optional request input after `internalPackSource`; session-only P7 ownership, no persistence target or materializer state argument | Phase 7 reload/session lifetime; Phase 12 Apply/profile/reset; Phase 2 inspection |
-| `OptionConfiguration.localizedDecorations` / `LangDecorations` | sole schema18 deep-immutable locale authority; §4.3's acquisition, normalization, collisions, per-key empty-preserving fallback and cache rules; §4.10 complete fingerprint and §5.1.1 source-free catalog | Phase 12 presentation; Phase 2 inspection |
+| `OptionConfiguration.localizedDecorations` / `LangDecorations` | sole current-schema deep-immutable locale authority, unchanged since D-P3-63; §4.3's acquisition, normalization, collisions, per-key empty-preserving fallback and cache rules; §4.10 complete fingerprint and §5.1.1 source-free catalog | Phase 12 presentation; Phase 2 inspection |
 The public declarations in §2.2 are incorporated into binding rows above, not merely illustrative.
+In particular, the options/screens row includes payload-free `ScreenProfileEntry()` as an
+explicit P12 **and P2** contract: P12 maps the literal selector to `ProfileCycle`, reads the
+declaration-ordered `profiles()` list, and derives selected/Custom from
+`inferProfile(previewState)`; it never reads an entry profile component. P2 projects that
+zero-component record as `Fields` containing only `$type=ScreenProfileEntry`, with no name,
+selection or Custom field. The complete definitions and finalized option state remain in
+their existing separate projection nodes. No old-shape constructor/accessor/decoder shim exists.
 The dependency-free `PackFrontEnds.create()` factory is the only public construction route for
 `PackFrontEndServices`; the final class has no public constructor. Each call creates four non-null,
 thread-safe readable receivers that cannot be mixed with receivers from another factory call.
@@ -3002,8 +3587,8 @@ rejected during configuration construction because both enums are closed executa
 `TextureBindingKey` is `(TexturePropertyStage stage, String sampler, OptionalInt duplicateDiscriminator)`.
 `TexturePropertyStage` is the closed enum `GBUFFERS`, `DEFERRED`, `COMPOSITE`, in that fixed
 validation and ordering sequence. `sampler` is the exact non-empty App F.5 sampler-name segment;
-the discriminator is absent or the parsed terminal single decimal digit `0..9` and is never
-folded into the sampler. Only a complete key matching
+the discriminator is absent or the parsed terminal single decimal digit `0..9`, used only to
+avoid duplicate property keys, never as filter/wrap state or part of the sampler. Only a complete key matching
 `texture.<gbuffers|deferred|composite>.<sampler>[.0-9]` produces this key. An additional segment
 does not get stripped, interpreted, or assigned to a base key: the complete occurrence instead
 survives as `UNRESOLVED_KEY` below, with no executable spec. Expansion remains fixed: `GBUFFERS`
@@ -3034,13 +3619,13 @@ occurrences means an empty list. It has these complete rules:
    key with a value rejected by the existing source/path/format rules is `INVALID_VALUE`.
    Any other `texture.*` key is `UNRESOLVED_KEY`, regardless of its value. These are the four
    exhaustive enum variants. Classification is deterministic under the containing schema and
-   has no GL dependency. No property-key suffix is currently classified as recognized sampling
-   state; the authority gap does not license inventing one.
+   has no GL dependency. Property-key suffixes are not sampling state under D-P3-67;
+   `.0`–`.9` retain only their documented duplicate-discriminator meaning.
 4. After capture, Phase 3 folds only `CUSTOM_SOURCE`/`NOISE_SOURCE` occurrences into the existing
    `textures()`/`noise()` projections. The last valid occurrence of the same complete decoded
    key wins; duplicate complete keys receive the existing attributed warning. All occurrences
    remain in the list, including shadowed ones. `INVALID_VALUE` warns without replacing the
-   prior valid value; `UNRESOLVED_KEY` warns that the key is unsupported pending authority and
+   prior valid value; `UNRESOLVED_KEY` retains the existing unsupported-key warning and
    never enters that reducer. Known absent/`.0`/`.9` keys remain distinct, as do differently
    suffixed unknown keys; no grouping of unknown keys by a guessed base binding is permitted.
    Unresolved and invalid occurrences are not duplicated in `unknownProperties`.
@@ -3055,16 +3640,16 @@ occurrences means an empty list. It has these complete rules:
 6. Phase 13 may report a retained unresolved declaration using its disposition and attribution.
    It consumes only the already-typed source specs for texture creation; it may not parse the
    retained strings, reopen Properties bytes, infer suffixes from `.mcmeta`, or reconstruct
-   discarded settings. Retention is not a rendering fallback or evidence that a sampling request
-   was honored. The missing grammar/precedence and the future typed sampling-state handoff are
-   explicit ungranted U1 dependencies in §5.4.
+   discarded settings. Retention is diagnostic losslessness, not advertised support for unknown
+   keys. D-P3-67 closes the former U1 authority request through the documented-mechanism
+   correction; no additional typed suffix-state handoff is required.
 
-Authority closure must be implemented by Phase 3 at this same pre-collapse boundary: recognize
-the approved full key, retain the exact declaration, publish the validated base key and typed
-sampling state together, and apply only the approved duplicate/discriminator/sidecar precedence.
-Do not retrofit sampling fields into a schema-18 configuration or reinterpret its unresolved
-records in Phase 13. A new owner amendment/schema and fresh load are required. This is the
-required migration boundary, not a grant of unspecified grammar or a second downstream parser.
+The sampling boundary remains the existing typed source and `TextureSidecarRef` publication
+below. Phase 13 owns `.mcmeta` blur/clamp interpretation and application; Phase 3 neither
+decodes sidecar bytes nor synthesizes filter/wrap fields. D-P3-67 leaves the texture records,
+unknown-key handling and canonical payload unchanged; D-P3-70 corrects only the external raw target mapping in the current
+schema `CURRENT_SCHEMA_VERSION`. Do not reinterpret retained `UNRESOLVED_KEY` records as supported input or add shims.
+The correction does not newly ratify any phase-local sidecar defaults or malformed-input policy.
 
 `CustomTextureSpec` is the sealed immutable sum
 `PackPath(key,NormalizedPackPath image,Optional<TextureSidecarRef> sidecar)` |
@@ -3075,14 +3660,18 @@ A `PackPath.image` final segment has a non-empty stem followed by the exact case
 suffix; mixed/uppercase extensions, a bare `.png`, and trailing characters are invalid. Invalid
 occurrences warn and do not replace a prior valid complete-key value. This predicate does not open
 or decode the image. `resourceIdentity` preserves the exact non-empty `minecraft:` value, including
-dynamic/atlas and `_n`/`_s` identity. `TextureTarget` is
-`TEXTURE_1D|TEXTURE_2D|TEXTURE_3D|RECTANGLE`; dimensions are positive and have arity 1, 2, 3, and 2
-respectively. The other closed format domains and integer compatibility rule are exactly §4.8's
+dynamic/atlas and `_n`/`_s` identity. `TextureTarget` is the unchanged typed enum
+`TEXTURE_1D|TEXTURE_2D|TEXTURE_3D|RECTANGLE`; **external** case-sensitive tokens are exactly
+`TEXTURE_1D`, `TEXTURE_2D`, `TEXTURE_3D`, `TEXTURE_RECTANGLE`, mapping respectively to those
+four variants with 1, 2, 3, 2 positive integer dimensions (6, 7, 8, 7 total source tokens).
+Bare `RECTANGLE` is invalid, not an alias. §4.8's complete lexical rejection/disposition and
+surviving-spec asset-domain rules are binding here. The other closed format domains and integer
+compatibility rule are exactly §4.8's
 tables. `TextureSidecarRef` is exactly `record TextureSidecarRef(NormalizedPackPath path)`; `path`
 is non-null, structural equality/hash apply, and `path()` returns the associated normalized
 `<image-or-bytes>.mcmeta` pack path. Its optional is present exactly when that adjacent regular
-file exists in the indexed snapshot; absence means no pack sidecar. Phase 3 does not open or
-interpret it, and a Minecraft resource carries no pack-side sidecar reference.
+file exists in the indexed snapshot; absence means no pack sidecar. Phase 3 snapshots its bytes
+under D-P3-69 without interpreting them; a Minecraft resource carries no pack-side sidecar reference.
 
 `NoiseTextureSpec` is `Generated` or
 `Override(NormalizedPackPath image,Optional<TextureSidecarRef> sidecar)`; absent `texture.noise`
@@ -3235,9 +3824,14 @@ in ascending numeric order. `DimensionKey` accepts only the empty base form or a
 roots. A present non-empty world folder has `mode=OVERRIDE`, a base link, and only its own roots;
 an empty folder has `mode=DISABLED` and no roots. An absent world key means no folder and selects
 the base entry; no consumer merges an override with base sources.
+Structural load success requires a usable source configuration in any base or explicit override
+after mandatory decode/include validation, not a usable base specifically. The empty base is
+still published for a dimension-only pack; selecting an absent world key selects that empty
+base, never the other world's override. Empty disabled folders are not usable shader sources.
 
 `SourceCatalog.sources()` is the immutable ascending-`SourceId.path` list containing every indexed
-physical file exactly once. `source(id)` is its absence-aware lookup. `roots()` is the immutable
+physical source document exactly once, not binary-only files or retained sidecar read-failure
+markers. `source(id)` is its absence-aware lookup. `roots()` is the immutable
 dimension/path/program/stage-ordered list of compile-root `SourceKey`s; only roots carry contextual
 dimension, program, and stage fields. `executablePrograms()` is the immutable distinct ascending
 projection of each non-virtual root's dimension and program name. Any `.vsh`, `.fsh`, or `.gsh`
@@ -3247,19 +3841,26 @@ one edge per physical include location; shared files are never contextually dupl
 `materializer()` is the only materialization path. It accepts only a published root `SourceKey` and
 uses exactly this configuration's finalized `options().state()`; no option-state argument or
 same-catalog updated-state runtime path exists. `MaterializedSource` carries exact text, source map,
-uniform catalog, diagnostics, and fingerprint; published values remain valid after the input lease
+uniform catalog, language, closed geometry form, diagnostics, and fingerprint; published values remain valid after the input lease
 closes.
 
 `OptionDefinition.tooltip()` retains the decoded terminal `!`. Phase 12 splits on `. `, marks a
 line ending in `!` warning/red, and removes only that marker for display; the existing
-`OptionDefinition` component and its schema-6 type remain unchanged.
+`OptionDefinition` component and its type remain unchanged.
 
-`ProgramRequirements.legacyGeometry` is empty when no pair exists and otherwise contains exactly
-one validated `LegacyGeometryConfig` with one `LegacyGeometryRewriteSite`. The site spans are
-half-open, source-identical to the root, source-ordered, and fingerprinted by Phase 3. Duplicate
-or unmatched pair members make that root unavailable. `GeometryTranslationRequest.None` is valid
-only for absence; `Translate(plan)` is the separate Phase-4 strategy and must match the root and
-positive recognized vertex count.
+`ProgramRequirements.legacyGeometry` is empty only for true pair absence and otherwise contains
+one validated `LegacyGeometryConfig` with one provenance-only `LegacyGeometrySite`. The §4.5
+native-preserving source algebra, its language/line/macro/attribution invariants and complete
+failure rules are incorporated **in full** into this binding contract. P4 calls
+`materialize(root,contribution,new GeometrySourceRequest.PreserveNative(expected))` for a recognized
+pair, or `new GeometrySourceRequest.None()` otherwise. It consumes `MaterializedSource.geometry()`
+as `None`, `CoreLayout(effective,declarations)`, or `NativeLegacy(config,effective,declarations)`;
+the last retains the native API triple separate from source-overridden effective values. It uses
+`language()` for version/profile/active extension metadata and `sourceMap()` for exact final text.
+No caller supplies option state, chooses source rewrites, derives geometry from a shader rescan,
+or treats a missing/malformed `.gsh` as a vertex/fragment-only success. Source-local unavailable
+results propagate into P4's complete binding fallback. The singular Phase 6 contribution and
+complete final uniform-catalog merge are unchanged. Full exact P4 migration is §11.4.
 
 
 `discover` requires a non-null `shaderpacksDirectory` and `DiagnosticReporter`. A resolvable request
@@ -3385,9 +3986,9 @@ The cause mapping is exhaustive:
 | `INVALID_SELECTION` | a non-null filesystem ID that is foreign, unknown, stale, superseded, evicted, or names a sentinel; an authenticated candidate status is classified by its specific input code instead |
 | `INPUT_UNSAFE` | an `UNSAFE` candidate or selected filesystem input with an absolute, traversal, NUL, drive-qualified, symlink-following, collision, or containment-escaping path/root condition |
 | `INPUT_LIMIT_EXCEEDED` | a `LIMIT_EXCEEDED` candidate or selected filesystem/archive input exceeding any configured entry, byte, path, nesting, source, graph, line, token, macro, or diagnostic bound |
-| `INPUT_UNREADABLE` | an `UNREADABLE` candidate or, after valid request/selection and absent a higher-specificity unsafe/limit cause, a selected filesystem child/byte stream that cannot be opened/read or has a corrupt archive container; filesystem-provider I/O and corrupt archive are this same code |
+| `INPUT_UNREADABLE` | an `UNREADABLE` candidate or, after valid request/selection and absent a higher-specificity unsafe/limit cause, a selected filesystem child/byte stream that cannot be opened/read or has a corrupt archive container; filesystem-provider I/O and corrupt archive are this same code, except §4.1 D-P3-69's positively proven optional owned-sidecar-only per-file marker, retained for P13 recovery |
 | `INTERNAL_SOURCE_INVALID` | `InternalPackSource` throws, changes identity, returns null/malformed/duplicate/colliding/noncanonical data, or violates any supplied/recounted limit |
-| `STRUCTURALLY_UNUSABLE` | a safely read, bounded, otherwise valid input has no effective `shaders/` root or no base shader source configuration surviving mandatory decode/include validation |
+| `STRUCTURALLY_UNUSABLE` | a safely read, bounded, otherwise valid input has no effective `shaders/` root or no shader source configuration in either the base or any explicit `OVERRIDE` surviving mandatory decode/include validation; empty `DISABLED` folders alone do not establish usability |
 | `UNEXPECTED_INTERNAL` | an unexpected implementation/library `RuntimeException` escapes a validated stage and is not attributable to filesystem input or the internal provider |
 
 Validation order is null request/selection shape (`INVALID_REQUEST`), token authentication
@@ -3398,6 +3999,9 @@ to `INTERNAL_SOURCE_INVALID`. Filesystem processing uses `INPUT_UNSAFE` before
 order chooses the primary cause within one class. `UNEXPECTED_INTERNAL` is the last boundary
 catch. The first reached class returns one failure, closes all acquired resources, publishes no
 partial configuration, and leaves shaders off.
+Per-file read markers may be deferred solely to establish D-P3-69's sidecar-only classification;
+they are not earlier public success. Fatal safety/bounds/index/container/prerequisite failures
+remain fatal, and any nonqualifying read marker returns this same ordered failure result.
 
 `ConfigurationFingerprint.value()` and `IdMappingFileFingerprint.value()` are non-empty canonical
 opaque strings, not provider exceptions, paths, or partial configuration objects.
@@ -3459,7 +4063,7 @@ inputs produce equal snapshots independent of bundle credentials or host path.
 
 The complete projection is a typed, recursive **allowlist**, not `toString` or reflection.
 `sections` has exactly `pack`, `dimensions`, `options`, `properties`, `programStates`,
-`resources`, `macros`, and `idMappings`. These project the corresponding published configuration
+`resources`, `macros`, `idMappings`, and `assets`. These project the corresponding published configuration
 record graphs, except `programStates` uses `evaluateProgramStates(Optional.empty(),reporter)`
 on finalized state, not raw enabled-expression execution by P2. Its closed Evaluated/InvalidState
 outcome is retained as a variant. Evaluation diagnostics join the inspection diagnostics in
@@ -3489,6 +4093,14 @@ The locale catalog uses the same map-entry sequence and record-component project
 all locales, nine map families, empty strings and missing versus present-empty locale. Locale
 keys are `TextHash`, not a new string allowlist exception; translation values remain `TextHash`
 even when empty. No selected locale or fallback-rendered labels replace this source-free graph.
+The `assets` section is exactly the generic `DecisionValue.Sequence` projection of
+`configuration.assets().manifest()` in canonical path order. Metadata records use the existing
+`Fields` component names and `$type`; availability is its exact enum token, byte count uses
+IntegerValue/Absent, path uses the existing canonical-path allowlist and `sha256` follows the
+ordinary String-leaf `TextHash`/Absent rule (hashing the digest string, not emitting binary).
+No byte buffer, cursor, `Acquired.bytes`, provider or capability identity enters this graph.
+Inspection is current-schema only; older schema snapshots/configurations are rejected before
+enrichment or serialization, never upgraded by synthesizing an empty `assets` section.
 
 `sources` is canonical-path ordered, one row per indexed physical source; line count is the
 existing logical-line count, and SHA-256 hashes the original bounded source bytes retained by
@@ -3498,6 +4110,13 @@ driver logs, diagnostic args/detail, arbitrary strings or host paths can inhabit
 and location copies already-structured source attribution when available, otherwise empty.
 P3 captures attribution while emitting its diagnostic; no consumer parses a message or `args`
 to recover coordinates. All SHA-256 fields are exactly 64 lower-case hex digits.
+
+The `idMappings` tree includes the complete D-P3-73 graph in both ordered rule lists:
+`MetadataConstraint.alternatives` and `IntegerRange` endpoints use Fields/Sequence/IntegerValue;
+`Literal.value` and `PropertyPredicate.propertyName` retain the existing String-leaf TextHash
+rule, while `IntegerInterval.range` is the typed interval graph. `selectorToken` and origin
+strings likewise keep their existing hashed treatment. This adds no string allowlist exception,
+range-member expansion, new tree, health row or projection-version bump.
 
 Phase 2 feeds folder/zip fixtures through fresh discovery of its established external cache
 staging directory, resolves the canonical reference, acquires bundle-owned safe persistence
@@ -3515,8 +4134,13 @@ The adapter retains that exact request/configuration association through the syn
 result; there is no new fingerprint accessor on `ProgramRegistryView` and no join against
 an independently read published registry. `Ready(candidate)` is closed in `finally` after
 copying; `ShadersOff(failure)` yields no fabricated rows or runtime publication.
-Each row retains independent `sourcePresent` and `SOURCED|CHAIN|ABSENT|FAILED`; `CHAIN.from` and sanitized
-failure classification retain P4's absence rules. A mismatched build/configuration identity,
+Each row retains independent `sourcePresent`, P4 D-P4-31's required `ownBuild`
+(`NOT_APPLICABLE|NO_SOURCE|DISABLED|SUCCEEDED|FAILED`), and effective
+`SOURCED|CHAIN|ABSENT|FAILED`. `CHAIN.from` and sanitized failure classification retain
+P4's absence rules; intentional disablement is never inferred from CHAIN, and actual own
+failure is never hidden by CHAIN. This D-P3-71 receipt changes no P3 snapshot tree or schema:
+the complete handle-free P4 row is a separate enrichment input, not a derived P3 field.
+A mismatched build/configuration identity,
 unavailable P4 result or absent enrichment cannot produce a complete golden. Runtime manifests
 use the accepted registry view instead. P2 writes only this snapshot plus the handle-free
 P4 projection and runner-owned provenance; source-bearing configuration and candidates never
@@ -3553,11 +4177,14 @@ golden serialization, the adapter, CI job and matrix acquisition/verdicts.
 
 ### 5.3 Interface/version discipline
 
-`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `18`, and every configuration produced by this revision
+`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `23`, and every configuration produced by this revision
 publishes that value. A consumer supports exactly `schemaVersion == CURRENT_SCHEMA_VERSION`; every
 other value is rejected before derived state is created or retained. The schema is separate from
 the content fingerprint. Any record-component change, changed component meaning/default, or removal
 requires the next version and producer/consumer compatibility tests.
+
+Historical schema chronology (the §0 addenda record their amendment dates; none of the older
+numeric values below is an active acceptance gate):
 The §0.55 R1 amendment required schema 15 for the nested companion macro state. The §0.56 U1
 amendment now adds `ShaderPropertiesModel.textureDeclarations`, its closed disposition meaning,
 and its canonical fingerprint payload, requiring schema 16. Schema-15 and schema-16 consumers
@@ -3572,11 +4199,49 @@ The §0.58 IR-24 amendment changes old-light global defaults/domains and the opt
 component meaning, requiring schema 17. Schema 16 and 17 reject one another before deriving
 state; no default injection upgrades a configuration. The §0.59 locale component replacement,
 effective old-light meaning, session-only load rebinding and removal of engine supersampling
-require schema 18 together. `IdMappingInput.schemaVersion`
-equals the containing schema (18), although its grammar is unchanged. Consumers reject schema17
-and earlier rather than inventing locale maps or reinterpreting old macros. Inspection remains
+required schema 18 together, including matching `IdMappingInput.schemaVersion`, although its
+grammar did not change. Schema17 and earlier could not be upgraded by inventing locale maps
+or reinterpreting old macros. Inspection remains
 `projectionVersion=1`: its generic graph encoding is unchanged; configuration schema gates the
 changed component graph, not a projection-version compatibility escape.
+The §0.60 U1 authority adoption removes an unspecified future requirement without changing any
+published component, parser behavior, default, disposition or fingerprint payload. It retained
+schema 18 at that amendment; §5's revised authority/ownership boundary required fresh review.
+The §0.61 native grant now requires **schema 19** for `LegacyGeometrySite`'s included/macro
+provenance meaning, `SourceMap.mappings`, `MaterializedSource.language/geometry`, closed
+request/result replacement and complete route-distinct materialization identity. It deletes the
+incomplete translator instead of admitting old success data. `IdMappingInput.schemaVersion`
+equals 19; its grammar, all option/locale/session/U1/texture wire contracts and inspection
+`projectionVersion=1` stay unchanged. Schema 18/19 reject one another before deriving state.
+Inspection's generic record codec projects the renamed nested resource site with schema19,
+but materialized GLSL/token ranges/expansion text do not enter its source-free allowlist.
+P4 owns any existing same-request resolution enrichment; this grants no new P4 inspection API.
+Historical 2026-09-08 §0.62/D-P3-69 required schema20 for acquisition, including matching nested
+ID and inspection schema. Historical 2026-09-07 §0.61/native references above describe schema19.
+Historical 2026-09-08 §0.63/D-P3-70 required **schema21** for payload-free
+`ScreenProfileEntry()` and incorporated the corrected structural/texture lexical contracts.
+Historical §0.64/D-P3-72 required schema22 for BLOCK alternate meaning.
+The current §0.65/D-P3-73 cutover requires **schema23** for typed metadata unions and property
+intervals; it retains all prior asset/native/option/profile and dual-era semantics without shims.
+Every active consumer gates `PackConfiguration`, nested `IdMappingInput`, and
+`PackDecisionSnapshot` on exact `schemaVersion == PackFrontEnd.CURRENT_SCHEMA_VERSION`;
+nested and containing values must also agree. Reject older, future and mismatched versions
+before parsing, deriving, retaining, enriching or serializing state. Never erase an old profile
+component, invent a name/selection, or relabel old data to manufacture compatibility.
+Materialization uses §4.10's `MaterializedSource-v23` domain and current schema-bound configuration
+and uniform-catalog payloads; old materializations and retained derived caches are incompatible.
+Missing/null/foreign-load assets remain invalid. No resource epoch or inspection metadata can
+reconstruct or relabel a runtime capability. `projectionVersion=1`, all nine source-free trees,
+asset field dispatch and metadata/hash/absence meanings remain unchanged; schema equality,
+not a codec-version change or shape shim, gates the changed typed selector graph.
+
+Required dated schema23 receipts cover P2 inspection/serialization and P12 selector decoding;
+P4 materialization/caches; P5 resources; P6 contribution/catalog consumption; P7 atomic reload,
+dimension selection and retained configurations/assets; P9 nested ID parsing; P11 expressions;
+P13 typed texture/acquisition; P8/P10 indirect projections; and P14 eventual acceptance.
+Each receiver records exact-current rejection before derivation for its owned boundary and
+preserves unchanged component semantics. P1 records a changed-§5 reread without a new facade.
+These are producer handoffs, not assertions that receipts or fresh reviews are complete.
 
 Round 40's program-state meaning required schema 6; Round 41's program-state and macro-default
 changes required schema 7. Round 42 changed binding operations but no component meaning, so retained
@@ -3624,8 +4289,8 @@ where pack order matters. Enums intended for forward-compatible storage include 
 is never a silently executable state. Closed executable enums reject unknown values; in particular,
 `GeometryInputPrimitive` and `GeometryOutputPrimitive` contain only their declared primitive sets.
 `IdMappingInput.schemaVersion` must equal its containing `PackConfiguration.schemaVersion`; Phase 9
-rejects a mismatch before parsing mod bytes or building aliases. Versions 1 through 17 are
-incompatible with the current surface and are never upgraded by inference.
+rejects a mismatch before parsing mod bytes or building aliases. Every non-current version is
+incompatible with the current surface and is never upgraded by inference.
 Closing the already-named `NormalizedPackPath` value with its canonical string projection does not
 add or reinterpret a `PackConfiguration` component and therefore did not itself increment the
 schema. Any future change to that path grammar is still an interface-breaking change. Likewise,
@@ -3642,48 +4307,50 @@ attribution, or absence semantics would require the next schema.
 
 ### 5.4 Requested changes to the dependency contract
 
-Phase 1 §5 already exposes the SPDX/`THIRD-PARTY.md` mechanism that Phase 3 consumes to record
-jcpp's Apache-2.0 attribution. It does not expose the build declaration for a new pure-`:engine`
-library. Request a Phase 1 fix-up to implement the following before Phase 3 code lands:
+**P1 owner-granted / P3 receiver-adopted, unverified (2026-09-07).** Phase 1
+§§4.2.4b/5.1/D-P1-49 grants `org.anarres:jcpp` in pure `:engine` production
+`implementation` scope. Before P3 code lands, implementation must select one exact
+`jcpp_version`, verify repository/POM/artifact identity and the full runtime closure,
+and record licenses/notices and outcomes in `PINS.md` and `THIRD-PARTY.md`.
+No range, latest selector, snapshot or inferred vendored version is permitted.
 
-1. allow/pin `org.anarres:jcpp` for `:engine` at the implementation-selected verified version;
-2. ensure the engine seam test permits this pure-JVM library while still rejecting
-   Minecraft/Forge/Cleanroom/Mixin/LWJGL dependencies.
-
-Recording jcpp's attribution is application of the existing notice contract, not a requested
-dependency-contract change.
+Adopt the entire owner contract: unchanged C-1 scans of compile/runtime closure and bytecode,
+no platform-library allowlist bypass, no public jcpp types, and matching compile/headless/client
+versions. Ship the verified third-party runtime closure once through `:mod`'s `contain`
+mechanism, separately from merged first-party engine classes; preserve LICENSE/NOTICE.
+Unverified closure/license identity blocks implementation rather than weakening the seam.
+The existing attribution mechanism remains binding. This receiver receipt changes no
+configuration payload or current-schema semantics and supplies no dependency/runtime proof.
 
 No new Phase 1 runtime interface is assumed. `RuntimeIdentityData` and `InternalPackSource` are
 Phase 3 interfaces supplied by later `:mod` work as plain data.
 
 **R1 grant and remaining dependency gates.** Phase 3 publishes the typed preliminary pair
 in §5.1. Phase 7/13's integration amendment adopts pre-load adaptation and independent user
-preferences; all consumers adopt current schema 18 through symbolic equality, including the
+preferences; all consumers must adopt `CURRENT_SCHEMA_VERSION` through symbolic equality, including the
 required non-Off `internalOptions` Optional (empty for Filesystem) and complete locale replacement.
 This is owner-designed/receiver-adopted architecture, not fresh verification or PBR conformance.
 The old load shape is not a fallback. Phase 1 already grants Phase 13 package placement;
-that request is not a missing Phase 3 dependency. Phase 13 R4 post-analysis demand and U1
-executable suffix semantics remain genuinely ungranted. Neither may become a macro producer.
-The jcpp build/seam request above remains outstanding.
+that request is not a missing Phase 3 dependency. Phase 13 R4 post-analysis demand remains
+genuinely ungranted; it may not become a macro producer. U1 is disposed by D-P3-67 below.
+The jcpp owner grant is adopted above; exact implementation pin/closure proof and fresh reviews remain.
 
-**U1 grant boundary and ungranted dependencies.** Phase 3 now owns and exposes the lossless
-declaration stream and its reducer in §5.1. That producer-side design does not close the
-"ours must honor them" requirement. Required authority action is §11.5 item 3: define the exact
-suffix grammar/value domain, association with a source declaration, discriminator and duplicate
-precedence, defaults and `.mcmeta` precedence, source-kind applicability, and invalid-input
-behavior; or explicitly correct the DESIGN requirement through a maintainer authority revision
-if evidence warrants that change. No such correction is made or presumed here.
+**U1 documented-mechanism authority adoption (D-P3-67).** The maintainer's dated correction in
+`docs/decisions/U1_TEXTURE_SAMPLING.md` selects the explicit correction route formerly requested
+by §11.5 item 3. Phase 3 adopts it here: required keys are the existing
+`texture.<gbuffers|deferred|composite>.<sampler>[.0-9]` and `texture.noise`, with existing source
+forms. Numeric suffixes are duplicate discriminators; filtering/wrapping uses Phase-13-owned
+`.mcmeta` blur/clamp. No unspecified filter/wrap key parser, typed suffix API, or future U1
+producer grant is required. Source specs, sidecar references, lossless declaration diagnostics
+and unknown-key reduction behavior remain unchanged within schema `CURRENT_SCHEMA_VERSION`.
 
-Until that decision, executable suffix semantics and a typed sampling-state publication are
-**ungranted**, not guessed enums, inert default parameters, or Phase 13 reconstruction work.
-After approval, Phase 3 owns a new schema-bound parser/publication amendment at the preserved
-boundary; Phase 13 must separately amend its active §§3/4/5/11 to consume only the resulting
-typed request and honor it in effective parameters and identity. The integration amendment
-reconciles Phase 13's producer description to lossless capture; it does not adopt executable
-suffix semantics. All configuration consumers must support current schema 18 and all changed
-§5 surfaces require fresh verification. U1 suffix-honoring conformance remains blocked; source
-forms and independent `.mcmeta` retention do not depend on an invented suffix rule. Phase 3
-gains no dependency on a Phase 13 type, policy, or GL operation.
+Phase 13 adopts the same authority correction in its own document and consumes only the existing
+typed sources/sidecar references, never reparsing retained declaration strings. That owner
+adoption and fresh independent reviews are not performed by this Phase 3 amendment. Existing
+Phase 13 defaults/error policy remain phase-local and independently reviewable, not newly
+ratified here. Runtime `.mcmeta` conformance still needs implementation evidence; diagnostic
+retention is not that evidence. IR-01 and every unrelated implementation/dependency gate remain.
+Phase 3 gains no dependency on a Phase 13 type, policy callback or GL operation.
 
 **Phase 4 §5.4 item 2 — owner grant and remaining gates.** The direct per-program mipmap and
 vertex projections are granted on the Phase 3 side by §5.1, preserving Phase 5/10 consumption.
@@ -3693,11 +4360,13 @@ remain unverified pending fresh §5 reviews. No Phase 4 dependency on Phase 5 or
 obtain either value, and no Phase 3 reverse dependency is introduced.
 
 Complete legacy geometry remains gated: Phase 1 **does** grant the narrow pre-link
-`configureLegacyGeometry` operation, and Phase 4 adopts it conditionally. Phase 3 has not
-granted native-preserving materialization, complete translation, mixed-form handling, or its
-schema/fingerprint migration. Today's `None` and two-span `Translate` are not usable substitutes.
-The jcpp build/seam and U1 authority/typed-sampling requests remain separate from immutable
-projection access. This ledger distinguishes existing grants from genuinely missing contracts.
+`configureLegacyGeometry` operation, and Phase 4 adopts it conditionally. D-P3-68 now grants the
+exact native-preserving source request/result, source-layout precedence, complete uniform
+catalog/map and current-schema fingerprint/migration in §§2.2/4.5/4.10/5.1. This closes the **P3 source
+API absence**, not runtime or consumer verification. `Translate` is removed; complete legacy-to-core
+translation is not granted. jcpp's adopted P1 pin/closure proof, P4 adoption/fresh review and R26/P7/P10
+submission conformance remain separate. The maintainer's conditional primitive adapter scope
+permission does not constitute a completed adapter or authorization for a renderer rewrite.
 
 **R-P12-5 — owner-granted in schema 18.** §2.2 replaces `lang()` (removed, no alias) with
 `Map<String,LangDecorations> localizedDecorations()`. §4.3's complete acquisition, normalization,
@@ -3711,8 +4380,9 @@ projects all locales, not a selected UI result. Internal option durability remai
 | Failure | Degradation and diagnostic | G2.4 rung |
 |---|---|---:|
 | Unknown/malformed/out-of-family directive, property, profile token, screen entry, ID rule, texture spec, or persisted option line | warn on the appropriate Phase 1 channel; ignore only that line/edge/occurrence; retain prior/default value; **never abort the pack** | local parse rule supporting rung 5 |
-| Unresolved texture key or invalid known texture value after successful Properties decoding | retain exact attributed declaration and disposition; warn, omit only its executable effect, and leave prior valid specs intact; never strip to a base binding or claim suffix conformance | local parse rule supporting rung 5; U1 authority gate remains |
+| Unresolved texture key or invalid known texture value after successful Properties decoding | retain exact attributed declaration and disposition; warn, omit only its executable effect, and leave prior valid specs intact; never strip to a base binding or advertise unknown-key support | local parse rule supporting rung 5; unchanged by D-P3-67 |
 | Missing include, include depth >10, cycle, bad source encoding, spoofed marker, invalid `#version` | mark affected source roots unavailable with attributed diagnostics; unrelated roots/config remain | hands Phase 4 a rung-3 program failure |
+| Malformed/missing/repeated legacy pair member, mismatched PreserveNative request, unsupported/conflicting geometry layout, incomplete final uniform catalog or source attribution | affected root returns `Unavailable` with all attributed diagnostics; configuration remains inspectable, P4 fails/falls back the complete program; no partial source/catalog or `.gsh` drop | hands Phase 4 a rung-3 program failure |
 | Ambiguous option | disable that option only and retain diagnostic/locations | feature-local, rung 2a analogue |
 | Cyclic profile/subscreen | ignore cyclic edge; retain non-cyclic entries | feature-local, rung 2a |
 | Invalid custom uniform expression text at runtime | Phase 3 preserves it; Phase 11 disables that custom uniform only | rung 1, later owner |
@@ -3723,13 +4393,15 @@ projects all locales, not a selected UI result. Internal option durability remai
 | Discovery candidate/byte limit exceeded, or retained-directory table full | publish the bounded keyed sentinel/diagnostic result; after any successful publication evict completion-LRU keys and expose the exact superseded outcomes | rung 4 |
 | Null/foreign/malformed option state or same-domain cross-pack persistence pairing | return the closed state/persistence failure before evaluation, rewrite, or I/O; publish no partial result | rung 2a/4 |
 | Selected input unsafe, over limit, unreadable/corrupt, internally invalid, or structurally unusable | apply §5.1's exhaustive ordered cause matrix, close all resources, publish no partial configuration, and select shaders-off | rung 4→5 |
+| Proven optional owned-sidecar-only per-file read failure | retain `UNREADABLE` in the same-load asset snapshot under D-P3-69; P13 alone applies atomic source-specific baseline recovery, one warning and outcome fingerprint; all other input-read failures retain the fatal row above | approved owned-sidecar local recovery |
 | Null load reporter | return `Failed(INVALID_REQUEST)` with its primary diagnostic, no callback, no I/O, and no throw | rung 4 |
 | Missing companion option macros on non-`Off` | return `Failed(INVALID_REQUEST)` with the existing primary diagnostic before I/O or preprocessing; `Off` still returns successfully without inspecting that field | rung 4 |
 | Debug-dump/persistence write failure | warn; retain in-memory configuration/state; never turn pack off | rung 2a |
 | Unexpected parser/library exception | after input/provider attribution, catch at the front-end boundary as `UNEXPECTED_INTERNAL`, close the lease, and return shaders-off | rung 5 |
 
 `STRUCTURALLY_UNUSABLE` applies only after safe bounded readable input succeeds and no effective
-root or base source configuration survives mandatory decode/include validation; it never subsumes
+root or source configuration in either the base or any explicit `OVERRIDE` survives mandatory
+decode/include validation; empty `DISABLED` folders alone are insufficient. It never subsumes
 unsafe, limit, unreadable, internal-provider, malformed-line, or unexpected-implementation causes.
 
 ## 7. Threading & performance notes
@@ -3766,6 +4438,121 @@ context or Minecraft type needed.
 
 ### 8.1 Unit and property tests
 
+- D-P3-72 / `idMap_blockForced11300SameSource`: the actual ISO-8859-1 fixture
+  `block-dual-era-modern-only` consists of these four LF-terminated lines (no injected header):
+
+  ```properties
+  #if MC_VERSION >= 11300
+  block.31=minecraft:grass
+  block.32=minecraft:redstone_lamp
+  #endif
+  ```
+
+  Load those bytes as selected-pack `shaders/block.properties` with ordinary A–G
+  `MC_VERSION=11202`: BLOCK publishes `PRESENT_EMPTY`, empty ordinary rules, and two MODERN
+  alternate rules at original lines 2/3 with selector ordinal 0 and the exact pack origin.
+  P9's PRESENT_EMPTY/nonempty gate selects those actual producer rules and its live-validated
+  catalog maps them to `minecraft:tallgrass`/`minecraft:lit_redstone_lamp`, IDs 31/32.
+  Repeat through `IdMappingParser.parse` using bounded mod bytes and
+  `ModMappingOrigin("fixture",0,"block.properties")` plus that configuration's exact environment:
+  the same rule/state/era/line result retains the mod origin rather than impersonating pack input.
+  Origin-distinct file fingerprints differ; equal requests repeat deterministically.
+- `idMap_blockOrdinaryWins`: add an `#else` before `#endif` containing
+  `block.31=minecraft:grass` and `block.32=minecraft:redstone_lamp`. Both lists are nonempty;
+  ordinary state is PRESENT_RULES, ordinary rules remain CLASSIC and P9 selects only them,
+  retaining exact 1.12 grass/unlit lamp meanings. No alternate merge or ambiguity heuristic.
+  The unconditional two-property variant likewise remains CLASSIC even though the independently
+  produced alternate contains identical selectors. Shader-ID changes never choose an era.
+- `idMap_blockAlternateIsolationAndFailure`: mutate only the modern conditional branch to
+  `block.33=minecraft:grass`; ordinary empty state is unchanged, alternate payload/file and
+  configuration fingerprints change. Inspect with current schema23 and projectionVersion=1:
+  preserve both source-free ID lists and actual attribution within the same nine-tree shape.
+  An alternate-only preprocessing failure returns an empty alternate plus actual attributed
+  diagnostic without changing valid ordinary rules; an ordinary-only failure leaves a separately
+  valid alternate available under PRESENT_EMPTY. Mutating caller bytes after the defensive copy,
+  or source-local define/undef in either pass, cannot alter the other run or published environment.
+  Exercise finite per-run limits without extra retries; unsafe acquisition still follows fatal
+  load precedence. ABSENT runs neither pass; present comment-only BLOCK has both lists empty.
+  Parsing these same conditional bytes as LAYER leaves its alternate empty; ITEM alternates are
+  always empty, and existing ENTITY cases remain unchanged. Consumers reject schema22/current23
+  in both directions and any mismatched nested/inspection schema before deriving state.
+  These are concrete future parser-to-resolver fixture traces, not executed evidence or fabricated
+  MODERN resolver records. P3 producer coverage is v0.1; P9 live-alias integration is v0.3.
+
+- D-P3-73 / `idMap_typedMetadataSetsAndPropertyRanges`: use one LF-terminated line
+  `block.31=minecraft:leaves:3,7,11,15 minecraft:reeds:age=0-3 minecraft:reeds:0-3:age=0-3`.
+  Require precisely three rules with original line 1 and ordinals 0/1/2, exact §4.9 payloads
+  and unchanged shader ID 31. P9 finite-state fixtures distinguish leaves metadata 3/7/11/15
+  from 2/4/14, reeds ages 0/3 from 4, and combined states (metadata,age) (0,3)/(3,0)
+  from (4,0)/(0,4); no cross-state conjunction or literal `0-3` equality is permitted.
+  Repeat short/namespaced/legacy `83:0-3:age=0-3` spellings and a namespace-unknown control,
+  preserving exact lookup/no fallback. Repeat through bounded mod bytes, an ordinary/forced
+  unconditional BLOCK pair, and a modern-only `#if MC_VERSION >= 11300` wrapper (rule line 2).
+  Repeat as `layer.cutout=...` in the same bytes: identical constraints, ordinary CLASSIC only,
+  with P9's solid-opaque exclusion unchanged. ITEM/ENTITY predicate-bearing controls remain
+  typed but match nothing at P9.
+- `idMap_rangeBoundariesNoExpansionOrOvermatch`: metadata `0-15` is one interval; property
+  `age=0-2147483647` is one interval and visits only finite live values. Cover equal endpoints,
+  leading-zero normalization, comma-order retention, mixed `age=0,2-3`, distinct overlapping
+  ranges, missing property, unknown literal, interval disjoint from the live domain and an
+  in-range subset with absent intermediate domain integers. Reject empty/duplicate alternatives,
+  duplicate properties, `15-0`, `0-16` metadata, `3-0` property, `0-2147483648`, `-1`, `+1`,
+  `1-`, `-3`, `1-2-3`, extra colons and metadata-after-property; preserve neighboring valid
+  selector rules and their original ordinals. Below/at/above existing token bounds cannot expand,
+  truncate or publish partially accepted predicates. Mutating caller lists after construction
+  cannot affect any retained rule or its identity.
+- `idMap_rangeIdentityAndInspection`: alter only an endpoint, variant, alternative order or
+  alternate branch and require changed canonical file/configuration/materialization payloads;
+  equal complete input repeats deterministically. P2 uses §5.1.1's typed source-free projection
+  without new raw strings, and preserves all nine trees/projectionVersion1. Reject schema22/23
+  in both directions, future versions and mismatched containing/nested/inspection schemas before
+  derivation or serialization; no singleton-scalar upgrade or old-cache reuse. These are planned
+  producer-to-consumer boundary cases, not executed tests or fresh review evidence.
+
+- R55-1 / D-P3-70 structural boundaries: a safe bounded pack with only valid
+  `shaders/world-1/gbuffers_basic.vsh` and `.fsh` loads an empty base plus usable `OVERRIDE`;
+  selection of -1 uses only those roots, while an absent world selects the empty base.
+  A usable override survives unrelated base decode/include failures; a usable base likewise
+  survives an unusable override. No roots, only empty disabled folders, or all roots invalid
+  yields `STRUCTURALLY_UNUSABLE`. Combined unsafe/bounds/read failures retain §5's priority,
+  including D-P3-69's narrowly authenticated optional-sidecar exception, never false success.
+- R55-2 / D-P3-70 raw boundaries: exact 1D/2D/3D/rectangle tokens accept 1/2/3/2 dimensions.
+  `textures/lut.dat TEXTURE_RECTANGLE RGBA8 16 16 RGBA UNSIGNED_BYTE` produces typed `Raw`
+  with `RECTANGLE` and `[16,16]`; readable bytes remain acquirable after input lease closure
+  through `assets`, with any adjacent sidecar retained. Bare `RECTANGLE`, mixed/lowercase,
+  unknown token, zero dimension, missing/extra dimension and trailing operand yield
+  `INVALID_VALUE`, no new executable spec, and preserve a previous valid complete-key winner.
+- R55-3 / D-P3-70 selector/schema boundaries: literal `<profile>` with zero definitions,
+  two definitions plus an inferred selection, or two definitions plus `Custom` always publishes
+  the same zero-component selector. P12 obtains current/preview inference separately and cycles
+  existing declaration order; P2 emits only the selector's `$type` while retaining definitions
+  and finalized values separately. Containing/nested ID/inspection schemas must all equal
+  `CURRENT_SCHEMA_VERSION`; older (including schema20), future and mismatched values reject
+  before derivation/enrichment/serialization. Old named-selector graphs and old materialization
+  identities cannot be shimmed or reused. D-P3-69's nine-tree metadata codec remains unchanged.
+  These three boundary sets are architecture test plans, not executed test evidence.
+
+- Binary snapshot grant (D-P3-69): `assets_zipDeletedOrReplacedAfterLoad` acquires exact PNG/raw/
+  noise/sidecar bytes after lease closure and host deletion/replacement; a later full load sees
+  new bytes while old cursors retain the original. `assets_sameLoadIdentityAndFingerprint`
+  rejects cross-load capability pairing, verifies byte SHA-256 against manifest/pack identity
+  and distinguishes missing, empty and changed content independently of lookup order/host path.
+  `assets_declaredDomainAndCursorIsolation` covers undeclared/null rejection before existence,
+  reduced-away/Minecraft/generated references, missing admitted sources, independent positions,
+  read-only duplicates/slices and no accessible mutable backing array.
+  `assets_boundsAndFatalReadPrecedence` covers entry/total/per-file bounds with checked arithmetic,
+  unsafe-before-limit-before-unreadable, unused-file accounting, Internal copy/identity failure,
+  and no capability on failed load. `assets_sidecarTimingAndRecovery` distinguishes absent ref/
+  Missing, present-empty or malformed JSON/Acquired, and indexed sidecar-only Unreadable with
+  usable source, atomic baseline, one P13 warning and distinct fingerprint. A sidecar path also
+  used as an include/configuration/primary source or with unprovable duties stays fatal; invalid
+  bounds/index/container cannot recover. Malformed primary bytes remain Acquired for P13 validation.
+  `assets_resourceOnlyNoneRetainsSnapshot` reuses exact config/assets across resource epochs,
+  without acquiring current host pack bytes or mutating its identity.
+  `assets_sourceFreeInspectionAndCurrent-schema` rejects older/missing-capability graphs, verifies
+  canonical ordered outcome/count/hash metadata and absence distinctions, and proves no binary
+  payload, cursor, provider, host path or capability token reaches an inspection artifact.
+  These are planned owner/consumer boundary cases, not executed tests or a PASS claim.
 - Locale catalog: `lang_allLocalesSameSnapshotAndImmutable` covers multiple locales after lease
   closure; `lang_normalizationCollisionOrder` covers en_US/en-us collision in reversed discovery
   order and a malformed winner; `lang_missingEmptyAndPerKeyFallback` covers absent locale,
@@ -3780,6 +4567,8 @@ context or Minecraft type needed.
   shader-analysis callback participates; runtime P9/P10 resolution must agree.
 - Schema cutover: schema17 producers are rejected by schema18 consumers and vice versa before
   deriving state; no fabricated locale map or legacy explicit-user macro reinterpretation.
+- Native schema cutover: schema18/19 reject one another before derivation; no two-span-result
+  upgrade, inferred native strategy, fake source map or unchanged-text cache reuse.
 - Internal session: `internalOptions_captureRejectsForeignAndFilesystem` covers null/foreign/
   filesystem failures without I/O; `internalOptions_freshCatalogSameIdentity` covers capture,
   fresh-load rebinding and immutable old configuration; `internalOptions_sessionSwitchAndRestart`
@@ -3884,10 +4673,22 @@ context or Minecraft type needed.
   (accepts finite values immediately above 0 and below 180 in every form; rejects 0, 180,
   out-of-range, NaN, and infinities while retaining the prior/baseline value),
   `materialize_noGeometryPairAcceptsNone`, `materialize_geometryPairRejectsNone`,
-  `geometryRewrite_allPrimitivePairsAndCanonicalFingerprint`,
-  `geometryRewrite_rejectsRootSiteVertexAndRangeMismatch`,
-  `load_legacyGeometryPublishesBeforePhase4PlanSelection`,
+  `geometryNative_preservesVersionExtensionConstantUsesBuiltinsAndAdjacentVaryings`,
+  `geometryNative_pairCardinalityAndIncludedMacroOrigins`,
+  `geometryNative_rejectsWrongRootSiteCountOrContributionMismatch`,
+  `geometryNative_partialAndCompleteLayoutsOverrideApiPerProperty`,
+  `geometryNative_equalRedeclarationsAllowedConflictsUnavailable`,
+  `geometryNative_intrinsicConditionalEnvironmentAndLineMapping`,
+  `geometryNative_finalUniformCatalogCompleteOrUnavailable`,
+  `load_legacyGeometryPublishesBeforeNativeRequestSelection`,
   `materializedSource_transformedTextAndSourceMapAreExactPair`.
+  These planned cases must use active/inactive option/include branches, code reading
+  `maxVerticesOut`, native input arrays and varying linkage, source layouts different from API
+  defaults, a same-text different-route/schema/map identity case, and malformed pairs that
+  leave unrelated programs usable. CPU materialization is not GL proof: P4/P1 must additionally
+  exercise preserved VSH/GSH/FSH compile/configure/link with a real advertised ARB context, verify
+  source-over-API linked properties and complete fallback/cleanup; P7/P10 own native draw
+  primitive/attribute/provoking-vertex/primitive-ID conformance under their separate grant.
 - Declared uniforms: `declaredUniformCatalog_deadBranchAndCommentsAbsent`,
   `declaredUniformCatalog_defaultBlockOnlyAndCommaDeclaratorsComplete`,
   `declaredUniformCatalog_arraysStructsAndSamplerKindsAreClosed`,
@@ -3920,7 +4721,9 @@ context or Minecraft type needed.
   `macroConfiguration_overrideValidationAndOrdering`,
   `macroConfiguration_overrideActionTargetMatrixAndPrecedence`
   (every action against absent/capability/identity names, protected targets, replacement shapes,
-  absent suppression no-op, base/order collisions, first diagnostic, pre-I/O failure, and no partial map),
+  absent suppression no-op, base/order collisions, first diagnostic, pre-I/O failure, no partial map,
+  and §4.5's reserved intrinsics plus arbitrary non-identity/capability names rejected by the §4.4
+  whitelist with the same pre-I/O `INVALID_REQUEST`),
   `propertiesModel_engineFlagsDefaultsAndUnknownRetention`,
   `persistence_accessAcquisitionRootsAndDomain`
   (validates exact shaderpacks/game roots, global filename, null/missing/non-directory/unreadable/
@@ -3971,8 +4774,9 @@ context or Minecraft type needed.
   deterministic, and the frozen list survives source closure),
   and `texture_sidecarIndependentOfUnresolvedKeys` (present/absent adjacent sidecars on accepted
   pack/raw/noise sources retain exact paths without reads or guessed suffix state; Minecraft
-  sources gain no pack sidecar). These are future checks, not executed tests or suffix-honoring
-  evidence. Phase 13's rendering assertions await its separate authority/consumer grant.
+  sources gain no pack sidecar). Numeric discriminators must never produce filter/wrap state.
+  These are future checks, not executed tests or rendering evidence; Phase 13 separately tests
+  its documented `.mcmeta` behavior under D-P3-67, not an invented suffix grammar.
 - Custom expressions: `customDecl_allUniformTypesRawExpressionAndAttribution` and
   `customDecl_allVariableTypesAndDuplicatesRetained` cover both kinds, all six types, exact
   case-sensitive names, same-name/different-kind/type declarations, repeated exact keys, and
@@ -4001,7 +4805,7 @@ context or Minecraft type needed.
   `idMap_originVariantsIdentityValidationAndOrdering` covers pack attribution, canonical mod IDs,
   per-mod ordinals, record equality, invalid construction, and leaves precedence evaluation to Phase 9;
   `idMap_fingerprintCoversPresenceEnvironmentAndBothParses` mutates each load-bearing input; and
-  `idMap_schemaAndContainingConfigurationMustMatch` rejects unsupported v1–v15 values and mismatched nested schemas.
+  `idMap_schemaAndContainingConfigurationMustMatch` rejects every non-current value, including v1–v22 and future versions, and mismatched nested schemas.
 - Appendix F tests: every Phase-3-owned test named in §§3.1–3.2 is required; a parameterized key
   manifest fails if a parser/model row lacks a Phase 3 assertion. Behavior-only handoff rows name
   their downstream owner's test and are excluded from the Phase 3 parser manifest.
@@ -4029,9 +4833,9 @@ context or Minecraft type needed.
   `packConfigurationIsOnlyLoadOutput`, `fingerprintChangesOnEveryLoadSemanticInput`,
   `fingerprintChangesWhenMinimumEditionCrossesCompatibility`
   (holds pack bytes and every other fingerprint input fixed and asserts both status and fingerprint change),
-  `materializedFingerprintChangesWithContributionOrGeometryPlan`,
+  `materializedFingerprintChangesWithContributionRouteSiteLayoutAndMap`,
   `materializedFingerprintChangesWithUniformCatalogSchemaOrContent`,
-  `schema_currentValuePublished` (accepts current schema 18), `schema_recordComponentChangeBumps`,
+  `schema_currentValuePublished` (accepts `CURRENT_SCHEMA_VERSION`), `schema_recordComponentChangeBumps`,
   `schema_incompatibleChangeBumps`, `schema_unsupportedVersionRejected`,
   `schema7RejectedBySchema8`, `schema8RejectedBySchema9`, `schema9RejectedBySchema10`,
   `schema10RejectedBySchema11`, `schema11ProducerRejectedBySchema12Consumer`,
@@ -4143,14 +4947,14 @@ milestone.
 | P3-C07 | typed current-candidate target acquisition, same-pack catalog/state authentication, safe access, direct-name persistence, closed per-pack/global codec matrices, and atomic load integration | `v0.1` |
 | P3-C08 | configurable OF-era/feature/identity macros with fixed `MC_VERSION`, canonical engine-version projection, required typed companion snapshot (explicit false pair at v0.1), six v0.1-effective option macros, the complete override action/state matrix, and unchanged Phase 6 slot | `v0.1` |
 | P3-C09 | OQ-7 policy finalizer/per-pack experiment results | `post-v0.5` |
-| P3-C10 | jcpp shader-source processor with hoisting/spoof guards | `v0.1` |
+| P3-C10 | jcpp shader-source processor with hoisting/spoof guards and D-P3-68 native GLSL preservation/classification | `v0.1` |
 | P3-C11 | properties-safe jcpp adapter and lossless property parser | `v0.1` |
 | P3-C12 | table-driven legacy Appendix A.3 directive scanner with exact family applicability and positional `DRAWBUFFERS` slots, excluding `RENDERTARGETS` | `v0.1` |
 | P3-C13 | immutable resource-requirement aggregator with exact closed public leaves, positional routing, program-family filters, complete canonical codec, and direct Phase 4 mipmap/vertex projections preserving Phase 5/10 consumers | `v0.1` |
-| P3-C14 | complete Appendix F model with exact decoded edition accessors, provisional edition grammar/comparator, source-projected program evaluation, D-P3-38 PNG interpretation, lossless pre-collapse texture declarations and dispositions under the U1 authority gate, closed flags/state, other-key unknown retention, and custom expressions | `v0.1` |
-| P3-C15 | schema-v18 ID-mapping/layer parser, classic/modern provenance, file-state/selector/era provenance, and forced-11300 entity parse | `v0.1` |
-| P3-C16 | same-build macro-snapshot source materializer and local processed-source debug dump | `v0.1` |
-| P3-C17 | schema-v18 validation, companion/engine-setting/locale/compatibility-status/resource/custom-expression/texture-declaration fingerprint payloads, and atomic `PackConfiguration` publication | `v0.1` |
+| P3-C14 | complete Appendix F model with exact decoded edition accessors, provisional edition grammar/comparator, source-projected program evaluation, D-P3-38 PNG interpretation, unchanged lossless texture declarations/dispositions and D-P3-67 documented-mechanism scope, closed flags/state, other-key unknown retention, and custom expressions | `v0.1` |
+| P3-C15 | current-schema ID-mapping/layer parser, D-P3-73 typed bounded metadata/property intervals without expansion, file-state/selector/era provenance, and isolated forced-11300 BLOCK/ENTITY parses under D-P3-72 | `v0.1` |
+| P3-C16 | same-build native-preserving/ordinary source materializer, exact language/geometry/map/catalog projection, route-distinct identity and local processed-source debug dump | `v0.1` |
+| P3-C17 | current-schema validation, companion/engine-setting/locale/compatibility-status/resource/custom-expression/texture-declaration fingerprint payloads, native source identity, and atomic `PackConfiguration` publication | `v0.1` |
 | P3-C18 | loader-neutral diagnostics, null-reporter handling, and exhaustive load-failure classification/degradation adapter | `v0.1` |
 | P3-C19 | global `.csh` source recognition/materialization reserved for G8/S2 | `post-v0.5` |
 | P3-C20 | headless manifests, fuzz fixtures, and the specified Phase 2 front-end hand-off | `v0.1` |
@@ -4159,10 +4963,10 @@ milestone.
 | P3-C23 | effective `MC_NORMAL_MAP`/`MC_SPECULAR_MAP` emission from the typed pre-load companion pair, with preliminary policy supplied by Phase 7 rather than completed atlases | `v0.5` |
 
 Later consumers may initially ignore fields, but Phase 3's v0.1 model already preserves all
-Appendix A.3/F data and unresolved texture declarations. Ignoring an unresolved declaration is
-never suffix-honoring conformance: the v0.5 texture requirement remains gated by U1 authority
-closure, a Phase 3 typed sampling-state amendment, and Phase 13 adoption (§5.4). This is not a
-post-v0.5 deferral or waiver. P3-C19 does not change legacy dimension semantics.
+Appendix A.3/F data and unresolved texture declarations. D-P3-67 retains numeric duplicate
+discriminators and Phase 13's v0.5 `.mcmeta` behavior, with no future required suffix parser
+or typed sampling-state amendment. Unknown-key retention is not advertised support or runtime
+evidence. All review/implementation gates remain. P3-C19 does not change legacy dimension semantics.
 
 ## 10. OQ & spike specifications
 
@@ -4283,6 +5087,14 @@ not a decision (PD §7.6).
 | D-P3-64 | Supersede only D-P3-61's explicit-user-only macro policy: resolve user→pack→local true after the single A–G-only properties parse, before shader jcpp, and emit iff effective true. G6 `doc/shaders.txt:660–661` says “When Old Hand Light is enabled” / “When Old Lighting is enabled”; `doc/shaders.properties:9–11` excludes option macros and `:17–29` gives user priority. Published [OptiFine shaders.txt](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.txt) and [shaders.properties](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.properties) (read 2026-09-07, option macros and old-light settings) corroborate enabled/priority but modern properties preprocessing differs and is not backported. True absent fallback is expressly P9 D-P9-8 / P10 D-P10-11 local policy, not author evidence. Schema 18 records the changed macro meaning; OQ-7 final identity posture remains open under RC3:1351–1354 and RESEARCH:854–871. |
 | D-P3-65 | Maintainer explicitly selected session-only Internal edits on 2026-09-07: preserve across selection changes within the client session, restart defaults. §4.3 grants an authenticated opaque snapshot and fresh-catalog load rebinding, no filesystem identity or durable target. RC3:1417–1421 and RESEARCH:603–605 did not supply Internal durability; this recorded maintainer choice supplies the missing product authority, not an invented external behavior. |
 | D-P3-66 | Maintainer explicitly selected “Pack-option compatibility only” for `superSamplingLevel` on 2026-09-07: preserve declared option/source use, remove engine SSAA sizing/traversal/resolve effects; AA UI/runtime remain excluded. Shipped G6 `doc/shaders.properties:189` lists the const option and RESEARCH's directive inventory supplies default 1; neither defines an execution algorithm. This approved scope disposition overrides earlier phase-local engine-SSAA assignments without rewriting historical research/design. Retained resource meaning changes share schema18. It does not ratify old-light defaults or OQ-7. |
+| D-P3-67 | Adopt the maintainer's 2026-09-07 “Correct requirement to documented mechanisms” decision in `docs/decisions/U1_TEXTURE_SAMPLING.md`: retain `.0`–`.9` duplicate discriminators and Phase-13-owned `.mcmeta` blur/clamp, remove unspecified filter/wrap key-suffix requirements. Published [OptiFine custom-texture documentation](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.properties) explicitly separates those mechanisms; [Iris `.mcmeta` documentation](https://shaders.properties/current/reference/buffers/custom_textures/#mcmeta-file) corroborates blur/clamp and resource/atlas exclusion. Supersede only D-P3-29/D-P3-59's pending authority/future typed-suffix obligation; preserve their historical evidence and the complete lossless stream. Existing parser/payload/defaults/fingerprints stay unchanged, hence schema18; no blanket defaults/error-policy ratification or runtime conformance claim. |
+| D-P3-68 | Answer P1 §11.4/P4 §5.4 with native-preserving geometry materialization, not an incomplete core translator. Published ARB rev26/GLSL1.20 rev8/GLSL1.50 rev11 evidence and notices are §0.61; same-build native source, exact final catalog/map, explicit source-layout precedence and schema19 clean cutover are §§2.2/4.5/4.10/5.1. This local API decision is not claimed runtime behavior; topology owner/conformance and review gates remain. |
+| D-P3-69 | 2026-09-08 TS-1 owner grant: publish schema20 `PackConfiguration.assets` over bounded same-load owned bytes, with declared-path Acquired/Missing/Unreadable/InvalidReference results, read-only heap cursors and metadata-only acyclic fingerprint/inspection. Refines D-P3-19 only for authenticated optional sidecar-only read markers under `docs/decisions/TEXTURE_SIDECAR_DEFAULTS.md`; all safety/bounds/index/primary/config failures remain fatal. P13 owns recovery diagnostics and interpretation; P7 retains exact assets across resource-only NONE. No host reopening, opaque provider, binary artifact or runtime/PASS claim. |
+| D-P3-70 | 2026-09-08 R55 fix-up: preserve usable base OR explicit override under ordered failure precedence; map exact external `TEXTURE_RECTANGLE` to existing `TextureTarget.RECTANGLE` (bare `RECTANGLE` invalid); replace named selector with `ScreenProfileEntry()`, deriving current/Custom solely through existing inference. Nested shape advances schema21 including ID/inspection and materialization identity; D-P3-69 assets/nine-tree meanings stay unchanged. §§5.3/11.4 require coordinated receipts and fresh reviews, not implementation clearance. |
+| D-P3-71 | 2026-09-08: receive P4 D-P4-31's required ownBuild disposition in the separate same-build registry enrichment adapter. Copy exact P4 classification without inferring it from sourcePresent/effective CHAIN. P3 snapshot trees/schema21 and golden/projection versioning remain unchanged; P2/P7 own runtime /3 serialization and T3 interpretation. |
+| D-P3-72 | 2026-09-08 P9 R1 C1 producer grant: extend the existing copied-byte/private-environment forced11300 mechanism to present BLOCK requests. Ordinary results/state stay classic and unchanged; only explicit alternate rules are MODERN, ITEM/LAYER alternates stay empty. P9 selects alternate only for PRESENT_EMPTY plus nonempty alternate, independently per contribution, never by ID/name heuristic or merge. RESEARCH §3.7 supplies classic preprocessing, not this local compatibility extension. Changed meaning requires schema22, current nested/inspection equality and MaterializedSource-v22; all unrelated contracts remain. §§4.9/5/8/9/11/12 define complete production, evidence and receiver obligations; fresh reviews remain required. |
+| D-P3-73 | 2026-09-08 C57-1: replace scalar metadata and literal-only predicates with immutable ordered metadata interval unions and typed Literal/IntegerInterval property alternatives, one rule per selector and no range expansion. Shipped G6 `doc/shaders.txt:544` explicitly incorporates `doc/properties_files.txt:97–122` sets/ranges/conjunction; exact API/normalization/ambiguity/bounds/rejection rules are local policy in §4.9, not source implementation claims. Schema23 and MaterializedSource-v23 bind the changed nested graph; P9 alone resolves live values, P2 projects typed metadata without new strings/trees. §§5.3/11.4 require dated receiver receipts and fresh reviews; no health IDs or unrelated semantics change. |
+| D-P3-74 | 2026-09-08 R60 C1: make §4.4's per-pack override target whitelist authoritative — protected targets are exactly non-version identity/capability names, so §4.5's reserved intrinsic namespace (`__VERSION__`, `__FILE__`, `__LINE__`, `GL_core_profile`, `GL_compatibility_profile`, `GL_ARB_geometry_shader4`) and any other non-whitelisted name are rejected with the same pre-I/O `INVALID_REQUEST`, resolving the blocklist/whitelist conflict with no `PackConfiguration` component, meaning, fingerprint or schema change. |
 
   D-P3-64's effective-mode projection, shared true fallback, unchanged `default` wire baseline,
   distinct DEFAULT/false fingerprint identity and zero-only AA storage were explicitly ratified
@@ -4315,19 +5127,24 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
    §3.1/§3.2. The contract behavior is retained.
 5. **Half-life units.** Appendix A.3 says ticks. Oculus reports an alternate smoothing-unit
    behavior; Phase 6 owns that conflict. Phase 3 stores the normative ticks unchanged.
-6. **Texture sampling suffixes (U1).** The older strip-and-ignore contract quoted at
-   `docs/phase13/v1/PHASE_13_DOC.md:531-541` / `:1647-1653` is no longer the active Phase 3
-   contract; those Phase 3 coordinates are stale. The current authority conflict is not waived:
-   `docs/design/v2.0-RC3/DESIGN.md:2441-2443` and independently
-   `docs/design/v3/DESIGN.md:2476-2478` say "ours must honor them", while
-   `docs/research/v1/RESEARCH.md:1484-1490` specifies `[.0-9]` and sidecars but supplies no
-   property-key filter/wrap grammar. The shipped text says ".0" to ".9" avoid duplicate keys
-   and modes use ".mcmeta" files (`reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:117-119`).
-   D-P3-59 retains the complete owner-side declaration stream now, without treating absence of
-   grammar as evidence of absence or inventing executable semantics. PD's explicit "pack PNG with
-   `.mcmeta` blur/clamp" (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:626-630`) confirms
-   the evidence distinction, not suffix syntax. §11.5 item 3 routes the still-required authority
-   decision. No full suffix-honoring conformance or downstream adoption is claimed.
+6. **Texture sampling suffixes (U1), corrected by D-P3-67.** RC3's historical Phase 3 gap
+   statement and “ours must honor them” requirement conflicted with the documented mechanisms:
+   RESEARCH Appendix F.5 and the shipped/published OptiFine text specify numeric duplicate
+   discriminators and `.mcmeta`, not filter/wrap key grammar. The maintainer explicitly selected
+   the authority-correction route in `docs/decisions/U1_TEXTURE_SAMPLING.md`; §0.60 and §5 adopt
+   it for Phase 3. Historical D-P3-29/D-P3-59 and §0.56 evidence remain intact, while their
+   pending suffix-authority obligation is superseded. The lossless stream, `UNRESOLVED_KEY`
+   diagnostics and typed sources/sidecar paths remain unchanged. This is neither a claim that
+   no extension syntax can exist nor a promise to support unknown extensions. Phase 13 owns
+   `.mcmeta` behavior and its independent review; no runtime evidence or broad default
+   ratification follows from this narrow documented-mechanism correction.
+7. **Two-span core rewrite versus native language.** RESEARCH §3.1 requires the documented
+   ARB alternative as well as core layouts. Removing its extension and `maxVerticesOut`
+   declaration does not translate GLSL version, `gl_VerticesIn`/input arrays, varyings or uses
+   of that constant. Published ARB rev26 independently confirms native forms and source-over-API
+   property precedence on GL3.2. D-P3-68 removes the advertised incomplete translation and
+   preserves native source. This correction is not a new shader transformer or topology policy;
+   maintainer-authorized P7/P10 submission remediation has its own owner and evidence gates.
 
 ### 11.4 Open items and hand-offs
 
@@ -4338,7 +5155,7 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
   expose only that handle-free layout to Phase 6. Phase 6 must not reopen source or reinterpret
   the Phase 3 type algebra.
 - For source materialization and program-state evaluation, Phase 4 calls
-  `SourceMaterializer.materialize(root, contribution, geometryTranslation)` and
+  `SourceMaterializer.materialize(root, contribution, geometry)` with `GeometrySourceRequest` and
   `PackConfiguration.evaluateProgramStates(selectedProfile, diagnostics)` only; both use the same
   finalized option state that produced the configuration's resources and fingerprint; materialization
   also retains that load's companion pair and hashes it. It never calls or reconstructs a raw-model
@@ -4348,7 +5165,7 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
   Phase 10 vertex-layout consumers retain the same values and responsibilities. Phase 4's
   integration amendment adopts the direct grant/current schema and reconciles its ledger;
   fresh reviews remain required, with no backward Phase 5/10 route or source reparse.
-  Complete legacy geometry and other ungranted dependency requests remain separate (§5.4).
+  D-P3-68's native source grant now requires consumer adoption; other dependency gates remain (§5.4).
 - Phase 7 must supply the bounded `InternalPackSource`; for filesystem loads it obtains
   `PersistenceFileAccess` from its factory bundle using the exact game/shaderpacks roots and passes
   only that same-domain receiver into `load`. It persists only
@@ -4361,13 +5178,14 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
   Content hashing/serialization uses only `NormalizedPackPath.canonicalString()`.
 - Phase 7 selects the published `DimensionConfiguration` by key: an absent world entry falls back
   to base, an override is source-exclusive, and a disabled entry never falls back or merges.
-- Phase 9 consumes `IdMappingInput`, selects an entity ordinary/forced result under its documented
+- Phase 9 consumes `IdMappingInput`, selects BLOCK/ENTITY ordinary/forced results under the documented
   present-empty rule, parses bounded mod bytes only through the published operation/environment,
   and owns mod precedence, tag expansion, registry resolution, and aliases.
 - Phase 11 consumes `PackConfiguration.customExpressions()` only after the latest Phase 3 revision
-  and latest §5 surface receive a fresh literal-PASS review; it owns expression grammar/evaluation,
-  duplicate diagnostics and first-valid policy, and expression-relative spans, and must not reopen
-  or reparse Properties bytes.
+  and latest §5 surface receive a fresh literal-PASS review; it owns expression grammar/evaluation
+  and expression-relative spans, including the D-P11-27 deterministic first-owner
+  duplicate/collision policy and its exact DUPLICATE_NAME/UNKNOWN_NAME diagnostics, and must not
+  reopen or reparse Properties bytes.
 - Phase 12 obtains receivers and persistence access through `PackFrontEnds.create`. Filesystem
   Apply derives only an authenticated `Acquired` target, writes safe persistence and requests a
   fresh load. Internal Apply/profile/reset uses P7's D-P3-65 commit adapter and no pack target.
@@ -4375,15 +5193,15 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
   preview state to its materializer/evaluator.
   It owns discard timing and global-setting UX and uses the retained tooltip
   marker for warning/red classification and display-only removal.
-- Phase 13 receives typed existing source specs plus the lossless, attributed declaration stream.
-  Unresolved declarations are diagnostic data, not sampling state. Phase 3 alone must implement
-  approved suffix decoding and publish a new schema-bound typed sampling request after §11.5 U1
-  resolves; Phase 13 must then adopt it in its own active contracts. No consumer reparses properties,
-  splits unknown keys, or infers requests from `.mcmeta`. Retention alone never clears the U1 gate.
+- Phase 13 receives unchanged typed source specs, sidecar references and the lossless attributed
+  declaration stream. D-P3-67 adopts numeric discriminators plus `.mcmeta`, not a future typed
+  suffix request. Unresolved declarations remain diagnostic data only; no consumer reparses
+  properties or splits unknown keys. Phase 13 owns sidecar interpretation/application and adopts
+  the authority correction separately; fresh reviews and runtime evidence remain required.
 - Phase 13 R1 and P1 package placement are owner-designed and receiver-adopted by the
-  coordinated integration amendment, as are Phase 4's direct projections. Current schema-18
-  consumption and all changed §5 surfaces remain unverified. Native source preservation,
-  jcpp, post-analysis R4 and executable U1 remain separate gates; see §5.4.
+  coordinated integration amendment, as are Phase 4's direct projections. Current schema
+  consumption and all changed §5 surfaces remain unverified. D-P3-68 supplies native source,
+  not jcpp admission, consumer adoption, post-analysis R4 or draw-conformance evidence; see §5.4.
 - Phase 2 adopts `inspect`/snapshot/archive-provenance in §5.1.1 and P1 diagnostic permission;
   P4 adopts the same-request resolution enrichment. All are architectural receipts, not
   completed matrix evidence. P2 alone owns golden formatting, acquisition metadata and verdicts.
@@ -4397,27 +5215,105 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
   serialized. Closed rejection and failed-load retention rules replace the former inert controls.
 - G8/S3 owns OQ-7's final policy after §10's spike.
 - G8/S2 consumes P3-C19; it must not alter legacy dimension-file rules silently.
+- **D-P3-68 producer grant / exact receiver migration.** P4 removes all translator plan/request/
+  rewrite-site imports, requests and presumed proof tokens. Join the existing selected program
+  requirement to its `.gsh` root: a recognized pair selects `PreserveNative(config)`; otherwise
+  select `None`; VSH/FSH use `None`. Materialize each present stage once with the same contribution.
+  Reject any unavailable stage as a complete program failure before publishing handles. Validate
+  catalog/source fingerprint equality and merge every final default-block declaration exactly as
+  before, rejecting same-name unequal structural types with both locations. No source reopen.
+  `geometry().CoreLayout` needs the existing GL3.2/core-source route; `NativeLegacy` requires the
+  actual ARB extension even on GL3.2+, and any nonempty source-layout declarations additionally
+  require GL3.2+. Preserve `language()`/text/map from all stages. On a fresh unpublished program,
+  before first link, call P1's already-granted
+  `configureLegacyGeometry(program, TRIANGLES, TRIANGLE_STRIP, native.config().maxVertices())`
+  under P1's owning-context/error/one-time setup rules. Do **not** pass source-overridden counts/
+  primitives into that narrow API. Retain source `effective` as declarative input; P1's successful
+  link captures authoritative linked input for conditional drawing. P4 adopts these source types
+  into its own strategy ledger/contracts, not an invented downstream surface in this document.
+  Preserve its diagnostics, deletion, validation and complete binding fallback for native errors.
+- **Current-schema propagation, no semantic collateral.** P1 re-reads changed §5 and owns its existing
+  pre-link operation/jcpp admission and backend linked metadata; no additional facade is requested.
+  P2 adopts current-schema and the renamed included-site projection through the existing source-free
+  inspection codec, plus its own golden/revision evidence; never exports shader text.
+  P4 changes strategy/materializer/catalog/source-map consumers as above. P5/P6/P8 adopt containing
+  current-schema for unchanged sizing/depth/shadow values; P6's contribution and merged catalog interface
+  stay unchanged. P7 adopts current-schema for atomic loads/reloads and owns orchestration with P10's
+  separately authorized submission adapter; it never rescans GLSL. P9 rejects old/mismatched nested
+  schema before unchanged ID mapping. P10 consumes its unchanged vertex requirements and obtains
+  draw compatibility through the owning P1/P4/P7 contracts, not P3 source text. P11/P12/P13 adopt
+  containing current-schema while preserving expression, locale/option/Internal-session and U1/texture
+  semantics. P14's eventual acceptance/inspection consumes the reviewed current schema only.
+  Consumer receipts, fresh independent producer/consumer whole-document reviews and final
+  integration remain mandatory; P3 cannot declare them completed. Earliest native `.gsh` support
+  must include native source and conditional draw compatibility together, not defer either as a
+  silent later-milestone escape. No code/runtime evidence is supplied by this architecture amendment.
+- **TS-1 acquisition receivers, 2026-09-08 — adopted/unverified.** P13 D-P13-30/§4.3.2/§5.2
+  consumes the exact D-P3-69 capability/results, primary-before-sidecar failure precedence,
+  read-only original bytes, atomic sidecar-only recovery and one diagnostic. P7 D-P7-33/§5.2
+  retains the same configuration/assets across preparation, dimension metadata and resource
+  NONE; full load alone replaces pack bytes. P2 D-P2-55 preserves all nine source-free
+  projection trees, with assets mapped to `[properties] owner.assets`, never decoded bytes.
+  These are current receiving contracts, not fresh whole-phase verification or runtime proof.
+- **Historical R55/schema21 receiver handoff — 2026-09-08, owner-designed/unverified.** P12 must consume
+  payload-free selector declarations, existing declaration-ordered profiles and separate
+  preview-state inference; no fabricated selection/name. P2 must consume the zero-component
+  selector through the same generic source-free codec, preserving all nine trees and
+  `[properties] owner.assets`. P7/P4 must preserve dimension-only success and exact no-merge
+  selection; P13 must receive typed rectangle sources/acquirable bytes, never parse an alias.
+  That amendment requested each receiver named in §5.3 to record a dated schema21 receipt with exact-current,
+  containing/nested identity checks before derived state, including current materialization
+  identity and cache retirement where owned. P1 rereads changed §5; its facade does not change.
+  This owner document does not certify sibling adoption. Separate producer/consumer reviews,
+  all applicable phase gates, IR-01 and final integration remain required.
+- **Historical D-P3-72/schema22 receiver handoff — 2026-09-08, owner-designed/unverified.** P9 must
+  adopt §4.9's same-source BLOCK producer and exact PRESENT_EMPTY/nonempty-alternate selection
+  in §§4.6/5.2/5.4, its resolved identity and v0.3 evidence plan; an assigned MODERN test record
+  is not producer evidence. Parse selected-pack and bounded mod bytes through P3, retain actual
+  provenance, and trace the selected grass/lamp rules to the live validated aliases. No P3 registry
+  lookup, ordinary-era inference, alternate merge, layer retry or extra parser API is granted.
+  All receivers listed in §5.3 must adopt current schema22 before deriving/retaining/serializing
+  their owned state, rejecting old/future/mismatched configuration/nested ID/inspection schemas.
+  P4 retires incompatible materializations/caches under MaterializedSource-v22; P2 keeps
+  projectionVersion=1 and the nine source-free trees, including both ID lists and actual
+  attribution under the unchanged codec. P7 preserves exact same-load assets and its existing
+  reload/retirement boundary. Other resource/native/option/texture contracts remain unchanged.
+  Older numeric receipts are historical; no receiver adoption or new PASS is asserted here.
+- **D-P3-73/schema23 receiver handoff — 2026-09-08, owner-designed/unverified.** Main must
+  amend P9 §§4.5/5/identity and evidence plans to consume
+  `Optional<MetadataConstraint> legacyMetadata`, `List<IntegerRange> alternatives` and
+  `PropertyPredicate.acceptedValues: List<PropertyValueConstraint>` (`Literal(value)` /
+  `IntegerInterval(range)`) with §4.9's exact finite-domain membership/conjunction and whole-selector
+  failure semantics. Keep one rule/provenance ordinal, existing precedence and independent
+  alternate selection; no raw selector/Properties parser, expansion or inferred MODERN era.
+  P9 derived identity must retain all typed constraints/order/provenance plus its chosen parse
+  and live snapshot; consume §8.1's actual pack/mod/ordinary/alternate/layer producer cases.
+  Main must amend P2's explicit ID projection dispatch for all new record/variant fields using
+  §5.1.1, preserving TextHash for property/literal/selector strings and IntegerValue for interval
+  endpoints, all nine trees and `[properties] owner.assets`; no additional health row is granted.
+  All §5.3 receivers need exact-current **23** containing/nested/inspection admission before
+  owned derivation/reuse/serialization, and current MaterializedSource-v23 retirement where owned.
+  Prior numeric receipts, including D-P3-72's above, are historical, not current acceptance gates.
+  These required receiving amendments and independent owner/receiver review are pending Main
+  integration; this owner resolution does not certify them or grant implementation clearance.
 
 ### 11.5 Requested upstream changes
 
-1. Phase 1 fix-up: expose/pin jcpp and accommodate it in the pure-JVM seam test as requested in
-   §5.4; record its Apache-2.0 attribution through the already-binding notice mechanism.
+1. **P1 jcpp grant adopted/unverified:** consume §§4.2.4b/5.1/D-P1-49 under this §5.4;
+   verify the exact implementation pin, closure, seam, notices and once-only packaging before code.
 2. RC3/RESEARCH clarification: state explicitly whether `shaders.properties` receives option
    macros. This design follows the shipped A–G-only rule pending an upstream contract change.
-3. **U1 — DESIGN/RESEARCH owners, required and ungranted.** Reconcile the literal requirement
-   "ours must honor them" (`docs/design/v2.0-RC3/DESIGN.md:2441-2443`, separately
-   `docs/design/v3/DESIGN.md:2476-2478`) with the incomplete suffix contract in
-   `docs/research/v1/RESEARCH.md:1484-1490`. Publish authoritative exact tokens and value domains;
-   suffix placement relative to `.0`–`.9`; whether a suffix is a separate parameter assignment
-   or decorates a source declaration; target association and missing-source behavior; duplicate
-   and invalid-value precedence; defaults and precedence against `.mcmeta` blur/clamp; and
-   applicability to pack PNG, raw, Minecraft/live resources, and noise. Phase 3 then owns parsing,
-   validation and a complete typed sampling-state §5 grant; Phase 13 owns application and effective
-   parameter identity after its separate §5 adoption. If evidence instead warrants correcting
-   DESIGN's suffix requirement, the maintainer must explicitly revise that authority and arrange
-   per-phase adoption; this document neither makes that change nor substitutes sidecar support for
-   it. Lossless schema-16 capture is already designed, but neither authority route nor suffix
-   honoring is granted by it. Preserve all prior evidence/addenda and re-verify changed §5 surfaces.
+3. **U1 — authority correction selected and adopted by Phase 3 (2026-09-07).** The maintainer
+   selected “Correct requirement to documented mechanisms” in
+   `docs/decisions/U1_TEXTURE_SAMPLING.md`, the explicit correction route previously requested
+   here. D-P3-67 adopts existing numeric duplicate discriminators and Phase-13-owned `.mcmeta`
+   blur/clamp, removing the unspecified property-key filter/wrap requirement. No future grammar
+   grant, typed sampling schema or parser expansion is required. Existing source forms, lossless
+   declarations and `UNRESOLVED_KEY` behavior are unchanged within current-schema; U1 itself added no schema.
+   Phase 13 records its own adoption; each changed §5 surface requires fresh independent review,
+   and IR-01 remains. Existing sidecar defaults/error policy are not newly ratified, and no
+   implementation or rendering conformance is claimed. Historical authority/research/reviews
+   and prior addenda remain evidence rather than being rewritten to imply this earlier decision.
 4. DESIGN/RESEARCH clarification: either standardize the concrete `%` tag-selector spelling,
    canonicalization, and rejection grammar in D-P3-47 or publish a different pack-visible syntax;
    §3.6.8 currently governs only the generic 1.12 shim and entries-before-tags priority.
@@ -4464,9 +5360,10 @@ Each item is independently actionable and names its test hook.
 4. `[v0.1]` Implement P3-C05 include expansion and numeric `#line` source maps before macro setup,
    expanded-stream option rewriting, and conditional evaluation; run `include_*Attribution`,
    `optionRewrite_includedChangedOptionOrder`, and `preprocess_lineAttribution`.
-5. `[v0.1]` Apply the Phase 1 jcpp pin/seam fix-up, record jcpp through the existing notice
-   mechanism, then implement P3-C10 and the closed legacy-geometry pair/site model with the
-   attributed plan rewrite; run all `preprocess_*`, `macro_*`, and `geometryRewrite_*` tests.
+5. `[v0.1]` Exercise the adopted Phase 1 jcpp pin/closure/seam grant and record its exact
+   dependency/runtime/notice evidence, then implement P3-C10 and D-P3-68's native-preserving source algebra, intrinsic
+   environment and complete attributed pair/layout discovery; run all `preprocess_*`, `macro_*`,
+   and `geometryNative_*` behavioral cases. No incomplete translator may be implemented as success.
 6. `[v0.1]` Implement P3-C08's fixed `(1,12,2)`/`MC_VERSION=11202` validation, canonical decimal
    `SCHMALOOGIUM_VERSION`, exact GL/GLSL formulas, exhaustive OS mapping, ordered vendor/renderer
    classifiers, ordered option projection, Java-25 numeric serialization, six effective option
@@ -4497,6 +5394,9 @@ Each item is independently actionable and names its test hook.
     source-projected profile/program evaluation, and immutable public state graph. Capture every
     active decoded `texture.*` occurrence before reduction, retain unresolved/invalid declarations
     without stripping, and derive only documented source specs under the §5.1 disposition rules;
+    Under D-P3-67 keep `.0`–`.9` as duplicate discriminators only; pass unchanged typed sources
+    and sidecar references to Phase 13. Implement no invented filter/wrap key parser, sampling
+    API, shim or schema synthesis. Phase 13 owns `.mcmeta` blur/clamp and its runtime tests.
     run `compatibilityVersionAndEditionGrammarComparatorVectors`,
     `minimumEditionRule_sourceAccessorProjections`,
     `texture_declarationsLosslessBeforeReduction`, `texture_unresolvedNeverAliasesBase`,
@@ -4528,15 +5428,16 @@ Each item is independently actionable and names its test hook.
     `fingerprint_attachmentFormatVariantAndExplicitValue`,
     `fingerprint_resourceCodecEveryLeafAndInsertionOrder`, all routing-slot tests, eligible/wrong-
     family orderings, and hand-verify one classic pack's resource requirements.
-13. `[v0.1]` Implement P3-C15's schema-v18 `IdMappingInput`, four per-kind file states, pure
+13. `[v0.1]` Implement P3-C15's current-schema `IdMappingInput`, four per-kind file states, pure
     bounded-byte parser, exact provisional tag identifier and numeric-short exclusion grammar,
     classic/modern provenance, entry/tag classification, per-rule era, and isolated forced-11300
-    entity result; run all `idMap_*` tests, including the four explicit numeric-boundary outcomes
-    and long/short/property/legacy/layer cases.
+    BLOCK and ENTITY results; exercise §8.1's real conditional BLOCK producer traces through P9,
+    alternate failure/isolation, D-P3-73's three typed-range boundary plans, and all existing
+    `idMap_*` numeric/long/short/property/legacy/layer cases without rule or range-member expansion.
 14. `[v0.1]` Implement P3-C16's source-catalog snapshot/materializer access, exact
     `executablePrograms()` projection, retained same-build companion macro snapshot, materialization
     cache and both-boolean fingerprint payload, complete fingerprint-bound `DeclaredUniformCatalog`,
-    exact transformed-text/source-map projections, and local-only dump;
+    exact transformed-text/source-map/language/geometry projections, route-distinct identity and local-only dump;
     run `sourceCatalog_orderedRootsSourcesIncludesAndMaterializer`,
     `sourceCatalog_programProjectionStagesDimensionsAndAbsence`,
     `sourceMap_numericLookupAndMaterializedLifetime`,
@@ -4547,13 +5448,17 @@ Each item is independently actionable and names its test hook.
     every code-selected field and exact primary-value delivery once to each non-null reporter, and
     prove a null reporter returns its table-defined primary `INVALID_REQUEST` with no callback,
     I/O, or throw.
-16. `[v0.1]` Implement P3-C17 schema-v18 validation/fingerprint/atomic publication, including
+16. `[v0.1]` Implement P3-C17 current-schema validation/fingerprint/atomic publication, including
     canonical physical source identity, catalog-bound option state, executable-program projection,
     renderer features, both companion booleans, computed compatibility status, the closed custom-texture nominal algebra,
     complete resource codec, custom-expression and texture-declaration payloads; prove `PackConfiguration` is the only
     success output, run `fingerprintChangesWhenMinimumEditionCrossesCompatibility`, and run
     schema-12/schema-13, schema-13/schema-14, schema-14/schema-15, schema-15/schema-16, and
-    schema-16/schema-17 and schema-17/schema-18 producer-consumer rejection directions.
+    schema-16/schema-17, schema-17/schema-18, schema-18/schema-19, schema-19/schema-20,
+    schema-20/schema-21, schema-21/schema-22 and schema-22/schema-23 producer-consumer rejection directions.
+    Implement D-P3-69's required same-load assets, typed sidecar-only failure classification,
+    shared read-only cursors, full metadata fingerprint and source-free inspection; exercise
+    §8.1's acquisition/lifetime/bounds/sidecar/resource-only cases before claiming this contract.
 17. `[v0.1]` Implement P3-C21's in-memory `(internal)` bridge with a synthetic engine-only pack;
     hash/order/serialize only canonical-string UTF-8 bytes and leave actual content to Phase 7.
     Implement D-P3-65 capture/rebind/session identity failures and D-P3-63 full locale acquisition,
@@ -4608,3 +5513,35 @@ clarification and R-P12-5 locale projection gates remain explicit. No tests or v
 owner contracts, including approved session-only Internal edits and option-only sampling scope.
 Only broader OQ-7 identity/feature posture remains open for this slice. No historical
 review or audit was rewritten. No builds, tests, formatters or validation ran; Main owns validation.*
+
+*§0.60 adopts the maintainer's documented-mechanism U1 correction under D-P3-67, superseding
+only prior pending suffix-authority/future typed-publication requirements. Schema18 and the
+published parser/payload remain unchanged. Fresh independent whole-document verification and
+IR-01 remain outstanding; no PASS, runtime test or blanket defaults ratification is claimed.
+No code, historical review, research/design document, build, test, formatter or validation
+command was changed or run in this Phase 3 adoption.*
+
+*§0.61/D-P3-68 closes the P3 native-source API absence with schema19 and removes the incomplete
+translator from active contracts. Published-spec evidence is separately attributed; no shader
+implementation, code, build, test, formatter or validation command ran. Main owns settled
+document validation and consumer integration. New conditional primitive-adapter permission does
+not complete P7/P10 owner/conformance work. Fresh independent reviews and remaining implementation
+gates remain; neither this grant nor successful preprocessing is a PASS or draw-support claim.*
+
+*§0.63/D-P3-70 records all three R55 repairs and schema21. R55's original
+PASS-WITH-CORRECTIONS remains historical with append-only Resolutions, not self-upgraded PASS.
+Phase 3 remains unverified because §5 changed; receiver receipts and a fresh independent
+whole-document review remain required. Architecture only: no implementation or runtime evidence,
+builds, tests, linters, formatters or validation commands were produced by this fix-up.*
+
+*§0.65/D-P3-73 records the R57 C57-1 architecture correction and schema23 clean cutover.
+The original R57 PASS-WITH-CORRECTIONS and source/license limitations remain unchanged.
+Changed §5, pending receiver receipts and fresh independent reviews remain gates. No validation
+commands, implementation, runtime evidence, fresh PASS or implementation clearance are claimed.*
+
+*§0.66/D-P3-74 records the R60 C1 whitelist-authoritative override-target correction and
+completes the amendment ledger for it, with no `PackConfiguration` component, meaning,
+fingerprint or schema change. The prior review history, including R60, remains historical with
+its own verdicts; §8.1's named gate and a fresh independent whole-document review remain
+required. No validation commands, implementation, runtime evidence, fresh PASS or
+implementation clearance are claimed.*

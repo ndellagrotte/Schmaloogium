@@ -239,27 +239,48 @@ grep -rhoE 'docs/[A-Za-z0-9._/-]+\.md' docs --include='*.md' --exclude=MOVES.md 
 ```
 
 **As re-audited after retiring the verification loop on 2026-08-08, "clean" means exactly seven
-lines, not zero:**
+lines, not zero — and as re-audited on 2026-09-08, exactly ten:**
 
 ```
+DANGLING: docs/decisions/OQ-15_ASYNC_COMPILE.md
 DANGLING: docs/decisions/OQ-3_GL_CONTEXT.md
 DANGLING: docs/decisions/OQ-4_CLEANMIX_HOOKS.md
 DANGLING: docs/phase1/v10/PHASE_1_DOC.md
 DANGLING: docs/phase1/v11/PHASE_1_DOC.md
 DANGLING: docs/phase1/v13/PHASE_1_DOC.md
-DANGLING: docs/tooling/VERIFY_LOOP_BRIEFS.md
+DANGLING: docs/phase1/v14/PHASE_4_DOC.md
+DANGLING: docs/phase13/reviews/PHASE_13_REVIEW_1..7.md
 DANGLING: docs/tooling/CODEX_VERIFICATION.md
+DANGLING: docs/tooling/VERIFY_LOOP_BRIEFS.md
 ```
 
 The two pending decision artifacts, the three historical citation sets, and the two verification-loop
 docs deleted 2026-08-08 — the latter cited by the immutable DESIGN revisions and by the retirement
-record in CODEX_MIGRATION_OVERLAY.md — dedup to those seven entries through `sort -u`, so the
-recorded expectation stays a seven-liner however many records cite them, and **any eighth line is a
-real regression.** The sweep command is deliberately left unchanged: adding exclusions for reviews,
+record in CODEX_MIGRATION_OVERLAY.md — dedup to the original seven entries through `sort -u`, so the
+recorded expectation stays stable however many records cite them. The **2026-09-08 audit** added
+three entries, each attributed after investigation (git-checked; none introduced by the 2026-09-08
+attempt-10 wave):
+
+1. `docs/decisions/OQ-15_ASYNC_COMPILE.md` — a **deliberate forward reference** in
+   `docs/phase14/v1/PHASE_14_DOC.md` (§10.1 spike output; checklist item 32; H-P14→IMPL-1 row),
+   the same class as OQ-3/OQ-4: a future decision artifact not yet authored. Git shows it already
+   present in the tracked file's last commit (`676a8ed` "integration review and fixup") — the
+   seven-line expectation recorded 2026-08-08 was stale before the attempt waves finished, not
+   regressed by them.
+2. `docs/phase1/v14/PHASE_4_DOC.md` — a path typo in `docs/phase10/reviews/PHASE_10_REVIEW_6.md`
+   (attempt-9 settled evidence with Resolutions; intended `docs/phase4/v1/PHASE_4_DOC.md`).
+   Reports above their Resolutions are immutable evidence, so the typo is recorded here rather
+   than rewritten (the §0.10-head-note principle: a stale coordinate in a historical record is a
+   smaller defect than a rewritten record).
+3. `docs/phase13/reviews/PHASE_13_REVIEW_1..7.md` — a range-notation citation in
+   `docs/phase13/reviews/PHASE_13_REVIEW_8.md` (attempt-8 settled evidence) that never names a
+   single existing file; same immutability reasoning.
+
+The sweep command is deliberately left unchanged: adding exclusions for reviews,
 briefs, planned outputs, or retired tooling would make the result look empty, but an exclusion list
 that grows each time something is legitimately absent is how genuine dangling references stop being
-noticed.
+noticed. **Any eleventh line is a real regression.**
 
 Only after a future §0.15 fix-up lands is the next illustrative roll `v14` →
-`v15`. If that roll strands an eighth path, extend the expected list rather than the exclusions, and
+`v15`. If that roll strands an eleventh path, extend the expected list rather than the exclusions, and
 say which roll each entry came from.

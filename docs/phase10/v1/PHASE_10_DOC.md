@@ -117,6 +117,82 @@ initial adoption. DESIGN §G0.4's executable-profile steps cannot be performed b
 that machinery was retired; the discrepancy is recorded in §11, not worked around by
 inventing a harness. Initial build stays in `docs/phase10/v1/`.
 
+### 0.5 R10-2 receiver adoption and geometry scope correction (2026-09-07)
+
+P7 §0.43/§5.1 grants the existing lifecycle/declaration proposal; this receiver adopts its
+exact operations, token failure semantics, registration lifetime and ten-step placement.
+Read P7/P10 completely including §§8/11, RC3/v3 Part I and respective specifications,
+RESEARCH §§0–1/4.1–4.6/7.1–7.4/Apps C/E/F.1, P9 §§2.2–2.3/4.1/5 and P1 §§4.10/5.3.
+No new source mining, implementation or validation ran. **Both §5 surfaces unverified.**
+R10-1 remains awaiting P1's separate grant. The maintainer additionally authorized conditional
+quad-to-triangle submission compatibility at the earliest milestone claiming affected .gsh
+support; §4.6 records bounded adapter semantics and the still-required P4 metadata grant.
+P3 D-P3-68's landed §5/§11.4 grant and exact geometry declarations were additionally read.
+Active consumption is **schema19**, rejecting schema18/earlier before derivation. Geometry
+source forms/effective layouts are consumed by P4, not a new P10 parser. Previous schema18
+decisions remain historical; vertex requirements, lighting, options and U1 semantics are unchanged.
+
+### 0.6 Settled R10-1 and R10-5 receiver receipts (2026-09-07)
+
+D-P10-18 adopts P1 §§4.7.6/4.10/5/D-P1-50's exact package, borrowed-input,
+restoration, recorder and class-only early compatibility grant. D-P10-19 adopts
+P4 §§4.8/4.9/5/D-P4-28's required effective `geometryInput` after actual linked agreement.
+These supersede the pending-owner status recorded in §0.5, not historical review verdicts.
+Both receipts and the P7 intermediary remain unverified. No runtime/conformance claim.
+
+### 0.7 Native array and cached-model correction (2026-09-08)
+
+D-P10-20 adopts P1 D-P1-55's R27-1/NS-1 isolation operation; D-P10-21 closes
+NS-2 locally with authenticated ModelRenderer capture, lifetime and every-call playback
+coverage. Original reviews and decisions remain historical. §5/§8/§11 change; P7 D-P7-32
+now grants R10-6, adopted here unverified. This is architecture correction,
+not a whole-phase PASS, implementation clearance or native execution result.
+D-P10-22 advances active containing-configuration and IdMappingInput consumption to
+schema20 through P7, rejecting schema19 and every older schema before derivation.
+P3's immutable same-load `PackConfiguration.assets()` is retained by its owner; P10
+does not read binary assets or serialize them. Earlier schema19 receipts are historical.
+
+### 0.8 Canonical sky/star correction and current schema (2026-09-08)
+
+D-P10-24 resolves review R1-1 by extending the existing bounded native-product owner
+to all three RenderGlobal sky/star products and all seven live list/VBO sites. R10-7
+publishes exact P7 receiving obligations; it is not an already-received P7 grant.
+D-P10-25 receives schema22/current-constant admission through P7. Earlier numeric
+schema19/20/21 receipts, including D-P10-23, are historical. Original review bodies
+remain unchanged; §5 changes require fresh owner/receiver review. No implementation,
+validation, transformed cardinality, native parity or implementation clearance is claimed.
+
+### 0.9 Attempt-5 C1 incremental ingress correction (2026-09-08)
+
+D-P10-27 specifies source-semantic setter dispatch before physical writes, not an
+endVertex-only cursor reset. D-P10-28 receives exact-current schema23 through P7;
+earlier numeric receipts, including D-P10-25/schema22, are historical.
+Read this complete owner and R2/C1, selected governing v3 Phase 10/G9 and RESEARCH
+Appendices C/E, and the separately identified vanilla BufferBuilder mirror linked in
+C1; MCP stable_39 resolved every added setter/advancement target. These source/mapping
+observations do not certify the unavailable historical pinned trees or transformed runtime.
+§§4.2/4.11/5/8/11 change; R10-8 requires Main's P7 health receiver receipt and fresh
+owner/receiver review. No validation commands, implementation, runtime or PASS claim.
+
+### 0.10 Attempt-6 C1 conventional participation correction (2026-09-08)
+
+D-P10-29 separates authenticated conventional-input participation from physical
+CLASSIC_56 storage. §§2.2/4.1–4.6/5/7/8/11/12 now preserve inherited current COLOR/UV1
+through live draws and cached playback. R10-9 specifies exact P1/P7 receipts without
+granting a new allocator, renderer or native submission API. Selected v3 authority,
+the current owner algorithms, R3/C1 and P1 §4.7.6 were read for this correction.
+Historical reports/confidence and schema23 remain unchanged; no implementation,
+validation, runtime evidence or fresh PASS is claimed.
+
+### 0.11 Attempt-7 R4 completion correction (2026-09-08)
+
+D-P10-30 amends the real ingress, completion/health, §5, fixture receipt, cases and
+checklist. Selected v3 Phase10 authority, R4, P1's affected capture-plan contract,
+current Cleanroom block-renderer patch/Forge dispatch and the separately identified
+vanilla late writer were read. Historical source/license qualifications and verdicts
+remain; no validation or runtime proof was run. Changed owner/receiver contracts
+require fresh review.
+
 ## 1. Scope & boundaries
 
 ### 1.1 Owned here
@@ -147,30 +223,31 @@ inventing a harness. Initial build stays in `docs/phase10/v1/`.
 | Alias calculation, ordinal projection and per-entity/TE uniforms | **Owned by Phase 9.** Stamp its exact `mcEntity` result; do not infer aliases from names, materials or entity uniforms |
 | GUI, options persistence and reload requests | **Owned by Phase 12.** Report failures; do not create a settings screen |
 | `_n`/`_s`, atlas dimensions and companion textures | **Owned by Phase 13.** This phase supplies the tangent frame; it creates no texture |
-| GL facade ownership and replay vocabulary | **Owned by Phase 1.** R10-1 requests the missing vertex service; direct GL in a Mixin is not an alternative |
+| GL facade ownership and replay vocabulary | **Owned by Phase 1.** R10-1's exact §4.7.6 service is receiver-adopted under §5.3; no direct-GL Mixin workaround |
 | Async GL, profiling optimizations and modern backend integration | **Owned by Phase 14 / G8.** Workers here never issue GL; no replacement chunk renderer |
 | Modern attribute semantics and capability advertisement | **G8/S4 and Phase 3/4 cutover.** Slots are designed now; unsupported features are not advertised |
 
 The stock chunk renderer, scheduling, culling and topology remain vanilla/Forge-owned.
 Vanilla/Forge still compute lighting/AO samples; Phase 10 owns only the shader-visible
 fixed-shade and AO-channel policy in §4.8.1. This is no terrain performance rewrite,
-triangle conversion, global array cache or core-profile rewrite.
+global array cache or core-profile rewrite. The only topology exception is the maintainer-
+authorized conditional submission conversion in §4.6; canonical quad construction is unchanged.
 
 ## 2. Architecture overview
 
-All Phase-10-owned components in §§2–8 are **v0.3** unless explicitly identified as
-post-v0.5 in §4.10/§9. Existing dependency components retain their own milestones.
+Phase-10-owned components in §§2–8 are v0.3 except the explicit v0.1 base-layout primitive
+compatibility infrastructure in §4.6/§9 and post-v0.5 growth in §4.10. Dependencies retain their milestones.
 
 ### 2.1 Placement and responsibilities
 
-Full package prefix is `com.schmaloogium`. R10-1 requests the exact new package homes;
-Phase 1's current closed package allocation does not yet grant an `engine.vertex` root.
+Full package prefix is `com.schmaloogium`. P1 D-P1-50 grants these exact package homes
+and the engine seam; this receiver adopts them without Minecraft/GL types in engine policy.
 
-| Proposed home | Components |
+| Granted home | Components |
 |---|---|
 | `:engine / engine.vertex` | Immutable `VertexLayout`, `VertexField`, `VertexEpoch`; `QuadAttributeWriter`; builder/mesh state policy; `VertexInputPlan`; closed outcomes |
 | `:engine / engine.vertex.internal` | Primitive stack storage, dirty-range tracking and layout validation; private to this phase |
-| `:engine / engine.gl` | Phase-1-owned requested `VertexInputService` and recording support; no Minecraft or LWJGL types |
+| `:engine / engine.gl` | Phase-1-owned `VertexInputService` and recording support under P1 §4.7.6; no Minecraft or LWJGL types |
 | `:mod / mod.glue.vertex` | Builder/state/VBO sidecars, format catalog and semantic conversion, task handoff, Forge cache invalidation, ordinal bridge, native facade implementation |
 | `:mod / mod.mixin.compat.vertex` | MOD-phase dumb hooks, gated together by the existing plugin slot |
 | `:mod / mod.compat` | `ChunkRendererCompatCheck`, evidence table, session-latched bail |
@@ -192,7 +269,13 @@ enum StorageType { FLOAT32, UINT8, INT8, INT16 }
 enum Delivery { FIXED_FUNCTION, FLOAT_VALUE, NORMALIZED_FLOAT, PADDING }
 record VertexLayout(String id, int strideBytes, List<VertexField> fields,
                     String fingerprint) {}
-record VertexInputPlan(String layoutFingerprint, List<AttributePointer> pointers) {}
+record VertexInputPlan(String layoutFingerprint, List<AttributePointer> pointers,
+                       Set<ConventionalInput> conventionalInputs,
+                       VertexGeometryInput expectedGeometryInput) {}
+enum ConventionalInput { POSITION, COLOR, UV0, UV1, NORMAL }
+enum VertexGeometryInput {
+    NONE, POINTS, LINES, LINES_ADJACENCY, TRIANGLES, TRIANGLES_ADJACENCY
+}
 record AttributePointer(String name, int location, int byteOffset,
                         int components, StorageType storage, boolean normalized) {}
 ```
@@ -202,6 +285,11 @@ changes on every geometry-affecting publication, including off/on and resource r
 with unchanged alias bytes. `idGeneration` is Phase 9's independent generation, not
 Phase 4's registry generation. `worldEpoch` prevents an old world/chunk coordinate from
 matching a newly loaded world. No equality of fingerprints permits reusing stale work.
+The plan's pointers and conventionalInputs are immutable defensive copies, nonnull and
+without null members. Conventional participation is authenticated source semantics,
+not inferred from occupied bytes or a caller-provided Set. Complete plan identity includes
+layout fingerprint, ordered pointer descriptors, conventionalInputs in enum order and
+expectedGeometryInput; equality is necessary, never source authority.
 
 The stack stores two primitive integers per entry, plus scope identity/depth. A build
 context captures one `AliasLookup`, its matching glue ordinal map, a VertexEpoch, and
@@ -252,7 +340,7 @@ below is expanded by the path table in §0.2 and the precise comparisons in §4.
 | §7.4 grow without rewriting consumers | Descriptor-driven byte access, source adapters and bind-plan iteration | `[D-P10-1]`; §4.10 |
 | E3 RenderChunk | H10-BUILD/H10-BLOCK; task lifetime plus all block render calls | `[V:mcp]` App E3, live MCP; Cleanroom RenderChunk patch |
 | E4 ChunkRenderDispatcher | H10-TASK/H10-UPLOAD; synchronous and worker paths share context rules | `[V:mcp]` App E4 plus live worker/upload resolution |
-| E5 BufferBuilder | H10-BEGIN/END/ARRAY/BULK/STATE/SEAL/RESET | `[V:mcp]` App E5; `[V:observed]` Cleanroom bulk patch |
+| E5 BufferBuilder | H10-BEGIN/END/ARRAY/BULK/STATE/SEAL/RESET plus seven H10-WRITER-* rows | `[V:mcp]` App E5 and D-P10-27 setter/advancement mapping; `[V:observed]` Cleanroom bulk patch |
 | E6 Tessellator | H10-TESS delegates once to uploader, retains cleanup boundary | `[V:mcp]` App E6 |
 | E7 WorldVertexBufferUploader | H10-CLIENT around actual draw after Forge element setup | `[V:mcp]` App E7; Cleanroom preDraw/postDraw patch |
 | E8 VertexBuffer | H10-VBO-UPLOAD/DRAW; actual stored layout and epoch | `[V:mcp]` App E8 |
@@ -312,13 +400,18 @@ target little-endian platform these bytes equal writing the two Phase 9 ints at
 use ordered byte/short stores. Float bits and byte channel order are preserved by
 semantic copy, not by treating a packed RGBA int as endian-independent.
 
-The Forge VertexFormat projection exposes ordinary position/color/UV/lightmap/normal
-semantics. Extension bytes are non-FF storage with no automatic generic-array side
-effect: use padding elements for the trailing extension span, with Phase 10 descriptors
-owning its interpretation. Forge's generic element handlers must not enable arrays
-behind the declaration plan's back. OQ-14 includes this projection through both
-lighting paths. Do not assign midpoint an extra FF UV index or identity a normalized
-Forge normal element merely to get storage.
+The Forge VertexFormat projection exposes only admitted ordinary position/color/UV/
+lightmap/normal semantics from §4.6's conventionalInputs. Keep every physical offset
+and stride unchanged: source-absent COLOR/UV1 slots are padding in the draw projection,
+so Forge preDraw/postDraw neither enables them nor resets their current values.
+Extension bytes likewise remain non-FF padding; Phase 10 descriptors own interpretation.
+Forge generic handlers cannot enable arrays behind the plan's back. The format catalog
+keys projections by authenticated original descriptor and participation, not CLASSIC_56
+alone. OQ-14 covers this projection through both lighting paths. Midpoint is not an
+extra FF UV index and identity is not a normalized Forge normal.
+This is the storage/draw projection, **not the source writer sequence**. Installing
+it requires §4.2's dispatch before each scalar write; resetting a physical cursor only
+at endVertex cannot fix an OLDMODEL tex call that would already address COLOR.
 
 ### 4.2 Builder state and ingress
 
@@ -342,12 +435,64 @@ an actual block-model scope supplies a Phase 9 lookup. Each builder maintains it
 stack cursor, pending quad count, first-unfinalized vertex, and dirty tail. A nested
 builder never borrows another builder's mutable cursor.
 
-**Incremental writes.** At `endVertex`, after vanilla has completed/count-incremented
-the vertex and any buffer growth, stamp the current identity into that vertex. Track
-indices, never cached native pointers across growth. Initialize extension bytes before
-a vertex can be observed. On every fourth vertex in QUADS mode finalize the four
-vertices using §4.3. This runs even if the current render-thread program does not use
-tangents: chunk compilation is not tied to a particular future program.
+**Incremental writes — D-P10-27.** Retain the authenticated immutable source descriptor
+at begin, before installing its physical projection. If begin receives an owner-issued
+projected default, recover its original descriptor from that same format-catalog identity,
+not its field order or stride. Reuse the existing nullable builder sidecar and semantic
+adapter: retain source usage/index/type → destination field mapping, source cursor,
+per-vertex written mask and setter-scope depth. No second layout, parser, format guess
+or public source credential is introduced. Known BLOCK fluid writers remain
+`pos→color→tex→lightmap→endVertex`; authenticated TexturedQuad OLDMODEL writers remain
+`pos→tex→normal→endVertex`. Neither caller gains synthetic color/lightmap/normal calls.
+
+The chosen hook is an exception-safe method wrapper around each scalar setter.
+Before invoking its ordinary scalar body, select its authenticated **source semantic**
+(pos=POSITION0, color=COLOR0, tex=UV0, lightmap=UV1, normal=NORMAL0), then select that
+semantic's physical destination element/index. Never choose the destination from the
+previous physical cursor. The catalog admits these built-in source/destination scalar
+encodings as compatible; a differing custom encoding needs its existing explicit
+semantic adapter, not execution of a wrong-type scalar body. Preserve ordinary position
+translation, float-to-int color delegation/quantization, byte order, lightmap component
+ordering, scalar normal encoding and fluent return identity. Quad-derived normal replacement
+still happens only under §4.3; non-QUADS retain the supplied source normal.
+
+Wrap `nextVertexFormatIndex` too: inside an authenticated scalar body, replace physical
+advancement with one logical source-element advancement (skip source padding, wrap in
+the source descriptor), without walking the CLASSIC_56 additions. On scalar exit,
+restore the physical cursor to the projection's first ordinary element in finally;
+the next setter again dispatches by semantic, independent of both cursor positions.
+The logical cursor records source traversal, not an obligation to issue setters for
+destination-only or omitted fields. The float color wrapper retains its original
+delegation to integer color; only the integer body writes/advances once. `noColor`
+keeps the ordinary no-write/no-advance behavior; the next tex still selects UV0.
+An advancement outside the authenticated setter scope on an active projected builder
+is unsupported ingress and invalidates the product, not silent physical traversal.
+
+Initialize each new destination record once, before its first scalar write (or
+endVertex if untouched), with §4.2's white color, zero lightmap/normal, zero padding
+and neutral extension fields; absent UV storage is zero, never invented sprite UVs.
+Missing required geometric inputs remain unsupported under the existing producer
+requirements. Omitted optional semantics never reuse previous-vertex bytes. Reserve
+the whole destination record before writes using the existing growth/cap rules; keep
+indices, not addresses, across growth. A successful endVertex calls vanilla count/growth
+once, then stamps identity and finalizes every newly complete quad. Only after success
+clear the written mask/pending-vertex flag and reset both cursors to their respective
+first ordinary elements. Initialization of the next vertex is lazy. Source normals,
+colors and lightmap cannot be overwritten by initialization after their setter ran.
+These white/zero source-absent COLOR/UV1 bytes are storage hygiene only: initialization
+never adds conventional participation, samples a current value or authorizes its reset.
+
+Begin, each setter (including float delegation), advancement, endVertex and both bulk
+wrappers cover exceptional exits: any failed active write/growth/stamp/finalization
+marks the entire product INVALID, clears transient setter ownership in finally and
+propagates the original error through §6 cleanup. Never stamp a failed vertex, rewind
+the count to present a successful prefix, seal/upload/capture invalid bytes or resume
+writing until reset/new successful begin. Reset clears source cursor/mask/association;
+save/sort/seal require a vertex boundary, and authenticated state restore reinstates
+the matching source descriptor with a fresh boundary cursor, not stale writer state.
+Inactive/null builders execute the original setters and advancement unchanged, with
+no sidecar allocation, descriptor dispatch, TLS or extended initialization. The v0.1
+base adapter does not install this v0.3 extended writer machinery.
 
 **Bulk writes.** Both `addVertexData(int[])` and Forge `putBulkData(ByteBuffer)` are
 first-class ingress. Snapshot the append start/count, let the supported input-format
@@ -357,13 +502,58 @@ started by incremental writes. Never mutate the caller's array/buffer contents, 
 its ownership, or stamp IDs into cached BakedQuad data. Preserve each API's ordinary
 position/limit consumption behavior. Do not replace Cleanroom's extra-vertex growth
 allowance (`BufferBuilder.java.patch:18,68`) with a smaller allocation.
+Bulk entry requires no pending incremental vertex; a partially written vertex is not
+implicitly ended or overwritten. A quad may span incremental/bulk boundaries only
+between completed vertices. Authenticate and append whole records using the existing
+bulk adapter, then return with source/physical cursors at their respective first elements,
+an empty written mask and no pending scalar vertex. Bulk data never changes begin's
+incremental source descriptor: a subsequent fluid/model setter resumes that source's
+semantics. Failed conversion/append invalidates the entire product with the same finally
+cleanup as scalar ingress; successful prior bytes cannot be sealed as a fallback.
 
 There is no stride inference from length divisibility: 56 ints could describe eight
 vanilla vertices or four extended vertices. The ordinary unannotated raw-array API
 means the current builder format, as vanilla defines it. A BakedQuad adapter receives
 the quad's actual `getFormat()`, and a bulk byte adapter carries its source descriptor
 in a call-local glue token. Only those authenticated source formats permit conversion.
-Unknown raw formats are not guessed to be BLOCK or ITEM.
+**D-P10-30 — partial ingress versus completed producer.** The builder retains its
+immutable final participation from the authenticated completed producer, not each
+intermediate BakedQuad's storage descriptor. In the recognized block-model producer,
+admit an authenticated ITEM BakedQuad into a BLOCK builder: ITEM supplies POSITION,
+COLOR, UV0 and its source normal; BLOCK's UV1 is supplied by the real subsequent
+`BufferBuilder.func_178962_a(IIII)V` (`putBrightness4`), not zero initialization.
+Before append, authenticate that producer's existing model scope, builder/epoch,
+actual quad format and exact four-vertex aligned append range. Attach one private
+pending-UV1 obligation for those four destination indices to that scope; complete any
+previous obligation before another append can move the last-quad target. Preserve
+begin's BLOCK descriptor and final mask throughout. This is not arbitrary mixed-source
+union: other mismatches require a separately bounded registered producer or rejection.
+Unknown raw formats are never guessed from stride, byte count or method arguments.
+
+The exception-safe brightness wrapper checks the same builder/scope/epoch and exact
+last-four destination range, then invokes the real writer using the projected format's
+UV1 offset and stride. Mark all four UV1 values complete only after successful return;
+their four original packed integer values, including zero when genuinely supplied,
+remain unchanged. An ordinary brightness mutation on an already complete authenticated
+BLOCK quad stays supported; it cannot discharge another scope's pending obligation.
+No filler, normal bytes, current lightmap or copied ITEM mask constitutes completion.
+On a partial/throwing write, invalidate the entire product, propagate the original
+exception through existing cleanup, and clear transient completion ownership in finally.
+Missing completion at normal model-scope exit, outer block exit, save/sort/seal,
+upload/capture/draw admission or any operation that would displace the pending last
+quad rejects/invalidate before publication. Completion cannot cross nested model
+scopes, resets, state restoration, cancellation or epoch retirement. Failure exits
+discard the obligation and invalid product; they never expose a successful prefix.
+Scalar BLOCK/Forge-lighting producers retain their real UV1 setter path, and genuinely
+uncolored OLDMODEL keeps COLOR/UV1 absent and inherited rather than acquiring an obligation.
+
+Current source corroboration (not historical-pin/runtime or copying permission):
+`reference-src/Cleanroom-0.6.12-alpha/patches/minecraft/net/minecraft/client/renderer/BlockModelRenderer.java.patch:12–14`
+retains append then brightness; its `ForgeBlockModelRenderer.java:49–86` dispatches
+flat and smooth paths to vanilla when Forge lighting is disabled. The separately read
+[vanilla BufferBuilder source](https://raw.githubusercontent.com/KealJones/mc-1.12.2-source_files/master/src/minecraft/net/minecraft/client/renderer/BufferBuilder.java)
+shows `putBrightness4` writing four packed values at last-quad UV1 offset/stride.
+This adapts only destination bytes; cached BakedQuad arrays remain immutable.
 
 **BLOCK, ITEM and textured variants.** Build immutable projections from a semantic
 source-format catalog. Known block and item/textured quad paths use the classic
@@ -381,9 +571,10 @@ the outer per-block scope finalizes any remaining dirty tail before pop. The sea
 boundary also finalizes dirty complete quads before sorting, state capture, upload,
 or drawing. Uniform translations need no recomputation, but a generic mutation
 adapter must conservatively dirty the affected quad. Color/lightmap-only mutations do
-not alter the tangent frame. The hook-health inventory includes any such mutation
-adapter selected from the implementation's actual writers; no whole-layer second
-re-encode is the default algorithm.
+not alter the tangent frame, but brightness still discharges D-P10-30's semantic
+completion obligation before any safe model/seal boundary. H10-BRIGHTNESS-4 is mandatory;
+other selected actual late writers also enter the hook-health inventory, including
+their exceptional cleanup. No whole-layer second re-encode is the default algorithm.
 
 **Primitive boundaries.** Group quads from vertex zero of each `begin`, never across
 builders, scopes, or draw modes. A block scope must start/end on a quad boundary for
@@ -507,9 +698,10 @@ workers and pending upload consumers (§4.8, R10-2).
 
 ### 4.5 Saved states, resort, and upload admission
 
-`BufferBuilder.State` copies carry layout, epoch, vertex count and seal status through
-an attached immutable stamp. State restore accepts only matching current epoch and
-format; it must not restamp saved vertices with today's neutral/current block ID.
+`BufferBuilder.State` copies carry layout, epoch, vertex count, seal status, authenticated
+original source descriptor and complete immutable input-plan identity through an attached
+stamp. Restore accepts only matching current epoch, source participation and format; it
+must not restamp vertices with today's block ID or rebuild participation from filler bytes.
 Sorting moves whole records/quads and therefore all attributes together. It never
 recomputes identities from the empty stack used during translucent resort.
 
@@ -519,15 +711,17 @@ not a resort attempt. A state from an uninstrumented external producer has no Ph
 stamp: it may enter a vanilla builder, or an explicitly declared source-format adapter;
 it is not trusted as a current extended chunk merely because its stride equals 56.
 
-The queued upload carries the sealed VertexEpoch and the source's remaining byte range.
-Validate both when queued and when executed on the render thread, since a toggle can
+The queued upload carries the sealed VertexEpoch, authenticated source descriptor,
+conventionalInputs, complete prepared plan identity and source's remaining byte range.
+Validate all when queued and when executed on the render thread, since a toggle can
 occur between them. Require whole records, valid count/range and the live chunk task's
 identity. Reject stale data before modifying a VBO, compiling a display list or marking
 a CompiledChunk ready. Cancel/discard via the existing task cancellation path, and
 schedule a replacement; do not report an exceptional future to vanilla's crash-report
 callback for an expected stale-generation event.
 
-`VertexBuffer` owns a sidecar containing the actual uploaded layout/epoch/count. Set it
+`VertexBuffer` owns a sidecar containing actual uploaded layout/epoch/count, authenticated
+source descriptor, conventionalInputs and complete prepared plan identity. Set it
 only after successful upload and error handling. Compute count from the uploaded byte
 range and that stored stride, never a now-mutated global default format. Empty uploads
 clear count; failed uploads clear eligibility. Existing VBOs and display lists from the
@@ -539,14 +733,53 @@ are pending. Skipping a stale chunk is safer than interpreting its old bytes dif
 #### Shared declaration plan
 
 Phase 4 binds `mc_Entity=10`, `mc_midTexCoord=11`, `at_tangent=12`. Phase 10 consumes
-only this published table directly. R10-2 asks Phase 7 to deliver the effective
+only this published table directly. P7's accepted R10-2 grant delivers the effective
 provider's already-scanned declaration set after successful activation. The Phase 4
 `ProgramStateBundle.attributes` is available to Phase 7, but Phase 4's §5 does not
 currently grant Phase 10 a current-program lookup.
 
+**Conventional participation — D-P10-29.** Derive the nonnull immutable
+`Set<ConventionalInput>` once from the authenticated completed producer descriptor and
+policy. POSITION/UV0 retain their established supported-source requirements; COLOR/UV1
+are members iff that producer supplies them, including D-P10-30's real late BLOCK UV1.
+An intermediate ITEM BakedQuad descriptor is partial ingress, not the BLOCK draw mask;
+completion is mandatory before product eligibility and never inferred from filler.
+NORMAL remains a member for a supplied source normal or the existing §4.3 generated
+quad-normal producer; non-QUADS preserve source normals and existing neutral/unsupported
+policy. No new normal, tangent, midpoint, identity or other attribute policy is introduced.
+Thus projected OLDMODEL admits POSITION/UV0/NORMAL, not COLOR/UV1; projected BLOCK
+admits POSITION/COLOR/UV0/UV1 plus its established generated NORMAL. The per-vertex
+written mask/noColor is not the source participation mask and cannot alter it.
+
+In LIVE_DRAW, bind only these conventional streams; temporarily disable absent COLOR/UV1
+arrays even if enabled on entry, without setting their pointers or current values.
+They inherit the caller's current primary color and current texture coordinate on unit1.
+P1 restores the actual prior enables/selectors and any affected state in finally.
+Forge setup/cleanup must not touch absent streams, including color-reset side effects.
+LIST_CAPTURE uses this same participation alongside its prepared generic union: absent
+COLOR/UV1 arrays stay disabled, their filler bytes are never captured, and no constant
+command substitutes the compile-time current values. Each LIST_REPLAY_GUARD receives
+the authenticated captured plan and current effective geometry requirement; playback
+uses the then-current inherited values without rebinding old arrays or baking the first
+entity's color/lightmap. Current-value changes alone do not invalidate or rebuild a product.
+
+The full source participation and complete plans belong to authenticated saved-state,
+sealed client source, VBO and original/derived list product identity, including base
+products before v0.3. Generic live plans may be derived only from that authenticated
+source and the effective declaration scope; capture uses the prepared union. Admission
+compares the appropriate complete plan, not equality between a capture union and a
+smaller live declaration set. Any source/participation change invalidates old products;
+same layout fingerprint/stride is insufficient. Whole-record topology conversion retains
+the source participation exactly; copying filler never promotes it to input.
+
 For a live draw, enable exactly the intersection of declared names and physically
-present supported fields. Disable every other Phase-10-owned generic array. Missing
-identity on a non-extended draw uses floating neutral `(0,0,0,1)` with its array
+present supported fields, disable the other Phase-10 generic arrays, and invoke P1
+D-P1-55's isolation operation: conventional positions require generic attribute zero
+temporarily disabled. LIST_CAPTURE additionally admits only the complete capture plan's
+conventional, per-client-texture-unit and generic arrays; all other enabled arrays are
+temporarily isolated by that owner operation, not merely locations 10/11/12. Save/restore
+every affected actual predecessor field and roll back partial setup as P1 specifies.
+Missing identity on a non-extended draw uses floating neutral `(0,0,0,1)` with its array
 disabled; midpoint/tangent use zero components, with the ordinary fourth default
 component where not explicitly supplied. No terrain alias is fabricated from
 `entityId`. A declared geometric attribute that should exist on supported terrain but
@@ -569,28 +802,31 @@ validates each emitted pointer before native calls and rejects inconsistent plan
 in parallel with `WorldVertexBufferUploader.draw`. After Forge's element `preDraw`
 setup, H10-CLIENT wraps the actual draw invocation:
 
-1. validate sealed builder, source range, epoch, layout and current input scope;
+1. validate sealed builder, source range, epoch, layout, authenticated participation,
+   complete plan and current input scope;
 2. use a borrowed client-data view with stride 56 and the offsets above; establish
    array-buffer binding zero before client pointers;
 3. retain the direct buffer and pointer ranges for the complete call;
-4. install declared generic pointers and masks, then submit the prepared draw through
-   P7 §4.6's countInstances boundary at v0.5 (one ordinary draw before that milestone);
-5. in `finally`, restore generic array/pointer/current-value state and buffer bindings;
+4. apply the complete P1 live plan including generic-zero isolation, then submit the
+   prepared draw through P7 §4.6's countInstances boundary at v0.5 (one ordinary draw earlier);
+5. in `finally`, restore every affected actual predecessor field through P1;
    run the normal Forge element `postDraw` cleanup and builder reset even on a
    shader-side failure. Do not duplicate a draw after partial execution.
 
-Ordinary FF elements still go through Forge's `VertexFormatElement.EnumUsage.preDraw`
-and `postDraw`. The patch replaced the old uploader switch; a design targeting that
-removed switch would miss the actual path. The outer uploader cleanup guard covers
-an exception before the inner draw wrapper is reached.
+Only participating FF elements go through Forge's `VertexFormatElement.EnumUsage.preDraw`
+and `postDraw`, using §4.1's source-keyed projection. Absent COLOR/UV1 remain padding,
+including during cleanup; do not invoke color postDraw merely because bytes 12–15 exist.
+The patch replaced the old uploader switch; targeting that removed switch misses the
+actual path. The outer uploader cleanup guard covers failures before the inner wrapper.
 
 #### VBO path
 
-At upload, authenticate the exact source and retain its actual layout metadata.
+At upload, authenticate the exact source and retain its actual layout and participation.
 At `VertexBuffer.drawArrays`, the facade uses a borrowed native VBO identity issued by
-the mod adapter, binds that source, and configures FF pointers from its stored layout
-plus generic pointers from the current declaration plan. Pointer arguments are byte
-offsets, not client addresses. A 56-byte VBO must never inherit VboRenderList's vanilla
+the mod adapter, binds that source, and configures only admitted FF pointers from the
+stored conventionalInputs plus generic pointers from the current authenticated plan.
+Pointer arguments are byte offsets, not client addresses. A 56-byte VBO must never
+inherit VboRenderList's vanilla
 28-byte FF stride; the P10 wrapper overrides the complete relevant pointer state
 immediately around the actual draw, after any vanilla setup.
 
@@ -606,18 +842,22 @@ upload, vanilla may compile a display list using the uploader. Compile with the
 complete current layout and the **union of supported classic attributes declared by
 the accepted pipeline** so the list captures every attribute later needed by main or
 shadow draws. This is an explicit `LIST_CAPTURE` mode, not a forged current-program
-activation. It installs client arrays only for the capture operation and restores them
-immediately afterward. Compile a list only while shader vertex mode is active; an
-epoch/mask change invalidates and rebuilds it.
+activation. Stage and validate the complete source/plan before opening a list; invoke
+P1's capture bind/isolation before `glNewList(GL_COMPILE)`, issue only admitted geometry,
+close `glEndList`, then restore outside the list. No predecessor-restoration commands are
+recorded. Compile extended chunk lists only while shader vertex mode is active; an
+epoch/mask change invalidates and rebuilds them. The model and sky/star base-format
+exceptions below also track products first compiled off, without extended vertex work.
 Count expansion and instance-uniform uploads are forbidden during LIST_CAPTURE. Capture
 geometry once; count belongs to authenticated live playback, not a compiled list epoch.
 
 At replay, the recorded vertex attributes are already part of the list; there is no
-live client pointer to its former builder memory. Apply the current shader's declared
-input policy to live array state, then at v0.5 submit the prepared list playback through
-P7 §4.6's adjacent-repeat boundary; restore generic current values afterward. Undeclared inputs are unused by
-the program, not live enabled arrays. Do not replay the Java uploader per frame or
-retain freed client memory to emulate a list.
+live client pointer to its former builder memory. Use P1 `LIST_REPLAY_GUARD` and current
+authenticated geometryInput without reconstructing or restoring expired capture pointers,
+then at v0.5 submit the prepared list playback through P7's adjacent-repeat boundary;
+restore affected generic current values afterward. Undeclared inputs are unused by the
+program, not live enabled arrays. Do not replay the Java uploader per frame or retain
+freed client memory to emulate a list.
 
 This capture-vs-live-draw distinction is D-P10-7. It must be exercised with VBOs off
 and different main/shadow declaration sets. If the actual compat driver cannot capture
@@ -642,13 +882,340 @@ by drawing once. Capture/setup and postDraw/reset occur once, depth/blend effect
 per native copy, and no new Forge traversal/event is emitted. Shadow uses the active root-shadow
 selection and never opens a main gbuffers scope. Failure stops copies, restores pointers and
 saved instance value in finally, then invokes P7 main containment or P8 shadow abort/neutralization.
-Existing R10-1/R10-2 vertex grants remain separate; actual driver/list/hook behavior still
-requires runtime verification. This accepts a specific v0.5 count boundary, not those grants.
+R10-1/R10-2 are owner-granted/receiver-adopted, unverified; actual driver/list/hook
+behavior requires runtime verification. Count authority alone does not grant a facade operation.
+
+#### Conditional primitive compatibility — maintainer scope correction
+
+The maintainer authorizes this narrow exception to the earlier no-conversion boundary,
+recorded in `docs/decisions/GEOMETRY_PRIMITIVE_COMPATIBILITY.md`: at the earliest milestone
+claiming an affected .gsh path (v0.1 native geometry support), convert only an otherwise
+admitted QUADS submission whose actually active effective geometry input is TRIANGLES.
+This base-layout submission adapter/facade infrastructure is v0.1; CLASSIC_56, P9 stamps
+and the extended-format lifecycle stay v0.3. No chunk scheduling/culling/renderer rewrite.
+P7's existing private activation/submission boundary supplies the authenticated category
+independently of optional extended-vertex installation, so absent P9 is not a fabricated
+lookup or a reason to claim early .gsh coverage without the adapter.
+
+P4 D-P4-28 grants R10-5 exactly: append required non-null
+`GeometryInputRequirement geometryInput` after `Optional<LegacyGeometryConfig> legacyGeometry`
+in ProgramStateBundle. The enum is NONE, POINTS, LINES, LINES_ADJACENCY, TRIANGLES,
+TRIANGLES_ADJACENCY. P7 consumes `Activated.binding().state().geometryInput()` under
+the current accepted selection; FixedFunction clears it. It describes the actual effective
+provider from P3 finalized geometry materialization, not a requested child or source scan.
+Unknown geometry must not become NONE. R10-5 is owner-granted (P4 D-P4-28) and
+receiver-adopted (D-P10-19), unverified; these names are the owner's exact grant, not locally
+minted private access. P1 remains authoritative for actual native linked-state
+validation. Mismatched or unavailable evidence suppresses submission through ordinary
+main/shadow containment, never issues an incompatible GL draw.
+
+The mod-side adapter translates the authenticated category into a P10-owned immutable
+submission plan without introducing registry types into engine.vertex. NONE preserves
+the original primitive; TRIANGLES accepts existing triangles/triangle strips/fans and
+converts QUADS only. POINTS, LINES, LINES_ADJACENCY and TRIANGLES_ADJACENCY accept only
+the corresponding GL-compatible original primitive families. No points/lines/adjacency
+synthesis exists. Unsupported mismatch rejects before draw and is reported, not retried
+under another program. Primitive count/range, layout, source issuance/lifetime, world/
+resource/product epoch and current activation must all be valid before preparation.
+
+VertexInputPlan.expectedGeometryInput is required and is this exact category translated by
+mod glue to VertexGeometryInput. P1's separately granted bind contract must compare it to
+private actual linked metadata for LIVE_DRAW/LIST_REPLAY_GUARD before native work; LIST_CAPTURE
+uses prepared demand and cannot infer a live program. This is a binding preflight, not a
+new public metadata lookup or independent activation.
+
+**Topology and pack observation.** Finish all original four-vertex normal/tangent/midpoint
+computation, late mutation and translucent quad ordering first. For each canonical quad
+q=(0,1,2,3), emit triangles **(0,1,3), (1,2,3)** in that order, then q+1. Copy whole vertex
+records bit-for-bit including IDs, padding, color, lightmap and unknown supported fields;
+never recompute attributes per triangle or modify source bytes/descriptor/count. This
+preserves winding for an ordinarily wound quad and uses the original last vertex3 as
+both triangles' last provoking vertex. The adapter requires the established last-vertex
+provoking convention; it does not change GL provoking state. A context/path using an
+unproven or incompatible convention cannot claim support. Nonplanar/concave quads follow
+this explicit diagonal, not a claim of identical unspecified native QUADS rasterization.
+
+The geometry stage observes two input primitives per original quad, in emitted order.
+Within one draw `gl_PrimitiveIDIn` is 2q then 2q+1 (plus preceding triangle primitives in
+that same draw, if any); it is not the old quad ID. IDs restart at ordinary draw boundaries
+and each adjacent instance submission. No source patch, hidden ID remap, geometry invocation
+merging or parity claim hides that visible change. Geometry-stage output provoking behavior
+stays the shader/GL contract. Real conformance must cover flat outputs, IDs, winding,
+nonplanar faces and ordering before parity is claimed.
+
+**Bounded client/VBO/list adapters.** Compute q=count/4 and destination count=6q with checked
+arithmetic; require original range start/count to contain complete canonical quads, validate
+all byte ranges and native count limits before any allocation or draw. Destination bytes
+are exactly 6q×stride (1.5× source), subject to the existing source/native buffer limits.
+Do not split a submission to fit memory: that changes primitive IDs and instance ordering.
+An unrepresentable/allocation-failed plan follows existing failed-operation containment.
+Allocate derived storage only when the prepared pipeline can require triangle conversion;
+ordinary no-geometry/off paths retain the original bytes and no conversion work.
+
+- Client arrays: derive one call-owned direct-buffer stream after source sealing and before
+  pointer setup. Bind its actual layout/range through the P1 vertex facade, draw TRIANGLES,
+  and retain both source borrow and derived storage through all adjacent copies and pointer
+  restoration. Release in finally after restoration, then ordinary Forge postDraw/reset.
+- VBOs: derive from the validated sealed upload source while CPU bytes are still available,
+  not per-frame readback. Glue owns an optional companion converted product in the same
+  vanilla upload lifecycle; canonical VBO remains untouched. Only the existing observed
+  vanilla-owned upload path creates/uploads/deletes it; a borrowed facade source grants no
+  allocation/deletion authority. Publish eligibility only after all required uploads succeed.
+  Retain paired actual stride/count/source epoch; converted draw borrows its own same-device
+  handle. Reupload/delete/reset/reload invalidates and retires both after last use. If demand
+  changes and no converted product exists, rebuild from canonical producer; do not read back,
+  reinterpret the original VBO or issue an incompatible draw while rebuilding.
+- Display lists: while the proven canonical capture stream is live, compile distinct original
+  and conditional converted geometry-only lists, each once, through the same observed
+  upload/capture owner. LIST_CAPTURE uses prepared pipeline demand, never current program
+  topology or instance values. Release source memory only after both captures and restoration.
+  At playback choose exactly one matching epoch/actual category, then repeat that prepared
+  list under P7 adjacent repetition. Unknown externally authored or mixed-state lists that
+  can bind programs, alter instance/provoking state, or mix unrecorded primitive runs are
+  unsupported for this path. Do not replay them to discover content, mutate them, force VBOs,
+  or silently play once. Retain canonical producer ownership to rebuild supported geometry;
+  absent such provenance is explicit incompatible-path containment.
+
+Nested forwarding shares the same prepared-submission guard; conversion/preparation happens
+once before N repeats. Emit A0…A(N−1),B0…B(N−1), never interleave triangle batches across copies.
+All copies reuse the same derived source and ordinary render state. Errors stop remaining
+copies without duplicate fallback, restore source/pointer/current/instance state in finally,
+then P7 main containment or P8 abort/neutralization. Failure to restore keeps shaders off;
+borrowed storage remains owned until restoration no longer references it. No worker GL.
+P10 owns these adapters; P1 owns facade restoration/native validation, P7 admission, P4
+effective geometry metadata, P13 resources and P9 identity values remain their owners.
+
+#### Cached vanilla model lists — NS-2
+
+This is a second vanilla list owner, not a chunk RenderList alias. Evidence:
+[Minecraft 1.12.2 ModelRenderer source](https://raw.githubusercontent.com/KealJones/mc-1.12.2-source_files/master/src/minecraft/net/minecraft/client/model/ModelRenderer.java)
+`compileDisplayList` generates one GLAllocation list, opens GL_COMPILE (4864), iterates
+`cubeList` calling ModelBox.render with the supplied scale, closes the list and sets
+`compiled=true`. `render` contains three branch-local callList sites and child traversal;
+`renderWithRotation` contains one; their transforms are outside the compiled body.
+`postRender` can trigger compilation but only applies transforms, with no list playback.
+[TexturedQuad.draw source](https://raw.githubusercontent.com/KealJones/mc-1.12.2-source_files/master/src/minecraft/net/minecraft/client/model/TexturedQuad.java)
+begins QUADS with OLDMODEL_POSITION_TEX_NORMAL, scales positions on the CPU and invokes
+Tessellator.draw per quad. The permitted Cleanroom 0.6.12-alpha ModelRenderer patch
+confirms the GLAllocation capture entry; MCP 1.12.2 independently resolves the methods
+and fields below. These are source/mapping observations, not proof of the configured
+Cleanroom 0.6.10-alpha transformed hooks.
+
+**Authenticated owner and source incarnation.** H10-MODEL-LIST-CAPTURE observes every
+compileDisplayList invocation, including off-mode and postRender-triggered compilation.
+Mod glue attaches a private same-device capture identity to that exact ModelRenderer
+object, list allocation incarnation and successful canonical compilation. Numeric list
+names, `compiled=true`, matching epochs or a caller-supplied marker cannot mint provenance.
+Record the exact first-compile scale bits, canonical producer revision, ordered draw runs,
+actual layout/count, original source descriptor, conventionalInputs and complete capture
+plan, configuration/resource/world identity, primitive-demand epoch and, at v0.3,
+VertexEpoch/layout/attribute-union identity. Base v0.1 identity does not invent
+P9 aliases/VertexEpoch. No epoch relabeling promotes an off/NONE/QUADS-only list into a
+TRIANGLES product. Configuration/layout/demand changes make old shader products ineligible
+before admission; unchanged identity permits repeated playback without recompilation.
+Changing animation transforms or a later render(scale) argument alone does not re-bake:
+vanilla bakes its first compile scale and uses current scale only in live transforms.
+Rebuilding that captured producer uses the recorded scale, never an accidental later
+argument; an actual new canonical compile establishes a new scale/incarnation.
+Off-mode observation allocates only bounded model-owner provenance, not builder sidecars,
+extended formats, converted storage or TLS work; D-P10-4's extended-work fast path
+remains intact. Rebuild requires the same proven canonical producer revision; unobserved
+custom cube/quad mutation cannot be certified by object identity and is unsupported,
+not silently treated as unchanged captured content.
+
+**Actual capture route.** The admitted model adapter brackets the known canonical
+compile operation, not glCallList discovery playback. When a shader product is needed,
+stage one canonical cubeList→ModelBox→TexturedQuad→Tessellator/uploader traversal with
+native submission suppressed and the original glNewList/glEndList envelope deferred.
+H10-CLIENT in this authenticated staging scope copies each sealed run before reset;
+no live activation, instance upload, P9 event or GL draw occurs during staging. Retain
+run boundaries/order and whole records, validate the entire body before native capture,
+and produce checked original/conditional triangle streams by the existing conversion law.
+Known homogeneous model runs may share one contiguous source/complete pointer plan but
+remain distinct native draws (primitive IDs retain original per-draw restart). Unsupported
+custom/mixed-state producers, reentrancy into list compilation, untracked native calls or
+incomplete capture fail before any playback; do not execute an early accepted prefix.
+Every run uses a range within the same authenticated contiguous source and unchanged complete
+pointer plan. A differing descriptor cannot trigger an inside-list bind; it requires a separately
+bounded admitted product or rejection. For chunks, the canonical
+`ChunkRenderDispatcher.uploadDisplayList(BufferBuilder,int,RenderChunk)` receives the complete
+builder before opening its list: stage/derive and bind before that envelope, retaining the same
+balanced chunk modelview commands and original draw boundaries in each product. Uploader
+pointer setup/reset/restoration stays outside the retained body.
+The implementation must establish the pinned canonical route/coverage, not trust a
+subclass merely because it inherits ModelRenderer. No general renderer rewrite is granted.
+
+Each original/derived list is captured separately under GL_COMPILE, never
+GL_COMPILE_AND_EXECUTE, never nested glNewList. P1 bind/isolation precedes glNewList;
+all streams/plans are prepared first, geometry-only commands run inside, glEndList
+precedes restoration. No transforms, program/instance/owner9 uniforms or restored
+predecessor constants may enter the body. Each body is captured once, not N times.
+In particular, an OLDMODEL run captures neither COLOR nor UV1 arrays or constants.
+The complete authenticated participation/plan is retained with each original/derived
+list, not reconstructed from its 56-byte storage. A later fleece color or current
+lightmap change remains live at every playback, even when the native list is reused.
+Publish the pair/compiled metadata atomically only after every demanded capture and
+restoration succeeds. On allocation/capture/end/restore failure invalidate the whole
+candidate, close an actually opened list best-effort, retire partial names without
+calling them, and invoke ordinary main/off or shadow-abort containment. A failed
+recompile never leaves `compiled=true` pointing at a failed/deleted candidate.
+
+**Every cached call.** H10-MODEL-LIST-PLAYBACK wraps all callList invocations in render
+and renderWithRotation, even on later frames that never reach an uploader. Before the
+first native call, require current authenticated main/root-shadow geometryInput and
+owner incarnation, validate the full list body and select a same-epoch compatible
+product. An off-compiled or missing-converted product can rebuild once from its proven
+canonical owner at this safe pre-call boundary using the retained first-compile scale;
+otherwise suppress the call and contain it, never submit stale QUADS to TRIANGLES.
+Unknown preinstallation lists are unproven, not adopted by raw name. With no authenticated
+shader, ordinary vanilla playback remains ordinary, but stale/failed owned names are
+never played. Rebuild may not occur inside an open list or active submission borrow.
+
+Run P1 LIST_REPLAY_GUARD against the current effective linked requirement; retain the
+chosen source through all copies and restore only replay-affected state, not dead CPU
+pointers. At v0.5 repeat this one geometry-list call under P7, preserving A0,A1,B0,B1,
+not the ModelRenderer method, children, matrix operations or capture. P7/P9 surrounding
+entity/TE and color rows are established before first playback and restored after their
+ordinary enclosing scope; their P6 immediate-if-active/activation refresh timing is
+unchanged. No per-model/per-copy owner9 push, re-resolution, upload or captured row
+value is added; absent pre-v0.3 owner9 remains the admitted neutral state.
+
+**Retirement.** H10-MODEL-LIST-LIFETIME observes canonical replacement and the existing
+[GLAllocation.deleteDisplayLists single/range path](https://raw.githubusercontent.com/KealJones/mc-1.12.2-source_files/master/src/minecraft/net/minecraft/client/renderer/GLAllocation.java),
+invalidating every overlapping authenticated name/incarnation before native deletion.
+Glue owns generated companion names through that same allocation/deletion path, never
+through borrowed VertexSource. Model-owner collection queues render-thread retirement
+(no GC-thread GL and no registry strong reference keeping models alive); configuration,
+world/resource/layout retirement, detach and shutdown also retire all companions after
+last submission/binding use. No finalizer is assumed on vanilla ModelRenderer.
+Canonical replacement/deletion invalidates companions; reused integer names never
+resurrect metadata. Deleting a canonical name also clears its live owner's compiled
+eligibility so the next ordinary render cannot call a deleted list. Deletion failure
+retains ownership for safe retirement and keeps shader admission closed.
+
+**Transaction placement.** P7 step1 closes admission and drains model capture, playback,
+bindings and retirement borrows alongside existing worker/upload borrows. Step4 freezes
+configuration/layout/attribute-union/primitive demand; step9 activation and required
+invalidation make every old model product ineligible before atomic admission. Lazy
+first-use rebuild is permitted only behind the unconditional pre-call guard, not as
+permission to submit old products. Step10 off recovery drops derived eligibility and
+restores safe canonical vanilla ownership; Pending/Failed retains owners and recovery
+tokens, never claims Drained/VanillaReady from cancellation alone. Resource-only NONE
+reuses retained configuration but a new resource epoch still invalidates native products.
+This also applies to the v0.1 private base adapter without pulling v0.3 P9 installation
+forward. P7 must explicitly adopt this lifetime/health extension under R10-6.
+
+#### Cached vanilla sky/star products — R1-1
+
+**Closed producer family and evidence.** The separately read
+[vanilla 1.12.2 RenderGlobal source](https://raw.githubusercontent.com/KealJones/mc-1.12.2-source_files/master/src/minecraft/net/minecraft/client/renderer/RenderGlobal.java)
+has three independent products: upper `generateSky` → `glSkyList`/`skyVBO`,
+lower `generateSky2` → `glSkyList2`/`sky2VBO`, and `generateStars` →
+`starGLCallList`/`starVBO`. Constructor calls create all three before shader admission;
+`loadRenderers` regenerates all three when `vboEnabled` changes. Upper/lower use
+`renderSky(BufferBuilder,float,boolean)` with `(16,false)` / `(-16,true)`;
+stars use `renderStars(BufferBuilder)` with their canonical fixed-seed producer.
+Each emits one POSITION/QUADS run. MCP 1.12.2 resolves the exact methods in §4.11.
+The separately identified Cleanroom 0.6.12-alpha RenderGlobal patch adds a custom
+sky-handler early return; it does not establish canonical provenance for that handler.
+These are source/mapping observations, not configured transformed-runtime proof.
+
+**Incarnation and preparation.** Reuse the model/chunk bounded capture registry, P1
+issuance and paired-native lifetime; add no public sky service or raw-name adoption.
+Private identity includes exact RenderGlobal owner, device, product kind, canonical
+producer revision/arguments, allocation incarnation, actual POSITION descriptor/count,
+configuration/world/resource epoch, backend mode, authenticated conventionalInputs,
+complete capture/draw plan and prepared primitive demand;
+v0.3 additionally uses the existing vertex/layout/attribute-union epoch. Numeric
+fields (including a reused list name), object class, or matching epoch alone grant
+no source authority. Observe all three generation methods even off-first, retaining
+only bounded provenance off: no extended builder sidecars, TLS, conversion or extra
+geometry traversal. Do not promote an off/NONE original into a converted product.
+
+At shader-required generation, defer the original GL_COMPILE envelope and suppress
+the uploader's native submission while the one canonical producer fills its builder.
+Stage/seal the complete POSITION run before reset or native capture. For VBO generation,
+the producer calls finishDrawing/reset/bufferData directly, without an uploader:
+the generation scope retains sealed count/format/range before reset and authenticates
+the exact bytes handed to `VertexBuffer.bufferData`, rather than relying on reset state
+or buffer-length divisibility. Checked whole-record expansion follows §4.6 unchanged.
+Prepare original and demanded triangle source once from this one run, then capture
+separate geometry-only GL_COMPILE lists or upload paired VBOs through the existing
+observed owner. No second `renderSky(float,int)` traversal, no second star generation
+for the derived product, no playback/readback to discover bytes and no forced VBO mode.
+List bind/isolation occurs before glNewList; end occurs before external restoration.
+The star producer's surrounding push/pop matrix remains outside both list bodies.
+All program, instance, current color, fog, live celestial transforms and restoration
+remain outside capture. Publish only after every demanded product and restoration
+succeeds; release staged bytes only afterward. Partial capture/upload/end/restore
+failure revokes candidates and retires partial names after last borrow, never calls them.
+
+**Every live native site.** `renderSky(float,int)` has four callList anchors:
+upper sky, brightness-positive stars, below-horizon lower sky, and final translated
+lower sky. It also has three VBO drawArrays anchors for the first three branches.
+All seven have distinct health rows; repeated use of `glSkyList2` is not one anchor.
+The final lower call is unconditional in the observed source, even in VBO mode where
+the canonical field is `-1`. That known absent product emits no native call and is
+not authenticated by the sentinel; do not invent a fourth VBO draw to repair vanilla.
+If a final lower list actually exists, it requires the same complete provenance,
+compatibility and count guard irrespective of mode. Unexpected field replacement
+is unproven and contains, not the known absent case.
+
+Before any existing product's first native call, borrow current P7 effective main
+geometryInput (or already-authenticated root-shadow authority, never create a sky
+shadow traversal), validate incarnation/full run/epoch and select original for NONE
+or checked triangles for TRIANGLES. Other geometry categories reject as §4.6 specifies.
+An off-first/demand-stale product may regenerate once through its exact canonical
+generation method at the safe pre-call boundary, before borrowing the native product;
+it must not be inside another capture or submission. This regenerates that bounded
+product only, never the sky/world method, events, brightness calculation or sun/moon.
+After successful publication, unchanged subsequent calls reuse it; inability to prove
+or safely rebuild the producer suppresses the incompatible call and invokes P7
+containment before any accepted prefix. NONE/off does not license a failed/deleted
+owned name. Unknown custom-sky products are not covered by these canonical rows.
+
+Lists use P1 LIST_REPLAY_GUARD; VBO sites use the existing H10-VBO-DRAW LIVE_DRAW
+adapter with actual authenticated POSITION stride/range, not an assumed chunk layout.
+At v0.5 P7 repeats only the chosen prepared call adjacently: A0,A1,B0,B1, including
+the two distinct lower-sky placements. Site wrappers and VBO delegation share the
+single-submission guard, never N². Preparation/upload/capture, transforms, current
+color/fog and enclosing sky selection happen once; no capture-time instance uploads.
+Keep product/source borrows through every copy and P1 external restoration, then
+release. List replay restores affected current values without dead capture pointers;
+VBO rollback/restoration includes affected pointers/bindings/arrays, generic0 and
+selectors. P7 restores saved instance state. Failure stops copies without duplicate
+fallback and uses existing main containment or authenticated P8 abort/neutralization.
+
+**Exact lifetime receivers.** Each generation scope revokes its previous product
+before canonical replacement/deletion. Shared GLAllocation single/range deletion
+invalidates overlapping sky incarnations before native deletion, with forwarding
+deduplicated; VertexBuffer.deleteGlBuffers does the same for all three authenticated
+VBO owners and companions. Companion allocation/deletion stays with the observed
+native owner, never a borrowed VertexSource. `loadRenderers` brackets the actual
+mode-change assignment/regeneration; unchanged mode alone does not regenerate sky.
+`onResourceManagerReload` only updates damage icons in vanilla: its P10 observer
+explicitly queues resource-epoch invalidation through P7, not a fictional vanilla
+sky rebuild. `setWorldAndLoadRenderers` observes world replacement/null detach.
+`deleteAllDisplayLists` is empty in this vanilla source, so it is an explicit P10
+retirement observer, not proof vanilla deletes sky resources. These named boundaries
+invalidate eligibility immediately and defer deletion/mutation until real final-use
+drain. Existing P7 removal/shutdown also retires all remaining owned companions;
+no GC-thread GL or strong registry reference extending owner lifetime.
+
+R10-7 requires P7 step1 to close/drain sky generation, staging, native playback,
+bindings and retirement borrows; step4 freezes backend/configuration/resource/
+primitive demand; step9 invalidates old shader eligibility before atomic admission;
+step10 restores safe canonical ownership and drops derived eligibility only after
+actual drain. Resource-only NONE preserves configuration but changes resource epoch
+and invalidates products. Pending/Failed retains owners and recovery tokens, never
+claims Drained/VanillaReady; failed deletion/restore keeps admission closed. Lazy
+canonical rebuild is allowed only behind the unconditional live guard. These rules
+apply already to the v0.1 base adapter, without fictitious P9 installation.
 
 #### Facade boundary
 
-R10-1 requests one typed vertex-state scope from the existing GLDevice, implemented
-and recorded under Phase 1's facade. It saves only the affected domains: generic
+R10-1 adopts the exact `GLDevice.vertexInputs()` service in P1 §4.7.6, including
+its source admission and rollback/restore law. It saves the affected domains: generic
 arrays/current values/pointers, relevant FF client arrays and pointers, array-buffer
 binding, and client-active texture. It preserves the VAO binding rather than resetting
 it to zero or clearing all sixteen attributes as Pintonium does. Nested scopes restore
@@ -659,6 +1226,34 @@ draws can leave generic current values indeterminate; no previous entity may lea
 The existing `StateService.snapshot()` covers frame state, **not** this complete
 vertex domain. It is not cited as proof of restoration. Driver errors use bounded
 facade drain windows; a batched error is not falsely attributed to one attribute.
+
+#### Authenticated deferred FastTESR ranges — D-P10-26
+
+Receive P9 §4.12.1/§5.6 and P7 D-P7-54 through the existing private client uploader.
+Only an authenticated dispatcher batch attaches the bounded primitive ordinal sidecar;
+ordinary builders and shaders-off remain unchanged. Per complete quad retain the active
+P9-provided state ordinal, opaque to P10 and never encoded into mc_Entity or vertex bytes.
+Nested append owners must align to complete quads; mixed/partial ownership fails preparation.
+Track endVertex, addVertexData and Forge putBulkData, plus begin/reset and State save/restore.
+Capacity is checked/reserved alongside builder growth under its existing byte cap.
+
+At the original full-batch sort, copy the actual destination-to-source permutation before
+record movement and apply that bijection to owners. No distance recomputation, per-owner
+sort or equal-distance reordering is allowed. Seal once, form maximal contiguous
+(firstQuad,quadCount,stateOrdinal) ranges, and validate the entire partition/identity/source/
+layout/topology before any draw. Save/restore carries an immutable corresponding ownership
+stamp; count/order changes invalidate or update it through the listed hooks.
+
+At the final native call after Forge preDraw, bind the sealed original or conditionally
+converted client source through P1. Checked range offsets/counts refer to four original or
+six converted vertices per quad, preserving complete records and the existing diagonal.
+P7/P9 enter the fresh range ID scope before its P10 prepared native guard. Repeat only that
+native range adjacently, then restore instance and ID before the next range. Do not replay
+the Java uploader, population or Forge setup. The complete source remains borrowed through
+all ranges and restoration; Forge postDraw/reset run once in finally.
+Any preparation failure forbids the whole batch; a later draw/restore failure stops remaining
+ranges without original-batch retry, runs independent cleanup and P7/P8 containment.
+Per-range primitive-ID restart follows P9's disclosed boundary, not an invented shader offset.
 
 ### 4.7 Constant entity/TE attribute candidate: rejected
 
@@ -689,9 +1284,9 @@ per-scope reset, and unchanged pack observation. No AGPL transform is part of th
 
 ### 4.8 Format transition and cache lifecycle
 
-One Phase 7 no-frame transaction owns the transition. The additional Phase 10 phases
-are `VANILLA`, `QUIESCING`, `PREPARED`, `ACTIVE`, `RECOVERING`, and session `BAILED`.
-A request during a frame queues; it cannot mutate format fields in place.
+One Phase 7 no-frame transaction owns the transition. P10's VANILLA/QUIESCING/PREPARED/
+ACTIVE/RECOVERING labels describe its participant state inside that transaction; session
+BAILED is P1's latch, not a second lifecycle or verdict enum. In-frame requests only queue.
 
 1. Stop accepting old-epoch build work and revoke its upload/draw eligibility. Cancel
    queued work, request cooperative cancellation of running tasks, drain/release queued
@@ -710,10 +1305,11 @@ A request during a frame queues; it cannot mutate format fields in place.
    model/resource rebuild where their old format references survive. Recreate world
    renderers/chunk VBOs/lists with the new format. Do not assume `loadRenderers` alone
    replaces baked models. OQ-14 selects the proven concrete invalidation strategy.
-6. Follow the **current Phase 7 §5.3** publication order. After Phase 9 accepts its new
-   generation, install its exact lookup and ordinal map in the prepared vertex epoch,
-   invoke `IdDependentGeometryInvalidator`, and admit only matching tasks/products.
-7. Return `Completed` to Phase 7 once every old product is ineligible, caches/layers
+6. Follow current Phase 7 §5.1/§5.3 exactly: begin/poll at step1, prepare immutable
+   layout/lighting/bake identity at step4 before acceptance; after textures and Phase 9
+   acceptance at step9 install the exact lookup/map/epoch tuple, require Activated, then
+   invoke IdDependentGeometryInvalidator and complete all other required invalidation.
+7. Return the existing invalidator Completed once every old product is ineligible, caches/layers
    invalidated and required rebuilds successfully scheduled. It means scheduling
    completed, not every visible chunk already rebuilt. Missing chunks rebuild normally;
    no old chunk is temporarily drawn with the new stride or alias generation.
@@ -814,14 +1410,18 @@ and before every format transition. Early probes inspect class resources/metadat
 without initializing renderer classes; mod IDs are consulted only when available.
 A thrown/indeterminate probe is not compatibility evidence and fails safe. Do not
 construct a GL capability profile before a context exists just to run class probes.
-The early/late split and the mapping from actual Phase 1 verdicts to Phase 7's prose
-compatibility outcomes need the explicit clarification requested in R10-1/R10-2.
+P7 §5.1 consumes the actual CompatEvaluation with no replacement enum. Adopt P1
+§4.10's `EarlyCompatCheck`/`EarlyCompatContext` and `BailRegistry.evaluateEarly`:
+register once before first MOD-plugin evaluation, resource/metadata probes only,
+throwing checks Bail, and retain the terminal whole-family veto for the session.
+No game/mod-list/GL initialization is legal in the early context.
 
-Incompatible vanilla-target mutation mixins are vetoed as one group when possible.
-Early nullable attachments, if unavoidable before MOD phase, must be inert and perform
-no format mutation; OQ-5 determines that placement on the pinned loader. A missing
-or overmatched required P10 anchor disables the entire extended pipeline. No half-set
-of stamping and pointer mixins is an admissible configuration.
+The dependent vertex hook family is gated together in `mod.mixin.compat.vertex`
+under the existing MOD config. Attachments stay inert until P7 admission; this grant
+populates no preinit hook. If target load-order evidence requires earlier attachment,
+obtain a separately reviewed owner amendment rather than applying ungated hooks.
+A missing/overmatched required anchor disables the entire dependent pipeline;
+no half-set of stamping and pointer mixins is admissible.
 
 Diagnostic key: `schmaloogium.compat.chunk_renderer_replaced`.
 
@@ -884,9 +1484,11 @@ methods are readable-name targets with `remap=false`, not fabricated SRG symbols
 | H10-BLOCK | E3 invocation of `BlockRendererDispatcher.func_175018_a` | AROUND each actual per-block render call inside rebuild; includes fluids and all Forge layers; push/finalize/pop |
 | H10-MODEL | E9 `BlockModelRenderer.func_178267_a` | Nested per-builder state scope; finalize dirty appended tail on exit; outer call guards guarantee throw cleanup |
 | H10-BEGIN | E5 `BufferBuilder.func_181668_a` | Resolve shader projection before format installation; initialize sidecar after successful begin; no mid-build swap |
-| H10-END | E5 `BufferBuilder.func_181675_d` | AFTER completed vertex; stamp and finalize newly complete quad |
+| H10-END | E5 `BufferBuilder.func_181675_d` | AROUND count/growth and successful stamp/finalization; reset per-vertex dispatch only on success, invalidate on exception |
 | H10-ARRAY | E5 `BufferBuilder.func_178981_a` | AROUND bulk append; capture old count, adapt explicitly typed input, stamp only appended region |
 | H10-BULK | E5 Forge `BufferBuilder.putBulkData` | Same bulk protocol; preserve extra-growth allowance and buffer consumption |
+| H10-WRITER-* | E5 seven exact setter/advancement rows below | Before scalar storage select authenticated source semantic's destination; source-only advancement, delegation once and exception invalidation |
+| H10-BRIGHTNESS-4 | E5 `BufferBuilder.func_178962_a(IIII)V` | AROUND actual last-quad UV1 writes; authenticate pending range, complete only after all four real stores return, invalidate on throw; D-P10-30 |
 | H10-SEAL | E5 `BufferBuilder.func_178977_d` | Before finish; finalize dirty tail, reject partial quads, seal metadata |
 | H10-STATE | E5 `func_181672_a`, `func_178993_a`, `func_181674_a` | Save/restore epoch/format without restamping; validate and seal before sort/state copy |
 | H10-RESET | E5 `BufferBuilder.func_178965_a` | Clear transient state and owner; do not clear independent immutable copied-state stamp |
@@ -897,8 +1499,14 @@ methods are readable-name targets with `remap=false`, not fabricated SRG symbols
 | H10-VBO-DRAW | E8 `VertexBuffer.func_177358_a` | AROUND actual draw; actual stored stride for both FF and generic pointers, finally restore |
 | H10-LIST-REPLAY | E6/E7 path completion, `RenderList.func_178001_a` | Epoch guard before list execution; finally restore recorded generic current values |
 | H10-VBO-LAYER | E8 path completion, `VboRenderList.func_178001_a` | Validate layer admission; per-VBO draw wrapper overrides vanilla fixed-stride setup, never duplicate the draw |
+| H10-MODEL-LIST-CAPTURE | `model.ModelRenderer.func_78788_d(F)V` | AROUND full compile including glNewList/end/compiled publication; authenticated staging/capture, off/NONE identity and failure cleanup |
+| H10-MODEL-LIST-PLAYBACK | `model.ModelRenderer.func_78785_a(F)V`, `func_78791_b(F)V`, every callList invocation | Pre-call full-product/current geometry guard, safe rebuild or containment; adjacent native repeats only |
+| H10-MODEL-LIST-LIFETIME | ModelRenderer canonical replacement plus GLAllocation deletion single/range paths | Revoke provenance before deletion/reuse, retire paired products after final use; no GC-thread GL |
+| H10-SKY-CAPTURE | RenderGlobal generateSky/generateSky2/generateStars | Full generation staging, replacement and off-first provenance; exact expanded rows below |
+| H10-SKY-PLAYBACK | RenderGlobal.func_174976_a(FI)V | Four list and three VBO sites, each guarded before native execution; no whole-sky repetition |
+| H10-SKY-LIFETIME | Exact deletion/resource/world/mode/teardown anchors below | Revoke before replacement/reuse; final-use retirement through existing owner lifecycle |
 
-Exact mapping results `[V:mcp — 2026-09-07, MC 1.12.2]`:
+Exact mapping results `[V:mcp — 2026-09-07, MC 1.12.2; ModelRenderer/GLAllocation and RenderGlobal/VertexBuffer deletion additions 2026-09-08]`:
 
 | Owner and readable method | SRG | JVM descriptor |
 |---|---|---|
@@ -912,6 +1520,7 @@ Exact mapping results `[V:mcp — 2026-09-07, MC 1.12.2]`:
 | `renderer.BufferBuilder.endVertex` | `func_181675_d` | `()V` |
 | `renderer.BufferBuilder.addVertexData` | `func_178981_a` | `([I)V` |
 | `renderer.BufferBuilder.putBulkData` | Forge-added, `remap=false` | `(Ljava/nio/ByteBuffer;)V`, from Cleanroom patch rather than MCP |
+| `renderer.BufferBuilder.putBrightness4` | `func_178962_a` | `(IIII)V`; R4 stable_39 resolution, separately corroborated ordinary last-quad writer |
 | `renderer.BufferBuilder.finishDrawing` / `reset` | `func_178977_d` / `func_178965_a` | `()V` / `()V` |
 | `renderer.BufferBuilder.getVertexState` | `func_181672_a` | `()Lnet/minecraft/client/renderer/BufferBuilder$State;` |
 | `renderer.BufferBuilder.setVertexState` | `func_178993_a` | `(Lnet/minecraft/client/renderer/BufferBuilder$State;)V` |
@@ -920,9 +1529,63 @@ Exact mapping results `[V:mcp — 2026-09-07, MC 1.12.2]`:
 | `renderer.WorldVertexBufferUploader.draw` | `func_181679_a` | `(Lnet/minecraft/client/renderer/BufferBuilder;)V` |
 | `renderer.vertex.VertexBuffer.bufferData` / `drawArrays` | `func_181722_a` / `func_177358_a` | `(Ljava/nio/ByteBuffer;)V` / `(I)V` |
 | `renderer.RenderList.renderChunkLayer` / `renderer.VboRenderList.renderChunkLayer` | `func_178001_a` | `(Lnet/minecraft/util/BlockRenderLayer;)V` |
+| `model.ModelRenderer.compileDisplayList` | `func_78788_d` | `(F)V` |
+| `model.ModelRenderer.render` / `renderWithRotation` / `postRender` | `func_78785_a` / `func_78791_b` / `func_78794_c` | `(F)V` each; postRender is compile coverage, not a playback anchor |
+| `renderer.GLAllocation.generateDisplayLists` | `func_74526_a` | `(I)I` |
+| `renderer.GLAllocation.deleteDisplayLists` single / range | `func_74523_b` / `func_178874_a` | `(I)V` / `(II)V` |
+| `renderer.RenderGlobal.generateSky` / `generateSky2` / `generateStars` | `func_174980_p` / `func_174964_o` / `func_174963_q` | `()V` each |
+| `renderer.RenderGlobal.renderSky` producer / live | `func_174968_a` / `func_174976_a` | `(Lnet/minecraft/client/renderer/BufferBuilder;FZ)V` / `(FI)V` |
+| `renderer.RenderGlobal.renderStars` | `func_180444_a` | `(Lnet/minecraft/client/renderer/BufferBuilder;)V` |
+| `renderer.RenderGlobal.loadRenderers` / `deleteAllDisplayLists` | `func_72712_a` / `func_72728_f` | `()V` each |
+| `renderer.RenderGlobal.onResourceManagerReload` | `func_110549_a` | `(Lnet/minecraft/client/resources/IResourceManager;)V` |
+| `renderer.RenderGlobal.setWorldAndLoadRenderers` | `func_72732_a` | `(Lnet/minecraft/client/multiplayer/WorldClient;)V` |
+| `renderer.vertex.VertexBuffer.deleteGlBuffers` | `func_177362_c` | `()V` |
 
 Owner prefixes in the table are `net.minecraft.client.`. `updateChunkNow` is a mapped
 coverage entry, not another stack owner; its invoked worker/rebuild guards do the work.
+
+**C1 exact writer expansion — D-P10-27.** MCP stable_39/SRG resolved 2026-09-08;
+all owners are `net.minecraft.client.renderer.BufferBuilder`. `B` in descriptors below
+expands to `Lnet/minecraft/client/renderer/BufferBuilder;`, not a literal JVM type.
+Every row is CORE, ownerPhase=10, expected=1 method wrapper, required in the full
+v0.3 ledger and retained at v0.5; none enters the v0.1 base-only subset.
+
+| Exact catalog ID | Mapped target and descriptor | Coverage |
+|---|---|---|
+| H10-WRITER-POS | `func_181662_b(DDD)B` | POSITION0 dispatch before the first store; translation/growth/failure |
+| H10-WRITER-COLOR-INT | `func_181669_b(IIII)B` | COLOR0 stores, noColor no-write/no-advance, one advancement |
+| H10-WRITER-COLOR-FLOAT | `func_181666_a(FFFF)B` | Original integer delegation and exception guard; no second store/advance |
+| H10-WRITER-TEX | `func_187315_a(DD)B` | UV0 dispatch independent of physical COLOR/lightmap/normal cursor |
+| H10-WRITER-LIGHTMAP | `func_187314_a(II)B` | UV1 dispatch and preserved component order |
+| H10-WRITER-NORMAL | `func_181663_c(FFF)B` | NORMAL0 dispatch independent of omitted COLOR/UV1 |
+| H10-WRITER-ADVANCE | `func_181667_k()V` | Active setter source-only advancement; reject unscoped active advance; original off path |
+
+Setter wrappers call ordinary bodies only after semantic selection. ADVANCE explicitly
+replaces the original physical traversal on the active path; AROUND's ordinary delegation
+rule otherwise remains intact. Each wrapper's success/exception/finally behavior is part
+of its one health row, not a healthy HEAD plus unaudited cleanup. These are method-wrapper
+counts, not runtime invocation totals or guessed RETURN counts. Existing H10-BEGIN,
+H10-END, H10-ARRAY, H10-BULK, H10-RESET, H10-SEAL and H10-STATE save/restore/sort
+subrows also audit §4.2's pending-vertex, initialization, transition and invalidation
+coverage; reset-only or missing nested-color cleanup is unhealthy.
+
+R10-8 requires P7 to receive all seven new IDs plus the amended existing row semantics
+in its single installed owner10 report, sort the full unique catalog, renew its canonical
+SHA-256 fingerprint and compare exact required expected/actual rows. Missing, duplicate,
+overmatched or incomplete exception coverage prevents full v0.3/v0.5 shader admission;
+an older full-ledger fingerprint cannot clear it. Preserve P7 primary IDs, scalar row
+shape, HEALTHY/FEATURE_DISABLED vocabulary and unchanged v0.1 base fingerprint.
+
+**D-P10-30 health delta:** add exact ID `H10-BRIGHTNESS-4`, ownerPhase=10,
+CORE, expected=1 exception-safe method wrapper, target
+`net.minecraft.client.renderer.BufferBuilder.func_178962_a(IIII)V`. Full v0.3/v0.5
+catalog/fingerprint only; the seven H10-WRITER-* rows and v0.1 base subset remain.
+Amend H10-MODEL/BLOCK/ARRAY/BULK/STATE/SEAL/RESET and upload/capture/draw admission
+coverage to audit pending UV1 ownership, all-real-store completion and failure cleanup.
+P7 receives this exact additional row through the same installed owner10 subreport;
+P2 forwards it without treating source mapping as transformed cardinality. Missing,
+duplicate, overmatched or non-exception-safe completion coverage makes the full CORE
+group unhealthy/off; no old fingerprint or Forge-lighting-only waiver is accepted.
 
 All listed rows are one required **CORE vertex health group** at v0.3. Initial expected
 cardinality is one per selected method/semantic invocation anchor; multi-method rows
@@ -940,28 +1603,114 @@ The grouping is CORE for activation safety even though the shared subreport voca
 calls the disabled disposition FEATURE_DISABLED. No stale report claims healthy Phase
 10 before its hooks are installed. Optional profiler hooks are not health evidence.
 
+The v0.1 primitive adapter activates the base-format portions of H10-BEGIN/SEAL/STATE/RESET,
+H10-TESS/CLIENT/UPLOAD/VBO-UPLOAD/VBO-DRAW/LIST-REPLAY/VBO-LAYER and
+H10-MODEL-LIST-CAPTURE/PLAYBACK/LIFETIME and the seventeen H10-SKY-* expansions
+below, plus H10-TASK/BUILD solely for source/paired-product cancellation and final-use
+tracking. Model and sky rows are CORE, ownerPhase=10, in both the v0.1 required subset
+and full v0.3 ledger. It performs no extended stamping/block stack/quad-attribute math.
+These exact anchor rows form its required health subset; missing/overmatched cleanup
+or upload coverage prevents the affected .gsh path.
+Its owner10 subreport fingerprints that explicit milestone subset, not the absent extended
+feature. At v0.3 the full ledger is required, and the new fingerprint invalidates old admission.
+P7 must check the installed milestone's exact required rows, never infer extended readiness
+from the earlier base report. No new health enum or second owner10 report is introduced.
+Model subrows identify render's three call sites and renderWithRotation's one separately;
+compile coverage includes calls from postRender, and lifetime subrows cover single/range
+deletion forwarding without double retirement. These source counts are evidence, not
+guessed transformed cardinalities. Missing any effective branch, staging envelope,
+deletion/reuse or exception-cleanup coverage prevents affected .gsh admission before
+the first model draw; it cannot report only chunk-list coverage as healthy.
+Canonical catalog expansions are H10-MODEL-LIST-CAPTURE-COMPILE;
+H10-MODEL-LIST-PLAYBACK-RENDER-ZERO, -RENDER-PIVOT, -RENDER-ROTATED,
+-WITH-ROTATION; and H10-MODEL-LIST-LIFETIME-REPLACE, -DELETE-SINGLE,
+-DELETE-RANGE. The full prefixes apply to every abbreviated suffix. Owner10's
+fingerprint includes each expanded ID, with the ordinary §4.11 audit/cardinality law.
+
+**R1-1 exact sky expansion (MCP/source evidence read 2026-09-08).** Each ID below is
+CORE, ownerPhase=10, required in the v0.1 base subset, retained in the full v0.3
+subset and still required for v0.5 adjacent repetition. They are additive to every
+existing required row, not a replacement milestone report. Each named semantic
+anchor has expected count one; actual transformed cardinalities and cleanup paths
+must be audited under the preceding law before admission. Shared deletion method
+instrumentation can serve model and sky logical rows but cannot double-retire.
+
+| Exact catalog ID | Exact selected anchor and obligation |
+|---|---|
+| H10-SKY-CAPTURE-UPPER | AROUND RenderGlobal.func_174980_p()V, including constructor/direct/rebuild invocation |
+| H10-SKY-CAPTURE-LOWER | AROUND RenderGlobal.func_174964_o()V, same complete scope |
+| H10-SKY-CAPTURE-STARS | AROUND RenderGlobal.func_174963_q()V, same complete scope |
+| H10-SKY-PLAYBACK-LIST-UPPER | func_174976_a(FI)V callList consuming glSkyList |
+| H10-SKY-PLAYBACK-LIST-STARS | Same method callList consuming starGLCallList inside brightness-positive branch |
+| H10-SKY-PLAYBACK-LIST-LOWER-HORIZON | Same method callList consuming glSkyList2 inside below-horizon branch |
+| H10-SKY-PLAYBACK-LIST-LOWER-FINAL | Same method final translated callList consuming glSkyList2, outside VBO conditional |
+| H10-SKY-PLAYBACK-VBO-UPPER | Same method skyVBO.drawArrays(I)V invocation, forwarding once to H10-VBO-DRAW |
+| H10-SKY-PLAYBACK-VBO-STARS | Same method starVBO.drawArrays(I)V invocation, same guard |
+| H10-SKY-PLAYBACK-VBO-LOWER-HORIZON | Same method sky2VBO.drawArrays(I)V invocation, same guard |
+| H10-SKY-LIFETIME-DELETE-SINGLE | GLAllocation.func_74523_b(I)V, authenticated sky overlap invalidation |
+| H10-SKY-LIFETIME-DELETE-RANGE | GLAllocation.func_178874_a(II)V, same range/incarnation rule |
+| H10-SKY-LIFETIME-DELETE-VBO | VertexBuffer.func_177362_c()V, authenticated owner/companion invalidation |
+| H10-SKY-LIFETIME-VBO-MODE | AROUND RenderGlobal.func_72712_a()V actual vboEnabled change/regeneration scope |
+| H10-SKY-LIFETIME-RESOURCE | AROUND RenderGlobal.func_110549_a(IResourceManager)V, queued epoch retirement |
+| H10-SKY-LIFETIME-WORLD | AROUND RenderGlobal.func_72732_a(WorldClient)V, replacement/null-detach retirement |
+| H10-SKY-LIFETIME-DELETE-ALL | AROUND RenderGlobal.func_72728_f()V, explicit observer of otherwise empty vanilla method |
+
+The v0.3 owner10 CORE report additionally enumerates each batch-only row below, expected=1
+per static target/anchor, with no aggregate count hiding missing subtargets:
+
+| ID | Exact target / action |
+|---|---|
+| H10-TE-BATCH-OWNER-END | BufferBuilder.func_181675_d()V, completed vertex ownership |
+| H10-TE-BATCH-OWNER-ARRAY | BufferBuilder.func_178981_a([I)V, checked bulk ownership |
+| H10-TE-BATCH-OWNER-BULK | Forge BufferBuilder.putBulkData(ByteBuffer)V, remap=false, checked bulk ownership |
+| H10-TE-BATCH-OWNER-SAVE | BufferBuilder.func_181672_a()BufferBuilder.State, copy ownership stamp |
+| H10-TE-BATCH-OWNER-RESTORE | BufferBuilder.func_178993_a(BufferBuilder.State)V, restore matched stamp |
+| H10-TE-BATCH-OWNER-BEGIN | BufferBuilder.func_181668_a(IVertexFormat)V, start/reset association |
+| H10-TE-BATCH-OWNER-RESET | BufferBuilder.func_178965_a()V, clear association |
+| H10-TE-BATCH-SORT | actual permutation point in BufferBuilder.func_181674_a(FFF)V before record movement |
+| H10-TE-BATCH-RANGES | final native invocation in WorldVertexBufferUploader.func_181679_a(BufferBuilder)V after preDraw and before postDraw/reset |
+
+AROUND/finally applies wherever ownership/source state is borrowed. Existing H10 hook
+implementations may share the adapter, but every listed application is independently
+audited/fingerprinted. Missing coverage keeps v0.3 shader admission closed, not geometry omitted.
+
+Replacement is part of each of the three CAPTURE scopes, not an unnamed extra hook.
+VBO source sealing-before-reset and all upload calls are obligations of those scopes
+plus existing H10-SEAL/RESET/VBO-UPLOAD; no uploader-only health substitutes for them.
+P7 removal/shutdown is the already-installed lifecycle operation, not a guessed
+Minecraft hook. All seventeen rows enter the sorted unique owner10 fingerprint at
+each milestone; old chunk/model-only fingerprints cannot admit affected sky .gsh.
+Missing/overmatched sites, cleanup, off-first observation or VBO source coverage close
+affected admission before playback, not merely emit a FEATURE_DISABLED label and draw.
+
 ## 5. Cross-phase interfaces
 
 This section is the monitored interface region. Detailed semantics in §§4.1–4.11 are
-incorporated by the rows below. All **new** interfaces here are Phase 10 proposals;
-requests name the owner that must adopt them. No dependency private type is consumed.
+incorporated by the rows below. R10-2 is owner-granted/receiver-adopted, unverified;
+R10-1 and R10-5 are now owner-granted/receiver-adopted, unverified. No dependency private type is consumed.
 
 ### 5.1 Exposed Phase 10 contracts
 
 | Contract | Exact content and ownership | Consumer |
 |---|---|---|
-| `VertexLayout` / `VertexField` / `VertexInputPlan` | Immutable named fields, byte stride, scalar storage/conversion, validation and fingerprint; classic values §4.1 | mod adapters, requested facade, conformance; G8 growth |
+| `VertexLayout` / `VertexField` / `VertexInputPlan` | Immutable named physical fields/stride and complete plan: layoutFingerprint, pointers, nonnull immutable Set<ConventionalInput> conventionalInputs, expectedGeometryInput; enum POSITION,COLOR,UV0,UV1,NORMAL. §§2.2/4.1/4.6 D-P10-29 source participation and full authenticated product identity incorporated; CLASSIC_56 remains56 | mod adapters, P1 existing facade, P7 prepared submission, conformance; G8 growth |
 | `VertexEpoch` | Independent vertex serial, world epoch, ID generation, layout fingerprint; equality necessary, not sufficient, for product admission | task/upload/state adapters; Phase 7 composition |
-| `VertexPipelineLifecycle` | Quiesce/prepare/activate/recover protocol below; no active frame or stale worker can overlap mutation | Phase 7 requested participant |
-| `VertexProgramInputSink` | Activation-scoped declaration delivery below, reset on every non-shader/abort/close transition; no program selection or GL upload | Phase 7 requested adapter |
+| `VertexPipelineLifecycle` | Exact accepted P7 §5.1 begin/poll/prepare/activate/restore operations below; no active frame or stale worker overlaps mutation | P7 installed participant, unverified |
+| `VertexProgramInputSink` | Exact accepted P7 §5.1 authenticated main/shadow enter/leave/reset; no program selection or GL upload | P7 installed adapter, unverified |
 | `IdDependentGeometryInvalidator` implementation | Implements the **existing Phase 7 interface**, exact `IdPublicationChange` and closed results; Completed only after old-product ineligibility, layer invalidation and successful scheduling | Phase 7 |
-| Builder/task/state/mesh sidecar protocol | §4.2/§4.4/§4.5: immutable handoff metadata, exclusive writers, no source mutation, expected stale cancellation | `mod.glue` vanilla adapters, not a public Minecraft API in engine |
+| Builder/task/state/mesh sidecar protocol | §4.2/§4.4/§4.5 including D-P10-27 source-semantic scalar dispatch independent of CLASSIC_56 cursor, omitted-field initialization, vertex-boundary bulk/state transitions and exception invalidation; immutable handoff, exclusive writers, no source mutation | `mod.glue` vanilla adapters, not a public Minecraft API in engine |
 | `ChunkRendererCompatCheck` | Existing Phase 1 `CompatCheck`, fixed check ID `schmaloogium.chunk_renderer`, table §4.9, session Bail | Phase 1 registry, Phase 7 admission, Phase 12 diagnostics |
-| Owner-phase-10 hook subreport | Exact shared `HookApplicationSubreport` shape, fingerprint and rows §4.11 | Phase 7 report composer / Phase 2 manifests |
+| Owner-phase-10 hook subreport | Exact shared `HookApplicationSubreport` shape, fingerprint and rows §4.11; R10-8 adds seven H10-WRITER-* CORE rows and amended ingress cleanup coverage to full v0.3/v0.5, not v0.1 base | Phase 7 report composer / Phase 2 manifests; receiver-adopted per P7 D-P7-62/D-P7-75 with identical P2 forwarding, unverified; fresh applicable review remains |
 | Growth producer requirements | Position/UV/block-context prerequisites, immutable name/layout cutover; no modern runtime producer in v0.3 | G8/S4, Phases 3/4 |
 | `ShaderLightingPolicy` | immutable effective `oldLighting`/`separateAo`; exact shader-visible RGB/AO-alpha semantics, local defaults and precedence in §4.8.1; captured in transition/bake identity and never sampled per vertex from mutable settings | Phase 7 preparation, Phase 12 reload policy, mod bake/build adapters |
+| Conditional primitive submission plan | §4.6 category translation, checked complete-record expansion, topology/provoking/primitive-ID policy and client/VBO/list paired lifetime; no source mutation | P7 private submission adapter; P1 facade; v0.1 affected .gsh paths |
+| Authenticated cached-model products | §4.6 ModelRenderer capture/incarnation/scale, paired-product selection, every-call guard and final-use retirement; exact CORE hook rows in §4.11 | P7 R10-6 lifecycle/health receiver; no public renderer API |
+| Authenticated cached sky/star products | §4.6 three canonical producers, off-first incarnation, full staged source, paired lists/VBOs, seven guarded sites, external restoration and retirement; all seventeen §4.11 CORE rows | P7 R10-7 exact lifecycle/health receiver; existing P1 facade only |
+| Deferred FastTESR ownership/ranges | D-P10-26 incorporates P9 §4.12.1/§5.6 complete sorted per-quad ownership, sealed partition and native adjacency; seven owner-state subrows plus sort/ranges, no vertex alias substitution | P7 D-P7-54 and P9 actual native ID scopes |
+| Inherited conventional-input delivery (R10-9) | D-P10-29 §§4.1–4.6: source-absent COLOR/UV1 storage is padding/hygiene, never automatically enabled, reset or captured; disable foreign arrays temporarily without changing inherited current values. Source-provided BLOCK streams and existing normal/tangent policy preserved. Complete source participation/plan authenticates state/client/VBO/capture/replay products; each playback uses current color/UV1, not first-compile values | P1 complete bind/restore receipt for all modes; P7 existing lifecycle/prepared-submission receipt, no new hook IDs or native API |
+| Completed block-model producer — D-P10-30 | §4.2 authenticated ITEM partial append→BLOCK final participation→func_178962_a real four-value UV1 completion; same builder/scope/epoch/range obligation, immutable cached source, rejection before safe model/seal/state/upload/capture/draw on missing/throwing completion. §4.11 H10-BRIGHTNESS-4 CORE expected1 full-v0.3/v0.5 receipt and amended cleanup rows incorporated; OLDMODEL inheritance unchanged | P1 complete-plan authority, P7 owner10 health/admission, P2 evidence |
 
-Proposed lifecycle operations (render thread only):
+Accepted R10-2 lifecycle operations (render thread only, unverified):
 
 ```java
 interface VertexPipelineLifecycle {
@@ -981,13 +1730,19 @@ matching ordinal bridge alongside it; the engine never receives Minecraft object
 The token is opaque, issued by this lifecycle instance, exclusive and non-reusable.
 Closed start outcomes: `Started(token)` or `Rejected(WRONG_THREAD|FRAME_OPEN|
 TRANSITION_OPEN|STALE_EPOCH|INVALID_REQUEST)`. Quiescence outcomes: `Pending`,
-`Drained`, `Failed(diagnosticId)`. Prepare outcomes: `Prepared` or `Failed`;
+`Drained`, `Failed(diagnosticId)`. Prepare outcomes: `Prepared` or `Failed(diagnosticId)`;
 activate outcomes: `Activated(epoch)` or `Rejected(STALE_EPOCH|NOT_PREPARED|
 LOOKUP_GENERATION_MISMATCH|HOOK_UNHEALTHY|BAILED)`. Recovery outcomes:
 `VanillaReady` or `Failed(diagnosticId)`; recovery failure keeps shader admission
 closed and discards old geometry, never authorizes unsafe reuse. Only Drained permits
 prepare/format mutation. Prepare owns no new alias publication; activate borrows one
-kept alive by Phase 7. Terminal outcomes invalidate the token.
+kept alive by Phase 7. Only Activated/VanillaReady consumes the token. Intermediate
+failure retains a recovery-only token for poll/restore, never shader preparation retry.
+After Activated, a later composition failure starts a new VANILLA transition against
+the actual serial. P7 §5.1's exact null/foreign/thread/order errors, partial/absent
+installation, removal/shutdown and failed-drain lifetime rules are incorporated unchanged.
+No Failed or timeout frees a still-borrowed lookup/map, fakes Drained or certifies vanilla
+geometry safe. Restore requires actual drain; failed recovery retains its token and owners.
 
 This does not add an ID runtime publisher or bypass Phase 7's atomic pipeline install.
 The lifecycle's `Activated` means vertex readiness, not independent frame admission.
@@ -995,7 +1750,7 @@ The lifecycle's `Activated` means vertex readiness, not independent frame admiss
 its existing rejections remain `STALE_GENERATION`, `INVALID_CHANGE`,
 `SCHEDULER_UNAVAILABLE`, and failures carry Phase 7 `FailureId`.
 
-Proposed declaration delivery:
+Accepted R10-2 declaration delivery:
 
 ```java
 interface VertexProgramInputSink {
@@ -1009,14 +1764,30 @@ interface VertexProgramInputSink {
 identity, immutable exact declared names, and whether this is a successful shader
 activation. Issuance/validation is by the Phase 7 adapter holding that successful
 activation; a public record with matching numbers alone cannot authorize a draw.
+The same authenticated input additionally carries P4 GeometryInputRequirement unchanged
+under adopted R10-5; only mod glue translates it to a registry-independent P10 plan.
+Before extended P10 installation, P7's existing private activation/submission adapter carries
+this geometry fact independently, without a VertexEpoch/AliasLookup or fake input scope.
 `InputScopeResult` is `Entered(opaque scope)` or
 `Rejected(STALE_EPOCH|NO_ACTIVE_SHADER|INVALID_DECLARATION|WRONG_THREAD)`.
 Nested enter/leave is LIFO; leave restores the preceding effective declaration set.
 `reset` invalidates every scope. Draw adapters borrow the current valid scope for the
 operation only. LIST_CAPTURE has a separate prepared-epoch union plan, never an
 Entered shader credential. The sink performs no GL and is **not** a Phase 4 barrier
-participant; the requested Phase 7 adapter invokes it at its established activation
-and restoration boundaries.
+participant; P7's accepted adapter invokes it after actual successful main/fullscreen or
+authenticated P8 root-shadow activation and at restoration boundaries. P7 §5.1's complete
+LIFO/suspension/reset, invalid-leave containment and no-call-after-detach semantics bind here.
+P7 copies effective attributes, not requested-child state; no main activation is opened
+inside shadow. Sink reset is non-GL, not proof of native array restoration.
+
+P7 §5.1 owns the all-or-none installed lifecycle/sink/invalidator/owner10 bundle. Its exact
+step1 real worker/upload drain, step4 prepare(token,layout,lighting), step9 accepted P9
+lookup/map/epoch/policy tuple→Activated→invalidation→atomic admission, and step10 off
+recovery are receiver-adopted. Apply to every format/resource/world/video/effective-lighting
+change, including unchanged ID bytes, and coalesce renderer invalidation once. P6 final-use
+retirement and P13 resource ownership are unchanged. P10 only borrows P9 publications.
+Missing P9/provider before v0.3 is inert absence, never fake health or empty aliases;
+missing required participant at v0.3 prevents vertex shader admission.
 
 ### 5.2 Consumed contracts: existing, not inferred
 
@@ -1026,29 +1797,53 @@ and restoration boundaries.
 | Phase 7 §5.1 / §5.5 | `IdDependentGeometryInvalidator`, `IdPublicationChange`, closed invalidation results | Concrete implementation supplied here; all generations invalidate, even identical bytes |
 | Phase 7 §5.1 | `FrameToken`, frame abort taxonomy, `ShaderReloadController` queuing and report/subreport shapes | Glue uses existing orchestration and diagnostic vocabulary; no independent frame driver |
 | Phase 7 §5.3 | Quiesced coordinated publication, IDs after textures/invalidation before atomic Active, every failed rebuild to off | Adopted alongside amended Phase 9 §5.3; all remain unverified |
-| Phase 7 §4.10/§5.5 | Deferred App E rows 3–9 and hook conventions | Claimed by §4.11; extension APIs still require R10-2 |
+| Phase 7 §5.1/§5.3/§5.5 | R10-2 lifecycle/declaration/lighting, exact placement, owner10 subreport and actual BailRegistry | adopted unverified; all hook rows claimed in §4.11, no missing R10-2 owner design |
 | Phase 9 §5.1 / §4.10 | `AliasLookup.generation()` and `mcEntity(int)`, `BlockStampResult` | One immutable lookup per task, exact two words, no alias re-resolution |
-| Phase 1 §5.3 / §4.10, narrow extra input | `CompatCheck`, `CompatContext`, `CompatVerdict`, `BailRegistry` | Existing mechanism only; no fabricated `Compatible` enum from Phase 7 prose |
-| Phase 1 §5.1/§5.2 | D-6 package seam, `GLCapabilityProfile.maxVertexAttribs`, diagnostics/error and recorder conventions | Proposed vertex verbs are explicitly absent until R10-1 adoption |
+| Phase 1 §5.3 / §4.10, narrow extra input | `CompatCheck`, `CompatContext`, `CompatVerdict`, `BailRegistry`, `EarlyCompatCheck`, `EarlyCompatContext` | Exact ordinary/early evaluation, retained whole-family MOD veto and bootstrap-safe diagnostics adopted; no fabricated `Compatible` |
+| Phase 1 §5.1/§5.2 / §4.7.6 | D-P1-50 package seam and exact `GLDevice.vertexInputs()` service/source/result/recorder contract; `maxVertexAttribs`, diagnostic/error conventions | Receiver-adopted/unverified; entire provenance, pre-mutation rejection, expected-vs-linked comparison, partial rollback and LIFO restoration contract incorporated |
 | Phase 7 §4.6 / §5.1 countInstances | Authenticated effective count and prepared-submission policy, saved instance restoration, single-wrapper guard and main/shadow failure routing | Existing client/VBO/list-playback adapters integrate at v0.5; no whole traversal, capture or upload repetition |
-| Phase 3 §§4.8/5 engine flags and codec, through Phase 7 | schema18 `oldLighting` decoded user tri-state and pack oldLighting/separateAo tri-states; reject every other schema before derivation | Phase 7 resolves §4.8.1 pair, preserving current same-build macro/materialization identity; no pack reopening or private parser |
+| Phase 3 §§4.8/5 engine flags and codec, through Phase 7 | exact-current configuration and nested IdMappingInput receipt (23 adopted by D-P10-28); `oldLighting` user tri-state and pack oldLighting/separateAo tri-states; reject every other schema/mismatch before derivation; no P10 binary-asset access | Phase 7 resolves §4.8.1 pair, preserving current same-build macro/materialization identity; no pack reopening or private parser |
 
 Phase 3 attribute names still flow through Phase 4's effective state; the narrow
 lighting/codec authority is consumed through Phase 7's immutable resolved input,
 not a new direct front-end dependency. Phase 9's glue-owned ordinal map is installed
 with the exact lookup and retained until the final worker borrow ends.
 
+**Schema23 receiver receipt — D-P10-28, 2026-09-08 (unverified).** Receive P3's
+range-capable selector shape through P7; P9 alone resolves registries and P10 does not
+select mapping rules. Composition requires containing configuration and nested
+`IdMappingInput` each to satisfy `schemaVersion == PackFrontEnd.CURRENT_SCHEMA_VERSION`
+(23 at this adoption) and agree before extracting lighting/vertex inputs, preparation,
+retention or reuse. Any received inspection snapshot must match that same current schema and
+configuration identity before reporting. Reject old/future/mismatched data without relabeling,
+deleting old profile fields or manufacturing defaults/empty components. Earlier dated schema22/21/20/19
+addenda and decisions are historical, not competing current gates. Preserve current
+configuration and MaterializedSource-v23 identity; old derived caches cannot be
+renamed current. P4 D-P4-43's `RegistryFingerprint/profile-selection-v3` remains opaque identity
+carried normally through P7 (D-P4-31's own-build fields retained within it), not a P10 parser,
+new getter or resolution-evidence gate. Effective-provider
+geometry/attribute delivery, lighting, vertex semantics, actual matched lookup/worker/product
+lifetimes and provider behavior are unchanged. Same-load assets stay owner-held; D-P3-69's nine
+source-free trees and projectionVersion=1 are unchanged. No binary acquisition, timing API or implementation clearance;
+fresh owner/receiver review remains required.
+
 ### 5.3 Required owner changes and adoption status
 
 | Request | Owner | Required binding change | Gate |
 |---|---|---|---|
-| R10-1 | Phase 1 | Grant `engine.vertex`, `mod.glue.vertex`, `mod.mixin.compat.vertex`; add typed vertex-input facade scope/recording contract below; clarify early class-only compatibility evaluation and MOD/preinit inert-attachment placement | All native pointer work and final package placement; no direct-GL workaround |
-| R10-2 | Phase 7 | Install lifecycle and declaration sinks with exact §5.1 sequencing, including immutable ShaderLightingPolicy at prepare; quiesce workers before retiring matched ID lookup/map; format/resource/world/video/effective-lighting transitions compensate off; owner-10 subreport and actual BailRegistry verdict | Phase 7 adoption/fresh verification gates in-game vertex integration |
+| R10-1 | Phase 1 | D-P1-50 §§4.7.6/4.10/5 exact package, facade and early context grant incorporated below | Owner-granted/receiver-adopted, unverified; fresh review and native proof remain |
+| R10-2 | Phase 7 | Owner-granted §0.43/§5.1/§5.3, receiver-adopted here: exact lifecycle/declaration/lighting, real worker/upload drain, matched P9 lifetime, all transitions/off and owner10/Bail | Fresh P7/P10 verification gates integration; no longer missing owner adoption |
 | R10-3 | Phase 9 | Owner-designed/receiver-adopted unverified in P9 §§4.1/5.3/5.4: publish after textures, every rebuild failure to off, matched lookup/map close after workers drain | Fresh Phase 9/10 verification remains; no longer a missing owner design |
 | R10-4 | Phases 3/4, via future G8/S4 | Extend declared-name and pre-bind catalogs in the same change that adds a modern producer/layout; no fixed-location Phase 10 private enum extension | post-v0.5 attribute activation only |
+| R10-5 | Phase 4 via P7 | D-P4-28 §§4.8/4.9/5 exact ProgramStateBundle.geometryInput after actual linked agreement, effective provider only, FixedFunction clears | Owner-granted/receiver-adopted, unverified; no private active-program access |
+| R10-6 | Phase 7 | Adopt §4.6 cached-model lifetime/transaction placement and §4.11 H10-MODEL-LIST-CAPTURE/PLAYBACK/LIFETIME as CORE owner10 rows in v0.1 base and v0.3 full fingerprints; current main/root-shadow geometryInput before every cached call | P7 D-P7-32 grants exact expanded rows and ten-step placement; receiver-adopted, unverified |
+| R10-7 | Phase 7 | Complete sky/star law and all seventeen owner10 CORE rows with actual current geometry/count at seven sites | P7 D-P7-53 grants receiver/lifecycle/fingerprint placement; adopted, unverified |
+| P9 deferred native ranges | Phases 9/7 | D-P10-26 receives P9 §4.12.1/§5.6 and P7 D-P7-54; actual full sort permutation, complete append/state coverage and fresh ID scope per native range | Coordinated adoption, unverified; no new public facade or renderer API |
+| R10-8 | Phase 7 / Phase 2 evidence forwarding | Receive seven §4.11 H10-WRITER-* IDs and amended existing ingress row coverage in full v0.3/v0.5 owner10 catalog/fingerprint; exact per-row count/cleanup audit, unchanged v0.1 subset | Receiver-adopted per P7 D-P7-62 (all seven H10-WRITER-* rows, fingerprint recompute, unchanged v0.1 subset, identical P2 forwarding) and D-P7-75 (H10-BRIGHTNESS-4 full v0.3/v0.5 only), unverified; fresh applicable review remains required |
+| R10-9 | Phases 1/7 | Receive D-P10-29 complete immutable conventionalInputs plan/domain and authenticated source/product identity, source-keyed Forge setup/cleanup, absent COLOR/UV1 live inheritance and capture exclusion across client/VBO/list; current values remain live at every cached playback | P1 D-P1-68 §4.7.6/§5.2 exact receipt read and adopted, unverified; P7 D-P7-70 conventionalInputs receipt adopted, unverified; fresh applicable review remains, no new native ownership API |
 
-Requested Phase-1 facade addition, deliberately limited to vertex input rather than a
-new renderer:
+**R10-1 receiver adoption.** P1 §4.7.6's complete declarations and semantics are binding,
+not a receiver-owned alternative. The core signatures are:
 
 ```java
 interface VertexInputService {
@@ -1059,7 +1854,7 @@ interface VertexInputService {
 enum VertexBindMode { LIVE_DRAW, LIST_CAPTURE, LIST_REPLAY_GUARD }
 ```
 
-`GLDevice` supplies the service. `VertexSource` is a closed client-range, borrowed-VBO,
+`GLDevice.vertexInputs()` supplies the service. `VertexSource` is a closed client-range, borrowed-VBO,
 or display-list-replay source family: client source owns no memory and retains its
 live ByteBuffer range for the scope; VBO/list sources are opaque same-device handles
 issued only by the glue that owns the vanilla object. No public raw-name adoption,
@@ -1078,10 +1873,40 @@ Use existing `drainErrors` semantics for driver evidence; wrong provenance appen
 native call. Recorder scripts need pointer/setup/restore failures and source lifetime
 rejection; facade recording cannot by itself prove native GL display-list capture.
 
-The owner may refine these names in its fix-up, but cannot omit the state/restoration,
-source provenance or no-worker-GL semantics. Corresponding §5 changes require fresh
-owner verification and Phase 10 interface reconciliation. All three current dependency
-exceptions remain authoring-only until that process completes.
+P1's public marker categories are untrusted without its private issuance authentication.
+Use its exact `VertexBindRejection` domain and recorder fixture factories/events, not
+locally minted raw-name sources. Source/range/epoch lifetime extends through restoration
+and every adjacent instance.
+The exact list fixture is
+`borrowedVertexList(String label, VertexLayout layout, VertexInputPlan capturePlan)`
+(P1 D-P1-70): issue with the completed immutable captured plan, including ordered
+generic union and conventionalInputs, and its matching layout. P1 validates and
+privately retains that authority before the first replay; geometry comes from the
+plan. Remove the former geometry-only overload; never teach the recorder its plan
+from a replay request. Identical CLASSIC56 layouts with distinct masks are distinct
+authenticated fixture products. This receipt does not authorize production raw names.
+LIVE_DRAW/LIST_REPLAY_GUARD compare nonnull plan
+`expectedGeometryInput()` to cached actual linked metadata before mutation and submission;
+LIST_CAPTURE uses its authenticated prepared-epoch plan without live shader authority.
+Every setup/restore drain failure prevents submission or triggers P7 off containment.
+Partial setup rolls back internally before Failed; no binding escapes, and failed rollback
+invalidates admission. Strict one-close LIFO restoration consumes the binding, even on error.
+R27-1/NS-1 receiver receipt: P1 D-P1-55 owns the exact actual-state snapshot and
+isolation implementation. LIVE_DRAW conventional positions disable generic0;
+LIST_CAPTURE isolates every enabled conventional/client-unit/generic array absent
+from the complete capture plan. Bind before glNewList, restore after glEndList; full
+affected predecessor restoration and partial-setup rollback include isolation changes.
+LIST_REPLAY_GUARD never reconstructs expired pointers. No duplicate P10 native API.
+This is the completed P10 receiving receipt for R-P1→P10-55, still unverified;
+the whole owner §4.7.6 law includes capability-gated enumeration and implicit current
+effects, including the prohibition on a current generic-zero query. Enable-only
+isolation does not rewrite foreign descriptors.
+Fresh P1/P7/P10 review and native list/state proof remain required; recorder success is not parity.
+P1 D-P1-53 additionally wires the real MOD-plugin class/key and class-only checks at v0.1
+before this phase's geometry-only native adapter family applies. Adopt that exact split:
+no permissive/absent plugin, no early preinit mutation; CLASSIC56 and format transitions
+remain v0.3. Base-subset hook-health and target-load-order proof still gate early .gsh claims.
+
 
 ## 6. Failure modes & degradation
 
@@ -1099,6 +1924,7 @@ exceptions remain authoring-only until that process completes.
 | Original mod/model renderer throws | Always unwind our scopes; do not swallow or misattribute an unrelated vanilla/mod exception as successful geometry | Preserve cleanup; no claim to repair foreign failures |
 | Cache invalidation/transition fails | Run §10.2 fallback, restore vanilla references and invalidate affected products; remain off if safe shader rebake cannot be established | 4/5 |
 | Unattributed/batched GL error | Report actual drain evidence, restore state; do not claim a specific attribute failed from the last call name | 2a/3/5 by actual containment |
+| Sky/star unproven/stale product, missing converted companion, failed capture/upload/deletion or unhealthy site | Safe canonical product-only rebuild before borrow if proven; otherwise suppress incompatible call, stop repeats, restore externally and use existing main/shadow containment. Retain failed-retirement owners; never raw-name adoption, forced VBO mode or skipped count expansion | 3 then 4/5 |
 
 No recovery path reuses an extended VBO with vanilla stride or returns a builder to a
 pool with an active stack. No setup error triggers an automatic duplicate of a draw
@@ -1126,9 +1952,10 @@ cost. Session-vetoed mixins need not pay even that branch.
 
 During active chunk writes, identity stamping is two words' worth of stores, no per-
 vertex allocation. Quad calculation touches four emitted records; no separate mesh
-conversion pass. Plans are precomputed per immutable layout and effective declaration
-set; no temporary Sets or pointer lists per draw. Necessary bulk format conversion
-copies directly into destination once and never clones already matching input merely
+conversion pass. Plans are precomputed per immutable layout, authenticated source
+participation and effective declaration set; no temporary Sets or pointer lists per draw.
+Necessary bulk format conversion copies directly into destination once and never clones
+already matching input merely
 to stamp it. No pooled global scratch or contended mutable registry is introduced.
 
 Native addresses are never cached across builder growth, state replacement or upload.
@@ -1149,11 +1976,16 @@ or state-transition bug. Loader/driver questions need actual runtime evidence.
 |---|---|
 | T10-LAYOUT | Decode produced CLASSIC_56 bytes as the shader input types; verify field preservation, all three identity components, signed 0xffff behavior and zero padding. Include an ITEM source with its different normal offset to catch blind prefix copying |
 | T10-MATH | §4.3 ordinary and mirrored square: normal, midpoint and opposite handedness after short normalization; non-planar diagonal normal; degenerate UV/geometry produces no NaN |
-| T10-INGRESS | Equivalent incremental, typed int[] and ByteBuffer input yields the same shader-visible quad; a quad split across incremental/bulk boundaries completes once; cached source bytes remain unchanged |
+| T10-INGRESS | Real BLOCK fluid `pos→color→tex→lightmap→endVertex` for successive vertices and OLDMODEL `pos→tex→normal→endVertex` preserve positions/UVs/color/lightmap/source normal before quad derivation, then yield the same shader-visible quad as authenticated int[]/ByteBuffer adaptation. Distinct consecutive inputs detect stale omitted fields or cursor drift; test non-QUADS source-normal preservation, float color delegation/noColor, source padding and translated positions. Complete vertices can split one quad across scalar→bulk→scalar without double finalization; partial-vertex bulk/save/seal rejects. Growth and injected scalar/advance/end/bulk failure invalidate before seal/capture/upload, then reset/new begin starts clean. Cached source bytes/consumption stay ordinary; shaders-off both real chains remain vanilla with no extended sidecar/TLS work |
 | T10-STACK | Nested states A/B/A, two interleaved builders and two workers; a throw/cancel restores the previous depth, and the next unrelated task starts neutral |
 | T10-STATE | Translucent reorder moves identities/tangents with whole quads; save/restore does not stamp the neutral resort stack over existing IDs; stale state is discarded |
 | T10-EPOCH | Queue under epoch A, activate B, run A's queued upload: no upload/draw occurs, rebuild is scheduled. Include identical alias fingerprints with unequal generations and world change with repeated coordinates |
-| T10-TRANSITION | Worker holds old alias borrow; prepare cannot swap until drain; failure after partial publication converges off, releases sources and leaves no stale eligible mesh |
+| T10-TRANSITION | Worker holds old alias borrow; prepare cannot swap until actual drain; failure after partial publication converges off, retains sources until last borrow ends and leaves no stale eligible mesh |
+| T10-DRAIN-FAILURE | Worker awaiting a render-thread upload; cancellation request/timeout is not Drained. Pending/Failed retains lookup/map, recovery token and services through off/removal/shutdown; no format mutation or false VanillaReady before last borrow ends |
+| T10-INSTALL | Absent pre-v0.3 extended provider stays inert; partial bundle and missing v0.3 P9 reject admission. Successful geometry-only base adapter before v0.3 requires no fake aliases; detach waits for final source/scope borrow |
+| T10-PUBLICATION | prepare freezes lighting before acceptance; P13→P9 matched tuple→Activated→all required invalidation→atomic admission. Inject failure at each stage, including after Activated: recovery uses correct token/serial and never restores the old pipeline |
+| T10-TOPOLOGY | Canonical quad attribute records survive (0,1,3),(1,2,3) expansion; both winding directions, last vertex3 flat value, two sequential geometry primitive IDs and nonplanar diagonal; no geometry preserves original source/primitive |
+| T10-TOPOLOGY-LIFETIME | Client/VBO/list paired source expiry, queued upload across reload, insufficient range/overflow/allocation/capture/restore failure: no incompatible draw, no freed source still referenced, no list discovery replay; unknown mixed-state lists explicitly unsupported |
 | T10-LIGHTING | Explicit user false overrides pack true; user DEFAULT delegates to pack; both DEFAULT use local true oldLighting/false separateAo. Render original project-owned diagnostic geometry with known tint/AO/lightmap: separateAo changes only the declared RGB/alpha split, fixed shade applies once, lightmap stays intact. Change policy while a worker/upload is pending; old baked/mesh products cannot draw under the new pair |
 | T10-DECLARATIONS | Effective fallback declares only midpoint while requested slot declares identity: only location 11 enabled. Shadow and nested restoration choose their actual provider; shader-to-fixed transition clears old arrays |
 | T10-GL-STATE | Recorder starts with nondefault source bindings and unrelated enabled attributes. Nested client/VBO setup plus injected error restores only the touched state, leaves unrelated state intact, rejects stale/forged source before native commands |
@@ -1161,12 +1993,33 @@ or state-transition bug. Loader/driver questions need actual runtime evidence.
 | T10-OFF | Run ordinary builder lifecycle with shaders off: bytes/count match vanilla, no sidecar allocation/TLS lookup/extended facade calls or changed defaults |
 | T10-GROWTH | Test-only appended named field changes stride; unchanged binder/copy/state algorithms deliver its supplied values without editing consumers. This proves extensibility, not modern pack support |
 | T10-INSTANCES | At v0.5 two prepared submissions with N=2 observe A0,A1,B0,B1; client/VBO/list paths have one preparation/reset and two native copies each. Compile list once without instance upload, then replay with current count; no N² forwarding. Nested distinct submission restores parent ID; failure after first copy stops remaining copies and contains rather than replays |
+| T10-ARRAY-ISOLATION | Enabled generic0 points to distinct valid positions on client/VBO entry; submitted positions come from admitted conventional source. Capture with unrelated conventional/client-unit/generic arrays enabled records only the complete plan. Nested success and partial setup failure restore exact actual predecessor fields, selectors, bindings and current values through P1 |
+| T10-MODEL-LIST | First compile off/NONE/QUADS, then effective TRIANGLES main and root-shadow reuse: no stale QUADS call; one safe recapture then same-epoch reuse without recompiling. Preserve first-compile scale, per-quad draw boundaries, transforms/children and A0,A1,B0,B1 copies. P9 row timing unchanged |
+| T10-MODEL-RETIRE | Capture failure after first run, glEndList/restore failure, configuration/layout/demand switch, postRender-first compile, deletion/range deletion and numeric name reuse: no partial rejected body executes, metadata never outlives incarnation, borrowed source survives last copy/restore, unknown producer contains before first illegal draw |
+| T10-SKY-PRODUCTS | All three constructor/off-first POSITION/QUADS products later face effective TRIANGLES: one canonical generation per needed product, original/derived from same run, no stale native QUADS and no repeated sky traversal; unchanged later epochs reuse. NONE selects originals; incompatible adjacency rejects before GL |
+| T10-SKY-SITES | Exercise all four list and three VBO sites, including both lower placements, star brightness branch and final VBO-mode absent sentinel. At v0.5 verify A0,A1,B0,B1 with current colors/transforms, one preparation, no N² forwarding, no invented fourth VBO draw |
+| T10-SKY-RETIRE | Source sealing before VBO reset; list/VBO deletion/reuse, mode flip, resource-only NONE, world detach and shutdown; inject second-product/end/restore/deletion failure. No rejected prefix or stale incarnation executes; borrows survive last copy/restoration, failed drain retains owners |
+| T10-CONVENTIONAL-INHERITED | OLDMODEL client/VBO and cached model-list playback under a shader exposing gl_Color and UV1: reuse identical geometry with fleece colors A then B and current unit1 values L1 then L2; each draw observes its current pair, not white/zero or first-capture values. Seed enabled foreign COLOR/UV1 arrays; they cannot override inheritance, and setup/failure/cleanup restores predecessor enables without resetting current color/UV1. Release staging memory before replay and exercise original/derived topology and main/root-shadow reuse |
+| T10-CONVENTIONAL-PROVIDED | Authenticated BLOCK vertices supply distinct per-vertex color/lightmap while current values differ: client/VBO/list original and derived products observe supplied streams, including after save/restore/resort. Equal CLASSIC_56 stride with OLDMODEL participation cannot reuse that product; forged/mismatched mask rejects before submission. Existing quad normals/tangents and source normal on non-QUADS remain unchanged |
+| T10-PARTIAL-BLOCK | Through actual flat and smooth non-Forge-lighting block-model scopes, append authenticated cached ITEM quad into BLOCK, then write four distinct real packed brightness values using func_178962_a; sealed client/VBO/list and derived products supply exactly those values despite differing current UV1. The ITEM array remains byte-identical, final BLOCK mask never changes, and all four zero values also count only after a real successful writer. Missing writer, throw after a partial store, wrong builder/range/scope, nested-scope escape, cancellation/reset and attempted early state/sort/seal/upload/capture/draw produce no eligible product. Repeat Forge-lighting scalar UV1 and cached OLDMODEL A/B color/lightmap playback to preserve both provided and inherited contracts |
+| T10-LIST-FIXTURE-AUTHORITY | Issue P1 list fixtures with identical layout/geometry and different full captured masks/unions. Own-plan first replay succeeds, cross-plan first replay rejects without submission, issuance rejects layout mismatch and caller mutation cannot rewrite retained metadata; no first-request learning or old overload |
+
+**2026-09-08 paper trace (not runtime/test execution):** the source-evidenced off-first
+compile has no converted product; subsequent TRIANGLES playback reaches the unconditional
+model-call guard before GL, and unequal capture/demand identity cannot select the original
+QUADS list. A successful complete recapture publishes the triangle product; equal-epoch
+later calls select it without capture. Failed staging/second capture publishes neither
+candidate and invokes containment, so no accepted prefix or original-list fallback executes.
+Deletion revokes incarnation before integer-name reuse; replay restoration references
+only its current-value guard, not released staging bytes. These are design traces for
+the acceptance scenarios, not substitutes for the planned native cases.
 
 Use Phase 1's recording/error conventions and capability fixtures. Test at the actual
 highest-used attribute boundary, not only on an abundant-capability profile. Do not
 assert source text, private field names, or mock echoes as the contract oracle.
 
 ### 8.2 Runtime scenarios
+
 
 - OQ-5 and OQ-14 run exactly as §10 specifies, on pinned Cleanroom and native LWJGL3.
 - With VBOs on **and off**, render terrain, fluids, cutout foliage, damaged blocks,
@@ -1184,6 +2037,27 @@ assert source text, private field names, or mock echoes as the contract oracle.
 - Inject a shader-side append/setup failure and confirm shaders-off remains reachable
   with clean vanilla geometry and no pool/stack leak. Do not claim recovery from every
   unrelated mod exception.
+- At earliest affected .gsh support, exercise client/VBO/list conditional conversion with a
+  diagnostic geometry shader exposing PrimitiveIDIn, winding and flat/provoking values.
+  Verify actual linked input against P4 metadata; core and native-preserved geometry routes,
+  absent geometry and disjoint main/shadow inputs. Conformance must report changed triangle
+  primitive semantics, not infer parity from successful linking or bytes alone.
+- Exercise every ModelRenderer.render branch, renderWithRotation and postRender-first
+  compile on actual vanilla entities and root-shadow users. Start shaders off, enable
+  TRIANGLES, switch provider/demand/configuration, then reuse unchanged epochs. Observe
+  submitted topology, capture count, transforms/scale, per-draw primitive IDs, current
+  entity/color values and deletion/reallocation—not merely successful glCallList.
+- Seed distinct generic0 and unrelated conventional/client-unit/generic sources before
+  live/capture scopes; verify rendered/captured values and exact restoration after
+  injected setup/capture failure. Recorder-only success is insufficient native proof.
+- Reuse one cached sheep wool model for changing dyed/rainbow fleece RGB and changing
+  current lightmap between entities/frames; a diagnostic shader observes current color/
+  UV1 on every playback without recapture. Contrast source-provided BLOCK color/lightmap
+  with different current values on client, VBO and list paths, including topology conversion.
+- Exercise all T10-SKY-* scenarios on pinned transformed Cleanroom with VBOs on/off,
+  nighttime/zero brightness and above/below-horizon views; seed unrelated arrays and
+  generic0 before list capture/VBO draw. Observe exact native topology, seven-site
+  coverage, current-value restoration and bounded capture counts, not source-only health.
 
 ### 8.3 Conformance tiers and artifacts
 
@@ -1216,6 +2090,9 @@ rows do not authorize code during this build session.
 | Saved states, resort, queued-upload and mesh epoch checks | v0.3 | No stale geometry admission |
 | Client/VBO/list capture/replay and facade restoration | v0.3 | Both required draw paths, not a VBO-only milestone |
 | Declaration delivery and format/reload participant | v0.3 | After owner grants/fresh verification |
+| Base-layout conditional topology adapter and facade | v0.1 | Required before earliest affected native .gsh claim; no extension fields/P9 dependency; client/VBO/list proof required |
+| Canonical sky/star base capture, seventeen health rows and seven playback guards | v0.1 | R10-7 receiver required; includes off-first/list/VBO/resource/mode lifetimes, no second sky traversal |
+| Canonical sky/star native adjacent repetition | v0.5 | Same prepared seven-site adapters under P7 count/instance policy; full v0.3 health remains required |
 | Geometry invalidator and Forge cache adapters | v0.3 | OQ-14 gates usable toggle lifecycle |
 | Bail checks/plugin policy and hook subreport | v0.3 | OQ-5 runs against actual replacement artifacts |
 | Layout/producer extensibility infrastructure | v0.3 | Descriptor-driven classic implementation |
@@ -1355,6 +2232,24 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
 | D-P10-12 | Adopt P9's amended off-on-failure and matched lookup/ordinal worker lifetime; preserve current P3 schema17 and catalog-bound same-build inputs through P7. P9 R10-3 is adopted/unverified, not still missing (IR-03/04/09). |
 | D-P10-13 | Adopt schema18 old-light macro projection while keeping typed runtime policy and bake invalidation unchanged; load-time shader macros follow the same user→pack→true rule after P3's independent Properties pass. Historical D-P10-12 schema17 adoption is superseded, with no inferred upgrade (IR-03/24). |
 | D-P10-14 | Adopt maintainer-approved IR-18 prepared-submission repetition through P7's existing authenticated scopes at v0.5. Client/VBO final draw and list playback repeat; construction/upload/capture/reset/Forge traversal do not. This neither invents a renderer API nor grants R10 native/lifecycle extensions. |
+| D-P10-15 | Adopt P7's exact R10-2 grant, real drain and matched lookup/map lifetime, authenticated declarations, immutable preparation and recovery-token semantics |
+| D-P10-16 | Adopt maintainer-authorized conditional submission conversion with (0,1,3),(1,2,3), last vertex3 provoking and explicit two-triangle primitive IDs; no parity assertion before real conformance |
+| D-P10-17 | Adopt P3 containing schema19 via P7 without changing vertex/lighting/U1 semantics; P4 effective geometry category remains a separately tracked owner grant |
+| D-P10-18 | Adopt P1 D-P1-50's complete R10-1 package/service/source/recorder/early-context grant; preserve its exact validation, lifetime, mode and failure/restoration laws |
+| D-P10-19 | Adopt P4 D-P4-28's effective linked geometry category through authenticated P7 activation; FixedFunction clears, failed/stale outcomes never authorize drawing |
+| D-P10-20 (2026-09-08) | Adopt P1 D-P1-55's complete R27-1/NS-1 affected-state isolation/rollback law; live conventional positions disable generic0, capture is a complete array whitelist, replay never restores expired pointers |
+| D-P10-21 (2026-09-08) | Resolve NS-2 through authenticated ModelRenderer capture/incarnation, retained compile scale, every-call compatible-product guard and paired lifetime; P7 D-P7-32/R10-6 hook/transaction grant adopted. No runtime/PASS claim |
+| D-P10-22 (2026-09-08) | Active containing configuration/IdMappingInput receipt is schema20 through P7; older schemas rejected before derivation. P3 assets remain same-load owner-held binary capability, never read or serialized by P10; historical schema19 native-source decisions preserved |
+| D-P10-23 (2026-09-08) | Adopt P3 D-P3-70 exact-current schema21/nested-ID and current configuration/materialization identity through P7 in §5.2; carry opaque P4 D-P4-31 registry identity normally. Historical schema20/19 receipts stay historical; vertex/provider/lifetime semantics unchanged; fresh review required |
+| D-P10-24 (2026-09-08) | Resolve R1-1 with three canonical RenderGlobal products, single-source paired capture/upload, all four list plus three VBO playback sites and seventeen milestone CORE rows. R10-7 requests exact P7 receiving lifecycle/fingerprint expansion; no raw-handle authority, sky traversal duplication or native proof claim |
+| D-P10-25 (2026-09-08) | Receive P3 schema22/current-constant containing/nested-ID admission through P7 for isolated forced11300Rules BLOCK extension. D-P10-23 numeric21 and earlier receipts become historical; projectionVersion=1, nine trees, binary assets, lighting/vertex/provider/option semantics remain unchanged |
+| D-P10-26 | Receive P9/P7 deferred FastTESR native-range protocol, including Forge bulk append, exact sort permutation and all source/ID lifetimes; no fast geometry omission, per-owner resort or alias-valued vertex substitution |
+| D-P10-27 (2026-09-08) | Resolve R2/C1 by authenticated source-semantic setter dispatch before storage, source-only advancement, omitted-field initialization and per-vertex reset; bulk/state transitions and exceptions cannot expose a partial product. Seven exact writer CORE rows require R10-8 P7 receipt; no caller rewrite, second layout or reset-only workaround |
+| D-P10-28 (2026-09-08) | Receive exact-current schema23 containing/nested/inspection equality and MaterializedSource-v23 through P7. Earlier numeric receipts are historical; nine metadata-only trees/projectionVersion=1, assets and vertex/lighting/provider policy unchanged; P9 alone resolves registries |
+| D-P10-29 (2026-09-08) | Resolve R3/C1 by immutable authenticated conventionalInputs distinct from physical CLASSIC_56 storage; absent COLOR/UV1 remain inherited on live draws and every cached playback, never filler arrays or capture-time constants. Complete source/plan identity follows Forge projection, state/client/VBO and original/derived capture products; preserve source-provided BLOCK and existing normal/tangent/other-attribute/off policy. R10-9 requests exact P1/P7 receipts; unverified architecture only |
+| D-P10-30 (2026-09-08) | Resolve R4 C1 by separating authenticated partial ITEM BakedQuad ingress from final BLOCK producer participation, with real func_178962_a four-vertex UV1 completion before eligibility and exact CORE health receipt; no filler promotion, arbitrary union, cached-source mutation or OLDMODEL inheritance change. Adopt P1 D-P1-70 complete capturePlan recorder factory before first replay; architecture only, unverified |
+| D-P10-31 (2026-09-08) | Resolve R5 C1 by naming the current `RegistryFingerprint/profile-selection-v3` domain (P4 D-P4-43; D-P4-31's own-build fields retained within it) as the opaque identity carried normally through P7 in §5.2; ledger-text repair only, no schema or carrier-semantics change |
+| D-P10-32 (2026-09-08) | Resolve R5 C2 by restating the R10-8/R10-9 receiver receipts as received in §5.1/§5.3/§11.3 — P7 D-P7-62 (seven H10-WRITER-* rows), D-P7-75 (H10-BRIGHTNESS-4 full-v0.3/v0.5-only), D-P7-70 (conventionalInputs) and P2's planned forwarding (PHASE_2_DOC.md:2962) — receiver-adopted/unverified with fresh applicable review retained as outstanding, and naming H10-BRIGHTNESS-4 in the §11.4 enumeration |
 
 ### 11.2 Input contradictions and rulings
 
@@ -1378,9 +2273,9 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
    consumes Phase 1's `CompatVerdict.Ok|Degrade|Bail` and `CompatEvaluation` at the
    owner-approved evaluation points. Receiver adoption is unverified; no separate
    replacement-backend enum or ungranted backend integration follows from `Degrade`.
-6. **Global module layout lacks the vertex policy home and facade operations.**
-   Request the precise homes/service under R10-1; do not conceal GL or Minecraft
-   types in the pure math layer to avoid the request.
+6. **P1 now grants the vertex policy home and facade operations (D-P1-50).**
+   §5.3 adopts the exact contract under R10-1; fresh reviews/native proof remain.
+   No GL or Minecraft types are concealed in the pure math layer.
 7. **Governance files mention a retired executable profile system.** MOVES records
    its removal and per-header authority. Initial v3 adoption is declared and indexed;
    no dry-run output or target-profile modification is claimed.
@@ -1392,8 +2287,13 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
 
 - OQ-5/OQ-14 remain open; their procedures and fallbacks are complete specifications,
   not a promise that classloading, cache switches or display-list capture already work.
-- R10-1/R10-2 require owner adoption and fresh review before implementation; R10-3
-  is adopted but unverified. R10-4 gates only modern growth.
+- R10-1/R10-2/R10-3 are owner-granted/receiver-adopted, unverified.
+  R10-4 gates only modern growth; fresh owner/receiver verification remains.
+- The maintainer's conditional topology permission is explicit, not external parity evidence.
+  R10-5's P4 effective metadata projection is adopted but needs fresh owner/receiver review;
+  real client/VBO/list topology, flat/provoking and primitive-ID conformance is mandatory
+  at the earliest affected .gsh milestone. Unknown/mixed-state external lists remain
+  explicitly unsupported rather than silently converted or drawn incompatibly.
 - IR-05/24 policy/default choices in §4.8.1 require conformance review and the OQ-14
   safe bake/cache adapter. Neither numeric parity nor successful invalidation is claimed.
 - Exact transformed injection cardinalities, exception-safe wrapper support on the
@@ -1404,16 +2304,61 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
   contract and reported upstream, not hidden by per-pack handedness heuristics.
 - The assignment's soft phrase “zero-cost” is satisfied as no shader work/allocation
   with a predictable inactive guard. A literal zero-cycle claim is not made.
+- R10-6 P7 cached-model CORE hook-health and lifecycle grant is received through D-P7-32;
+  both owner and receiver remain unverified, with actual transformed/native coverage still owed.
+- R10-7 requires P7 receipt of the complete sky/star lifetime and seventeen-row health
+  expansion; existing R10-6 model receipt does not grant it implicitly. §5 is changed,
+  and fresh owner/receiver review remains required before integration.
+- R10-8 receipts are received, not outstanding: P7 D-P7-62 grants all seven H10-WRITER-*
+  IDs with exact descriptors, fingerprint recompute, unchanged v0.1 subset and identical P2
+  forwarding, and D-P7-75 grants H10-BRIGHTNESS-4 full-v0.3/v0.5-only with P2's planned
+  evidence case (PHASE_2_DOC.md:2962). Receiver-adopted, unverified; fresh applicable review,
+  T10-INGRESS and transformed/runtime proofs remain future obligations.
+- R10-9/C1's conventional participation surface requires exact P1/P7 receiver review;
+  T10-CONVENTIONAL-INHERITED/PROVIDED remain planned observable proof, not executed evidence.
 
 ### 11.4 Hand-offs
 
 - **Phase 7:** lifecycle/activation adapters including `prepare(token,layout,lighting)`;
   resolve user/pack/default pair before bake preparation, preserve frame timing and
   three-participant barrier, and invalidate after any effective pair change.
-  Adopt P3 schema18 and reject schema17 before preparation; shader macro projection is
+  Adopt exact `CURRENT_SCHEMA_VERSION` equality for P3 configuration/IdMappingInput and received inspection snapshots (23 at D-P10-28) and reject every other version/mismatch before preparation; shader macro projection is
   frozen by P3 before shader preprocessing, not recomputed by a vertex adapter.
   At v0.5 use P7 §4.6's prepared-submission count policy in §§4.6/5.2, including
   root-shadow-only admission, saved-parent instance restoration and failure containment.
+  R10-6 requires exact owner10 CORE H10-MODEL-LIST-CAPTURE/PLAYBACK/LIFETIME
+  in v0.1 base and v0.3 full subsets, with branch/deletion subrows and fingerprint
+  renewal. Step1 drains model capture/playback/retirement borrows; step4 freezes
+  capture demand; step9 invalidates before admission; step10 retains failed-recovery
+  owners. Deliver current geometryInput at every cached main/root-shadow call,
+  preserve owner9 surrounding row timing and P7 adjacent-copy/containment policy.
+  R10-7 additionally requires all seventeen H10-SKY-* IDs in §4.11 in the installed
+  v0.1 base, v0.3 full and v0.5 count-enabled fingerprints, preserving P7 primary IDs
+  and one owner10 report. Step1 drains sky generation/staging/playback/binding/
+  retirement; step4 freezes backend and resource/configuration/primitive demand;
+  step9 invalidates before admission; step10 retains failed-recovery owners and
+  restores safe canonical ownership only after drain. Receive resource-only NONE,
+  world/mode/deletion and teardown invalidation, off-first bounded provenance and
+  safe product-only rebuild; deliver current geometry/count at all seven sites,
+  including final lower list, while H-SKY-01/03 remain program/cancellation wrappers.
+  Do not expand P7 sky traversal or authorize arbitrary custom-sky list adoption.
+  R10-8 additionally receives H10-WRITER-POS, H10-WRITER-COLOR-INT,
+  H10-WRITER-COLOR-FLOAT, H10-WRITER-TEX, H10-WRITER-LIGHTMAP,
+  H10-WRITER-NORMAL and H10-WRITER-ADVANCE, each expected=1, CORE/owner10;
+  D-P10-30's H10-BRIGHTNESS-4 completes the same full-v0.3/v0.5-only receipt per
+  P7 D-P7-75, with the v0.1 base subset unchanged.
+  Amend existing begin/end/array/bulk/reset/seal/state coverage per §4.11; renew the
+  full v0.3/v0.5 sorted-unique catalog fingerprint and reject stale/incomplete reports.
+  Preserve v0.1 base subset and all prior model/sky/batch rows; forward the identical
+  owner catalogue/counts to P2, with no new report, row compression or fake runtime evidence.
+  R10-9 additionally preserves the complete authenticated conventionalInputs plan across
+  prepared client/VBO/capture/replay submissions and existing invalidation/drain lifetimes.
+  Absent COLOR/UV1 inherit each playback's current values; do not capture or re-bake them.
+  No hook IDs, report shape, schema23 or nine inspection trees change.
+- **Phase 1:** R10-9 receives §2.2's exact conventionalInputs component/domain and §4.6's
+  full authenticated plan for all bind modes; source-absent COLOR/UV1 require temporary
+  enable isolation, not pointer/current-value setup or Forge reset. Preserve per-playback
+  inheritance and capture exclusion through existing bind/restore, without new native APIs.
 - **Phase 9:** adopted matched lookup/ordinal lifetime and exact payload semantics;
   no lookup result may outlive its safe task borrow.
 - **Phase 12:** canonical oldLighting tri-state wire setting and REPUBLISH, with renderer
@@ -1438,15 +2383,30 @@ reference report, dependency document, or review verdict was changed during auth
 Ordered independently actionable future work. Every item carries a milestone and a
 specific verification hook; this list does not authorize implementation before §11.3.
 
-1. **[v0.3]** Reconcile freshly verified Phase 4/7/9 inputs and adopt R10-1…R10-3 in
-   their owners; verify exact consumed/exposed §5 symmetry before coding (integration
+0. **[v0.1]** Verify adopted R10-5 metadata and P1 base-layout facade grants; implement
+   §4.6 conditional topology adapters before affected .gsh support. Exercise T10-TOPOLOGY/
+   T10-TOPOLOGY-LIFETIME and real client/VBO/list flat/ID/winding conformance, without moving
+   CLASSIC_56/P9 stamping ahead of v0.3.
+   Include all seventeen H10-SKY-* rows and all seven cached sky/star native sites;
+   receive R10-7 and exercise T10-SKY-PRODUCTS/RETIRE with constructor off-first capture,
+   resource/world/VBO switches and exact external restoration. **[v0.5]** additionally
+   exercise T10-SKY-SITES adjacent copies under P7, without repeated sky traversal.
+1. **[v0.3]** Reconcile freshly verified Phase 4/7/9 inputs and P1 R10-1, and verify
+   the already-adopted R10-2/R10-3 owner/receiver symmetry before coding (integration
    review; reverify Phase 10 if its §5 changes).
 2. **[v0.3]** Implement immutable classic layout, format projections and endian-explicit
    encoders; exercise T10-LAYOUT and the max-used-location boundary.
+   Include D-P10-29 source-keyed conventionalInputs and padding-only absent COLOR/UV1
+   projection; obtain R10-9 P1/P7 receipts and exercise T10-CONVENTIONAL-INHERITED/PROVIDED.
+   Implement D-P10-30's scope-bound pending UV1 completion and mandatory H10-BRIGHTNESS-4
+   wrapper; obtain P7 full-catalog/P2 evidence receipt and exercise T10-PARTIAL-BLOCK
+   plus T10-LIST-FIXTURE-AUTHORITY. Missing/throwing completion cannot seal or publish.
 3. **[v0.3]** Implement pure quad math with §4.3's square/mirror/degenerate oracles;
    exercise T10-MATH before touching buffer hooks.
-4. **[v0.3]** Implement nullable builder attachment, incremental and both bulk ingress
-   adapters, dirty-tail sealing and source immutability; exercise T10-INGRESS/T10-OFF.
+4. **[v0.3]** Implement nullable builder attachment, authenticated source-semantic scalar
+   dispatch and all seven writer hooks, both bulk ingress adapters, boundary reset,
+   exception invalidation and dirty-tail sealing; exercise expanded T10-INGRESS/T10-OFF
+   with real fluid/OLDMODEL chains and obtain R10-8 exact health receiver review.
 5. **[v0.3]** Implement per-builder stacks, task context/pooled-builder ownership and
    finally cleanup around model/fluid calls; exercise T10-STACK on concurrent workers.
 6. **[v0.3]** Implement stamped saved states, translucent resort and upload admission;
@@ -1458,6 +2418,9 @@ specific verification hook; this list does not authorize implementation before �
 9. **[v0.3]** Implement VBO metadata/draw and complete immediate/list client paths;
    run diagnostic material/tangent visualization with VBOs on/off, release capture
    memory before replay, and confirm generic state does not leak afterward.
+   Authenticate the complete source participation/plan through saved state, upload and
+   original/derived capture identities; changing cached fleece RGB/current UV1 must stay
+   live on every playback without recapture, while BLOCK uses supplied vertex streams.
 10. **[v0.3]** Implement quiesced format/default swaps, model/cache adapters and existing
     `IdDependentGeometryInvalidator`; exercise T10-TRANSITION and run OQ-14, selecting
     its evidence-backed fallback where necessary.
