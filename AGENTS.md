@@ -78,6 +78,8 @@ Uncached setup requires network access for Gradle, dependencies, and potentially
 
 ## Testing & QA
 
+- **Mandatory post-edit diagnostics (.java only):** After every edit to a `.java` file, request fresh LSP diagnostics for every touched `.java` file. Repeat after corrective edits; diagnostics from before the latest edit do not count. Edits to other file types do not require this check.
+- **Completion gate (.java only):** Do not report a task complete while any error-severity diagnostic remains open on a touched `.java` file. Resolve the errors and pull diagnostics again before declaring completion. If a touched `.java` file has no configured language server or the diagnostic request fails, explicitly report that verification gap; never treat unavailable diagnostics as a clean result.
 - JUnit Jupiter **6.0.3** is enabled through `enable_junit_testing=true`; tests use JUnit Platform and Java 25. There is currently **no `src/test/` or repository-owned test suite**. A successful empty `test` task is not regression coverage.
 - No coverage tool or numeric coverage threshold is configured. For implementation work, consult the relevant phase's §8 for behavioral cases; distinguish headless checks from real client/GL verification. Build/toolchain changes should include a client-main-menu smoke check when a graphics runtime is available.
 - Multi-module tests, fixture/conformance tasks, opt-in GL tests, and golden-update flags in phase documents are planned interfaces, not current commands. Future rendering QA requires controlled scenes and moving-camera checks, not arbitrary screenshots alone.

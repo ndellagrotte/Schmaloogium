@@ -34,3 +34,6 @@ docs/**/chatlogs/
 
 # vscode settings
 .vscode/settings.json
+
+# Eclipse language-server compiler output
+/bin/

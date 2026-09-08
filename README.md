@@ -4,19 +4,46 @@ Mod development template for Cleanroom, uses a custom [Unimined fork](https://gi
 ### WARNING: Custom Unimined Fork
 May have issues, report here or [here](https://github.com/kappa-maintainer/Unimined) when you encountered impossible field names or impossible Scala compiler errors. 
 
-## DOs and DON'Ts
-### Choose Branch
-Choose mixin branch if you want to use Mixin.
+## Java language server (OMP, Linux)
 
-Use scala and kotlin branch if you want to use those languages. 
+The project uses [Eclipse JDT LS](https://github.com/eclipse-jdtls/eclipse.jdt.ls)
+for Java 25 and Gradle/Buildship support. OMP loads `.omp/lsp.json`; no mod
+runtime dependency is added.
 
-There are 4 branches available:
-- main
-- mixin
-- scala
-- kotlin
+Install the pinned [1.61.0 release](https://download.eclipse.org/jdtls/milestones/1.61.0/)
+once outside the checkout (Python 3.9+ is required by its launcher):
 
-If you want to use non-main branches, after clicked *Create a new repository* under *Use this template*, check the *Include all branches* checkbox.
+```sh
+archive="$(mktemp)"
+curl --fail --location --output "$archive" \
+  https://download.eclipse.org/jdtls/milestones/1.61.0/jdt-language-server-1.61.0-202609031315.tar.gz
+echo "338e7e73d61836651ba2453919a0d34fa763eb4e7c03342092309bffb8934c64  $archive" | sha256sum --check - &&
+  mkdir -p "$HOME/.local/share/jdtls/1.61.0" &&
+  tar -xzf "$archive" -C "$HOME/.local/share/jdtls/1.61.0"
+rm "$archive"
+```
+
+Set `JAVA_HOME` to JDK 25. If unset, `.omp/jdtls.py` checks Java on `PATH`,
+then JDKs already provisioned in `${GRADLE_USER_HOME:-$HOME/.gradle}/jdks`.
+An explicitly set `JAVA_HOME` must be Java 25. Set `JDTLS_HOME` to use a
+different extracted JDT LS distribution; the launcher does not download tools.
+
+The server uses the checked-in Gradle wrapper. Initial import may download
+Gradle and dependencies. `gradle/scripts/extra.gradle` conditionally exposes
+Unimined's source-set compile classpath to Buildship and runs Blossom's
+`generateJavaTemplates` during synchronization, so Minecraft/Forge types and
+the generated `Reference` class resolve.
+
+Workspace/configuration metadata stays under
+`${XDG_CACHE_HOME:-$HOME/.cache}/schmaloogium/jdtls/<checkout-path-hash>/`;
+Eclipse compiler output in `/bin/` is ignored. `reference-src/` is excluded
+from project import. Separate checkout paths receive separate workspaces.
+
+In OMP, call LSP `reload` with `file: "*"` to discover the configuration, then
+request `symbols` or `diagnostics` on
+`src/main/java/com/example/modid/ExampleMod.java`. After changing the launcher
+or Java environment, restart the OMP session/server; `reload` alone normally
+refreshes settings rather than replacing a live Java process.
 
 ### Running Client or Server
 If you are using IntelliJ, **DO NOT** use the `Minecraft Client` configure with a blue icon. Just use the `2. Run Client` Gradle task.
@@ -74,8 +101,3 @@ This template comes with three workflows.
 You need to fill in your project IDs and configure your tokens in GitHub repository first.
 
 By default, you will need to manually trigger the workflow in web page, but you can also enable tag triggering by merging the third yml into `release.yml`.
-
-### Credit
-Thanks @Karnatour for fixing shadow plugin
-
-Thanks @ghostflyby for making kotlin branch

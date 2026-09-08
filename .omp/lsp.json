@@ -1,0 +1,36 @@
+{
+  "servers": {
+    "jdtls": {
+      "command": "python3",
+      "args": [".omp/jdtls.py"],
+      "fileTypes": [".java"],
+      "languageId": "java",
+      "rootMarkers": ["settings.gradle"],
+      "warmupTimeoutMs": 300000,
+      "initOptions": {
+        "settings": {
+          "java": {
+            "import": {
+              "gradle": {
+                "enabled": true,
+                "wrapper": { "enabled": true }
+              },
+              "maven": { "enabled": false },
+              "exclusions": [
+                "**/node_modules/**",
+                "**/.metadata/**",
+                "**/archetype-resources/**",
+                "**/META-INF/maven/**",
+                "**/reference-src/**"
+              ],
+              "generatesMetadataFilesAtProjectRoot": false
+            },
+            "configuration": {
+              "updateBuildConfiguration": "automatic"
+            }
+          }
+        }
+      }
+    }
+  }
+}

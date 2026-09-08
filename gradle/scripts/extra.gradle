@@ -3,3 +3,16 @@
 
 // Helper methods (assertProperty, assertSubProperties, setDefaultProperty) are
 // defined directly in build.gradle's script scope and exported via ext.
+
+// Buildship otherwise misses dependencies Unimined adds directly to the source set.
+plugins.withId('eclipse') {
+    def eclipseDependencies = configurations.create('eclipseDependencies') {
+        canBeConsumed = false
+        canBeResolved = true
+    }
+    dependencies.add(eclipseDependencies.name, files(provider {
+        sourceSets.main.compileClasspath
+    }))
+    eclipse.classpath.plusConfigurations += [eclipseDependencies]
+    eclipse.synchronizationTasks(tasks.named('generateJavaTemplates'))
+}
