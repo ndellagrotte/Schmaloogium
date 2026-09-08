@@ -29,8 +29,9 @@
 
 ### 0.2 Dependency PHASE docs consumed
 
-`docs/phase1/v14/PHASE_1_DOC.md` — the only declared dependency (§G5.1), verified and current. Every
-item consumed from it is cited to a section and listed in §5.2.
+`docs/phase1/v14/PHASE_1_DOC.md` is the sole declared dependency (§G5.1). Its prior reviews
+remain historical; the integration-amended §5 is adopted architecturally here and requires
+fresh whole-document verification. Every consumed item is cited and listed in §5.2.
 
 ### 0.3 Deviations from the assigned reading list, with reasons
 
@@ -228,6 +229,18 @@ provenance. Because §5 changes, this v2 artifact is unverified pending fresh wh
 ### 0.37 Round-37 fix-up
 
 Corrected the tier contract so per-call drain cadence narrows diagnostic windows but only replay-confirmed isolated recurrence establishes GL-error attribution.
+
+### 0.38 Integration reconciliation — 2026-09-07
+
+IR-02/20/29 architecture-only fix-up reads the integration findings/ledger, V3 Phase 2 and
+§G1.3, P1 diagnostic permission, P3's complete inspection/acquisition/provenance contract,
+P4 same-request enrichment, P5 pure planning/resource acquisition, and P11 §5.6 evaluator
+vectors/providers/results. P7 §4.13 now
+adopts `/2`; D-P2-27 records the receiver receipt without treating design adoption as a run.
+D-P2-28 adopts `RUN-EXPRESSION-CONFORMANCE`; D-P2-29 closes the source-free snapshot route.
+Changed §5 and receiving owner contracts remain **unverified pending fresh whole-document
+review**. No implementation, validation, real-pack result or historical PASS upgrade is claimed.
+
 
 ---
 
@@ -1325,9 +1338,36 @@ with these fields, so that "which runs gate v0.3?" is a query and not a document
 | `RUN-T2` | B + C | classic packs × the milestone's declared static SHOT set, oracles present | `CROSS_ENGINE` pass on every selected static shot; moving coverage is the separate T1 `RUN-MOTION-PATHS` gate | local, v0.3+ |
 | `RUN-T3` | B | pack × scene set + `<packId>.features` + run manifest | every automated feature row observed; every attested row signed; **zero `CHAIN`-with-source slots** (§4.2.4) | local, v0.4+ |
 | `RUN-GL-SMOKE` | B′ (`:mod` test JVM) | none | a compatibility-profile GL context ≥ 2.1 is created and a GLSL 120 shader compiles | the OQ-10 spike's subject (§10) |
+| `RUN-EXPRESSION-CONFORMANCE` | A (headless), v0.4 evaluator gate | `ORIGINAL_VECTORS`: P11 §5.6 original catalog, scripted providers/recording sink; optional `LOCAL_MATRIX`: acquired declarations with same providers | every original case's independently authored observable matches; FAIL and UNSUPPORTED prevent run PASS; matrix without independent oracle is disposition-only | hermetic CI once P11 exists; local matrix uses fixture acquisition gate |
 
 `RUN-GOLDEN-CORE` and `RUN-CAPS-GATE` are the two runs that are green in CI **before a single line of
 renderer exists**, which is what makes §9.2's week-one subset more than a promise.
+
+For `RUN-EXPRESSION-CONFORMANCE`, P2's adapter consumes the **complete P11 §5.6 contract**:
+`ExpressionConformanceVectors.cases()` returns immutable `ExpressionConformanceCase(caseId,
+request,steps,expected)` values. The closed steps are `Activate(contexts,randomValues)`,
+`Refresh(builtIns,sinkResults)`, `Reset(reason)`, `Close`; the result is
+`ExpressionConformanceCaseResult(caseId,backendSemanticId,fixedSchemaVersion,contextSchemaVersion,
+verdict,mismatchPaths)` with `PASS|FAIL|UNSUPPORTED`. It invokes existing compile/controller
+activate/reset/close/P6 bridge refresh operations only, using authentic synthetic P4/P6 contexts,
+a P6-conforming immutable scripted built-in view, `CustomSubmitResult` scripts and recording
+sink. This adds no production evaluator API or engine dependency on a test/harness framework.
+Every `ExpressionConformanceExpected` build disposition/load-diagnostic list and per-refresh
+observation is independent expected data: ordered `CustomUploadCommand`s (binary32 bits,
+exact integers/booleans), diagnostic kinds/stable IDs, `CustomRefreshResult` counts and
+context/random consumption. Exhausted/unused scripts fail rather than cycle/default.
+Close is terminal and last; frame/time inputs are scripted, not wall-clock waits.
+
+Mandatory families are `EXPR-OPERATORS`, `EXPR-FUNCTIONS`, `EXPR-MATRIX`,
+`EXPR-ERROR-ISOLATION`, `EXPR-SMOOTH`, `EXPR-PROVIDER`, and `EXPR-LIFECYCLE`, covering every
+P11 named function/operator, matrix access/exclusions, partial/variable failures, sink
+absence/rejection and accepted-prefix counts, lazy random, same-frame/no-double-advance
+smoothing, rise/fall/reset and provider schema/availability failures. The adapter retains all
+case results and reports stable mismatch paths; an absent family or unsupported capability
+cannot pass. `LOCAL_MATRIX` uses P2 acquisition plus current-schema finalized P3 declarations
+and fingerprints; no independently authored oracle means no golden PASS. Committed reports
+contain only hashes, semantic/schema IDs and diagnostic kinds, never pack expressions/assets.
+Original fixture success is neither a real-pack result nor coverage of renderer behavior.
 
 ### 4.10 The fixture system
 
@@ -1517,25 +1557,68 @@ refusal rather than an exception.
 
 #### 4.11.4 Engine snapshot boundary and conformance adapter
 
-Phase 3 owns an API and immutable data model in `:engine` that expose front-end decisions without
-depending on the harness. Illustrative names are `FrontEndInspector` and `PackDecisionSnapshot`;
-their final engine package and member layout belong to Phase 3. The directional contract is:
+P3 §5.1.1 is the exact engine-owned boundary, not the former illustrative `FrontEndInspector`
+or an ungranted `PackSource` overload. P2 acquires `PackFrontEnds.create()`, fresh discovery,
+canonical durable-reference resolution and bundle-owned persistence access for isolated
+external fixture/game roots, then calls `frontEnd.inspect(PackLoadRequest)` with every
+non-Off field, including explicit companion preferences. The result is closed
+`Off|Failed(failure,diagnostics)|Inspected(configuration,snapshot,archiveSha512)`.
+Folder and archive loading use existing pure-JVM acquisition; internal fixtures use the
+bounded internal provider. Configuration schema must equal current P3 **17**; snapshot
+`projectionVersion` must equal **1**, with no inferred old-schema defaults.
 
-```java
-// :engine; owns every type in this signature
-public interface FrontEndInspector {
-    PackDecisionSnapshot inspect(PackSource pack, GLCapabilityProfile profile);
-}
-```
+`PackDecisionSnapshot` carries schema/configuration fingerprint, ordered source path/line-count/
+SHA-256 rows, the exact eight-section `DecisionValue` projection and structured source-free
+diagnostics. P3's recursive allowlist/hash/absence/ordering rules are incorporated in full.
+All arbitrary text—including option/range text, expressions, tooltips/lang strings, texture
+declarations and nonstandard macro replacements—is hashed; approved identifiers, paths,
+typed values and standard numeric macro replacements retain the owner's projection.
+`GoldenProjectionAdapter` alone maps these values to `GoldenDocument`; it neither opens
+parser-private code nor accesses original logical lines, source dumps, diagnostic args/detail
+or raw driver logs. Snapshot fields map `[sources]`, `[options]`, `[properties]`, `[macros]`,
+`[diagnostics]` and `[sizing]`; numeric half-life values in resources remain directly readable.
+Hashed option/range equality is retained without reproducing arbitrary pack expressions.
 
-`GoldenProjectionAdapter` lives in `com.schmaloogium.conformance.golden`, consumes that engine
-snapshot, and maps it to `GoldenDocument`. The snapshot is deterministic for equal inputs, exposes
-the Phase-3-owned decisions enumerated by §§4.11.2–4.11.3, and contains diagnostics as structured
-coordinates, never pack source text. Phase 4 enriches that engine-owned model with the per-slot
-resolution fields requested by R10; no `:engine` type implements or references a `:conformance`
-type. A **complete** real golden is producible only after both Phase 3 and Phase 4 land. Before Phase
-4, tests may project an explicitly synthetic/partial document, but no matrix golden may be approved
-and no `RUN-GOLDEN-MATRIX` verdict may be issued.
+Archive provenance is a checked join, not a relabelled content hash: P3 hashes the actual
+bounded immutable archive bytes consumed by that load; P2 requires this digest equal its
+independently verified `PackFixture.archiveSha512` before any matrix verdict. Folder/internal
+fixtures have no archive digest and are explicitly synthetic/non-registry. P2 owns id/version,
+mode/licence and the golden `input.packSha512`; `PackIdentity`/configuration/source hashes
+remain distinct identities. Missing/mismatched archive digest fails provenance.
+
+For `[programs]`, P2 keeps the exact returned `Inspected.configuration` solely as the
+`RegistryBuildRequest.configuration` input to P4's synchronous build, with the same profile,
+dimension, contribution and sampler policy. It retains the snapshot association through that
+call, not an invented view fingerprint accessor or an arbitrary published `current()` lookup.
+`Ready(candidate)` supplies `candidate.view().resolutions()`; close caller-owned candidates
+in `finally`, with no runtime publication. Each `ProgramResolutionProjection` preserves
+`slot,status,from,sourcePresent,driverLog` using P4's closed status/absence rules and sanitized
+projection detail only. `ShadersOff(failure)` cannot fabricate complete resolution rows.
+Headless execution uses P1's recording device with P4's owner-conforming scripts, never a live
+GL claim. The source-bearing configuration/candidate never reaches the golden writer.
+A complete matrix golden requires successful P3, actual P4 enrichment and P5's complete
+resource projection below. Earlier synthetic partial documents stay labelled partial and
+cannot yield `RUN-GOLDEN-MATRIX` PASS.
+
+P2 acquires `BufferArchitectures.create()` from P5 §5.1 (D-P5-25), then calls only its pure
+`plan(BufferPlanRequest(configuration,view,view.fingerprint(),capabilities,runtime))`.
+Configuration/view/profile are the same inspection/P4 build inputs; no inferred view fingerprint
+accessor exists. Original headless golden fixtures use explicit display extent `1280×720`,
+and render/shadow quality from canonical P3 `renderResMul`/`shadowResMul` parsed as float then
+widened to double (default `1.0`). These three planning values are recorded as golden inputs;
+a deliberately varied fixture records its explicit values rather than reading client state.
+No call to buffer `create`, main-depth acquisition, publication, binding or live GL occurs.
+The P4 recorder uses the test thread as its designated render thread, not a real client.
+
+Both `BufferPlanResult.Valid(plan,Available)` and `Invalid(failure,resources)` are consumed.
+P5 `BufferResourceSnapshot.Available` supplies the complete `[sizing]` projection, including
+`CapabilityGate.OK|SHORTFALL` and exact ordered `CapabilityShortfall(limit,required,available)`
+rows (`maxDrawBuffers`, `maxColorAttachments`, `maxTextureImageUnits`). A complete expected
+SHORTFALL is legitimate negative conformance evidence, not a successful allocation.
+`Unavailable(reason)` means the sizing section is incomplete and blocks a complete golden.
+Neither P3 minima, P4 CAPABILITY failure nor rendered behavior substitutes for these fields.
+P3 parsed directives/half-lives remain distinct from P5 resolved formats/counts/clear values;
+the adapter copies both owner projections without overwriting a requested value with a fallback.
 
 Until Phase 3 lands, `GoldenWriter`, `GoldenComparer`, the format and every one of their tests are
 exercised against a hand-built `GoldenDocument` — which is why the golden machinery is in the
@@ -1751,12 +1834,14 @@ is inert without its system property.
 | **The named-run catalogue** — `RunId`, `HarnessRun`, `RunRegistry` | §4.9. **This is the vocabulary every impl gate should cite**; §5.3 says how | all behavioural phases; whoever tags a milestone |
 | **The `/2` scene format and initial scene set** | §4.3, §3.4. Stable scene/capture ids, static SHOTs, dense frame-indexed PATH samples, and at least one moving path in every one of the six motion-sensitive families | 7, 8, 9, 10, 13 |
 | **The determinism ledger** | §4.4. A phase adding a new time- or randomness-dependent input must add a row, or it has silently broken every baseline | all |
-| **The golden document format + adapter input requirements** | §4.11.1–§4.11.4. Phase 3 owns the `:engine` snapshot API, Phase 4 supplies its per-slot resolution enrichment, and complete real goldens wait for both; Phase 2 maps it in `:conformance` | **3**, **4**, 5 |
+| **The golden document format + adapter input requirements** | §4.11.1–§4.11.4. P3 owns acquisition/source-free snapshot, P4 same-request resolution enrichment and P5 pure resource/capability projection; complete real goldens require all three | **3**, **4**, **5** |
 | **The `[sizing]` golden section** — the concrete list of resource-sizing decisions the headless harness validates | §4.11.3 | **3**, **4**, **5** |
 | **The `GLCapabilityProfile` fixture set + `profiles.index`** | §4.12. Phase 1 owns the type and format; this is the *set* your "recorded-GL run" impl gates run against | **4**, **5**, **6**, 14 |
 | **The run manifest wire schema** | §4.5.4, schema `schmaloogium.run-manifest/2`, canonically stored at `<cache>/runs/<runId>/manifest.manifest`, including complete `captures.*`, frame pose/history, `resources.*`, and `hooks.*` grammars. Every frame identifies `SHOT|PATH`, capture id and sample ordinal and carries planned/actual current/previous poses. Client capture admits only registry-backed packs; runner-owned provenance, world identity, T0/T3 evidence, GL attribution, and frozen hook reports retain their v1 guarantees. `/1` is historical and has no compatibility reader | **3** (front-end and pack configuration), **4** (per-slot program resolution), **5** (immutable live resource snapshot), **7** (capture, pose report, frozen hook report, and serialization using R4A) |
 | **The capture-agent contract + capture-plan wire schema** — what `:mod` must implement and what Phase 7 must hook | §4.5, schema `schmaloogium.capture-plan/2`, §5.4 R11–R14 and R17–R19. The runner resolves all scene defaults before serialization; the plan writer, agent reader, and manifest reader perform no defaulting. Dense samples, bounded windows, and runner-owned pack provenance are immutable inputs. `/1` is historical and no compatibility reader is required | **7** |
 | **Runner-owned pack-provenance bridge** | Acquisition mode and licence originate in the fixture registry; archive SHA-512 originates in post-resolution verification. They cross the client process only through the immutable capture plan and return only as verbatim manifest values. Pack content, scene text, agent rediscovery, and rendered behavior are not evidence for any of the three | **7**, CI/reporting |
+| **Headless archive-provenance bridge** | §4.11.4 consumes P3 same-read archive SHA-512 and compares to runner-verified PackFixture; content/configuration hashes are never archive provenance | **3**, **4**, CI/reporting |
+| **Evaluator run and adapter** | `RUN-EXPRESSION-CONFORMANCE`, §4.9/P11 §5.6; original vector/provider/expected-observable catalog, closed per-case outcomes, source-free optional matrix mode | **11**, 14 |
 | **The fixture registry, cache API and never-rehost rules** | §4.10 | anyone adding a pack; CI |
 | **Tolerance profiles** | §4.6.3, calibrated by §4.6.5 | anyone reading a diff verdict |
 | **The CI task split** — hermetic `test` vs fixture-dependent `conformanceTest`, and the tag policy | §4.14 | anyone adding a test to `:conformance` |
@@ -1783,6 +1868,7 @@ document names Phase 2 explicitly for the first four.
 | `ReplayAwareGLError(GLError, attributed)` | §2.4/§4.7.4/§5.2, `[D-P1-42]` | the manifest's total `gl_errors.*.attributed` boolean; Phase 2 copies the producer result and never infers from `op` or `subjectLabel` |
 | CI job/step layout and the `conformance` extension point | §4.11; §5.3's last row names Phase 2 as its consumer | §4.14 |
 | The version pin table and its re-pin procedure | §4.2.6 | §4.10's refusal to add a dependency coordinate without one |
+| `EngineDiagnostic`, `DiagnosticSeverity`, `UserChannel`, `DiagnosticReporter` | P1 §5.3 / §4.9.4 D-P1-45 | R4B adopted/unverified; code/severity/channel only, coordinates from P3 attributed projection; never infer locations from diagnostic text |
 
 Phase 1's four-field `GLError` alone does **not** supply the manifest's `attributed` boolean. Phase 1
 has accepted and exposed the R4A grant as `[D-P1-42]`; its `ReplayAwareGLError` is consumable and
@@ -1809,6 +1895,9 @@ expressed as Phase-2-defined harness runs". The mechanism:
 - A gate needing a run that §4.9 does not contain is a **request against this document**, made in the
   requesting phase's §5 and answered by a §G1.3 fix-up here — not invented locally, and not silently
   substituted with a different run.
+- P11 §5.6 R11-2 is now adopted as `RUN-EXPRESSION-CONFORMANCE` (§4.9), not substituted
+  with a Properties or shader-load run. Original evaluator coverage is distinct from matrix
+  dispositions and from real-pack render tiers.
 
 **This phase's own impl gate**, from the spec: *"fixture downloader + headless golden-run skeleton +
 scene-spec parser implemented and green in CI before Phase 7's implementation lands (D-10)"*. §9.2's
@@ -1830,30 +1919,30 @@ as existing.
 | R3 | Acknowledgement that `conformance/build.gradle` gains a second test task and JUnit tag configuration (§4.14) | §4.2.4a says "Phase 1 stands the module up; Phase 2 fills it", which most likely already covers this; flagged because the file is Phase 1's artifact and the change is additive rather than internal |
 | R4 | In `mod/build.gradle`: the default `test` task **excludes `@Tag("gl")`**, and a separate `glTest` task (opt-in, `-PglTests`) includes it | Not cosmetic. `PHASE_1_DOC.md` §4.11 step 1 runs `:mod:test` as CI's named "Seam architecture test" step on a headless runner; a GL test inside that task fails the seam step for a non-seam reason on every push (§4.14, §10.2). `:mod/build.gradle` is Phase 1's file, so the change is requested rather than assumed |
 | R4A — **accepted and consumable from Phase 1 v14 `[D-P1-42]`** | An additive replay-aware GL-error result carrying `GLError error` and `boolean attributed`: `true` only when replay reproduces and isolates the error to the named facade operation; `false` when replay is clean or the window remains batched/foreign. The producer returns one result for every drained error, covering single-call, batched, replay-clean, and foreign-error windows without changing `GLError` | The run manifest requires a total boolean for every record, while the four-field `GLError` cannot supply it (§4.5.4). This classification comes from the owner of the drain/replay protocol, never from Phase 7 guessing from `op` or `subjectLabel` |
-| R4B | Grant Phase 2 consumption of `EngineDiagnostic`, `DiagnosticSeverity`, and `UserChannel` | Phase 1 v14 grants these types to selected phases but not Phase 2. Until this request is accepted in Phase 1's binding §5, Phase 2 does not consume those domain types or treat them as the implementation source of the Phase-2-owned `diagnostics{code,severity,channel,file,line}` wire records |
+| R4B — **owner-designed / receiver-adopted, unverified** | P1 §5.3 D-P1-45 grants existing `EngineDiagnostic`, `DiagnosticSeverity`, `UserChannel`, `DiagnosticReporter` | P2 copies codes/severity/channel; only owner-attributed projections supply coordinates. No args/detail/raw log enters golden evidence |
 
 No facade verb is requested. R4A is an additive diagnostic result from the existing drain/replay
 protocol; §4.7.4's absent-verbs table is not touched.
 
-**To Phase 3** (a Wave-1 sibling — these are requests against its future §5, not consumptions):
+**From Phase 3** — R5–R9 owner-designed and receiver-adopted under §5.1.1, still unverified:
 
 | # | Request |
 |---|---|
-| R5 | An `:engine`-owned API and immutable snapshot model (§4.11.4) exposing Phase 3's decisions in §§4.11.2–4.11.3 deterministically, with **no pack source text** and no reference to `:conformance`; Phase 2's `GoldenProjectionAdapter` performs the `GoldenDocument` mapping, and complete real goldens await R10's Phase 4 enrichment |
-| R6 | A `PackSource` that reads a folder **or a zip** with no Minecraft resource manager involved — the harness feeds it a downloaded archive from a cache directory |
-| R7 | A stable pack-identity hash over the pack's own files, so a golden's `input.packSha512` and a manifest's pack block agree |
-| R8 | The parsed engine constants — `wetnessHalflife`, `drynessHalflife`, `eyeBrightnessHalflife`, `centerDepthHalflife` (§3.2, App A.3) — readable from the snapshot, because §4.4's warm-up rule computes from them |
-| R9 | Diagnostics exposed as **code + severity + file + line**, not as quoted source lines, so `[D-P2-5]` holds for the `[diagnostics]` golden section |
+| R5 — adopted | `frontEnd.inspect(PackLoadRequest)` and `PackInspectionResult` / `PackDecisionSnapshot` / closed `DecisionValue` graph exactly P3 §5.1.1; source-free deterministic one-load snapshot, with separate P4 R10 enrichment |
+| R6 — adopted | Existing pure-JVM discovery/reference resolution/safe persistence/load through one bundle; directory/archive candidates and bounded internal provider, no `PackSource` constructor or Minecraft resource manager |
+| R7 — adopted, identity distinction corrected | P3 same-read archive digest must equal P2-verified fixture archive SHA-512 before joining runner metadata; source/content/configuration hashes are separate; folder/internal digest absent |
+| R8 — adopted | Snapshot `resources` projection includes all four named half-lives as typed values, preserving producer units/defaults for warm-up calculation |
+| R9 — adopted | `DecisionDiagnostic(code,severity,channel,Optional<SourceAttribution>)`; exact owner-attributed coordinates or absence, never quoted lines or inference from P1 args/detail |
 
-**To Phase 4:** R10 — per program slot, the resolution status `SOURCED` / `CHAIN(from=<slot>)` /
-`ABSENT` / `FAILED(driverLog)` **paired with whether the pack shipped a source file for that slot**,
-queryable at runtime (for §4.5.4's manifest) and present in the engine snapshot (for goldens). §4.2.4's
-clause-2 assertion is not implementable without the pair.
+**From Phase 4:** R10 — owner-designed/receiver-adopted, unverified: use the exact same-request
+`Ready(candidate).view().resolutions()` route in §4.11.4 and P4 §5.6. Each closed resolution
+status is paired with independent source presence; sanitized failure detail is never raw driver
+text. Runtime manifests use the accepted view; complete golden enrichment never fabricates it.
 
-**To Phase 5:** R10A — expose to Phase 7 an immutable runtime snapshot containing every canonical
-`resources.*` value in §4.5.4, including the capability gate and shortfalls, with the same
-availability and absence rules. Phase 5 owns these live sizing decisions; Phase 7 only captures and
-serializes the snapshot.
+**From Phase 5:** R10A — owner-designed/receiver-adopted, unverified: runtime P7 copies the
+canonical `resources.*` snapshot; headless P2 acquires `BufferArchitectures.create()` and
+uses pure `plan` on the same P3/P4 build with explicit runtime/profile inputs (§4.11.4).
+`Available` includes exact complete SHORTFALL; `Unavailable` blocks complete golden evidence.
 
 **To Phase 7:**
 
@@ -1865,7 +1954,7 @@ serializes the snapshot.
 | R14 | A clean programmatic shutdown after the last capture sample, so a capture run terminates without a timeout kill |
 | R17 | Capture and serialize every accepted R4A replay-aware result, copying its boolean verbatim to `gl_errors.<n>.attributed`; preserve single-call, batched, replay-clean, and foreign-error records, and never derive attribution from `GLError.op` or `subjectLabel` |
 | R18 | Capture and serialize the complete frozen `HookApplicationReport` defined by Phase 7: preserve every primary catalog ID/target/order/count/class/deferred-owner/fallback and every nested owner-phase/fingerprint/enabled/row field exactly. Include Phase 8's eight-row nested report when present; represent absence as absence; never infer hook health or capability from runtime behavior |
-| R19 — **required `/1` → `/2` migration** | Replace Phase 7's historical `schmaloogium.capture-plan/1` / `schmaloogium.run-manifest/1` consumer-producer contract with the `/2` contracts in §§4.5.2–4.5.4. Reject `/1`; execute one rendered frame per dense sample after first-pose warm-up; expose an immutable frame-end pose report containing actual current and previous camera poses; and serialize `SHOT|PATH`, capture id, ordinal, counts, windows, poses, and image keys exactly. Phase 7 must be migrated and freshly verified before its capture implementation consumes Phase 2 v2 |
+| R19 — **receiver-adopted `/2`, unverified** | P7 §4.13 now incorporates P2 §§4.5.1–4.5.4 end-to-end: rejects `/1`, dense sample execution after first-pose warm-up, actual current/previous frame-camera report, after-final capture, complete exact capture/frame/image/provenance serialization and shutdown. Architectural receipt only; P2/P7 require fresh review before implementation consumption; historical `/1` evidence is not a compatibility path |
 
 **To Phase 12:** R15 — programmatic get/set of pack options and engine options, for the scene format's
 `[pack] option.*` and `engine.*` blocks, plus a validation hook so §4.3.3 can reject an unknown
@@ -1980,7 +2069,7 @@ All in `:conformance` unless noted; all in the hermetic `test` task (§4.14) unl
 | `RunManifestReaderTest` | canonical `run-manifest-v2.manifest` round-trips with SHOT/PATH captures, dense ordinals, captured/image bijection, planned/actual current+previous poses, T0 state, hashes, GL errors, hooks, and Phase 8 subreport; `/1`, gaps, pose omissions, bad windows/keys/orders/types, and unsupported versions abort; `x.<producer>.*` is preserved-and-reported |
 | `TierEvaluatorTest` | reconstructs each T0 failure independently, including capture/sample count, ordinal, image-bijection, and current/previous pose mismatches; derives unattributable counts solely from `attributed=false`; covers per-sample T1 `NO_BASELINE`, T2 dual-spec refusal, and T3 sourced/unsourced `CHAIN` without capability inference |
 | `RunManifestFailureTest` | launch failure, timeout, crash, truncated output, missing hook/pose report, missing provenance, every plan-provenance mismatch, and every `/2` temporal mismatch produce a canonical runner-synthesized failure manifest with authoritative plan facts and deterministically fail T0; pack-authored provenance is ignored |
-| `HookManifestEvidenceTest` | serialization is a field-for-field copy of a frozen Phase 7 report; Phase 7 primary IDs/order never change; an owner-phase-8 subreport preserves exactly eight IDs/counts/dispositions and its fingerprint/enabled bit; absence stays absent; successful frames and images cannot synthesize health |
+| `HookManifestEvidenceTest` | serialization copies the complete current frozen Phase 7 report field-for-field, including H-RESOURCE-01; projection never rewrites IDs/order or derives counts from behavior. A catalog amendment requires new evidence, not mutation of historical reports. An owner-phase-8 subreport preserves exactly eight IDs/counts/dispositions and its fingerprint/enabled bit; absence stays absent |
 | `BaselineIdentityTest` | world and mod-set hashes are invariant to traversal/record order, change with any input byte or identity, flow unchanged into approval manifests, and a mismatch yields `NO_BASELINE`; world copy/hash rejects an internal link, an escaping link, FIFO, socket, and representative device entry without following it |
 | `TierLedgerTest` | scene-set identity and exact captured-sample coverage, including every bounded PATH ordinal; missing/hash-mismatched/stale evidence → `NOT_ATTEMPTED`; contained path/digest/attestation rules remain enforced; inconsistent ledgers are flagged and renderings remain stable |
 | `PintoniumParseCalibrationTest` | exactly seven source-text-free records; exact registry archive identity and configured Pintonium revision/environment; missing/stale/malformed records fail; forbidden messages/source/absolute paths fail; Pintonium success/failure deltas report, while any Schmaloogium parse failure fails D-3 |
@@ -2261,6 +2350,9 @@ framebuffer size.
 | `D-P2-24` | Camera paths are dense explicit frame-indexed samples with first-pose warm-up, one rendered frame per sample, and a bounded ≥2-sample capture window containing motion | Deterministic temporal input exposes the `previous*`/depth/motion-vector/TAA/bloom defect class without interpolation or wall-clock races (§4.3.4; PD §19.1) |
 | `D-P2-25` | Scene, capture-plan, and run-manifest current majors are `/2`; capture plan and manifest `/1` are unsupported history | Motion changes the process-boundary meaning and requires reconstructible sample and pose fields; silently reading `/1` would fabricate absent temporal evidence |
 | `D-P2-26` | Pintonium parse outcomes are complete source-text-free calibration evidence, never a conformance oracle | V3 requires the comparison, while D-3 requires Schmaloogium to parse all seven regardless of competitor outcome (§4.11.7) |
+| `D-P2-27` | Receive P7's explicit `/2` migration as architecture, not capture evidence | P7 §4.13 now names dense samples, warm-up, actual pose/history and exact serialization; both §5 surfaces remain unverified |
+| `D-P2-28` | Adopt P11 original-vector evaluator run with source-free matrix disposition mode | Language/smooth/provider effects must execute; generic front-end parsing is not evaluator coverage |
+| `D-P2-29` | Use P3 one-load source-free inspection and checked archive join, with P4 same-request enrichment | No parser-private access, reverse dependency, inferred configuration/archive identity, or synthetic complete golden |
 
 ### 11.2 Disposition of `D-1` … `D-10`
 
@@ -2295,8 +2387,8 @@ Reported, not smoothed over (§G1.1).
    `docs/phase2/v2/PHASE_2_DOC.md` under the §0.36 exception, while v1 remains history.
 3. **Phase 1's old gating exception is historical only.** V1 recorded that it began before an
    earlier Phase 1 correction chain closed. The current manifest-selected
-   `docs/phase1/v14/PHASE_1_DOC.md` is verified and valid for dependency consumption; no Phase 1 gate
-   remains open here.
+   `docs/phase1/v14/PHASE_1_DOC.md` now has integration-amended §5 contracts; their fresh
+   verification gate remains open. Architectural receipt here does not upgrade a prior PASS.
 4. **The historical camera-path narrowing is closed.** `[D-P2-3]` is superseded by
    `[D-P2-24]`; `/2` supplies actual dense motion in every initial family and no longer treats a
    static shot as a path.
@@ -2326,27 +2418,31 @@ Reported, not smoothed over (§G1.1).
 
 ### 11.4 Items handed onward
 
-**To Phase 3** — R5–R9 (§5.4) are the whole of it, and R5 is the load-bearing one: without a
-deterministic, source-text-free engine snapshot there is no golden harness, and the golden harness is what
-`D-10` buys. The eight micro-packs (§4.11.6) are yours to use as front-end test inputs; they were
-designed against §3.2/§3.3/App F precisely so they would be.
+**From Phase 3** — R5–R9 are adopted from P3 §5.1.1 under D-P2-29: exact acquisition,
+same-load source-free snapshot and checked archive-provenance join. P1 R4B is also granted.
+Fresh reviews and implementation remain gates, not missing producer APIs. The eight original
+micro-packs remain available as front-end fixtures, never pack redistribution.
 
 **To Phase 4** — R10. §4.2.4's clause-2 assertion is the only mechanical part of T3, and it needs
 `(resolution status, source present)` as a **pair**. A status alone cannot distinguish App A.2's
 legitimate inheritance from a compile failure the backup chain absorbed.
 
-**To Phase 5** — R10A. Supply the immutable live resource snapshot; its fields and absence rules are
-the canonical `resources.*` wire block in §4.5.4.
+**From Phase 5** — R10A adopted via P5 §5.1 pure planner acquisition and canonical resource
+projection (§4.11.4); complete source-free goldens require this third owner in addition to
+P3/P4. Runtime manifests still copy the live immutable resource snapshot through P7.
 
 **To Phase 7** — R11–R14 and R17–R19. R11 is the one that gates every image tier: without a defined moment after
 `final` and before present, the capture agent has no correct place to grab a frame. Capture and
 serialize Phase 3's front-end/pack evidence, Phase 4's program-resolution evidence, and Phase 5's
 R10A snapshot; R17 consumes Phase 1's accepted R4A result. R18 requires a complete direct
 copy of the frozen primary/nested application report, including Phase 8 when present, with no
-renamed IDs or inferred capability. R19 is a mandatory downstream migration: Phase 7's historical
-`/1` capture consumer cannot implement this document and must adopt `/2`, publish the actual
-current/previous pose report, and undergo its own fresh verification before implementation. R13 is
-conditional and is recorded so it is a known route rather than a surprise.
+renamed IDs or inferred capability. R19 is architecturally adopted at P7 §4.13, including
+actual current/previous camera reporting and strict `/2`; fresh review and executable capture
+evidence remain required. R13 is conditional, not implied by the `/2` migration.
+
+**From Phase 11** — R11-2 is adopted through §4.9's named evaluator run and exact P11 §5.6
+vector/provider/result shapes. Original-vector and local-matrix reporting remain separate;
+neither this adoption nor a disposition-only matrix record is a real-pack PASS.
 
 **To Phase 12** — R15/R16. Until R15 exists, `[pack] engine.*` keys are collected and reported as
 **unvalidated** rather than accepted (§4.3.3), so a typo there is visible but not fatal.
@@ -2452,3 +2548,7 @@ Every item names its milestone tag and its test hook.
 `## Resolutions` section. Review round 37 returned **PASS-WITH-CORRECTIONS** against the
 maintainer-authorized v2 rebuild; §0.37 applies its sole correction. This artifact is **not
 verified** pending the required fresh whole-document Review 38.*
+
+*§0.38 integration reconciliation additionally changes §5: `/2` receiver receipt, named
+evaluator conformance, P1 diagnostic permission, and P3/P4/P5 source-free inspection chain.
+All are unverified architectural contracts. No validation or real-pack result is claimed.*

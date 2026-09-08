@@ -37,3 +37,4 @@ docs/**/chatlogs/
 
 # Eclipse language-server compiler output
 /bin/
+.omp/rules/java-completion-verification.md

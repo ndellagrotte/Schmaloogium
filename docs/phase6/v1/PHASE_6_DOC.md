@@ -301,6 +301,15 @@ zero blocking findings and zero corrections before verified downstream consumpti
 Section 5.2 preserves ungranted dependency and owner-verification gates. No code, reviews,
 builds, tests, verification runs, other documents, or directory rolls are part of this amendment.
 
+### 0.25 Integration remediation (2026-09-07)
+
+IR-03/04/10/11/21 synchronize current dependency grants, split frame/matrix timing, retain the
+governing v0.1 Phase 7 entityColor producer and adopt the authenticated atlas-bind adapter.
+RC3 remains governing; historical addenda/reviews are preserved. Active §§4/5/11 retain terminal
+`retire(reason)` and its rejection/service-lifetime rules, never CLOSE compatibility.
+§5 changed: this document remains unverified and requires fresh whole-document owner verification
+before implementation consumption. Documentation only; no builds/tests/formatters or PASS claims.
+
 ---
 
 ## 1. Scope & boundaries
@@ -341,16 +350,17 @@ Phase 6 owns:
   creation/lifetime, the texture object bound behind each fixed unit, framebuffer estate, flip
   state, and depth copies. Phase 6 consumes the resolver; re-pointing a sampler uniform to unit 7
   is not binding a texture to unit 7.
-- **Owned by Phase 7:** frame orchestration and every v0.1 vanilla/Mixin producer hook, including
-  frame begin, first-clear matrix capture, celestial rotation, GlStateManager observation,
-  `entityColor`, and the composite `instanceId` loop.
+- **Owned by Phase 7:** frame orchestration and v0.1 vanilla/Mixin producers, including frame
+  begin, post-camera matrix capture, GlStateManager observation and scoped `entityColor`.
+  Its celestial event wiring is v0.2 and composite/deferred `instanceId` loop is v0.5.
 - **Owned by Phase 8:** shadow-camera setup and the values of the shadow/celestial set at v0.2.
 - **Owned by Phase 9:** alias resolution and the values of held-item, `entityId`, and
   `blockEntityId` inputs at v0.3.
 - **Owned by Phase 10:** vertex-pipeline work. It does not upload Appendix D uniforms.
 - **Owned by Phase 11:** parsing/evaluating custom expressions and rung-1 expression isolation.
   Phase 6 supplies only the ordered activation bridge and upload/error plumbing.
-- **Owned by Phase 13:** the `atlasSize` value source and texture-change producers at v0.5.
+- **Owned by Phase 13:** the `atlasSize` query/value source at v0.5; Phase 7 authenticates actual
+  current-bind evidence and joins it to this phase's existing sink (§4.12).
 - **Owned by Phase 14:** the optional PBO/fence replacement for synchronous center-depth readback.
   This document deliberately leaves that ledger item live.
 
@@ -506,7 +516,7 @@ The current coordinated Phase 4 bytes remain subject to §5.2's fresh-owner-revi
 Phase 7 frame-begin hook
   → beginFrame (world/tick/frame sample + previous snapshots + sync center-depth sample)
   → Phase 5 resize/clear may begin
-  → Phase 7 first-clear hook captures current gbuffer matrices
+  → later Phase 7 post-camera hook captures current gbuffer matrices (not ordinal-zero clear)
   → Phase 4 barrier binds effective program
       → sampler participant uploads fixed integers resolved by Phase 5 from effective layout/context
       → built-in participant uploads current immutable cells
@@ -853,10 +863,10 @@ and elapsed time resets to zero at 3600
 | `upPosition` | `vec3`; eye-space world-up vector | celestial signal; pending neutral | immediate if active + every switch | interface v0.1; value v0.2 |
 | `cameraPosition` | `vec3`; current world-space view-entity/camera position | frame provider | every switch, skip equal | v0.1 |
 | `previousCameraPosition` | `vec3`; prior accepted frame's `cameraPosition` | temporal store at frame begin | every switch, skip equal | v0.1 |
-| `gbufferModelView` | `mat4`; model-view captured after camera setup at first clear | gbuffer matrix signal | every switch, **always upload** | v0.1 |
+| `gbufferModelView` | `mat4`; model-view captured once after camera setup, later than first clear | gbuffer matrix signal | every switch, **always upload** | v0.1 |
 | `gbufferModelViewInverse` | `mat4`; inverse of current gbuffer model-view | matrix engine | every switch, **always upload** | v0.1 |
 | `gbufferPreviousModelView` | `mat4`; last accepted frame's captured model-view | temporal matrix store | every switch, **always upload** | v0.1 |
-| `gbufferProjection` | `mat4`; projection captured after camera setup at first clear | gbuffer matrix signal | every switch, **always upload** | v0.1 |
+| `gbufferProjection` | `mat4`; projection captured once after camera setup, later than first clear | gbuffer matrix signal | every switch, **always upload** | v0.1 |
 | `gbufferProjectionInverse` | `mat4`; inverse of current gbuffer projection | matrix engine | every switch, **always upload** | v0.1 |
 | `gbufferPreviousProjection` | `mat4`; last accepted frame's captured projection | temporal matrix store | every switch, **always upload** | v0.1 |
 | `shadowProjection` | `mat4`; Phase 8 shadow-camera projection | shadow signal; pending identity | every switch, **always upload** | interface v0.1; value v0.2 |
@@ -989,11 +999,12 @@ previous image. Width/height ≤0 produce `Unavailable`, not negative coordinate
 `FramebufferService.readDepthPixel`; the exact verb is published at
 `docs/phase1/v14/PHASE_1_DOC.md:2920`.
 
-Gbuffer matrices are not sampled in `beginFrame`. Phase 7 calls
-`captureGbufferMatrices(frameId,...)` exactly once after vanilla camera setup at the ordinal-zero
-clear anchor. The prior matrices have already been snapshotted, so the call can overwrite current
-matrices without destroying temporal state. A second capture for the same frame is an invariant
-diagnostic and is ignored; a missing capture leaves main-program matrix cells invalid so only those
+Gbuffer matrices are not sampled in `beginFrame` or at ordinal-zero clear. Phase 7 calls
+`captureGbufferMatrices(frameId,...)` exactly once at its later post-camera setup hook.
+The prior matrices have already been snapshotted before resize/clear, so that later capture
+overwrites current matrices without destroying temporal state.
+A second capture for the same frame is an invariant diagnostic and is ignored; a missing capture
+leaves main-program matrix cells invalid so only those
 uniforms are disabled for that frame.
 
 The Pintonium evidence validates the capture source, not the exact hook contract:
@@ -1287,20 +1298,44 @@ methods; they never assign callbacks into Phase 6.
 | Signal/notifier | Phase 6 consumer | Required producer and moment | Owner / milestone |
 |---|---|---|---|
 | frame begin | tick/frame cells, previous snapshots, all three smoothers | before any resize or clear in world-frame orchestration | Phase 7 / v0.1 |
-| gbuffer matrix capture | current/inverse gbuffer matrices | after camera setup at first ordinal-zero clear, once per frame | Phase 7 / v0.1 |
+| gbuffer matrix capture | current/inverse gbuffer matrices | later post-camera setup hook, once per frame; ordinal-zero clear precedes camera setup and is not capture | Phase 7 / v0.1 |
 | celestial rotation | sun/moon/shadow-light/up vectors | inside sky rotation after FF transforms are established; immediate upload if a shader token is current | Phase 7 invokes; Phase 8 values / v0.2 |
 | shadow camera | four shadow matrices | after Phase 8 installs its shadow FF camera, before shadow draw activation | Phase 8 / v0.2 |
 | fog mode/start/end/density/color | `fogMode`, `fogDensity`, `fogColor` | GlStateManager-facing fog mutation sites plus frame fallback; immediate upload if active | Phase 7 / v0.1 |
 | blend enable/factors | `blendFunc` | every GlStateManager blend mutation updates underlying observation and immediately uploads if active; every activation overlays the effective Phase 4 `BlendSpec` | Phase 7 + Phase 4 descriptor / v0.1 |
-| texture bind | `atlasSize` invalidation only; sampler unit integers do not change | atlas bind/stitch lifecycle | Phase 13 / v0.5 |
+| texture bind | `atlasSize`; sampler unit integers do not change | actual authenticated current base texture bind/restoration, never stitch-only availability; adapter below | Phase 7 observer/adapter + Phase 13 query / v0.5 |
 | normal/specular texture change | no built-in value; future custom/texture bridge invalidation | companion-atlas bind/change | Phase 13 / v0.5 |
 | render phase change | no Appendix D `renderStage`; retained as custom-extension signal only | every Phase 4/7 stage transition | Phase 7, Phase 11/G8 consumer later |
 | fallback/current entity | `entityId` | scoped entity render push/pop with immediate upload and 0 restoration | Phase 9 values via Phase 7 hook / v0.3 |
 | current block entity | `blockEntityId` | scoped TE render push/pop with immediate upload and 0 restoration | Phase 9 values via Phase 7 hook / v0.3 |
-| entity color | `entityColor` | hurt/flash color set/reset scope with immediate upload | Phase 7 / v0.1 |
+| entity color | `entityColor` | P7-owned hurt/flash push/pop with immediate upload and exact nested prior-color restoration, neutral outside scope; independent of alias IDs | Phase 7 / v0.1, not deferred to Phase 9/v0.3 |
 | instance | `instanceId` | immediately upload 0 before original and `i` before each repeated draw; restore 0 | Phase 7 / v0.5 composite loop |
 | held items | four held-item uniforms | tick/inventory change after Phase 9 alias resolution | Phase 9 / v0.3 |
-| atlas size | `atlasSize` | atlas becomes current/bound; immediate upload if active; reset on reload | Phase 13 / v0.5 |
+| atlas size | `atlasSize` | authenticated bind → P13 Known dimensions or Unknown/non-atlas `(0,0)` → `updateAtlasSize`; immediate active upload and reload reset | Phase 7 adapter + Phase 13 value / v0.5 |
+
+**Split timeline and governing milestone (D-P6-19).** Frame sampling/previous snapshots/center
+depth complete before any resize/clear; ordinal-zero clear remains the earlier Phase 7 hook;
+camera setup and current-matrix capture follow at a distinct hook before main shader activation.
+RC3 Phase 6 assigns v0.1 and explicitly defers shadow values, alias IDs and atlas sourcing
+(`DESIGN.md` §Phase 6 scope/milestone), not `entityColor`. Phase 7 therefore owns real hurt/flash
+color at v0.1; Phase 9 may share the render scope but owns only its v0.3 alias IDs.
+Before installation neutral color plus missing-producer warning is degraded bring-up, not a
+new milestone or feature-complete fallback.
+
+**Authenticated atlas adapter (D-P6-20).** Phase 7 publishes
+`AtlasBindingSink.currentBinding(AtlasBindingEvidence) -> SignalResult`; evidence is opaque,
+privately retaining `Optional<AtlasId>`, `PipelineVersion`, `resourceReloadEpoch`, and `bindSerial`.
+Only its mod binding-observer mints after an actual successful vanilla bind or Phase 5 Bound
+physical base-texture bind/restoration. Phase 7 checks issuer, render thread, current composition/
+resource epoch and latest serial before querying Phase 13 `atlasSize(id)`. Accepted Known
+dimensions become `updateAtlasSize(Int2(width,height))`; Unknown or empty/non-atlas id becomes
+`updateAtlasSize(Int2(0,0))`. Stale/rejected evidence never mutates a cell. Reset/off/resource reload
+invalidates old evidence and routes `(0,0)` at the quiescent live-runtime boundary before retirement;
+never call the retired sink. New runtimes begin neutral and require new authenticated bind evidence.
+Phase 6 immediately uploads through a current activity token/cached location, otherwise caches
+for next activation. Stitch completion and gbuffers/shadow draw family do not prove the atlas is
+bound. This is a separate Phase 7 sink, not a new Phase 6 operation, UniformSignal variant, or
+physical binder; Phase 5 retains sole shader texture-object binding ownership.
 
 The blend row is mandatory, not advisory. Pintonium's shared code dereferences its notifier while
 registering `blendFunc`
@@ -1613,7 +1648,7 @@ turn a future producer into optional work.
 | `UniformRuntime` / `UniformResetReason` / `RegistryGenerationAdoptionResult` | exact §2.2 callable shape: `adoptRegistryGeneration(long, UniformResetReason) -> RegistryGenerationAdoptionResult`; `fixedExpressionInputSchema() -> FixedExpressionInputSchema`; `beginFrame(FrameBeginInput) -> FrameBeginResult`; `events() -> UniformEventSink`; `samplerParticipant()`, `builtInParticipant()`, and `customParticipant() -> ProgramBindingParticipant`; `centerDepthMacroContributor() -> MacroContributor`; `installCustomUniformBridge(CustomUniformBridge) -> void`; `reset(UniformResetReason) -> void`; `retire(UniformRetirementReason) -> UniformRetirementResult`. Adoption results remain `ADOPTED`, `ALREADY_CURRENT`, `REJECTED_RETIRED_GENERATION`. Reset reasons are exactly `PACK_REPLACEMENT`, `SHADERS_OFF`, `GL_CONTEXT_LOSS`, `WORLD_EPOCH`; adoption accepts the first three, direct reset only `WORLD_EPOCH`; invalid pairings/null fail without mutation. Live adoption uses the reacquired accepted generation before new use, equality-only identity and §4.14.1 state scopes. World reset separates final old-world from first new-world use. Custom bridge installation remains non-null, pre-use, first-instance-wins/idempotent; non-terminal transitions retain it, retirement releases it. No `CLOSE`, `reset(CLOSE)` alias or runtime `close()` remains | Phases 7, 8, 9, 11, 13 |
 | `UniformRetirementReason` / `UniformRetirementResult` / `UniformRetirementRejection` | exact §2.2 algebra and complete §4.14 semantics: reasons `UNPUBLISHED_ABORT`, `REPLACEMENT`, `SHUTDOWN`; results `Retired()`, `AlreadyRetired()`, `Rejected(WRONG_THREAD\|ACTIVE_CALLBACK)`. Render-thread-only, terminal/idempotent, synchronous non-GL cleanup without any barrier/provider/service call. Wrong thread precedes already-retired, then active-callback rejection; rejection leaves state/ownership unchanged. Final callback precedes retirement; candidate abort requires no publication, replacement follows actual old-barrier invalidation, shutdown precedes Phase 4 atomic teardown, all precede borrowed-service disposal. Cached locations/plans/values, active token pair, pending batches and all provider/service/bridge references are dropped, not closed/deleted. Every retained operational capability is permanently guarded as §4.14.2 specifies; retirement is never generation adoption or shaders-off reset | Phase 7 composition/abort/replacement/shutdown; R7-11 adopted, fresh PASS owed; all retained-capability consumers |
 | `FrameBeginInput` / `FrameBeginResult` | input schema plus `ACCEPTED`, `DUPLICATE`, `REJECTED_STALE_FRAME`, `REJECTED_GENERATION`; only accepted mutates, duplicate is a safe no-op for a live runtime, rejection forbids shader draw; retired runtime always returns `REJECTED_GENERATION` before duplicate or identity handling | Phase 7 |
-| **Frame-begin ordering contract** | `beginFrame` completes world/tick sampling, previous snapshots, and center-depth read **before any Phase 5 resize or clear**; then first-clear matrix capture occurs after camera setup | Phase 7; integration review |
+| **Frame-begin ordering contract** | `beginFrame` completes sampling, previous snapshots and center-depth read before any Phase 5 resize/clear; distinct later post-camera hook captures current matrices once, never ordinal-zero clear | Phase 7; integration review |
 | `UniformEventSink` and immutable sample records | exact §4.2 schemas; world/frame/tick identity; finite/range validation; copy/absence/fallback rules; held-light old-mode mapping; next-activation vs immediate-if-active policy while live; survives non-terminal reset, but every retained sink rejects after retirement with `IllegalStateException` before mutation or service/GL access (§4.14.2) | Phases 7, 8, 9, 13 |
 | `SamplerRepointParticipant` | exact §4.9 shared-resolver operation/results and plan-reuse rules; unchanged `afterBind(ResolvedProgramDescriptor, BarrierContext, BoundProgramUniformAccess)`; effective `binding.samplerLayout()` plus `context.stage()/band()`, never child state; Ready exact-name/full-shape rows become ascending-unit then fixed-name declaration-order integer uploads; Invalid retains validation evidence and degrades only the effective program's sampler participant without uploads or replacement mapping; existing absent-location, deduplication, cache/activity-token and §4.11 error semantics remain while live; retirement first rejects every retained callback with `Degraded`/`phase6.runtime.retired` without resolver, lookup, upload or service access (§4.14.2), and the stale pipeline must not draw | Phase 4 composition via Phase 7; R7-10; R7-11 terminal guard |
 | `BuiltInUniformRefreshParticipant` | Appendix D plan, every-activation visit, cached-value skip, matrices always upload, error isolation while live; retirement first rejects retained callbacks with `Degraded`/`phase6.runtime.retired`, without lookup, upload or service access (§4.14.2), and the stale pipeline must not draw | Phase 4 composition via Phase 7 |
@@ -1622,6 +1657,8 @@ turn a future producer into optional work.
 | `BuiltInExpressionView` / `CustomUniformUploadSink` | view carries the matching catalog version and exact-name `Present(typed value)`/`Absent`; every present value conforms bidirectionally to the fixed schema's exact name/type mapping; upload commands are closed to `Float1`, `Int1`, `Bool1`, `Float2`, `Float3`, and `Float4`, matching `float`, `int`, `bool`, `vec2`, `vec3`, and `vec4`; sink returns closed `Accepted`, normal no-warning/no-GL `SkippedAbsent`, or `Rejected(stable diagnostic ID)`; while live, active layout or location absence skips, while actual type mismatch, invalid name, and duplicate submission reject; `Bool1` matches GLSL `bool` and Phase 6 owns 0/1 GL encoding; outcomes preserve call order and feed the three refresh counts per §4.13. Retirement first makes retained sink submissions `Rejected("phase6.runtime.retired")`, with no counting, enqueue, service access or GL (§4.14.2); detached immutable values remain readable | Phase 11 |
 | `UniformPlatformProvider` / `CenterDepthSource` | exact §4.2 request/result schemas and validation; loader-neutral sampling SPI with no Minecraft or GL-name types | `mod.glue`, Phase 7 |
 | `centerDepthMacroContributor` | always `MacroContribution.Empty` under D-P6-1 | Phase 3/4 materialization |
+| Authenticated current-atlas adapter | exact §4.12 P7 `AtlasBindingSink`/opaque evidence → P13 Known/Unknown query → existing `updateAtlasSize(Int2)`; reset/non-atlas `(0,0)`, stale evidence no mutation, immediate active/cached inactive behavior and retired-sink rejection | Phases 7/13, adopted/unverified |
+| Governing `entityColor` producer | §4.12 Phase 7 hurt/flash scoped values at v0.1, immediate update/nested restoration independent of Phase 9 alias IDs; neutral before installation is degraded bring-up, not milestone deferral | Phases 7/9 |
 
 The exact external schemas and semantics incorporated above from §§2.2, 4.2, 4.9, 4.13, and 4.14 are
 binding parts of §5. Every consumer-visible API, schema, or semantic change to those incorporated
@@ -1647,7 +1684,7 @@ Existing Phase 1 overloads and the readback verb are sufficient for every Phase 
 
 | Phase 3 §5 contract | Use |
 |---|---|
-| `PackConfiguration`, schema/fingerprint discipline | sole parsed truth and cache derivation |
+| `PackConfiguration`, schema/fingerprint discipline | accept exactly `PackFrontEnd.CURRENT_SCHEMA_VERSION` (17 after IR-24); reject older schema before derivation, no fabricated defaults or inferred upgrades |
 | closed `ResourceRequirements` algebra | center-depth enablement and smoothing half-lives with published defaults/order |
 | `DeclaredUniformCatalog`, `DeclaredUniform`, `DeclaredGlslType`, attributed locations | final post-materialization declaration/type provenance; consumed through Phase 4's merged effective layout without reopening source |
 | reserved `phase6.centerDepthSmoothRedirect` contributor | deliberately returns Empty |
@@ -1702,17 +1739,17 @@ R7-11 at `docs/phase7/v1/PHASE_7_DOC.md:2322-2330` (“its owner must reconcile 
 is adopted here by §§2.2/4.14/5.1, **pending fresh whole-document Phase 6 PASS**. No new Phase 4
 operation is needed: consume its existing old-token invalidation and actual
 `Accepted`/`Rejected`/`RecoveredOff` publication outcomes under its still-open owner-review gate.
-Phase 7 must separately synchronize its §5 consumed inventory/status and the final-use/service
-retention obligations before verified coordinated consumption. Its current request-status row
-and Phase 4's corresponding request remain untouched in this Phase-6-only amendment.
+Phase 7's current integration amendment adopts R7-10/11 consumption and final-use/service
+retention. Phase 4/5's ledgers likewise recognize those grants as owner-designed/unverified
+and receiver-adopted/unverified; this coordination does not replace fresh whole-document reviews.
 
-**UNGRANTED dependencies remain ungranted:** Phase 7's R7-12/R7-13 requests to Phase 8 and
-Phase 13's R1 request to Phase 3 are not supplied by R7-11
-(`docs/phase7/v1/PHASE_7_DOC.md:2305-2307`, “requested, ungranted”). Retirement requires no
-new Phase 8/13 method and does not grant those shadow/texture/macro paths or certify Phase 7's
-coordinated rebuild. Phase 7 owns any adapter-lifetime coordination needed by §4.14.3; it must
-flag an unavailable owner capability, not dispose borrowed services early or invent a Phase 6
-barrier/close hook. R7-10's Phase 3/4/5 owner-verification gates above remain unchanged.
+**Remaining gates:** Phase 8 §§0.7–0.8 now adopts R7-12/R7-13 and Phase 3 §0.55 publishes
+the required companion input. Phase 1 package/native-configure and Phase 3 lossless/direct
+projection grants likewise exist; they are not supplied or verified by retirement. Typed suffix
+authority, jcpp permission, native legacy source preservation and every affected owner's fresh
+verification remain distinct. Phase 7 retains provider/service adapters through final use and
+Retired/AlreadyRetired even when texture/shadow owners retire earlier; no invented P6 barrier/
+close hook or early disposal breaks that ordering.
 
 ### 5.3 Historical verified dependency contract changes
 
@@ -1737,7 +1774,7 @@ historical reviews do not certify the current coordinated owner bytes or waive �
    changed interface (`docs/phase4/reviews/PHASE_4_REVIEW_18.md:57`–`:70`).
 
 No `ProgramHandle`, source string, or parallel declaration parser is assumed. The provisional
-current-byte sampler interfaces and still-ungranted lifecycle request are explicitly gated in §5.2.
+current-byte sampler/retirement grants and remaining authority/verification gates are explicit in §5.2.
 
 ### 5.4 Requested governing clarification
 
@@ -1979,6 +2016,9 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
 | D-P6-16 | distinguish custom submission as accepted, skipped-absent, or rejected and count all three without reordering accepted commands | per-program declaration absence is normal; only admitted commands may enter the GL batch, while invalid/type/duplicate errors stay visible |
 | D-P6-17 | make `Bool1` distinct from `Int1` and encode boolean 0/1 only inside Phase 6 after linked-GLSL validation | keeps expression typing in Phase 11 and GL representation/location ownership in Phase 6 |
 | D-P6-18 | replace terminal `reset(CLOSE)` with R7-11's non-GL `retire(reason)`; keep generation adoption non-terminal | unaccepted abort, replaced-instance disposal and shutdown require distinct ordering and permanent capability invalidation, not a teardown-only alias; §§0.24/4.14 |
+| D-P6-19 | Separate pre-clear sampling from later post-camera current-matrix capture; keep Phase 7 entityColor at governing v0.1 | IR-11; a later alias-ID owner cannot silently defer non-alias color |
+| D-P6-20 | Accept only Phase 7 authenticated current-bind evidence translated through P13 Known/Unknown into existing atlas sink | IR-21; availability is not binding, and P5 remains sole physical binder |
+| D-P6-21 | Reconcile R7-10..13 grants and retain permanent retirement after final use with rejection retaining services | IR-04/10; owner-designed is not freshly verified |
 
 ### 11.2 Contradictions and contract gaps found
 
@@ -2028,8 +2068,8 @@ No contradiction with RESEARCH.md's authority was silently resolved.
 
 ### 11.3 Items handed onward
 
-**To Phase 7:** implement the frame-begin-before-resize/clear contract; invoke first-clear matrix
-capture exactly once; supply frame/fog/blend/entityColor/celestial events; restore scoped dynamics;
+**To Phase 7:** implement frame sampling before resize/clear and distinct post-camera matrix
+capture exactly once; supply frame/fog/blend/entityColor (v0.1), celestial (v0.2) and scoped events;
 compose the three participants in Phase 4's fixed positions; add actual hook coordinates beside every
 §4.12 audit row. Do not resample providers from a hook that merely switches programs.
 Inject `FixedSamplerPolicies.resolver()` immediately after configuration in the §2.2 factory call,
@@ -2037,14 +2077,15 @@ paired with compilation's appB3 policy. R7-10 and R7-11 are adopted here but are
 Migrate terminal reset callers to `retire(UNPUBLISHED_ABORT|REPLACEMENT|SHUTDOWN)` under §4.14;
 never alias CLOSE, retire the newly adopted runtime as if it were the old one, or treat
 `Rejected` as disposal. Keep providers/adapters alive until `Retired`/`AlreadyRetired`, even when
-their texture/shadow owner retires earlier. Synchronize Phase 7's consumed §5 and status separately
-and obtain fresh whole-document owner verification; §5.2's ungranted gates remain intact.
+their texture/shadow owner retires earlier. Current sibling ledgers adopt these contracts;
+fresh whole-document owner verification and §5.2's remaining authority gates still apply.
 
 **To Phase 8:** supply all four shadow matrices and celestial/shadow-light values after shadow-camera
 setup through the v0.1 event interface. A singular inverse disables only that inverse.
 
-**To Phase 9:** supply main/off-hand alias IDs/light values plus scoped entity/TE IDs, always
-restoring 0 in `finally`-shaped hook scopes.
+**To Phase 9:** supply main/off-hand alias IDs/light values plus scoped entity/TE IDs at v0.3,
+with exact nested restoration and outer 0. Share Phase 7's already-v0.1 color scope without
+claiming color ownership or delaying hurt/flash tint until alias installation.
 
 **To Phase 11:** obtain the immutable fixed schema before compilation; bind only exact-name
 `Present(closed type)` inputs at its catalog version; require every runtime `Present` value to
@@ -2054,8 +2095,14 @@ GLSL `bool`, branch on `Accepted` / `SkippedAbsent` / `Rejected`, and report exa
 aborted-prefix counts for all three without reordering. Treat absent active layout/location as normal and let Phase 6 own
 type/location validation, duplicate/name rejection, boolean 0/1 GL encoding, and upload replay. Do
 not install another Phase 4 participant, resolve GL locations/types, or read per-draw dynamics.
+Map P11-owned terminal CLOSE to `retire(UNPUBLISHED_ABORT|REPLACEMENT|SHUTDOWN)` on Phase 6
+only after final custom/controller callback use under Phase 7 composition. P11 may retain its own
+CLOSE semantics; it must not send CLOSE to P6. Retired/AlreadyRetired complete disposal; Rejected
+keeps services and closed admission until a legal retry, preserving §4.14's reason-specific order.
 
-**To Phase 13:** feed `atlasSize` only at the atlas bind lifecycle and restore/reset on reload.
+**To Phases 13/7:** consume §4.12's authenticated bind adapter to the existing atlas sink;
+Known/Unknown query data alone never proves current binding. Reset/non-atlas becomes `(0,0)`,
+stale evidence does not mutate, and old evidence cannot cross reload/retirement.
 Texture/normal/specular changes do not change fixed sampler integers.
 
 **To Phase 14:** D-P6-1 leaves the PBO/fence async-center-depth ledger item live. Measure against the

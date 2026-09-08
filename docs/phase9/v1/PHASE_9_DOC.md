@@ -11,7 +11,11 @@ change the governing revision of an earlier phase.
 **Declared dependencies:** Phases 3, 6, and 7.
 **Assigned open questions:** none.
 
-All dependency gates were checked before their binding contracts were consumed:
+**Integration fix-up (2026-09-07): unverified.** IR-03/04/09/11/22/24 change active
+§5 contracts below (D-P9-13…15). Historical dependency PASS evidence is provenance only;
+current producer amendments and this consumer adoption require fresh individual verification.
+
+At initial authorship, dependency gates were checked against the then-current contracts:
 
 - Phase 3 closes with literal `PASS`, zero findings, in
   `docs/phase3/reviews/PHASE_3_REVIEW_20.md:56`–`:67`.
@@ -145,8 +149,8 @@ Phase 9 owns the complete identity and per-draw value subsystem:
 - main/off-hand alias IDs, static held-block light, `oldHandLight`, and the
   `dynamicHandLight` interoperability disposition;
 - balanced per-entity and per-block-entity uniform scopes;
-- real `entityColor` delivery from the values vanilla computes before its fixed-function TexEnv
-  effect, including neutral restoration;
+- the Phase 9 specification of real `entityColor` semantics consumed by Phase 7's existing
+  color-only producer at v0.1; Phase 9 adds no second writer or v0.3 deferral;
 - Phase-9-specific hook health, warn-once keys, and conformance evidence.
 
 ### 1.2 Explicit adjacent ownership
@@ -182,10 +186,10 @@ published table. Mixins contain no alias, precedence, light, or color policy. Ph
 a vertex, select a program, change a render layer directly, rescan shader-pack bytes, create a
 dynamic-light implementation, or observe TexEnv state after the fact.
 
-The verified dependency surfaces lack inputs needed by this assignment. R9-1 and R9-2 in §5.4 are
-requests, not granted contracts. The 11300 retry, `%` tag parsing, correct absent-vs-present
-fallback, and coordinated publication/hook refinement are implementation-gated until their owners
-apply and reverify those changes.
+R9-1 is owner-designed and receiver-adopted, unverified, under current Phase 3 §5.
+R9-2's coordinated transaction and hook surfaces are receiver-adopted from current Phase 7
+§§4.1/5; the shadow admission and color reconciliation below are coordinated unverified amendments.
+Fresh owner/consumer reviews remain implementation gates, not missing-API fallbacks.
 
 ---
 
@@ -407,10 +411,18 @@ Phase 7 has validated matching pack/configuration/registry identities and before
 open. Generation is a monotonically increasing positive `long`; overflow is terminal shaders-off,
 not wraparound.
 
-A frame borrows one publication generation. Entity/TE/color scopes and held events must echo that
-frame and generation. Phase 10 chunk-build work records the lookup generation in its build context;
+A frame borrows one publication generation. Entity/TE scopes and held events must echo that
+frame and generation; P7's independent color-only scope does not require an ID runtime.
+Phase 10 chunk-build work records the lookup generation in its build context;
 publication replacement makes work/results with another generation stale. Retired tables remain
 alive until already-issued frame/build borrows end, but no new borrow can target them.
+The lookup and its glue-owned Minecraft-object-to-ordinal map are one matched borrow lifetime.
+Phase 7 stops new Phase 10 work, revokes upload/draw eligibility, cancels queued tasks/uploads,
+drains running workers without holding pool locks, and only then closes the retired lookup/map.
+An incomplete drain keeps both alive and admission closed; off recovery never frees arrays still
+borrowed by a worker. Equal fingerprints do not authorize pairing an old ordinal map with a new
+lookup. Pure candidate failure leaves the local publisher untouched, not permission for Phase 7
+to resume the old pipeline after a failed coordinated rebuild.
 
 ### 4.2 Live-registry snapshot and D-6 adapter
 
@@ -452,9 +464,9 @@ assets/<modid>/shaders/entity.properties
 
 Jar and directory sources share path-containment, entry-count, per-file-byte, total-byte, and
 decompression-ratio limits. Symlinks that leave a directory root, duplicate normalized archive
-entries, NUL/absolute/`..` paths, and non-regular files are rejected for that mod. Bytes are decoded
-as ISO-8859-1 and passed to Phase 3's public `IdMappingParser`; Phase 9 never implements Java
-Properties or preprocessor syntax.
+entries, NUL/absolute/`..` paths, and non-regular files are rejected for that mod. Pass bounded
+`ImmutableBytes` to `IdMappingParser.parse` with kind, attributed origin, exact published
+parserEnvironment and reporter; Phase 3 alone decodes ISO-8859-1 and parses Properties/macros.
 
 Sources are ordered by Unicode code-point `modid`, then mapping kind. Duplicate active mod IDs are
 reported as an invalid mod-source snapshot; Forge normally rejects them, but Phase 9 does not rely
@@ -577,8 +589,8 @@ For each pack or mod entity file independently:
 
 The retry never merges both parses and never changes global `RuntimeIdentityData`. It is an
 ID-file-local era bridge only. A source fingerprint includes ordinary/alternate results and which
-branch was selected. Phase 3 must perform the preprocessing and parsing; R9-1 requests the presence
-bit, alternate result, and era provenance because the current §5 surface publishes none of them.
+branch was selected. Phase 3 performs the preprocessing and parsing through its current
+`IdMappingInput` / `IdMappingParser` grant; R9-1 is adopted, pending fresh verification.
 
 ### 4.8 Legacy numeric fallback
 
@@ -649,11 +661,14 @@ item table. Static light is 0 unless the item has a captured `ItemBlock` default
 which case it is that state's validated 0–15 emitted light. Phase 9 does not invent luminosity for
 non-block items.
 
-`HandLightPolicy` resolves the raw Phase 3 tri-states and future Phase 12 user values:
+`HandLightPolicy` resolves Phase 3's pack tri-state and decoded Phase 12 user setting:
 
-- an explicit user value wins over the pack value where the pack-author docs grant priority;
-- otherwise explicit pack `TRUE/FALSE` wins;
-- `oldHandLight=DEFAULT` resolves `true`, the backward-compatible default;
+- wire key `oldHandLight` accepts exactly `default|true|false`, absent means `default`;
+- explicit decoded user TRUE/FALSE wins, else explicit pack TRUE/FALSE wins;
+- both DEFAULT resolve `true`, the local backward-compatible fallback (D-P9-8), not
+  a claim that the shipped documentation specifies a missing-value default;
+- Phase 3 emits `MC_OLD_HAND_LIGHT 1` only for explicit user true; default/false omit it.
+  This pre-load macro is not the resolved runtime hand policy and is never rewritten after load;
 - `dynamicHandLight=DEFAULT` resolves `true`, but has an effect only when a recognized external
   `DynamicHandLightInterop` is installed.
 
@@ -675,7 +690,7 @@ The hook ledger is binding:
 | ID / class | SRG target and injection | Ordered action | Health / fallback |
 |---|---|---|---|
 | H9-ENTITY-ID-01 `RenderManager` | both `func_188388_a(Entity,F,Z)V` and `func_188391_a(Entity,D,D,D,F,F,Z)V`, HEAD/RETURN with Phase 7 boundary drain on throw | resolve exact entity type ordinal; push prior `entityId`; call `updateEntityId(mapped-or-0)`; on exit validate LIFO token and restore prior value | `FEATURE`; App E row 13; disable ID feature + reset 0 on mismatch |
-| H9-BLOCK-ENTITY-ID-01 `TileEntityRendererDispatcher` | `func_147549_a(TileEntity,D,D,D,F)V`, ordered inside H-ENTITY-03 | after Phase 7 opens `gbuffers_block`, obtain the TE world/position state ordinal, push prior `blockEntityId`, publish mapped-or-0; restore before Phase 7 closes program scope | `FEATURE`; App E row 14; unknown/detached TE uses 0 |
+| H9-BLOCK-ENTITY-ID-01 `TileEntityRendererDispatcher` | `func_147549_a(TileEntity,D,D,D,F)V`, ordered inside H-ENTITY-03 | after authenticated main `gbuffers_block` admission **or** valid current shadow execution, obtain TE world/position state ordinal, push prior `blockEntityId`, publish mapped-or-0; restore before enclosing admission releases | `FEATURE`; App E row 14; unknown/detached TE uses 0 |
 | H9-HELD-01 Phase 7 accepted-frame boundary | immediately after Phase 6 `beginFrame` and before shadow/gbuffers activation | sample both hands once, resolve tuple, publish changed `HeldItemSample` | `FEATURE`; invalid sample uses zeros for this frame |
 
 Both RenderManager methods are hooked because either may be an external entry point. If one calls
@@ -690,30 +705,64 @@ a throwable, Phase 7's H-FRAME finally/abort path calls `PerDrawDynamics.resetFr
 both stacks and sends zero before any later shader draw. Mixins only forward object ordinals and
 call-local tokens; all validation/policy lives in glue/engine.
 
-### 4.13 Real `entityColor` delivery
+Main and shadow admission are distinct capabilities, not matching numeric records:
 
-Pintonium has no 1.12 producer, and reading TexEnv after vanilla changes it cannot work while a GLSL
-program is bound. Phase 9 observes the input to the effect instead:
+```java
+interface IdScopeAdmission {} // opaque, issued and validated by Phase 7 glue
+enum IdScopeRejection { STALE_ADMISSION, STALE_GENERATION, WRONG_THREAD, STACK_LIMIT }
+sealed interface IdScopeResult {
+    record Entered(IdScopeToken token) implements IdScopeResult {}
+    record Rejected(IdScopeRejection reason) implements IdScopeResult {}
+}
+// Operations on PerDrawDynamics:
+IdScopeResult enterEntity(IdScopeAdmission admission, int entityOrdinal);
+IdScopeResult enterBlockEntity(IdScopeAdmission admission, int stateOrdinal);
+void leave(IdScopeToken token);
+```
+
+Phase 7 issues main admission only from the accepted entity/block scope and shadow admission
+only after `ShadowExecutionBridge.validate(...)` returns `Valid` for the exact current
+`ShadowExecutionView`. Issuance/entry checks thread, frame, pipeline/ID generation, slot/execution
+epoch and live dynamic extent. `IdScopeToken` additionally authenticates stack kind/depth and
+admission kind; it is opaque, single-close, invalidated on drain. Unknown ordinal uses 0, whereas
+stale generation rejects before lookup. Shadow entry never opens a gbuffers scope, acquires a main
+snapshot or activates/restores a main program. Nested entity/TE exits restore the immediately
+preceding IDs before shadow admission releases, preserving Phase 8 Forge pass ordering. Invalid
+leave, overflow or throw neutralizes the affected cells and drains scopes before any later draw;
+Phase 7/P8 failure containment owns whether the shadow pass aborts.
+
+### 4.13 Real `entityColor` delivery — Phase 7 color-only producer
+
+The following capture semantics are specified here for the governing Phase 9 assignment and
+implemented once by Phase 7 at v0.1, independently of alias-runtime installation. The governing
+RC3 Phase 6 assignment requires the full inventory at v0.1 and does not defer color as it does
+alias IDs; the Phase 9 assignment repeats value-delivery responsibility, not permission to regress
+the earlier milestone. Pintonium has no 1.12 producer. Observe vanilla's input, never query TexEnv:
 
 | ID / class | SRG target and injection | Ordered action | Health / fallback |
 |---|---|---|---|
-| H9-COLOR-01 `RenderLivingBase` | within `func_177092_a(EntityLivingBase,F,Z)Z`, intercept the invocation of `GlStateManager.func_187448_b(IILjava/nio/FloatBuffer;)V` whose parameter name is `GL_TEXTURE_ENV_COLOR` | copy the four floats at the supplied buffer's current position and forward them to `updateEntityColor`; do not retain/mutate the buffer, reconstruct hurt/creeper formulas, or suppress the original call | `OBSERVER`; expected exactly once when the method returns true and zero times when false |
-| H9-COLOR-02 `RenderLivingBase` | `func_177091_f()V` RETURN | restore neutral `(0,0,0,0)` after vanilla unsets the effect | `OBSERVER`; frame reset is the throw fallback |
+| H9-COLOR-01 `RenderLivingBase` (Phase 7 owner) | within `func_177092_a(EntityLivingBase,F,Z)Z`, intercept the invocation of `GlStateManager.func_187448_b(IILjava/nio/FloatBuffer;)V` whose parameter name is `GL_TEXTURE_ENV_COLOR` | copy four floats at the buffer position into Phase 6 `updateEntityColor`; retain no buffer, reconstruct no formula and preserve the original call | `OBSERVER`; exactly once on true and zero on false |
+| H9-COLOR-02 `RenderLivingBase` (Phase 7 owner) | `func_177091_f()V` RETURN | pop to preceding scoped color, or neutral outside all scopes | `OBSERVER`; enclosing finally/frame reset drains on throw |
 
 The adapter duplicates the buffer and reads four absolute values from its current position; it never
 changes the original position/limit or retains the buffer. This captures the input to TexEnv, not
 post-hoc fixed-function state. Values are finite-checked; a missing, extra, short, or wrong-parameter
 observation disables only color delivery for that frame and sends neutral. The original vanilla call
-always executes, preserving shaders-off behavior. Nested render layers use a primitive color stack
-so reset restores the prior scoped color rather than blindly zeroing an outer scope. Phase 7's
-existing H-COLOR-01 RETURN-only description does not expose the buffer or current scope; R9-2
-requests the hook refinement before this feature is implemented.
+always executes, preserving shaders-off behavior. Phase 7's color-only primitive stack restores
+the prior scoped color rather than blindly zeroing an outer scope; Phase 6 uploads immediately
+when active and at activation otherwise. Phase 9 aliases borrow this established surrounding
+color scope and never gate it on ID publication. Neutral before producer installation is not
+v0.1 feature completion. The frozen catalog strings H9-COLOR-01/02 retain historical identity
+despite ownerPhase=7/v0.1; they do not denote a second P9 writer or deferred owner. No duplicate
+hooks are installed.
 
 ### 4.14 Reload, invalidation, and diagnostics
 
 Rebuild triggers are:
 
-- pack selection/options/resource reload producing a new Phase 3 configuration or fingerprint;
+- pack selection/options producing a new Phase 3 configuration or fingerprint; resource reload
+  refreshes registry/mod/tag inputs and resource epochs without rediscovery/reparse when Phase 12
+  requests `NONE + resourceReacquire`;
 - any changed per-mod source fingerprint;
 - `FMLModIdMappingEvent`, whose documentation explicitly directs mods to update ID-dependent caches
   (`reference-src/cleanroom-0.6.6-alpha/src/main/java/net/minecraftforge/fml/common/event/FMLModIdMappingEvent.java:35`–`:40`);
@@ -746,7 +795,7 @@ fingerprints does not repeat warnings; a genuinely changed input may.
 | `IdRuntimePublisher` / `PublishedIdRuntime` | render-thread safe-boundary publication, generation, borrow/retire/close rules | Phase 7 frame/reload owner |
 | `AliasLookup` / `AliasValue` / `BlockStampResult` | O(1) full-int block/item/entity alias queries and exact two-word `mc_Entity` result; generation-stamped | Phase 10; Phase 9 per-draw bridge |
 | `RenderLayerLookup` / `ResolvedRenderLayer` | optional custom layer per state ordinal after opaque-solid exclusion | Phase 7 terrain dispatch; Phase 10 rebuild invalidation |
-| `PerDrawDynamics` / Phase-9 scope tokens | held, entity, TE, color update/reset state machine authenticated to frame/publication | Phase 7 hook glue; Phase 6 sink |
+| `PerDrawDynamics` / `IdScopeAdmission` / `IdScopeResult` / tokens | exact §4.12 main-or-authenticated-shadow entry/leave, nested restoration, neutral failure/drain; held/entity/TE state uses Phase 6 sink; color is the established Phase 7 writer | Phase 7/P8 hook glue; Phase 6 sink |
 | `HandLightPolicy` / `HeldHandsValue` / `DynamicHandLightInterop` | typed user/pack policy, static values, optional external-provider suppression only | Phase 7 hand scope; Phase 12 settings; compat glue |
 | alias/tag catalog versions and diagnostic summary | deterministic provenance and capability evidence without live MC objects | Phase 2 manifests/conformance; diagnostics |
 
@@ -761,13 +810,16 @@ properties, fallback, or precedence.
 
 | Phase 3 §5 contract | Use |
 |---|---|
-| `PackConfiguration` schema/fingerprint discipline | sole selected-pack identity and cache key |
-| `UnresolvedIdMappings`, `IdMappingParser` | existing ordinary unresolved pack rules and parsing of Phase-9-provided mod text |
+| `PackConfiguration` current schema/fingerprint discipline | accept only `CURRENT_SCHEMA_VERSION` (17 after IR-24); reject all other versions before derivation, never infer an upgrade |
+| `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser.parse(IdMappingParseRequest)` | current nested schema equals configuration schema; per-kind ABSENT/PRESENT_EMPTY/PRESENT_RULES, ordered ordinary/forced11300 rules, ENTRY/TAG and CLASSIC/MODERN provenance; use exact parserEnvironment for bounded mod bytes |
 | `ShaderPropertiesModel.engineFlags` | raw `oldHandLight` / `dynamicHandLight` requested states |
+| `EngineOptionData` current codec | decoded oldHandLight DEFAULT/TRUE/FALSE, explicit user priority; use exactly §4.11 runtime policy, not macro presence as a resolved Boolean |
 | `DiagnosticReporter` and attributed origins | warnings without exceptions or lost source location |
 
-The current exposure is at `docs/phase3/v1/PHASE_3_DOC.md:1103`–`:1125`; consumers may not reopen
-the pack at `docs/phase3/v1/PHASE_3_DOC.md:1183`–`:1186`.
+Phase 3 §§2.2/4.9/5.1/5.3 are the current schema17 owner contracts. Catalog-bound
+materialization and lossless declarations remain required alongside IR-24's amended codec.
+Only selected configuration `idMappings()` is consumed. No selected-pack reopening, macro
+reconstruction, flattened old list, fabricated alternate list or absence default is allowed.
 
 #### Phase 6
 
@@ -778,9 +830,8 @@ the pack at `docs/phase3/v1/PHASE_3_DOC.md:1183`–`:1186`.
 | `updateEntityId`, `updateBlockEntityId`, `updateEntityColor`, `updateHeldItems` | immediate-if-active replacement plus activation refresh |
 | reset/neutral rules | zero outside scope and on missing/later producers |
 
-Phase 6 explicitly exposes its runtime/events to Phase 9 at
-`docs/phase6/v1/PHASE_6_DOC.md:1183`–`:1189` and defines the sink methods at
-`docs/phase6/v1/PHASE_6_DOC.md:280`–`:292`.
+Phase 6 §§4.2/5.1 publish these sink/value contracts; P7 is the sole color writer,
+while P9 writes held/entity/TE values. Immediate-active upload and restoration stay P6-owned.
 
 #### Phase 7
 
@@ -790,40 +841,42 @@ Phase 6 explicitly exposes its runtime/events to Phase 9 at
 | `FrameBeginSignal` | world/tick/frame identity for held sampling and scope generation |
 | `UniformSignalBridge` and current uniform runtime composition | route existing frame/color signals without sampling from Phase 9 |
 | H-ENTITY-02/03 downstream hand-off | exact rows Phase 9 augments |
-| `ShaderReloadController` / pipeline transaction | build/publish/retire identity runtime with the shader pipeline after R9-2 |
+| `ShaderReloadController` / pipeline transaction | current publish-after-textures, failed-rebuild-to-off and matched worker-drain protocol in §5.3 |
 | `HookApplicationReport` | report Phase-9 row counts/classes/fallbacks |
 
-The explicit Phase 9 hand-off is `docs/phase7/v1/PHASE_7_DOC.md:1619`–`:1625`; the hook rows are
-specified at `docs/phase7/v1/PHASE_7_DOC.md:927`–`:946` and deferred at
-`docs/phase7/v1/PHASE_7_DOC.md:1019`–`:1021`.
+Current Phase 7 §§4.10/5.1/5.5 publish the hook/integration handoff; §§4.4/5.1
+authenticate shadow admission. Historical line anchors do not preserve old ungranted APIs.
 
 ### 5.3 Publication and integration protocol
 
-After R9-1/R9-2 are granted, Phase 7 extends its candidate transaction in this order:
+Phase 7's current §§4.1/5.3 ten-step transaction is canonical:
 
-1. load one Phase 3 configuration and validate its current schema/fingerprint;
-2. snapshot registries, tags, active-mod sources, and user hand-light policy;
-3. build the Phase 9 candidate off-thread where safe, retaining no Minecraft object;
-4. compose existing Phase 4/5/6 candidates and validate matching configuration/registry identity;
-5. at a render-thread no-frame boundary publish Phase 4/5/6 as their contracts require, then publish
-   the Phase 9 candidate before the pipeline becomes Active;
-6. invalidate layer/chunk products from the former Phase 9 generation;
-7. open new frames only after all publications are visible.
+1. Close admission and drain frame, bindings, shadow and Phase 10 workers/queued uploads;
+   freeze matching configuration/world/resource/hook identities and ordinal projections.
+2. Load/re-publish the current Phase 3 configuration only when its reload algebra requires it;
+   `NONE + resourceReacquire` preserves that configuration while rebuilding resource/ID inputs.
+3. Snapshot registries/tags/mod sources/user policy and build a pure Phase 9 candidate alongside
+   the coordinated Phase 4/5/6 preparation. Validate all identities before publication.
+4. At the safe boundary follow Phase 7: Phase 4 acceptance, actual generation adoption by the
+   new Phase 6 runtime, Phase 5 acceptance, then Phase 13 texture build/registration.
+5. Publish Phase 9 **after** the texture stage, install its matched lookup/ordinal bridge and
+   complete Phase 10 `IdDependentGeometryInvalidator` before atomic Active and frame admission.
+   Before the texture milestone the explicit empty slot preserves this ordering.
 
-Any failure before publication closes the new candidate and retains the old whole pipeline. If
-Phase 9 publication alone rejects after earlier components accepted, Phase 7 executes its existing
-recovered-off path; it never runs a new pipeline with old ID ordinals. Shaders-off closes Phase 9 in
-reverse composition order after all scopes are reset.
+Every failed coordinated rebuild converges off, including failure before any acceptance. A pure
+builder's no-mutation guarantee does not retain the old renderable pipeline. Rejected candidates
+remain caller-owned; accepted publications are retired by their publishers, never caller-closed.
+After partial acceptance Phase 7 resets/deactivates IDs, completes required geometry invalidation
+and executes its compensating-off path. Shaders-off resets scopes and retires lookup/map only
+after the final frame and worker borrows drain. No failure pairs a new registry/atlas with old IDs.
 
-### 5.4 Requested dependency changes — flagged, never assumed
+### 5.4 Dependency adoption ledger — unverified
 
-| ID | Owner | Requested binding change | Blocked feature |
+| ID | Owner | Current disposition | Remaining gate |
 |---|---|---|---|
-| R9-1 | Phase 3 | Replace/extend the ID surface with a schema-versioned `IdMappingInput` that preserves per-kind file state (`ABSENT`, `PRESENT_EMPTY`, `PRESENT_RULES`), ordinary and forced-11300 entity parse results, per-rule `MappingEra`, and `SelectorKind.ENTRY/TAG`; expose the same pure parser operation for Phase-9-provided mod bytes. Increment `CURRENT_SCHEMA_VERSION` because the published shape/meaning changes. | exact no-file fallback, entity retry, `%` tags, ambiguous modern `grass`/lamp bridge |
-| R9-2 | Phase 7 | Add Phase 9 candidate/publication to the coordinated safe-boundary pipeline lifecycle; call held/reset hooks at the accepted-frame boundary; order ID augmentation inside H-ENTITY-02/03; refine H-COLOR to expose the exact `GlStateManager.glTexEnv(int,int,FloatBuffer)` `GL_TEXTURE_ENV_COLOR` buffer/current scope; add Phase-9 rows to `HookApplicationReport` and registry-remap/resource reasons. | all in-game publication, held/ID scopes, real `entityColor`, coherent layer/chunk invalidation |
-
-Both requests change binding §5 surfaces and therefore require owner fix-up plus fresh verification
-before Phase 9 implementation or Phase 10 consumption. Phase 9 does not edit either dependency.
+| R9-1 | Phase 3 | owner-designed, receiver-adopted in §5.2: current schema-bound input/parser, state/era/tag/alternate semantics | fresh Phase 3/9 verification; provisional concrete tag grammar authority remains P3-owned |
+| R9-2 | Phase 7 | owner-designed, receiver-adopted in §§4.12–4.14/5.3: coordinated ID publication, held/reset hooks, health, resource/remap reasons; color uses P7's v0.1 writer | fresh Phase 7/9 review, including authenticated shadow admission amendment |
+| R10-3 | Phase 10 → Phase 9 | adopted §§4.1/5.3: failure-to-off and matched lookup/ordinal lifetime until worker drain | fresh Phase 9/10 verification; no new publisher or generation equality |
 
 ### 5.5 Downstream hand-offs
 
@@ -845,7 +898,7 @@ before Phase 9 implementation or Phase 10 consumption. Phase 9 does not edit eit
 | entity modern retry empty/invalid | entity map for that source remains empty; IDs use neutral 0 | 2a |
 | missing pack `block.properties` | deliberate live vanilla numeric fallback after explicit mod rules | normal fallback |
 | registry snapshot inconsistent or unavailable | do not publish candidate; if current ordinals are stale, recover shaders off rather than use them | 4/5 |
-| candidate build failure during ordinary reload | keep old whole pipeline when identities remain valid; report failure | 2a |
+| candidate build failure during ordinary reload | local publisher unchanged, but Phase 7 coordinated rebuild takes the whole composition off; report failure | 5 |
 | Phase 9 publish rejects after partial pipeline publication | Phase 7 recovered-off transaction; close candidates in reverse order | 5 |
 | stale alias/frame/build generation | mutation-free rejection; ID draw omitted/neutral, stale mesh discarded and rebuilt | 2a |
 | entity/TE/color stack overflow, wrong token, underflow, or throwable leak | reset all three cells to neutral, disable affected producer for frame, Phase 7 drains/aborts safely | 2a |
@@ -969,7 +1022,7 @@ match.
 | resolved custom render layers | v0.3 | opaque exclusion + terrain scene |
 | held IDs/static lights/old mode/dynamic interop disposition | v0.3 | recording sink + hand scenes |
 | entity and TE ID scopes | v0.3 | nested/throw hook tests + scenes |
-| exact vanilla-argument `entityColor` | v0.3 | H9-COLOR hook test + hurt/creeper scenes |
+| exact vanilla-argument `entityColor` | v0.1 Phase 7 producer, reused v0.3 | P7 H-COLOR hook test + hurt/creeper scenes; no ID-runtime prerequisite |
 | further modern alias/tag catalog entries | post-v0.5 | named fixture + catalog version/addendum; never heuristic |
 
 Every component is architected here. The final row is data growth, not a deferred rewrite of the
@@ -980,9 +1033,9 @@ resolver or publication shape.
 ## 10. OQ & spike specifications
 
 Phase 9 owns no open question in §G10 or its Part II assignment. No spike is authorized or needed.
-The missing Phase 3/7 surfaces are requested dependency corrections with deterministic fallback
-behavior, not OQs: until granted, their named features are gated and shaders remain on the last
-coherent publication or off.
+Current producer grants are adopted as unverified contracts in §5.4, not new OQs.
+Until fresh owner/consumer verification their implementation remains gated; a failed
+coordinated rebuild goes off, never resumes the old pipeline.
 
 ---
 
@@ -1004,6 +1057,9 @@ coherent publication or off.
 | D-P9-10 | Publish dense-ordinal primitive lookups and the exact packed `mc_Entity` result. This keeps `:engine` MC-free, makes stale generations explicit, and prevents name/property work on vertex hot paths. |
 | D-P9-11 | Resolve custom layers per block state and refuse every solid opaque cube before publication. Phase 7 consumes the decision; Phase 9 never mutates vanilla layers directly. |
 | D-P9-12 | Hook both RenderManager entry methods and make scopes nestable/idempotent for the same entity. MCP/App E show both are valid entry points; assuming only their current internal call relation would be brittle. |
+| D-P9-13 | Adopt current P3 schema/input and P7 publish-after-textures/off-on-failure; preserve local pure-builder no mutation and drain matched lookup/ordinal borrows before close (IR-03/04/09). |
+| D-P9-14 | Admit ID scopes through authenticated main or shadow capability, restore nested values before release, and never activate main programs in shadow (IR-22). |
+| D-P9-15 | Reuse the P7-owned v0.1 color-only producer; P9 defines operand-capture semantics but adds no writer or later-milestone deferral. Preserve exact oldHandLight default/true/false user-over-pack codec and local true fallback (IR-11/24). |
 
 ### 11.2 Input contradictions and rulings
 
@@ -1014,35 +1070,32 @@ coherent publication or off.
 2. **Pintonium fallback vs “re-derive values.”** Its fallback is a curated modern-name list with
    magic compatibility IDs, not a live 1.12 projection. The Phase assignment says re-derive values;
    §4.8 uses live vanilla numeric registry IDs.
-3. **Phase 9 assignment vs Phase 7 `entityColor` ownership.** The assignment gives Phase 9 value
-   computation/delivery, while Phase 7 already catalogs a RETURN-only H-COLOR producer. The existing
-   hook cannot observe the computed operands. R9-2 retains Phase 7 hook ownership but delegates exact
-   value capture/policy to this design; no duplicate mixin is assumed.
-4. **11300 retry vs Phase 3 no-reopen rule.** The Phase 9 assignment requires a second parse, but
-   Phase 3 forbids consumers from reopening the pack and publishes neither raw text nor an alternate.
-   R9-1 makes Phase 3 publish the safe alternate, preserving its ownership and seam.
+3. **Color assignment overlap.** RC3 Phase 6's full-inventory v0.1 obligation and Phase 9's
+   explicit value-delivery assignment are reconciled by §4.13: P7 installs the color-only producer
+   at v0.1 using these semantics, P9 reuses it at v0.3. No authority rewrite is implied.
+4. **11300 retry versus no-reopen.** Phase 3 now publishes the alternate and presence/era data;
+   §5.2 adopts that grant instead of retaining the historical missing-surface claim.
 
 No contradiction with RESEARCH D-1…D-10 was found.
 
 ### 11.3 Open items and hand-offs
 
-- R9-1 and R9-2 are hard implementation gates; integration review must verify both were actually
-  granted and freshly verified rather than inferred from this document.
-- Phase 10 must decide its chunk-build stale-result scheduling but may not change alias bit semantics
-  or resolve names itself.
+- R9-1/R9-2 and R10-3 are adopted/unverified as §5.4 records; fresh owner/consumer reviews,
+  not another invented API, gate implementation.
+- Phase 10 owns stale-result scheduling and matched lookup/ordinal-map worker draining; it
+  may not change alias bits or resolve names itself.
 - The v0.3 `LegacyTagCatalog` data set must be derived from the target pack matrix and live 1.12
   registries under the explicit provider rules. Unknown tags already have a complete fallback.
-- Phase 12 must supply the higher-priority user old-hand-light setting. Until then the typed default
-  is `true`; no GUI is invented here.
+- Phase 12 supplies the higher-priority decoded oldHandLight tri-state under the current codec;
+  DEFAULT delegates to the pack then §4.11's local true fallback, not an unconditional GUI true.
 - An external dynamic-lights adapter is optional and must be separately compatibility-gated. Its
   absence does not reduce shader identity conformance.
 
 ### 11.4 Requested upstream changes
 
-- Apply R9-1 to `docs/phase3/v1/PHASE_3_DOC.md` through §G1.3, increment its schema, and run the fresh
-  review owed by the §5 change.
-- Apply R9-2 to `docs/phase7/v1/PHASE_7_DOC.md` through §G1.3 and run the fresh review owed by its §5
-  and hook-ledger changes.
+- Freshly verify Phase 3's current ID and engine-option schema grant and this receiver's §5.2.
+- Freshly verify the coordinated Phase 7/9/10 §5 lifecycle, shadow-admission and color producer
+  amendments; no historical PASS is promoted to current integration clearance.
 - In the next design candidate, qualify PD §8's “tag expansion … working in production” summary as
   modern-only in this checkout, with the 1.12 shim still required. This document does not modify
   `DESIGN.md` or PD.
@@ -1051,10 +1104,9 @@ No contradiction with RESEARCH D-1…D-10 was found.
 
 ## 12. Implementation checklist
 
-1. **[v0.3]** Land and freshly verify Phase 3 R9-1: file states, alternate entity parse,
-   `MappingEra`, tag selector, schema bump, and named parser tests.
-2. **[v0.3]** Land and freshly verify Phase 7 R9-2: candidate lifecycle, accepted-frame call,
-   H-ENTITY ordering, exact H-COLOR observation, reload reasons, and hook report.
+1. **[v0.3]** Freshly verify adopted Phase 3 R9-1/current schema, parser and engine-option codec.
+2. **[v0.3]** Freshly verify adopted Phase 7 R9-2 and Phase 10 R10-3: lifecycle/drain,
+   accepted-frame hooks, main/shadow ID ordering, existing P7 color producer and hook report.
 3. **[v0.3]** Implement/validate `IdRegistrySnapshot` schema and scripted snapshot tests; add D-6
    forbidden-type checks.
 4. **[v0.3]** Implement the bounded jar/directory `ModIdSourceSnapshot` adapter and containment/order
@@ -1078,8 +1130,8 @@ No contradiction with RESEARCH D-1…D-10 was found.
     interop optional and separately gated.
 14. **[v0.3]** Implement H9-ENTITY-ID and H9-BLOCK-ENTITY-ID balanced stacks, injection-order tests,
     throw drain, and hook health rows.
-15. **[v0.3]** Implement H9-COLOR exact-argument capture/neutral restoration and hurt/creeper/nested
-    layer tests without suppressing vanilla's original FF call.
+15. **[v0.3]** Verify reuse of P7's v0.1 H9-COLOR-01/02 exact-argument capture/restoration
+    in alias scenes; preserve the original FF call and install no duplicate color hooks.
 16. **[v0.3]** Run the headless scripted-registry suite and licensed Phase 2 T0/T1 scenes; record
     manifests/hashes only and meet the full §8.3 gate.
 17. **[post-v0.5]** Extend alias/tag catalog data only through named fixtures, live-target proofs,

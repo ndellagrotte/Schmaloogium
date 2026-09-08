@@ -6,14 +6,14 @@
 - **Milestone:** v0.5 (`docs/design/v3/DESIGN.md:2438`; RESEARCH v0.5 row at
   `docs/research/v1/RESEARCH.md:951`)
 - **Module/package:** `:engine` texture policy plus `:mod` glue and mixins — §2.1 states the exact
-  placement and the one pending Phase 1 package grant
+  placement and Phase 1's owner-designed/receiver-adopted, unverified texture-package grant
 - **Declared dependencies:** Phases 3, 5, 7 (`docs/design/v3/DESIGN.md:625`)
 - **Assigned open questions:** none — the phase row's `OQs` cell is `—`
   (`docs/design/v3/DESIGN.md:2438`)
 - **Governing design:** `docs/design/v3/DESIGN.md`, Part I §G0–§G12 and the Phase 13 specification
   only
-- **Design status:** coordinated architecture-only rebuild through §0.6; unverified
-- **Date:** 2026-09-06
+- **Design status:** architecture-only integration amendment through §0.7; unverified
+- **Date:** 2026-09-07
 
 The commissioning request explicitly selected v3, so every `DESIGN.md` coordinate in this document
 was re-derived from `docs/design/v3/DESIGN.md`'s own headings and endpoints rather than shifted from
@@ -149,6 +149,20 @@ loop is part of this build.
 
 §5 changed in this coordinated rebuild. Unverified; a fresh whole-document review returning literal PASS is required before verified downstream consumption. v1 retained; no directory roll.
 
+### 0.7 Integration consumer amendment — IR-03/04/06/08/21/23/24
+
+Active §§1–5/8/9/11/12 adopt Phase 3's catalog-bound same-build configuration and lossless
+texture declarations, schema 17 after the coordinated IR-24 codec amendment; independent
+decoded normal/specular preferences precede load. Phase 1 package, Phase 3 R1, Phase 6
+R7-10/11 and Phase 8 R7-12/13 grants are owner-designed and receiver-adopted here, **unverified**,
+not still absent. P7 owns authenticated current-bind delivery to P6; P5 retains all physical
+draw binding. P14 consumes exact parameter/lifetime policy only, with optional extensions gated.
+Reads: current owner grants and §5 contracts, P12 reload/codec and P3 incorporated option,
+texture/persistence contracts, RESEARCH §§0–1 and v3 Phase 12/13 scopes. Historical addenda
+and quotations above remain history, not active stripped-suffix or unchanged-load fallbacks.
+§5 changed; fresh whole-document verification remains required. No implementation or validation
+was performed and no PASS/conformance claim is made.
+
 ---
 
 ## 1. Scope & boundaries
@@ -181,8 +195,8 @@ Phase 13 owns the texture estate that is not a framebuffer attachment:
 | Uploading sampler integers for those units, and uploading the `atlasSize` ivec2 | **Phase 6**; Phase 13 is the *value source* for `atlasSize` only (`docs/design/v3/DESIGN.md:2479`–`:2481`) |
 | Tangent-frame math and any shading that consumes the sampled normals | **Phase 10** (`docs/design/v3/DESIGN.md:2485`–`:2486`) |
 | labPBR channel semantics — what the specular channels *mean* | **pack-side convention; engine-neutral.** G8 advertises it (`docs/design/v3/DESIGN.md:2486`); Phase 13 delivers bytes and interprets none of them |
-| Parsing texture keys, normalized suffix disposition, retained sidecar references and noise options | **Phase 3** (`docs/phase3/v1/PHASE_3_DOC.md:1482-1510`); Phase 13 never reparses properties |
-| Emitting `MC_NORMAL_MAP` / `MC_SPECULAR_MAP` | **Phase 3**, pending §5.3 R1; Phase 13 supplies a static preliminary value before load, not a completed plan |
+| Parsing texture keys, lossless declaration disposition, retained sidecar references and noise options | **Phase 3 §5.1**; schema 17 retains schema-16 lossless declarations; Phase 13 never reparses properties |
+| Emitting `MC_NORMAL_MAP` / `MC_SPECULAR_MAP` | **Phase 3 §5.1**, R1 owner-designed and adopted here, unverified; Phase 13 supplies independent preliminary values before load, not completed linked demand |
 | Alias-derived id values, held-item and entity id delivery | **Phase 9** |
 | Frame/pass transactions, same-selector orchestration and coherent reload publication | **Phase 7**; Phase 13 contributes an owner, immutable publication, restricted lease source and hooks, not frame policy |
 | Sampler objects, asynchronous transfers, PBO uploads, and any performance rework of these paths | **Phase 14** (`docs/design/v3/DESIGN.md:1686`–`:1687`) |
@@ -212,18 +226,13 @@ resource manager, or GL lives in `:mod`.
 
 | Layer | Package | Contents |
 |---|---|---|
-| `:engine` | `com.schmaloogium.engine.textures` *(pending grant — see below)* | companion-atlas planning, the noise generator, custom-texture spec resolution, `.mcmeta` interpretation, the overlay registry model, `atlasSize` values, closed results and failures. No Minecraft, Forge, Cleanroom, Mixin, or LWJGL type. |
-| `:mod` | `com.schmaloogium.mod.glue.textures` *(pending grant)* | the atlas source adapter over `TextureMap`/`TextureAtlasSprite`, the resource-manager reader, the Forge stitch-event listener, and the facade-backed uploader |
-| `:mod` | `com.schmaloogium.mod.mixin.textures` *(pending grant; `com.schmaloogium.mod.mixin` is already allocated to Phase 13)* | the dumb accessor and tick hooks of §4.6 |
+| `:engine` | `com.schmaloogium.engine.textures` | companion planning, noise, custom spec resolution, sidecar policy, candidate/atlas values, failures; no Minecraft/Forge/LWJGL |
+| `:mod` | `com.schmaloogium.mod.glue.textures` | atlas/resource adapters, stitch and actual-bind observation, facade-backed uploads |
+| `:mod` | `com.schmaloogium.mod.mixin.textures` | dumb accessors/tick observations in §4.6 |
 
-`docs/phase1/v14/PHASE_1_DOC.md:1530`–`:1543` lists no `engine.textures` package. Phase 7 and Phase 8
-each received an analogous three-package allocation (`engine.frame`/`mod.glue.frame`/
-`mod.mixin.frame` at `:1537`, `:1551`, `:1554`; the shadow trio at `:1539`, `:1552`, `:1555`), so
-this is the established pattern rather than a new mechanism. §5.3 request **R3** asks Phase 1 for it.
-The fallback if R3 is not granted is bounded and already safe: Phase 1 explicitly names
-`com.schmaloogium.mod.mixin` as a Phase 13 package (`docs/phase1/v14/PHASE_1_DOC.md:1553`), so the
-mixins have a granted home regardless, and only the engine and glue package *names* are pending. No
-type, contract, or behavior in this document depends on which name is granted.
+Phase 1 §§0.24/2.1/5.1 grants these exact three homes. R3 is owner-designed and
+receiver-adopted, **unverified**; no alternate package or missing-name fallback remains.
+The grant adds no facade verb or module edge and does not relax C-1…C-4.
 
 C-1 is honored by construction: nothing in `engine.textures` references a Minecraft, Forge,
 Cleanroom, Mixin, or LWJGL type, and the atlas is presented to it as a plain immutable descriptor
@@ -259,7 +268,8 @@ public enum TextureLeaseRejection {
     REGISTRY_FINGERPRINT_MISMATCH, STALE_SELECTION
 }
 public record PreliminaryCompanionDemand(
-    boolean packActive, boolean fixedUnitCapabilityAvailable) {}
+    boolean packActive, boolean fixedUnitCapabilityAvailable,
+    boolean normalMapEnabled, boolean specularMapEnabled) {}
 public record CompanionMacroState(boolean normalMap, boolean specularMap) {}
 public final class CompanionMacroPolicy {
     public static CompanionMacroState preliminaryMacroState(PreliminaryCompanionDemand demand);
@@ -334,6 +344,12 @@ public sealed interface TextureSourceIdentity {
         long objectEpoch) implements TextureSourceIdentity {}
 }
 public record TextureParameterSpec(MinFilter minFilter, MagFilter magFilter, WrapMode wrap) {}
+public enum MinFilter {
+    NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, LINEAR_MIPMAP_NEAREST,
+    NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_LINEAR
+}
+public enum MagFilter { NEAREST, LINEAR }
+public enum WrapMode { REPEAT, CLAMP_TO_EDGE }
 public record TextureParameterFingerprint(String value) {}
 public record TextureSourceCatalog(long resourceReloadEpoch, List<TextureSourceAsset> assets) {}
 public sealed interface TextureSourceAsset {
@@ -458,18 +474,18 @@ architectural checks**, specified with input → observable outcome in §8, not 
 
 | # | Contract → design | Provenance | Check |
 |---|---|---|---|
-| F5-1 | Parsed normalized key → §4.3.1 exact name retained | `[V:doc]` `docs/research/v1/RESEARCH.md:1484-1484`; `docs/phase3/v1/PHASE_3_DOC.md:1482-1488` | `sharedUnit_exactNameAndOrdinal` |
-| F5-2 | Numeric discriminator remains separate → original key/ordinal on each candidate | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:117-117`; `docs/phase3/v1/PHASE_3_DOC.md:1485-1486` | `sharedUnit_exactNameAndOrdinal` |
+| F5-1 | Typed complete key → §4.3.1 exact name retained | `docs/phase3/v1/PHASE_3_DOC.md` §5.1 TextureBindingKey / lossless declaration contract | `sharedUnit_exactNameAndOrdinal` |
+| F5-2 | Numeric discriminator remains separate → original key/ordinal on each candidate | `docs/phase3/v1/PHASE_3_DOC.md` §5.1 exact discriminator and canonical-order contract | `sharedUnit_exactNameAndOrdinal` |
 | F5-3 | Pack-relative PNG → owned decoded upload, §4.3.2 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:91-91` | `publication_contentIdentity` |
 | F5-4 | Minecraft decoded asset → owned upload, §4.3.2 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:95-95` | `publication_contentIdentity` |
 | F5-5 | Dynamic lightmap → borrowed live object, §4.3.2 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:98-98` | `publication_foreignReloadIdentity` |
 | F5-6 | Atlas resource → borrowed live object, §4.3.2 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:99-99` | `publication_foreignReloadIdentity` |
 | F5-7 | `_n`/`_s` source variants → companion/default identity, §4.3.2 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:100-101` | `companion_discoveryPerSprite` |
 | F5-8 | Raw path/target/internal format/dimensions/transfer → §4.3.3 source-bearing upload | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:104-110` | `sharedUnit_programSpecificTargets` |
-| F5-9 | Four raw targets retain arities 1/2/3/2 → §4.3.3 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:106-110`; `docs/phase3/v1/PHASE_3_DOC.md:1493-1498` | `sharedUnit_fullSamplerShape` |
+| F5-9 | Four raw targets retain arities1/2/3/2 → §4.3.3 | `docs/phase3/v1/PHASE_3_DOC.md` §5.1 CustomTextureSpec.Raw | `sharedUnit_fullSamplerShape` |
 | F5-10 | Several target types per fixed unit, one type per program → §4.3.4 Phase4 layout + Phase5 selection | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:112-116`; `docs/research/v1/RESEARCH.md:1488-1490` | `sharedUnit_programSpecificTargets`, `sharedUnit_incompatibleAliasesBeforeBind` |
-| F5-11 | Sidecar blur → §4.3.5 effective filter | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:118-119`; `docs/phase3/v1/PHASE_3_DOC.md:750-750` | `custom_mcmetaBlurSetsFilter` |
-| F5-12 | Sidecar clamp → §4.3.5 effective wrap | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:118-119`; `docs/phase3/v1/PHASE_3_DOC.md:750-750` | `custom_mcmetaClampSetsWrap` |
+| F5-11 | Sidecar blur → §4.3.5 effective filter | `docs/phase3/v1/PHASE_3_DOC.md` §5.1 TextureSidecarRef; independent of unresolved keys | `custom_mcmetaBlurSetsFilter` |
+| F5-12 | Sidecar clamp → §4.3.5 effective wrap | `docs/phase3/v1/PHASE_3_DOC.md` §5.1 TextureSidecarRef; independent of unresolved keys | `custom_mcmetaClampSetsWrap` |
 | F5-13 | Gbuffers → gbuffers+shadow copies, §4.3.1 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:83-83` | `custom_stageExpansionExact` |
 | F5-14 | Deferred → deferred only, §4.3.1 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:84-84` | `custom_stageExpansionExact` |
 | F5-15 | Composite → composite+final copies, §4.3.1 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:85-85` | `custom_stageExpansionExact` |
@@ -504,9 +520,9 @@ architectural checks**, specified with input → observable outcome in §8, not 
 | # | Contract → design | Provenance | Check |
 |---|---|---|---|
 | D-1 | Bound atlas extent as ivec2 → §4.4 Known/Unknown | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:177-177`; `[D-P13-9]` PD §11, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:638-639` | `atlasSize_valueAndValidityWindow` |
-| F3-1 | Noise absent baseline disabled/256 → §4.2.1 | `[V:doc]` `docs/phase3/v1/PHASE_3_DOC.md:1543-1544`; `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:422-422` | `noise_resolutionFromRequirementsAndBaseline` |
-| M-1 | Normal macro option → §4.1.6 preliminary producer and requested Phase3 input | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:655-655`; `[D-P13-10]` PD §7.6, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:470-474` | `macro_beforeJcppAndUngrant` |
-| M-2 | Specular macro option → §4.1.6 preliminary producer and requested Phase3 input | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:656-656`; `[D-P13-10]` PD §7.6, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:470-474` | `macro_beforeJcppAndUngrant` |
+| F3-1 | Noise absent baseline disabled/256 → §4.2.1 | `docs/phase3/v1/PHASE_3_DOC.md` §5.1 ResourceRequirements baseline | `noise_resolutionFromRequirementsAndBaseline` |
+| M-1 | Normal macro option → §4.1.6 independent preliminary preference and adopted Phase3 input | `[V:doc]` Phase3 §5.1; `[D-P13-10]` | `macro_independentPreferencesBeforeJcpp` |
+| M-2 | Specular macro option → §4.1.6 independent preliminary preference and adopted Phase3 input | `[V:doc]` Phase3 §5.1; `[D-P13-10]` | `macro_independentPreferencesBeforeJcpp` |
 
 ### 3.5 Hook and Pintonium do-not-inherit ledger
 
@@ -519,35 +535,29 @@ identifiers or a dependency's ungranted implementation.
 | E-11 | `[V:mcp]` `docs/research/v1/RESEARCH.md:1411-1411` | §4.6 H13-SPRITE-01 read-only metadata/counter accessors; H13-SPRITE-02 dormant |
 | PD-1 | `[V:observed — Pintonium targets/backed/NoiseTexture]` PD §11/§18, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:621-625`, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:815-815`; `[D-P13-3]` | RESEARCH `docs/research/v1/RESEARCH.md:596-597` requires xorshift, not Random(0) → `noise_signedRecurrence` |
 | PD-2 | `[V:observed — Pintonium]` PD §18, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:808-808`; `[D-P13-16]` | App B.3 `docs/research/v1/RESEARCH.md:1228-1255` rejects dynamic units → `sharedUnit_fixedRangeAndShadowAlias` |
-| PD-3 | `[V:observed — Pintonium]` PD §7.4/§11, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:447-448`, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:626-630`; `[D-P13-6]` | Phase3 `docs/phase3/v1/PHASE_3_DOC.md:749-750` strips key suffix, separately retains sidecar; DESIGN `docs/design/v3/DESIGN.md:2476-2478` requires honoring suffix → U1 pending, sidecar checks cover only granted retention |
+| PD-3 | Historical Pintonium suffix gap; `[D-P13-6]` | Current Phase3 §5.1 preserves every texture declaration and unresolved disposition without stripping; DESIGN v3 Phase13 requires suffix honoring → U1 authority/typed-sampling gate remains, independent sidecars work |
 | PD-4 | `[V:observed — Pintonium texture/pbr/PBRTextureManager]` PD §11, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:631-637`; `[D-P13-4]` | RESEARCH `docs/research/v1/RESEARCH.md:594-595` requires full atlases, not per-bound-id keying → `companion_layoutAndMipChainMatchBase` |
 | PD-5 | `[V:observed — Pintonium uniforms]` PD §11, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:638-639`; `[D-P13-9]` | Shipped `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:177-177` requires real bound extent → `atlasSize_valueAndValidityWindow` |
-| PD-6 | `[V:observed — Pintonium PackRenderTargetDirectives]` PD §17, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:799-799`; `[D-P13-12]` | Accepted atlas cost `docs/design/v3/DESIGN.md:2499-2500`; post-analysis unused allocation may be skipped, never change pre-jcpp macro policy → `macro_beforeJcppAndUngrant` |
+| PD-6 | `[V:observed — Pintonium PackRenderTargetDirectives]` PD §17 B13; `[D-P13-12]` | Optional post-analysis unused allocation may be skipped, never enable a disabled preference or change pre-jcpp macro policy → `macro_independentPreferencesBeforeJcpp` |
 | PD-7 | `[V:observed — Pintonium ProgramSamplers]` PD §17, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:796-796`; `[D-P13-17]` | App F.5 required binding `docs/research/v1/RESEARCH.md:1488-1490` needs closed outcomes, not false boolean → `binding_absenceVersusIncompatibility` |
 | PD-8 | `[V:observed — Pintonium]` PD §11, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:626-629`; `[D-P13-15]` | `docs/design/v3/DESIGN.md:2471-2476` and `docs/research/v1/RESEARCH.md:1488-1490`: accept required v0.5 shared-unit capability through exact pack names, effective linked layouts and typed candidates; reject only generated customtexN names/source patching → `sharedUnit_programSpecificTargets` |
 
 ### 3.6 Input contradictions and binding rulings
 
-1. Phase3 publishes the base sampler **"after removing a recognized terminal filter/wrap suffix"**
-   and says it is **"stripped and ignored"** (`docs/phase3/v1/PHASE_3_DOC.md:1483-1485`;
-   conformance `docs/phase3/v1/PHASE_3_DOC.md:749-749`). Separately, it retains the normalized
-   sidecar without opening/interpreting it (`docs/phase3/v1/PHASE_3_DOC.md:1498-1500`;
-   `docs/phase3/v1/PHASE_3_DOC.md:750-750`). Phase13 accepts this normalized boundary, never
-   reconstructs discarded settings, and honors retained sidecars. DESIGN says suffixes
-   **"are stripped and ignored there"** and **"ours must honor them"**
-   (`docs/design/v3/DESIGN.md:2476-2478`). These incompatible statements remain routed to
-   Phase3/DESIGN U1, not silently reconciled. PD explicitly supports "pack PNG with `.mcmeta`
-   blur/clamp" (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:626-626`); no claim that PD
-   ignores sidecars, or that unlisted suffix behavior cannot exist, survives. `[D-P13-6]`
-2. Phase5's old narrow domain was an architectural shortfall. The coordinated full
-   `FixedSamplerName`/candidate/binding contract now fulfills R2 architecturally, including
-   colortex fullscreen overrides. D-P13-11's legal-input fallback is historical/superseded.
-   Fresh verification and Phase6/8 consumer grants remain implementation gates.
-3. Review36 cleared the original Phase7 gate, and Review38 certified prior Phase5 bytes
-   (`docs/phase7/reviews/PHASE_7_REVIEW_36.md:107-123`,
-   `docs/phase5/reviews/PHASE_5_REVIEW_38.md:61-62`). Neither certifies this changed §5.
-   Phase3 remains provisional under applied Review36 resolutions and no fresh PASS
-   (`docs/phase3/reviews/PHASE_3_REVIEW_36.md:270-292`, `docs/phase3/reviews/PHASE_3_REVIEW_36.md:322-328`).
+1. Current Phase3 §5.1 retains the complete decoded `texture.*` declaration stream before
+   collapse, including unresolved keys and invalid values. Its typed `textures()`/`noise()`
+   projections do not strip guessed suffixes into a base key. Phase13 adopts both surfaces
+   without reparsing `[D-P13-6]`. DESIGN v3 Phase13's **"ours must honor them"** still needs
+   U1 authority to specify grammar, defaults, duplicate/discriminator/source association,
+   source-kind applicability, sidecar precedence and invalid-input policy, then a new
+   Phase3 typed sampling-state amendment. Lossless retention is not suffix conformance.
+   Existing sidecar semantics remain independently granted; no assertion that PD ignores
+   sidecars or that missing documentation disproves suffix behavior is made.
+2. Phase5's full FixedSamplerName/candidate/binding protocol fulfills R2 architecturally.
+   Phase6 R7-10/11 and Phase8 R7-12/13 are owner-designed and receiver-adopted, unverified,
+   not missing grants. Old narrow fallback D-P13-11 is historical.
+3. Historical PASS covers historical bytes only. Current Phase3 schema17, Phase1 package
+   grants and coordinated owner/consumer §5 contracts all require fresh whole-document reviews.
 4. C-TX01 remains unresolved: RESEARCH's `0xFF7F7FFF` wins over PD's `0x7F7FFFFF`
    (`docs/research/v1/RESEARCH.md:595-595`, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:632-632`,
    `docs/design/v3/DESIGN.md:1088-1088`). §4.1.4 states byte-order assumption without silently swapping it.
@@ -559,12 +569,13 @@ identifiers or a dependency's ungranted implementation.
 
 #### 4.1.1 Demand and enablement
 
-Before controller-owned Phase3 load, Phase7 computes `PreliminaryCompanionDemand` solely from
-selected-pack/off state and fixed-unit capabilities. `CompanionMacroPolicy.preliminaryMacroState`
-is static, pure and total: both output booleans equal
-`demand.packActive() && demand.fixedUnitCapabilityAvailable()`. It needs no owner, atlas, GL,
-configuration, registry, linked declarations or completed plan. Choose ALWAYS_ON_FALLBACK before
-preprocessing; no post-jcpp `ResourceRequirements` can be a preprocessor producer.
+Before controller-owned Phase3 load, Phase7 obtains decoded independent user preferences
+`normalMapEnabled` and `specularMapEnabled` from Phase3's global codec (each absent-key
+default true), plus selected-pack/off state and fixed-unit capability. The static pure policy
+computes `normalMap = packActive && fixedUnitCapabilityAvailable && normalMapEnabled` and
+`specularMap = packActive && fixedUnitCapabilityAvailable && specularMapEnabled` `[D-P13-20]`.
+It needs no texture owner, atlas, GL operation, configuration, registry or linked declaration.
+All four preference pairs are meaningful. Never use completed linked demand before preprocessing.
 
 ```java
 public record CompanionPolicy(boolean normalsEnabled, boolean specularEnabled,
@@ -572,11 +583,14 @@ public record CompanionPolicy(boolean normalsEnabled, boolean specularEnabled,
 public enum CompanionDemandSource { DECLARED_SAMPLERS, ALWAYS_ON_FALLBACK, CAPABILITY_GATED_OFF }
 ```
 
-After analysis, R4 may avoid allocating an unused physical companion by setting DECLARED_SAMPLERS,
-using published demand, without changing either already-chosen macro boolean. Without R4, both
-companions are allocated for active/capable packs (the accepted cost,
-`docs/design/v3/DESIGN.md:2499-2500`); otherwise CAPABILITY_GATED_OFF. Build failure cannot change
-already-preprocessed source policy: it follows the coherent transaction's failure rule.
+Without optional R4, allocate each enabled kind and **only** that kind according to the
+already-chosen pair (ALWAYS_ON_FALLBACK); inactive/incapable yields CAPABILITY_GATED_OFF.
+With R4, physical demand may only reduce an enabled kind's allocation, never enable a false
+macro or revise preprocessing provenance. Disabled kind discovery/upload/animation allocation
+is zero and its companion cell is `Absent(NOT_CONFIGURED)`. P5 still owns required compatible
+neutral/fallback binding and typed suppression; disabled companions never authorize stale unit
+reuse. Explicit pack custom textures remain a separate source policy, not a backdoor companion.
+Build failure follows coherent compensation; it cannot alter the same-build macro pair.
 
 #### 4.1.2 Sprite companion discovery
 
@@ -655,20 +669,17 @@ missing object suppresses only the program under the typed bind result; no unrel
 
 #### 4.1.6 `MC_NORMAL_MAP` / `MC_SPECULAR_MAP` wiring
 
-§2.2 publishes the static preliminary producer and both boolean records. Phase7 adapts its result
-to the **requested**, Phase3-owned `CompanionOptionMacros(boolean normalMap,boolean specularMap)`
-input before load/jcpp. R1 specifies the exact new PackLoadRequest component and same-build
-materialization/fingerprint propagation in §5.3. `TexturePlan.macroState` is provenance of the
-already-chosen state, never its producer.
+§2.2 publishes the preliminary producer. Phase7 adapts its result to Phase3-owned required
+`CompanionOptionMacros(boolean normalMap,boolean specularMap)` immediately after engineOptions
+in `PackLoadRequest`, **before load/jcpp**. Phase3 §5.1 retains the exact pair in
+MacroConfiguration and same-build materialization and both fingerprints. TexturePlan retains
+that provenance unchanged and rejects a pair inconsistent with its configuration.
+Missing non-Off data is INVALID_REQUEST; Off short-circuits; earlier milestones pass explicit
+(false,false), never call an old API. R1 is adopted/unverified, not absent.
 
-Current Phase3 materialization accepts only `Empty` or `DefineCenterDepthSmooth`
-(`docs/phase3/v1/PHASE_3_DOC.md:532-640`) and load runs jcpp before publishing configuration
-(`docs/phase3/v1/PHASE_3_DOC.md:644-666`). The singular Phase6 contributor remains untouched.
-Until R1 is granted, invoke the unchanged load API, emit neither macro and never patch later
-shader text. PBR macro conformance remains explicitly blocked, not “available by construction.”
-The placement decision `[D-P13-10]` checks the shipped meaning
-(`reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:655-656`) against PD §7.6's macro family
-(`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:470-474`); it does not adopt a new macro bag.
+The separate materializer contribution remains Empty/DefineCenterDepthSmooth, not a general
+macro bag. P13 injects no macro text, uses no renderer-feature second gate, and never selects
+macros from linked-program demand. `[D-P13-10]` preserves P3 emission ownership.
 
 #### 4.1.7 Sprite animation
 
@@ -696,9 +707,9 @@ snapshots and atlasSize before vanilla replacement. No Minecraft object reaches 
 
 #### 4.2.1 Sizing and enablement
 
-Resolution and enablement come from Phase 3's `ResourceRequirements.noise`, a
-`NoiseRequirement(boolean enabled, int resolution)` (`docs/phase3/v1/PHASE_3_DOC.md:1159`, bound at
-`:1533`) whose absent-directive baseline is disabled with resolution 256 (`:1543`–`:1544`). The texture is
+Resolution and enablement come from Phase3 §5.1's `ResourceRequirements.noise`,
+`NoiseRequirement(boolean enabled,int resolution)`, whose absent-directive baseline
+is disabled/resolution256. The texture is
 `resolution × resolution`, internal format RGB, unsigned-byte transfer, wrap `REPEAT`, filter
 `LINEAR` — the contract's noise sampling is a repeating field sampled with interpolation
 (`docs/research/v1/RESEARCH.md:596`–`:597`; behavioral corroboration at
@@ -746,7 +757,7 @@ design does not take that route and does not need to: it specifies the contract 
 
 #### 4.2.4 The pack override
 
-`NoiseTextureSpec.Override(image, sidecar)` (`docs/phase3/v1/PHASE_3_DOC.md:1502`–`:1503`) replaces the
+`NoiseTextureSpec.Override(image, sidecar)` (Phase3 §5.1) replaces the
 generated texture entirely: the pack image is decoded, uploaded, and parameterized from its own
 `.mcmeta` sidecar if present (§4.3.5), otherwise with the same `REPEAT`/`LINEAR` defaults as the
 generated texture. `noiseTextureResolution` does not resize an override; the image's own dimensions
@@ -765,15 +776,19 @@ compute/unwired domains remain typed unsupported, not silently composite.
 
 #### 4.3.1 From normalized key to candidates
 
-Consume Phase3's `TextureBindingKey(stage,sampler,duplicateDiscriminator)` unchanged.
-Recognized terminal filter/wrap suffixes have already been stripped and ignored
-(`docs/phase3/v1/PHASE_3_DOC.md:1482-1488`, conformance `docs/phase3/v1/PHASE_3_DOC.md:749-750`).
-Do not reparse properties or reconstruct discarded settings.
+Consume Phase3 §5.1 `TextureBindingKey(stage,sampler,duplicateDiscriminator)` from typed
+`textures()` unchanged. Separately retain `properties().textureDeclarations()`:
+`TexturePropertyDecl(key,value,sourceOrdinal,attribution,disposition)` with exact decoded
+occurrence order and closed CUSTOM_SOURCE/NOISE_SOURCE/UNRESOLVED_KEY/INVALID_VALUE.
+Use disposition/attribution for diagnostics only; **never** parse key/value strings, collapse
+them, reconstruct suffix state or infer sidecar precedence. Only typed executable specs
+create candidates. U1 unresolved declarations can change configuration identity even when
+executable textures do not change `[D-P13-21]`.
 
 Enumerate the immutable custom-spec list in Phase3 canonical order: property-stage order,
 unsigned-UTF8 sampler, absent discriminator then0..9, source kind PackPath/MinecraftResource/Raw.
 Complete-key duplicate last-valid-wins has **already** happened before sorting
-(`docs/phase3/v1/PHASE_3_DOC.md:1504-1508`). Assign one zero-based canonical `phase3Ordinal` per
+(Phase3 §5.1). Assign one zero-based canonical `phase3Ordinal` per
 original list entry; every expanded copy retains it and the entire original key.
 Expand GBUFFERS→GBUFFERS+SHADOW, DEFERRED→DEFERRED, COMPOSITE→COMPOSITE+FINAL.
 Call Phase5's pure exact-name lookup for `FixedSamplerName`; retain exact key/name and enum,
@@ -795,7 +810,7 @@ producer ordering never ranks a companion or noise ahead of a compatible custom 
 | Same variant naming dynamic/lightmap or atlas | ForeignLive: borrowed live object, exact resource identity, reload epoch and logical object epoch; never copy/allocate/delete vanilla storage |
 | `Raw(key,bytes,target,internalFormat,dimensions,pixelFormat,pixelType,sidecar)` | RAW_BYTES OwnedUpload plus exact target/format/dimensions/transfer and byte digest |
 
-The source grammar is `docs/phase3/v1/PHASE_3_DOC.md:1490-1500`; live forms and variants are
+The source grammar is Phase3 §5.1 `CustomTextureSpec`; live forms and variants are
 documented at `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:95-101`.
 `_n`/`_s` selects the companion atlas or companion resource; an absent asset variant uses an owned
 1×1 default-fill object with DEFAULT_FILL identity, not a foreign fabricated handle.
@@ -814,7 +829,7 @@ Candidate metadata describes actual borrowed/uploaded sample/target/comparison c
 #### 4.3.3 Raw upload and full capabilities
 
 Phase3 validates grammar, four target arities and integer transfer compatibility
-(`docs/phase3/v1/PHASE_3_DOC.md:1493-1498`). Phase13 validates checked byte-size products,
+(Phase3 §5.1 CustomTextureSpec.Raw). Phase13 validates checked byte-size products,
 exact payload length, each dimension against target-specific capability limits, and effective
 internal format through Phase5's published App B.4 policy. No overflow may turn an invalid size
 into an accepted allocation. An entry-local source failure becomes catalog `FailedAsset` evidence;
@@ -877,10 +892,9 @@ FIXED_FUNCTION_PASSTHROUGH or NONE; virtual metadata is VirtualNotApplicable and
 
 #### 4.3.5 `.mcmeta` filter and wrap
 
-Phase3 retains `TextureSidecarRef` without opening it
-(`docs/phase3/v1/PHASE_3_DOC.md:750-750`, `docs/phase3/v1/PHASE_3_DOC.md:1498-1500`).
-This is independent of property-key suffix stripping at `docs/phase3/v1/PHASE_3_DOC.md:749-749`.
-Phase13 opens/interprets the sidecar, never properties:
+Phase3 §5.1 retains `TextureSidecarRef` without opening it. This is independent of the
+lossless texture declaration stream and unresolved suffix gate. Phase13 opens/interprets
+only that retained sidecar, never properties:
 
 | Field | Absent / false | true |
 |---|---|---|
@@ -914,7 +928,8 @@ in canonical fingerprinting. No null, sentinel, unrelated enum or invented unit 
 The coordinated Phase5 domain admits all legal AppF5 names/columns: R2 is architecturally
 fulfilled. This path is solely for genuinely unknown names/unsupported stage domains, e.g.
 shadow-only tex expanded into gbuffers yields STAGE_COLUMN there and remains legal in shadow.
-Implementation is gated by fresh reviews and external Phase6/8 grants, not old narrow R2.
+Implementation remains gated by fresh owner/receiver reviews of adopted Phase6/8 grants,
+not missing grants or old narrow R2.
 
 ### 4.4 `atlasSize`
 
@@ -935,19 +950,29 @@ public sealed interface AtlasSizeResult {
 - `AtlasId.canonicalName` is the Minecraft atlas resource-identity string exactly as the game reports
   it at stitch time: H13-ATLAS-01 passes it, H13-ATLAS-04 carries it in the snapshot's atlas field,
   and H13-ATLAS-02 carries it in AtlasDescriptor. Phase13 neither invents nor normalizes it.
-- The App D row is about the atlas bound during world rendering, so the parameterless
-  `atlasSize()` of §2.2 answers for the block/item atlas Phase 13 built companions for, and is the
-  operation Phase 6 uses through Phase 7; `atlasSize(AtlasId)` exists for any other catalogued atlas
-  and returns `Unknown` for an id absent from the current catalog. A consumer never has to guess an id.
-- It becomes `Known` at the moment the atlas catalog is captured (§4.6 row `H13-ATLAS-02`) and reverts
-  to `Unknown` when the catalog is invalidated by a resource reload.
-- The **validity window** is the contract's own: the value is meaningful only for programs drawing
-  with the atlas bound, i.e. the gbuffers and shadow stages. Phase 13 exposes the value and the window;
-  Phase 6 decides the upload cadence for a uniform whose value is stage-conditional, exactly as it does
-  for every other App D row.
-- `Unknown` before the first stitch is a real state, not an error: a pack can be loaded before any
-  atlas exists. Phase 6 applies its own last-valid/default policy for an unavailable value; Phase 13
-  reports rather than inventing a number.
+- `atlasSize()` is a convenience query for the catalogued block/item atlas;
+  `atlasSize(AtlasId)` queries any exact current-epoch catalogued atlas and otherwise returns
+  Unknown. Known means **size available**, not evidence that the atlas is currently bound.
+- Stitch publishes catalog metadata only. Resource invalidation resets it to Unknown.
+- Runtime uniform validity requires authenticated **actual current binding**, not stage name,
+  a prior stitch or a linked sampler declaration. Entity textures, custom overrides and
+  shadow draws need not bind the atlas.
+- P7 publishes opaque `AtlasBindingEvidence` with private Optional<AtlasId>, current
+  PipelineVersion, resourceReloadEpoch and monotonically increasing bindSerial. Only its
+  installed mod binding-observer can mint evidence after successful actual P5 Bound
+  physical binding/restoration or observed vanilla base-texture binding. It exposes no
+  forgeable public record/constructor; P13 supplies exact atlas identity/catalog association.
+- `AtlasBindingSink.currentBinding(AtlasBindingEvidence) -> SignalResult` is P7-owned.
+  It authenticates issuer, render thread, current composition/resource epoch and latest
+  serial before querying this owner's atlasSize(id). Known maps to P6
+  `updateAtlasSize(new Int2(width,height))`; absent atlas, unknown catalog, non-atlas binding
+  or reset maps to `updateAtlasSize(new Int2(0,0))`.
+  P6 uploads immediately when a program is active, otherwise updates its cache for next bind.
+- Release/restoration, resource reload, Off and owner replacement invalidate the previous
+  evidence and publish/reset Unknown before readmission. Stale or foreign evidence is rejected,
+  never allowed to restore an old atlas value. Candidate adapters never update the old runtime.
+  The observer performs no physical bind; P5 remains the sole shader physical-binding owner.
+  This query/issuer-adapter agreement is `[D-P13-22]`; it adds no P6 channel or fourth participant.
 
 There is no reference for this row — PD's notifier is a no-op with a TODO debating the semantics
 (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:638`–`:639`)
@@ -965,7 +990,7 @@ resourceReloadEpoch even with equal estate generation/paths. TexturePlan preserv
 registry/configuration/source-catalog pairing; Phase13 may inspect issued sampler metadata for
 demand/diagnostics but never reparse/remerge declarations or allocate units.
 
-Reuse Phase3 §4.10's framing (`docs/phase3/v1/PHASE_3_DOC.md:1389-1410`): canonical base10
+Reuse Phase3 §4.10's canonical framing: canonical base10
 ASCII scalars/UTF8 strings with decimal byte-length + colon; lists with element count, opening
 bracket, length-prefixed elements and closing bracket. SHA-256 with distinct
 `phase13.texturePublication/v1`, `phase13.source/v1`, `phase13.parameters/v1` domains is a **new
@@ -1011,7 +1036,7 @@ the caller responsible.
 
 Phase7 then calls `activate(UseProgramRequest(selection,context))`, never re-resolving or manually
 rebinding rows. Phase6's unchanged callback receives the effective descriptor and callback-only
-uniform access; its requested resolver cutover is R7-10. After Bound, finally closes **binding
+uniform access; its adopted resolver cutover is R7-10. After Bound, finally closes **binding
 only**; otherwise finally closes the acquired lease only. Skipped/fixed-function, lease rejection,
 activation failure, draw exception, reload and teardown take the same ownership rule.
 Suppression calls main `discardPass(snapshot)` or shadow `abortPass`, never completion/flips for
@@ -1050,8 +1075,8 @@ restored after failure. Before any acceptance, close caller-owned candidates and
 After acceptance, accepted owners retire their resources, remaining caller-owned candidates close,
 Phase8 closes, Phase9 resets/deactivates with full required geometry invalidation, then Phase5
 publishes off and Phase4 publishes ShadersOff with an issued release context. Texture failure
-must not leave new registry/estate paired with old objects. Phase6 retirement is requested
-R7-11, not an invented UniformRuntime.close operation.
+must not leave new registry/estate paired with old objects. Phase6 retirement uses adopted
+R7-11 retire(reason) and closed outcomes, never UniformRuntime.close/reset(CLOSE).
 
 ### 4.6 Hook catalog — App E rows 10 and 11
 
@@ -1089,6 +1114,22 @@ Option equality cannot keep an old publication paired to a new generation; regis
 replacement issues a new publication id using the **actual accepted estate generation**.
 Unload/off retires then closes as §4.5.3 specifies.
 
+P12's `ReloadRequest(NONE,false,true,RESOURCE_RELOAD)` is adopted as resource-only work:
+the exact PackConfiguration/schema/fingerprint and same-build macro pair remain unchanged.
+P7 drains texture bindings, shadow work and P9/P10 ID/geometry readers before resource replacement.
+The adopted P7 §4.8.1/§5.1 H-RESOURCE-01 wrapper performs that drain and retirement
+synchronously before the resource-manager body releases old packs. It advances the epoch
+before release and holds admission closed until the outer body and every listener return.
+H13-ATLAS-01/02 only invalidate/copy pending current-epoch data during that gate; they do
+not publish live resources or stand in for pre-destructive quiescence. Nested replacement
+bodies share the outer gate. A failed original discards pending data and follows P7 off
+compensation; listener notification does not trigger a duplicate refresh.
+After the outer body returns, P7 refreshes the P13 catalog/publication and resource-derived IDs
+at the new resourceReloadEpoch and atomically re-admits only the coherent refreshed tuple. No P3 discovery/load, old pair
+recalculation or implicit FULL promotion is permitted. `worldRendererReload` remains a separate
+OR flag; P7/P10 execute any required ID invalidation barrier even when that GUI flag is false.
+Failure compensates off; the previous resource publication is never resumed.
+
 #### 4.7.1 Resize participation
 
 Phase13 implements render-thread non-throwing
@@ -1119,10 +1160,11 @@ The accepted cost is stated by the governing design: "two extra full atlases is 
 public record TextureMemoryEstimate(long companionBytes, long noiseBytes, long customBytes) {}
 ```
 
-- **Companions.** Two atlases at the base atlas's extent and mip chain. A mipped RGBA atlas costs
-  approximately 4/3 of its base level, so both companions together cost approximately
-  `2 × (4/3) × width × height × 4` bytes. §4.1.1's demand-driven enablement is what keeps this from
-  being spent when the active pack declares neither sampler.
+- **Companions.** Each enabled kind costs one atlas at the base extent and mip chain.
+  A mipped RGBA atlas costs approximately `4/3 × width × height × 4` bytes; both enabled
+  kinds cost twice that. Without optional R4, independent preliminary preferences in §4.1.1
+  determine allocation even when no linked sampler demands it. Disabled kinds cost zero;
+  declaration-based allocation reduction remains gated by R4 and never changes the macro pair.
 - **Noise.** `resolution² × 3` bytes, 192 KiB at the default 256 — negligible.
 - **Custom textures.** Pack-controlled and unbounded in principle. Every entry is counted in the
   estimate, the total is logged once per publication, and the raw form's dimension checks (§4.3.3)
@@ -1155,11 +1197,11 @@ not merely illustrative.
 | Restricted lease source | `TextureLeaseSource.lease(TextureOverlayPublicationId expected,ProgramBindingSelection selection) -> TextureLeaseResult.Acquired(TextureOverlayLease lease) \| Rejected(TextureLeaseRejection reason)`; TextureSystem exposes same operation, no separate public id getter |
 | Lease failure domain | PUBLICATION_UNAVAILABLE, PUBLICATION_ID_MISMATCH, REGISTRY_FINGERPRINT_MISMATCH, STALE_SELECTION, checked against active issuing owner before incrementing count |
 | Source identity | `TextureSourceIdentity.OwnedUpload(OwnedTextureSourceKind sourceKind,String logicalSource,String contentDigest,String configurationIdentity) \| ForeignLive(String exactResourceIdentity,long resourceReloadEpoch,long objectEpoch)`; owned source kind PACK_PNG/MINECRAFT_DECODED_ASSET/RAW_BYTES/GENERATED_NOISE/COMPANION_RESOURCE/DEFAULT_FILL |
-| Effective parameters | `TextureParameterSpec(MinFilter minFilter,MagFilter magFilter,WrapMode wrap)` and `TextureParameterFingerprint(String value)`; §4.3.5 and §4.5.1 canonical source/parameter/publication SHA-256 semantics |
-| Preliminary macro producer | `CompanionMacroPolicy.preliminaryMacroState(PreliminaryCompanionDemand demand) -> CompanionMacroState`; demand `(boolean packActive,boolean fixedUnitCapabilityAvailable)`, result `(boolean normalMap,boolean specularMap)`; both equal conjunction, before load/jcpp with no configuration/owner/GL |
+| Effective parameters | `TextureParameterSpec(MinFilter minFilter,MagFilter magFilter,WrapMode wrap)` / `TextureParameterFingerprint(String value)`; exact enum domains §2.3, canonical source/parameter/publication hashes §§4.3.5/4.5.1; P14 conversion/gate §5.5 |
+| Preliminary macro producer | `preliminaryMacroState(PreliminaryCompanionDemand(packActive,fixedUnitCapabilityAvailable,normalMapEnabled,specularMapEnabled)) -> CompanionMacroState(normalMap,specularMap)`; each output is active AND capable AND its independent decoded preference, before P3 load/jcpp; no linked-demand/default invention |
 | Atlas metadata | Exact §2.3 AtlasId/SpriteDescriptor/AtlasDescriptor/AtlasCatalog/AnimationFrameDescriptor/SpriteAnimationMetadata; copied frames and immutable sequence, no Minecraft objects |
 | Post-vanilla animation | `AtlasAnimationSnapshot(AtlasId atlas,long resourceReloadEpoch,long tickSequence,List<SpriteAnimationState> sprites)`; state `(String iconName,int sequencePosition,int currentSourceFrameIndex,int nextSourceFrameIndex,int elapsedTicks,int currentDuration,double nextFrameWeight)`; §4.1.7 epoch/frame-map/duration/tick validation |
-| Size/close | `TextureSystem.atlasSize(AtlasId atlas)` and `atlasSize() -> AtlasSizeResult.Known(int width,int height) \| Unknown`; exact current-epoch identity/validity window §4.4; `void close()` idempotent retirement/deferred deletion |
+| Size/close | `atlasSize(AtlasId)` / `atlasSize() -> Known(width,height) \| Unknown` supplies metadata only; §4.4's authenticated P7 current-binding adapter delivers P6 updateAtlasSize immediately/next-bind as appropriate. `close()` retires immediately and defers owned deletion until all leases drain |
 | Hooks/resize | Exact H13-* bridge catalog §4.6 and transaction-bound `ResizeConsumerResult resize(BufferResizeNotice notice)` SUCCESS/FAILED; no guessed registry identity |
 | Diagnostics/memory | §4.3.6 exact UnsupportedBinding/RequestedTextureTarget/UnsupportedReason; `TextureMemoryEstimate(long companionBytes,long noiseBytes,long customBytes)`; sanitized TextureFailure, no raw GL names |
 
@@ -1202,14 +1244,14 @@ acquired lease only. Holding a stale lease delays deletion but never authorizes 
 
 | Owner / surface | Consumption |
 |---|---|
-| Phase3 `docs/phase3/v1/PHASE_3_DOC.md:1482-1510` | normalized original keys/discriminators, complete-key duplicate resolution then canonical order, source references; suffix stripping distinct from sidecar retention |
-| Phase3 `docs/phase3/v1/PHASE_3_DOC.md:532-666` | full sampler type algebra via Phase4 metadata; singular centerDepthSmooth materializer unchanged; load/jcpp before configuration |
-| Phase3 `docs/phase3/v1/PHASE_3_DOC.md:1389-1410`, `docs/phase3/v1/PHASE_3_DOC.md:1532-1558` | canonical framing, configuration identity, noise requirements/defaults; never reparsed |
+| Phase3 §§2.2/5.1 | Current schema17 (=symbolic CURRENT_SCHEMA_VERSION); typed source specs/discriminators, canonical executable order plus separate lossless occurrence list, no suffix parsing; same-build retained companion pair and catalog-bound materialization |
+| Phase3 §§4.10/5.1 | Canonical framing/fingerprints and exact noise/resource requirements; lossless declarations affect identity even with identical executable projection; no inferred older-schema upgrades |
+| Phase1 §§0.24/2.1/5.1 | Exact texture package trio granted and adopted here, unverified; seam constraints unchanged |
 | Phase4 `docs/phase4/v1/PHASE_4_DOC.md:1785–1796` | exact detached ProgramRegistryView, registry/policy fingerprints, ProgramSamplerLayout and opaque ProgramBindingSelection; line 1787: “resolve is detached handle-free inspection, not selection authority” |
 | Phase5 `docs/phase5/v1/PHASE_5_DOC.md:2344–2375` | sole fixed-name/policy/resolver, candidate/binding results, accepted estate generation, formats and resize; line 2363: “Bound alone transfers lease into closeable sixteen-row snapshot with BoundObject/Unused” |
 | Phase7 `docs/phase7/v1/PHASE_7_DOC.md:504–520,749–819,2230–2268` | active-tuple owner/publication/lease source, select-once orchestration, transaction; line 2233 incorporates “complete ten numbered steps of §4.1” |
-| Phase6 `docs/phase6/v1/PHASE_6_DOC.md:1036–1097,1382–1394` | unchanged afterBind(effective descriptor,context,bound uniform access), three participants/cache/activity-token semantics; resolver cutover requested, not adopted |
-| Phase8 `docs/phase8/v1/PHASE_8_DOC.md:560–607,1081–1133` | unchanged optional shadow lifecycle/bridge/traversal; new full shared binding remains requested and real slot gated |
+| Phase6 §§0.23–0.24/5 | Adopted FixedSamplerResolver input and retire(reason); unchanged afterBind descriptor/context/uniform access, three participants, caches/tokens; fresh owner/receiver reviews required |
+| Phase8 §§0.7–0.8/5 | Adopted registry-independent planning and full shared selector/context/publication/lease invocation; traversal and neutralization unchanged; real slot still gated on implementation/verification |
 
 The exact Phase5 name enum is:
 TEXTURE→texture, TEX→tex, LIGHTMAP→lightmap, NORMALS→normals, SPECULAR→specular,
@@ -1295,26 +1337,30 @@ binding. Stale/closed lease maps CLOSED_OVERLAY_LEASE even if its content id equ
 
 ### 5.3 Coherent transaction and exact outstanding requests
 
-The following transaction is mirrored by Phase7 §4.1/§5.3, not an independent publication path:
+The following full configuration/runtime replacement transaction is mirrored by Phase7
+§4.1/§5.3, not an independent publication path. A resource-only NONE request instead takes
+§4.7's quiescent same-configuration branch: no P3 work or P6 retirement solely for reacquisition.
+That branch rejoins P7's final receipt/admission/error discipline, not these load steps.
 
 1. Stop admission; finish/abort old frame, drain binding/shadow work, freeze intended
    reload/configuration/resource epoch. Failed rebuild means shaders-off, not restored prior
-   composition. Compute preliminary demand before Phase3.load; use granted R1 input or absent macros.
-2. Preserve Phase8 policy-before-Phase6 ordering only under registry-independent R7-13. Until
-   granted real shadow remains NotInstalled. Create inactive Phase13 owner/adapters, then Phase6
-   provider/runtime at current authoritative registry generation; atlasSize Unknown until accepted
-   stitch. Candidate adapters never send an event to an old runtime.
+   composition. Compute independent preliminary preferences before Phase3.load and always
+   supply the required R1 pair.
+2. Consume adopted registry-independent R7-13 policy-before-Phase6 ordering. Real shadow
+   still needs owner/consumer verification and implementation. Create inactive Phase13
+   owner/adapters then Phase6 runtime; atlas metadata starts Unknown, and even accepted
+   stitch does not emit a bound-atlas event. Candidate adapters never signal an old runtime.
 3. Preserve Phase9 pure candidate build/frozen validation. Get `FixedSamplerPolicies.appB3()`;
    Phase4 compiles with that policy and the new runtime's existing macro contribution. Phase5
    plans/creates from the detached registry. AwaitingMainDepth publishes nothing and remains gated.
-4. Compose barrier with that runtime's three participants. Optional Phase8 construction needs
-   grants and the final new registry fingerprint. Revalidate intended configuration/world/resource/
+4. Compose barrier with that runtime's three participants. Optional Phase8 construction uses
+   adopted interfaces and the final new registry fingerprint. Revalidate intended configuration/world/resource/
    hook/candidate identities. Precommit failure closes caller-owned candidates and takes old
    composition off; never resume a restitched stale atlas.
 5. Close old Phase8 and retire old texture-event/resize registrations and the old texture owner after draw/binding drain at quiescence. Publish
    Phase4 Ready with issued release context; handle Accepted, Rejected and RecoveredOff separately.
    Rejected retains candidate ownership; RecoveredOff is a result, never RegistryPublication input.
-   Retire old Phase6 only under requested R7-11, after old barrier invalidation.
+   Retire old Phase6 through adopted R7-11 after old barrier invalidation.
 6. After Accepted reacquire actual publisher generation; call
    `adoptRegistryGeneration(generation,PACK_REPLACEMENT)`. ADOPTED/ALREADY_CURRENT proceed;
    REJECTED_RETIRED_GENERATION compensates before any event/participant/beginFrame/shadow use.
@@ -1338,92 +1384,93 @@ and readiness. Phase13 remains a downstream v0.5 slot, not a retroactive declare
 Earlier milestones may use an explicit empty publication through the same selector/lease protocol;
 that is not completion of required v0.5 custom/PBR execution.
 
-**R1 — Phase3 typed load-time option input (ungranted).** Add Phase3-owned
-`CompanionOptionMacros(boolean normalMap,boolean specularMap)` immediately after engineOptions
-in PackLoadRequest; copy into MacroConfiguration option state and every same-build materialization.
-Phase7 adapts preliminary state before load. Emit only enabled MC_NORMAL_MAP/MC_SPECULAR_MAP
-after #version/extensions and before jcpp/pack #line. Include both booleans in configuration and
-materialization fingerprints. Missing required typed data on non-Off inputs is existing
-INVALID_REQUEST; Off still short-circuits. Do not overload MacroContribution. Until granted,
-call unchanged load, leave macros absent and explicitly block PBR conformance.
+**R1 — Phase3 typed load input: owner-designed / receiver-adopted, unverified.**
+Phase3 §§0.55/5.1 grants required CompanionOptionMacros immediately after engineOptions,
+retained in MacroConfiguration and same-build materialization/fingerprints. This document
+adopts it under current schema17. Non-Off missing pair is INVALID_REQUEST, Off short-circuits;
+earlier milestones supply explicit false/false. No unchanged-load/absent-input fallback.
 
 **R2 — Phase5 full domain:** fulfilled architecturally by the coordinated FixedSamplerName/
 candidate/binding contract. Old narrow fallback/D-P13-11 are historical, not a legal-input path.
 Fresh reviews remain required; no implementation closure is claimed.
 
-**R3 — Phase1 package allocation:** retain request for engine.textures/mod.glue.textures/
-mod.mixin.textures; existing mod.mixin grant permits mixins, engine/glue names still pending.
-No alternate package is invented.
+**R3 — Phase1 packages: owner-designed / receiver-adopted, unverified.** §§0.24/2.1/5.1
+grant engine.textures/mod.glue.textures/mod.mixin.textures exactly; §2.1 adopts them.
 
 **R4 — Phase3 post-analysis memory optimization:** add
 `CompanionMapRequirement(boolean normals,boolean specular)` to ResourceRequirements from
 declared sampler analysis. It may avoid unused atlas allocation only, never modify preliminary
-macro policy; ungranted fallback builds both for active/capable pack.
+macro policy; genuinely ungranted fallback allocates each preliminary-enabled kind only.
 
-**R7-10 — Phase6 fixed resolver migration (ungranted).** Inject Phase5 `FixedSamplerResolver`
-immediately after configuration in UniformRuntimeFactory.create. Phase5 provides it before any
-registry/estate via `FixedSamplerPolicies.resolver()` alongside appB3(), backed by the same
-schema/table and fingerprint:
+**R7-10 — Phase6 resolver: owner-designed / receiver-adopted, unverified.**
+UniformRuntimeFactory.create receives Phase5 FixedSamplerResolver immediately after configuration.
+Phase5 provides it before registry/estate via `FixedSamplerPolicies.resolver()` alongside
+appB3(), backed by the same schema/table and fingerprint:
 `resolve(ProgramSamplerLayout layout,StageId stage,StageBand band) ->
 FixedSamplerPlanResult.Ready(List<ResolvedSamplerBinding> bindings,FixedSamplerPolicyFingerprint policy)
 | Invalid(SamplerLayoutValidation reason)`. Phase6 uses binding.samplerLayout/context inside its
 unchanged sampler participant, locates exact names and uploads integers in existing cache/order/
 error protocol after object binding. No second map, free allocation, fourth participant or raw
-handle loop. Until adopted/freshly reviewed the single-authority upload seam is blocked.
+handle loop. Adoption is complete at the document boundary; fresh review/implementation remain gates.
 
-**R7-11 — Phase6 retirement (ungranted).** Request
-`UniformRetirementResult retire(UniformRetirementReason reason)`, reasons UNPUBLISHED_ABORT,
-REPLACEMENT, SHUTDOWN; results Retired, AlreadyRetired,
-Rejected(WRONG_THREAD|ACTIVE_CALLBACK). No GL/barrier operation; permanently disable events,
-participants/adoption and release caches/provider references after final callback, before borrowed
-services disappear. Candidate abort may precede any publication; replacement follows old barrier
-invalidation; shutdown precedes Phase4 teardown. Reconcile existing reset(CLOSE) rule
-(`docs/phase6/v1/PHASE_6_DOC.md:1342-1360`), do not add a conflicting alias or invent close().
-Until adopted, candidate/replacement runtime lifecycle is an implementation blocker.
+**R7-11 — Phase6 retirement: owner-designed / receiver-adopted, unverified.**
+`retire(UNPUBLISHED_ABORT|REPLACEMENT|SHUTDOWN)` returns Retired, AlreadyRetired or
+Rejected(WRONG_THREAD|ACTIVE_CALLBACK). It is non-GL, terminally disables events/adoption/
+participants and releases references after final use. Rejected means retirement did not occur:
+quiesce/leave the callback and retry at the lawful render-thread boundary before releasing
+borrowed services. Abort precedes publication, replacement follows old barrier invalidation,
+shutdown precedes P4 teardown. No reset(CLOSE) alias or invented runtime close survives.
 
-**R7-12 — Phase8 full shared shadow migration (ungranted).** Append selection, activationContext,
-TexturePublication and TextureLeaseSource to ShadowInvocationContext. Phase7 selects root shadow
-once and owns the invocation bridge. Request Phase8 §4.2 steps3–13 and R8-2 use that selector/
+**R7-12 — Phase8 shared binding: owner-designed / receiver-adopted, unverified.**
+The current ShadowInvocationContext carries selection, activationContext, TexturePublication
+and TextureLeaseSource. Phase7 selects root shadow once; Phase8 consumes that exact selector/
 context, beginPass(selection), expected-id full overlay lease, five-argument shadowBindings above,
 sixteen-row preflight, Phase5 object binds before activation, every closed result, and exactly-once
 binding closure in finally. Preserve existing traversal/camera/copied-depth/mipmap/neutralization
-and bridge lifetime. This **supersedes** the old four-row non-closeable request
-(`docs/phase8/v1/PHASE_8_DOC.md:1102-1116`), not a claim of consumption. Until adoption and fresh
-review, real shadow custom execution stays NotInstalled/unavailable with existing neutral-shadow
-behavior; never old rows/prior-frame bindings. Unrelated Phase8 requests remain outstanding.
+and bridge lifetime. It supersedes the old four-row non-closeable request, not a compatible
+runtime alternative. Fresh owner/receiver review and implementation still gate real shadow;
+NotInstalled remains explicit before that milestone, never prior-frame binding reuse.
 
-**R7-13 — Phase8 construction cycle (ungranted).** Remove registry from ShadowPlanInput so
-remaining fields are ShadowPolicy,ShadowHookHealth; add RegistryFingerprint registry immediately
-after ShadowPlan plan in ShadowPassFactory.create. Plan stays registry-independent policy/celestial
-metadata; final publication/build identity includes registry. Do not use an old fingerprint to
-break the current cycle (`docs/phase8/v1/PHASE_8_DOC.md:225-257`). Until granted, real construction
-stays NotInstalled.
+**R7-13 — Phase8 planning: owner-designed / receiver-adopted, unverified.**
+Current ShadowPlanInput(policy,hookHealth) is registry-independent; ShadowPassFactory.create
+takes the final RegistryFingerprint immediately after plan. §5.3 consumes this acyclic order.
+No old-registry fingerprint workaround or still-ungranted claim remains.
 
-**U1 — Phase3/DESIGN suffix conflict:** route the exact incompatible quotations and separate
-sidecar grant in §3.6 to both owners; no reconstructed suffix parameters or claim PD drops mcmeta.
-Keep Phase3 pending re-verification and Phase4 legacy-geometry/attribute requests outstanding.
+**U1 — remaining authority/typed-sampling gate.** Phase3 lossless declarations are granted
+and adopted; suffix grammar, precedence, defaults, applicability and invalid-input policy are
+not. Authority must settle them before a new Phase3 schema-bound typed sampling publication
+and P13 effective-parameter adoption. No downstream string parser or defaulted fake support.
 
 ### 5.4 Verification state and change triggers
 
-Review36 literal PASS/Interface changed:no cleared historical Phase7 provisional consumption.
-The coordinated changes now alter Phase4/5/7/13 §5, so those **new** contracts are unverified;
-prior PASS records certify only preceding bytes. Phase3 remains provisional under applied
-Review36 resolutions with §5 changed and no fresh PASS.
-
-Actual future triggers are consumed signature/type/ordering/fingerprint/suffix semantics, sampler
-policy/selection/lease lifetime changes, hook snapshot/resize/reload transaction changes, owner
-adoption of R1/R7-10..13, and fresh-review corrections affecting these contracts. Reconcile them
-through governed fix-up/rebuild as required. A directory name or version roll is never the trigger.
-Neither Phase7's old footer nor historical PASS overrides the new unverified state.
+Current P1/P3/P4/P5/P6/P7/P8/P13 owner and receiver amendments are **unverified**; historical
+PASS records do not certify changed §5. R1/R3/R7-10..13 are adopted architecture, not executed
+features. Real implementation, fresh whole-document reviews and conformance remain gates.
+Future signature/type/order/fingerprint/suffix/lease/hook/epoch changes require reciprocal
+owner/consumer amendments; directory names/version rolls are not verification triggers.
 
 ### 5.5 Downstream hand-offs
 
-Phase14 owns sampler objects and asynchronous/PBO transfer optimization; preserve fixed policy,
-source identity, target/parameterization, deferred deletion and post-vanilla snapshot semantics.
-Phase2 owns fixtures/conformance adapters; receives handle-free plans/diagnostics and §8's future
-checks. G8 advertises labPBR channel semantics only; required AppF5 typed shared-unit behavior
-belongs to v0.5, not G8. Phase6 atlasSize cadence is unchanged; Phase7 owns the coherent runtime
-adapter and same-selector transaction. No request grants itself by appearing here.
+**Phase14 parameters/retirement (IR-23)** `[D-P13-23]`: consume exact
+TextureParameterSpec min/mag/wrap and its fingerprint, not a guessed general sampler state.
+Map min/mag directly; apply the single wrap to target-applicable axes (S for 1D, ST for
+2D/RECT, STR for 3D) only when target compatibility and the eventual P1 parameter grant
+permit that state. RECT cannot execute REPEAT or mipmap min filters: reject that incompatible
+mapping without normalizing it. Do not infer comparison, border, anisotropy, LOD or per-axis differences.
+P1's complete TextureParameters/sampler-object mapping is a separate ungranted extension;
+unsupported/incomplete mapping retains synchronous upload and sampler0/object-state behavior,
+never guessed parameters. Borrowed live objects are never mutated; sampler acceleration
+requires authenticated complete actual parameters, otherwise sampler0.
+P5 alone performs physical texture/sampler selection under its adopted extension, if any.
+P13 remains the texture owner: close stops leases immediately (READY→RETIRING, isCurrent false),
+owned deletion waits for **all** live/retiring leases, and borrowed references are released
+without deletion. Content equality never revives a retired lease. Async/PBO work needs a
+separate owner-adopted staging/completion/retirement contract; current synchronous upload stays.
+
+Phase2 receives handle-free plans/diagnostics and future checks, not source bytes. G8 only
+advertises labPBR channel convention; required AppF5 typed binding remains v0.5. P7/P6 adopt
+§4.4's authenticated current-bind→atlasSize→updateAtlasSize contract, including Unknown/reset
+and immediate-active upload, without transferring P5 binding ownership.
 
 ---
 ## 6. Failure modes & degradation
@@ -1501,7 +1548,7 @@ make outcome and zero-mutation contracts observable; Phase2 owns harness adapter
 | sharedUnit_effectiveFallbackLayout — P4/P7 | Failed child, ancestor with different complete layout/state → selector, candidates, activation and P6 callback all use ancestor; child overlays nothing |
 | custom_stageExpansionExact — P13 | GBUFFERS/DEFERRED/COMPOSITE original keys → exactly gbuffers+shadow/deferred/composite+final copies preserving key/discriminator/ordinal; tex is legal only shadow, typed stage diagnostic in gbuffers |
 | custom_fullscreenFixedOverrides — P5/P7 | Compatible composite/final colortex1 and deferred gaux1 → custom objects bind1/7 instead of base; every documented name/alias reachable |
-| sharedUnit_fixedRangeAndShadowAlias — P5/P6 requested adapter | Fixed table plus adding direct compatible watershadow → all rows0–15, depthtex1 remains11, gbuffers12 unused, shadow alias4→5 in same policy/resolver with no allocation |
+| sharedUnit_fixedRangeAndShadowAlias — P5/P6 adopted adapter | Fixed table plus adding direct compatible watershadow → all rows0–15, depthtex1 remains11, gbuffers12 unused, shadow alias4→5 in same policy/resolver with no allocation |
 | sharedUnit_exactNameAndOrdinal — P13/P5 | Compatible same-name absent/0/9 discriminators in shuffled storage → greatest canonical ordinal9 wins after filtering; different alias winning objects → CONFLICTING_CANDIDATES |
 | sharedUnit_fullSamplerShape — P4/P5 | Equal target dimension but different signedness/shadow/array/multisample flags → cannot match; aggregate samplers retained and unsupported, not cast/dropped |
 | binding_staleBeforeMutation — P4/P5/P13/P7 | Independently stale registry generation/fingerprint, estate/depth/frame/context/provider/band/layout/policy/publication/resource epoch or closed lease → reject before bind; publication id beats registry within overlay checks |
@@ -1510,11 +1557,13 @@ make outcome and zero-mutation contracts observable; Phase2 owns harness adapter
 | publication_contentIdentity — P13 | Same key/path/dimensions with changed bytes or effective upload/filter → different fingerprint; no reuse from equal dimensions/path |
 | publication_foreignReloadIdentity — P13 | Same minecraft dynamic/atlas string resolves replacement after reload → reload/object epoch changes identity with no GL-name hash; in-place animation does not republish each tick |
 | animation_postVanillaSnapshot — P13 | Reordered frame map with unequal durations, vanilla tick first → companions use exact current/next frames, weight and mips; reload rejects old snapshot, failed hook restores frame0 |
-| macro_beforeJcppAndUngrant — P13 producer/P7 orchestration/P3 requested owner | Active/capable preliminary input → both booleans before configuration/load/jcpp; granted input changes same-build branches/fingerprints; ungranted API leaves both undefined and PBR gate incomplete |
+| macro_independentPreferencesBeforeJcpp — P13/P7/P3 | All four preference pairs with active/capable, plus off/incapable → independent exact required pre-load pair, matching same-build branches/fingerprints, no disabled-kind companion allocation/candidate or stale binding |
 | noise_signedRecurrence — P13 | Signed wrapping/arithmetic-shift recurrence → xorshift(-1)=253983; channel(1,1,1) remainder=-115/upload141; unsigned shift or absolute value fails |
 | unsupported_noEnumSentinel — P13 | Unknown name → UnknownSampler(exactName)+KEY_DOMAIN; known out-of-stage → KnownSampler+STAGE_COLUMN, no fabricated enum/unit |
 | pipeline_textureFailureCompensates — P7 | Texture build/identity/registration failure after P4/P5 acceptance → P5/P4 off, no Active tuple/draw, caller candidates closed, accepted resources owner-retired; preserve ConsumerFailed count/no borrowed deletion |
-| shadow_sharedBindingAndGate — P5/P7/P8 requested consumer | Granted migration → one selection, sixteen applicable rows bound before uploads, transferred snapshot closed; no grant → NotInstalled/unavailable, no old four-row success |
+| shadow_sharedBindingAndGate — P5/P7/P8 adopted consumer | One selection and sixteen-row preflight, physical binds before uploads, transferred snapshot closed; unimplemented/unverified real slot remains NotInstalled, never old four-row success |
+| declarations_losslessWithoutSuffixParsing — P3/P13 | Duplicate/invalid/unresolved occurrences remain ordered and fingerprinted; only owner typed source reduction creates candidates, no guessed suffix/default state |
+| resource_nonePreservesConfiguration — P12/P7/P13/P9 | NONE+resourceReacquire advances resource epoch after reader drain, retains exact configuration/pair, refreshes resources/IDs and resets atlas validity, no P3 call |
 
 ### 8.2 Companion, upload and hook checks
 
@@ -1528,7 +1577,7 @@ make outcome and zero-mutation contracts observable; Phase2 owns harness adapter
 | custom_mcmetaClampSetsWrap | Sidecar clamp true/false or malformed → CLAMP_TO_EDGE/REPEAT/default plus correct outcome digest |
 | noise_resolutionFromRequirementsAndBaseline | No noise requirement vs enabled N → no noise allocation versus NxN RGB; absent resolution baseline256 |
 | noise_packOverrideReplacesGenerated | Valid override image vs decode failure → exact image dimensions/parameters versus diagnosed generated fallback |
-| atlasSize_valueAndValidityWindow | Inactive owner, accepted stitch, resource invalidation → Unknown, exact Known extent while bound, Unknown; unknown AtlasId never guessed |
+| atlasSize_valueAndValidityWindow | Stitch makes metadata Known but performs no uniform update; authenticated actual atlas bind uploads Known, non-atlas/restoration/reset uploads0,0; old epoch/issuer/serial rejected, active update immediate and inactive next-bind cached |
 | companion_vanillaAtlasUntouchedWithShadersOff | Off/reload/close with borrowed atlas → no foreign allocation/upload/delete, restored vanilla binding/state |
 | hook_atlasCatalogCapturedAtStitchPost | Pre then Post → invalidated old catalog then copied current metadata/pixels only |
 | hook_spriteCompanionAndAnimationRows — P7 audit | Application report → active read-only accessors/atlas TAIL counted, per-sprite update rows explicitly dormant |
@@ -1561,15 +1610,15 @@ regeneration (`docs/design/v3/DESIGN.md:692-728`). No new fixture or test file i
 | Source catalog/prepared payload identity, custom candidates, full-name overrides — P13 | v0.5 | sharedUnit_programSpecificTargets, custom_stageExpansionExact, custom_fullscreenFixedOverrides, publication_contentIdentity |
 | Companion layout/defaults/metadata and H13-* hooks — P13 | v0.5 | companion_layoutAndMipChainMatchBase, animation_postVanillaSnapshot |
 | Signed noise, override and sidecars — P13 | v0.5 | noise_signedRecurrence, noise_packOverrideReplacesGenerated, custom_mcmetaBlurSetsFilter, custom_mcmetaClampSetsWrap |
-| Preliminary macros and requested P3 input | v0.5 | macro_beforeJcppAndUngrant; R1 gate remains |
+| Independent preliminary macros and adopted P3 R1 input | v0.5 | macro_independentPreferencesBeforeJcpp; fresh owner/receiver review and implementation remain |
 | Lease/publication/reload/resize coherence — P13/P7 | v0.5 | publication_foreignReloadIdentity, binding_leaseOwnershipAllExits, pipeline_textureFailureCompensates |
 | atlasSize | v0.5 | atlasSize_valueAndValidityWindow |
 | H13-SPRITE-02 per-sprite injection | v0.5, dormant | explicitly dormant in application audit, not missing |
 | Async/PBO transfer and sampler-object optimization — P14 | post-v0.5 | P14-owned checks preserving identity/ownership |
 
-Full AppF5 binding is no longer conditional on old R2. Phase3 macro/suffix/reverification,
-Phase6 resolver/retirement, Phase8 construction/consumption, package grants and fresh whole-doc
-reviews remain explicit blockers; no architecture-only edit claims implementation closure.
+Full AppF5 binding is no longer conditional on old R2. R1/R3/R7-10..13 are owner-designed
+and receiver-adopted, unverified. U1 suffix authority/typed publication, optional R4/P14
+extensions, actual implementation and fresh whole-document reviews remain distinct gates.
 The v0.5 implementation gate remains the full classic matrix at T3 plus correctly rendered
 MC_NORMAL_MAP packs (`docs/design/v3/DESIGN.md:2507-2508`).
 
@@ -1603,11 +1652,11 @@ Two OQs touch this subsystem without belonging to it, recorded so a reader does 
 | D-P13-3 | Contract signed xorshift, not Random(0); PD §11/§18 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:621-625`, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:815-815` checked against `docs/research/v1/RESEARCH.md:596-597`; reopening only via observed contract conflict |
 | D-P13-4 | Full companion atlases, reject per-bound-id side table; PD §11 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:631-637` checked against `docs/research/v1/RESEARCH.md:594-595` |
 | D-P13-5 | Preserve literal normal default and explicit byte-order assumption, C-TX01 `docs/design/v3/DESIGN.md:1088-1088` |
-| D-P13-6 | Consume stripped/ignored key suffixes separately from retained sidecars; honor sidecars and route assignment conflict U1. Phase3 `docs/phase3/v1/PHASE_3_DOC.md:749-750`, PD §7.4/§11 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:447-448`, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:626-630` |
+| D-P13-6 | Consume current P3 lossless declaration dispositions and typed source projections without parsing suffixes; independent sidecars honored, U1 authority/typed-sampling gate remains (§§3.6/4.3/5.3) |
 | D-P13-7 | Forge stitch events for timing, read-only atlas/sprite accessors for private data; policy stays in engine/glue |
 | D-P13-8 | Atlas TAIL post-vanilla full animation snapshot, no independent clock; design requirement `docs/design/v3/DESIGN.md:2482-2483`, not observed sync; frame0 fallback |
 | D-P13-9 | Real bound atlasSize Known/Unknown, not PD no-op; `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:177-177`, PD §11 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:638-639` |
-| D-P13-10 | Static preliminary active/capable demand before load/jcpp; requested separate P3 option macros, not completed-plan input; checked shipped meanings `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:655-656` and PD §7.6 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:470-474` |
+| D-P13-10 | Independent preliminary user preferences before load/jcpp; adapt adopted P3 CompanionOptionMacros and retain same-build provenance, never linked-demand-derived (§4.1.6) |
 | D-P13-11 | **Historical/superseded:** old narrow P5 domain fallback. Coordinated R2 now fulfills full AppF5 domain architecturally |
 | D-P13-12 | Post-analysis demand may save unused atlas allocation without changing macro policy; accepted cost `docs/design/v3/DESIGN.md:2499-2500`, PD B13 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:799-799` |
 | D-P13-13 | Verification comes from latest verdict and outstanding interface changes, never stale footers; P3 pending, coordinated P4/5/7/13 fresh PASS required |
@@ -1617,6 +1666,11 @@ Two OQs touch this subsystem without belonging to it, recorded so a reader does 
 | D-P13-17 | Closed bind outcomes and Bound-only ownership transfer, never boolean/no-op success; AppF5 `docs/research/v1/RESEARCH.md:1488-1490`, PD B10 `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:796-796` |
 | D-P13-18 | Actual bytes/parameters/config/source/reload/object identity in canonical SHA-256 domains; content equality never generation/ownership authority |
 | D-P13-19 | Compatible custom greatest canonical Phase3 ordinal wins across distinct discriminators; complete-key last-valid-wins already happened upstream; conflicting aliases never traversal-winner |
+| D-P13-20 | Preliminary macro state = active AND capable AND each independent decoded user preference; disabled kind allocates no companion, optional demand only reduces enabled allocation (§4.1.1) |
+| D-P13-21 | Lossless declaration occurrence order is distinct from executable candidate canonical order; unresolved input affects identity but is never downstream executable syntax (§4.3.1) |
+| D-P13-22 | Atlas size metadata is not current-bind proof; authenticated P7 actual-bind evidence selects P13 query and existing P6 sink, P5 retains physical binding (§4.4) |
+| D-P13-23 | Exact min/mag/wrap parameter projection and all-live-lease retirement are P14 constraints, not permission for sampler/async APIs; synchronous sampler0 baseline until grants (§5.5) |
+| D-P13-24 | Reconcile granted owner ledgers as adopted/unverified, retain genuinely missing U1/R4/P14 proposals separately (§§5.3/11.5) |
 
 ### 11.2 Binding decisions
 
@@ -1627,46 +1681,39 @@ verbatim; RESEARCH D-1..D-10 are not contradicted.
 
 ### 11.3 Input contradictions
 
-§3.6 records suffix stripping versus assignment honoring, the now-superseded narrow-domain
-shortfall, corrected verification-state history and unresolved C-TX01. No claim that PD ignores
-mcmeta or that omitted shipped grammar proves absence survives. No RESEARCH change is requested.
+§3.6 records current lossless-but-unresolved suffix semantics versus required honoring, the
+superseded narrow-domain shortfall, historical verification and C-TX01. No claim that PD ignores
+mcmeta or that undocumented grammar proves absence survives. No authority text is changed here.
 
 ### 11.4 Hand-offs and blockers
 
-P4 owns complete linked metadata and authenticated selection; P5 sole policy/candidate selection/
-physical binding; P6 requested fixed-integer upload adapter; P7 orchestration and coherent owner
-tuple; P13 source/candidate production and lease retirement. P14 owns later transfer optimization.
-P8 unchanged implementation cannot consume a new binding seam without adopting R7-12/13; bridge/
-traversal ownership remains unchanged. This does not close unrelated P8 requests, P4 legacy-
-geometry/attribute requests, P3 pending re-verification or package grants.
+- **IR-03/04:** §§2.1/4.1/4.3/5 adopt P3 current schema17/lossless/same-build contracts and
+  P1/P3/P6/P8 owner grants; all receiver and owner verification remains open.
+- **IR-06/08/24:** §§4.1.1/4.7 adopt independent canonical codec preferences before load,
+  disabled allocation/candidates, and P12 resource-only NONE with configuration-preserving
+  quiescent P7/P9 refresh. Macro emission/fingerprints remain P3-owned.
+- **IR-21:** §4.4 binds P7 opaque actual-bind evidence to P13 current metadata query and
+  existing P6 Int2 sink; stale/unknown/reset and immediate-active timing are explicit.
+- **IR-23:** §5.5 publishes P14 exact parameter/retirement constraints; P5 owns physical
+  binding, P13 owns texture lifetime, optional sampler/async APIs remain separate gates.
 
 ### 11.5 Exact upstream requests
 
-§5.3 is the binding detailed request text; this ledger routes, never grants it:
+§5.3 is the binding detailed disposition; this ledger routes, never grants itself:
 
-1. **U1 Phase3/DESIGN:** reconcile Phase3 **"after removing a recognized terminal filter/wrap
-   suffix"**, **"stripped and ignored"** (`docs/phase3/v1/PHASE_3_DOC.md:1483-1485`) with DESIGN
-   **"ours must honor them"** (`docs/design/v3/DESIGN.md:2476-2478`). Separate sidecar retention
-   remains `docs/phase3/v1/PHASE_3_DOC.md:1498-1500` and
-   `docs/phase3/v1/PHASE_3_DOC.md:750-750`. PD §11 says
-   "pack PNG with `.mcmeta` blur/clamp" (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:626-626`).
-   No downstream reparsing/reconstruction is authorized.
-2. **R1 Phase3:** CompanionOptionMacros immediately after engineOptions in load request, same-build
-   option/materialization propagation and both fingerprints, INVALID_REQUEST for missing required
-   non-Off data; unchanged API/no emitted macros until granted. PBR remains blocked.
-3. **R4 Phase3:** post-analysis CompanionMapRequirement memory optimization only; no macro cycle.
-4. **R2 Phase5:** fulfilled architecturally by full names/candidates/binds; fresh verification still due.
-5. **R3 Phase1:** engine.textures/mod.glue.textures/mod.mixin.textures package grant remains open.
-6. **R7-10 Phase6:** inject Phase5 pure FixedSamplerResolver after configuration, unchanged afterBind/
-   cache/token/order semantics, no new map or participant; implementation blocked until adoption.
-7. **R7-11 Phase6:** exact no-GL retire reason/result operation, reconcile reset(CLOSE); no invented close.
-8. **R7-12 Phase8:** same selection/context/TexturePublication/TextureLeaseSource, full expected-id
-   acquisition and five-argument sixteen-row physical shadowBindings, close transferred snapshot in
-   finally. Supersede old R8-2 four-row view; unchanged traversal/mipmap/neutralization policies.
-9. **R7-13 Phase8:** registry-independent ShadowPlanInput(policy,hookHealth); final registry after
-   plan in ShadowPassFactory.create. Real shadow NotInstalled until both grants and fresh review.
-10. **All four coordinated owners:** fresh whole-document literal PASS before verified downstream
-    consumption; prior PASS cannot certify changed §5. No review/manifest/directory roll in this build.
+| Request | Owner status / receiving disposition / remaining gate |
+|---|---|
+| U1 Phase3/DESIGN | Lossless declaration stream owner-designed and adopted; grammar/precedence/default/source applicability/invalid behavior and subsequent typed sampling-state publication still ungranted. No suffix parsing or fabricated support |
+| R1 Phase3 | Required typed pair, same-build materialization/fingerprints, non-Off INVALID_REQUEST and Off short-circuit granted and adopted under schema17; fresh reviews/implementation remain |
+| R4 Phase3 | Optional post-analysis memory optimization genuinely ungranted; baseline builds each preliminary-enabled kind only, no macro cycle |
+| R2 Phase5 | Full policy/candidate/binding protocol fulfilled architecturally and adopted, unverified |
+| R3 Phase1 | Exact texture package trio granted and adopted, unverified; no pending-name fallback |
+| R7-10 Phase6 | Sole FixedSamplerResolver injection granted and adopted; unchanged three-participant afterBind/cache/token semantics |
+| R7-11 Phase6 | Terminal retire(reason) closed outcomes granted and adopted; no reset(CLOSE), rejected retirement is not success |
+| R7-12/13 Phase8 | Full selector/context/lease binding and registry-independent planning granted and adopted; preserve traversal/neutralization; actual real slot requires implementation and fresh reviews |
+| IR-21 Phase7/6 | Authenticated current-bind query/sink adapter adopted §§4.4/5.5, unverified |
+| IR-23 Phase14/1 | Exact P13 parameter/lifetime adoption; full P1 TextureParameters mapping and async/staging permission remain separately ungranted with synchronous sampler0 baseline |
+| All affected owners | Fresh whole-document verification of current bytes before implementation consumption; no prior PASS or directory roll substitutes for it |
 
 ---
 
@@ -1680,8 +1727,8 @@ Future coding work only; §8 rows specify the observable checks and §9 fixes th
 2. `[v0.1 P5/P7]` Carry selector in snapshots, mutation-free preflight then ascending physical binds,
    Bound-only transfer and local discard; no manual P7 row loop. Checks:
    binding_staleBeforeMutation, binding_absenceVersusIncompatibility, binding_leaseOwnershipAllExits.
-3. `[v0.2 P5/P8/P7]` Adopt requested full shadow operation/context and registry-independent planning
-   before real installation; preserve bridge/traversal/neutralization. Check: shadow_sharedBindingAndGate.
+3. `[v0.2 P5/P8/P7]` Implement adopted full shadow operation/context and registry-independent
+   planning before real installation; preserve traversal/neutralization. Check: shadow_sharedBindingAndGate.
 4. `[v0.5 P13]` Define immutable §2 types, closed unsupported diagnostics, source catalog and paired
    prepared uploads/foreign handles, pre-allocation identity validation. Checks:
    publication_contentIdentity, publication_foreignReloadIdentity, unsupported_noEnumSentinel.
@@ -1693,16 +1740,16 @@ Future coding work only; §8 rows specify the observable checks and §9 fixes th
    sharedUnit_fullSamplerShape, custom_mcmetaBlurSetsFilter, custom_mcmetaClampSetsWrap.
 7. `[v0.5 P13]` Implement signed wrapping noise recurrence and override fallback. Checks:
    noise_signedRecurrence, noise_resolutionFromRequirementsAndBaseline, noise_packOverrideReplacesGenerated.
-8. `[v0.5 P13/P3/P7]` Static preliminary demand before load; adopt R1 typed macros/fingerprints,
-   retain absent fallback until grant; R4 only optimizes physical demand. Check: macro_beforeJcppAndUngrant.
+8. `[v0.5 P13/P3/P7]` Compute independent preliminary preferences before load and supply adopted
+   R1 typed pair/fingerprints; R4 only reduces enabled allocation. Check: macro_independentPreferencesBeforeJcpp.
 9. `[v0.5 P13]` Discover/build full companions with base extents/mips/default bytes, copied immutable
    animation metadata/pixels. Checks: companion_discoveryPerSprite, companion_layoutAndMipChainMatchBase,
    companion_missingNormalUsesContractDefault, companion_missingSpecularUsesZeroDefault.
 10. `[v0.5 P13/P7]` Implement H13 atlas/sprite accessors and post-vanilla snapshot validation; restore
     frame0 on failed live state/hook, invalidate before reload. Checks: animation_postVanillaSnapshot,
     hook_atlasCatalogCapturedAtStitchPost, hook_spriteCompanionAndAnimationRows.
-11. `[v0.5 P13]` Provide inactive Unknown/current bound atlasSize and accepted-stitch transitions.
-    Check: atlasSize_valueAndValidityWindow.
+11. `[v0.5 P13/P7/P6]` Provide Known metadata independently from authenticated actual-bind
+    uniform delivery/reset and current-epoch rejection. Check: atlasSize_valueAndValidityWindow.
 12. `[v0.5 P13/P7]` Implement expected-id selection-bound lease and all close paths; retire before
     deferred deletion, never delete borrowed resources or reuse by hash alone. Checks:
     binding_leaseOwnershipAllExits, publication_foreignReloadIdentity.

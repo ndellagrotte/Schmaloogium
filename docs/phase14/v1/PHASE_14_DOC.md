@@ -9,10 +9,18 @@
 - **Declared dependencies:** Phases 5, 6, 7, 13 (`docs/design/v3/DESIGN.md:626`)
 - **Assigned open questions:** OQ-15, OQ-22 (`docs/design/v3/DESIGN.md:626`, `:878`, `:885`)
 - **Governing design:** `docs/design/v3/DESIGN.md`
-- **Design status:** initial build document, not yet verified
-- **Date:** 2026-08-08
+- **Design status:** documentation integration fix-up; changed contracts unverified, no implementation or new PASS claim
+- **Date:** 2026-09-07 (initial build: 2026-08-08)
+ 
+**Integration change notice — IR-15/23/26/27.** The current owner contracts supersede the
+initial-build consumption assumptions below: Phase 5 owns fixed policy and physical binding,
+Phase 6 consumes its resolver, Phase 7 owns the ten-step synchronous transaction, and Phase 13
+publishes effective parameters and deferred retirement. §§4/5/7/10/11 adopt those contracts and
+Phase 11's OQ-22 measurement handoff. D-P14-19…22 record the changes. Current owner verification
+and optional-extension gates remain open; historical review verdicts do not certify these bytes.
+No test, runtime experiment, formatter or validation command was run for this documentation fix-up.
 
-This is an **initial build against v3**, not a §G0.4 re-pointing: Phase 14 has never been built, so
+The **initial build was against v3**, not a §G0.4 re-pointing: Phase 14 had never been built, so
 the four-step adoption procedure at `docs/design/v3/DESIGN.md:195`–`:220` does not apply
 (commissioning record: `docs/phase14/briefs/PHASE_14_BUILD_BRIEF.md:19`–`:29`). Every v3 coordinate
 below was derived from v3's own headings (`grep -n '^#'`) and each range's first and last line was
@@ -27,7 +35,7 @@ document's own §0", and `docs/tooling/CODEX_MIGRATION_OVERLAY.md:12`–`:22` is
 interpreter for the immutable revisions' retired execution wording. This §0 declaration is therefore
 the sole source of truth for this document's governing revision.
 
-### 0.1 Inputs actually read
+### 0.1 Initial-build inputs actually read (historical record)
 
 | Input | Portion read | Why |
 |---|---|---|
@@ -50,7 +58,7 @@ the sole source of truth for this document's governing revision.
 | `docs/MOVES.md` | §"There is no longer one governing revision" (`:80`–`:112`) | resolve versioned paths; confirm the §0-declaration rule |
 | `docs/phase11/v1/PHASE_11_DOC.md` | §0 only (`:1`–`:60`) | format exemplar (most recent v3-governed doc), per the commissioning brief |
 
-### 0.2 Reads beyond the assigned list, with reasons
+### 0.2 Initial-build additional reads (historical record)
 
 §G1.1 permits reading beyond the list on a genuine gap, and requires recording what was read and
 why (`docs/design/v3/DESIGN.md:243`–`:245`). Four such reads occurred.
@@ -83,7 +91,7 @@ the working tree during this session. No `OCULUS_DESIGN.md` content was read: §
 "does not amend any phase's current Required inputs" (`docs/design/v3/DESIGN.md:1113`–`:1116`) and
 the Phase 14 spec does not list OD. No file from `glsl-transformation-lib` was opened.
 
-### 0.3 Deviations from the assigned reading list and the §G5.3 gate
+### 0.3 Initial-build departures and gate evidence (historical record)
 
 Phase 14 depends on 5, 6, 7 and 13 (`docs/design/v3/DESIGN.md:626`). §G5.3 invariant 1 requires each
 to be verified per the §G1.3 definition before a dependent build session reads it
@@ -158,6 +166,20 @@ to be verified per the §G1.3 definition before a dependent build session reads 
 6. **Doc-vs-doc contradiction on the Wave 5 schedule.** Reported with a ruling in §3.4 and §11.2
    finding C-4; not smoothed over, per `docs/design/v3/DESIGN.md:282`–`:284`.
 
+### 0.4 Current integration inputs and gates
+
+This fix-up reads `docs/PHASE_INTEGRATION_REVIEW.md` IR-15/23/26/27; current
+`docs/phase4/v1/PHASE_4_DOC.md` §5.1/§11.4; `docs/phase5/v1/PHASE_5_DOC.md`
+§§2.4/4.12/5; `docs/phase6/v1/PHASE_6_DOC.md` §§4.9/5;
+`docs/phase7/v1/PHASE_7_DOC.md` §§4.1/5.3;
+`docs/phase13/v1/PHASE_13_DOC.md` §§4.3.5/4.5/4.7/5; and
+`docs/phase11/v1/PHASE_11_DOC.md` §§4.11/5/10.1. Authority is
+`docs/design/v3/DESIGN.md` Phase 11 evaluator requirement and Phase 14 scope/gates, under
+`AGENTS.md`'s phase-owner rules. These are current-byte documentation contracts, not fresh verified
+grants. §§0.1–0.3 and C-1 retain initial-build history only; their absent-interface and old PASS
+premises are not current consumption authority. No restricted source, transcript or prior review
+was opened for this fix-up. Each owner retains its own governing revision.
+
 ---
 
 ## 1. Scope & boundaries
@@ -200,14 +222,13 @@ is owned elsewhere. Stated per §G9's anti-sprawl device:
   Phase 5 hands this phase exactly *"sampler objects, DSA modernization, asynchronous transfers,
   persistent staging, and performance tuning"* (`docs/phase5/v1/PHASE_5_DOC.md:384`–`:386`).
 - **Owned by Phase 6:** the synchronous center-depth design A3 replaces, the Appendix D catalog, the
-  fixed App B.3 sampler maps, cadences, smoothing math, and the `CenterDepthSource` seam. Phase 6
+  shared-resolver sampler-integer uploads, cadences, smoothing math, and the `CenterDepthSource` seam. Phase 6
   hands this phase *"the optional PBO/fence replacement for synchronous center-depth readback. This
   document deliberately leaves that ledger item live"* (`docs/phase6/v1/PHASE_6_DOC.md:285`–`:286`).
-- **Owned by Phase 7:** frame orchestration, the reload/pack-switch transaction A4 accelerates, every
-  Mixin hook, and every `DebugService` call site A5 needs. Phase 7 hands this phase *"timing and
-  resize-consumer seams but defines no optimization policy"*
-  (`docs/phase7/v1/PHASE_7_DOC.md:368`–`:369`). **Phase 14 adds no Mixin and no vanilla hook**
-  (D-P14-18).
+- **Owned by Phase 7:** frame orchestration, the current ten-step reload/pack-switch transaction,
+  every Mixin hook and every `DebugService` call site A5 requests. Phase 7's timing aggregates are
+  internal, not a public elapsed-per-pass API; Phase 14 accepts JFR attribution (§5.4). Resize notices
+  are Phase 5's contract. **Phase 14 adds no Mixin and no vanilla hook** (D-P14-18).
 - **Owned by Phase 13:** the `_n`/`_s` companion atlases, noise, and custom textures whose *upload*
   A4 accelerates and whose *filter/wrap and `.mcmeta` blur/clamp* A1 must honor
   (`docs/design/v3/DESIGN.md:2450`–`:2483`). Phase 14 loads no texture and stitches no atlas.
@@ -223,6 +244,9 @@ is owned elsewhere. Stated per §G9's anti-sprawl device:
 - **Owned by Phase 4:** program compilation, linking, backup chains, and the `Program.use()` state
   barrier. A4 changes *where a shader object is compiled*, never what is compiled or how it is
   resolved.
+- **Owned by Phase 11:** expression language/diagnostics/effects and the private evaluator SPI.
+  Phase 14 accepts its measurement handoff and conditional backend experiment (§5.8/L-11),
+  without requiring compiled evaluation or taking ownership of expression semantics.
 - **Owned by G8/S2:** compute, SSBOs, image load-store, and indirect dispatch. PD §15's evidence that
   all four run pack-exercised on the 1.12.2 compat context
   (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:741`–`:744`) is carried in §7.5's ledger as
@@ -235,7 +259,7 @@ Every row A1–A7 is required to be *"a strict behavioral no-op from the pack's 
 requirement (`:552`–`:558`). Three consequences bind the whole document:
 
 1. **No pack-observable semantics are authored here.** Filter and wrap values are Phase 5's and
-   Phase 13's; unit numbers are Phase 6's; `centerDepthSmooth`'s value semantics are Phase 6's; the
+   Phase 13's; unit names/numbers/shapes are Phase 5's; `centerDepthSmooth`'s value semantics are Phase 6's; the
    program set is Phase 4's. Phase 14 changes only *how* the driver is asked, never *what* is asked.
 2. **Every row ships with a fallback to the reference-faithful path**
    (`docs/design/v3/DESIGN.md:2574`–`:2575`), selected at init from `GLCapabilityProfile` or at
@@ -271,22 +295,23 @@ it lands in `mod.glue`**, because almost all of it is invisible above the facade
            GlModernizationPolicy per-row AUTO | FORCE_ON | FORCE_OFF
            GlModernizationPlan   the six tiers actually selected, + why (diagnostic strings)
 
-:mod     com.schmaloogium.mod.glue.gl              (the whole behavior of this phase)
+:mod     com.schmaloogium.mod.glue.gl              (A1–A5 GL mechanisms)
            Lwjgl3GLDevice        (Phase 1's) — A1 and A2 live inside it
              SamplerCache          TextureHandle -> interned sampler; per-unit bind cache
              DsaStrategy           CORE_45 / ARB / BIND_TO_EDIT object-creation strategy
            KhrDebugBackend       Phase 1's DebugService, implemented; balance-safe by construction
            CenterDepthReadback   Phase 6's CenterDepthSource, implemented over a PBO+fence ring
            GlWorkerContext       the single shared GLFW compat context (A4, spike-gated)
-           CompileExecutor       Inline (ships now) | Worker (spike-gated); Phase 4/7 see one type
+           CompileExecutor       proposed Inline | Worker seam; requires Phase 4/7 adoption
 
 :conformance                                       (Phase 2's; Phase 14 adds runs, not machinery)
            the A3 imperceptibility comparison, the A6 allocation profile, the A7 audit
 ```
 
-Nothing in this phase enters `mod.mixin`. Nothing in this phase enters `:engine` outside
-`engine.gl`, and everything it does enter there is an immutable value with no GL type in its
-signature, satisfying Phase 1's C-1 seam constraint.
+Nothing in this phase enters `mod.mixin`. A1–A5's new engine values use the requested `engine.gl`
+placement and carry no GL type. The L-11 conditional expression candidate, if evidence triggers
+it, belongs inside Phase 11's existing implementation-private SPI under that owner's semantics;
+no placement grant or compiled backend is inferred merely from this measurement responsibility.
 
 ### 2.2 The two structural ideas
 
@@ -325,7 +350,7 @@ The design finds that **no new GL entry point is needed**:
 | `SamplerService` (create/parameterize/bind/delete sampler objects) | **Not added.** A1 is served entirely inside the LWJGL3 backend (§4.1): a sampler is a pure function of the `TextureParameters` Phase 5 already supplies, so `TextureService.bindToUnit` can bind the interned sampler alongside the texture with no caller change. Recorded as a *reserved future additive extension* should a phase ever need to bind a sampler independently of a texture; none does today. |
 | A DSA verb set | **Not added.** A2 is by definition an internal object-creation strategy (`docs/design/v3/DESIGN.md:2534`–`:2535`). |
 | An async-readback verb | **Not added.** A3 implements Phase 6's existing `CenterDepthSource` SPI, which Phase 6 already declares as *"loader-neutral sampling SPI with no Minecraft or GL-name types"* implemented from `mod.glue` (`docs/phase6/v1/PHASE_6_DOC.md:1392`). `FramebufferService.readDepthPixel` (`docs/phase1/v14/PHASE_1_DOC.md:3008`) remains the fallback path, unchanged. |
-| An async-compile verb | **Not added** to `engine.gl`. `CompileExecutor` is a `:engine` *policy* interface consumed by the pipeline build, whose two implementations differ only in which thread runs `glCompileShader`; Phase 4 keeps `ShaderService` unchanged. |
+| An async-compile verb | **Not added** to `engine.gl`. `CompileExecutor` is a proposed policy seam, not an existing Phase 4 API; R-P14→P4-1 and R-P14→P7-1 must land before any caller migration. Current `ProgramRegistryCompiler.compile(RegistryBuildRequest)` remains synchronous. |
 | KHR_debug verbs | **Already present.** Phase 1 ships `DebugService` at v0.1 precisely so call sites can label immediately (`docs/phase1/v14/PHASE_1_DOC.md:3060`–`:3065`, `:1652`); Phase 14 supplies the implementation. |
 | The pure value types in §2.1 | **Added.** Immutable records/enums with no GL type. Requires the package-placement grant requested in §5.3 (R-P14→P1-2). |
 
@@ -337,18 +362,18 @@ init (Phase 1 bring-up stage 2)
      ├─ DsaStrategy installed in Lwjgl3GLDevice          ── A2
      ├─ SamplerCache installed in Lwjgl3GLDevice         ── A1
      ├─ KhrDebugBackend installed as DebugService        ── A5
-     ├─ CenterDepthReadback installed as CenterDepthSource (Phase 7 composition step 5)  ── A3
-     └─ CompileExecutor installed for the pipeline build ── A4
+     ├─ CenterDepthReadback installed as CenterDepthSource (P7 transaction step 2) ── A3
+     └─ current synchronous P4 compiler; proposed CompileExecutor only after grants ── A4
 
-pack switch / reload  (Phase 7 §4.1 steps 1–18, PHASE_7_DOC.md:690–:729)
-  └─ step 7 ProgramRegistryCompiler.compile via CompileExecutor          ── A4 (needs R-P14→P7-1)
-     step 9 BufferArchitecture.create → textures allocated               ── A1 A2 interning + DSA
-     Phase 13 companion-atlas upload                                     ── A4 (needs R-P14→P13-1)
+pack switch / reload  (Phase 7 §§4.1/5.3, current ten-step transaction)
+  └─ step 3 P4 compile + P5 plan/create                              ── A1 A2; A4 gated
+     steps 5–7 accept registry, adopt actual generation, accept estate
+     step 8 P13 synchronous texture build/identity checks/registration ── A1 A2; upload A4 gated
 
 frame  (Phase 7 FrameHookSink)
   open  → Phase 6 beginFrame → CenterDepthSource.readCenter              ── A3
   enter/exit scopes → DebugService.pushGroup/popGroup                    ── A5 (needs R-P14→P7-2)
-  pass  → TextureService.bindToUnit ×16 from Phase 5's snapshot          ── A1 (sampler bound too)
+  pass  → P5 preflights and physically binds before returning Bound      ── A1 (sampler bound too)
   finish→ sampler units cleared before vanilla resumes                   ── A1 (D-P14-4)
 
 resize (Phase 5 BufferResizeConsumer, PHASE_5_DOC.md:2018 — "Phases 13 and 14")
@@ -375,8 +400,8 @@ element is the mechanism that guarantees each one is not perturbed. A row here i
 
 | In-scope contract item | Design element that keeps it invariant | Provenance / disposition |
 |---|---|---|
-| **Fixed texture-unit map** — packs rely on these numbers, units 0–15 by stage | A1's per-unit sampler bind cache is indexed by the **fixed** App B.3 unit, never allocated; §4.1.4. Phase 6 remains sole author of the map | `[V:doc]` `docs/research/v1/RESEARCH.md:628` *"Fixed texture-unit map — **Keep** — Contract-visible (App B.3)"*; consumed from `docs/phase6/v1/PHASE_6_DOC.md:974`–`:991`; **D-P14-3** |
-| `depthtex1` is unit 11 | same; A1 introduces no unit-assignment logic at all | `[V:doc]` + Phase 6's ruling at `docs/phase6/v1/PHASE_6_DOC.md:455`, `:987` |
+| **Fixed texture-unit map** — packs rely on these numbers, units 0–15 by stage | A1's per-unit sampler bind cache is indexed by the **fixed** App B.3 unit, never allocated; §4.1.4. Phase 5 is sole policy author and physical binder; Phase 6 consumes its resolver for integer uploads | `[V:doc]` `docs/research/v1/RESEARCH.md:628` *"Fixed texture-unit map — **Keep** — Contract-visible (App B.3)"*; current `docs/phase5/v1/PHASE_5_DOC.md` §§4.12.1/5.1 and `docs/phase6/v1/PHASE_6_DOC.md` §§4.9/5.2; **D-P14-3**, **D-P14-19** |
+| `depthtex1` is unit 11 | same; A1 introduces no unit-assignment logic at all | `[V:doc]` App B.3; current Phase 5 §§4.12.1/5.1 policy, consumed unchanged by Phase 6 |
 | **Ping-pong buffer + flip semantics, buffer clear rules** — packs depend on exact flip behavior | A1 and A2 change texture *parameterization* and *object creation*; neither reads or writes flip state, side selection, or clear policy, all of which stay in `engine.buffers` | `[V:doc]` `docs/research/v1/RESEARCH.md:627`; Phase 5 ownership at `docs/phase5/v1/PHASE_5_DOC.md:343`–`:345`; **D-P14-1** |
 | **Filter and wrap state of every colortex** — `CLAMP_TO_EDGE` S/T; NEAREST for integer formats, LINEAR otherwise | A1 derives `SamplerKey` **from Phase 5's `TextureParameters` value**, never independently; the equivalence test in §8.1 asserts the bound sampler's state equals the texture's configured state for every texture in the estate | `[V:doc]` Phase 5's policy at `docs/phase5/v1/PHASE_5_DOC.md:1042`–`:1045`; **D-P14-1** |
 | **Shadow filter, mipmap, and hardware-PCF compare mode** | `SamplerKey` carries `compareMode`; derived from Phase 5's `ShadowTextureResource(hardwareFiltering, mipmap, nearest)` (`docs/phase5/v1/PHASE_5_DOC.md:534`) | `[V:doc]` `docs/research/v1/RESEARCH.md:523`–`:525` via `docs/phase5/v1/PHASE_5_DOC.md:868`; §4.1.3 |
@@ -385,7 +410,7 @@ element is the mechanism that guarantees each one is not perturbed. A row here i
 | **Everything refreshes on program switch; matrices always upload** | A1–A7 touch no uniform upload and no barrier participant. A5's debug groups are gated `isActive()` and issue no GL when inactive | `[V:observed]` `docs/research/v1/RESEARCH.md:1379`–`:1380` via `docs/phase6/v1/PHASE_6_DOC.md:448`–`:449`; **D-P14-15** excludes contract cadence from optimization |
 | **Stage semantics, program set, backup chains** | A4 moves `glCompileShader` to another thread of the same share group. It does not choose, order, name, resolve, or fall back between programs — all Phase 4's | `[V:doc]` `docs/research/v1/RESEARCH.md:626`; **D-P14-11** keeps link, uniform location and the `Program.use()` barrier on the render thread |
 | **`_n`/`_s` companion atlases; missing sprites → `0xFF7F7FFF` / zero-specular** | A4's async upload changes *when bytes reach the driver*, never the byte values or the defaults, which are Phase 13's | `[V:doc]` `docs/research/v1/RESEARCH.md:638`; spec at `docs/design/v3/DESIGN.md:2451`–`:2454`; **spec-derived — R-P14→P13-1** |
-| **Custom-texture `.mcmeta` blur/clamp and `texture.<stage>.<sampler>` filter/wrap suffixes must be honored** | A1 must derive the `SamplerKey` for a Phase 13 texture from Phase 13's parsed filter/wrap value, or the suffixes silently stop working. The interface does not exist yet | `[V:doc]` spec at `docs/design/v3/DESIGN.md:2467`–`:2478`, including the do-not-inherit note *"filter/wrap suffixes are stripped and ignored there (PD §7.4); ours must honor them"* at `:2476`–`:2478`; **spec-derived — R-P14→P13-2** |
+| **Custom-texture `.mcmeta` blur/clamp and owner-approved filter/wrap semantics** | A1 consumes Phase 13 `TextureParameterSpec(MinFilter,MagFilter,WrapMode)` and its parameter fingerprint through §5.5's exact conversion/lifetime rule. The separate upstream property-suffix authority conflict is not silently resolved here; sampler 0 preserves owner-applied texture state while any full conversion is unavailable | `docs/phase13/v1/PHASE_13_DOC.md` §§4.3.5/5.1/5.5; **D-P14-19**, R-P14→P1-3 |
 | **`GL_QUADS` stays available; compat profile is mandatory `[D-9]`** | A5's debug-context dev mode adopts a context-flag change **only** if OQ-3 sanctions one; the default plan is *"Make **no** context-flag change"* (`docs/phase7/v1/PHASE_7_DOC.md:2321`). A2/A1 request no profile change and no core-profile entry point that is absent from compat | `[D-9]` `docs/research/v1/RESEARCH.md:103`, `:758`; **D-P14-14** |
 | **No UBOs for the pack contract** | nothing in A1–A7 introduces a uniform block; A2's DSA verbs cover texture/framebuffer/buffer object creation only | `[V:doc]` `docs/research/v1/RESEARCH.md:759` |
 | **Never crash the client; shaders-off always reachable; vanilla framebuffer path never corrupted** | Every row degrades to its fallback in-place (§6). A1 additionally clears all sampler bindings before control returns to vanilla, because a leftover sampler silently overrides vanilla's texture filtering | §G2.4 rung 5 (`docs/design/v3/DESIGN.md:439`–`:440`); **D-P14-4** |
@@ -409,7 +434,7 @@ bullet applies to every adopted claim.
 | **DSA tiering** — `DSACore` (GL 4.5) → `DSAARB` → bind-to-edit, chosen at init | **Adopted as the facade-internal object-creation strategy** (§4.2); non-contract-visible; **D-P14-5** | PD §15 at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:737`. `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/IrisRenderSystem.java:33`–`:43]` — `if (GL.getCapabilities().OpenGL45) { dsaState = new DSACore(); } else if (GL.getCapabilities().GL_ARB_direct_state_access) { dsaState = new DSAARB(); } else { dsaState = new DSAUnsupported(); }`; the tier classes are at `:490`, `:494`, `:581` over the interface at `:458` |
 | **Routing `bindTextureToUnit` through the DSA tier** | **Rejected.** `glBindTextureUnit` bypasses the active-unit and bound-texture state `GlStateManager` caches, desyncing vanilla — §G4.6's cooperation rule forbids it. Binding stays on the cooperating path under all three tiers; **D-P14-6** | `[V:observed — Pintonium .../IrisRenderSystem.java:312]` — `dsaState.bindTextureToUnit(target, unit, texture);`. §G4.6 at `docs/design/v3/DESIGN.md:593`–`:596` |
 | **GL 3.3 sampler objects (`GlSampler`) with per-unit bind caches** | **Adopted** (§4.1); **D-P14-1**, **D-P14-2** | PD §15 at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:738`–`:740`. `[V:observed — Pintonium .../gl/sampler/GlSampler.java:10`–`:26]` — constructor takes `(boolean linear, boolean mipmapped, boolean shadow, boolean hardwareShadow)` and sets min/mag filter, `GL_TEXTURE_WRAP_S/T = GL_CLAMP_TO_EDGE`, and `GL_TEXTURE_COMPARE_MODE = GL_COMPARE_REF_TO_TEXTURE` for hardware shadow. Per-unit cache: `.../IrisRenderSystem.java:367`–`:375` — `if (samplers[unit] == sampler) { return; }` |
-| **GL 4.5 `glBindSamplers` batching** | **Adopted as the `MULTI_BIND` tier**, and it fits our design *better* than the reference's: our unit map is a fixed, dense 0–15 array, so one `glBindSamplers(0, 16)` replaces the whole per-pass sampler set; **D-P14-2** | `[V:observed — Pintonium .../IrisRenderSystem.java:377`–`:389]` — `hasMultibind` is `OpenGL45 \|\| GL_ARB_multi_bind` (`:45`) and `GL45C.glBindSamplers(0, emptyArray);` clears the whole range in one call |
+| **GL 4.5 `glBindSamplers` batching** | **Proposed `MULTI_BIND` mechanism**, disabled pending R-P14→P5-2/P1 owner-controlled preflight/batch boundary; no parallel Phase 7 binder. Fixed dense units suit batching only after complete sampler-state conversion; **D-P14-2/19** | Historical `[V:observed — Pintonium .../IrisRenderSystem.java:377`–`:389]`: `hasMultibind` uses OpenGL45 or GL_ARB_multi_bind and `GL45C.glBindSamplers(0, emptyArray)` clears the range; mechanism evidence is not an owner-interface grant |
 | **Dynamic per-program texture-unit allocation** | **Rejected — pre-decided.** §G11.4 lists it among the pre-decided rejections: *"dynamic per-program texture-unit allocation (ours: fixed App B.3 map incl. depthtex1 at unit 11)"*; **D-P14-3** | `docs/design/v3/DESIGN.md:954`–`:955`; PD §18 row at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:808`; Phase 6 rejected the same at `docs/phase6/v1/PHASE_6_DOC.md:473` |
 | **KHR_debug object labels + per-phase push/pop groups behind a flag** | **Pattern adopted, wiring rejected** (§4.5), as the specification instructs at `docs/design/v3/DESIGN.md:2549`–`:2551`; **D-P14-13**, **D-P14-14** | PD §15 at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:745`–`:747`. `[V:observed — Pintonium .../gl/debug/GLDebug.java:291]` — `if (Boolean.getBoolean("celeritas.enableGLDebug") && (GL.getCapabilities().GL_KHR_debug \|\| GL.getCapabilities().OpenGL43))`; label/push/pop at `:334`–`:355`; the stack-depth and label-length probes at `:330`–`:331` |
 | **GPU-side `centerDepthSmooth` (1×1 R32F ping-pong pass)** | **Not this phase's to adopt, and already rejected upstream.** Phase 6 recorded `D-P6-1` selecting the synchronous CPU readback; §3.4 records the resolution and its consequence for A3 | PD §6.3 at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:312`–`:331`; rejection at `docs/phase6/v1/PHASE_6_DOC.md:468`, `:965`–`:968` |
@@ -494,11 +519,11 @@ Three grounds:
    places — and it did not write one for Phase 14. The absence is meaningful, not an oversight to be
    read around.
 
-**Consequence for this document.** Phase 14 was built anyway, on explicit maintainer instruction
-(`docs/phase14/briefs/PHASE_14_BUILD_BRIEF.md:57`–`:68`). That is a *disclosed, authorized
-departure*, not an application of a rule that does not exist. Concretely: Phase-13-sourced items are
-§5.4 requests against the v3 spec, never assumed interfaces (§0.3 item 2); Phase-7-sourced items are
-provisional (§5.3). **Requested upstream (§11.4):** either add an explicit soft-dependency clause to
+**Consequence for this document.** The initial build proceeded on explicit maintainer instruction
+(`docs/phase14/briefs/PHASE_14_BUILD_BRIEF.md:57`–`:68`); §0.3 preserves that authorized departure.
+This integration fix-up now consumes the actual P5/P6/P7/P13 owner contracts in §5 under the current
+documentation-remediation assignment, with no new verification claim. **Requested upstream (§11.4):**
+either add an explicit soft-dependency clause to
 Phase 14's §G5.1 row bounding it to Phase 13's texture-estate lifecycle, in the shape §G5.3 item 3
 already uses for Phase 12, or move P14 to a Wave 6 that follows P13's verification. The parallel-wave
 line and the literal-dependency line should not both stand unqualified.
@@ -546,26 +571,20 @@ Phase 13) remains the sole author of what filter and wrap a texture has; Phase 1
 sampler-object state as a pure function of that same value. This is what makes A1 a behavioral
 no-op rather than a second, competing source of truth.
 
-```java
-/** engine.gl — immutable, no GL type, C-1 clean. The sampler-object half of a texture's state. */
-public record SamplerKey(
-        Filter minFilter,          // NEAREST | LINEAR | NEAREST_MIPMAP_NEAREST | LINEAR_MIPMAP_LINEAR
-        Filter magFilter,          // NEAREST | LINEAR
-        Wrap   wrapS, Wrap wrapT, Wrap wrapR,   // CLAMP_TO_EDGE | REPEAT | MIRRORED_REPEAT
-        CompareMode compareMode,   // NONE | COMPARE_REF_TO_TEXTURE
-        CompareFunc compareFunc) {
-
-    /** The whole of A1's equivalence obligation lives in this one function. */
-    public static SamplerKey of(TextureParameters p);
-}
-```
+`SamplerKey` is a proposed immutable derived value in the requested `engine.gl` placement,
+with a proposed `SamplerKey.of(TextureParameters)` conversion. Its exact complete fields are
+gated on R-P14→P1-3, not defined by a reduced example that omits LOD or border state.
+The conversion must retain every supported minification mode (including all six P13 modes),
+magnification, applicable-axis wrapping, compare state and all remaining sampler fields supplied
+by the owner. P14 introduces no lossy four-filter vocabulary.
 
 GL divides a texture's parameter set in two, and the split is the design's central correctness
 concern (§8.1's `SamplerStateSplitTest` pins it):
 
 - **Sampler state** — min/mag filter, wrap S/T/R, min/max LOD, LOD bias, border colour, texture
   compare mode and func. When a sampler object is bound to a unit, these **override** the texture
-  object's values for sampling through that unit. These are exactly `SamplerKey`'s components.
+  object's values for sampling through that unit. R-P14→P1-3 must publish the exact complete
+  source/derived field set before A1 is enabled. No omitted field gets an invented default.
 - **Texture state** — base level, max level, swizzle, immutability. These are *not* sampler state and
   must continue to be set on the texture object by `TextureService.setParameters`. Phase 5 explicitly
   has one: the sfb *"old-pack swizzle"* (`docs/phase5/v1/PHASE_5_DOC.md:350`).
@@ -575,15 +594,15 @@ texture-state half with `glTexParameter*` as today, and route the sampler-state 
 `SamplerCache.intern(SamplerKey.of(p))`, recording the result against the texture handle. No caller
 changes. **`TextureParameters`' exact field set is not published by Phase 1** — it appears once, in
 the `setParameters` signature at `docs/phase1/v14/PHASE_1_DOC.md:3016`, and nowhere else in that
-document — so §5.3 request R-P14→P1-3 asks for it, and the split above is stated as this design's
-assumption until it is granted.
+document — so §5.6 request R-P14→P1-3 asks for it. The split is a correctness obligation,
+not a granted conversion or a substitute for sampler 0 while fields remain unspecified.
 
 #### 4.1.3 `SamplerCache` — interning, in `mod.glue`
 
 ```text
 SamplerCache
-  Map<SamplerKey, SamplerHandle>  interned      — created lazily, destroyed with the estate
-  Map<TextureHandle, SamplerKey>  perTexture    — what sampler each texture wants
+  Map<SamplerKey, SamplerHandle>  interned      — reference-accounted through live/retiring owners
+  perTexture                                 — actual handle/source/parameter/publication identity
   SamplerHandle[16]               boundPerUnit  — the fixed App B.3 units, index == unit number
 ```
 
@@ -592,43 +611,45 @@ SamplerCache
   (`docs/phase5/v1/PHASE_5_DOC.md:1042`–`:1045`); plus the shadow set, which adds the hardware-PCF
   compare mode and per-texture nearest/mipmap flags from Phase 5's
   `ShadowTextureResource(hardwareFiltering, mipmap, nearest)` (`docs/phase5/v1/PHASE_5_DOC.md:534`);
-  plus, at v0.5, Phase 13's custom-texture filter/wrap suffixes and `.mcmeta` blur/clamp, which is
-  the one input this design cannot yet name (R-P14→P13-2). A dozen distinct samplers covers the
-  whole estate; they are created once per estate generation and shared.
-- **Lifecycle is Phase 5's generation, not Phase 14's.** The cache is keyed to the published
-  `BufferEstateView.generation()` (`docs/phase5/v1/PHASE_5_DOC.md:2004`). Phase 14 registers as a
-  `BufferResizeConsumer` — Phase 5 already names *"Phases 13 and **14**"* as that contract's
-  consumers (`docs/phase5/v1/PHASE_5_DOC.md:2018`) — and on a notice re-interns from the new
-  estate's parameters and deletes the previous generation's sampler objects. No sampler outlives its
-  generation, matching Phase 5's opaque-handle lifetime discipline.
+  plus Phase 13's exact `TextureParameterSpec` (§5.5). The distinct count depends on validated
+  effective owner parameters; there is no assumed dozen-state cap.
+- **Lifecycle follows actual ownership, not a bare generation number.** Estate metadata uses
+  Phase 5's accepted generation. Phase 13 source/configuration/parameter/publication/resource and
+  foreign-object identities also participate. An equal handle number, digest or generation alone
+  cannot reuse a stale entry. On all eight resize reasons (§5.2), invalidate bound-unit knowledge
+  and retire affected entries; obtain replacement parameters only from the transaction's accepted
+  pairing. Do not infer a new registry from a notice or construct a competing publication.
+  Retired publications cannot bind; outstanding leases merely defer deletion. Shared sampler
+  allocations stay accounted for across every live/retiring owner reference and are deleted only
+  after no reference can need them, with units cleared first. Never delete a foreign texture.
 - **Interning is deterministic.** `SamplerKey` is a record, so equality is structural; two textures
   with identical parameters share one sampler object. That is also what makes the `MULTI_BIND` tier
   cheap: a per-pass sampler array is 16 ints assembled from `boundPerUnit`.
 
 #### 4.1.4 Binding, and the rejection of dynamic unit allocation
 
-Binding hangs off the existing verb. Phase 7 binds fixed units from Phase 5's immutable
-`TextureBindingSnapshot`, which has *"exactly sixteen ascending fixed-unit rows and total lookup"*
-(`docs/phase5/v1/PHASE_5_DOC.md:2017`). Under A1, `TextureService.bindToUnit(unit, t)` binds the
-texture as today **and** the sampler `perTexture.get(t)` to the same unit, through a per-unit cache
-that skips a redundant call — the shape verified in the reference at
-`[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/IrisRenderSystem.java:367`–`:375]`
-(`if (samplers[unit] == sampler) { return; }`).
+Binding hangs off Phase 5's existing physical operation, not a Phase 7/14 replay of a snapshot.
+`textureBindings(passSnapshot,overlayLease,expectedOverlay)` (and the corresponding five-argument
+`shadowBindings`) authenticates the same retained Phase 4 selection/context, preflights all sixteen
+rows and then performs ascending object binds. Only `Bound(TextureBindingSnapshot)` transfers the
+overlay lease into its closeable snapshot. `Degraded`/`Rejected` bind nothing; `BackendFailed` may
+follow partial GL but transfers nothing. Bound's owner closes the binding in `finally`; on every
+other exit the acquiring caller closes its lease. Activation and Phase 6 uploads follow Bound.
 
-**`MULTI_BIND` tier.** When `GLCapabilityProfile.atLeast(4,5) || hasExtension("GL_ARB_multi_bind")`,
-the sixteen fixed units are bound with one `glBindSamplers(0, ids)` at the start of a pass instead of
-up to sixteen `glBindSampler` calls. Our fixed, dense App B.3 map suits this strictly better than the
-reference's dynamic map does, because the range is always the same contiguous 0–15. The reference
-uses the same call only to *clear* the range (`.../IrisRenderSystem.java:387`).
+A1 may derive/cache a sampler only inside this owner-controlled binding path, before Bound and
+immediate activation, never in an independent frame binder. Unknown/unconverted and Unused units
+use sampler 0, never a stale previous sampler. P5's no-bind preflight and failure containment remain.
+`MULTI_BIND` may batch only inside that same operation after full preflight, with complete
+sampler-state knowledge and completion before Bound. There is no current facade batch boundary;
+until P5/P1 explicitly grant one, use the existing per-unit path or `NONE`, not a new P7 binder.
 
 **`D-P14-3`: dynamic per-program unit allocation is rejected, pre-decided.** §G11.4 lists it among
 the standing pre-decided rejections — *"dynamic per-program texture-unit allocation (ours: fixed App
 B.3 map incl. depthtex1 at unit 11)"* (`docs/design/v3/DESIGN.md:954`–`:955`) — and Phase 6 already
 rejected it for the sampler-uniform side (`docs/phase6/v1/PHASE_6_DOC.md:473`). This design contains
 no allocator: `boundPerUnit` is a fixed array whose index *is* the App B.3 unit number, and the only
-way an entry changes is a `bindToUnit` call whose unit came from Phase 5's snapshot. There is no
-per-program sampler state anywhere in Phase 14, so the divergence cannot be reintroduced by
-accident.
+way an entry changes is Phase 5's authenticated physical bind (or required clear), never snapshot replay.
+There is no per-program sampler policy in Phase 14.
 
 #### 4.1.5 `D-P14-4` — clearing samplers before vanilla resumes
 
@@ -660,7 +681,7 @@ sampler state applied through *u* equals the sampler state `TextureParameters` f
 "we set the same values": it is a property over the whole published estate, re-checked per
 generation, so a future Phase 5 or Phase 13 parameter that A1 does not know about **fails the test**
 rather than silently degrading a pack's filtering. That failure mode is deliberate; it is the safety
-net for R-P14→P13-2 not landing.
+net for any missing or incomplete parameter conversion, including R-P14→P1-3.
 
 #### 4.1.7 Fallback
 
@@ -895,7 +916,7 @@ The ring is discarded by step 2 on any identity change, which is already suffici
 *additionally* discarded eagerly on a Phase 5 `BufferResizeNotice` — Phase 5 names Phase 14 as a
 consumer of that contract (`docs/phase5/v1/PHASE_5_DOC.md:2018`), and eager discard means the
 first frame after a resize costs a warm-up `Unavailable` rather than an invalidation check against a
-destroyed FBO. `BufferResizeReason.MAIN_DEPTH_EXTENT` and `DISPLAY_EXTENT` are the two that matter.
+destroyed FBO. All eight reasons in §5.2 invalidate the ring, not just depth/display changes.
 Phase 7 already sequences center-depth sampling before any resize is applied
 (`docs/phase7/v1/PHASE_7_DOC.md:1046`–`:1051`: *"On an active frame, Phase 6 samples the prior depth
 first; Phase 7 then abandons that shader frame … This avoids resizing the source before center-depth
@@ -1000,10 +1021,10 @@ RESEARCH.md §6.2 states the replaced behavior as *"Multi-second render-thread f
 switch"* with the risk note *"Driver quality for shared compat contexts varies; needs a synchronous
 fallback `[U→OQ-15]`"* (`docs/research/v1/RESEARCH.md:774`), and §4.8 as *"Synchronous on-thread
 compile of ~40 programs"* (`:644`). In our own designed pipeline the freeze is Phase 7's pipeline
-build: step 7 *"call Phase 4 `ProgramRegistryCompiler.compile`"* and step 9's buffer creation, inside
-the transaction Phase 7 runs *"at a no-draw, no-open-frame safe point"*
-(`docs/phase7/v1/PHASE_7_DOC.md:696`–`:716`). The second half of the freeze is Phase 13's companion
-atlases: two additional full atlases with matching mip chains is the accepted memory cost
+build: current ten-step transaction step 3 calls Phase 4 `ProgramRegistryCompiler.compile` and
+Phase 5 plan/create; step 8 builds Phase 13 textures after accepted registry/estate generations.
+All currently run synchronously at a no-draw, no-open-frame safe point (Phase 7 §§4.1/5.3).
+For companion atlases, two additional full atlases with matching mip chains is the accepted memory cost
 (`docs/design/v3/DESIGN.md:2498`–`:2500`), and uploading them is a large synchronous transfer.
 
 #### 4.4.2 Threading model, stated precisely
@@ -1086,11 +1107,14 @@ never-run spike safe.
 
 #### 4.4.4 The mandatory synchronous fallback, designed now
 
+**Proposed interface, not a current owner grant.** R-P14→P4-1 (§5.9) and R-P14→P7-1
+must land before either implementation replaces the existing synchronous compiler.
+
 ```java
 /** :engine policy interface. Both implementations satisfy it identically from the caller's view. */
 public interface CompileExecutor {
-    /** Non-blocking. Returns a token the caller polls. */
-    CompileBatchToken submit(List<ShaderCompileUnit> units);
+    /** Worker never waits; Inline compiles synchronously. Batch is opaque and P4-issued. */
+    CompileBatchToken submit(PreparedCompileBatch batch);
     /** Never blocks. PENDING | READY(results) | FAILED(diagnosticId). */
     CompileBatchStatus poll(CompileBatchToken token);
 }
@@ -1102,28 +1126,23 @@ public interface CompileExecutor {
   poll always succeeds, so the build completes in one call exactly as Phase 7 designs it today.
 - **`WorkerCompileExecutor`** — the §4.4.2 model.
 
-This is the design decision that makes a failed spike cost nothing: because the synchronous path is
-expressed through the *same* interface with the same call sequence, switching tiers changes no
-control flow in Phase 4 or Phase 7, and `Inline` is what ships on day one. §G4.4's requirement that
-*"a failed spike never stalls a milestone"* (`docs/design/v3/DESIGN.md:578`–`:579`) is satisfied
-structurally rather than by intention.
+After owner adoption, both tiers share this sequence. Before adoption, the fallback is the current
+Phase 4 synchronous `compile(RegistryBuildRequest)`, not an invented submit/poll adapter.
+A declined split leaves core control flow unchanged and does not block the milestone.
 
-#### 4.4.5 What this needs from Phase 7, and what it needs from Phase 13
+#### 4.4.5 Required compiler, transaction and texture-owner grants
 
-- **Phase 7 (R-P14→P7-1).** Phase 7's build transaction is written as a single render-thread sequence
-  of eighteen steps at one safe point (`docs/phase7/v1/PHASE_7_DOC.md:690`–`:729`), and its exposed
-  `ReloadStatus.Building()` carries no progress (`docs/phase7/v1/PHASE_7_DOC.md:1689`). Async compile
-  needs the transaction to be **resumable across frames**: step 7 submits, later frames poll, and the
-  publication steps 8–18 run in the frame where the batch reports `READY`, with vanilla rendering
-  continuing meanwhile. Phase 7's §5 does not currently express that. Requested, not assumed.
-  **If declined, A4 ships `Inline` and nothing else changes.**
-- **Phase 13 (R-P14→P13-1).** The `_n`/`_s` upload half needs Phase 13's companion-atlas
-  load/stitch/reload lifecycle to expose an upload seam that can accept a staged upload — that is,
-  the point at which pixel bytes become a `TextureData` must be separable from the point at which
-  the texture becomes bindable, with a completion signal. The v3 spec defines the lifecycle
-  (`docs/design/v3/DESIGN.md:2451`–`:2458`, `:2482`–`:2483`) but no interface exists (§0.3 item 2).
-  **If unavailable, A4 covers shader compile only and the atlas upload stays synchronous** — the two
-  halves are independent work items sharing one worker.
+- **Phase 4 (R-P14→P4-1).** §5.9 requests the exact prepare/worker/link ownership split. P4
+  freezes validated materialization/policy inputs, owns private shader results, produces the candidate
+  only after render-thread link/layout work, and preserves existing failure/fallback semantics.
+- **Phase 7 (R-P14→P7-1).** Its current ten-step transaction is synchronous. The proposal suspends
+  step 3 after preparation and before a publishable candidate, then resumes remaining step 3 and
+  steps 4–9 only after readiness and identity revalidation. No shader draw while pending; invalidation
+  cancels and drains late results under compiler ownership before the existing off compensation.
+- **Phase 13 (R-P14→P13-1).** Its synchronous build and exact prepared payload/catalog contract
+  exist. What is absent is submit/poll staging at step 8, with allocation on render thread, no
+  bindable partial upload and no animation before readiness. Until owner adoption, atlas uploads
+  remain synchronous, independently of whether the compiler proposal is adopted.
 - **Phase 1 (R-P14→P14-P1-4).** `RecordingGLDevice` is *"not made thread-safe to cover the Phase 14
   exception. If off-thread uploads ever need recording, that is a Phase 14 request against this
   document"* (`docs/phase1/v14/PHASE_1_DOC.md:4322`). Taking that invitation up in §5.3.
@@ -1455,35 +1474,41 @@ another phase's design.
 | `GlModernizationPlan` / `SamplerTier` / `DsaTier` / `DebugTier` / `AsyncCompileTier` / `AsyncReadbackTier` | immutable `:engine` record of the six tiers actually selected plus an immutable ordered list of rationale strings; derived by a **pure** static function of `GLCapabilityProfile` + `GlModernizationPolicy`, once, at bring-up, and never mutated for the life of the GL context | diagnostics; Phase 2's run manifest (as an environment fact, not a result); Phase 12 for display |
 | `GlModernizationPolicy` | per-row `AUTO \| FORCE_ON \| FORCE_OFF`, five rows (sampler, DSA, debug, compile, readback); sourced from the mod config owned by `mod.core`; every row defaults to `AUTO`, and `AUTO` resolves to the reference-faithful path until that row's ledger entry closes (`D-P14-17`) | `mod.core` config; Phase 12 GUI if it chooses to surface them |
 | `SamplerKey` and `SamplerKey.of(TextureParameters)` | the pure derivation function; the whole of A1's behavioral-equivalence obligation is in this one function, which is why it is exposed rather than hidden — it is the thing §8.1's equivalence test asserts over | `:engine` tests; Phase 5 and Phase 13 as the authors of the inputs |
-| `CompileExecutor` / `CompileBatchToken` / `CompileBatchStatus` | non-blocking `submit`/`poll` policy interface with two interchangeable implementations; the caller's control flow is identical under both, so `Inline` requires no separate code path | Phase 4 compilation and Phase 7's pipeline-build transaction |
-| **The `CenterDepthSource` implementation** | not a new type: `mod.glue`'s implementation of **Phase 6's** existing SPI, in either the PBO+fence or the synchronous form | Phase 6, through Phase 7's composition step 5 |
+| `CompileExecutor` / `CompileBatchToken` / `CompileBatchStatus` | **Proposal only:** submit/poll after explicit P4 prepare/worker/link and P7 resumability adoption (§5.9/§5.4); no current caller may infer an async compiler grant | Phase 4 owns compiler products; Phase 7 owns the transaction; P14 owns optional executor mechanism |
+| **The `CenterDepthSource` implementation** | Phase 6's existing SPI, synchronous until R-P14→P6-1 grants sample age and the experiment passes | Phase 6 through Phase 7 transaction step 2 |
 | **The `DebugService` implementation** | not a new type: `mod.glue`'s implementation of **Phase 1's** existing interface, balance-safe per `D-P14-13` | every phase that labels an object; Phase 7's group call sites |
 | **Measurement procedures** — §4.3.6 imperceptibility comparison, §4.6.2 allocation profile, §4.7.2 redundant-state audit, §7.5 OQ-22 ledger | procedures and criteria, executed as Phase 2 harness runs; outputs are counts manifests in the local/CI cache, never repository artifacts | the implementation effort; G8/S2 for the feasibility rows |
 
 No exposed contract carries a GL name, an LWJGL type, a Minecraft type, a `ProgramHandle`, or a
 mutable value. Phase 14 exposes **no new GL entry point on `engine.gl`** (§2.3).
 
-### 5.2 Consumed from Phase 5 (verified dependency)
+### 5.2 Consumed from Phase 5 — current owner contract, unverified changes
 
-Verified: `docs/phase5/reviews/PHASE_5_REVIEW_38.md:43`–`:45`, PASS, `Interface changed: no`.
-(Its doc's own trailer is stale — §0.3 item 4.)
+Phase 5 §5 incorporates §§2.4/4.12. Its old PASS is historical and does not certify the current seam.
 
-| Phase 5 §5 contract | Use here |
+| Contract | Phase 14 consumption |
 |---|---|
-| `BufferEstateView`, `BufferSizing`, `BufferInventory`, `BufferInventoryEntry`, `ResolvedBufferFormat` — Phase 5 already names **14** among the consumers (`docs/phase5/v1/PHASE_5_DOC.md:2004`) | the generation that keys `SamplerCache`'s lifetime; the inventory that enumerates the textures whose `SamplerKey`s are interned |
-| `BufferResizeNotice`, `BufferResizeConsumer`, `BufferResizeRegistration`, `ResizeConsumerResult` — Phase 5 already names *"Phases 13 and **14**"* as the consumers (`docs/phase5/v1/PHASE_5_DOC.md:2018`) | A1 re-interns and A3 discards its ring on `DISPLAY_EXTENT`, `RENDER_QUALITY`, `MAIN_DEPTH_EXTENT`, `SHADOW_RESOLUTION` and `COLOR_INVENTORY_OR_FORMAT`. Phase 14 registers as an ordinary consumer, returns a closed result, and never fails a resize — a failing consumer *"stops dispatch, publishes next-generation off"*, which a performance row must never cause |
-| `ShadowTextureResource(boolean hardwareFiltering, boolean mipmap, boolean nearest)` (`docs/phase5/v1/PHASE_5_DOC.md:534`) | the three inputs to a shadow texture's `SamplerKey`: compare mode, mipmap min filter, nearest-vs-linear |
-| Colortex filter/wrap policy: `CLAMP_TO_EDGE` S/T, NEAREST for integer formats, LINEAR otherwise (`docs/phase5/v1/PHASE_5_DOC.md:1042`–`:1045`) | the colour estate's `SamplerKey` set; **Phase 5 remains the author**, Phase 14 only derives (`D-P14-1`) |
-| `TextureBindingSnapshot` / `TextureBindingRow` / `TextureBindingOutcome` — sixteen ascending fixed-unit rows, total lookup (`docs/phase5/v1/PHASE_5_DOC.md:2017`) | the fixed unit indices for the per-unit sampler bind cache; Phase 14 adds no unit and reorders none |
-| `BufferPlan`/estate lifecycle and generation discipline (`docs/phase5/v1/PHASE_5_DOC.md:2002`–`:2003`) | sampler objects are created and destroyed with the generation that owns their textures; none outlives it |
+| `FixedSamplerPolicies.appB3()` / `.resolver()` | Sole fixed spelling/unit/shape policy and fingerprint, pure before registry/runtime/estate creation; no second map or allocator |
+| `textureBindings` / `shadowBindings` / `TextureBindingResult` | P5 alone performs physical binds after complete preflight; exact Bound-only lease transfer and all four outcomes are consumed as §4.1.4 states |
+| `TextureBindingSnapshot` | Closeable sixteen-row evidence with `BoundObject`/`Unused`; usable only while pass/frame/estate/depth/registry/selection/overlay identities and owner currentness remain valid. Never replay expired rows or retain handles as authority |
+| `BufferEstateView`, sizing/inventory/formats, shadow resource parameters | Non-owning accepted generation metadata and owner-authored parameter inputs; not texture-ownership transfer |
+| Resize publication/registration/notice/results | All eight reasons in declaration/priority order: `DISPLAY_EXTENT`, `RENDER_QUALITY`, `MAIN_DEPTH_EXTENT`, `SHADOW_RESOLUTION`, `SHADOW_QUALITY`, `PACK_CONFIGURATION`, `REGISTRY_PLAN`, `COLOR_INVENTORY_OR_FORMAT`. Notice is old/new sizing, new generation and one prioritized reason, not registry identity |
 
-**No change to Phase 5 is requested.** One hand-off is offered and left to Phase 5 to accept or
-decline: H-P14→P5-1 (§4.1.8, §11.5).
+Register through the existing closed `Registered`/rejected protocol at the accepted pairing.
+Each callback is render-thread synchronous and returns `SUCCESS` or `FAILED`; preserve the owner's
+full delivery result, including `ConsumerFailed`'s installed-off ownership and `deliveredCount`.
+An optional cache failure should demote/retire locally when safe, never claim SUCCESS after
+incomplete safety cleanup or hide a required failure from P7. §4.1.3 defines invalidation and
+lease-safe retirement. P7 owns compensation; no old publication is revived.
 
-### 5.3 Consumed from Phase 6 (verified dependency), and the one request against it
+H-P14→P5-1 remains an optional mipmap simplification, not permission to change P5's baseline.
+**R-P14→P5-2 (ungranted):** a full-preflight internal sampler batch boundary, preserving zero-bind
+rejection, Bound-only transfer and backend-failure containment. `MULTI_BIND` remains disabled
+without that boundary; per-unit/`NONE` needs no parallel binder.
 
-Verified: `docs/phase6/reviews/PHASE_6_REVIEW_24.md:43`–`:45`, PASS, `Interface changed: no`.
-(Its §0.6 self-status is stale — §0.3 item 4.)
+### 5.3 Consumed from Phase 6 — current owner contract and sample-age request
+
+Current §5 adopts Phase 5's resolver; old PASS evidence does not certify its changed interfaces.
 
 | Phase 6 §5 contract | Use here |
 |---|---|
@@ -1491,7 +1516,7 @@ Verified: `docs/phase6/reviews/PHASE_6_REVIEW_24.md:43`–`:45`, PASS, `Interfac
 | `D-P6-1` and the not-obviated statement (`docs/phase6/v1/PHASE_6_DOC.md:1678`, `:965`–`:968`) | resolves A3's conditional status (§3.4) |
 | The frame-begin ordering contract — center-depth read completes before any Phase 5 resize or clear (`docs/phase6/v1/PHASE_6_DOC.md:1385`, `:864`–`:876`) | A3 adds no frame moment and preserves the ordering; it is the reason no in-flight transfer can outlive its framebuffer |
 | The §6 degradation row *"center-depth dimensions/FBO unavailable | 2a | retain previous smoothed depth"* (`docs/phase6/v1/PHASE_6_DOC.md:1500`) | the designed meaning of A3's warm-up and invalidation `Unavailable` returns |
-| The fixed sampler maps, units 0–15 by stage, `depthtex1` at 11 (`docs/phase6/v1/PHASE_6_DOC.md:974`–`:991`) | the fixed indices A1's bind cache uses; the standing rejection of dynamic allocation (`D-P14-3`) |
+| `FixedSamplerResolver` injected immediately after `UniformConfiguration`; `Ready(List<ResolvedSamplerBinding>,policy)` / `Invalid(SamplerLayoutValidation)` | P6 consumes P5's sole resolver, not an independent map. Ready rows are exact name/full shape/unit; P6 only locates/uploads integers using the same effective layout/stage/band/policy as preceding P5 binds, preserving its cache and activity-token rules |
 | `UniformConfiguration`'s exact half-lives in ticks, incl. center depth (`docs/phase6/v1/PHASE_6_DOC.md:487`) | the `h` in §4.3.6's criterion C2, so the tolerance is derived from the pack rather than invented |
 | `centerDepthMacroContributor()` always `MacroContribution.Empty` (`docs/phase6/v1/PHASE_6_DOC.md:1393`) | confirms no macro-level redirect exists; A3 is the only async path |
 
@@ -1514,36 +1539,31 @@ value — which is exactly what Phase 6 has ruled out. Requested, in preference 
 the synchronous path ships (§4.3.7). A3's mechanism is unaffected; only its permission to be enabled
 is. This request is the *sole* blocker on A3.
 
-### 5.4 Consumed from Phase 7 (**unverified — provisional**), and two requests against it
+### 5.4 Consumed from Phase 7 — ten-step baseline and optional requests
 
-**Everything in this subsection is provisional.** `docs/phase7/reviews/PHASE_7_REVIEW_32.md:299`–`:301`
-is PASS-WITH-CORRECTIONS with `Interface changed: yes`, so §G1.3's re-verify clause is engaged and
-round 33 is owed; the doc says of itself that *"v1 remains unverified pending a fresh whole-document
-review."* This session read it under the maintainer authorization at
-`docs/phase14/briefs/PHASE_14_BUILD_BRIEF.md:57`–`:63`. **If round 33 changes Phase 7's §5, every row
-below is re-checkable and this document owes a §G1.3 fix-up** — not a rebuild, because no Phase 14
-decision depends on the *detail* of these rows, only on their existence.
+Current §§4.1/5.3 are the owner contract. Coordinated changed bytes remain unverified; initial-build
+round-32/33 predictions in §0.3 are not current authority.
 
-| Phase 7 §5 contract (provisional) | Use here |
+| Phase 7 contract | Use here |
 |---|---|
 | `FrameDriver` / `FrameHookSink` and the `enter`/`exit` scope pair (`docs/phase7/v1/PHASE_7_DOC.md:1363`–`:1372`) | the boundaries A5's debug groups bracket, and A7's segmentation keys |
 | `FrameExitKind { NORMAL, EARLY_RETURN, THROWN }` and `FrameAbortReason`'s six values (`docs/phase7/v1/PHASE_7_DOC.md:1383`–`:1386`) | the exhaustive exit set A1's sampler clear (`D-P14-4`) and A5's group drain must cover |
 | The `finally`-based finalization guarantee (`docs/phase7/v1/PHASE_7_DOC.md:2166`–`:2168`) | what A1's sampler clear rides so it survives a throw |
 | `ShaderReloadController` / `ReloadRequest` / `ReloadToken` / `ReloadStatus{Queued, Building, Active, Off, Failed, Unknown}` (`docs/phase7/v1/PHASE_7_DOC.md:1671`–`:1693`) | the pack-switch entry point A4 accelerates; `Building` is the state an async build would occupy |
-| The eighteen-step pipeline-build transaction, step 7 compile and step 9 buffer creation (`docs/phase7/v1/PHASE_7_DOC.md:690`–`:729`) | where `CompileExecutor` is installed and where A1/A2 first act on a new estate |
-| Composition step 5 — construct the Phase 6 platform provider and `UniformRuntime` (`docs/phase7/v1/PHASE_7_DOC.md:694`–`:697`) | where `mod.glue`'s `CenterDepthSource` (A3) is installed |
-| `BufferResizeConsumer` delivery at coordinated publication step 12 (`docs/phase7/v1/PHASE_7_DOC.md:2012`) | Phase 7 sequences the resize notices A1/A3 consume from Phase 5 |
+| Current ten-step §§4.1/5.3 transaction | Step 1 quiesce/drain/freeze and preliminary preferences before load; 2 inactive texture owner/adapters then runtime/provider with P5 resolver; 3 frozen ID inputs, P4 compile and P5 plan/create; 4 compose/revalidate; 5 retire old owners/registrations and publish P4 Ready; 6 adopt actual accepted registry generation; 7 publish P5 with full synchronous resize result; 8 build/validate/register P13 against actual accepted identities; 9 publish ID/invalidate geometry then atomically Active/admit; 10 failure compensation through owner retirement and P5/P4 off |
+| Exact ownership and generation rules | Only caller-owned candidates are caller-closed; accepted resources retire through publishers. Old barriers invalidate before P6 retirement and borrowed services outlive retirement. PipelineVersion increments once per final outcome; P4 generation changes independently, so Ready then compensating Off may increment it twice |
+| Construction and resize placement | CenterDepthSource installs in step 2; P5 allocation in step 3; P13 texture allocation/upload only in step 8 after accepted generations, never a guessed generation; resize publication/delivery is step 7, new P13 registration step 8 |
 | Phase 7's own posture: *"Phase 7 adds no readback"* (`docs/phase7/v1/PHASE_7_DOC.md:2194`–`:2195`) | confirms A3 is the only readback path in the frame |
 | OQ-3's default plan: *"Make **no** context-flag change"* (`docs/phase7/v1/PHASE_7_DOC.md:2320`–`:2323`) | the constraint that produces finding C-3 and shapes A5's gate (`D-P14-14`) |
 
-**R-P14→P7-1 — a resumable pipeline-build transaction.** Phase 7's build is a single render-thread
-sequence at one safe point, and `ReloadStatus.Building()` carries no progress. A4 needs step 7 to be
-able to *submit* and later *poll*, with steps 8–18 running in the frame where the batch is `READY`
-and vanilla rendering continuing meanwhile. Requested: that Phase 7's §5 admit a multi-frame build in
-which the transaction holds its caller-owned candidates across frame boundaries, no shader draw
-occurs while it is pending, and any frame-boundary invalidation (world change, resize epoch, a
-superseding reload intent) aborts the pending build and closes its candidates by Phase 7's existing
-reverse-order rules. **If declined, A4 ships `Inline`** (§4.4.4, §4.4.6) and no other row is affected.
+**R-P14→P7-1 — resumability, still ungranted.** After R-P14→P4-1 is explicitly adopted,
+permit suspension at step 3 between compiler preparation and a publishable candidate. P7 retains
+the frozen configuration/schema/world/resource/hook/policy identities and caller-owned candidates;
+P4 retains opaque worker products and their cleanup. `PENDING` permits vanilla only. At `READY`,
+revalidate every identity before finishing step 3 and steps 4–9. Failure/superseding intent/world or
+resource/resize invalidation cancels the pending build, rejects late results and follows step 10;
+no retired atlas or prior registry is restored. Step 8 async upload requires separate P13 staging
+adoption. Without either owner grant, run its current synchronous operation. No implicit resumability.
 
 **R-P14→P7-2 — debug-group call sites, and a frame-phase timing seam.** Two parts:
 
@@ -1551,65 +1571,63 @@ reverse-order rules. **If declined, A4 ships `Inline`** (§4.4.4, §4.4.6) and n
    already owns — the frame, each `RenderSection` scope, the shadow invocation, and each
    deferred/composite/final pass. Phase 14 adds no hook (`D-P14-18`), and the cost when inactive is
    nil (§4.5.4).
-2. **Timing.** Phase 7's §1.2 states it *"exposes timing and resize-consumer seams"*
-   (`docs/phase7/v1/PHASE_7_DOC.md:368`–`:369`), but **its §5 exposes neither**: the resize-consumer
-   contract is Phase 5's (which Phase 7 consumes at `:2012`), and the only timing-adjacent surfaces
-   in §5 are `FrameReadiness.consecutiveFinalizedFrames` and the Phase 2 capture listener. The
-   internal *"debug hook timing … preallocated counters … off by default"* (`:2196`) is not exposed.
-   Requested: expose a read-only, off-by-default per-frame phase-timing seam (a small immutable
-   record of frame ID plus elapsed nanoseconds per `RenderSection`/pass), so §4.6.2's profile and
-   §4.7.2's ranking can attribute cost to a pass rather than to a stack trace. **This is a discovered
-   interface-honesty gap in Phase 7's own §1.2-vs-§5, reported as finding C-5 in §11.2**, not merely
-   a convenience request. **If declined, A6 and A7 fall back to JFR stack attribution and A5's debug
-   groups**, which is coarser but sufficient; nothing is blocked.
+2. **Timing — adopted fallback, not an exposed timer.** Phase 7 narrows its §1.2 promise to
+   internal off-by-default debug aggregates and records this same disposition in §§5.5/11.
+   No public elapsed-per-RenderSection/pass record exists; frame counts are not elapsed timing.
+   Phase 14 accepts JFR stack attribution for A6/A7 ranking; debug groups may segment a separate
+   counts/capture run only if their optional call sites are adopted. Timing runs never enable
+   label/recordGL flags. A read-only frame-id/per-pass-nanos projection remains an optional
+   unadopted future request; missing instrumentation does not block synchronous rendering.
 
-### 5.5 Requests against Phase 13 — spec-derived assumptions, never assumed interfaces
+### 5.5 Consumed from Phase 13 — parameters/lifetime and optional upload staging
 
-**Phase 13 supplies no contract to this document.** `docs/phase13/reviews/` is empty — zero review
-rounds — so §G5.3 invariant 1 bars its in-flight draft (§0.3 item 2). §G1.1's rule stands: *"If it is
-missing something you need, flag the request in your doc §5; do not invent the missing interface as
-if it existed"* (`docs/design/v3/DESIGN.md:296`–`:298`). Everything below is therefore a **request
-against an assumption derived from the v3 Phase 13 specification**, with the assumption stated so a
-verify session can check it and a future fix-up can reconcile it.
+Phase 13 §§2.3/4.3.5/4.5/4.7/5 publish real current contracts. The initial-build claim that no
+interface exists is historical, not an active premise. Changed owner contracts remain unverified.
 
-**R-P14→P13-1 — a stageable companion-atlas upload seam** (needed by A4's `_n`/`_s` half).
+**R-P14→P13-2 — value handoff adopted, complete sampler conversion still gated.**
+Consume exactly `TextureParameterSpec(MinFilter minFilter,MagFilter magFilter,WrapMode wrap)`
+and `TextureParameterFingerprint(String value)` from the validated candidate/source metadata.
+The owner-published closed domains are:
+`MinFilter { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, LINEAR_MIPMAP_NEAREST,
+NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_LINEAR }`,
+`MagFilter { NEAREST, LINEAR }`, and `WrapMode { REPEAT, CLAMP_TO_EDGE }`.
+Map min/mag one-to-one with no mip-mode reduction. Wrap applies S for 1D, S/T for 2D and
+RECTANGLE, S/T/R for 3D. RECTANGLE requires CLAMP_TO_EDGE and non-mipmap minification;
+an incompatible spec is rejected by owner target compatibility, never silently normalized.
+`.mcmeta` blur false/absent gives NEAREST, true LINEAR; clamp false/absent REPEAT, true
+CLAMP_TO_EDGE. Consume the effective owner result, including sidecar/default outcome;
+never reparse properties or invent stripped suffix semantics. Unknown borrowed modes remain
+outside interning and use sampler 0, not a fabricated representable spec.
+The P13 value is **not** automatically P1's `TextureParameters`: missing compare/LOD/border
+state and object-only base/max-level/swizzle/immutability must come from the exact granted P1
+conversion/owner policy. Do not infer those fields from three values. Until a lossless complete
+conversion exists, that texture's unit binds sampler 0 and retains owner-applied texture parameters.
+This also covers borrowed objects: actual authenticated foreign parameters only, no mutation to
+make requests compatible, no invented compare/default state. P5 logical-buffer mipmaps cannot
+overwrite a custom/foreign replacement's parameters.
 
-- *Spec-derived assumption.* Phase 13 will own *"`_n`/`_s` companion atlases … full companion
-  atlases with matching mip chains … stitch/load hooks on `TextureMap`/`TextureAtlasSprite`"* and a
-  *"companion-atlas lifecycle (load/stitch/reload/animate)"* (`docs/design/v3/DESIGN.md:2451`–`:2455`,
-  `:2502`–`:2503`), with *"memory posture documented (two extra full atlases is the accepted cost)"*
-  (`:2499`–`:2500`).
-- *Requested.* That the lifecycle separate **"pixel bytes are ready"** from **"the texture is
-  bindable"**, with (a) an upload submission that accepts a staged/asynchronous transfer, (b) a
-  completion signal the render thread can poll, and (c) a defined state for "atlas allocated but not
-  yet filled" in which no shader draw sampling it is permitted. Also requested: that texture
-  *storage allocation* stay on the render thread (§4.4.2 rule 6) and that sprite-animation ticking
-  (`:2482`–`:2483`) not begin until the completion signal fires, so an animation cannot race a
-  partial upload.
-- *If unavailable.* A4 covers shader compile only; the atlas upload stays synchronous. The two halves
-  are independent work items sharing one worker, so this cannot block A4.
+**Publication/lifetime consumed exactly.** `TextureSystemFactory.create` returns inactive
+`Created(TextureSystem)|Failed(TextureFailure)`. `plan` is `Planned(TexturePlan)|Invalid`;
+`build(TextureBuildRequest(planRequest,sources))` is synchronous `Ready(TexturePublication)|Failed`,
+validating matching prepared payload/catalog source/content/target/parameter/epoch before GL.
+P7 builds in step 8 with accepted registry and estate generations and registers against accepted
+sizing. Immutable publication/candidate views are non-owning; P14 never acquires deletion authority.
+`TextureLeaseSource.lease(expectedPublication,selection)` returns `Acquired(lease)|Rejected(reason)`;
+the P5 Bound-only closure rule applies. Retire immediately prevents new leases and makes
+`isCurrent()` false. Outstanding leases delay reverse-order owned deletion, not stale-use rejection.
+Close never blocks the render thread; borrowed references are released, never deleted. Same-owner
+reuse requires complete equal source/parameter identity and accounting across every live/retiring
+publication; equal hashes never grant cross-owner reuse or revive an old publication.
 
-**R-P14→P13-2 — filter/wrap and `.mcmeta` blur/clamp as a derivable value** (needed by A1).
+**R-P14→P13-1 — stageable upload remains ungranted.** The missing extension is separation of
+prepared bytes from bindable completion, not missing texture interfaces. Request render-thread
+storage allocation, worker upload of immutable prepared payloads, opaque completion polling,
+no binding/animation before ready, and owner-controlled cancel/late-completion cleanup under P7's
+frozen transaction identities. Current synchronous build remains baseline. If this extension is
+declined, an independently granted compile optimization may proceed but atlas upload stays synchronous.
 
-- *Spec-derived assumption.* Phase 13 will own *"`.mcmeta` blur/clamp sidecars"* and, explicitly as a
-  do-not-inherit row, *"the filter/wrap suffix gap — `texture.<stage>.<sampler>` filter/wrap suffixes
-  are stripped and ignored there (PD §7.4); **ours must honor them** (conformance row)"*
-  (`docs/design/v3/DESIGN.md:2467`–`:2478`).
-- *Requested.* That the parsed filter/wrap and blur/clamp result be exposed as a value from which
-  `SamplerKey.of(...)` can derive — ideally as the same `TextureParameters` Phase 1's
-  `setParameters` takes, so no second vocabulary exists. **This is a conformance requirement, not an
-  optimization:** if a Phase 13 texture's filter/wrap is applied by a path A1 does not see, the
-  sampler bound to that unit will override it and the suffixes will silently stop working — turning
-  a contract row into a bug. §4.1.6's `SamplerEquivalenceTest` is written to **fail** in that case
-  rather than degrade silently, which is the designed safety net.
-- *If unavailable.* Phase 13's textures are excluded from sampler interning: their units bind sampler
-  0 and keep per-texture parameters, while the Phase 5 estate uses samplers. That mixed mode is
-  correct but partial, and it is the shipping behavior until this request lands.
-
-**R-P14→P13-3 — non-blocking, on request.** Phase 13's noise texture (unit 15) and custom textures
-in all three source forms (`docs/design/v3/DESIGN.md:2461`–`:2478`) are consumed by A1 through the
-same `TextureParameters` route as everything else. No separate request; listed so the reconciliation
-sweep has a complete inventory.
+**R-P14→P13-3 — inventory covered.** Noise, companion and all custom source forms use the same
+parameter/source/lease discipline; no alternate interning route or separate texture owner is added.
 
 ### 5.6 Requests against Phase 1 (not a declared dependency; read narrowly per §0.2)
 
@@ -1622,7 +1640,7 @@ posture"* (`:1490`). Four requests follow; none blocks a row outright.
 |---|---|---|---|
 | **R-P14→P1-1** | Redefine `DebugService.isActive()`. Its current comment — *"false unless a debug context and the dev flag are both on"* (`docs/phase1/v14/PHASE_1_DOC.md:3064`) — makes the whole service dead under Phase 7's OQ-3 default of *"Make **no** context-flag change"* (`docs/phase7/v1/PHASE_7_DOC.md:2320`). Requested: `(KHR_debug or GL 4.3) && -Dschmaloogium.debug.glLabels`, with a debug context an enhancement. Finding C-3 | KHR_debug requires no debug context; the reference gates on extension-or-version plus a flag (`[V:observed — Pintonium .../gl/debug/GLDebug.java:291]`) | A5 is unshippable as specified. This is the one request whose refusal would make a scope row undeliverable, so it is flagged as such rather than softened |
 | **R-P14→P1-2** | A package-placement grant for Phase 14, in the shape Phase 8 already has (`docs/phase1/v14/PHASE_1_DOC.md` §5.1 *"Phase 8 package grant"*): permission to add the §2.1 pure value types to `com.schmaloogium.engine.gl`, and to place the backend in `com.schmaloogium.mod.glue.gl`. §2.1 assigns no package to Phase 14 today | Phase 1's rule is *"a phase's code goes in the package §2.1 assigns it"* | the values live in an existing `engine.gl` sub-namespace by Phase 1's direction; no design change, only placement |
-| **R-P14→P1-3** | Publish `TextureParameters`' exact field set. It appears once, in the `setParameters` signature (`docs/phase1/v14/PHASE_1_DOC.md:3016`), and is never declared. §4.1.2's split of sampler state from texture state cannot be verified against an unpublished type | A1's correctness rests entirely on that split | §4.1.2's assumed field set stands as this document's stated assumption and `SamplerStateSplitTest` pins it; a mismatch is caught by `SamplerEquivalenceTest` rather than shipped |
+| **R-P14→P1-3** | Publish `TextureParameters`' complete field set and exact P13 three-field conversion with remaining sampler-state and object-state policy; §4.1.2's illustrative subset is not a complete type | A1 must preserve every owner-authored parameter without guessed defaults | Keep sampler 0/per-texture parameters for every texture without a complete lossless conversion; no partial A1 enablement based only on the illustration |
 | **R-P14→P1-4** | (a) Thread-safety, or a documented off-thread mode, for `RecordingGLDevice` — Phase 1 explicitly invites this: *"it is not made thread-safe to cover the Phase 14 exception. If off-thread uploads ever need recording, that is a Phase 14 request against this document"* (`docs/phase1/v14/PHASE_1_DOC.md:4322`). (b) One new flag in the §4.9.3 namespace: `schmaloogium.debug.glContext`, owner P14, milestone v0.5, gated on OQ-3. (c) Optional: an `AutoCloseable DebugService.group(String)` scoped form | (a) A4's worker issues GL through the facade; (b) §4.5.5; (c) §4.5.3 | (a) the worker bypasses the recorder and off-thread calls are simply not recorded — A4 loses recorded-log coverage of the worker, nothing else; (b) the debug-context tier is dropped and the always-available `GL_DEBUG_OUTPUT` tier stands; (c) `D-P14-13`'s backend construction already makes imbalance harmless |
 
 ### 5.7 Consumed from Phase 2 (not a declared dependency; procedures only)
@@ -1634,6 +1652,48 @@ redefined here. The one new scene requested is `S-CD-1` (§4.3.6 family F3) — 
 camera path — proposed to Phase 2 as a scene, not authored here. §G6's derived-artifact rules bind
 every output: no pack source text, no rendered images in the repository
 (`docs/design/v3/DESIGN.md:718`–`:725`).
+
+### 5.8 Consumed from Phase 11 — OQ-22 measurement ownership
+
+P14 accepts the §10.1 methodology and §5.1 `ExpressionMetricsSink.record(ExpressionMetrics)`
+consumer handoff. The immutable record is `(String planFingerprint,long refreshCount,
+long nodeEvaluations,long variableMemoHits,long variableMemoMisses,long uniformSuccesses,
+long uniformErrors,long uniformSkips,long elapsedNanos,String profilerCorrelationId)`.
+Delivery is synchronous render-thread, non-null, no-op by default; sink failure disables metrics
+only. No node callbacks, pack text or mutable evaluator state crosses the boundary.
+P11 retains language, effect/diagnostic ordering, backend semantic IDs and implementation-private
+SPI. P14 owns measurement and the conditional candidate experiment, not a new expression language.
+§7.5 L-11 and §10.2 specify the decision and source-free metrics; no compiled evaluator is required
+without measured real-pack evidence.
+
+### 5.9 R-P14→P4-1 — explicit compiler owner-change request (ungranted)
+
+Current P4 §5.1 remains `compile(RegistryBuildRequest) -> Ready(caller-owned candidate) |
+ShadersOff(failure)`, synchronous render-thread. Request P4-owned preparation that freezes the
+same configuration/dimension/materialization/macro/policy/capability inputs and validates all
+callback outputs before GL into an opaque compiler-issued immutable prepared batch. No worker
+calls P3/P5/runtime callbacks or retains the mutable request/services.
+
+Only shader-object create/source/compile/status/log/fence work may execute on the shared worker.
+The prepared batch and completion tokens expose no shader/program handle or candidate credential.
+P4 consumes completion on the render thread, establishes visibility, then owns program creation,
+attach/link/validate, declaration/location queries, deterministic fallback/failure projection and
+minting the existing caller-owned candidate. P7 remains sole publication caller/transaction orchestrator;
+P14 supplies executor mechanics, not registry products or fallback-chain policy.
+
+Proposed submit/poll outcomes are opaque token then `PENDING | READY(results) | FAILED(diagnosticId)`;
+cancellation marks that token terminal/failed and rejects any late result. P4 owns exactly-once
+shader/fence disposal after worker acknowledgement, including failures, canceled or stale builds;
+never delete an object while the worker still uses it or let late completion publish. P7 freezes and
+revalidates the same build identities at step 3 suspension/resumption (§5.4); no source text enters
+diagnostics/manifests. Exact owner API declarations and safe worker-drain behavior must be published
+and freshly verified by P4, then reciprocally adopted by P7, before migration. OQ-15 evidence is an
+additional gate, not a substitute for either grant. Declined/unlanded: existing synchronous compile
+remains; after adoption Inline remains the driver fallback. No core rebuild is required to decline.
+
+**Recipient disposition:** P4 §5.7/§11.4 records R-P14→P4-1 as pending, not adopted; its exact
+prepare/link/cancel/visibility callable schema must be an owner amendment, not inferred from
+this executor sketch. P5 §5.5/§11.5 likewise records R-P14→P5-2 as ungranted.
 
 ---
 
@@ -1648,8 +1708,8 @@ cannot cause a pack-visible failure that the pre-Phase-14 pipeline would not als
 | Failure | Detection | Required disposition | Rung |
 |---|---|---|---:|
 | GL < 3.3, or `ARB_sampler_objects` absent | `GlModernizationPlan.derive` at bring-up | `SamplerTier.NONE`; Phase 5's per-texture parameterization runs unchanged; info diagnostic | — (designed path) |
-| Sampler object creation fails, or a `glSamplerParameteri` errors at estate build | `drainErrors` after the estate's sampler interning | delete every sampler created for that generation, fall the whole estate back to `SamplerTier.NONE` for the session, warn once. **Never per-texture mixing** — a half-sampler estate is the state in which a unit's filter is ambiguous | 2a |
-| A Phase 13 texture's filter/wrap cannot be derived (R-P14→P13-2 unlanded) | `SamplerKey.of` returns absent for that texture | that unit binds sampler 0 and keeps per-texture parameters; the Phase 5 estate keeps samplers; `SamplerEquivalenceTest` records the exclusion rather than passing silently | 2a |
+| Sampler object creation/parameterization fails | owner's build-window error drain | clear units and demote the affected estate to `NONE`; retire sampler entries with §4.1.3 reference accounting, delete only unused objects, preserve required P5 failure/compensation if safe cleanup fails | 2a |
+| Complete P13-to-P1 sampler conversion unavailable | §5.5 lossless-conversion gate | that unit binds sampler 0 and retains owner parameters; already supported estate inputs may use samplers. This explicit exclusion is not a partially initialized sampler | 2a |
 | A sampler is left bound when control returns to vanilla | the backend's own `finally` at frame exit; `SamplerLeakTest` in CI | cannot occur by construction (`D-P14-4`); if the clear itself errors, force `SamplerTier.NONE`, clear again, and warn — **a leaked sampler is a vanilla-corruption hazard, so it escalates rather than degrades locally** | 5 |
 | GL 4.5 / `ARB_direct_state_access` absent | `derive` at bring-up | `DsaTier.BIND_TO_EDIT`; today's path | — (designed path) |
 | A DSA entry point errors at first use | `drainErrors` in the estate-build window | demote the strategy to `BIND_TO_EDIT` for the session, re-run the failed operation, warn once naming vendor and renderer. Demotion is safe because the tiers are behaviorally identical (`D-P14-7`) | 2a |
@@ -1674,10 +1734,9 @@ cannot cause a pack-visible failure that the pre-Phase-14 pipeline would not als
 Two properties of this table are worth stating explicitly, because they are what make a performance
 phase safe:
 
-1. **Every automatic demotion is to a path that already shipped.** No row degrades into an untested
-   intermediate state. The one deliberate exception to partial degradation is the sampler estate,
-   which falls back wholesale rather than per-texture, because a half-converted estate is the only
-   configuration in which a unit's effective filter is ambiguous.
+1. **Every automatic demotion is to the synchronous/per-texture baseline.** Failed sampler
+   initialization demotes coherently with owner-safe retirement. Deliberate sampler-0 exclusion for
+   an unconvertible texture is valid mixed mode, never permission to leave partial sampler state.
 2. **No Phase 14 failure is pack-visible.** A pack cannot observe which tier ran, so no failure here
    reaches §G2.4 rungs 1, 3 or 4 — those rungs concern uniforms, programs and capability gates, none
    of which this phase owns. The rows that reach rung 5 do so because they threaten *vanilla*, not
@@ -1698,7 +1757,7 @@ phase safe:
 | `KhrDebugBackend`, incl. its depth counters | **render thread only** | groups are frame-scoped; the debug-message callback may be invoked by the driver on the render thread only, because `GL_DEBUG_OUTPUT_SYNCHRONOUS` is set |
 | `CompileExecutor.submit` / `poll` | **render thread only** | the *interface* is render-thread; only the work it schedules is not |
 | `GlWorkerContext` and its queue | **the single `schmaloogium-gl-worker` thread** | the only off-render-thread GL in the project, sanctioned by §G2.3 (`docs/design/v3/DESIGN.md:412`–`:415`); its context is made current on that thread once and never elsewhere |
-| `InlineCompileExecutor` | **render thread only** | no thread at all; this is the shipping default |
+| `InlineCompileExecutor` | **render thread only** | proposed after owner adoption; before it, current P4 synchronous compile remains baseline |
 | Measurement procedures (§4.3.6, §4.6.2, §4.7.2) | Phase 2 harness | offline; no production thread |
 
 **No shared mutable state crosses the worker boundary.** `ShaderCompileUnit` is an immutable value
@@ -1774,7 +1833,7 @@ the operative word: each experiment is hours, not a milestone.
 | **L-8** | *"**Delete the allocation-discipline design constraint** … generational ZGC on Java 25 makes straightforward code acceptable. Write clean code first, optimize with evidence"* `[U]` (`docs/research/v1/RESEARCH.md:784`) | none — this is the highest-value unverified claim in the phase, because the whole §G2.5 posture rests on it | §4.6.2's allocation profile, on the Phase 2 scenes, at v0.5 | Zero steady-state allocation in `com.schmaloogium.*` **and** GC pauses indistinguishable from the shaders-off baseline ⇒ the posture holds and the row closes confirmed. Any violation ⇒ a finding against the owning phase (§11.5), **not** a reintroduction of OF's array-cache machinery, which §4.8 marks **Skip** (`docs/research/v1/RESEARCH.md:645`) |
 | **L-9** | *"FFM API for native buffer work … Replaces reflection-into-direct-buffer hacks; useful for **pixel-transfer paths**"* `[U]` (`docs/research/v1/RESEARCH.md:785`) | none; directly relevant because A3's PBO map and A4's atlas staging are exactly pixel-transfer paths | microbenchmark: read one float from a mapped PBO via `ByteBuffer` vs `MemorySegment`/`memGetFloat`, 10⁶ iterations; and stage one atlas both ways | ≥1% of frame time or ≥1 MB/s saved, per §4.6.3 test 2 ⇒ adopt in `mod.glue` only (`:engine` is C-1-constrained). Otherwise ⇒ closes as "no measurable win"; the straightforward `ByteBuffer` path ships |
 | **L-10** | *"Vector API for CPU-side math … measure first (incubator churn risk)"* `[U]` (`docs/research/v1/RESEARCH.md:786`) | none | **not relied on by Phase 14.** Its cited uses — per-quad tangent math, frustum plane tests — are Phase 10's | Ledgered as **out of scope, owner Phase 10**. Recorded so the OQ-22 sweep is complete and nobody assumes Phase 14 closed it |
-| **L-11** | *"Modern language features … `MethodHandle`/bytecode-compiled expressions for per-frame custom-uniform evaluation"* `[U]` (`docs/research/v1/RESEARCH.md:787`) | none | **not relied on by Phase 14**; owner Phase 11 | Ledgered as out of scope, owner Phase 11. OQ-22's own text names *"expression-engine compilation"* (`:1028`), so it is listed with its true owner rather than silently dropped |
+| **L-11** | *"Modern language features … `MethodHandle`/bytecode-compiled expressions for per-frame custom-uniform evaluation"* `[U]` (`docs/research/v1/RESEARCH.md:787`) | **Unmeasured**; P11 interpreter and metrics/SPI are the baseline, not performance evidence | **P14 owns measurement:** execute P11 §§4.11/10.1 exactly, using §5.8 metrics, on at least two supported Java 25 platforms; procedure below in §10.2 S-22-6 | Interpreter meets p95 ≤0.25 ms, p99 ≤0.50 ms and zero steady allocation ⇒ retain it, no compiler. Real-pack miss after local cleanup with material AST dispatch attribution ⇒ conditional P14 backend prototype inside P11 SPI; require ≥2× failing-p95 improvement, budgets, bounded build/memory and exact semantic differential results or reject to interpreter |
 | **L-12** | Compute / SSBO / image load-store / indirect dispatch are feasible on the 1.12.2 compat context | `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/gl/IrisRenderSystem.java]` per PD §15 (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:741`–`:744`): *"present and pack-exercised, on the 1.12.2 compat context. **This is the strongest available evidence that G8/S2 is feasible on Cleanroom.**"* | none in Phase 14 | Ledgered as **feasibility evidence for G8/S2 only** (`docs/design/v3/DESIGN.md:788`–`:793`). Not a Phase 14 work item and not a Phase 14 close |
 | **L-13** | *"§2.4 effort estimates"*, the other half of OQ-22's catch-all (`docs/research/v1/RESEARCH.md:1028`) | none | not a GL claim; effort estimates are validated by the implementation effort's own tracking, not by a Phase 14 experiment | Ledgered as **out of scope for this phase**, recorded so OQ-22's full text is accounted for and the verify session can see nothing was quietly dropped |
 
@@ -1807,14 +1866,14 @@ answerable on a driver, and §8.3's harness runs are where that is settled.
 | `SamplerKeyDerivationTest` | `SamplerKey.of` maps Phase 5's colour policy exactly: `CLAMP_TO_EDGE` S/T for every colour texture, NEAREST min **and** mag for integer formats, LINEAR otherwise (`docs/phase5/v1/PHASE_5_DOC.md:1042`–`:1045`); shadow textures map `hardwareFiltering → COMPARE_REF_TO_TEXTURE`, `mipmap → *_MIPMAP_*` min filter, `nearest → NEAREST` (`docs/phase5/v1/PHASE_5_DOC.md:534`); equal parameters yield equal keys (structural equality, so interning is deterministic) |
 | `SamplerStateSplitTest` | Every field of `TextureParameters` is classified exactly once as sampler state or texture state, with **no field unclassified** — this is the test that fails loudly if R-P14→P1-3 lands a field this design did not anticipate, rather than letting it silently fall through |
 | `SamplerEquivalenceTest` | Over a recorded estate: for every texture and every unit it binds to, the sampler state applied through that unit equals the sampler state its `TextureParameters` specify. A texture whose parameters cannot be derived (the R-P14→P13-2 gap) is asserted **excluded and reported**, never silently defaulted. This is A1's whole behavioral-no-op obligation, discharged as a property over the estate |
-| `SamplerCacheLifecycleTest` | Interning is per estate generation; a `BufferResizeNotice` re-interns and deletes the prior generation's samplers; no sampler outlives its generation; the resize consumer returns a success result on every path, because a failing consumer would publish shaders off (`docs/phase5/v1/PHASE_5_DOC.md:2018`) |
+| `SamplerCacheLifecycleTest` | Each of all eight resize reasons invalidates bound-unit knowledge; retired identity cannot bind even with outstanding leases/equal hashes; outstanding live/retiring references prevent premature deletion; borrowed texture is never deleted; callback failure preserves exact installed-off/deliveredCount handling rather than falsely reporting SUCCESS |
 | `SamplerLeakTest` | Over arbitrary bounded sequences of scope push/pop/throw and all three `FrameExitKind`s plus all six `FrameAbortReason`s, the recorded log ends every frame with all sixteen units at sampler 0 (`D-P14-4`) |
 | `FixedUnitDisciplineTest` | The bind cache is indexed by App B.3 unit; no code path allocates, reassigns or reorders a unit; `depthtex1` resolves to 11. A regression here would reintroduce the pre-decided divergence at `docs/design/v3/DESIGN.md:954`–`:955` |
 | `BindingNeutralityTest` | Against `RecordingGLDevice`, the same call script under all three `DsaTier`s produces (a) an identical facade-verb log, and (b) an identical observable binding state after every non-binding verb (`D-P14-7`). This is the proof that the tiers are substitutable |
 | `CenterDepthRingTest` | Warm-up returns `Unavailable`; a signalled fence yields `Sample`; an unsignalled fence yields the previous value; ≤0 dimensions return `Unavailable` **with no GL call** (`docs/phase6/v1/PHASE_6_DOC.md:585`–`:587`); the render thread issues no blocking wait on any path — asserted by the absence of a `clientWaitSync`/`finish` record in the log (`D-P14-9`) |
 | `CenterDepthInvalidationTest` | Each of `registryGeneration`, `worldEpoch`, width, height, `pixelX`, `pixelY` changing independently discards the whole ring and returns `Unavailable`; **no value from a prior world, generation or extent is ever returned** (`D-P14-10`) |
 | `CenterDepthTraceComparisonTest` | Given two recorded traces from a scripted depth sequence, the analytic criteria C1 and C2 of §4.3.6 are computed and asserted headlessly. The *judgement* is thereby testable without a GPU; only the *capture* needs one |
-| `CompileExecutorContractTest` | `Inline` and a scripted `Worker` double satisfy the same contract: `submit` never blocks, `poll` is total over `PENDING`/`READY`/`FAILED`, results preserve submission order, a `FAILED` batch leaves no partial program state. **The caller's control flow is asserted identical under both**, which is what makes the fallback free |
+| `CompileExecutorContractTest` (only after P4/P7 grant) | Completed units preserve deterministic source order and P4 failure/fallback semantics; failed/canceled/stale batches cannot publish, late completion disposes exactly once after worker acknowledgement, and publication remains render-thread. Worker submit/poll is non-waiting; Inline may compile synchronously in submit |
 | `CompileFallbackLadderTest` | Each of §4.4.3's six stages, injected in turn, degrades to `INLINE`, tears down the worker, emits exactly one diagnostic, and completes the pipeline build synchronously. The watchdog fires at `T_watchdog` and never earlier |
 | `DriverPolicyTest` | An unknown vendor/renderer resolves to `INLINE` (**default deny**, `D-P14-12`); an allowlisted family resolves to `SHARED_CONTEXT`; `FORCE_OFF` overrides an allowlist entry; a denylist entry overrides `FORCE_ON` |
 | `DebugGroupBalanceTest` | Over arbitrary bounded push/pop/throw sequences across `NORMAL`, `EARLY_RETURN` and `THROWN` exits: recorded pops never exceed recorded pushes; an underflow is a no-op plus exactly one diagnostic; an overflow past `GL_MAX_DEBUG_GROUP_STACK_DEPTH` issues nothing and its matching pop issues nothing; depth is zero at every frame boundary (`D-P14-13`). **This is PD B7's bug shape, asserted impossible** |
@@ -1889,8 +1948,8 @@ principle applies: the whole subsystem is architected now, tagged by when it is 
 | `DsaStrategy` three tiers (A2) | now | **v0.5** | facade-internal; no dependent phase is affected |
 | `CenterDepthReadback` PBO+fence ring (A3) | now | **v0.5** | gated on R-P14→P6-1 **and** §4.3.6's criteria; ships `FORCE_OFF` otherwise |
 | Synchronous `CenterDepthSource` (A3 fallback) | — | **v0.1, by Phase 6** | already designed and staged by Phase 6 (`docs/phase6/v1/PHASE_6_DOC.md:1643`); Phase 14 adds nothing at v0.1 |
-| `CompileExecutor` + `InlineCompileExecutor` (A4 fallback) | now | **v0.5** | the interface and the synchronous implementation ship together, so `Worker` is a pure addition later |
-| `GlWorkerContext` + `WorkerCompileExecutor` (A4) | now | **post-v0.5** | gated on OQ-15's spike and R-P14→P7-1. `AUTO` resolves to `INLINE` at v0.5 |
+| `CompileExecutor` + `InlineCompileExecutor` (A4 proposal) | now | **after owner grants** | R-P14→P4-1 and R-P14→P7-1 first; current synchronous compile remains until then |
+| `GlWorkerContext` + `WorkerCompileExecutor` (A4) | now | **post-v0.5** | additionally gated on OQ-15 evidence; no owner split/resumability grant is inferred from a successful spike |
 | Async `_n`/`_s` atlas upload (A4) | now | **post-v0.5** | additionally gated on R-P14→P13-1 |
 | `KhrDebugBackend` — labels and groups (A5) | now | **v0.5** | Phase 1 already stages `schmaloogium.debug.glLabels` at *"`v0.5` | Phase 14"* (`docs/phase1/v14/PHASE_1_DOC.md:4508`); gated on R-P14→P1-1 |
 | `GL_DEBUG_OUTPUT` message callback (A5) | now | **v0.5** | no context change needed |
@@ -2026,11 +2085,10 @@ Failure on *every* family closes OQ-15 as "shared compat contexts are not reliab
 `WorkerCompileExecutor` is not shipped, and the result is written back to RESEARCH.md §11's status
 column. **No milestone is blocked** — see §9.2's honest note on gate condition 3.
 
-**(4) Fallback, designed now.** §4.4.4's `InlineCompileExecutor`, ships at v0.5 as the default, is
-the automatic result of every rung of §4.4.3's ladder, and is selected per driver family by
-`D-P14-12`'s default-deny allowlist. Because it satisfies the *same* `CompileExecutor` interface with
-the same submit/poll call sequence, a failed spike changes no control flow anywhere in Phase 4 or
-Phase 7 — the fallback is not a contingency plan, it is what runs unless the spike says otherwise.
+**(4) Fallback, designed now.** Current Phase 4 synchronous `compile(RegistryBuildRequest)` ships
+unless its owner explicitly adopts R-P14→P4-1 and P7 adopts R-P14→P7-1. After adoption,
+`InlineCompileExecutor` is the same-thread default and automatic driver fallback. A failed spike
+never requires migration of an ungranted interface and never changes render-thread publication.
 
 ### 10.2 OQ-22 — the modernization-claim spot-check ledger
 
@@ -2060,10 +2118,10 @@ rows close individually rather than together.
 - **S-22-2 — run each row's cheap experiment**, exactly as §7.5's "cheap experiment" column
   specifies, at the milestone its "decision point" names. Each is hours, not days; that is the design
   constraint on the column.
-- **S-22-3 — the two expensive rows.** L-3's imperceptibility comparison (§4.3.6, four scene
-  families, criteria C1–C4) and L-8's allocation profile (§4.6.2) are the only rows requiring a full
-  harness run; both are scheduled with the v0.5 conformance runs rather than separately, so they cost
-  no extra environment setup.
+- **S-22-3 — scheduled representative runs.** L-3's imperceptibility comparison, L-8's allocation
+  profile and L-11's representative expression workload run with the appropriate conformance
+  environment. L-11 follows P11's fixed scripted inputs and separate allocation-profile run,
+  not a substituted microbenchmark of a single AST node.
 - **S-22-4 — record and write back.** Each row closes as **confirmed**, **refuted**, or **out of
   scope (owner named)**, with its measured numbers. The implementation effort writes the results into
   RESEARCH.md §11's status column and adds an addendum note to this phase doc, per §G4.4
@@ -2072,6 +2130,25 @@ rows close individually rather than together.
   *"promote to its own OQ row if it turns out contentious"*. A row whose experiment produces a
   disputed or platform-dependent result is proposed as a new OQ in this doc's §11.4 rather than
   argued to a conclusion inside the ledger.
+- **S-22-6 — accepted P11 expression method (D-P14-20).** Run all custom expressions from each
+  locally acquired matrix pack plus the synthetic 128-uniform/256-variable graph at 40 switches
+  per frame, on at least two supported Java 25 platforms. Use a release JVM warmed for 30 seconds,
+  deterministic scripted inputs and interpreter semantic checks; sample allocations separately.
+  Consume §5.8 immutable metrics and correlate refreshes with the harness frame, not a new P7 timer.
+  Record source-free pack identity/custom definition counts, switches/frame, node evaluations,
+  p50/p95/p99 total expression nanos/frame, worst refresh nanos, steady allocations, plan-build
+  time/memory and profile top nodes; retain no pack expressions or provider snapshots.
+  First measure the unmodified interpreter, then only profile-guided local interpreter cleanup.
+  All real packs and stress workload meeting p95 ≤0.25 ms, p99 ≤0.50 ms and zero steady allocation
+  closes the decision as retain-interpreter. A supported real pack still missing after cleanup,
+  with material cost attributed to AST dispatch rather than provider/sink work, is the only
+  compiled-backend trigger. A stress-only miss is recorded/investigated, not compiler authorization.
+  The conditional P14 prototype stays inside P11's private SPI and requires at least 2× improvement
+  of the failing p95, both frame budgets, bounded build time/memory, and bit/diagnostic/effect-order
+  identity over every P11 golden/fuzz vector. Unsafe bytecode, license-heavy dependency, instability,
+  slowdown or semantic mismatch rejects it. Keep interpreter and existing cadence/diagnostics.
+  Record the measured decision in L-11 and a P11 addendum; propose RESEARCH OQ-22 write-back through
+  §11.4 only after evidence. This document records no measurement outcome or compiled backend grant.
 
 **(3) Success and failure criteria.**
 
@@ -2111,7 +2188,7 @@ decision nevertheless carries its source-verified provenance in §3.2.
 
 | ID | Decision | One-line rationale |
 |---|---|---|
-| **D-P14-1** | A sampler object's state is **derived** from Phase 5's/Phase 13's `TextureParameters`, never authored independently | one source of truth for filter and wrap is what makes A1 a behavioral no-op instead of a competing policy |
+| **D-P14-1** | Derive sampler state from P5 owner parameters and P13 `TextureParameterSpec` through a complete granted P1 conversion, never a second authored policy | unknown fields keep sampler 0 rather than guessed defaults |
 | **D-P14-2** | Sampler tiering `MULTI_BIND → PER_UNIT → NONE`, chosen once at init from `GLCapabilityProfile` | `NONE` is byte-for-byte today's path, so the fallback needs no separate design |
 | **D-P14-3** | Reject dynamic per-program texture-unit allocation; the bind cache is a fixed `SamplerHandle[16]` indexed by App B.3 unit | §G11.4 pre-decided rejection (`docs/design/v3/DESIGN.md:954`–`:955`); a fixed dense map also suits `glBindSamplers` better than a dynamic one |
 | **D-P14-4** | All sixteen sampler units are cleared on **every** path that returns control to vanilla, from the backend's own `finally` | a leftover sampler silently overrides vanilla's filtering — a §G2.4 rung-5 vanilla-corruption hazard, not a leak |
@@ -2129,24 +2206,28 @@ decision nevertheless carries its source-verified provenance in §3.2.
 | **D-P14-16** | The redundant-state audit is scoped **by construction**: its instrument only sees facade calls on Schmaloogium-owned or -borrowed subjects | vanilla's rendering never reaches the facade, so the §1.2 non-goal becomes a property of the method rather than a rule the auditor must remember |
 | **D-P14-17** | Every row is individually switchable at runtime, and `AUTO` resolves to the **reference-faithful path** until that row's ledger entry or spike closes | an unrun ledger then ships a product identical to one built without this phase, which is what makes leaving OQ-22 open across a milestone safe |
 | **D-P14-18** | Phase 14 adds **no Mixin and no vanilla hook**; every call site it needs is one an existing phase already owns | `D-5` bounds the injection budget to ~25–30 sites (`docs/research/v1/RESEARCH.md:99`), and a performance phase has no business spending from it |
+| **D-P14-19** | Adopt current P5 sole-policy/physical-binding/Bound-only lease protocol, all eight resize reasons, P6 resolver, P13 conversion/retirement and P7 ten-step construction points | fixes IR-23 without a second binder, map, guessed generation or revived lease |
+| **D-P14-20** | P14 accepts P11's OQ-22 method/metrics and owns L-11 decision; compiler only after a measured real-pack miss and exact differential success | IR-15 recipient accepts the handoff while P11 retains semantics/SPI |
+| **D-P14-21** | Accept P7's narrowed internal-timing promise and JFR attribution, leaving public elapsed projection optional/ungranted | IR-26 tooling cannot block synchronous baseline |
+| **D-P14-22** | Require explicit P4 prepare/worker/link ownership adoption plus P7 resumability before any async caller migration; current synchronous/Inline fallback remains | IR-27 prevents a policy proposal from minting compiler ownership |
 
 ### 11.2 Input contradictions found, with rulings and provenance
 
 Reported, never silently resolved (`docs/design/v3/DESIGN.md:282`–`:284`, `:141`–`:143`).
 
-**C-1 — The commissioning brief states Phase 13 is unbuilt; the working tree disagrees.**
+**C-1 — Historical initial-build contradiction: the brief said Phase 13 was unbuilt.**
 `docs/phase14/briefs/PHASE_14_BUILD_BRIEF.md:50`–`:51` says *"`docs/phase13/` does not exist. There
 is no `PHASE_13_DOC.md` to read at all — this is an unbuilt phase, not merely an unverified one."*
-During this session `docs/phase13/v1/PHASE_13_DOC.md` was present: 1 435 lines, thirteen `##`
+During the initial build session `docs/phase13/v1/PHASE_13_DOC.md` was present: 1 435 lines, thirteen `##`
 sections, mtime 2026-08-08 14:04 — untracked when first observed, then committed mid-session as
 `9ff94a5` — with `docs/phase13/reviews/` containing only `.gitkeep`, i.e. **zero review rounds**.
 `docs/MOVES.md`'s Phase 13 v3 adoption record (`docs/MOVES.md:82`, `:89`, `:91`) confirms a Phase 13
-build session ran. **Ruling:** the brief's *premise* is stale but
-its *instruction* is unaffected and governs. §G5.3 invariant 1 requires a **verified** doc, and a
-draft with zero review rounds from a concurrent Wave-5 session is not one — it is exactly the
-unverified high-fan-out input the invariant exists to exclude, and a concurrent writer may still be
-changing it. This session did not read it; all Phase-13 items are §5.5 requests against the v3 spec.
-**Owed:** a §G1.3 fix-up reconciling §5.5 against Phase 13's actual §5 once Phase 13 is verified.
+build session ran. **Historical ruling:** the initial-build instruction and §G5.3 verification gate
+prevented consuming that concurrent draft; the initial author did not read it. This preserves the
+original quotation and provenance, not an active absence claim. **Current IR-23 disposition:**
+§5.5 now consumes the actual P13 contract, including exact parameters and retirement; only the
+stageable-upload/full-sampler-conversion extensions remain gated. Current coordinated bytes still
+need fresh owner verification.
 
 **C-2 — Three dependencies declare RC3 while being adjudicated against v3.**
 `docs/phase5/v1/PHASE_5_DOC.md:18`, `docs/phase6/v1/PHASE_6_DOC.md:10` and
@@ -2181,18 +2262,13 @@ Phase 14 has no such clause. **Ruling: the gating invariant governs and the wave
 because §G5.3 item 2 subordinates the diagram itself (*"Waves are a schedule, not a barrier"*,
 `:664`–`:667`). Requested upstream in §11.4.
 
-**C-5 — Phase 7's §1.2 claims to expose a timing seam that its §5 does not contain.**
-`docs/phase7/v1/PHASE_7_DOC.md:368`–`:369` states *"Phase 7 exposes timing and resize-consumer seams
-but defines no optimization policy."* Its §5.1 exposes neither: the resize-consumer contract is
-**Phase 5's** (`docs/phase5/v1/PHASE_5_DOC.md:2018`), which Phase 7 *consumes* (`:2012`), and the
-only timing-adjacent surfaces exposed are `FrameReadiness.consecutiveFinalizedFrames` and the Phase 2
-capture listener. The internal counters at `:2196` are explicitly *"off by default"* and not exposed.
-**Ruling:** §5 governs — §G1.1's *"Dependency docs are contracts. What a dependency's PHASE doc
-exposes in its §5 is what you build against"* (`docs/design/v3/DESIGN.md:296`–`:298`) — so this
-document assumes **no** timing seam and raises R-P14→P7-2 part 2. A6 and A7 fall back to JFR stack
-attribution plus A5's debug groups, which is coarser but blocks nothing. Flagged because a §1.2
-promise that §5 does not keep is exactly the interface-honesty gap a verify session exists to catch,
-and Phase 7's round 33 is the natural place to fix it.
+**C-5 — Historical timing promise narrowed; JFR fallback reciprocally adopted (IR-26).**
+The original P7 wording was *"Phase 7 exposes timing and resize-consumer seams but defines no
+optimization policy."* Its §5 did not expose elapsed timing, and the resize protocol belonged
+to P5. Current P7 §§1.2/5.5/11 narrow that promise to internal off-by-default debug aggregates.
+P14 §5.4 accepts JFR stack attribution; optional adopted groups can segment separate counts runs.
+A public read-only per-pass elapsed record remains a future owner-change request, not a baseline
+dependency or a fabricated supplied API. No timing measurement was performed by this fix-up.
 
 **C-6 — RESEARCH.md §6.2 has no DSA row, though the design now depends on DSA tiering.** The DSA
 scope row is a REV1 addition sourced from PD §15 (`docs/design/v3/DESIGN.md:2533`–`:2535`); RESEARCH
@@ -2283,30 +2359,46 @@ following are proposals.
 
 **To `docs/phase5/v1/PHASE_5_DOC.md` (its own fix-up session, not this document):**
 
-8. **Correct the stale closing trailer.** It still says Phase 5 is *"**not verified** pending a fresh
-   whole-document review"*. Reviews 37 and 38 were exactly those fresh whole-document rounds and both
-   returned literal PASS with `Interface changed: no`
-   (`docs/phase5/reviews/PHASE_5_REVIEW_38.md:43`–`:45`). Per §G1.3 the review file governs
-   (`docs/design/v3/DESIGN.md:357`–`:359`), so **Phase 5 is verified** and the trailer misleads every
-   dependent that reads it.
+8. **Historical status request superseded.** The initial-build request to clear P5's stale
+   trailer concerned pre-cutover bytes (§0.3). Do not apply it to today's changed/unverified
+   binding/lifecycle contract or claim its older PASS certifies it.
 9. **Optional simplification** — hand-off H-P14→P5-1, §11.5.
+   **R-P14→P5-2** (§5.2) requests the optional internal batch boundary; disabled until granted.
 
 **To `docs/phase6/v1/PHASE_6_DOC.md`:**
 
-10. **Correct the stale §0.6 status.** It still says *"the current bytes remain **not verified** until
-    a fresh review returns literal PASS"* (`docs/phase6/v1/PHASE_6_DOC.md:138`–`:141`). Review 24
-    returned exactly that: PASS, `blocking=0; corrections=0; notes=0`, `Interface changed: no`
-    (`docs/phase6/reviews/PHASE_6_REVIEW_24.md:43`–`:45`).
+10. **Historical status request superseded.** The initial-build P6 trailer correction (§0.3)
+    does not certify the changed resolver/retirement contract. Fresh current-owner verification
+    remains required; there is no request to relabel current bytes PASS.
 11. **R-P14→P6-1** (§5.3) — contract the center-depth sample's age. The one request blocking A3.
 
-**To `docs/phase7/v1/PHASE_7_DOC.md` (naturally handled at round 33):**
+**To `docs/phase7/v1/PHASE_7_DOC.md`:**
 
-12. **R-P14→P7-1** and **R-P14→P7-2** (§5.4), and the §1.2-vs-§5 timing-seam gap (finding C-5).
+12. **R-P14→P7-1** remains optional/ungranted and paired with R-P14→P4-1. **R-P14→P7-2** groups remain optional; timing disposition is the reciprocally adopted narrowed promise/JFR fallback (§5.4/C-5), not a pending baseline blocker.
 
 **To `docs/phase1/v14/PHASE_1_DOC.md`:**
 
 13. **R-P14→P1-1** through **R-P14→P1-4** (§5.6). R-P14→P1-1 is the one whose refusal makes a scope
     row undeliverable.
+
+**To `docs/phase4/v1/PHASE_4_DOC.md`:**
+
+14. **R-P14→P4-1** (§5.9) is routed to the compiler owner: opaque prepared batch, worker-only
+    shader operations, render-thread link/candidate minting, deterministic failures and cancellation/
+    late-result disposal. P4/P7 must publish and verify their exact seam before async is enabled.
+    This remains a request, not owner adoption or an OQ-15 result.
+
+**To `docs/phase11/v1/PHASE_11_DOC.md`:**
+
+15. **IR-15 recipient acceptance:** §§5.8/7.5 L-11/10.2 S-22-6 now adopt P11 method/metrics.
+    P11 retains semantics/SPI and records the reciprocal handoff; future measurements and any
+    conditional candidate require source-free ledger/P11 addendum, not an unmeasured compiler.
+
+**To `docs/phase13/v1/PHASE_13_DOC.md`:**
+
+16. **IR-23 conversion/lifetime adoption:** §5.5 consumes the existing exact value and deferred
+    deletion. R-P14→P13-1 remains stageable-upload proposal; R-P14→P13-2's parameter value is
+    supplied, but P1's full sampler-state conversion remains distinct and ungranted.
 
 **To `docs/MOVES.md`:** no change requested by this phase; a Phase 14 row is added by whoever records
 this document's adoption, per its own rules.
@@ -2316,7 +2408,7 @@ this document's adoption, per its own rules.
 | ID | Hand-off | To |
 |---|---|---|
 | **H-P14→P5-1** | Once `SamplerTier != NONE`, `generateShadowMipmaps` need not mutate a texture's min filter: `glGenerateMipmap` does not require a mipmap min filter, and the sampling filter now lives in the sampler. `MIPMAP_FILTER_RESTORE_FAILURE`, its `Neutralized` result variant and its containment path (`docs/phase5/v1/PHASE_5_DOC.md:1728`–`:1739`) would become unreachable in that mode. **Phase 5 owns that algorithm; this is offered, not applied**, and the `NONE` fallback leaves Phase 5's path exactly as written | Phase 5 |
-| **H-P14→P13-1** | §5.5's two requests are the input list for Phase 13's own design work, and Phase 14's §5.5 should be reconciled against Phase 13's actual §5 at a §G1.3 fix-up | Phase 13 |
+| **H-P14→P13-1** | §5.5 now consumes current parameter/publication/lifetime contracts. Reciprocal P13 §5.5 records exact conversion and sampler-0 fallback; staged upload remains R-P14→P13-1 ungranted, not an absent-interface claim | Phase 13 |
 | **H-P14→ALL-1** | Any allocation site found in a frame path by §4.6.2 is a **finding against the owning phase**, routed by package attribution (`engine.buffers` → 5, `engine.uniforms` → 6, `engine.frame` → 7, …). Phase 14 measures; it does not edit another phase's code | the owning phase |
 | **H-P14→ALL-2** | Any redundant-state candidate found by §4.7.2 in a sibling's call sequence is likewise that phase's, after passing §4.6.3's four-part test | the owning phase |
 | **H-P14→G8-1** | PD §15's evidence that compute, SSBOs, image load-store and indirect dispatch all run pack-exercised on the 1.12.2 compat context (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:741`–`:744`) is carried as ledger row **L-12** — *"the strongest available evidence that G8/S2 is feasible on Cleanroom"*. Not a Phase 14 work item | G8/S2 (`docs/design/v3/DESIGN.md:788`–`:793`) |
@@ -2324,22 +2416,21 @@ this document's adoption, per its own rules.
 | **H-P14→IMPL-1** | `docs/decisions/OQ-15_ASYNC_COMPILE.md` is owed by the spike, in the shape Phase 7 uses for OQ-3 (`docs/phase7/v1/PHASE_7_DOC.md:2312`–`:2313`), and its per-family verdict table becomes `D-P14-12`'s shipped allowlist data | implementation effort |
 | **H-P14→IMPL-2** | §7.5's thirteen ledger outcomes are written back into RESEARCH.md §11's OQ-22 status column, with an addendum note added to this document, per §G4.4 (`docs/design/v3/DESIGN.md:578`–`:580`) | implementation effort |
 | **H-P14→P2-1** | Scene `S-CD-1` — a scripted near↔far camera path, 300 frames, for §4.3.6 family F3 — is proposed to Phase 2 as a scene. Phase 14 authors no scene | Phase 2 |
-| **H-P14→REVIEW-1** | The final integration review (§G5.3 item 4, `docs/design/v3/DESIGN.md:672`–`:684`) should check consumed-vs-exposed symmetry on the P5→P14, P6→P14, P7→P14 and P13→P14 edges, and specifically whether §5.5's spec-derived Phase 13 requests were adopted or orphaned | integration review |
+| **H-P14→REVIEW-1** | Integration review checks current P5/P6/P7/P13 consumption plus P11 metric-method acceptance and P4 compiler request; separates adopted baseline from ungranted optional extensions and historical verdicts | integration review |
 
 ### 11.6 Known gaps in this document
 
 Stated so a verify session does not have to discover them:
 
-1. **`TextureParameters` is unspecified upstream**, so §4.1.2's split of sampler state from texture
-   state is this document's stated assumption rather than a derivation. R-P14→P1-3;
-   `SamplerStateSplitTest` is designed to fail rather than pass silently if the assumption is wrong.
-2. **Phase 13's interfaces do not exist**, so §5.5's two requests are written against the v3
-   specification. Every A1 and A4 claim that depends on Phase 13 is scoped accordingly, and the
-   partial modes (§6's mixed-sampler row; §4.4.5's compile-only mode) are designed rather than
-   assumed away.
-3. **Phase 7's §5 is provisional** (§0.3 item 1). Nothing here depends on the *detail* of a Phase 7
-   row, only on its existence, so a round-33 change should cost a fix-up rather than a rebuild — but
-   that is a prediction, not a guarantee.
+1. **Complete P1 `TextureParameters`/sampler conversion remains ungranted** (R-P14→P1-3).
+   P13's exact min/mag/wrap value does not fill unspecified compare/LOD/border fields. Sampler 0
+   and existing texture parameters are mandatory until complete conversion is available.
+2. **P13 stageable upload does not exist as a granted API.** Its synchronous build, exact effective
+   parameters, source pairing and deferred retirement do exist and are consumed in §5.5.
+   Compile-only optimization requires its independent P4/P7 grants; atlas upload stays synchronous.
+3. **Current coordinated P4/P5/P6/P7/P13 contracts remain unverified.** Their actual binding,
+   lifetime and ten-step ordering details matter, not merely the existence of interface names.
+   R-P14→P4-1/P7-1/P13-1 and P5-2 are still optional ungranted extensions.
 4. **A2's driver-behavior claim is untestable headlessly.** No test we can write proves a given
    driver's DSA path is correct; §9.2's per-tier T1 run and the runtime `FORCE_OFF` are the whole
    mitigation, and that is stated rather than implied.
@@ -2367,8 +2458,8 @@ audit because they are its segmentation keys; the synchronous fallbacks precede 
 | 5 | Implement `DsaStrategy` `BIND_TO_EDIT` first — the existing behavior, extracted behind the interface with no functional change | v0.5 | `BindingNeutralityTest`; the recorded log must be unchanged from before extraction |
 | 6 | Add `DsaStrategy` `ARB` and `CORE_45`; install by tier at bring-up | v0.5 | `BindingNeutralityTest` across all three tiers on one call script |
 | 7 | Resolve R-P14→P1-3 (`TextureParameters` fields); implement `SamplerKey.of` and the sampler/texture state split | v0.5 | `SamplerKeyDerivationTest`, `SamplerStateSplitTest` |
-| 8 | Implement `SamplerCache`: interning, `TextureHandle → SamplerKey`, per-generation lifecycle; register as a Phase 5 `BufferResizeConsumer` | v0.5 | `SamplerCacheLifecycleTest` |
-| 9 | Bind the interned sampler from `TextureService.bindToUnit` with a per-unit redundant-bind cache; add the `MULTI_BIND` batched path | v0.5 | `FixedUnitDisciplineTest`; recorded-log bind-count assertions |
+| 8 | Implement sampler interning with actual source/parameter/publication identity, all eight resize reasons and live/retiring reference accounting (§4.1.3) | v0.5 | `SamplerCacheLifecycleTest` |
+| 9 | Extend only P5's physical bind path; per-unit samplers after complete conversion, `MULTI_BIND` only after R-P14→P5-2/P1 grant | v0.5 | zero-bind rejected/degraded paths, Bound-only transfer, no stale sampler |
 | 10 | **Implement the sampler clear on every vanilla-return path, in the backend's own `finally`** — ships **with** item 9, never after it | v0.5 | `SamplerLeakTest` over all exit kinds and abort reasons |
 | 11 | Implement the whole-estate fallback to `SamplerTier.NONE` on any sampler GL error | v0.5 | scripted `ScriptedResponses.glError` demotion tests (§8.2) |
 | 12 | Resolve R-P14→P1-1 (`isActive()` gate); implement `KhrDebugBackend` labels with `GL_MAX_LABEL_LENGTH` clamping | v0.5 | `DebugLabelCoverageTest` |
@@ -2377,8 +2468,8 @@ audit because they are its segmentation keys; the synchronous fallbacks precede 
 | 15 | Land R-P14→P7-2 part 1 (group call sites in Phase 7) | v0.5 | recorded-log frame/pass group nesting |
 | 16 | Add `GL_DEBUG_OUTPUT` + `GL_DEBUG_OUTPUT_SYNCHRONOUS` + `glDebugMessageCallback` routing to `schmaloogium.gl` | v0.5 | manual: one injected GL error appears with a usable stack |
 | 17 | Run ledger row **L-5**: one RenderDoc/Nsight capture with `glLabels` set | v0.5 | groups and labels visible; L-5 closes |
-| 18 | Implement the `CompileExecutor` interface and `InlineCompileExecutor`; route Phase 4/7's compile through it with no behavior change | v0.5 | `CompileExecutorContractTest`; recorded log unchanged |
-| 19 | Implement `CenterDepthReadback` in its `SYNCHRONOUS` form over `FramebufferService.readDepthPixel`, installed at Phase 7 composition step 5 | v0.5 | `CenterDepthRingTest` in synchronous mode; Phase 6's `CenterDepthDecisionTest` still green |
+| 18 | Keep current synchronous P4 compile; migrate to proposed `CompileExecutor`/Inline only after R-P14→P4-1 and R-P14→P7-1 adoption | optional after grants | compiler ownership/cancellation/publication cases |
+| 19 | Implement synchronous CenterDepthSource fallback at P7 transaction step 2 | v0.5 | current P6 SPI/order remains unchanged |
 | 20 | Land R-P14→P6-1 (contract the sample age) | v0.5 | Phase 6's fresh verify round |
 | 21 | Implement the PBO+fence ring: non-blocking poll, 4-byte map, ring discard on identity change, resize-consumer discard | v0.5 | `CenterDepthRingTest`, `CenterDepthInvalidationTest` |
 | 22 | Implement the trace-comparison judgement (criteria C1–C4) as a headless analysis over two recorded traces | v0.5 | `CenterDepthTraceComparisonTest` |
@@ -2386,15 +2477,15 @@ audit because they are its segmentation keys; the synchronous fallbacks precede 
 | 24 | Implement §4.7.2's audit classifier and its three validity gates over a `GLCallLog` | v0.5 | `AuditClassifierTest`, `AuditScopeFilterTest` |
 | 25 | Run the audit **before and after** item 9 on one classic pack | v0.5 | **L-2 closes**; §4.7.3's predictions confirmed or refuted |
 | 26 | Run §4.6.2's allocation profile on the Phase 2 scenes across the three configurations | v0.5 | **L-8 closes**; violations become H-P14→ALL-1 hand-offs |
-| 27 | Run **L-6**'s per-tier T1 comparison; **L-1**, **L-7**, **L-9** spot-checks | v0.5 | ledger rows close; L-9 decides the FFM question |
+| 27 | Run L-6 per-tier comparison and L-1/L-7/L-9 spot-checks; run L-11 exact P11 method before considering any compiled evaluator | v0.5 | source-free measured ledger decisions; no untriggered compiler |
 | 28 | Execute S-22-1 and S-22-4: freeze the row set, then write every outcome back to RESEARCH.md §11 and add the addendum note | v0.5 | §9.2 condition 4 |
 | 29 | Verify §9.2's gate: full classic matrix at T3 jointly with Phase 13; no T1 regression under any default-enabled tier | v0.5 | Phase 2 `RUN-T1-REGRESS`, `RUN-T0`, T3 runs |
-| 30 | Land R-P14→P7-1 (resumable pipeline-build transaction) | post-v0.5 | Phase 7's fresh verify round |
+| 30 | Land exact P4 prepare/worker/link R-P14→P4-1 and matching P7 step-3 resumability R-P14→P7-1 | post-v0.5, optional | fresh owner verification and cancellation/late-result cases |
 | 31 | Implement `GlWorkerContext` and `WorkerCompileExecutor` per §4.4.2, with the six safety rules and the watchdog | post-v0.5 | `CompileFallbackLadderTest`, `DriverPolicyTest` |
 | 32 | Run **OQ-15**'s spike (§10.1) on ≥2 driver families; write `docs/decisions/OQ-15_ASYNC_COMPILE.md` | post-v0.5 | criteria K1–K5; **L-4 closes**; the verdict table becomes the allowlist |
 | 33 | Land R-P14→P13-1; add the async `_n`/`_s` atlas upload to the worker | post-v0.5 | atlas pixel equality vs a synchronous upload |
 | 34 | Land R-P14→P1-4(b); add `-Dschmaloogium.debug.glContext` and the `GLFW_OPENGL_DEBUG_CONTEXT` request, gated on OQ-3's outcome | post-v0.5 | manual: debug-context message volume vs the non-debug tier |
-| 35 | Reconcile §5.5 against Phase 13's verified §5 through a §G1.3 fix-up; likewise §5.4 against Phase 7 round 33 | as they land | fresh verify rounds on the affected docs |
+| 35 | Reconcile any subsequent owner corrections to current §5 contracts and verification gates; never promote prior PASS to certify changed bytes | as owners change | fresh affected-owner review |
 
 Items 1–29 constitute v0.5. Items 30–34 are the quality-of-life half of *"v0.5 + quality-of-life"*
 (`docs/design/v3/DESIGN.md:2516`) and are individually droppable: each is gated on a request or a
@@ -2402,9 +2493,9 @@ spike, and each fails closed to a path that already ships.
 
 ---
 
-*End of `PHASE_14_DOC.md`. This is the §G1.1 build-session deliverable: v1, initial build against
-`docs/design/v3/DESIGN.md`, **not yet verified**. A §G1.2 verify session owes
-`docs/phase14/reviews/PHASE_14_REVIEW_1.md`. Two disclosed, maintainer-authorized departures from
-§G5.3's gating invariant are recorded in §0.3 and §11.2 — Phase 7 consumed while unverified, and
-Phase 13 absent as a contract — and the six findings C-1 … C-6 in §11.2 are this session's reported
-input contradictions, none silently resolved.*
+*End of `PHASE_14_DOC.md`. v1 remains governed by `docs/design/v3/DESIGN.md`; the IR-15/23/26/27
+documentation fix-up changes cross-phase consumption and remains **unverified**. Initial-build
+departures and quotations are preserved as history in §0.3/§11.2, not present-day absence claims.
+Current P5 binding/P6 resolver/P7 transaction/P13 lifetime and P11 measurement handoffs are adopted
+as documentation contracts; optional extensions, authority changes and implementation experiments
+remain gated. No implementation, test/validation result, OQ closure or fresh PASS is claimed.*

@@ -7,7 +7,7 @@
 **Phase:** 1 — Foundation & project architecture
 **Milestone:** v0.1 · **Depends on:** — (Wave 0; this doc feeds every other phase)
 **Assigned OQs:** OQ-2, OQ-12, OQ-20 (seam hardness), OQ-21
-**Authored:** 2026-07-24 · **Last revised:** 2026-09-07 (§0.25)
+**Authored:** 2026-07-24 · **Last revised:** 2026-09-07 (§0.26)
 **Deliverable:** this document, per DESIGN.md §G9.
 **Verifies against:** `docs/design/v2.0-RC2/DESIGN.md` from §0.11 onward; `docs/design/v1.1/DESIGN.md`
 through §0.10. **There is no longer one governing revision for the project:** RC2 governs **this
@@ -1526,6 +1526,17 @@ migration still owed. No code, builds, tests, verification runs, authority edits
 rolls; `v14` remains the path.
 
 ---
+### 0.26 Integration reconciliation — 2026-09-07
+
+This architecture-only IR-04/14/18/29 fix-up reads the integration findings/ledger, P1's
+complete §5 and incorporated diagnostic/bootstrap contracts, the RC2 Phase 1 specification
+and §G1.3, and the P2/P3 owner snapshot requests. D-P1-45 grants P2 diagnostic-type consumption
+without widening diagnostic fields or artifact permissions. D-P1-46 reaffirms loader-owned
+stage one and keeps non-fullscreen countInstances authority-open. Existing package and
+native-parameter grants are not missing APIs; native-preserving source output and jcpp
+permission remain separate gates. Changed §5 and receiving contracts are **unverified pending
+fresh whole-document reviews**. No implementation, validation or new PASS claim is made.
+
 
 ## 1. Scope & boundaries
 
@@ -3956,6 +3967,13 @@ and Phase 12 needs lang keys for the GUI anyway. The severity/channel split maps
 degradation ladder — a disabled single uniform is `WARN`/`LOG_ONLY`, a failed program is
 `ERROR`/`SHADER_GUI`, a failed capability gate is `ERROR`/`CHAT`.
 
+Phase 2 may consume these same four types for its source-free evidence adapter (D-P1-45).
+It projects `messageKey`, severity and channel; structured coordinates must come from the
+emitting owner's attributed projection, because `EngineDiagnostic` itself has no location.
+It never extracts coordinates from `args`/`detail`, commits those strings, or changes channel
+routing. The source-bearing diagnostic may be retained locally for ordinary reporting but
+does not enter goldens; P3 §5.1.1 supplies the complete source-free inspection projection.
+
 ### 4.10 The `mod.compat` bail registry
 
 Phase 1 owns **the mechanism**. The mod-id list, the detection technique, and the message text are
@@ -4391,7 +4409,7 @@ authenticated permission matrix is the binding §5.2 row below.
 | `StateService` state verbs + `snapshot()` / `restore()` | the §G4.6 perturb-and-restore mechanism, over viewport, clears, depth mask, **depth test**, blend, alpha test and **fog** — the composite/final block RESEARCH.md §4.4 requires. `DrawService.fullscreenQuad()` establishes **no** state: the caller sets the block. The backend issues every `GlStateManager`-cached verb through `GlStateManager` (§4.7.4, `[D-P1-29]`). **Phase 4 is a consumer too (V14-2):** the per-program `alphaTest.<prog>`/`blend.<prog>` override values are Phase 4's to apply — its use-program barrier carries the *"per-program alpha/blend lock"* (`DESIGN.md` ll. 1245, 1365) — through `alphaTest(...)`/`blend(...)` here, with Phase 7 invoking the barrier (§3's rows) | **4** (the alpha/blend lock at the use-program barrier, `DESIGN.md` ll. 1245, 1365), 5, 6, **7** |
 | **Pixel-transfer verbs** — `FramebufferService.readDepthPixel(f,x,y)`, `initializeDepthTextureFromFramebuffer(src,dst,region)`, `copyDepthToTexture(src,dst,region)`, `TextureService.upload(t, TextureData)`, `UniformService.upload(loc,int,int)` (ivec2) and `upload(loc,int,int,int,int)` (**ivec4**) | §4.7.4; value types `TextureData` / `TextureRegion` / `PixelLayout` / `BlitSpec`. Depth initialization is first-copy exact-format storage definition on an owned destination; steady copy requires matching defined storage. Neither accepts a foreign destination, and both restore framebuffer/texture bindings | **6** (the v0.1 synchronous `centerDepthSmooth` readback; `atlasSize`/`eyeBrightness`; `blendFunc`), **5** (`depthtex1`/`depthtex2` first and steady copies plus formats), **8** (shadow depth→`shadowtex1`), **13** (noise, companion atlases, custom textures) |
 | **The facade's stated non-verbs**, with requesters and adjacent owners | §4.7.4's closing table remains binding: async/PBO and general colour/texture readback, `ivec3`/`mat3`, colour mask, face culling, free-standing pixel-store state, a **general** pre-link parameter setter, instanced draw, and binding Minecraft's own framebuffer. §0.25 serves the legacy geometry triple only; it is no longer an absent operation. Minecraft's FBO is not `bindDefault`'s name 0: Phase 7 must arrange the v0.1 final-to-vanilla bind through vanilla's path, with Phase 5 the second requester if its estate needs that FBO as a copy/blit source (§4.12). `bindsBalanced` cannot prove an internal/vanilla bind. `ivec4` is already served. The replacement for composite/deferred instancing remains Phase 7's caller-side loop at **v0.5**, Phase 6 uploads `instanceId`, and Phase 5 owns the unchanged estate/flip law. Gbuffers/shadow re-render remains an open Phase 7 case, not a facade instanced draw (D-P1-33/35) | **14** async; **13** texture readback; **7** colour mask/anaglyph, face culling, framebuffer bind and both re-render cases; **6** `instanceId` upload; **5** estate policy and second framebuffer requester; **3** flag-ownership map and `countInstances` detection; **4** any additional general pre-link parameter request and per-slot instance count |
-| **Legacy geometry source/consumer migration — ungranted outside Phase 1** | The former mandatory-core-rewrite assumption is withdrawn. §11.4's explicit hand-off is incorporated: Phase 3 must grant a legacy-preserving `MaterializationResult` path with same-build options/macros, final declarations, exact source map and fingerprint; current `None` rejects a pair and current `Translate` is not complete. Phase 4 must adopt that verified producer result and this operation in its active §4.8/§5/compile/fingerprint/failure contracts. Until both owner amendments and fresh whole-document verification, the legacy program remains unavailable and follows fallback. This row grants no new Phase 3 API and no reverse dependency | **3**, **4** |
+| **Legacy geometry source gate / adopted consumer migration** | The former mandatory-core-rewrite assumption is withdrawn. §11.4 is incorporated: Phase 3 must grant a legacy-preserving result with same-build options/macros, final declarations, exact source map and fingerprint; current `None` rejects a pair and `Translate` is incomplete. Phase 4's integration amendment conditionally adopts the native verb and its compile/fingerprint/failure transaction. Native source preservation is still ungranted; both owner/receiver remain unverified. Until source grant and fresh reviews, legacy programs remain unavailable with fallback. No new Phase 3 API or reverse dependency | **3**, **4** |
 | `DebugService` | present in v0.1, active at v0.5 | 4, 5 (call sites), **14** (implementation) |
 
 **Explicit note to Phase 2:** your declared input is "`PHASE_1_DOC.md` (module layout, facade,
@@ -4428,7 +4446,7 @@ PBO variant is Phase 14's.
 |---|---|---|
 | `Log` / `LogSink` / `Logs` | §4.9.1 | all phases |
 | **The fixed channel list** | §4.9.2 | all phases |
-| `EngineDiagnostic`, `DiagnosticSeverity`, `UserChannel`, `DiagnosticReporter` | §4.9.4 | 3, 4, 5, 6, 7, 11, **12** (GUI is a channel consumer) |
+| `EngineDiagnostic`, `DiagnosticSeverity`, `UserChannel`, `DiagnosticReporter` | §4.9.4, including D-P1-45's explicit Phase 2 source-free projection permission; unchanged fields/channels and no committed args/detail | **2**, 3, 4, 5, 6, 7, 11, **12** (GUI is a channel consumer) |
 | **Debug-flag namespace and the four reserved flags** | §4.9.3 | 3 (`saveSources`), **2** (`dumpCapabilities` and `recordGL` — the fixture and call-log capture path your harness drives), 14 (`glLabels`) |
 | Mixin config slots (three, by phase) + package placement | §4.5.2. **Two duties come with them, both yours (Phase 7):** confirm Unimined actually generates a refmap for the first config that lands — the template's `main` branch has never carried one, so the machinery is unexercised in this checkout (§12 item 33, and it **blocks** hook work if it fails); and spot-check `compatibilityLevel: "JAVA_8"`, inherited verbatim from the template snapshot while our source level is Java 25, the first time a mixin uses a language feature that survives to bytecode | **7**, 10, 13 |
 | SRG-targeting policy and the `schmaloogium$` prefix | §4.5.3 | 7, 10, 13 |
@@ -4963,6 +4981,8 @@ designed for, which is the best available evidence that it is drawn in the right
 | D-P1-42 | **Expose replay attribution as `ReplayAwareGLError(GLError error, boolean attributed)`, one result per triggering drained error, with `true` earned only by isolated reproduction.** | The original `GLError` accurately describes a drain window but cannot distinguish an isolated replay success from a clean, batched, ambiguous, or foreign-error replay. A boolean paired with the original immutable value is the minimum transport that lets Phase 6 report the result and Phase 2/7 capture it without guessing from labels or operation names (§0.22, §4.7.4, §5.2). |
 | D-P1-43 | **Grant Phase 13 R3 exactly `engine.textures`, `mod.glue.textures`, and `mod.mixin.textures`; retain every existing grant, including Phase 7 R7-8.** | The current closed table already supplies all four frame/capture homes but lacks the texture trio. Reuse the engine-policy / platform-adapter / dumb-hook split of the frame and shadow grants; add no API permission, facade verb or module edge (§0.24, §2.1, §5.1). |
 | D-P1-44 | **Accept Phase 4 §5.4 item 1's native alternative:** one engine-enum pre-link legacy geometry operation; no asserted complete core translation | Phase 3's two-span contract lacks whole-source/version/interface translation, whereas the published ARB specification supplies native semantics. Keep core GL objects and opaque handles, map only inside `mod.glue`, and require explicit Phase 3 source and Phase 4 consumer migration before legacy support is usable (§0.25, §§4.7.4/5.2/11.4). This supersedes only D-P1-25's geometry assumption |
+| D-P1-45 | Grant Phase 2 R4B consumption of the existing diagnostic types only | P3/P4 source-free evidence uses stable codes, severity, channel and owner-supplied coordinates; no new diagnostic field/channel or source/log redistribution permission (§4.9.4/§5.3). |
+| D-P1-46 | Keep stage-one bootstrap on FML lifecycle; retain the non-fullscreen countInstances authority gate | RC2 expressly permits justified bootstrap deviation; P1 already selected it. Only fullscreen composite/deferred execution has an accepted owner/milestone; metadata publication does not settle gbuffers/shadow traversal semantics. |
 
 ### 11.2 D-1..D-10 disposition
 
@@ -5103,6 +5123,11 @@ not own.
 empty slots by intent, not omissions. The `GLCapabilityProfile` text format (§4.7.2) and the
 `GLCallLog.render()` stability guarantee (§4.7.5) are the two contracts your golden-file workflow
 should build on. Phase 1 supplies no fixture set and no answer to OQ-10.
+R4B is now owner-designed and adopted by P2's integration amendment: consume the existing
+diagnostic types under §5.3/§4.9.4's source-free restriction. P3's `inspect(PackLoadRequest)`
+projection and P4's separate same-build resolution enrichment supply artifact data; Phase 1
+does not supply a front-end inspector, source coordinates inferred from text, or an archive hash.
+All amended §5 surfaces still require fresh review.
 
 **One REV2 clause lands on you rather than here** (§8.3). §G6 now governs *derived* artifacts as well
 as pack files: goldens carry **no pack source text** (`[D-P2-5]`), **no rendered images enter the
@@ -5181,12 +5206,12 @@ dual-form path. In your own authorized owner session, migrate active §§3.1/4.6
    Real driver compilation/linkage of original minimal legacy and core fixtures is required later;
    recorder success is not a GLSL compatibility proof.
 
-Phase 4's current §4.6 planning text passes an explicit `OptionState`, unlike Phase 3's no-option-argument
-signature (`docs/phase3/v1/PHASE_3_DOC.md:1185-1189`); migrate to the owner's same-build state
-rather than invent an overload. These consumer/source edits are explicitly **ungranted and
-unperformed** here. All changed §5 surfaces need fresh whole-document verification. Item 2's
-registry projections, the jcpp build/seam request, and unrelated coordinated requests remain open;
-no new Phase 1 dependency or broader transformer/library permission is implied.
+Phase 4's integration amendment migrates to Phase 3's no-option-argument materializer and
+direct per-program projections, and conditionally adopts the native operation. These are
+receiver-adopted/unverified contracts, not implementation proof. Phase 3 native-preserving
+source output remains ungranted; jcpp build/pin/seam permission also remains genuinely open.
+All changed §5 surfaces need fresh whole-document verification. No new Phase 1 dependency
+or broader transformer/library permission is implied.
 
 
 **To Phase 7** — the three mixin configs exist and are empty. Verify refmap generation before
@@ -5219,6 +5244,10 @@ omission: the reference hooks `GameSettings.loadOptions` at `HEAD`; we use `preI
 ~25–30 injections on a moment the loader hands over free is the wrong trade. All three sites were read
 at the reference's own mixin classes rather than taken from the digest
 (`[V:observed — Pintonium forge122/src/shaders/java/org/taumc/celeritas/mixin/shaders/startup/]`).
+The IR-14 receiving amendment removes `GameSettings.loadOptions` from the required CORE
+hook catalog: stage one is loader-event work, so absence of that redundant injection cannot
+disable shaders or manufacture a failed hook-health row. Stage two remains the required
+GL-ready RETURN injection; stage three remains recommended/deferred.
 
 **The composite `countInstances` loop is yours, it is assigned rather than open, and it is `[v0.5]`.**
 `DESIGN.md` names the `countInstances` instancing loop in your *Scope — in*, part (a), under
@@ -5234,6 +5263,11 @@ the N draws run inside; the loop does not change its read/write/flip law. Until 
 document attributed the loop to Phase 5; that was wrong and is corrected here. Distinguish it from the
 *open* case two paragraphs below: the composite loop is work `DESIGN.md` has already given you, at a
 milestone it has already set, and the gbuffers/shadow re-render is neither.
+**IR-18 disposition:** retain gbuffers/shadow repeated traversal as an explicit authority
+question for DESIGN/RESEARCH owners: specify the responsible traversal owner, exact replay
+scope and side-effect exclusions, state/instance restoration, and milestone before promising
+execution. P4 publishes positive count metadata but now promises only the accepted fullscreen
+consumer. No new facade instancing verb or inferred v0.5 non-fullscreen obligation is granted.
 
 **Your Phase 7 package and replay-result requests are accepted as `[D-P1-41]` and
 `[D-P1-42]`.** Put pure frame policy and closed results in `engine.frame`, platform adaptation in
@@ -5244,10 +5278,10 @@ the particular triggering `GLError`; a label, batched window, clean replay, ambi
 foreign-context error is never positive evidence.
 
 **R7-8 reconciliation:** this is the existing §0.22 grant, not an outstanding package addition.
-Phase 7's current request/status text still calls it pending; that downstream document is unchanged
-in this amendment. Its owner must reconcile the request and placement hand-offs with §5.1 under
-the normal review gate. The current Phase 1 surface now owes §0.24's fresh whole-document PASS;
-an existing package grant does not waive that gate or grant any unrelated Phase 7 dependency.
+Phase 7's integration amendment adopts the exact homes and reconciles its ledger; architecture
+is owner-designed/receiver-adopted, still unverified. The latest Phase 1/7 §5 surfaces require
+fresh whole-document reviews; placement grants neither implementation evidence nor unrelated
+dependency permissions.
 
 **One residue of the GL-error design is yours to place, and it is a placement rather than a
 design.** The backend elides a drain that has seen no mutating **facade** call since the previous
@@ -5373,20 +5407,20 @@ Use `com.schmaloogium.engine.textures` for pure policy/model/results,
 uploader, and `com.schmaloogium.mod.mixin.textures` for dumb accessors/tick hooks. The existing
 parent `mod.mixin` allocation is not revoked; no fallback name needs inventing. C-1 through C-4,
 `.internal` privacy, facade-only GL and the existing config/package agreement remain mandatory.
-Your current §§0/2.1/5.3 still describe R3 as pending; reconcile those downstream placement
-contracts and hand-offs through their owner, not by treating this grant as an edit to that document.
-Verified consumption requires the fresh Phase 1 whole-document PASS in §0.24.
+Phase 13's integration amendment now adopts the exact package homes and reconciles R3.
+This is receiver-adopted architecture, not implementation or verification. The latest
+Phase 1/13 §5 contracts require fresh whole-document reviews.
 
-**Placement-only boundary for Phases 7/13.** This amendment grants none of the other requests in
-`docs/phase7/v1/PHASE_7_DOC.md:2302`–`:2307` and
-`docs/phase13/v1/PHASE_13_DOC.md:1341`–`:1404`: Phase 3's typed macro input (R1) and optional
-post-analysis allocation hint (R4), Phase 6's fixed-resolver migration and retirement (R7-10/11),
-and Phase 8's shared-shadow migration and construction split (R7-12/13) remain **ungranted**.
-The Phase 3 suffix conflict and pending reverification, Phase 4 attribute request, and fresh
-verification of the coordinated Phase 4/5/7/13 §5 changes remain outstanding. For legacy geometry,
-§0.25 grants only Phase 1's operation; the explicit source grant and consumer migration above remain open.
-Already-granted R7-9 still needs Phase 3 reverification; no package row clears those blockers,
-changes their stated fallbacks, or certifies PBR/shadow/conformance execution.
+**Placement-only boundary for Phases 7/13.** Placement itself grants no runtime protocol.
+The owners now separately publish P3's preliminary macro pair and direct mipmap/vertex
+projections, P6's fixed-resolver/retirement (R7-10/11), and P8's shared-shadow/planning split
+(R7-12/13); coordinated receiving amendments adopt those grants, still unverified. Do not
+call them missing APIs or infer their implementation from package placement.
+Genuinely ungranted: P3 native-preserving legacy source path, jcpp build/pin/seam permission,
+suffix grammar and typed sampling-state publication, and optional P13 post-analysis R4.
+P1's native parameter verb exists and P4 conditionally adopts it; source support does not.
+Already-granted R7-9 and all changed owner/receiver §5 surfaces still require fresh reviews.
+No package row certifies PBR/shadow/conformance execution.
 
 **To Phase 13** — the transfer verbs you need exist and carry no policy:
 `TextureService.create`/`allocate`/`setParameters`/`upload`/`bindToUnit`/`generateMipmap`, with
@@ -5394,8 +5428,8 @@ changes their stated fallbacks, or certifies PBR/shadow/conformance execution.
 uses. `schmaloogium.textures` is your log channel. Two things are **yours to contest, not
 inherited**: §4.7.4 declines a `glGetTexImage`-shaped texture readback on the expectation that your
 companion-atlas construction builds data rather than reading it back — that is a guess about your
-design, and if it is wrong the verb is an additive request in your §5; and the fixed unit map is
-Phase 5/6 policy, so `bindToUnit` takes the number you are given rather than choosing one.
+design, and if it is wrong the verb is an additive request in your §5; the fixed unit map and
+physical binding are exclusively Phase 5's. Phase 6 consumes the pure resolver for uploads.
 
 **The transfer verbs do not cover all of App F.5, and the route for the rest is
 `ForeignTextureProvider`** (§4.7.3, §4.12, `[D-P1-36]`; new this revision, V13-2 — §5.1 named you a
@@ -5662,3 +5696,7 @@ materialization and Phase 4 consumer migration remain explicitly ungranted. `PHA
 is **not verified** and is not a valid dependency input until a fresh **whole-document** review
 returns literal PASS. No review, build, test or verification run was performed, no code or other
 document was edited, and no implementation or complete dual-form support is claimed. `v14` stays.*
+
+*§0.26 integration amendment: P1 diagnostic permission and bootstrap/count/grant-ledger
+reconciliation change §5. Current surface remains unverified; historical reviews are unchanged.
+No implementation, validation or new PASS result accompanies this documentation fix-up.*

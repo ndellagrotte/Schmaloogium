@@ -1,5 +1,12 @@
 # Phase integration review
 
+**Fix-up reader notice:** §§0–6 and Appendix A below retain the original provisional audit,
+including its original input fingerprints, line coordinates, finding counts and verdict.
+The subsequent `## Resolutions` section records the commissioned IR-02–IR-29 remediation
+against amended phase documents; use its versioned paths and section anchors for current
+contracts. IR-01 is excluded from this fix-up. Neither amendments nor recorded dispositions
+constitute fresh individual verification or implementation clearance.
+
 ## 0. Method, authority and eligibility
 
 Requested review: DESIGN §G5.3 item 4. Scope is the current fourteen architecture documents, not executable shader support or a replacement for individual phase verification. Main integrated four independent read-only contract audits (P1–4, P5–8, P9–11, P12–14), covering every document's complete §1, §5 and §11 and following their incorporated contracts and recipient sections where needed. The audit checked all 36 hard dependency edges plus the soft P7→P12 edge, additional published sibling/reverse handoffs, and all six expressly named seams.
@@ -1025,3 +1032,347 @@ Ranges refer to the phase document in the same row. SHA-256 identifies the exact
 | 12 | `docs/phase12/v1/PHASE_12_DOC.md` | §1 180–223; §5 1168–1325; §11 1606–1732 | `0bbf28460611b4ca1e8cfec85b0926d8c678cfd59075e20935cc2c49f65d1aa5` |
 | 13 | `docs/phase13/v1/PHASE_13_DOC.md` | §1 154–204; §5 1137–1428; §11 1595–1672 | `ab1973d38901337fd5a382d6e6a62b8bc0bc11413a20f210d558b74486e5fa1b` |
 | 14 | `docs/phase14/v1/PHASE_14_DOC.md` | §1 163–253; §5 1445–1639; §11 2101–2354 | `a0ac95dde89d09d768b8f13c9e6401d3785752bd9a09d348c8b880fc89cfd325` |
+
+## Resolutions
+
+### Commission, scope and disposition vocabulary
+
+The maintainer commissioned systematic remediation of every finding **except IR-01**.
+This fix-up changes the fourteen current phase documents, not the shader implementation.
+The original audit above, its counts/verdict, prior reviews and authority documents remain
+historical evidence. IR-01's finding text and implementation-clearance restriction are unchanged.
+
+**Remediated** below means the identified architecture mismatch has an owner/receiver repair,
+not that code exists or a phase has passed fresh verification. **Partial** identifies remaining
+required behavior or authority decisions that this session could not honestly supply.
+**Dispositioned** records the permitted note outcome without pretending an optional API or
+future experiment has run. The result is **21 remediated, 4 partial, 3 dispositioned** across
+IR-02–IR-29. Every changed §5 or incorporated contract remains unverified.
+
+P3's setting domains, defaults and macro meaning changed under IR-24. Its mandatory schema
+discipline therefore required **schema 17**, including the nested ID schema. The earlier
+schema-16 catalog/materialization, companion-input, lossless-declaration and safe-persistence
+grants are retained in schema 17; there is no inferred upgrade or old-schema fallback.
+
+Current citation key for this section (section anchors, **not** the original audit's line numbers):
+
+| Key | Amended document | Fix-up notice |
+|---|---|---|
+| P1 | `docs/phase1/v14/PHASE_1_DOC.md` | §0.26 |
+| P2 | `docs/phase2/v2/PHASE_2_DOC.md` | §0.38 |
+| P3 | `docs/phase3/v1/PHASE_3_DOC.md` | §0.58 |
+| P4 | `docs/phase4/v1/PHASE_4_DOC.md` | §0.36 |
+| P5 | `docs/phase5/v1/PHASE_5_DOC.md` | §0.40 |
+| P6 | `docs/phase6/v1/PHASE_6_DOC.md` | §0.25 |
+| P7 | `docs/phase7/v1/PHASE_7_DOC.md` | §0.41 |
+| P8 | `docs/phase8/v1/PHASE_8_DOC.md` | §0.9 |
+| P9 | `docs/phase9/v1/PHASE_9_DOC.md` | integration fix-up in §0 |
+| P10 | `docs/phase10/v1/PHASE_10_DOC.md` | integration fix-up in §0 |
+| P11 | `docs/phase11/v1/PHASE_11_DOC.md` | integration fix-up in §0 |
+| P12 | `docs/phase12/v1/PHASE_12_DOC.md` | integration fix-up in §0 |
+| P13 | `docs/phase13/v1/PHASE_13_DOC.md` | integration fix-up in §0 |
+| P14 | `docs/phase14/v1/PHASE_14_DOC.md` | §0.4 |
+
+### IR-02 — Remediated: capture protocol
+
+P7 §4.13/§5.1 consumes only P2's `/2` plan and manifest contracts: dense samples,
+first-pose warm-up, actual current/previous frame poses, final-before-present capture and
+exact serialization/provenance. P2 §5.4 R19/§11.4 records receiver adoption. `/1` remains
+historical, not a compatibility reader. P2's hook-evidence case now copies the current P7
+catalog, including H-RESOURCE-01, without rewriting historical reports.
+
+### IR-03 — Partial: current configuration cutover; locale and Internal options gated
+
+P4 §§4.7/5.3 now materializes the containing configuration without an `OptionState`
+argument and consumes direct P3 mipmap/vertex projections. Sparse resource rows use P3's
+empty projection baseline and the selected effective dimension, not a null dereference or
+synthetic row. P5–P13 adopt the relevant current schema-17 projections, same-build macros,
+ID input and lossless texture declarations. P12 §§4.1–4.6/5.2 rederive catalog-issued
+previews, profile inference and exact safe-codec outcomes rather than retaining old APIs.
+
+Re-derivation exposed a real missing owner surface: current P3 publishes one `LangDecorations`,
+not locale-indexed data. P3 §§5.4/11.4 and P12 §§4.3.5/5.4/11 record **R-P12-5** for a
+future single-authority locale-map replacement, including normalization/collision, missing/
+empty, selection and fingerprint rules. Current decoration data is usable, but the requested
+locale→en_us chain is not falsely claimed. P3 also supplies no Internal pack-option persistence
+or transient override target: P12/P7 keep Internal pack mutations inert/rejected while global
+settings remain available. These are explicit remaining contract limitations, not hidden parsers.
+
+### IR-04 — Remediated: grant ledgers and actual consumption
+
+P1/P3 owner handoffs and P4/P5/P7/P8/P9/P12/P13 active consumers distinguish
+**owner-designed/unverified**, **receiver-adopted/unverified** and genuinely missing grants.
+P4 §§4.8/5.2 consumes P1's exact legacy pre-link configure operation, capability gate and
+drain/configure/drain failure transaction; P6 resolver/retirement and P8 shared-binding/
+registry-independent planning grants are no longer universally described as absent.
+Native source preservation, jcpp permission, U1 typed suffix execution and optional future
+proposals remain separate gates. Ledger repair does not grant those features.
+
+### IR-05 — Remediated: lighting and AO ownership
+
+P10 §§4.8.1/5 explicitly owns immutable `ShaderLightingPolicy`, directional shading and
+AO-to-alpha behavior, user-over-pack oldLighting precedence, bake identity and full
+quiescent invalidation. P7 §5.1 and P12 §§4.6/4.7 accept the pair and effective-change
+predicate. The P10 reload handoff is **REPUBLISH**, with renderer reload only when effective
+bake inputs change, plus P7's post-load OR of any newly discovered required invalidation.
+Unspecified fallback values/face factors are labeled local D-P10-11 compatibility decisions;
+OQ-14 still owes concrete Forge bake-adapter and parity evidence. No renderer-performance
+rewrite is authorized.
+
+### IR-06 — Remediated: reload adapter and pre-destructive resource gate
+
+P7 §5.1 adopts P12's exact NONE/REPUBLISH/FULL maximum plus independent OR flags,
+selection/profile freezing, safe persistence, programmatic option bridge and final receipts.
+FULL rediscovers; REPUBLISH loads the same authenticated selection; resource NONE retains
+the identical configuration while refreshing quiescent resources and resource-derived IDs.
+P12 §§4.7/5.3 and P13 §§4.7/5.3 reciprocally adopt these distinctions.
+
+Endpoint verification caught a remaining ordering hole: a resource listener that only queues
+work cannot quiesce before vanilla replacement. P7 §4.8.1/§4.10.7/§5.1 now publishes
+**H-RESOURCE-01 / `ResourceReloadBoundary.invoke(Runnable original)`**, wrapping
+`SimpleReloadableResourceManager.func_110541_a(Ljava/util/List;)V` before packs are released.
+It drains prior uses, retires acquisition authority and advances the epoch before original;
+listeners contribute pending data/effects, outer completion publishes once, nested bodies share
+the gate, and exceptions preserve the original failure while recovery converges off.
+P12 §4.8.3/§7 and P13 §4.7 distinguish notification from the gate. MCP confirmed the method
+descriptor and release/load/listener order; actual weaving/call-site safety remains OQ-4
+implementation evidence, not a result of this documentation task.
+
+### IR-07 — Remediated: generation accounting and cache invalidation
+
+P4 §5.1/§11.4 and P7/P12 §5 distinguish one drained request/final outcome from publisher
+mutations. A rejected pre-release attempt changes no P4 generation; accepted Ready then
+compensating Off can change it twice. Explicit Off/RecoveredOff use actual owner results.
+P7's generation listener and ordered receipt notify genuinely generation-derived caches
+before further use; failed delivery leaves them unavailable until authoritative polling.
+Configuration-keyed presentation state is not falsely made generation-keyed.
+
+### IR-08 — Remediated: independent companion preferences
+
+P13 §§4.1.1/4.1.6/5.1 computes each preliminary bit independently from active pack,
+fixed-unit capability and its decoded user preference. P7 §§4.1/5.3 passes the required
+P3 pair before jcpp; P12 §4.6 uses the same settings. Disabled kinds allocate/discover/
+upload/animate nothing and cannot reuse stale bindings; P5 owns neutral binding/suppression.
+Optional linked-demand allocation savings remain R4-gated and cannot change macros.
+P13 §4.8's memory estimate now follows this policy instead of claiming ungranted savings.
+
+### IR-09 — Remediated: ID publication and borrowed lifetime
+
+P9 §§4.1/5.3/6 adopts texture-before-ID publication and P7's failure-to-off composition.
+Its pure candidate builder still does not mutate publication; that local rule no longer
+promises recovery of the old whole pipeline. P9/P10 §5 retain matched lookup/ordinal-map
+storage through worker draining, and admit the new tuple only after required geometry
+invalidation. R9-1/R9-2/R10-3 adoption is recorded as unverified.
+
+### IR-10 — Remediated: uniform retirement
+
+P11 §4.12/§5 retains its own terminal controller CLOSE but maps P6 disposal only to
+UNPUBLISHED_ABORT, REPLACEMENT or SHUTDOWN. P7/P8 lifecycle handoffs consume P6 §4.14's
+reason-specific ordering: final restoration first; replacement after actual old-barrier
+invalidation; shutdown before atomic P4 teardown. Rejected retirement retains services and
+closed admission. No P6 CLOSE alias or invented `UniformRuntime.close()` was restored.
+
+### IR-11 — Remediated: notifier timing and real color milestone
+
+P6 §§4.6/4.12/5 and P7's hook catalog separate pre-clear frame sampling from later
+post-camera current-matrix capture. P7 owns real hurt/flash color at **v0.1**, preserving
+stable H9-COLOR-01/02 catalog spellings; P9's aliases/held/ID scopes remain v0.3.
+P9 §§4.13/5.2 agrees on exact operands, immediate active upload and nested restoration.
+Neutral missing-producer behavior is degraded bring-up, not a new deferral of required color.
+
+### IR-12 — Partial: unsupported supersampling promise removed
+
+P5 §§4.11.1/5.1/11.5 and P7 §§4.6/11 now name the actual
+`BufferSizing.superSamplingLevel()` metadata; there is no invented `SupersamplingPlan`
+or accepted sample/draw schedule. RESEARCH's “SSAA multiplier” does not settle its no-AA
+boundary or execution semantics. P5 D-P5-23 explicitly requests scope, level domain,
+sizing/rounding, sample/camera/uniform cadence, coverage, accumulation/final resolve,
+depth/flip effects, cleanup and owner/milestone. **Level>1 execution and conformance remain
+unresolved.** No guessed algorithm, extent multiplication, silent normalization or unapproved
+runtime rejection policy was substituted.
+
+### IR-13 — Remediated: anaglyph state boundary
+
+P7 §5.1 `FrameRenderPort` and its render-state prose use mod-side cache-coherent
+`GlStateManager` color masking/restoration, consistent with P5. Engine code does not call
+a nonexistent P1 facade verb or introduce a native GL bypass.
+
+### IR-14 — Remediated: bootstrap sequence
+
+P1 §§5.1/11.4 and P7 §4.10.2 adopt preInit/FMLLoadCompleteEvent prerequisites, not a
+redundant GameSettings CORE injection. H-BOOT-01 reports actual loader-event delivery,
+not fabricated injection success. GL-ready RETURN remains required; the menu signal remains
+recommended/deferable. Historical hook evidence is preserved.
+
+### IR-15 — Remediated: expression measurement recipient
+
+P11 §§5.1/10.1/11.3 and P14 §5.8/§7.5 L-11/§10.2 accept the exact OQ-22 method and
+metrics handoff. P14 owns measurement/decision and a conditional candidate experiment;
+P11 retains semantics and its private backend SPI. Interpreter cleanup and a demonstrated
+real-pack budget miss precede any compiled-backend experiment. No measurement or compiled
+evaluator is claimed.
+
+### IR-16 — Remediated: screen column resolution
+
+P12 §4.3.3–§4.3.4/§5.2 consumes P3's resolver:
+`max(explicitColumns.orElse(2), ceil(expandedSlotCount/9))`. All expanded slots count,
+including empty/profile/subscreen entries, with the adopted star-expansion rules.
+Thus 19 expanded slots with configured columns=1 resolves to 3, not 1.
+Presentation and planned behavioral cases no longer retain unconditional explicit override.
+
+### IR-17 — Remediated: direct source-free expression diagnostics
+
+P11 §§4.9.1/5.5.1 publishes `ExpressionDiagnosticGuiSnapshot` with pack/configuration
+fingerprints, attempt serial, final ACCEPTED/REJECTED outcome and immutable safe entries.
+P7 §5.1 publishes `ExpressionDiagnosticGuiSource.current()` after final composition;
+P12 §§4.9/5.3 consumes it on presentation/refresh. Selection/Off/shutdown clear its lifetime;
+raw expressions, paths/spans/attribution/dependency chains do not cross this projection.
+P11's chat/log channels are unchanged; no fourth channel or speculative P1 conversion exists.
+
+### IR-18 — Partial: non-fullscreen countInstances remains authority-open
+
+P1 §11.4, P4 §§4.9/11.4–11.5 and P7 §§4.6/11 remove the claim that both cases already
+have an accepting executor. The existing fullscreen loop stays specified; gbuffers/shadow
+re-rendering remains an explicit authority/owner/milestone request covering traversal
+side effects, authenticated admission, instance IDs, restoration and failures.
+Retained metadata neither supplies that behavior nor authorizes instanced draws or a new
+extension API. No whole-phase rebuild was substituted for this missing decision.
+
+### IR-19 — Remediated: actual compatibility outcomes
+
+P7 §4.12 consumes P1's `BailRegistry.evaluate(CompatContext)`, `CompatEvaluation` and
+`CompatVerdict.Ok/Degrade/Bail` at owner-approved evaluation points, including session Bail.
+P10 §11.2 now records adoption rather than repeating the old missing-adapter assertion.
+Degrade preserves its actual restriction; it does not grant renderer-backend replacement.
+
+### IR-20 — Remediated: evaluator-specific conformance contract
+
+P11 §5.6 publishes the original immutable vectors, scripted provider/random inputs,
+closed activation/refresh/reset/close steps and expected observable outcomes.
+P2 §§4.9/5.1/5.3 adopts **RUN-EXPRESSION-CONFORMANCE** using the existing compiler,
+controller and P6 bridge, with per-case PASS/FAIL/UNSUPPORTED results.
+Original vectors are distinct from local matrix runs; a matrix run without an independent
+oracle records a disposition, not a golden verdict. No real-pack run was performed here.
+
+### IR-21 — Remediated: authenticated current atlas producer
+
+P7 §5.1, P13 §§4.4/5.5 and P6 §§4.12/5 connect actual bind/restoration evidence through
+an opaque pipeline/resource-epoch/serial credential to P13 Known/Unknown size and the existing
+P6 `updateAtlasSize(Int2)` sink. Unknown/nonatlas/reset maps to `(0,0)`; stale evidence
+cannot mutate the sink. Active consumers upload immediately; inactive consumers retain the
+current value. P5 remains the physical binder, and P8 preserves the same adapter in shadow
+scope. Stitch-time availability alone is not binding evidence.
+
+### IR-22 — Remediated: shadow ID admission
+
+P7 §5.1, P8 §§4.8.2/5/11.4 and P9 §§4.12/5.1 admit IDs through either an accepted main
+scope or separately authenticated current shadow execution. Opaque admission/tokens enforce
+generation/thread validity and exact LIFO restoration. Shadow tile entities require no
+gbuffers_block scope, main snapshot or main program activation. Existing Forge pass ordering
+and failure neutralization remain intact.
+
+### IR-23 — Remediated: modernization owner cutover
+
+P14 §§3.1/4.1.2–4.1.4/4.3.4/5.2–5.5 consumes P5 sole policy/physical binding,
+Bound-only transferred lease closure, all eight resize reasons, P6's shared resolver,
+P13's exact parameter domains/conversion and lease-drained lifetime, and P7's current
+ten-step construction/compensation points. Active old-map/absent-interface/eighteen-step
+claims were removed. Missing complete P1 parameter conversion retains sampler 0; unadopted
+batching, staging, resumability and sample-age extensions retain their synchronous baseline.
+
+### IR-24 — Partial: canonical settings adopted; authority ratification remains
+
+P3 §§4.4/4.10/5.1/D-P3-61 and P12 §4.6 publish one vocabulary:
+normalMapEnabled, specularMapEnabled, renderResMul, shadowResMul, handDepthMul,
+oldHandLight, oldLighting, antialiasingLevel. Defaults are
+`true,true,1.0,1.0,0.125,default,default,0`.
+Old-light wire values are exact `default|true|false`; explicit user values win at runtime,
+DEFAULT delegates to P9/P10 pack/default policy. Companion preferences remain independent.
+No old GUI key spellings are introduced as aliases.
+
+The pre-load policy independently emits MC_OLD_* only for explicit user true; DEFAULT and
+false omit it, but remain fingerprint-distinct. This avoids a post-preprocessing pack-policy
+cycle. AA is reserved at exact zero and MC_FXAA_LEVEL is absent: no AA control/feature is added.
+These are explicit phase-local compatibility decisions, **not OQ-7 ratification**. P3 §11.5
+item 6 retains the authority question about macro/default semantics and RESEARCH's AA inventory
+versus no-AA boundary. Cross-phase vocabulary is reconciled; that authority decision remains open.
+
+### IR-25 — Remediated: durable restart selection
+
+P12 §4.6.3/§5.2 and P7 §5.1 persist the owner-defined
+`FilesystemCandidateReference`, resolve it against fresh discovery, and handle
+Resolved/Missing/Ambiguous/KindChanged/InvalidSnapshot before safe target acquisition.
+Off/Internal retain distinct sentinels. Display labels are presentation only; no candidate-ID
+serialization, first-collision selection or consumer-chosen path sanitization survives.
+
+### IR-26 — Dispositioned: timing promise narrowed
+
+P7 §§1.2/11.5 and P14 §5.4/D-P14-21 reciprocally accept JFR attribution rather than
+claiming a public elapsed-per-pass API. Internal timing and P5-owned resize notices are not
+misrepresented as that API. Optional timing records/debug groups remain separate proposals
+and do not block the synchronous rendering baseline.
+
+### IR-27 — Dispositioned: explicit compiler request received, not enabled
+
+P14 §5.9/§11.4 publishes R-P14→P4-1 and P4 §5.7/§11.4 receives it explicitly as pending:
+prepare/worker/link ownership, cancellation/late-result cleanup, visibility and render-thread
+candidate/publication rules must precede async adoption. P7 resumability is a separate matched
+dependency. Current synchronous compile/Inline remains the only callable baseline; OQ-15
+evidence and an exact adopted split are still required before enabling the optimization.
+
+### IR-28 — Dispositioned: first-hook duties explicitly accepted
+
+P7 §11.3/§12 accepts P1's first-real-configuration refmap-generation/artifact check and
+JAVA_8-versus-Java-25 Mixin compatibility check at the first hook gate. Broader OQ-4 wording
+no longer substitutes for those named duties. This records future implementation work,
+not a build, refmap or bytecode result.
+
+### IR-29 — Remediated: complete source-free inspection and provenance route
+
+P3 §5.1.1 publishes `inspect(PackLoadRequest)` with Off/Failed/Inspected outcomes,
+same-build configuration, recursively allowlisted source-free snapshot and optional archive
+SHA-512 obtained from the same bounded immutable archive read used for decoding.
+P1 §§4.9.4/5.3 grants diagnostic consumption without detail/argument leakage.
+P4 §5.6 enriches the exact inspected configuration/build-request association with detached
+resolution rows, without inventing a view fingerprint accessor or publishing a live registry.
+
+P5 §§2.2/5.1 now exposes `BufferArchitectures.create()` for the existing stateless pure
+planner. P2 §4.11.4/§5.4 combines **P3 + P4 + P5**, including exact runtime sizing inputs
+and final capability projection, without live GL or buffer creation. Available SHORTFALL
+can be complete evidence; Unavailable cannot. P2 independently verifies fixture archive
+provenance and requires equality with the inspection digest; configuration/content hashes
+are not archive hashes. Partial synthetic goldens remain distinct from complete matrix verdicts.
+
+### Remaining decisions and verification boundary
+
+The four partial findings above are deliberately not marked closed:
+
+1. **IR-03:** P3 locale-indexed publication/selection and Internal pack-option mutation
+   contracts remain absent; receiver behavior is explicitly limited until owner amendments.
+2. **IR-12:** SSAA level>1 scope and execution semantics require an authority decision.
+3. **IR-18:** non-fullscreen repetition still needs an accepting owner and traversal contract.
+4. **IR-24:** OQ-7 macro/default ratification and no-AA inventory reconciliation remain open.
+
+Unrelated already-recorded gates also remain: native-preserving legacy source completion,
+jcpp build/pin/seam permission, U1 typed suffix execution, P10 concrete facade/lifecycle/bake
+adapters, optional GUI choice ladders and P14 optimization extensions. They were not silently
+granted by this fix-up. Local choices and retained metadata are not conformance evidence.
+
+Six phase-owned editing slices worked concurrently with explicit cross-owner contracts, followed
+by three read-only endpoint reviews covering every IR-02–IR-29 finding. Verification caught and
+repaired the lighting FULL/REPUBLISH mismatch, sparse projection null path, nonexistent SSAA
+accessor, stale modernization map ownership, and missing pre-destructive resource gate.
+Main additionally reconciled P10's stale compatibility ledger and P13's misleading allocation
+estimate. The lifecycle reviewer re-read the new gate and its P12/P13 endpoints and found no
+remaining actionable mismatch in that slice. These checks are scoped fix-up verification,
+**not** fresh whole-phase reviews or a rerun of the original all-edge eligibility audit.
+
+Programmatic documentary checks cover all 28 resolution IDs, all 42 mandatory §1/§5/§11
+sections across fourteen phase documents, balanced fenced blocks, unique phase decision-table
+IDs, resolution-path existence and preservation of the original audit text. SHA-256 checks
+preserve the research document, the three governing design revisions and the eleven latest
+individual review files; IR-01's body is unchanged. No Gradle build, test suite, client,
+rendering experiment or retired verification tool was run: the amended contracts have no
+repository implementation to exercise. The two MCP method lookups establish mappings only.
+All fourteen amended documents still require the applicable fresh verification before
+implementation consumption; this session does not attempt to remediate or waive IR-01.

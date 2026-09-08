@@ -7,7 +7,7 @@
 - **Module/package:** `:engine`, `com.schmaloogium.engine.expr`
 - **Declared dependencies:** Phase 3 and Phase 6; no Phase 7 dependency
 - **Governing design:** `docs/design/v3/DESIGN.md`
-- **Design status:** initial build document, not yet verified
+- **Design status:** integration fix-up unverified; historical Review 10 PASS does not verify this §5 amendment
 - **Date:** 2026-08-03
 
 The commissioning request explicitly selected v3. This document therefore derives its pins from
@@ -17,11 +17,9 @@ expression language to pure `:engine` code (`docs/design/v3/DESIGN.md:2281`–`:
 module map puts that code in `engine.expr` and requires `:engine` to have zero Minecraft, Forge,
 Cleanroom, Mixin, or LWJGL dependencies (`docs/design/v3/DESIGN.md:468`–`:500`).
 
-The dependency gate is open. Phase 3 Review 34 is literal `PASS` with zero blocking findings and
-zero corrections (`docs/phase3/reviews/PHASE_3_REVIEW_34.md:44`–`:56`). Phase 6 Review 22 is also
-literal `PASS` with zero blocking findings and zero corrections
-(`docs/phase6/reviews/PHASE_6_REVIEW_22.md:48`–`:63`). Those reviews verify the current dependency
-documents read below.
+The historical dependency reviews below record authoring provenance only. Current Phase 3
+schema17 and Phase 6 retirement amendments are adopted provisionally in §5; their current bytes
+and this receiver's amended surface require fresh verification before implementation.
 
 ### 0.1 Inputs actually read
 
@@ -68,7 +66,7 @@ Phase 11's v3 adoption is complete: `verification/targets/phase-11.json` derives
 v3, its dry-run preflight has succeeded, and `docs/MOVES.md:89`–`:92` records the adoption. The
 per-round verification chronology is stated in exactly one place, the §0.4-onward round addenda,
 whose newest entry always restates whether a fresh verification round is still required. It is:
-§0.9's §5 citation change has not yet been verified, so a fresh round is required before closure.
+§0.13's integration §5 change is unverified and requires a fresh round before closure.
 
 ### 0.3 Legal and provenance posture
 
@@ -151,6 +149,13 @@ Round 9 declared the previously unpinned `DiagnosticSeverity` and `DiagnosticCha
 §4.9. No §5 text changed and no other contract substance changed. The outstanding requirement
 stands: §0.9's §5 citation change still requires a fresh verification round before closure.
 
+### 0.13 Integration contract fix-up — unverified
+
+IR-03/10/15/17/20 reconcile current configuration intake, terminal retirement, direct source-free
+GUI diagnostics, named evaluator conformance and OQ-22 measurement. Active §§4/5/11 change under
+D-P11-14…17; prior addenda and Review 10 remain historical evidence. No implementation, test,
+measurement, build or fresh PASS is claimed. Current producer and consumer reviews remain gates.
+
 ---
 
 ## 1. Scope & boundaries
@@ -184,11 +189,12 @@ This is the full Objective: “grammar, functions, input binding, evaluation cad
 - **`mod.glue`** implements the biome/view snapshot provider. Phase 11 defines only loader-neutral
   value objects and an SPI.
 - **Phase 7** later wires lifecycle calls and the provider at the composition root. This document
-  exposes that interface without reading or depending on Phase 7.
+  exposes that composition interface; this fix-up reads the current P7 lifecycle solely for
+  its published consumer handoff, not a new declared dependency.
 - **Phase 12** owns GUI presentation, including any profiles/options UI.
 - **Phase 14** owns the OQ-22 measurement decision and any compiled evaluator implementation.
-- **Phase 2** extends conformance runs with real-pack scripted inputs; Phase 11 owns the pure golden
-  vectors those runs call.
+- **Phase 2** owns `RUN-EXPRESSION-CONFORMANCE` orchestration/adapter; Phase 11 owns original
+  vectors and provider/effect expectations (§5.6). Local matrix capture remains source-free.
 
 ### 1.3 Hard boundaries
 
@@ -810,6 +816,49 @@ aggregated so one bad line does not hide later errors.
 This is degradation-ladder rung 1: “A custom uniform that errors at runtime disables that uniform
 only” (`docs/design/v3/DESIGN.md:419`–`:425`). No expression exception crosses the bridge.
 
+#### 4.9.1 Direct immutable GUI projection
+
+```java
+enum ExpressionDiagnosticAttemptOutcome { ACCEPTED, REJECTED }
+record ExpressionDiagnosticGuiEntry(
+    String stableId, ExpressionDiagnosticKind kind, DiagnosticSeverity severity,
+    String declarationName, String summary) {}
+record ExpressionDiagnosticGuiSnapshot(
+    String packFingerprint, String configurationFingerprint, long attemptSerial,
+    ExpressionDiagnosticAttemptOutcome outcome,
+    List<ExpressionDiagnosticGuiEntry> entries) {}
+interface ExpressionDiagnosticGuiProjector {
+    ExpressionDiagnosticGuiSnapshot project(
+        String packFingerprint, String configurationFingerprint, long attemptSerial,
+        ExpressionDiagnosticAttemptOutcome outcome, List<ExpressionDiagnostic> diagnostics);
+}
+```
+
+P11 owns this pure projection and vocabulary. Inputs are non-null, fingerprints non-empty opaque
+identities, serial positive, and entries immutable defensive copies in declaration/diagnostic
+order, deduplicated by stableId. Invalid caller arguments throw `IllegalArgumentException` before
+publication; no partial view results. Output contains no raw expression, source path/span,
+attribution, dependency chain, pack resource/handle or exception text. Declaration name is a
+validated identifier or empty for a pre-plan error; summary is generated from a fixed
+kind/severity template, never copied from diagnostic summary or arbitrary pack text. Stable
+identities/fingerprints are opaque equality keys, not text to decode into source.
+
+P7 owns publication at the final composition outcome, not compiler completion: ACCEPTED means
+the final pipeline/configuration was admitted (possibly with expression errors/NoCustoms);
+REJECTED means the attempt was not admitted, including later compensated-off failure. A
+`PlanBuildResult.Success` or `PlanActivationResult.Activated` alone cannot choose ACCEPTED.
+Both existing P11 channels are eligible with identical WARNING→WARNING / ERROR→ERROR mapping;
+LOG_ONLY detail is replaced by the safe template, not leaked. This direct typed input does not
+route through P1 SHADER_GUI or add a third/fourth P11 channel.
+
+P7's positive attempt serial orders this selected-pack session, independent of Phase 4 generations.
+P12 consumes the P7-mediated immutable optional snapshot and rejects an older serial or different
+selected pack. P7 clears the slot before selection change, explicit off and shutdown; no expression
+compile means no new expression snapshot. A same-pack failed attempt may remain displayed as
+REJECTED until next attempt/clear, never as the active plan's diagnostics. Configuration fingerprint
+is that of the attempted current P3 configuration. Replaced snapshots have no retained resources;
+UI copies may survive for display only and confer no publication or controller authority.
+
 ### 4.10 Biome and view-entity provider seam
 
 ```java
@@ -964,21 +1013,29 @@ Phase 6 or GL and retains neither provider nor random source after deactivation.
 
 Composition forwards lifecycle events at these binding boundaries:
 
-- for Phase 6 `PACK_REPLACEMENT`, `SHADERS_OFF`, or `GL_CONTEXT_LOSS` generation adoption, final
-  old-state use completes, Phase 11 receives the equal-named reset, then Phase 6 adopts the new
-  generation; customs may join first new-state use only after a successful fresh activation;
-- for Phase 6 direct `WORLD_EPOCH` reset, final old-world use completes, Phase 11 receives
-  `WORLD_EPOCH`, then Phase 6 resets, and successful fresh activation precedes custom participation
-  in next-world use;
-- after final pre-resize custom use and before any custom use against resized framebuffer state,
-  Phase 11 receives `FRAMEBUFFER_RESIZE`; this has no Phase 6 reset counterpart, and successful
-  fresh activation precedes renewed custom participation; and
-- after final use of all Phase 6 participants, Phase 11 receives terminal `CLOSE`, then Phase 6
-  receives terminal `CLOSE`; neither controller nor participant may be used afterward.
+- Retained/new P6 runtime generation adoption (`PACK_REPLACEMENT`, `SHADERS_OFF`,
+  `GL_CONTEXT_LOSS`): final old use completes, reset the affected P11 controller with the matching
+  reason, then perform P6 adoption. Only ADOPTED/ALREADY_CURRENT plus fresh P11 Activated permits
+  new custom participation; rejected adoption is not accepted publication.
+- P6 direct `WORLD_EPOCH`: final old-world use, P11 WORLD_EPOCH reset, then P6 reset and fresh
+  activation before next-world customs. Framebuffer resize resets P11 FRAMEBUFFER_RESIZE after
+  final pre-resize use; it has no P6 reset counterpart.
+- P6 instance disposal: after final use of **all** participants/callbacks, close its owned P11
+  controller with terminal `CLOSE`, then call P6 `retire(reason)`. Use UNPUBLISHED_ABORT only
+  for never-accepted candidates; REPLACEMENT for replaced/accepted-then-compensated instances
+  after the old P4 barrier is actually invalidated; SHUTDOWN before P4 atomic teardown.
+  A P4 Rejected candidate remains caller-owned; P4 Accepted or RecoveredOff must be handled
+  according to actual owner disposition, never relabeled an unpublished abort.
+- Retirement `Retired|AlreadyRetired` authorizes releasing P6's borrowed providers/services.
+  `Rejected(WRONG_THREAD|ACTIVE_CALLBACK)` leaves P6 ownership unchanged: keep admission closed
+  and services alive, finish the outer callback and retire on the render thread. P11 is not
+  reactivated merely to undo its terminal close. No P6 CLOSE/reset alias or runtime close exists.
 
-Failed or absent fresh activation leaves customs at `NoCustoms`; it never delays Phase 6's required
-adoption/reset or unrelated rendering. These sequences constrain only the two published lifecycles,
-not the internal ordering of unrelated Phase 7 work.
+Failed/absent fresh activation leaves customs at NoCustoms; it does not postpone required P6
+adoption/reset or authorize the old pipeline to resume. Rejected P11 activation locally preserves
+its prior tuple only until the composition's mandatory reset/off/retirement boundary; that local
+atomicity does not override P7's failed-rebuild-to-off policy. A discarded old controller cannot
+be installed into the replacement runtime.
 
 ---
 
@@ -989,18 +1046,19 @@ not the internal ordering of unrelated Phase 7 work.
 | Exposed contract | Exact content | Consumer |
 |---|---|---|
 | `CustomExpressionCompiler` / `CustomExpressionCompileRequest` | exact `compile(request)` and `compilePhase3(...)`; deterministic partial-success build; ordered declarations, exact schemas, backend semantic ID; no pack I/O | Phase 7 composition/reload, Phase 2 harness |
-| `PlanBuildResult` | closed `Success(plan,diagnostics)`, `Partial(plan,diagnostics)`, `Failure(diagnostics)`; diagnostics never null/empty on failure | Phase 7, Phase 12 display, Phase 2 |
+| `PlanBuildResult` | closed `Success(plan,diagnostics)`, `Partial(plan,diagnostics)`, `Failure(diagnostics)`; diagnostics never null/empty on failure; build disposition is not pipeline acceptance | Phase 7, Phase 2; GUI receives §5.5 projection only |
 | `CustomExpressionPlan` | immutable fingerprint and metadata accessors, valid-uniform declaration order, schema/backend semantic IDs, load diagnostics; private executable graph; no runtime state | controller, Phase 2 |
-| `CustomExpressionControllerFactory` / `CustomExpressionController` | non-null metrics sink at construction, sole lifecycle; single Phase 6 bridge; closed atomic activation result; every reset deactivates the tuple, discards its random stream, and yields `NoCustoms` until fresh activation; §4.12 maps every reason to Phase 6 adoption/reset or framebuffer boundary, orders final-old/reset/adoption/activation/first-new use, and makes close terminal; rung-1 isolation | Phase 6 installation, Phase 7 lifecycle |
+| `CustomExpressionControllerFactory` / `CustomExpressionController` | non-null metrics sink, sole lifecycle, single P6 bridge; exact §4.12 atomic activation, reset and terminal CLOSE; accepted versus rejected publication determines P6 UNPUBLISHED_ABORT/REPLACEMENT/SHUTDOWN after final use; rejected retirement retains dependencies | Phase 6 installation, Phase 7 lifecycle |
 | `ExpressionContextSchema` | immutable `BIOME_*` name→id map and fixed fourteen view-boolean names | `mod.glue`, compiler |
 | `ExpressionContextProvider` / request/result/snapshot | one loader-neutral biome/weather/view snapshot per refresh; closed available/unavailable result | `mod.glue`, scripted tests |
 | backend selection | compile request carries `schmaloogium:typed-ast-interpreter-v1`; any other ID returns `Failure` with one pre-plan `UNSUPPORTED_BACKEND` error whose stable ID uses kind, pack fingerprint, and requested ID as specified in §4.11; backend graph/build/value/frame/memo types remain implementation-private | v0.4 interpreter; Phase 14 candidate implemented inside Phase 11 SPI |
 | `RandomSource` | `nextFloat()` in `[0,1)`; injectable, activation-tuple-lifetime stream discarded on every reset and freshly supplied by later activation | `mod.glue`, tests |
 | `ExpressionMetricsSink` / `ExpressionMetrics` | synchronous non-null immutable aggregates; no-op default; sink failure disables metrics only; no pack data or node callbacks | Phase 14 OQ-22 ledger |
-| `ExpressionDiagnostic` | stable ID, kind, severity/channel, declaration attribution and source span | Phase 7 diagnostics, Phase 12 display |
+| `ExpressionDiagnostic` / GUI projection | internal chat/log diagnostics remain P11-owned; §4.9.1 projector emits source-free immutable ExpressionDiagnosticGuiSnapshot with final P7 attempt outcome/identity, never raw diagnostic delivery to GUI | Phase 7 diagnostics/publication, Phase 12 direct display |
+| `ExpressionConformanceVectors` / `ExpressionConformanceCase` | exact §5.6 original vector/provider/expected-effect contract, using existing compiler/controller/P6 bridge; no harness dependency in engine | Phase 2 RUN-EXPRESSION-CONFORMANCE, Phase 14 conditional differential evaluation |
 
-All types above are pure Java. A consumer may retain plans and schemas because they are immutable;
-it may not retain snapshots or mutable controller internals.
+All types above are pure Java. Consumers may retain immutable plans, schemas and source-free
+GUI/conformance value snapshots; they may not retain a live callback view or mutable controller internals.
 
 The exact consumer-visible declarations and semantics in §§2.3, 4.1, and 4.9–4.12 are incorporated
 into this §5 publication and are binding, including record fields, closed variants/enums, callable
@@ -1028,12 +1086,15 @@ The list must be immutable, source ordered, lossless after Properties unescaping
 for Phase 11 diagnostics, and every record field and the ordered list participate in
 `PackConfiguration` fingerprinting. Phase 3 owns key/type/name validation; Phase 11 consumes this
 projection without reopening pack files or reinterpreting Properties syntax
-(`docs/phase3/v1/PHASE_3_DOC.md:1442` for the publication row and `:1459`–`:1480` for the binding
-algebra block).
+(Phase 3 §§2.2/5.1 custom-expression declaration algebra and §5.3 schema discipline).
+Before extracting declarations, composition accepts exactly current `CURRENT_SCHEMA_VERSION`
+(17 after IR-24), never upgrades older configurations or manufactures missing declarations.
+The compile adapter copies this same configuration's ordered list and fingerprint unchanged;
+it neither materializes a different option catalog nor uses stale pack declarations with new macros.
 
 ### 5.3 Phase 6 contract consumed
 
-Phase 11 consumes exactly the verified Phase 6 contracts:
+Phase 11 adopts the current, unverified Phase 6 §5 contracts:
 
 - one `CustomUniformBridge.refresh(ResolvedProgramDescriptor, BuiltInExpressionView,
   CustomUniformUploadSink)` (`docs/phase6/v1/PHASE_6_DOC.md:1200`–`:1205`);
@@ -1044,6 +1105,9 @@ Phase 11 consumes exactly the verified Phase 6 contracts:
   and Phase 6 owning GL uploads (`:1283`–`:1286`);
 - definition-order submission, finite values, type/location checks, duplicate rejection, and
   accepted-prefix semantics (`:1296`–`:1329`).
+- permanent `retire(UNPUBLISHED_ABORT|REPLACEMENT|SHUTDOWN)` and exact
+  `Retired|AlreadyRetired|Rejected(WRONG_THREAD|ACTIVE_CALLBACK)` lifetime/final-use rules
+  in P6 §4.14; P11's own CLOSE remains terminal but is never forwarded as a P6 enum value.
 
 Phase 11 does not retain `ResolvedProgramDescriptor`, inspect a linked layout, resolve a location,
 install a fourth participant, or invoke a Phase 6 provider.
@@ -1070,11 +1134,109 @@ Later composition must:
 5. forward every lifecycle event through §4.12's binding map and ordering; successful fresh
    activation must precede custom participation in new-state use, while failed/absent activation
    leaves `NoCustoms` and does not block Phase 6 lifecycle progress;
-6. route Phase 11 chat/log diagnostics through Phase 1's diagnostic channels.
+6. route existing chat/log diagnostics through the established Phase 1 diagnostic mechanism;
+   separately publish only §5.5.1's safe direct GUI projection at final attempt outcome.
 
 These are Phase 11's published requirements, not assumptions about Phase 7 internals.
 
 ---
+
+#### 5.5.1 Phase 12/7 direct diagnostic adoption
+
+§4.9.1's exact records and `ExpressionDiagnosticGuiProjector.project(...)` are binding.
+P7 owns `ExpressionDiagnosticGuiSource.current() -> Optional<ExpressionDiagnosticGuiSnapshot>`;
+P12 reads it on presentation/refresh beside `ReloadOutcomeSource`, not through a frame channel.
+Empty clears the slot. P12 displays only this source-free projection, using final attempt outcome,
+selected pack identity, configuration fingerprint and serial, with no expression parsing or P1
+store/channel conversion. R11-1 names this coordinated P7/P12 adoption; current documentation
+adoption remains unverified and grants no runtime-delivery claim.
+
+### 5.6 Phase 2 evaluator conformance receiving request
+
+R11-2 requests and Phase 2 adopts the named **RUN-EXPRESSION-CONFORMANCE** with
+`ORIGINAL_VECTORS` and `LOCAL_MATRIX` modes. P11 owns the vector catalog, P2 the orchestration
+and adapter; no `:engine` dependency on `:conformance`, test framework or pack acquisition results.
+
+```java
+interface ExpressionConformanceVectors {
+    List<ExpressionConformanceCase> cases();
+}
+record ExpressionConformanceCase(
+    String caseId, CustomExpressionCompileRequest request,
+    List<ExpressionConformanceStep> steps, ExpressionConformanceExpected expected) {}
+sealed interface ExpressionConformanceStep {
+    record Activate(List<ExpressionContextResult> contexts,
+                    List<Float> randomValues) implements ExpressionConformanceStep {}
+    record Refresh(BuiltInExpressionView builtIns,
+                   List<CustomSubmitResult> sinkResults) implements ExpressionConformanceStep {}
+    record Reset(ExpressionResetReason reason) implements ExpressionConformanceStep {}
+    record Close() implements ExpressionConformanceStep {}
+}
+enum ExpressionConformanceBuild { SUCCESS, PARTIAL, FAILURE }
+record ExpressionConformanceObservation(
+    List<CustomUploadCommand> commands, List<ExpressionDiagnosticKind> diagnosticKinds,
+    List<String> stableDiagnosticIds, CustomRefreshResult refreshResult,
+    int contextSamples, int randomSamples) {}
+record ExpressionConformanceExpected(
+    ExpressionConformanceBuild build, List<ExpressionDiagnosticKind> loadDiagnosticKinds,
+    List<ExpressionConformanceObservation> refreshes) {}
+enum ExpressionConformanceVerdict { PASS, FAIL, UNSUPPORTED }
+record ExpressionConformanceCaseResult(
+    String caseId, String backendSemanticId, String fixedSchemaVersion,
+    String contextSchemaVersion, ExpressionConformanceVerdict verdict,
+    List<String> mismatchPaths) {}
+```
+
+These are conformance-facing original fixtures, not new production evaluator entry points.
+Lists and scripted views are deeply immutable, non-null, stable ordered snapshots. P6 owns
+`CustomSubmitResult`, `CustomUploadCommand`, `CustomRefreshResult` names and closed algebras.
+The adapter calls existing `compile`, controller `activate/reset/close`, and bridge `refresh`;
+it uses a P6-conforming scripted view and recording sink and an authentic synthetic P4/P6
+activation context/descriptor, not a forged production credential or real GL. On each Activate,
+the scripted context provider consumes exactly one result per requested snapshot; the random
+provider consumes one value per nextFloat. Exhaustion is provider failure, not cycling/filling.
+Each Refresh supplies one sink result per actual submission; unused/exhausted entries fail the
+vector. All traces include explicitly scripted frameCounter/time values; no wall-clock waits.
+
+Expected command values compare raw binary32 bits and exact boolean/int values, ordered names,
+diagnostic kinds/stable identities and refresh counts. `refreshes` contains one observation per
+Refresh, including NoCustoms after a nonterminal reset. Close is terminal and last; no fixture
+refreshes a closed controller as if it were live. Runtime diagnostics are captured through the
+established recording diagnostic destination, not inferred from command omissions.
+Load failure cases have no Activate/Refresh; every case's expected data is authored independently
+from §3/§4 semantics, never generated by the evaluator under test.
+
+Mandatory stable case families are `EXPR-OPERATORS`, `EXPR-FUNCTIONS`, `EXPR-MATRIX`,
+`EXPR-ERROR-ISOLATION`, `EXPR-SMOOTH`, `EXPR-PROVIDER`, and `EXPR-LIFECYCLE`, with caseId
+suffixes identifying each §8.1–8.3 vector. Coverage includes every named function/operator,
+matrix row/column and exclusion, partial load/variable failure, sink absence/rejection and
+accepted-prefix counts, lazy random consumption, same-frame smooth/no-double-advance, independent
+rise/fall/reset traces and provider schema/availability failure. This evaluates the language,
+not merely Properties parsing or successful shader loading.
+
+The original catalog includes these fixed receiving vectors (all declarations are project-owned
+synthetic fixtures, with unique names/ordinals and the current schemas):
+
+| caseId | Input / scripted sequence | Independent observable expectation |
+|---|---|---|
+| EXPR-FUNCTIONS/remainder-vs-floor | float uniforms `a=-5%3`, `b=fmod(-5,3)`, `c=frac(-1.25)`, `d=round(-1.5)`; all sinks Accepted | ordered Float1 values `-2` (`c0000000`), `1` (`3f800000`), `0.75` (`3f400000`), `-1` (`bf800000`); no diagnostics; Completed(4,0,0) |
+| EXPR-OPERATORS/lazy-random | `a=if(false,random(),0.25)`, `b=random()`; random script `[0.75]`; Accepted sinks | a=`0.25` (`3e800000`), b=`0.75`; exactly one random sample, Completed(2,0,0), no diagnostic from the unchosen branch |
+| EXPR-MATRIX/row-column | `a=gbufferModelView.2.1`; scripted MAT4 has logical element `[row 2][column 1]=9` and every other element 0 | a=`9` (`41100000`), not transposed zero; separately absent matrix disables only a with INPUT_ABSENT and no submission |
+| EXPR-ERROR-ISOLATION/divide | ordered `a=1/temperature`, `b=2`; scripted temperature=0, Accepted sink for b | load Success; runtime DIVIDE_BY_ZERO disables a only; b alone submits `2` (`40000000`), Completed(1,0,0); subsequent refresh omits disabled a until reset |
+| EXPR-SMOOTH/same-frame-reset | `a=smooth(7,temperature,1,2)`; contexts target 0 at frame 1, target 1 at frame 1 again, target 1 at frame 2 with frameTime=1; reset WORLD_EPOCH, refresh, fresh activation target 0.25 | a=`0`, `0`, `1` in the first three refreshes; reset refresh NoCustoms/zero provider calls; fresh activation initializes at `0.25`, not old 1; context sampled once per active refresh |
+| EXPR-PROVIDER/unavailable | valid `a=temperature`; context script Unavailable with a stable project-owned diagnostic ID | Aborted with (0,0,0), no commands, one context sample; unrelated program remains usable |
+
+These named examples do not replace exhaustive §3/§8 coverage. Every completed vector fixes a
+single expected build/runtime disposition; a permissive either-result oracle is prohibited.
+
+PASS requires every expected observable to match; FAIL reports stable source-free mismatch
+paths; UNSUPPORTED reports the unsupported backend/schema capability and is never PASS.
+P2 aggregates results without dropping unsupported/error cases. LOCAL_MATRIX acquires packs by
+P2 policy, uses same-build P3 declarations/fingerprints and these providers, and records every
+declaration disposition without committing expression text/assets. A matrix case lacking an
+independently authored oracle is disposition-only, not a golden PASS. Reports retain hashes,
+semantic/schema IDs and diagnostic kinds, not pack expressions or source spans/paths. No run or
+real-pack result is claimed by this architecture amendment.
 
 ## 6. Failure modes & degradation
 
@@ -1246,9 +1408,16 @@ MethodHandle/bytecode backend over the v0.4 interpreter?
 **Procedure.** Run the §4.11 representative workload on at least two supported Java 25 platforms,
 record pack/custom definition counts, switches/frame, node evaluations, p50/p95/p99 total
 expression nanos/frame, worst refresh nanos, steady allocations, plan-build time, and profile top
-nodes. First profile the unmodified interpreter; then allow only local interpreter cleanup. If it
-still misses, prototype one compiled backend behind the existing SPI and run the exact semantic
-differential/golden suite.
+nodes. First profile the unmodified interpreter; then allow only local interpreter cleanup.
+Only when the supported-real-pack miss and AST-dispatch attribution trigger below both hold,
+prototype one compiled backend behind the existing SPI and run the exact semantic differential suite.
+
+**Owner/adoption.** Phase 14 accepts this method and the exact §4.11
+`ExpressionMetricsSink`/`ExpressionMetrics` aggregate as its OQ-22 L-11 measurement obligation
+(DESIGN v3 Phase 11 compiled-path methodology at 2310–2314). Phase 11 owns language semantics,
+vectors and the private backend SPI; Phase 14 owns measurement, evidence ledger and the conditional
+backend decision. Only the real-pack miss plus attribution trigger below authorizes a candidate;
+synthetic stress alone cannot demand a compiler. Recipient adoption is documented/unverified.
 
 **Success for interpreter.** All real packs and the synthetic stress workload meet p95 ≤ 0.25 ms,
 p99 ≤ 0.50 ms, and zero steady allocation without suppressing evaluation or diagnostics.
@@ -1287,6 +1456,10 @@ session does not run the spike or update RESEARCH.md.
 | D-P11-11 | make smooth writes transactional per definition; keep random consumption left-to-right and non-rewinding | prevents partial smooth state while giving the injected random source a precise, implementable order |
 | D-P11-12 | automatic smooth keys derive from source/AST identity, never execution order | stable across program switches and backend implementations |
 | D-P11-13 | Appendix F.6 fixes the named operator/function surface; §§4.2 and 4.6 fix otherwise undocumented exact typing, domains, coercion, evaluation order, and finite-result behavior | distinguishes authoritative surface provenance from Phase 11's testable semantic choices |
+| D-P11-14 | Adopt current P3 schema17 same-configuration declarations and P6 final-use retirement; preserve controller CLOSE but never forward it to P6 | IR-03/10; rejected publication/retirement cannot be relabeled accepted disposal |
+| D-P11-15 | Publish the direct source-free immutable GUI projection with final P7 attempt outcome and selected-pack lifetime | IR-17; existing diagnostic channels remain unchanged and raw source never enters GUI |
+| D-P11-16 | P11 original vectors/providers are the exact RUN-EXPRESSION-CONFORMANCE receiving contract, with P2-owned adapter and source-free reports | IR-20; function/smooth evaluation and effects, not Properties parsing, determine conformance |
+| D-P11-17 | P14 accepts OQ-22 method/metrics and measured decision while P11 retains semantics/SPI | IR-15; interpreter remains the baseline absent a demonstrated real-pack miss |
 
 ### 11.2 Contradictions, gaps, and rulings
 
@@ -1300,18 +1473,21 @@ session does not run the spike or update RESEARCH.md.
 3. **stareval historical credit versus verifiable license.** Neither the missing upstream nor the
    current repository evidence establishes a reusable component-specific grant. The binding rule
    says clean-room when unverifiable; D-P11-1 applies it.
-4. **Verification state.** The v3 target, successful preflight, and MOVES adoption preceded this
-   review; the completed rounds are recorded once in the §0.4-onward round addenda, whose newest
-   entry restates the outstanding requirement — a fresh verification round is still required for
-   §0.9's §5 citation change.
+4. **Verification state.** Historical adoption/preflight/reviews remain provenance only.
+   §0.13 changes active §5; fresh P11 and current producer/receiver reviews are required.
+5. **Measurement handoff.** P14's former out-of-scope rejection is reconciled by §10.1 and
+   its L-11 adoption. No measurement or compiled-backend need has been established.
 
 ### 11.3 Open handoffs
 
 - **To `mod.glue`/later composition:** implement the exact biome/view snapshot and biome catalog;
   create one runtime random source; forward all reset reasons.
-- **To Phase 2:** add the scripted-provider, matrix-pack, error, and function/smooth golden runs.
-- **To Phase 12:** display immutable Phase 11 load diagnostics; do not parse expressions in GUI.
-- **To Phase 14:** run the §10 OQ-22 ledger method before considering a compiled backend.
+- **To Phase 2:** R11-2 / §5.6 RUN-EXPRESSION-CONFORMANCE, original vectors and local-matrix
+  dispositions through the exact adapter. Owner/receiver adoption is unverified; no run is claimed.
+- **To Phase 12/P7:** R11-1 / §4.9.1 and §5.5.1 direct typed source-free GUI input,
+  final-outcome publication and clear/rejection lifetime; adopted documentation requires review.
+- **To Phase 14:** accepted §10.1 OQ-22 method/metrics and conditional decision; semantics
+  remain P11-owned, interpreter remains baseline, measurement not yet run.
 
 ### 11.4 Requested upstream and maintainer changes
 

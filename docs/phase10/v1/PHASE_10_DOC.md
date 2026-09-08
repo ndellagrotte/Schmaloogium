@@ -15,6 +15,10 @@ revision's headings, not shifted from another revision.
 **Status:** architecture authored; unverified. No implementation, build, test, spike,
 verification loop, or adversarial review was performed in this build session.
 
+**Integration fix-up (2026-09-07), unverified:** IR-03/04/05/09/24 amend active
+lighting and owner/consumer contracts in §§4.8.1/5/11 (D-P10-11/12). No implementation,
+fresh PASS, lighting parity or OQ-5/OQ-14 result is claimed.
+
 ### 0.1 Dependency gate and maintainer-authorized exception
 
 The maintainer explicitly authorized consumption of the unverified Phase 9 document,
@@ -125,6 +129,8 @@ inventing a harness. Initial build stays in `docs/phase10/v1/`.
   rendering, worker cancellation and handoff, stale mesh rejection and rebuild scheduling.
 - Format transitions on pack enable/disable/reload; coordination with world-renderer,
   baked-quad and lighting-cache invalidation; OQ-14's fallback.
+- Shaders-only `oldLighting` fixed directional shading and `separateAo` color-channel
+  policy, effective user/pack/default resolution and matched bake/mesh invalidation.
 - The Phase 1 bail registry's chunk-renderer checks, message text and OQ-5 spike.
 - Exact owner-phase-10 hook ledger for Appendix E rows 3–9, plus the minimal helper
   targets needed to make those rows complete.
@@ -145,9 +151,10 @@ inventing a harness. Initial build stays in `docs/phase10/v1/`.
 | Async GL, profiling optimizations and modern backend integration | **Owned by Phase 14 / G8.** Workers here never issue GL; no replacement chunk renderer |
 | Modern attribute semantics and capability advertisement | **G8/S4 and Phase 3/4 cutover.** Slots are designed now; unsupported features are not advertised |
 
-The stock chunk renderer, its scheduling policy, culling, lighting and topology remain
-vanilla/Forge-owned. There is no terrain re-encoding pipeline of the Pintonium kind,
-no triangle conversion, no global array cache, and no core-profile rewrite.
+The stock chunk renderer, scheduling, culling and topology remain vanilla/Forge-owned.
+Vanilla/Forge still compute lighting/AO samples; Phase 10 owns only the shader-visible
+fixed-shade and AO-channel policy in §4.8.1. This is no terrain performance rewrite,
+triangle conversion, global array cache or core-profile rewrite.
 
 ## 2. Architecture overview
 
@@ -697,6 +704,57 @@ recreates path-specific products; it does not reinterpret a display list as a VB
 Video/lighting changes that alter format or baking must enter this transition, not
 just call `BufferBuilder.begin` with a newly mutated global object.
 
+#### 4.8.1 Shader lighting/AO policy and bake identity
+
+Phase 3's current master flag map assigns `oldLighting` and `separateAo` here.
+RESEARCH Appendix F.1 requires tri-state flags, video-setting priority and AO in
+`color.a`; shipped `doc/shaders.properties:27–29` calls old lighting a fixed
+block-lighting multiplier with higher-priority user control. These sources establish
+behavior/precedence, not complete numeric defaults. D-P10-11 therefore explicitly
+chooses the missing-value fallback and fixed-face policy below as local compatibility
+decisions, subject to conformance review, never verified external observations.
+
+```java
+record ShaderLightingPolicy(boolean oldLighting, boolean separateAo) {}
+```
+
+Phase 7 resolves this immutable pair before vertex preparation: user wire key
+`oldLighting` is exactly `default|true|false` (absent=`default`) through Phase 3's
+codec; explicit user TRUE/FALSE wins, else explicit pack `EngineFlags.oldLighting`
+wins, else use **true**. `EngineFlags.separateAo` has no invented user key: explicit
+pack TRUE/FALSE wins, else use **false**. P3's pre-load `MC_OLD_LIGHTING` macro reflects
+only explicit user true and is not a post-parse effective-policy query. Default/false
+omit the macro; P10 never mutates same-build macro state after parsing.
+
+At each supported block/model/fluid vertex, retain vanilla/Forge's sampled lightmap
+and tint/base color, identify AO separately from the fixed directional shade, then:
+
+- `oldLighting=true`: apply the fixed directional shade once to RGB; false: omit that
+  multiplier (factor 1), without disabling lightmap, tint or AO computation.
+- The local fixed face factors are DOWN=0.5, UP=1.0, NORTH/SOUTH=0.8,
+  WEST/EAST=0.6. Respect an explicitly unshaded model/quad (factor 1); do not infer a
+  face from a transformed tangent or rescale already shaded RGB a second time.
+- `separateAo=false`: multiply AO into RGB once and retain original alpha.
+  `separateAo=true`: do not multiply AO into RGB; write the sampled AO factor to
+  color alpha. Where AO is not applied, the factor is 1. This shader-mode channel
+  contract intentionally replaces color alpha; the shaders-off path remains untouched.
+- Preserve vanilla/Forge sample/interpolation and color quantization order. If an
+  adapter cannot identify the pre-AO/pre-directional components of a custom model,
+  report incompatibility and fail shader preparation safely; do not divide arbitrary
+  packed color, guess missing AO or silently leave one producer on old policy.
+
+The pair is frozen with the prepared vertex epoch, captured by every bake/build task
+and incorporated in bake/mesh cache identity. The effective pair changing (or shaders
+on/off) invokes §4.8's complete worker/queued-upload drain, invalidates retained baked
+models and lighting/format caches, rebuilds world-renderer products, and prevents old
+products drawing even if layout/ID bytes are equal. P12 submits REPUBLISH for oldLighting,
+with `worldRendererReload` iff effective bake inputs change; P7 ORs in any further required
+invalidation found after load, including a changed separateAo policy. `Completed` means invalidation and
+rebuild scheduling completed, not all chunks rebuilt. No worker observes a mutable
+global setting. Failed preparation converges off and restores vanilla policy/formats.
+OQ-14 still gates the concrete safe Forge cache/bake adapter; it is not permission to
+replace the renderer or claim lighting parity without exercising these cases.
+
 **Known OQ-14 risk.** Cleanroom BakedQuad retains a final `VertexFormat` reference;
 LightUtil retains a ConcurrentMap keyed by format pairs **and** static
 `DEFAULT_FROM`, `DEFAULT_TO`, `DEFAULT_MAPPING`. Clearing the map alone is not a
@@ -876,6 +934,7 @@ requests name the owner that must adopt them. No dependency private type is cons
 | `ChunkRendererCompatCheck` | Existing Phase 1 `CompatCheck`, fixed check ID `schmaloogium.chunk_renderer`, table §4.9, session Bail | Phase 1 registry, Phase 7 admission, Phase 12 diagnostics |
 | Owner-phase-10 hook subreport | Exact shared `HookApplicationSubreport` shape, fingerprint and rows §4.11 | Phase 7 report composer / Phase 2 manifests |
 | Growth producer requirements | Position/UV/block-context prerequisites, immutable name/layout cutover; no modern runtime producer in v0.3 | G8/S4, Phases 3/4 |
+| `ShaderLightingPolicy` | immutable effective `oldLighting`/`separateAo`; exact shader-visible RGB/AO-alpha semantics, local defaults and precedence in §4.8.1; captured in transition/bake identity and never sampled per vertex from mutable settings | Phase 7 preparation, Phase 12 reload policy, mod bake/build adapters |
 
 Proposed lifecycle operations (render thread only):
 
@@ -883,7 +942,8 @@ Proposed lifecycle operations (render thread only):
 interface VertexPipelineLifecycle {
     TransitionStart beginTransition(VertexTransitionRequest request);
     QuiesceResult pollQuiescence(VertexTransitionToken token);
-    PrepareResult prepare(VertexTransitionToken token, VertexLayout layout);
+    PrepareResult prepare(VertexTransitionToken token, VertexLayout layout,
+                          ShaderLightingPolicy lighting);
     ActivateResult activate(VertexTransitionToken token, VertexEpoch epoch,
                             AliasLookup aliases);
     RecoveryResult restoreVanilla(VertexTransitionToken token);
@@ -940,23 +1000,25 @@ and restoration boundaries.
 | Phase 4 §5.1 fixed attribute row | 10/11/12 exactly | Direct Phase 10 consumption; does **not** grant active-program query or registry internals |
 | Phase 7 §5.1 / §5.5 | `IdDependentGeometryInvalidator`, `IdPublicationChange`, closed invalidation results | Concrete implementation supplied here; all generations invalidate, even identical bytes |
 | Phase 7 §5.1 | `FrameToken`, frame abort taxonomy, `ShaderReloadController` queuing and report/subreport shapes | Glue uses existing orchestration and diagnostic vocabulary; no independent frame driver |
-| Phase 7 §5.3 | Quiesced coordinated publication, ID publication/invalidation before atomic Active, failure to off | Governs integration ordering; Phase 9's older retain-old-pipeline prose is not imported |
+| Phase 7 §5.3 | Quiesced coordinated publication, IDs after textures/invalidation before atomic Active, every failed rebuild to off | Adopted alongside amended Phase 9 §5.3; all remain unverified |
 | Phase 7 §4.10/§5.5 | Deferred App E rows 3–9 and hook conventions | Claimed by §4.11; extension APIs still require R10-2 |
 | Phase 9 §5.1 / §4.10 | `AliasLookup.generation()` and `mcEntity(int)`, `BlockStampResult` | One immutable lookup per task, exact two words, no alias re-resolution |
 | Phase 1 §5.3 / §4.10, narrow extra input | `CompatCheck`, `CompatContext`, `CompatVerdict`, `BailRegistry` | Existing mechanism only; no fabricated `Compatible` enum from Phase 7 prose |
 | Phase 1 §5.1/§5.2 | D-6 package seam, `GLCapabilityProfile.maxVertexAttribs`, diagnostics/error and recorder conventions | Proposed vertex verbs are explicitly absent until R10-1 adoption |
+| Phase 3 §§4.8/5 engine flags and codec, through Phase 7 | schema17 `oldLighting` decoded user tri-state and pack oldLighting/separateAo tri-states | Phase 7 resolves §4.8.1 pair, preserving current same-build macro/materialization identity; no pack reopening or private parser |
 
-Phase 3 is not an added direct dependency: names flow through Phase 4's effective
-state to the requested Phase 7 adapter. Phase 9's registry ordinal map is glue-owned;
-its matched publication must be installed with the lookup, not reconstructed privately.
+Phase 3 attribute names still flow through Phase 4's effective state; the narrow
+lighting/codec authority is consumed through Phase 7's immutable resolved input,
+not a new direct front-end dependency. Phase 9's glue-owned ordinal map is installed
+with the exact lookup and retained until the final worker borrow ends.
 
-### 5.3 Required owner changes — ungranted
+### 5.3 Required owner changes and adoption status
 
 | Request | Owner | Required binding change | Gate |
 |---|---|---|---|
 | R10-1 | Phase 1 | Grant `engine.vertex`, `mod.glue.vertex`, `mod.mixin.compat.vertex`; add typed vertex-input facade scope/recording contract below; clarify early class-only compatibility evaluation and MOD/preinit inert-attachment placement | All native pointer work and final package placement; no direct-GL workaround |
-| R10-2 | Phase 7 | Install lifecycle and declaration sinks with exact §5.1 sequencing; quiesce workers before retiring ID lookup/ordinal map; invoke on format/resource/world/video transitions and compensate off; connect owner-10 subreport and actual BailRegistry verdict | In-game Phase 10 activation, reload and effective per-program enablement |
-| R10-3 | Phase 9 | Reconcile §5 with current Phase 7 publish-after-textures/failure-to-off sequence; make matched ordinal bridge lifetime and close-after-worker-drain obligation explicit; reconcile R9-2 status with the newer Phase 7 surface | Verified dependency consumption after the maintainer's authoring exception |
+| R10-2 | Phase 7 | Install lifecycle and declaration sinks with exact §5.1 sequencing, including immutable ShaderLightingPolicy at prepare; quiesce workers before retiring matched ID lookup/map; format/resource/world/video/effective-lighting transitions compensate off; owner-10 subreport and actual BailRegistry verdict | Phase 7 adoption/fresh verification gates in-game vertex integration |
+| R10-3 | Phase 9 | Owner-designed/receiver-adopted unverified in P9 §§4.1/5.3/5.4: publish after textures, every rebuild failure to off, matched lookup/map close after workers drain | Fresh Phase 9/10 verification remains; no longer a missing owner design |
 | R10-4 | Phases 3/4, via future G8/S4 | Extend declared-name and pre-bind catalogs in the same change that adds a modern producer/layout; no fixed-location Phase 10 private enum extension | post-v0.5 attribute activation only |
 
 Requested Phase-1 facade addition, deliberately limited to vertex input rather than a
@@ -1066,6 +1128,7 @@ or state-transition bug. Loader/driver questions need actual runtime evidence.
 | T10-STATE | Translucent reorder moves identities/tangents with whole quads; save/restore does not stamp the neutral resort stack over existing IDs; stale state is discarded |
 | T10-EPOCH | Queue under epoch A, activate B, run A's queued upload: no upload/draw occurs, rebuild is scheduled. Include identical alias fingerprints with unequal generations and world change with repeated coordinates |
 | T10-TRANSITION | Worker holds old alias borrow; prepare cannot swap until drain; failure after partial publication converges off, releases sources and leaves no stale eligible mesh |
+| T10-LIGHTING | Explicit user false overrides pack true; user DEFAULT delegates to pack; both DEFAULT use local true oldLighting/false separateAo. Render original project-owned diagnostic geometry with known tint/AO/lightmap: separateAo changes only the declared RGB/alpha split, fixed shade applies once, lightmap stays intact. Change policy while a worker/upload is pending; old baked/mesh products cannot draw under the new pair |
 | T10-DECLARATIONS | Effective fallback declares only midpoint while requested slot declares identity: only location 11 enabled. Shadow and nested restoration choose their actual provider; shader-to-fixed transition clears old arrays |
 | T10-GL-STATE | Recorder starts with nondefault source bindings and unrelated enabled attributes. Nested client/VBO setup plus injected error restores only the touched state, leaves unrelated state intact, rejects stale/forged source before native commands |
 | T10-COMPAT | Actual `celeritas` ID alone, exact renderer class alone, throwing probe, late positive before format swap, and clean vanilla. A package string is not a class probe; positive results latch off |
@@ -1088,6 +1151,9 @@ assert source text, private field names, or mock echoes as the contract oracle.
   that memory; restoration must prevent generic state leaking to later entity/UI draws.
 - Move the camera through translucent terrain; trigger chunk resorts, pending uploads,
   world unload, dimension change, pack on/off, resource reload and VBO-setting change.
+- Exercise all four effective oldLighting/separateAo pairs with AO on/off, shaded/unshaded
+  models, fluids, all face directions, and a custom Forge baked model. Compare shader-visible
+  color/lightmap and off-mode vanilla restoration, not only successful mesh scheduling.
 - Inject a shader-side append/setup failure and confirm shaders-off remains reachable
   with clean vanilla geometry and no pool/stack leak. Do not claim recovery from every
   unrelated mod exception.
@@ -1258,6 +1324,8 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
 | D-P10-8 | Detect-and-bail through Phase 1, adding actual `celeritas` to assigned candidates. OQ-5 validates mechanisms; no performance-mod integration is smuggled into shaders-only scope |
 | D-P10-9 | Missing facade, activation sink and lifecycle grants are explicit owner requests. Neither a public state record nor user-authorized provisional design consumption grants private dependency access |
 | D-P10-10 | Preserve the current build-authoring exception as provenance, not a verified label; reconcile fresh Phase 4/7/9 interfaces before implementation |
+| D-P10-11 | Accept shaders-only oldLighting/separateAo behavior from P3's master map and RESEARCH F.1. Local defaults true/false and fixed face factors are explicit compatibility choices; user default delegates to pack, AO moves to alpha, and effective policy participates in every bake epoch. No renderer performance work or verified-parity claim (IR-05/24). |
+| D-P10-12 | Adopt P9's amended off-on-failure and matched lookup/ordinal worker lifetime; preserve current P3 schema17 and catalog-bound same-build inputs through P7. P9 R10-3 is adopted/unverified, not still missing (IR-03/04/09). |
 
 ### 11.2 Input contradictions and rulings
 
@@ -1274,15 +1342,13 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
    metadata: bytes 48/50/52 carry all three specified components and 54 is padding.
    This follows both the value formula and `shaders.txt:119`; request upstream wording
    clarification without changing RESEARCH here.
-4. **Phase 9 publication prose predates Phase 7's rebuild.** Phase 9 §5.3 says failure
-   before publication retains the old pipeline and publishes IDs after 4/5/6; Phase 7
-   now publishes after the texture stage and explicitly converges failures off.
-   Phase 10 follows the current transaction owner, flags R10-3, and does not claim the
-   documents already agree or that R9-2's historical request is fully closed.
-5. **Phase 7 compatibility prose uses outcomes not declared by Phase 1.** The actual
-   mechanism is `Ok/Degrade/Bail` plus `CompatEvaluation`, not a new Phase 10
-   `Compatible/ReplaceableBackendDetected/UnsafeRendererDetected` enum. An adapter
-   clarification is requested; no ungranted backend integration follows from Degrade.
+4. **Phase 9's older publication contradiction.** P9 §§4.1/5.3 now adopts Phase 7's
+   publish-after-textures/failure-to-off and matched worker-drain lifetime. R10-3 is
+   receiver-adopted/unverified; fresh reviews, not another ownership request, remain.
+5. **Phase 7's older compatibility outcome mismatch is reconciled.** P7 §4.12 now
+   consumes Phase 1's `CompatVerdict.Ok|Degrade|Bail` and `CompatEvaluation` at the
+   owner-approved evaluation points. Receiver adoption is unverified; no separate
+   replacement-backend enum or ungranted backend integration follows from `Degrade`.
 6. **Global module layout lacks the vertex policy home and facade operations.**
    Request the precise homes/service under R10-1; do not conceal GL or Minecraft
    types in the pure math layer to avoid the request.
@@ -1297,9 +1363,10 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
 
 - OQ-5/OQ-14 remain open; their procedures and fallbacks are complete specifications,
   not a promise that classloading, cache switches or display-list capture already work.
-- R10-1 through R10-3 require owner adoption/fresh verification before implementation.
-  R10-4 gates only modern growth. No source scaffold is justified while those grants
-  are unresolved.
+- R10-1/R10-2 require owner adoption and fresh review before implementation; R10-3
+  is adopted but unverified. R10-4 gates only modern growth.
+- IR-05/24 policy/default choices in §4.8.1 require conformance review and the OQ-14
+  safe bake/cache adapter. Neither numeric parity nor successful invalidation is claimed.
 - Exact transformed injection cardinalities, exception-safe wrapper support on the
   pinned CleanMix toolchain, and effective upload callback anchors require runtime
   application evidence. Missing evidence disables activation; it is not guessed here.
@@ -1311,10 +1378,13 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
 
 ### 11.4 Hand-offs
 
-- **Phase 7:** lifecycle/activation adapters and existing invalidator implementation;
-  preserve its fixed frame-begin/camera timing and three-participant barrier.
-- **Phase 9:** matched lookup/ordinal lifetime, exact payload semantics and publication
-  reconciliation; no lookup result may outlive its safe task borrow.
+- **Phase 7:** lifecycle/activation adapters including `prepare(token,layout,lighting)`;
+  resolve user/pack/default pair before bake preparation, preserve frame timing and
+  three-participant barrier, and invalidate after any effective pair change.
+- **Phase 9:** adopted matched lookup/ordinal lifetime and exact payload semantics;
+  no lookup result may outlive its safe task borrow.
+- **Phase 12:** canonical oldLighting tri-state wire setting and REPUBLISH, with renderer
+  reload iff effective bake inputs change; pack separateAo changes use the same invalidation.
 - **Phase 13:** unquantized derivation then classic quantized tangent frame is ready
   for normal/specular mapping; no atlas sampling or emissive-light policy was added.
 - **Phase 2:** both draw paths, moving-camera/translucent scenes, current generation

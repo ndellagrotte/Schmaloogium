@@ -4,13 +4,13 @@
 
 **Phase:** 8 — Shadow pass
 **Milestone:** v0.2
-**Date:** 2026-08-02
+**Date:** 2026-08-02 · **Last revised:** 2026-09-07 (§0.9).
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 8
 assignment at lines 1957–2034. This phase deliberately adopts RC3 for its initial build; it does not
 change the governance of any earlier phase.
 **Declared dependencies:** Phases 4, 5, 6, and 7.
 
-All dependency gates were checked before their documents were consumed:
+Historical initial-build gate record (not verification of the current §0.9 amendment):
 
 - Phase 4 closes with literal `PASS`, zero findings, in
   `docs/phase4/reviews/PHASE_4_REVIEW_18.md:55`–`:70`.
@@ -174,6 +174,18 @@ returning literal PASS is required before verified downstream consumption.** Rea
 `NotInstalled`/unavailable until those gates close. No code, reviews, builds, tests, verification
 or directory roll are part of this amendment.
 
+### 0.9 Integration-review receiver adoption (2026-09-07)
+
+Architecture-only IR-03/04/10/11/21/22/24 adoption in active §§4/5/11. RC3 remains governing.
+Read inputs: integration findings; RESEARCH §§0–1/4.3–4.5/App A.3/F.1 and RC3 Phase8 assignment;
+P1 exact package grant/non-verbs/bootstrap handoff; P2 v2 §§4.5/5; P3 §5 schema/typed
+configuration; P6 current resolver/retirement; P7 complete active construction, invocation,
+reload and ID admission interfaces; coordinated P9/P13 owner handoffs.
+Earlier grants and PASS records remain historical. **§5 changed; unverified**; fresh whole-
+document owner/receiver verification still gates real shadow. No implementation, reference-source
+inspection, tests, validation commands or new PASS. R8-3 and P2 R8-5 are granted/adopted,
+not missing interfaces; R7-10–13 producer and receiver architecture is synchronized.
+
 ---
 
 ## 1. Scope & boundaries
@@ -237,9 +249,9 @@ The current dependency surfaces grant R8-1/R8-2/R8-4 and Phase 7's part of R8-5 
 subject to their fresh-verification gates. Phase 8 consumes R7-12's replacement binding contract
 in §0.7, not the obsolete four-row proposal. R7-13 is now adopted by §0.8: planning is
 registry-independent and final construction explicitly receives the new registry fingerprint.
-R8-3 package placement, Phase 2's part of R8-5, and the owner synchronization/verification and
-upstream gates in §5.5 remain implementation blockers. Neither an old registry nor prior-frame
-bindings substitute for a gated real shadow slot.
+R8-3 package placement and both R8-5 halves are granted/adopted architecture. Fresh owner/
+receiver verification and separate upstream gates in §5.5 remain blockers. Neither an old
+registry nor prior-frame bindings substitute for a gated real shadow slot.
 
 ---
 
@@ -270,9 +282,9 @@ The intended package shape is:
     RenderBlobShadowMixin      blob-only suppression redirect
 ```
 
-The new package slots require the Phase 1 grant R8-3; they are not silently assumed. If the grant
-chooses a different public package spelling, these responsibilities move intact without changing
-the interfaces below.
+Phase 1 §11.4 grants the exact engine.shadow/mod.glue.shadow/mod.mixin.shadow slots above.
+R8-3 is receiver-adopted here, pending current owner/receiver verification, not another package
+request; structural seam and Mixin-config rules remain unchanged.
 
 ### 2.2 Public shape
 
@@ -606,6 +618,12 @@ only that inverse; it does not suppress the original matrix or the pass.
 `ShadowPlanInput(ShadowPolicy policy, ShadowHookHealth hookHealth)`. It never accepts a registry
 fingerprint/generation, source strings, property maps, Minecraft objects, GL handles, or mutable
 collections. The resulting `ShadowPlan` likewise contains no hidden registry identity.
+P7 supplies only the resolved projection from current P3 schema17, validating the containing
+and nested ID schema before construction; no schema16 upgrade/default reconstruction. Shadow
+extent consumes P5's actual allocation from canonical `shadowResMul`, not an alias
+`shadowQuality` key or a second multiplier in camera math. The user/pack old-light tri-state,
+independent companion pair and reserved zero-only antialiasing setting follow current P3/P7
+load policy; none is a new P8 parser, AA path or texture binder.
 
 Validation is closed and deterministic:
 
@@ -1058,9 +1076,19 @@ The adapter therefore:
 5. after the split/translucent terrain, sets pass 1 and invokes the same method once; and
 6. restores the original pass and all four counters exactly.
 
-Pass 0 is pre-split; pass 1 is post-split. The Phase 7 entity/block-entity program hooks are guarded
-off, but Forge's per-entity/per-tile-entity pass predicates and batching remain active. The
-`RenderManager` blob call is suppressed while fire rendering remains intact.
+Pass 0 is pre-split; pass 1 is post-split. Main entity/block-entity program hooks are bypassed,
+but IDs are not: P7 issues opaque `IdScopeAdmission` from the currently Valid
+`ShadowExecutionView`, binding frame/pipeline, current ID generation, execution/slot epoch
+and stack depth. P9 `enterEntity(admission,entityOrdinal)` /
+`enterBlockEntity(admission,stateOrdinal)` return Entered(IdScopeToken) or
+Rejected(STALE_ADMISSION|STALE_GENERATION|WRONG_THREAD|STACK_LIMIT); `leave(token)` validates
+LIFO and restores the preceding ID. Main accepted gbuffers scopes are the other admission
+kind, not a precondition of this shadow path. No main snapshot, selection or activation occurs.
+Every nested finally restores P7 color then P9 ID before shadow program release; stale,
+unbalanced or thrown traversal drains IDs/color to zero and preserves §6 containment. Before
+P9 installation IDs remain neutral; the P7 v0.1 hurt/flash producer is independently active.
+Forge per-entity/TE predicates, batching, prior-pass/counter restoration and depth split remain
+unchanged. `RenderManager` blob suppression still retains fire rendering.
 
 #### 4.8.3 Depth split
 
@@ -1138,6 +1166,15 @@ callback count/cache/error isolation is unchanged. Non-final `FixedFunctionEmpty
 no shader candidates/object binds, and no sampler upload; it still follows the same ownership
 protocol and renders depth through vanilla state after `FixedFunction`.
 
+Actual base-texture binding/restoration during shadow drawing uses P7 §5.1's authenticated
+`AtlasBindingEvidence`→`AtlasBindingSink.currentBinding` adapter: opaque evidence from the
+mod binding observer contains optional P13 AtlasId, PipelineVersion, resourceReloadEpoch and
+bindSerial; only current issuer/thread/composition/epoch/latest serial may query `atlasSize`.
+Known becomes P6 `updateAtlasSize(Int2(width,height))`; Unknown/non-atlas/reset is `(0,0)`.
+It updates the current active shadow program immediately or caches before activation. P5
+remains the only physical shader texture binder; shadow family identity never implies an atlas.
+P8 restores ID/color before release, then real texture restoration emits new bind evidence.
+
 ### 4.11 Blob-shadow policy
 
 Shader shadow availability, not “currently inside the offscreen pass,” controls suppression. If a
@@ -1153,7 +1190,7 @@ active. This avoids double shadows without turning an optional Mixin failure int
 ### 4.12 Cleanup and reload
 
 The Phase 7 pipeline publication owns the returned `ShadowPassPublication` and accesses its slot.
-Reload/shutdown ordering is:
+Full replacement/shutdown ordering is:
 
 1. stop admitting new world frames;
 2. finish or abort the current Phase 7 frame; unwind §4.2's exactly-one binding/lease closure even
@@ -1165,6 +1202,12 @@ Reload/shutdown ordering is:
    rejection, and retire Phase 6 only after its final callback under its adopted-but-unverified
    R7-11 contract; never invent `UniformRuntime.close()` or revive retired textures as fallback;
 5. restore blob-shadow behavior and remove Phase-8 hook-state publication.
+
+Resource-only P12 NONE+resourceReacquire follows P7 §5.1's separate retained-configuration
+branch: quiesce/drain before vanilla replacement, refresh texture/ID resources and current atlas
+evidence, and recreate P8 publication only if borrowed services change. It does not retire a
+retained P6 runtime or reload P3. Any failed refresh converges to coherent off, never old atlas
+reuse. Nonterminal resets remain distinct from UNPUBLISHED_ABORT/REPLACEMENT/SHUTDOWN retirement.
 
 Closing during `INVOKING` is rejected without mutation; Phase 7 first aborts the frame. A stale
 slot cannot neutralize or mutate a newer Phase 5 estate. Dimension change builds a new plan from
@@ -1206,6 +1249,7 @@ borrowed views only for the duration of `invoke`; no vanilla collection is retai
 | `ShadowCameraMath`, `ShadowCamera`, `ShadowFrustum`, `ShadowTraversalPlan` | deterministic column-major camera/celestial math, finite plane set, total AABB predicate, full/prism traversal strategies | Phase 8 runtime; Phase 2 fixtures |
 | `ShadowHookHealth`, Phase-8 hook rows | immutable expected/actual counts and enabled/disabled outcome for §4.13 | diagnostics; Phase 2 manifest integration |
 | implementation of Phase 7 `ShadowInvocationSlot` | §4.2's full R7-12 transaction: supplied same selection/context and expected-publication lease, five-argument physical binding, four result branches, Bound-only transfer and exactly-one finally closure; no retained invocation values; returns before main clear; real slot remains gated under §5.5 | Phase 7 frame driver |
+| Shadow-aware ID/color/atlas integration | §4.8.2 alternate authenticated P7 IdScopeAdmission for P9 entity/TE tokens, independent v0.1 P7 color stack, and §4.10 actual-bind P7→P13→P6 atlas update; no main gbuffers snapshot/program and no second texture binder | P7/P9/P13 glue |
 
 Phase 8 exposes no GL handle, framebuffer name, program handle, parsed source, mutable vanilla
 collection, or physical shadowcolor side.
@@ -1336,6 +1380,7 @@ owner-verification gates at `:1688-1707` remain; no Phase 8 runtime-close author
 | `TexturePublication texturePublication`, `TextureLeaseSource textureLeases` | non-owning members of the same active tuple; acquire full expected-publication lease with that same selection |
 | result semantics and H-FRAME-05 | NotInstalled/Completed advance to main clear; pre-mutation Rejected aborts one frame; Failed schedules off; Phase 8 returns and Phase 7 closes execution before main bind/clear |
 | §5.3 construction protocol and §5.4 R7-13 | adopted §4.1 sequence: policy/hook plan -> new provider/runtime -> compile/compose -> create with final new registry; publication validates/fingerprints both plan and registry; no planning-time registry dependency |
+| `IdScopeAdmission` and current-bind adapter | exact P7 §5.1 opaque admission/authentication and AtlasBindingEvidence/AtlasBindingSink; P8 admits owned traversal IDs only while current execution is Valid, restores before release, never mints credentials itself |
 
 The exact field order incorporated from `docs/phase7/v1/PHASE_7_DOC.md:1576-1587` is:
 
@@ -1378,22 +1423,19 @@ absence and still uses this protocol. Phase 13's required fresh verification rem
 |---|---|---|---|
 | R8-1 | Phase 7 — architecturally granted, owner reverification required | Consume exact ShadowFrameView, authenticated ShadowExecutionView and driver-owned bridge from §5.4; preserve existing main-hook bypass and traversal token | §0.25 granted this; R7-12 appends credentials without changing bridge ownership |
 | R8-2 | Phase 5 — architecturally granted, current shared contract adopted here subject to owner reverification | Consume §5.3's five-argument physical binding, sixteen-row closeable result and Bound-only transfer, plus typed mipmaps and coherent runtime neutralization | current §5 supersedes the historical four-row borrowed proposal; no additional shadow-only binder requested |
-| R8-3 | Phase 1 | Grant `com.schmaloogium.engine.shadow`, `mod.glue.shadow`, and `mod.mixin.shadow` (or exact owner-selected equivalents) in the closed package table | module placement is binding; Phase 8 does not squat in another phase's package |
-| R8-4 | Phase 7 composition — architecturally granted, owner synchronization/reverification required | Keep typed policy projection without reparsing, shared celestial policy, Phase 8 publication construction/rollback/close | R7-13 now closes the planning/provider/compile design cycle through registry-independent planning and final-registry construction |
-| R8-5 | Phase 7 half architecturally granted; Phase 2 half ungranted | Preserve nested Phase 8 hook-health rows without changing Phase 7 identities; Phase 2 must still consume them in its manifest | Phase 7 health wiring alone cannot grant the Phase 2 reporting contract |
+| R8-3 | Phase 1 — owner-granted/receiver-adopted, unverified | exact engine.shadow/mod.glue.shadow/mod.mixin.shadow slots | no new placement request; current owner/receiver verification required |
+| R8-4 | Phase 7 — owner-designed/receiver-adopted, unverified | pure typed policy before provider, final-registry create and coherent close/off | planning cycle closed, fresh reviews remain |
+| R8-5 | Phase 7 and Phase 2 — owner-designed/receiver-adopted, unverified | P2 v2 §4.5.4/R18 accepts all eight nested P8 hook rows; P7 `/2` serialization copies exact frozen projection | no inferred hook success or /1 compatibility |
 | R7-12 | Phase 8 — adopted by §0.7, unverified | §4.2 and incorporated §§5.1–5.4 consume the exact supplied selection/context/publication/source, selector-based beginPass, full physical binding and four-result closure protocol | closes the consumer design mismatch only; real slot remains gated until fresh whole-document owner PASS |
 | R7-13 | Phase 8 — adopted by §0.8, unverified | ShadowPlanInput(policy,hookHealth) and ShadowPlan contain no registry; create(plan,registry,uniforms,world,diagnostics) receives final new registry immediately after plan; §4.1 validation and publication fingerprint include it | closes the cycle without an old fingerprint; real construction stays NotInstalled until remaining grants and fresh owner/Phase 8 PASS |
-| R7-10 / R7-11 | Phase 6 — adopted in current owner bytes, unverified | Phase 5 sole FixedSamplerResolver injection and permanent non-GL retirement for candidate abort/replacement/shutdown | Phase 6 §0.24/§5.2 still require fresh owner PASS and Phase 7 consumer synchronization; no second map or invented runtime close |
+| R7-10 / R7-11 | Phase 6 — owner-designed/P7-receiver-adopted, unverified | sole FixedSamplerResolver and permanent non-GL candidate/replacement/shutdown retirement | fresh current owner/receiver reviews required; no second map or runtime close |
 
-The new Phase 4/5/6/7/13 shared-unit surfaces require their owners' fresh whole-document verification.
-Phase 7's other upstream gates (including Phase 3 reverification, R7-8 package placement and
-Phase 13's macro/package grants) remain unchanged, as recorded in its §5.4/§11.3. R8-3 and Phase
-2's R8-5 half remain **ungranted**; Phase 13 R1 is not supplied by this shadow grant.
-Phase 7's §5.4 still calls R7-12/R7-13 “requested, ungranted” at
-`docs/phase7/v1/PHASE_7_DOC.md:2305-2306`; that unchanged consumer status must be synchronized
-with this owner's §§0.7–0.8 grants before verified coordinated consumption. Its R7-10/R7-11
-rows similarly await owner-side synchronization with Phase 6. This single-file amendment
-edits none of those dependency tables and grants no other owner's interface.
+Current P4/5/6/7/13 shared-unit contracts require fresh whole-document owner verification.
+P7 has adopted P6 R7-10/11 and P8 R7-12/13; P1 R8-3 and P2 R8-5 reporting are granted and
+adopted, not open grants. P3 current schema17/required companion/lossless projections are
+adopted through P7; typed suffix semantics, jcpp permission and native legacy source
+preservation remain separate authority/owner gates. No package/reporting grant creates
+shader capability or waives P8's own fresh verification.
 
 R8-1's consumed representation-neutral authentication contract is exact: Phase 7 is the sole
 issuer and owner of `ShadowExecutionBridge`; `open(activeExecutionIdentity, slotEpoch)` returns
@@ -1697,6 +1739,8 @@ These outcomes do not modify RESEARCH §11.
 | D-P8-11 | Do not add an unconditional `glFlush` to the pass contract | ordered commands on one GL context already order draws, copy, mipmaps, and completion; the digest's flush is not a RESEARCH contract and would create an avoidable driver-submission policy |
 | D-P8-12 | Adopt R7-12's same-selection, full shared physical binding and Bound-only closure contract | Phase 7 §5.4 `docs/phase7/v1/PHASE_7_DOC.md:2332-2342` and Phase 5 §5.1 `docs/phase5/v1/PHASE_5_DOC.md:2357-2363` supply the operation; preserves RESEARCH App B.3 `docs/research/v1/RESEARCH.md:1228-1255` without a second map or four-row success |
 | D-P8-13 | Adopt R7-13: pure policy/hook plan first; final-registry validation and fingerprinting only at publication construction | Phase 7 §5.4 `docs/phase7/v1/PHASE_7_DOC.md:2344-2349` requires registry-independent metadata and final-registry create; breaks the provider/compile cycle without borrowing an old registry or weakening live generation/epoch authentication |
+| D-P8-14 | accept authenticated shadow execution as alternate P9 ID admission and independent P7 color producer | delivers IDs without illegal main gbuffers scopes; preserves Forge pass order and nested restoration |
+| D-P8-15 | adopt current producer grants/schema and authenticated current-bind atlas route | distinguish architecture adoption from verification; no second binder, stale atlas inference or historical schema fallback |
 
 ### 11.2 Binding decision disposition
 
@@ -1748,16 +1792,15 @@ These outcomes do not modify RESEARCH §11.
     input/factory order requested at `docs/phase7/v1/PHASE_7_DOC.md:2344-2349`. The pure plan
     precedes the provider/runtime and compilation; final publication validation/fingerprinting
     includes the final new registry. An old registry fingerprint is never a workaround.
-11. **Shared pipeline gates remain open:** Phase 6 R7-10/R7-11 are now adopted by their owner,
-    not verified grants (`docs/phase6/v1/PHASE_6_DOC.md:296-300`). Phase 4/5/6/7/13 fresh owner
-    verification, consumer synchronization and §5.5's unrelated ungranted package/reporting/
-    upstream interfaces remain blockers. Phase 8 itself owes fresh whole-document verification
-    because §5 changed; Phase 7's unchanged request rows are not evidence against this owner's grant.
+11. **Shared pipeline gates:** current P6 R7-10/11 and P8 R7-12/13 are owner-designed and
+    P7 receiver-adopted, unverified. P1 R8-3 and P2 R8-5 are likewise adopted. Fresh current
+    owner/receiver reviews and separate §5.5 upstream authority gates remain; historical
+    PASS never certifies this amendment.
 
 ### 11.4 Open hand-offs
 
-- Phase 9 must make entity/block-entity ID scopes shadow-execution-aware without changing the
-  Phase 8 pass ordering.
+- P7/P9 alternate shadow IdScopeAdmission is adopted in §4.8.2/§5; verify nested entity/TE
+  restoration and failure zeroing before shadow release, without changing Forge pass order.
 - Phase 10 must verify both VBO and client-array extended attributes during Phase 8's ordinary
   RenderGlobal layer calls.
 - Phase 13 supplies shadow-stage companion/custom/noise candidates through the full expected-
@@ -1770,13 +1813,11 @@ These outcomes do not modify RESEARCH §11.
 
 ### 11.5 Requested upstream changes
 
-§5.5 is the complete active adoption/gate ledger. R8-1/R8-2/R8-4 and Phase 7's R8-5 half are
-architecturally granted, not newly requested. R7-12/R7-13 are adopted here but unverified.
-Phase 6 R7-10/R7-11 are likewise adopted, pending owner verification and Phase 7 synchronization.
-Those gates still block shared-pipeline integration. R8-3 remains ungranted and blocks package
-placement. Phase 2's ungranted R8-5 half still blocks a complete hook-health manifest, not pure
-math design. Request remaining owner grants, consumer synchronization and fresh verification
-through the governing process; this amendment edits no dependency or review.
+§5.5 is the active adoption/gate ledger. R8-1–5 and R7-10–13 are owner-designed and receiver-
+adopted as applicable, not fresh verified implementation permission. Current schema17 and
+P7's exact reload/current-bind/ID adapters require coordinated fresh reviews. Real shadow
+remains NotInstalled until those gates and applicable separate upstream authority requests
+close. No duplicate package grant or `/1` reporting fallback is required.
 
 No change is requested to RESEARCH's shadow contract. A future DESIGN candidate should retain the
 Phase 5/Phase 8 PCF ownership split explicitly. This amendment preserves that behavior and the
@@ -1786,9 +1827,9 @@ traversal/camera/bridge/copied-depth/mipmap/neutralization contracts; it grants 
 
 ## 12. Implementation checklist
 
-1. **[v0.2]** Obtain the remaining ungranted package/reporting/upstream interfaces in §5.5 and
-   synchronize consumer grants, then obtain fresh whole-document owner and Phase 8 literal-PASS
-   reviews. R7-12/R7-13 adoption leaves real shadow NotInstalled until those gates close.
+1. **[v0.2]** Obtain fresh whole-document owner and P8 reviews for §5.5's adopted contracts,
+   and close applicable separate upstream authority gates. Keep real shadow NotInstalled
+   until verified; no repeated package/reporting grant request.
 2. **[v0.2]** Add the granted engine/glue/mixin packages with seam tests rejecting Minecraft,
    Forge, Mixin, and LWJGL from `:engine`.
 3. **[v0.2]** Implement registry-independent `ShadowPolicy`/plan validation, fingerprinting and
@@ -1850,9 +1891,9 @@ traversal/camera/bridge/copied-depth/mipmap/neutralization contracts; it grants 
 34. **[post-v0.5]** Hand completed targets to G8/S1 for `shadowcomp`; do not implement it in this
     checklist.
 
-**Current §G1.3 status:** R7-12 and R7-13 are adopted in the active and incorporated §5 contracts.
-Phase 8 is **unverified** after §0.8; fresh whole-document verification returning literal PASS
-is required before verified downstream consumption. The planning cycle is architecturally closed,
-but §5.5's remaining ungranted dependencies, consumer synchronization and owner-verification
-gates keep real shadow `NotInstalled`/unavailable. No code or reviews were edited; no builds,
-tests or verification were run. `v1` is retained without a directory roll.
+**Current §G1.3 status:** active §5 adopts R7-12/13 and the integration corrections in §0.9.
+Phase 8 remains **unverified**; fresh whole-document owner/receiver review returning literal
+PASS is required. Package/reporting and planning/binding architecture is adopted, not
+implementation evidence. Separate upstream authority gates remain; real shadow stays
+NotInstalled/unavailable until verified. No code/reviews/builds/tests/validation were changed
+or run; v1 is retained.
