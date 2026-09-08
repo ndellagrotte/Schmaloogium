@@ -4,7 +4,7 @@
 
 **Phase:** 7, both mandated parts: (a) engine-side frame driver and (b) Mixin hook catalog.  
 **Document version:** v1, initial build.  
-**Date:** 2026-08-03 · **Last revised:** 2026-09-07 (§0.41).
+**Date:** 2026-08-03 · **Last revised:** 2026-09-07 (§0.42).
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`; its Phase 7 assignment begins at
 `docs/design/v2.0-RC3/DESIGN.md:1805` and names dependencies 2–6 at
 `docs/design/v2.0-RC3/DESIGN.md:1807`. The heading and ranges were derived from this
@@ -368,6 +368,18 @@ the earlier schema-16 grants remain historical, not an upgrade path.
 **§5 changed; unverified.** Fresh whole-document owner and consumer verification remains
 required. No implementation, tests, validation, source/reference inspection or PASS is claimed.
 SSAA execution and non-fullscreen countInstances remain explicitly authority-gated (§11.3).
+
+### 0.42 Four-part partial-finding follow-on (2026-09-07)
+
+§0.41 records the preceding reconciliation, not the current schema or authority disposition.
+Current §§4/5/11 adopt **schema18**, P3's single locale catalog and session-only Internal
+capture/load protocol, plus P12's exact commit outcomes. The maintainer approved option-only
+superSamplingLevel (no engine SSAA), v0.5 adjacent prepared-submission repetition, and effective
+old-light macros with user→pack→true fallback after the standard-only Properties parse.
+D-P7-23–25 and §§4.6/5.1/11.3 bind these choices; prior gates there are superseded, not rewritten
+research/design history. The broader OQ-7 identity experiment and unrelated implementation/
+owner-verification gates remain open. This is documentary remediation, not a phase PASS,
+implemented rendering behavior or clearance to consume changed §5 before fresh review.
 
 ---
 
@@ -777,7 +789,7 @@ from retained configuration follows only the applicable owner operations specifi
    normalMapEnabled,specularMapEnabled))`. Each output is active AND capable AND its own
    preference. Supply the required Phase 3 `CompanionOptionMacros(normalMap,specularMap)`
    immediately after `engineOptions`; no old-load fallback, missing-pair default or late
-   linked-demand decision exists. Accept only current schema 17 and equal nested ID schema.
+   linked-demand decision exists. Accept only current schema18 and equal nested ID schema.
    Catalog-bound options, materialized sources, program evaluation and macros all come from
    that same load. Off/load failure/rebuild failure goes off, never back to an old atlas.
 2. Adopt R7-13's `ShadowPlanInput(ShadowPolicy,ShadowHookHealth)` before provider construction;
@@ -1080,11 +1092,69 @@ completed image in step 1 of §4.3.
    Binding rejection/degradation, lease rejection or Skipped uses `discardPass`, not abort of
    unrelated programs or false completion. Backend/activation/draw failure takes frame containment.
 
-This schedule accepts only fullscreen deferred/composite/final repetition. Non-fullscreen
-gbuffers/shadow countInstances is retained metadata, not an accepted rerender loop (§11.3).
-P5 `BufferSizing.superSamplingLevel()` is likewise retained metadata only: level>1 has no accepted
-draw/sample/resolve schedule pending IR-12 authority ruling. Do not multiply extents, synthesize
-an AA feature, claim single-sample execution honored it, or infer failure semantics while gated.
+**Non-fullscreen countInstances — adopted prepared-submission contract (IR-18).**
+On 2026-09-07 the maintainer approved adjacent repeats of each already-prepared geometry
+submission at v0.5, not whole-subpass replay. P7 owns a private synchronous mod-side
+submission adapter beneath the existing scope/activation boundary; this is not a public
+renderer-extension API or modern instanced draw.
+
+Admission requires the current render thread/frame/pipeline, an accepted main ScopeToken
+and successful effective P4 shader selection/activation, **or** P7's current Valid shadow
+execution and P8's successfully activated root-shadow selection. Check issuer, generation,
+dynamic extent, selected provider and prepared operand lifetime before the first copy.
+No main gbuffers scope, snapshot or activation may be opened inside authenticated shadow.
+Use the effective provider's positive `instanceCount` N; never overlay requested-child count.
+Fixed-function, absent, suppressed and unauthenticated vanilla work does not acquire a
+repeat authority. Before v0.5 non-fullscreen count>1 is explicitly deferred, not fulfilled.
+
+For each prepared submission, save the preceding P6 instanceId, issue existing
+`updateInstanceId(i)` immediately before each native draw for i=0…N−1, then restore the
+saved predecessor in finally (outer neutral is zero). Two submissions A,B therefore order
+A0…A(N−1),B0…B(N−1). Reuse the exact prepared primitive/range/geometry and active render
+state; do not rebuild/upload/reset geometry, replay entity methods/Forge callbacks, resample
+camera/time/history, rerun shadow terrain setup or add clears/depth copies/flips/mipmaps.
+Depth tests/writes and blend effects accumulate normally for every copy; no rollback,
+accumulation buffer or averaging is implied. Program activation and its three participants
+occur at ordinary scope boundaries only; per-copy instance upload does not refresh custom
+expressions or rotate P6 history. Nested independent submissions restore their saved parent
+instance value before returning; no reentrant pipeline publication is permitted.
+
+Client-array/VBO adapters repeat only the final native submission after preparation and
+before pointer teardown/reset. Display-list compilation records geometry once, without
+instance uploads/count expansion; playback repeats the existing geometry-list call under
+the current shader N times. A private call-local submission guard ensures only the outer
+owner repeats: nested low-level forwarding of the same submission cannot produce N² copies.
+It does not suppress a genuinely distinct nested geometry submission. Only lists proven
+not to change program/instance state during replay are admissible; unknown/mixed-state
+lists cannot be claimed supported by silently drawing once. P10's existing draw adapters
+adopt this boundary without granting its unrelated native facade/vertex extensions.
+
+Pre-draw invalid admission changes nothing and follows existing scope/frame rejection;
+no repeated operation is attempted with forged authority. Once a copy or event begins,
+a propagated exception or admission/protocol failure stops remaining copies, restores the
+saved instance and ordinary pointer/scope state in finally, and is never mutation-free
+Rejected. Main work takes frame-abort/shaders-off containment; shadow work reports through
+P8's existing abort/neutralization/finally result, then P7 containment. A propagated restoration
+failure forbids later shader draws and schedules Off. P6's void event and §4.11 per-uniform
+GL-error isolation remain unchanged: an internally isolated/diagnosed upload is not a new
+failure return or mandatory frame abort, and a disabled/absent location does not suppress
+the N native submissions. No caller queries private uniform status or invents an upload
+acknowledgement. Such diagnostics still prevent a clean conformance result under P2's rules.
+Frame/shadow pass completion, depth copies and flips occur
+only at their ordinary successful boundaries, never once per copy.
+
+**IR-12 maintainer-approved scope disposition (2026-09-07).**
+P5 `BufferSizing` now contains only `mainExtent` and optional `shadowExtent`;
+P3 `WorldRenderConstants` only `sunPathRotation` and `ambientOcclusionLevel`.
+The removed sampling fields have no aliases. `superSamplingLevel` survives only as an
+eligible pack option and in pack source, not an engine resource/directive request.
+Regardless of its selected source value, this option alone changes no engine allocation, sample/draw count,
+camera jitter, current/previous history, uniform/expression cadence, shadow traversal,
+depth copy, flip, accumulation or final resolve. Existing frame/pass cleanup applies unchanged.
+There is no value>1 rejection or normalization to 1. This explicitly approved scope reduction
+replaces the former execution promise; it is not a claim that one ordinary frame implements SSAA.
+Capture remains one ordinary finalized frame after final and before present, with actual
+current/previous poses and unchanged P2 `/2` dense sample semantics.
 
 Virtual deferred_pre/composite_pre bypass select and use VirtualNotApplicable planning metadata;
 they execute only `applyVirtualTransition`, never shader binding/upload/draw. Sparse holes are not
@@ -1575,6 +1645,12 @@ session Bail, Bail if bailed, otherwise NOT_REACHED; no compatible-backend infer
 ## 5. Cross-phase interfaces
 
 ### 5.1 Interfaces and data contracts exposed by Phase 7
+
+The non-fullscreen prepared-submission contract in **§4.6** is incorporated into this binding
+surface for P1/P4/P6/P8/P10/P2, including v0.5 timing, effective-provider count, authenticated
+main versus root-shadow admission, list capture/playback distinction, saved-parent instance
+restoration, single-wrapper suppression and failure/isolation rules. It is a private mod-side
+adapter under these existing scopes, not an additional public renderer API.
 
 The public frame seam is deliberately split in two. `engine.frame` owns policy and transaction
 state. `mod.glue.frame` adapts Minecraft/Forge events and the catalogued mixins to primitive or
@@ -2251,7 +2327,11 @@ public interface ProgrammaticOptionBridge {
     ProgrammaticApplyResult apply(PipelineIdentity expected,
         Map<String,String> packOptions, Map<String,String> engineOptions);
 }
-public enum WriteDisposition { UNCHANGED, COMMITTED, FAILED, NOT_ATTEMPTED }
+public interface InternalOptionCommitter {
+    ProgrammaticApplyResult commit(PipelineIdentity expected, OptionState preview,
+        EngineOptionData globals, ReloadRequest effects);
+}
+public enum WriteDisposition { UNCHANGED, COMMITTED, SESSION_ACCEPTED, FAILED, NOT_ATTEMPTED }
 public record OptionPersistenceReceipt(WriteDisposition pack, WriteDisposition global) {}
 public sealed interface ProgrammaticApplyResult {
     record Queued(ReloadToken token, OptionPersistenceReceipt persistence)
@@ -2287,13 +2367,13 @@ Apply is client-thread-only; non-null immutable maps are requested deltas agains
 active identity, validated in full before writes. P3 catalog constructs updated complete state;
 unknown/invalid pack options and unknown engine keys reject (unknown-safe persistence keys are
 not executable settings). Decode only P3/P12 current key domains. Rejection changes nothing.
-For Internal, P3 supplies baseline pack options and ignores pack persistence; nonempty
-programmatic packOptions deltas reject INVALID_REQUEST before any write. No synthetic target
-or transient override exists. Global-only Internal settings remain supported through EngineOptionData.
+Internal pack deltas route through `InternalOptionCommitter` below, not a filesystem codec.
+Global-only Internal changes preserve the current session preference and remain durable through
+EngineOptionData; no synthetic candidate/PackOptionsTarget is constructed.
 Decoded oldHandLight remains tri-state through this adapter into P9 §4.11: explicit user
 TRUE/FALSE wins, else explicit pack TRUE/FALSE, else P9's local true fallback. P7 never
 derives that runtime Boolean from MC_OLD_HAND_LIGHT presence or a GUI default.
-Persist explicitly, pack first then global, skip unchanged domain; enqueue only after all
+For filesystem packs persist explicitly, pack first then global, skip unchanged domain; enqueue only after all
 required writes COMMITTED. A failed write returns FailedPersistence with each domain's
 UNCHANGED/COMMITTED/FAILED/NOT_ATTEMPTED status, preserves the complete pending edit overlay,
 does not reload and does not roll back a previously committed file. Retry writes the same
@@ -2302,11 +2382,51 @@ shaderpacks roots and polls token completion before rendering; there is no trans
 argument to P3 load/materialize. Global settings-only changes still supply EngineOptionData to
 the subsequent load. Same-value apply may enqueue NONE and return its normal final receipt.
 
+**Internal session acceptance (IR-03).** P7 installs the exact committer above for P12's
+GUI and programmatic adapter. It is client-thread-only and serialized against selection,
+shutdown and reentrant publication. Validate in order: thread/null fields/effect validity,
+not shutting down, expected current active Internal identity, exact current-catalog preview
+and complete desired globals. Effects must be REPUBLISH with independently accumulated
+resource/bake flags. Invalid input returns INVALID_REQUEST, shutdown SHUTTING_DOWN, stale
+identity STALE_CONFIGURATION; no mutation or I/O. Off-thread calls return INVALID_REQUEST.
+P7 calls the current catalog's `captureInternalOptions(preview,diagnostics)`:
+NULL_INPUT/FOREIGN_CATALOG/NOT_INTERNAL map INVALID_REQUEST; INVALID_STATE maps INVALID_VALUE.
+No caller-supplied opaque token is trusted. The programmatic adapter first constructs the
+complete typed preview from its deltas using that same catalog.
+
+With validation/capture complete, write changed globals through P3 first. Failure returns
+FailedPersistence with pack NOT_ATTEMPTED/global FAILED and retains prior session preference,
+preview and active state. Otherwise atomically queue one request and store the captured token
+in the P7 session map keyed by exact Internal PackIdentity. Accepted changed pack state is
+SESSION_ACCEPTED; unchanged domains UNCHANGED; global COMMITTED only means a real successful
+write. SESSION_ACCEPTED is illegal for global/filesystem domains. Serialization prevents a
+late selection rejection after a successful global write; catastrophic failure is reported
+as failed acceptance with actual write disposition, never a mutation-free rejection.
+
+The map belongs to one long-lived P3 bundle. Off/filesystem selection and failed accepted
+reload retain preferences for retry; shutdown/bundle replacement clears it, restart defaults.
+Only the entry matching the provider's exact current identity is chosen; an unseen identity
+starts defaults, not a token transplanted from another built-in corpus. Every non-Off
+PackLoadRequest supplies non-null `internalOptions` immediately after `internalPackSource`:
+empty for filesystem, matching optional token for Internal. P3 alone authenticates domain/
+identity and revalidates values into a fresh catalog before shader preprocessing; any failure
+goes Off with no default retry. Reset captures complete catalog defaults. Profiles freeze their
+selection with the same accepted batch, then evaluate only the new configuration. Coalesced
+newer Internal edits replace the pending token for that exact identity; a newer selection
+supersedes its load, not the already accepted session preference or ORed flags.
+The accepted token is frozen at drain; edits during a drain belong to the next slot.
+NONE resource refresh retains the exact existing configuration and never applies queued
+option changes implicitly. No preview enters materialization; session token identity is
+excluded from fingerprints, finalized values and schema18 semantics are included.
+
 **Lighting policy (IR-05).** P7 resolves and freezes P10
 `ShaderLightingPolicy(boolean oldLighting,boolean separateAo)`: explicit user oldLighting
 true/false wins; DEFAULT defers to explicit pack value; both DEFAULT use true. separateAo
-uses explicit pack value else false. These final defaults are phase-local P10/P7 decisions
-pending conformance, not newly verified external facts. Freeze the pair with P3 vertex
+uses explicit pack value else false. The maintainer ratified the old-light true fallback
+and effective-mode macro rule on 2026-09-07; this is policy authority, not external runtime
+parity evidence. P3's A–G-only Properties parse precedes the identical load-time old-light
+resolution and shader macro emission; runtime consumes typed inputs, never macro presence.
+Freeze the pair with P3 vertex
 requirements in the P10 bake/transition identity. Any effective pair change quiesces workers,
 invalidates model/mesh products and completes worldRendererReload before shader admission.
 P10 owns directional lighting and AO-to-alpha behavior; P7 does not rewrite chunk renderer
@@ -2415,16 +2535,19 @@ The consumed Phase 2 surfaces are `docs/phase2/v2/PHASE_2_DOC.md` §§4.5/5; R19
 |---|---|
 | `PackFrontEnd`, discovery/load requests/results | bootstrap, selection, reload |
 | `PackConfiguration`, `PackIdentity`, `DimensionConfiguration`, fingerprint/version discipline | sole configuration and per-dimension cache truth |
-| current-schema `IdMappingInput` (17), nested version equals containing configuration | handed unchanged into Phase 9; reject every other schema before derived state, never infer a schema-16 upgrade |
+| current-schema `IdMappingInput` (18), nested version equals containing configuration | handed unchanged into Phase 9; reject 17 and every other schema before derived state; no inferred upgrade |
 | `ProgramStateModel`, `ProgramStateEvaluationResult`, `EvaluatedProgramStates` | evaluate using containing configuration's finalized catalog-issued state; no OptionState argument or properties reparse |
 | `ResourceRequirements` | Phase 4/5/6 build inputs and Phase 7 world constants/routing |
 | `InternalPackSource` / `InternalPackSnapshot` | Phase 7 supplies the built-in bytes through the Phase 3-owned protocol |
+| `InternalOptionSnapshot`, catalog capture and load Optional | exact §5.1 session acceptance, fresh-catalog same-build load and P3 closed failures; no target or serialization |
+| `localizedDecorations()` and two-field `WorldRenderConstants` | sole immutable locale authority handed to P12; locale selection no reload; no engine superSamplingLevel field |
+| ratified old-light macro projection | standard-only Properties pass then user→pack→true shader macros; P7/P9/P10 typed runtime resolution agrees, no callback/cycle or post-load mutation |
 | `centerDepthMacroContributor` slot | pass Phase 6's empty contribution into materialization |
 | `CompanionOptionMacros`, `MacroConfiguration`, catalog-bound `OptionConfiguration`, `SourceMaterializer` | required same-load companion pair and finalized state; no caller option/materialization override; P3 owns fingerprints and macro emission |
 | `properties().textureDeclarations()` and typed executable textures/noise | preserve lossless owner declaration stream; P13 consumes typed specs only, no discarded-suffix reconstruction |
 | safe `PackFrontEndServices`, persistence access/target and `FilesystemCandidateReference` resolver | bundle-domain-authenticated load/persistence; restore durable reference against fresh discovery, never display text or serialized candidate IDs |
 
-Current Phase 3 §5.1 and incorporated declarations plus §5.3 schema17 are consumed
+Current Phase 3 §5.1 and incorporated declarations plus §5.3 schema18 are consumed
 architecturally, unverified; fresh whole-document owner/receiver reviews and R7-9 production
 gate remain. Older schema defaults, source/option rebinding and raw persistence targets are forbidden.
 
@@ -2439,7 +2562,7 @@ gate remain. Older schema defaults, source/option rebinding and raw persistence 
 | `ProductionBarrierComposer` and exactly the three Phase 6 participants | authenticated barrier candidate composition |
 | `ProgramRegistryPublisher.publish/current` | publish/off transaction, generation checks |
 | `PublishedProgramStateBarrier` and Phase-4-issued `FrameBarrierContexts` | every activation/release; no direct program bind |
-| per-slot scale/mipmap/instance metadata | fullscreen executor inputs |
+| per-slot scale/mipmap/instance metadata | fullscreen execution plus §4.6 authenticated non-fullscreen prepared submissions at v0.5; effective provider owns count |
 
 Phase 7 incorporates the coordinated Phase 4 §2/§5 selection contract: `select(ProgramSlotId,
 BarrierContext) -> ProgramSelectionResult.Selected(ProgramBindingSelection)|Skipped(ProgramSlotId)|
@@ -2626,7 +2749,7 @@ is likewise adopted. Both sides remain unverified; neither falls back to four-ro
 | R7-11 (owner-designed; receiver-adopted/unverified) | Phase 6 §§0.24/4.14/5 | retire(UNPUBLISHED_ABORT/REPLACEMENT/SHUTDOWN), no reset(CLOSE) | exact retirement below; fresh reviews remain |
 | R7-12 (owner-designed; receiver-adopted/unverified) | Phase 8 §§0.7/4.2/5 | same selection/context/full expected-publication lease and five-argument sixteen-row binding | migration present; real slot NotInstalled until fresh owner reviews |
 | R7-13 (owner-designed; receiver-adopted/unverified) | Phase 8 §§0.8/2/5 | registry-independent plan, final registry after plan in create | cycle closed architecturally; fresh reviews gate execution |
-| Phase 13 R1 (owner-designed; receiver-adopted/unverified) | Phase 3 §§0.55/5 | required CompanionOptionMacros after engineOptions; now current schema17 | preliminary pair before every load; missing non-Off data invalid, no unchanged-load fallback |
+| Phase 13 R1 (owner-designed; receiver-adopted/unverified) | Phase 3 §§0.55/5 | required CompanionOptionMacros after engineOptions; now current schema18 | preliminary pair before every load; missing non-Off data invalid, no unchanged-load fallback |
 
 R7-10's adopted exact factory is `create(long initialRegistryGeneration,
 UniformConfiguration configuration, FixedSamplerResolver samplerResolver,
@@ -2795,6 +2918,9 @@ unsafe.”
 | per-draw dynamics | accepted P6 frame→held sample; nested IDs under main or authenticated shadow admission; no main activation in shadow; independent v0.1 color immediate update/restoration and terminal zero |
 | dimension cache | base/override/disabled switches and version equality; failed rebuild goes off, retired texture leases cannot reactivate a slot; demotion retains plans only |
 | fullscreen plan | mipmap-before-pass, identity projection, exact scale viewport, instances `0..N-1`, restore `0`, final/passthrough |
+| pack-only superSamplingLevel | varying retained value alone leaves engine extent, frame/sample count, history, shadow/depth/flip schedule and capture timing unchanged; source branches still receive the selected option value; no engine-SSAA success claim |
+| prepared non-fullscreen repetition | A0,A1,B0,B1 at N=2; effective fallback count, authenticated root-shadow/no-main-scope, nested saved-parent restoration, once-only Forge/build/upload/reset, list playback not capture, no N² forwarding, stop after failed copy and contain |
+| Internal session apply | exact-catalog capture, no target/I/O for pack state, global-failure no acceptance, SESSION_ACCEPTED then fresh same-build load; Off/switch/retry retention, restart defaults, stale identity rejection, reset complete defaults |
 | internal pack source/golden | ordinary Phase 3 load and limit rejection require no manifest; after Phase 3 reverification, the granted projection drives exact manifest identity/path list and SHA-256-v1 digest for every accepting limit; rejecting limits cannot yield a subset |
 | engine flags | tri-state/default behavior and `finally` restoration for every §3.5 row |
 | hook-coverage model | exactly one disposition for §7.1 needs 1–11, Appendix A.1 rows, App E rows 1–18, and Pintonium rows 1–7; owner-phase-8 subreport rows copy without primary-ID drift and absence is never healthy |
@@ -2990,8 +3116,11 @@ slice, or continue partially. Any selected alternative is recorded by a Phase 7 
 | D-P7-18 | P7 owns v0.1 hurt/flash color producer; authenticated shadow is alternate P9 ID admission | RC3 excludes alias IDs from v0.1, not entityColor; no main pass inside shadow |
 | D-P7-19 | direct P11 immutable diagnostic GUI projection and authenticated current-atlas adapter | no fourth channel or physical binder; current bind is evidence, stitch availability is not |
 | D-P7-20 | loader events, actual CompatEvaluation, mod-side anaglyph restoration and first-hook checks | adopts P1 owner boundaries, never invented facade/verdict/bootstrap contracts |
-| D-P7-21 | SSAA and non-fullscreen countInstances remain authority-gated; JFR fallback accepted | retained metadata is not execution, optional profiling does not gate synchronous baseline |
+| D-P7-21 | Historical SSAA/non-fullscreen authority gates superseded by D-P7-24/25; JFR fallback retained | Earlier metadata retention never constituted execution |
 | D-P7-22 | Wrap the actual resource-manager replacement before it releases packs, not merely its post-release listener | IR-06 verification repair; a queued NONE request cannot protect borrowed texture lifetimes; MCP target is mapped, OQ-4/runtime proof remains owed |
+| D-P7-23 | Adopt schema18 locale/session/old-light contracts and exact P12 Internal committer | P3 owns parsing and fresh-catalog load; session acceptance is not persistence or rendering success |
+| D-P7-24 | Maintainer-approved option-only superSamplingLevel with two-field P5 sizing and unchanged ordinary capture | Explicit 2026-09-07 scope reduction, no engine SSAA or AA feature |
+| D-P7-25 | Maintainer-approved adjacent prepared geometry submissions, IDs0…N−1, at v0.5 | P1/P4/P8 contract adopted in §4.6, P10 draw adapters consume; no world/Forge replay or renderer-extension API |
 
 ### 11.2 Binding decision disposition
 
@@ -3016,16 +3145,19 @@ slice, or continue partially. Any selected alternative is recorded by a Phase 7 
 - R7-9 is granted; internal-pack manifest/digest production requires fresh Phase 3 PASS.
 - R7-10/11 and R7-12/13 are owner-designed/receiver-adopted, unverified; real shadow stays
   NotInstalled pending fresh Phase 4/5/6/7/8/13 owner reviews and applicable upstream gates.
-- P3 schema17/companion/lossless/projection adoption is explicit; typed suffix semantics,
+- P3 schema18/companion/lossless/projection adoption is explicit; typed suffix semantics,
   jcpp permission and native legacy source preservation remain separately ungranted.
-- **IR-12 unresolved authority gate:** RESEARCH §1.2 excludes AA, App A.3 only names an SSAA
-  multiplier, and §4.3 gives display×quality extent. Authority must decide whether pack SSAA
-  is in scope and, if so, exact level domain, sample/draw order, camera/history treatment,
-  final resolve weighting/target and failure behavior. Until then level>1 is not supported
-  execution; no extent multiplication, guessed sample loop or silent single-sample success.
-- **IR-18 unresolved authority gate:** gbuffers/shadow countInstances needs an explicit owner,
-  milestone and rerender/side-effect contract. Only §4.6 fullscreen repetition is accepted;
-  metadata retention or a modern instanced draw is not support for the non-fullscreen case.
+- **IR-12 scope approved, not SSAA support:** on 2026-09-07 the maintainer selected
+  pack-option compatibility only for `superSamplingLevel`, retaining source use but removing
+  engine allocation/sample/resolve effects. P5 §4.11.1 supplies the evidence and adopted
+  sizing policy; §4.6 consumes it. Published author documentation provides no execution
+  schedule, and the admissible reference only recognizes the option. RESEARCH App A.3 and
+  RC3's old engine-SSAA promise are preserved historical authority bytes, with the explicit
+  maintainer disposition recorded here rather than silently rewritten. No AA feature is granted.
+- **IR-18 adopted, implementation evidence still owed:** maintainer approved §4.6's
+  per-prepared-submission order at v0.5 on 2026-09-07. P1/P4/P8 adopt the same boundary;
+  P10 draw adapters integrate it, P6 owns immediate instance upload/restoration. Actual hook/
+  display-list/state-restoration conformance is future implementation work, not an authority gap.
 - **IR-28 first-hook gate:** before subsequent hook implementation, verify the first actual
   Mixin config generates its refmap in the built jar and reconcile JAVA_8 compatibilityLevel
   with Java-25-produced Mixin bytecode/features. Record actual evidence with OQ-4; neither
@@ -3066,7 +3198,9 @@ site; Phase 4/5 interface gaps become requests; Pintonium remains evidence only.
   fresh reviews remain, not a missing consumer design.
 - **Phase 13 R1:** Phase 3 required pair adopted with independent preferences before load;
   R4 post-analysis allocation remains separate and cannot provide preprocessing input.
-- **IR-12/18:** request the explicit authority decisions in §11.3, without changing authority.
+- **IR-12/18/24:** carry the explicit maintainer-approved scope/order/macro dispositions in
+  §§4.6/5.1/11.3 into the next authority revision; historical research/design bytes remain
+  unchanged. Broader OQ-7 renderer identity experiments are not ratified by these choices.
 - **IR-26:** accept Phase 14 JFR attribution fallback; no public elapsed-per-pass API is promised.
 - **Phase 3/DESIGN suffix reconciliation:** current P3 preserves lossless unresolved declarations
   and separate typed executable sources/sidecars; suffix grammar/precedence/typed sampling

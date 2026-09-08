@@ -786,8 +786,10 @@ value. The v1 scene form is historical and no `/1` compatibility reader is requi
 outside the sample range or shorter than two; a captured window with no non-zero position or
 orientation delta between consecutive samples; a non-finite coordinate; a `gamerule` that §4.4's
 ledger marks mandatory and the file leaves unset; a duplicate capture name across shots and paths;
-or a `[pack] engine.*` key that Phase 12's validation hook rejects (until that hook exists, unknown
-`engine.*` keys are collected and reported as **unvalidated**, not accepted silently — §5.4).
+or a `[pack] engine.*` key outside P3 §5.1's eight executable settings or a value outside
+that key's published domain. Preflight validates against that canonical inventory/codec
+without invoking a mutating apply or requiring an active pipeline. Unknown-safe storage
+round-trip support is not scene execution permission (§5.4).
 `SceneCorpusTest` additionally requires every one of §3.4's six scene ids to contain at least one
 valid path. `internal` and `OFF` remain valid for headless scene consumers, but `CaptureRunner`'s
 client-capture preflight rejects either selection before cache or client-process work; client
@@ -1561,11 +1563,13 @@ P3 §5.1.1 is the exact engine-owned boundary, not the former illustrative `Fron
 or an ungranted `PackSource` overload. P2 acquires `PackFrontEnds.create()`, fresh discovery,
 canonical durable-reference resolution and bundle-owned persistence access for isolated
 external fixture/game roots, then calls `frontEnd.inspect(PackLoadRequest)` with every
-non-Off field, including explicit companion preferences. The result is closed
+non-Off field, including explicit companion preferences and non-null `internalOptions`
+(empty for filesystem, matching engine-issued session token or empty for Internal). The result is closed
 `Off|Failed(failure,diagnostics)|Inspected(configuration,snapshot,archiveSha512)`.
 Folder and archive loading use existing pure-JVM acquisition; internal fixtures use the
-bounded internal provider. Configuration schema must equal current P3 **17**; snapshot
-`projectionVersion` must equal **1**, with no inferred old-schema defaults.
+bounded internal provider. Configuration schema must equal current P3 **18**, including nested
+IdMappingInput; reject 17 and every other schema before projection/reuse. Snapshot
+`projectionVersion` remains **1**, with no inferred old-schema defaults.
 
 `PackDecisionSnapshot` carries schema/configuration fingerprint, ordered source path/line-count/
 SHA-256 rows, the exact eight-section `DecisionValue` projection and structured source-free
@@ -1578,6 +1582,15 @@ parser-private code nor accesses original logical lines, source dumps, diagnosti
 or raw driver logs. Snapshot fields map `[sources]`, `[options]`, `[properties]`, `[macros]`,
 `[diagnostics]` and `[sizing]`; numeric half-life values in resources remain directly readable.
 Hashed option/range equality is retained without reproducing arbitrary pack expressions.
+The schema18 `[options]` tree preserves P3's entire normalized `localizedDecorations` catalog,
+all nine typed maps, winning collision/empty distinctions and source-free TextHash leaves.
+It is not a selected-locale `lang` map. P3's exact projection codec governs ordering and hashes;
+P2 never reparses language files or serializes translated strings. P12's presentation checks
+consume this same catalog with requested→en_us per-key presence fallback. A locale switch
+changes presentation inputs only; all locale bytes already participate in configuration identity.
+Internal inspection authenticates same bundle/exact PackIdentity and fresh-catalog finalized
+values before projection. Opaque session handles are never golden fields or persisted inputs.
+Absent token and captured-default token with equal finalized state yield equal semantic output.
 
 Archive provenance is a checked join, not a relabelled content hash: P3 hashes the actual
 bounded immutable archive bytes consumed by that load; P2 requires this digest equal its
@@ -1616,6 +1629,12 @@ P5 `BufferResourceSnapshot.Available` supplies the complete `[sizing]` projectio
 rows (`maxDrawBuffers`, `maxColorAttachments`, `maxTextureImageUnits`). A complete expected
 SHORTFALL is legitimate negative conformance evidence, not a successful allocation.
 `Unavailable(reason)` means the sizing section is incomplete and blocks a complete golden.
+IR-12 adopts the maintainer's 2026-09-07 option-only superSamplingLevel scope: P5 sizing is
+`BufferSizing(Extent2i mainExtent,Optional<Extent2i> shadowExtent)` without a sampling member.
+No engine sample/accumulation/resolve projection is invented; source-selected option values
+remain in hashed options/source decisions. Ordinary render/shadow quality and depth/flip
+planning stay unchanged. Capture `/2` still means one ordinary rendered frame per dense sample,
+with existing actual-current/previous pose evidence; no SSAA sample count or capture sentinel.
 Neither P3 minima, P4 CAPABILITY failure nor rendered behavior substitutes for these fields.
 P3 parsed directives/half-lives remain distinct from P5 resolved formats/counts/clear values;
 the adapter copies both owner projections without overwriting a requested value with a fallback.
@@ -1842,6 +1861,7 @@ is inert without its system property.
 | **Runner-owned pack-provenance bridge** | Acquisition mode and licence originate in the fixture registry; archive SHA-512 originates in post-resolution verification. They cross the client process only through the immutable capture plan and return only as verbatim manifest values. Pack content, scene text, agent rediscovery, and rendered behavior are not evidence for any of the three | **7**, CI/reporting |
 | **Headless archive-provenance bridge** | §4.11.4 consumes P3 same-read archive SHA-512 and compares to runner-verified PackFixture; content/configuration hashes are never archive provenance | **3**, **4**, CI/reporting |
 | **Evaluator run and adapter** | `RUN-EXPRESSION-CONFORMANCE`, §4.9/P11 §5.6; original vector/provider/expected-observable catalog, closed per-case outcomes, source-free optional matrix mode | **11**, 14 |
+| **IR-03/12/18/24 receiving cutover** | §§4.11.4/5.4 adopt P3 schema18 locale/Internal/old-light shapes and P5 option-only sizing. P7/P8/P10 v0.5 prepared-submission repetition changes draws within a frame, not `/2` samples, traversal/hook counts or capture provenance. No runtime PASS derives from metadata retention | **3**, **4**, **5**, **7**, **8**, **10**, **12** |
 | **The fixture registry, cache API and never-rehost rules** | §4.10 | anyone adding a pack; CI |
 | **Tolerance profiles** | §4.6.3, calibrated by §4.6.5 | anyone reading a diff verdict |
 | **The CI task split** — hermetic `test` vs fixture-dependent `conformanceTest`, and the tag policy | §4.14 | anyone adding a test to `:conformance` |
@@ -1961,6 +1981,23 @@ uses pure `plan` on the same P3/P4 build with explicit runtime/profile inputs (�
 `engine.*` key instead of collecting it as unvalidated. R16 — the persistence semantics
 `RUN-OPTIONS-ROUNDTRIP` asserts: a round-trip preserves the model, and **only changed options
 persist** (§4.7 of RESEARCH.md).
+R15/R16 are now **owner-designed, receiver-adopted, unverified** through P12 §5.3(D–E)
+and P7's ProgrammaticOptionBridge/InternalOptionCommitter; not a missing get/set API.
+Apply uses exact expected active PipelineIdentity and current-catalog complete preview.
+P7/P12's executable bridge rejects unknown keys before I/O and consumes P3's published
+eight-key domains; P3's storage codec independently preserves unknown-safe keys with warnings.
+Default old-light values are distinct from false, and reserved antialiasingLevel admits only
+zero. Filesystem outcomes distinguish changed-only
+pack/global writes from queued final composition; a failed second file write is not atomic rollback.
+Internal pack values instead return SESSION_ACCEPTED with no pack file; globals may persist.
+P2's capture-plan registry restriction remains: Internal session behavior is a separate original
+headless/client adapter scenario, never fake archive provenance or a matrix capture PASS.
+Switch away/back retains accepted Internal values; fresh bundle/client defaults; failed capture/
+global write leaves prior preference; failed accepted load retains it but cannot silently retry
+defaults. Poll reload's final outcome before claiming applied rendering, not merely Queued.
+Scene preflight consumes the same P3 canonical inventory/domains without a mutating bridge
+call; the active-client bridge revalidates before apply. An unimplemented adapter is a named
+unavailable prerequisite, never silent acceptance of unvalidated engine keys.
 
 ---
 
@@ -2075,6 +2112,9 @@ All in `:conformance` unless noted; all in the hermetic `test` task (§4.14) unl
 | `PintoniumParseCalibrationTest` | exactly seven source-text-free records; exact registry archive identity and configured Pintonium revision/environment; missing/stale/malformed records fail; forbidden messages/source/absolute paths fail; Pintonium success/failure deltas report, while any Schmaloogium parse failure fails D-3 |
 | `ReportRendererTest` | snapshot of all three renderings; skips separate from passes; PATH rows never collapse by scene; all seven Pintonium/Schmaloogium comparisons are labelled evidence-only; every non-pass carries a reason |
 | `HarnessRunRegistryTest` | every §4.9 id resolves; every §3.5 exit criterion maps to a run; the v3 motion and parse-calibration gates map specifically to `RUN-MOTION-PATHS` and `RUN-PINTONIUM-PARSE-CALIBRATION` |
+| `LocaleProjectionContractTest` | Original two-locale inputs preserve sparse per-key fallback, present-empty suppression, deterministic collision winner and all nine hashed maps; locale selection leaves configuration unchanged, changing an unselected locale changes it. Full matrix golden still requires P3/P4/P5, not this synthetic projection |
+| `InternalOptionSessionTest` | Exact-catalog acceptance followed by fresh-catalog load preserves selected source behavior across Off/filesystem switch; foreign/wrong-identity token rejects, restart defaults, global-write failure no session acceptance, accepted-load failure no default retry; no filesystem pack target |
+| `PreparedInstanceContractTest` | At v0.5 original diagnostic geometry observes A0,A1,B0,B1, effective fallback N, nested restoration and shadow root admission; one traversal/setup/reset, N submissions, no capture-time/N² expansion. Failure stops remaining copies; source-free draw evidence cannot substitute for actual runtime coverage |
 
 Already owned by Phase 1 and running in this task: `SeamConformanceDependencyTest` (C-4,
 `PHASE_1_DOC.md` §8.1) and `:conformance`'s placeholder test, which §12 replaces with real content.
@@ -2353,6 +2393,8 @@ framebuffer size.
 | `D-P2-27` | Receive P7's explicit `/2` migration as architecture, not capture evidence | P7 §4.13 now names dense samples, warm-up, actual pose/history and exact serialization; both §5 surfaces remain unverified |
 | `D-P2-28` | Adopt P11 original-vector evaluator run with source-free matrix disposition mode | Language/smooth/provider effects must execute; generic front-end parsing is not evaluator coverage |
 | `D-P2-29` | Use P3 one-load source-free inspection and checked archive join, with P4 same-request enrichment | No parser-private access, reverse dependency, inferred configuration/archive identity, or synthetic complete golden |
+| `D-P2-30` | Adopt P3 schema18 locale/Internal/old-light projection and P12/P7 validated session adapter | No duplicate parser, old-schema upgrade, translated text golden or fabricated Internal archive provenance |
+| `D-P2-31` | Accept approved option-only sampling scope and prepared-submission count policy without changing `/2` frame/provenance wire | 2026-09-07 maintainer choices, P5/P4 evidence; ordinary capture and full P3/P4/P5 golden completeness remain |
 
 ### 11.2 Disposition of `D-1` … `D-10`
 
@@ -2444,8 +2486,11 @@ evidence remain required. R13 is conditional, not implied by the `/2` migration.
 vector/provider/result shapes. Original-vector and local-matrix reporting remain separate;
 neither this adoption nor a disposition-only matrix record is a real-pack PASS.
 
-**To Phase 12** — R15/R16. Until R15 exists, `[pack] engine.*` keys are collected and reported as
-**unvalidated** rather than accepted (§4.3.3), so a typo there is visible but not fatal.
+**To Phase 12** — R15/R16 are adopted/unverified through §5.4's exact P7/P12 bridge.
+Unknown executable engine keys are rejected by the P7/P12 bridge before persistence/queue,
+not by P3's unknown-safe storage codec. P2 preflight uses the same published inventory/domains;
+an unimplemented adapter reports unavailable. Internal session tests
+do not relax registry-only capture or filesystem changed-only roundtrip semantics.
 
 **To Phase 8/9/10/13** — the scenes your milestones gate on already exist and are authored at v0.1
 (§9.1): `night-shadows` (P8), `entities-blocks` (P9, P10), `weather-rain` and `water-translucent`

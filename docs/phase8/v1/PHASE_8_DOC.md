@@ -4,7 +4,7 @@
 
 **Phase:** 8 — Shadow pass
 **Milestone:** v0.2
-**Date:** 2026-08-02 · **Last revised:** 2026-09-07 (§0.9).
+**Date:** 2026-08-02 · **Last revised:** 2026-09-07 (§0.10).
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 8
 assignment at lines 1957–2034. This phase deliberately adopts RC3 for its initial build; it does not
 change the governance of any earlier phase.
@@ -185,6 +185,15 @@ Earlier grants and PASS records remain historical. **§5 changed; unverified**; 
 document owner/receiver verification still gates real shadow. No implementation, reference-source
 inspection, tests, validation commands or new PASS. R8-3 and P2 R8-5 are granted/adopted,
 not missing interfaces; R7-10–13 producer and receiver architecture is synchronized.
+
+### 0.10 IR-18 prepared submissions and schema18 (2026-09-07)
+
+RC3 remains governing. Research §3.2/4.5 and RC3 P4/P7/P8 assignments were read before the
+maintainer's explicit prepared-submission/v0.5 decision. P4 §11.5 records independently checked
+author/OSS evidence and its limits. §§4.8.5/5/11 adopt the receiving contract without replaying
+world/Forge traversal; P3 schema18 is consumed through P7, with no older-schema upgrade.
+§5 changed and remains unverified. Earlier addenda/PASS are historical; no implementation,
+validation, tests, formatter, reference-code reuse or certification is claimed.
 
 ---
 
@@ -618,8 +627,8 @@ only that inverse; it does not suppress the original matrix or the pass.
 `ShadowPlanInput(ShadowPolicy policy, ShadowHookHealth hookHealth)`. It never accepts a registry
 fingerprint/generation, source strings, property maps, Minecraft objects, GL handles, or mutable
 collections. The resulting `ShadowPlan` likewise contains no hidden registry identity.
-P7 supplies only the resolved projection from current P3 schema17, validating the containing
-and nested ID schema before construction; no schema16 upgrade/default reconstruction. Shadow
+P7 supplies only the resolved projection from current P3 schema18, validating the containing
+and nested ID schema before construction; reject schema17 rather than upgrade/reconstruct. Shadow
 extent consumes P5's actual allocation from canonical `shadowResMul`, not an alias
 `shadowQuality` key or a second multiplier in camera math. The user/pack old-light tri-state,
 independent companion pair and reserved zero-only antialiasing setting follow current P3/P7
@@ -775,6 +784,8 @@ execution bridge around it; Phase 8 does not repeat selection or mint another ac
      rejection or stale retry;
    - `ShadersOff` or `FailedSafe`: abort and return `Failed`.
 10. Execute §4.8's unchanged terrain/cloud/entity/depth-split/translucent order through the port.
+    At v0.5 the approved §4.8.5 countInstances adapter repeats prepared submissions inside
+    these calls, never the calls/traversal themselves; the invocation still owns one snapshot.
 11. Call the typed post-pass mipmap operation. `Generated` carries canonical per-buffer outcomes;
     `Degraded` within it continues only after successful base-filter restoration. Result-level
     `Neutralized(...,true)` has already aborted without flips and invalidated the snapshot:
@@ -1110,6 +1121,37 @@ entity pass 1 regardless of the terrain flag when §4.8.2's startup rule admitte
 because modded entities independently declare their pass. Both occur under the same shadow program
 override. No deferred/composite program runs inside the shadow pass.
 
+#### 4.8.5 Prepared shadow submissions (v0.5)
+
+The maintainer's 2026-09-07 **Repeat prepared submissions** decision is adopted here. P4 §11.5
+records the author documentation, bounded licensed-source checks and explicit choice; none of
+those sources is misrepresented as proving the target's ordering. For count N from the effective
+root-shadow selection, each prepared native geometry submission is issued adjacently N times
+with `instanceId=0..N-1`. A then B yields A0…A(N−1), B0…B(N−1), not repeated world traversal.
+
+P7 owns policy and private synchronous mod-side adaptation through P10's existing draw hooks.
+P8 continues to supply the same live Valid shadow execution, exact root selection/context,
+frame and publication; the adapter revalidates those credentials and current program activity
+before copies. No main gbuffers scope/snapshot/selection is opened inside shadow. Retained
+metadata, equal fingerprints or an expired execution never authorize a draw.
+
+VBO/client-array pointer setup and build/upload/reset occur once; only final native submission
+repeats before teardown. Geometry display lists compile once without count expansion or instance
+uploads and repeat at playback, under a private dynamic-extent guard that excludes nested lower
+wrappers. Replay-stable geometry/program/state must be established by P10's vanilla hook coverage;
+this is not permission to adopt a replacement renderer or fabricate a public renderer API.
+Only instanceId varies between copies; P6's existing event supplies it. Nested finally restores
+the predecessor, outermost zero, before shadow release, alongside existing ID/color restoration.
+
+All terrain/cloud/layer calls, Forge pass predicates and entity/TE callbacks, counters, scheduling,
+depth split, clear, flips and mipmaps retain §4.8's original cadence. In particular pass0 remains
+before the single split and pass1 after optional translucents. On stale pre-mutation admission,
+draw nothing. On failure after any copy, stop remaining copies, restore in finally, abort the
+open snapshot without flips and use §§4.2/6's existing neutralization/Failed containment; never
+restart copies or return partial success or a mutation-free Rejected after mutation. Existing
+P6 per-uniform isolation remains unchanged. This adds v0.5 execution beneath the v0.2 traversal,
+not a changed v0.2 exit milestone or a second shadow invocation.
+
 ### 4.9 Mipmaps and hardware PCF
 
 `ShadowMipmapPolicy` is Phase 5's immutable, duplicate-free canonical list of typed shadow
@@ -1250,6 +1292,7 @@ borrowed views only for the duration of `invoke`; no vanilla collection is retai
 | `ShadowHookHealth`, Phase-8 hook rows | immutable expected/actual counts and enabled/disabled outcome for §4.13 | diagnostics; Phase 2 manifest integration |
 | implementation of Phase 7 `ShadowInvocationSlot` | §4.2's full R7-12 transaction: supplied same selection/context and expected-publication lease, five-argument physical binding, four result branches, Bound-only transfer and exactly-one finally closure; no retained invocation values; returns before main clear; real slot remains gated under §5.5 | Phase 7 frame driver |
 | Shadow-aware ID/color/atlas integration | §4.8.2 alternate authenticated P7 IdScopeAdmission for P9 entity/TE tokens, independent v0.1 P7 color stack, and §4.10 actual-bind P7→P13→P6 atlas update; no main gbuffers snapshot/program and no second texture binder | P7/P9/P13 glue |
+| Prepared shadow submissions | §4.8.5 incorporates P4 §11.5's approved N adjacent native submissions/IDs0..N-1, P7 policy/P10 existing private adapters, authenticated shadow-only admission, nested restoration and failure containment; one unchanged P8 traversal/snapshot/depth split | P7/P10 adapters; P6 existing instance event |
 
 Phase 8 exposes no GL handle, framebuffer name, program handle, parsed source, mutable vanilla
 collection, or physical shadowcolor side.
@@ -1432,7 +1475,7 @@ absence and still uses this protocol. Phase 13's required fresh verification rem
 
 Current P4/5/6/7/13 shared-unit contracts require fresh whole-document owner verification.
 P7 has adopted P6 R7-10/11 and P8 R7-12/13; P1 R8-3 and P2 R8-5 reporting are granted and
-adopted, not open grants. P3 current schema17/required companion/lossless projections are
+adopted, not open grants. P3 current schema18/required companion/lossless projections are
 adopted through P7; typed suffix semantics, jcpp permission and native legacy source
 preservation remain separate authority/owner gates. No package/reporting grant creates
 shader capability or waives P8's own fresh verification.
@@ -1648,6 +1691,11 @@ With `RecordingGLDevice`/scripted ports and fake verified dependencies:
   blob behavior restore exactly;
 - assert H8-BLOB-01 suppresses only the blob invocation and preserves the fire path;
 - assert unavailable estate performs no shadow GL and main frame proceeds.
+- at v0.5, verify N=3 gives each prepared submission IDs0,1,2 while Forge predicates, entity
+  counters, traversal/setup, clear/split/flip/mipmap counts equal N=1; no main scopes in shadow;
+- exercise nested instance restoration, stale shadow admission, second-copy failure (no third
+  copy/no partial completion), and display-list compilation once/playback N times without
+  captured instance IDs or nested N² multiplication.
 
 The Cleanroom integration fixture records `shouldRenderInPass(0/1)` calls for modded entity and tile
 entity fixtures and verifies the current RenderGlobal patch behavior.
@@ -1741,6 +1789,8 @@ These outcomes do not modify RESEARCH §11.
 | D-P8-13 | Adopt R7-13: pure policy/hook plan first; final-registry validation and fingerprinting only at publication construction | Phase 7 §5.4 `docs/phase7/v1/PHASE_7_DOC.md:2344-2349` requires registry-independent metadata and final-registry create; breaks the provider/compile cycle without borrowing an old registry or weakening live generation/epoch authentication |
 | D-P8-14 | accept authenticated shadow execution as alternate P9 ID admission and independent P7 color producer | delivers IDs without illegal main gbuffers scopes; preserves Forge pass order and nested restoration |
 | D-P8-15 | adopt current producer grants/schema and authenticated current-bind atlas route | distinguish architecture adoption from verification; no second binder, stale atlas inference or historical schema fallback |
+| D-P8-16 | Adopt the maintainer-approved v0.5 prepared-submission boundary, leaving shadow traversal/cadence intact | P4 §11.5 records exact evidence and 2026-09-07 authority; §4.8.5 defines shadow authentication/restoration/failure and excludes world/Forge replay. No new renderer API. |
+| D-P8-17 | Adopt P3 schema18 through P7, superseding D-P8-15's earlier schema; reject schema17 | No parser/source reopening or inferred migration; P5 alone supplies actual main/shadow extents and no engine superSamplingLevel sizing field exists. |
 
 ### 11.2 Binding decision disposition
 
@@ -1810,18 +1860,23 @@ These outcomes do not modify RESEARCH §11.
   fallbacks remain mandatory.
 - G8/S1 consumes the completed shadow targets after Phase 8 and adds real `shadowcomp` flips; it
   may not move the v0.2 water-shadow split.
+- P7/P10 consume §4.8.5's approved v0.5 prepared-submission contract through existing private
+  draw adapters. P8 retains one traversal and cannot mint main admissions inside shadow.
 
 ### 11.5 Requested upstream changes
 
 §5.5 is the active adoption/gate ledger. R8-1–5 and R7-10–13 are owner-designed and receiver-
-adopted as applicable, not fresh verified implementation permission. Current schema17 and
+adopted as applicable, not fresh verified implementation permission. Current schema18 and
 P7's exact reload/current-bind/ID adapters require coordinated fresh reviews. Real shadow
 remains NotInstalled until those gates and applicable separate upstream authority requests
 close. No duplicate package grant or `/1` reporting fallback is required.
 
-No change is requested to RESEARCH's shadow contract. A future DESIGN candidate should retain the
-Phase 5/Phase 8 PCF ownership split explicitly. This amendment preserves that behavior and the
-traversal/camera/bridge/copied-depth/mipmap/neutralization contracts; it grants no broader redesign.
+IR-18's non-fullscreen boundary is explicitly approved by the maintainer on 2026-09-07:
+repeat prepared submissions, not traversal (§4.8.5). P4 §11.5 holds the independently consulted
+author/OSS evidence and limits. Governing RC3 and historical RESEARCH remain unchanged.
+A future DESIGN candidate should retain Phase 5/8 PCF ownership and this approved v0.5 boundary.
+This amendment preserves traversal/camera/bridge/depth/mipmap/neutralization contracts and
+does not grant a renderer-extension API or waive fresh owner/receiver verification.
 
 ---
 

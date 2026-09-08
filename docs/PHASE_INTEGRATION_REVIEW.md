@@ -1376,3 +1376,141 @@ rendering experiment or retired verification tool was run: the amended contracts
 repository implementation to exercise. The two MCP method lookups establish mappings only.
 All fourteen amended documents still require the applicable fresh verification before
 implementation consumption; this session does not attempt to remediate or waive IR-01.
+
+### 2026-09-07 follow-on — IR-03, IR-12, IR-18 and IR-24
+
+This is a **dated follow-on disposition**, not an alteration of the original audit or the
+preceding partial-resolution records. Those records describe their then-current bytes.
+Only these four partial findings were reopened. IR-01, historical review verdicts and
+whole-phase eligibility remain untouched. The work changes documentary contracts, not the
+template implementation; no phase PASS or implementation-consumption clearance is granted.
+
+Owner §5 surfaces and their incorporated semantics/§11 ledgers were reconciled under each
+phase's own header authority: P1 RC2, P2 v3, P3–9 RC3 and P10–14 v3. Research and all three
+governing design files remain unchanged. Where evidence did not select policy, the maintainer
+made the following explicit choices **after** the bounded evidence was reported:
+
+| Finding | Maintainer choice on 2026-09-07 | Current disposition |
+|---|---|---|
+| IR-03 | Internal pack options are session-only, survive selection changes, restart at defaults | **Remediated architecturally**; locale publication and authenticated mutation/load contracts now exist |
+| IR-12 | `superSamplingLevel` is pack-option/source compatibility only; remove engine SSAA requirement | **Remediated by approved scope correction**, not by implementing or claiming SSAA |
+| IR-18 | Repeat each prepared native geometry submission adjacently, N total IDs0…N−1, at v0.5 | **Remediated architecturally**; ownership, admission, ordering and side effects are bound |
+| IR-24 | Ratify effective-mode old-light macros and user→pack→true fallback; retain eight keys and zero-only AA reservation | **Remediated for this finding**; broader OQ-7 renderer identity/feature experiment is not ratified |
+
+#### IR-03 follow-on — one locale authority and session-only Internal options
+
+`docs/phase3/v1/PHASE_3_DOC.md` §§2.2/4.3/4.10/5.1/5.1.1/5.3/11
+(D-P3-63/65) publishes schema18:
+
+- `OptionConfiguration.localizedDecorations(): Map<String,LangDecorations>` replaces the
+  single `lang()` component with no alias. One bounded immutable load acquires all locales.
+  Canonical locale/path ordering, deterministic whole-file collision winner, strict UTF-8/
+  Properties escapes, all nine maps, absent versus present-empty distinctions, per-key
+  requested→en_us→P12 fallback and locale-only cache invalidation are explicit.
+- The complete catalog participates in configuration fingerprints and the existing recursive
+  source-free inspection. String leaves use `DecisionValue.TextHash(String sha256)` of exact
+  UTF-8 bytes, including locale keys and empty translations; no translated pack text or
+  invented text-length field enters committed goldens.
+- `PackLoadRequest` takes required non-null `Optional<InternalOptionSnapshot>` immediately
+  after `internalPackSource`. `OptionCatalog.captureInternalOptions` issues an opaque
+  same-bundle/exact-PackIdentity token with complete values and closed failures. Load
+  authenticates it and rebinds into a fresh catalog before preprocessing. Filesystem input
+  is empty; no fake candidate, path, `PackOptionsTarget` or serialized token exists.
+
+`docs/phase7/v1/PHASE_7_DOC.md` §§4.1/5.1/5.2/11 and
+`docs/phase12/v1/PHASE_12_DOC.md` §§4.3–4.7/5.2–5.4/8/11 adopt the exact
+`InternalOptionCommitter(expected,preview,globals,effects)` result/lifetime contract.
+Validate before I/O; changed globals write first, then queue/session preference acceptance.
+`SESSION_ACCEPTED` is distinct from file `COMMITTED` and final pipeline success. Capture/
+global-write failure leaves the prior preference; accepted-load failure retains it for retry
+but never silently retries defaults. Off/filesystem switches retain the session map; shutdown/
+bundle replacement clears it. Profiles/reset/discard and coalescing use the same path.
+
+`docs/phase2/v2/PHASE_2_DOC.md` §§4.3.3/4.11.4/5.4/8/11 adopts inspection and
+the executable option bridge without relaxing complete **P3+P4+P5** matrix-golden or registry-only
+capture provenance requirements. P12 owns final display fallback, not another language parser.
+R-P12-5 and the missing Internal mutation contract are fulfilled architecturally, unverified.
+
+#### IR-12 follow-on — approved removal of engine SSAA semantics
+
+`docs/phase5/v1/PHASE_5_DOC.md` §§4.11.1/5/8/11.6 (D-P5-26/27) records the
+independent evidence and its limits: shipped G6 author documentation's unexplained constant
+row; the pinned official OptiFine author document; licensed Pintonium/Iris option recognition.
+These establish spelling/option compatibility, **not** an engine-level domain, N versus N²
+samples, jitter, accumulation or resolve. No decompile implementation or generic SSAA
+assumption fills that gap. Exact source paths, revisions, URLs and licensing limits are in §11.6.
+
+The maintainer explicitly removed the old engine interpretation. P5 now publishes only
+`BufferSizing(Extent2i mainExtent,Optional<Extent2i> shadowExtent)`; P3 publishes only
+`WorldRenderConstants(float sunPathRotation,float ambientOcclusionLevel)`. No sampling
+accessor, structural-equality member, positive-level engine constraint or forced level1 remains.
+Eligible pack options and pack-authored source use still work under ordinary option rules.
+P7 §4.6 and P2 §4.11.4 consume this cutover: unchanged ordinary extent/quality, frame/history,
+shadow cadence, depth-copy/flip/mipmap/final and `/2` capture scheduling. The option name
+alone adds no engine draw/allocation/resolve or AA UI/runtime. Historical App A.3/RC3 wording
+is preserved, with the approved authority correction recorded in §11 rather than silently edited.
+
+#### IR-18 follow-on — prepared submissions, not repeated world traversal
+
+`docs/phase1/v14/PHASE_1_DOC.md` §5/D-P1-47,
+`docs/phase4/v1/PHASE_4_DOC.md` §5/§11.5/D-P4-25 and
+`docs/phase8/v1/PHASE_8_DOC.md` §4.8.5/§5/D-P8-16 accept the contract consumed
+by P7 §§4.6/5.1, P6 §§4.4.4/4.12/5 and P10 §§4.6/5/8/11.
+P4 §11.5 records published author evidence and bounded Angelica/Iris/Pintonium observations:
+they do not determine replay ordering. **Adjacent order is the maintainer's explicit choice.**
+
+P7 owns a private synchronous mod-side adapter beneath existing authenticated main scopes
+or Valid shadow execution plus the active root-shadow selection. Effective-provider N governs
+N native copies with IDs0…N−1: A0…A(N−1), then B0…B(N−1). P10 client-array/VBO final
+submissions and geometry-list playback integrate at v0.5; list capture/build/upload/reset and
+Forge/entity/world/shadow traversal occur once. A call-local guard prevents N² forwarding.
+Unknown mixed-state lists cannot count as supported by silently drawing once.
+
+Use P6's existing void instance event, restore the saved parent value (outer zero), and do
+not add activation participants, expression/history refresh, clears, depth splits, flips or
+mipmaps per copy. Propagated draw/protocol failures stop copies and take main abort/off or
+shadow abort/neutralization with finally restoration; no post-mutation Rejected/restart.
+P6's existing internally isolated per-uniform GL degradation is preserved, not turned into
+a fabricated event status or automatic abort. Recorded errors still affect conformance.
+No public renderer API or unrelated P10 facade/lifecycle grant is created.
+
+#### IR-24 follow-on — ratified effective macros, no AA feature
+
+P3 §§2.3/4.4/5/11 (D-P3-64), P9 §4.11/§5/§11, P10 §4.8.1/§5/§11 and
+P12 §4.6/§5/§11 agree: discover original-source options; parse Properties with standard
+macros A–G only; resolve old-light user→pack→true; emit `MC_OLD_HAND_LIGHT`/
+`MC_OLD_LIGHTING` as1 iff enabled **before shader jcpp**. Reuse immutable same-build
+materialization inputs. Runtime consumes typed tri-states and resolves the same rule,
+never reverse-decodes macro presence or feeds a post-load callback into preprocessing.
+
+The exact known keys remain `renderResMul`, `shadowResMul`, `handDepthMul`,
+`normalMapEnabled`, `specularMapEnabled`, `oldHandLight`, `oldLighting`,
+`antialiasingLevel`. `default` remains distinct from explicit `false` in storage/fingerprints;
+the last key is reserved zero-only, not an eighth UI control or enabled FXAA macro.
+Unknown-safe storage keys still warn/round-trip in P3; P7/P12 reject unknown executable
+delta keys, and P2 preflight checks the published inventory/domains without mutating apply.
+P5's option-only sampling correction closes the conflicting AA inventory implication.
+The maintainer's narrow ratification is policy authority, not an OQ-7 experiment or parity result.
+
+#### Follow-on verification and remaining boundary
+
+Three exclusive owner-editing slices and Main's receiver integration were followed by three
+read-only focused reviews of the settled locale/session, draw/sampling and schema/macro edges.
+The reviews identified and the fix-up corrected: a nonexistent P12 text-length projection,
+P2 codec-versus-executable-bridge rejection ownership, P6 upload-isolation ambiguity and old
+instance range, and P7's missing binding incorporation/current revision marker. The draw/
+sampling reviewer re-read those final P6/P7 corrections and reported no remaining actionable
+contradiction within that slice. These are scoped documentary checks, not whole-phase PASSes.
+
+Programmatic documentary checks confirm the 42 mandatory §1/§5/§11 sections across fourteen
+phase documents, balanced fences, unique §11 decision-table IDs, referenced phase-path existence,
+and preservation of this review's entire pre-follow-on byte prefix and the four authority files.
+P14's conditional sizing/lifecycle/metrics interfaces introduce no changed accessor/payload and
+are intentionally unchanged. No implementation, Gradle build/test, client, GL experiment, matrix
+capture, image or retired verification tooling was run or produced.
+
+**All four former partial findings now have a complete architectural disposition.** Broader OQ-7,
+IR-01 and the preceding unrelated native-source/jcpp/typed-suffix/P10/optional-UI/P14 gates remain.
+Changed phase §5 surfaces still require their applicable fresh whole-document verification
+before implementation consumption; this follow-on neither waives those gates nor rewrites
+the original audit's result.

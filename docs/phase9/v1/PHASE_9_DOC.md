@@ -667,8 +667,9 @@ non-block items.
 - explicit decoded user TRUE/FALSE wins, else explicit pack TRUE/FALSE wins;
 - both DEFAULT resolve `true`, the local backward-compatible fallback (D-P9-8), not
   a claim that the shipped documentation specifies a missing-value default;
-- Phase 3 emits `MC_OLD_HAND_LIGHT 1` only for explicit user true; default/false omit it.
-  This pre-load macro is not the resolved runtime hand policy and is never rewritten after load;
+- Phase 3 resolves load-time `MC_OLD_HAND_LIGHT` from this same user→pack→true rule after
+  its option-macro-free Properties parse, before shader preprocessing. The runtime still
+  resolves typed values, never infers policy from macro presence or rewrites finalized macros;
 - `dynamicHandLight=DEFAULT` resolves `true`, but has an effect only when a recognized external
   `DynamicHandLightInterop` is installed.
 
@@ -810,13 +811,13 @@ properties, fallback, or precedence.
 
 | Phase 3 §5 contract | Use |
 |---|---|
-| `PackConfiguration` current schema/fingerprint discipline | accept only `CURRENT_SCHEMA_VERSION` (17 after IR-24); reject all other versions before derivation, never infer an upgrade |
+| `PackConfiguration` current schema/fingerprint discipline | accept only `CURRENT_SCHEMA_VERSION` (18 after IR-03/24); reject all other versions, including 17, before derivation, never infer an upgrade |
 | `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser.parse(IdMappingParseRequest)` | current nested schema equals configuration schema; per-kind ABSENT/PRESENT_EMPTY/PRESENT_RULES, ordered ordinary/forced11300 rules, ENTRY/TAG and CLASSIC/MODERN provenance; use exact parserEnvironment for bounded mod bytes |
 | `ShaderPropertiesModel.engineFlags` | raw `oldHandLight` / `dynamicHandLight` requested states |
 | `EngineOptionData` current codec | decoded oldHandLight DEFAULT/TRUE/FALSE, explicit user priority; use exactly §4.11 runtime policy, not macro presence as a resolved Boolean |
 | `DiagnosticReporter` and attributed origins | warnings without exceptions or lost source location |
 
-Phase 3 §§2.2/4.9/5.1/5.3 are the current schema17 owner contracts. Catalog-bound
+Phase 3 §§2.2/4.9/5.1/5.3 are the current schema18 owner contracts. Catalog-bound
 materialization and lossless declarations remain required alongside IR-24's amended codec.
 Only selected configuration `idMappings()` is consumed. No selected-pack reopening, macro
 reconstruction, flattened old list, fabricated alternate list or absence default is allowed.
@@ -1060,6 +1061,7 @@ coordinated rebuild goes off, never resumes the old pipeline.
 | D-P9-13 | Adopt current P3 schema/input and P7 publish-after-textures/off-on-failure; preserve local pure-builder no mutation and drain matched lookup/ordinal borrows before close (IR-03/04/09). |
 | D-P9-14 | Admit ID scopes through authenticated main or shadow capability, restore nested values before release, and never activate main programs in shadow (IR-22). |
 | D-P9-15 | Reuse the P7-owned v0.1 color-only producer; P9 defines operand-capture semantics but adds no writer or later-milestone deferral. Preserve exact oldHandLight default/true/false user-over-pack codec and local true fallback (IR-11/24). |
+| D-P9-16 | Adopt P3 schema18 load-time old-hand-light projection after option-macro-free Properties parsing; retain typed runtime user→pack→true resolution and identical held-light behavior. No macro-presence adapter, older-schema reuse or runtime mutation of shader macros (IR-03/24). |
 
 ### 11.2 Input contradictions and rulings
 
@@ -1087,6 +1089,8 @@ No contradiction with RESEARCH D-1…D-10 was found.
 - The v0.3 `LegacyTagCatalog` data set must be derived from the target pack matrix and live 1.12
   registries under the explicit provider rules. Unknown tags already have a complete fallback.
 - Phase 12 supplies the higher-priority decoded oldHandLight tri-state under the current codec;
+  P3's schema18 shader macro projection uses the same rule after its independent Properties
+  pass; global `default` remains distinct from explicit false in canonical identity.
   DEFAULT delegates to the pack then §4.11's local true fallback, not an unconditional GUI true.
 - An external dynamic-lights adapter is optional and must be separately compatibility-gated. Its
   absence does not reduce shader identity conformance.

@@ -573,7 +573,8 @@ setup, H10-CLIENT wraps the actual draw invocation:
 2. use a borrowed client-data view with stride 56 and the offsets above; establish
    array-buffer binding zero before client pointers;
 3. retain the direct buffer and pointer ranges for the complete call;
-4. install declared generic pointers and masks, perform the original draw once;
+4. install declared generic pointers and masks, then submit the prepared draw through
+   P7 §4.6's countInstances boundary at v0.5 (one ordinary draw before that milestone);
 5. in `finally`, restore generic array/pointer/current-value state and buffer bindings;
    run the normal Forge element `postDraw` cleanup and builder reset even on a
    shader-side failure. Do not duplicate a draw after partial execution.
@@ -608,11 +609,13 @@ shadow draws. This is an explicit `LIST_CAPTURE` mode, not a forged current-prog
 activation. It installs client arrays only for the capture operation and restores them
 immediately afterward. Compile a list only while shader vertex mode is active; an
 epoch/mask change invalidates and rebuilds it.
+Count expansion and instance-uniform uploads are forbidden during LIST_CAPTURE. Capture
+geometry once; count belongs to authenticated live playback, not a compiled list epoch.
 
 At replay, the recorded vertex attributes are already part of the list; there is no
 live client pointer to its former builder memory. Apply the current shader's declared
-input policy to live array state, invoke the list, then restore generic current values
-that recorded attribute commands may have changed. Undeclared inputs are unused by
+input policy to live array state, then at v0.5 submit the prepared list playback through
+P7 §4.6's adjacent-repeat boundary; restore generic current values afterward. Undeclared inputs are unused by
 the program, not live enabled arrays. Do not replay the Java uploader per frame or
 retain freed client memory to emulate a list.
 
@@ -620,6 +623,27 @@ This capture-vs-live-draw distinction is D-P10-7. It must be exercised with VBOs
 and different main/shadow declaration sets. If the actual compat driver cannot capture
 these generic arrays correctly, shaders fail safely for this path; **forcing VBOs is
 not an acceptable completion of the required two-path implementation**.
+
+#### Prepared-submission repetition — IR-18
+
+P7 owns count/admission/instance/failure policy; these existing draw adapters supply the final
+native submission **after** validation, uploads and pointer setup, and **before** teardown,
+Forge postDraw or builder reset. At v0.5 repeat that prepared operation N times, not the Java
+uploader/Tessellator/entity/render-layer method. N comes from the current successfully activated
+effective provider through P7, not a P10 registry query or requested-child metadata.
+The same P7 private submission guard prevents duplicate forwarding wrappers from multiplying
+N²; distinct nested submissions retain saved-parent instance restoration.
+No new public renderer interface or native facade extension is granted by this policy.
+
+For display lists, repeat playback only while current main admission or authenticated shadow
+admission remains valid. The list must not record program changes or instance uploads that
+would overwrite the live per-copy value. Unproven mixed-state lists cannot claim count support
+by drawing once. Capture/setup and postDraw/reset occur once, depth/blend effects occur once
+per native copy, and no new Forge traversal/event is emitted. Shadow uses the active root-shadow
+selection and never opens a main gbuffers scope. Failure stops copies, restores pointers and
+saved instance value in finally, then invokes P7 main containment or P8 shadow abort/neutralization.
+Existing R10-1/R10-2 vertex grants remain separate; actual driver/list/hook behavior still
+requires runtime verification. This accepts a specific v0.5 count boundary, not those grants.
 
 #### Facade boundary
 
@@ -722,9 +746,10 @@ Phase 7 resolves this immutable pair before vertex preparation: user wire key
 `oldLighting` is exactly `default|true|false` (absent=`default`) through Phase 3's
 codec; explicit user TRUE/FALSE wins, else explicit pack `EngineFlags.oldLighting`
 wins, else use **true**. `EngineFlags.separateAo` has no invented user key: explicit
-pack TRUE/FALSE wins, else use **false**. P3's pre-load `MC_OLD_LIGHTING` macro reflects
-only explicit user true and is not a post-parse effective-policy query. Default/false
-omit the macro; P10 never mutates same-build macro state after parsing.
+pack TRUE/FALSE wins, else use **false**. P3 resolves its load-time `MC_OLD_LIGHTING`
+after the option-macro-free Properties parse with the same user→pack→true rule, before
+shader preprocessing. P10 still consumes typed policy, never macro presence, and never
+mutates same-build macro state at runtime; `default` and false remain fingerprint-distinct.
 
 At each supported block/model/fluid vertex, retain vanilla/Forge's sampled lightmap
 and tint/base color, identify AO separately from the fixed directional shade, then:
@@ -1005,7 +1030,8 @@ and restoration boundaries.
 | Phase 9 §5.1 / §4.10 | `AliasLookup.generation()` and `mcEntity(int)`, `BlockStampResult` | One immutable lookup per task, exact two words, no alias re-resolution |
 | Phase 1 §5.3 / §4.10, narrow extra input | `CompatCheck`, `CompatContext`, `CompatVerdict`, `BailRegistry` | Existing mechanism only; no fabricated `Compatible` enum from Phase 7 prose |
 | Phase 1 §5.1/§5.2 | D-6 package seam, `GLCapabilityProfile.maxVertexAttribs`, diagnostics/error and recorder conventions | Proposed vertex verbs are explicitly absent until R10-1 adoption |
-| Phase 3 §§4.8/5 engine flags and codec, through Phase 7 | schema17 `oldLighting` decoded user tri-state and pack oldLighting/separateAo tri-states | Phase 7 resolves §4.8.1 pair, preserving current same-build macro/materialization identity; no pack reopening or private parser |
+| Phase 7 §4.6 / §5.1 countInstances | Authenticated effective count and prepared-submission policy, saved instance restoration, single-wrapper guard and main/shadow failure routing | Existing client/VBO/list-playback adapters integrate at v0.5; no whole traversal, capture or upload repetition |
+| Phase 3 §§4.8/5 engine flags and codec, through Phase 7 | schema18 `oldLighting` decoded user tri-state and pack oldLighting/separateAo tri-states; reject every other schema before derivation | Phase 7 resolves §4.8.1 pair, preserving current same-build macro/materialization identity; no pack reopening or private parser |
 
 Phase 3 attribute names still flow through Phase 4's effective state; the narrow
 lighting/codec authority is consumed through Phase 7's immutable resolved input,
@@ -1134,6 +1160,7 @@ or state-transition bug. Loader/driver questions need actual runtime evidence.
 | T10-COMPAT | Actual `celeritas` ID alone, exact renderer class alone, throwing probe, late positive before format swap, and clean vanilla. A package string is not a class probe; positive results latch off |
 | T10-OFF | Run ordinary builder lifecycle with shaders off: bytes/count match vanilla, no sidecar allocation/TLS lookup/extended facade calls or changed defaults |
 | T10-GROWTH | Test-only appended named field changes stride; unchanged binder/copy/state algorithms deliver its supplied values without editing consumers. This proves extensibility, not modern pack support |
+| T10-INSTANCES | At v0.5 two prepared submissions with N=2 observe A0,A1,B0,B1; client/VBO/list paths have one preparation/reset and two native copies each. Compile list once without instance upload, then replay with current count; no N² forwarding. Nested distinct submission restores parent ID; failure after first copy stops remaining copies and contains rather than replays |
 
 Use Phase 1's recording/error conventions and capability fixtures. Test at the actual
 highest-used attribute boundary, not only on an abundant-capability profile. Do not
@@ -1326,6 +1353,8 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
 | D-P10-10 | Preserve the current build-authoring exception as provenance, not a verified label; reconcile fresh Phase 4/7/9 interfaces before implementation |
 | D-P10-11 | Accept shaders-only oldLighting/separateAo behavior from P3's master map and RESEARCH F.1. Local defaults true/false and fixed face factors are explicit compatibility choices; user default delegates to pack, AO moves to alpha, and effective policy participates in every bake epoch. No renderer performance work or verified-parity claim (IR-05/24). |
 | D-P10-12 | Adopt P9's amended off-on-failure and matched lookup/ordinal worker lifetime; preserve current P3 schema17 and catalog-bound same-build inputs through P7. P9 R10-3 is adopted/unverified, not still missing (IR-03/04/09). |
+| D-P10-13 | Adopt schema18 old-light macro projection while keeping typed runtime policy and bake invalidation unchanged; load-time shader macros follow the same user→pack→true rule after P3's independent Properties pass. Historical D-P10-12 schema17 adoption is superseded, with no inferred upgrade (IR-03/24). |
+| D-P10-14 | Adopt maintainer-approved IR-18 prepared-submission repetition through P7's existing authenticated scopes at v0.5. Client/VBO final draw and list playback repeat; construction/upload/capture/reset/Forge traversal do not. This neither invents a renderer API nor grants R10 native/lifecycle extensions. |
 
 ### 11.2 Input contradictions and rulings
 
@@ -1381,6 +1410,10 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
 - **Phase 7:** lifecycle/activation adapters including `prepare(token,layout,lighting)`;
   resolve user/pack/default pair before bake preparation, preserve frame timing and
   three-participant barrier, and invalidate after any effective pair change.
+  Adopt P3 schema18 and reject schema17 before preparation; shader macro projection is
+  frozen by P3 before shader preprocessing, not recomputed by a vertex adapter.
+  At v0.5 use P7 §4.6's prepared-submission count policy in §§4.6/5.2, including
+  root-shadow-only admission, saved-parent instance restoration and failure containment.
 - **Phase 9:** adopted matched lookup/ordinal lifetime and exact payload semantics;
   no lookup result may outlive its safe task borrow.
 - **Phase 12:** canonical oldLighting tri-state wire setting and REPUBLISH, with renderer

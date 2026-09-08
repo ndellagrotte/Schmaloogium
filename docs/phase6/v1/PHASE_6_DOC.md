@@ -892,7 +892,7 @@ semantics without inventing a Minecraft query.
 | `entityId` | `int`; Phase 9 alias-mapped entity ID; 0 outside scope | Phase 9 scoped signal | immediate if active + every switch | interface v0.1; value v0.3 |
 | `blockEntityId` | `int`; Phase 9 alias-mapped block ID for current block entity; 0 outside scope | Phase 9 scoped signal | immediate if active + every switch | interface v0.1; value v0.3 |
 | `blendFunc` | `ivec4`; effective draw-state `(srcRGB,dstRGB,srcAlpha,dstAlpha)`, or zeros while blending is disabled | GlStateManager observation plus effective Phase 4 blend-lock overlay | immediate if active + every switch | v0.1 |
-| `instanceId` | `int`; 0 original, 1…N copy | Phase 7 draw-loop signal | immediate before each draw + every switch | interface v0.1; composite value v0.5 |
+| `instanceId` | `int`; total N draws IDs0…N−1, saved predecessor restored, outer neutral0 | Phase 7 draw-loop signal | immediate before each prepared draw + every switch | interface v0.1; fullscreen/authenticated non-fullscreen values v0.5 |
 
 All five are excluded from Phase 11's expression-input view. That exclusion is contract-visible:
 `docs/research/v1/RESEARCH.md:1369` calls them “Per-draw dynamics (excluded from custom-uniform
@@ -1309,7 +1309,7 @@ methods; they never assign callbacks into Phase 6.
 | fallback/current entity | `entityId` | scoped entity render push/pop with immediate upload and 0 restoration | Phase 9 values via Phase 7 hook / v0.3 |
 | current block entity | `blockEntityId` | scoped TE render push/pop with immediate upload and 0 restoration | Phase 9 values via Phase 7 hook / v0.3 |
 | entity color | `entityColor` | P7-owned hurt/flash push/pop with immediate upload and exact nested prior-color restoration, neutral outside scope; independent of alias IDs | Phase 7 / v0.1, not deferred to Phase 9/v0.3 |
-| instance | `instanceId` | immediately upload 0 before original and `i` before each repeated draw; restore 0 | Phase 7 / v0.5 composite loop |
+| instance | `instanceId` | immediately upload IDs0…N−1 before prepared copies; restore saved predecessor, outer zero | Phase 7 / v0.5 fullscreen and authenticated non-fullscreen boundary; no history/expression refresh |
 | held items | four held-item uniforms | tick/inventory change after Phase 9 alias resolution | Phase 9 / v0.3 |
 | atlas size | `atlasSize` | authenticated bind → P13 Known dimensions or Unknown/non-atlas `(0,0)` → `updateAtlasSize`; immediate active upload and reload reset | Phase 7 adapter + Phase 13 value / v0.5 |
 
@@ -1684,7 +1684,7 @@ Existing Phase 1 overloads and the readback verb are sufficient for every Phase 
 
 | Phase 3 §5 contract | Use |
 |---|---|
-| `PackConfiguration`, schema/fingerprint discipline | accept exactly `PackFrontEnd.CURRENT_SCHEMA_VERSION` (17 after IR-24); reject older schema before derivation, no fabricated defaults or inferred upgrades |
+| `PackConfiguration`, schema/fingerprint discipline | accept exactly `PackFrontEnd.CURRENT_SCHEMA_VERSION` (18 after the IR-03/24 follow-on); reject every other schema, including 17, before derivation, no fabricated defaults or inferred upgrades |
 | closed `ResourceRequirements` algebra | center-depth enablement and smoothing half-lives with published defaults/order |
 | `DeclaredUniformCatalog`, `DeclaredUniform`, `DeclaredGlslType`, attributed locations | final post-materialization declaration/type provenance; consumed through Phase 4's merged effective layout without reopening source |
 | reserved `phase6.centerDepthSmoothRedirect` contributor | deliberately returns Empty |
@@ -1709,6 +1709,16 @@ Existing Phase 1 overloads and the readback verb are sufficient for every Phase 
 Phase 6 never bypasses `PublishedRegistry.barrier`. Phase 4 binds its retained selection and invokes
 exactly the three callbacks; no Phase 6 operation selects or activates a program independently
 (`docs/phase4/v1/PHASE_4_DOC.md:1789-1790`, “calls three participants”).
+
+For IR-18, P7's v0.5 non-fullscreen adapter sends `updateInstanceId(i)` for each prepared
+native copy and restores the saved preceding value (outer zero), not unconditional zero in
+a nested scope. Frame sampling/history rotation and custom refresh remain at existing
+boundaries; this event invokes no program activation or fourth participant. A propagated
+event/protocol/restoration exception follows P7/P8 containment and stops remaining copies;
+stale admission never becomes valid. The event still returns void. §4.11's internally isolated
+GL upload errors retain their per-uniform degradation and diagnostics, not a new return status
+or automatic frame abort. Disabled/absent instance locations do not suppress native copies;
+P2 still counts recorded errors against conformance.
 
 #### Phase 5 — R7-10 pure policy dependency
 
@@ -2019,6 +2029,8 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
 | D-P6-19 | Separate pre-clear sampling from later post-camera current-matrix capture; keep Phase 7 entityColor at governing v0.1 | IR-11; a later alias-ID owner cannot silently defer non-alias color |
 | D-P6-20 | Accept only Phase 7 authenticated current-bind evidence translated through P13 Known/Unknown into existing atlas sink | IR-21; availability is not binding, and P5 remains sole physical binder |
 | D-P6-21 | Reconcile R7-10..13 grants and retain permanent retirement after final use with rejection retaining services | IR-04/10; owner-designed is not freshly verified |
+| D-P6-22 | Adopt P3 schema18 and its changed configuration fingerprints through the same P4/P7 handoffs | Locale publication, Internal session options and old-light projection change configuration identity, not P6 event/upload ownership; no schema17 reuse |
+| D-P6-23 | Consume P7's v0.5 prepared-submission instance sequence and saved-parent restoration through the existing immediate event sink | Per-copy instance uploads do not rotate history, sample providers or refresh expressions; P7/P8 retain traversal and failure ownership (IR-18) |
 
 ### 11.2 Contradictions and contract gaps found
 

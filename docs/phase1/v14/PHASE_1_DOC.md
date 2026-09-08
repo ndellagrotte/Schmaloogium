@@ -1537,6 +1537,14 @@ native-parameter grants are not missing APIs; native-preserving source output an
 permission remain separate gates. Changed §5 and receiving contracts are **unverified pending
 fresh whole-document reviews**. No implementation, validation or new PASS claim is made.
 
+### 0.27 IR-18 prepared-submission decision — 2026-09-07
+
+RC2 remains this phase's governing design. After research §3.2/4.5 and the scoped published/
+licensed evidence recorded in P4 §11.5, the maintainer chose N adjacent prepared submissions
+at v0.5, P7 policy/P10 adapters, one P8 traversal. D-P1-47/§5/§11 incorporate that authority;
+earlier open-case statements in §0/decision history are superseded, not erased. No new facade
+verb, renderer API, source reuse, implementation or verification claim. Changed §5 remains unverified.
+
 
 ## 1. Scope & boundaries
 
@@ -1771,7 +1779,7 @@ debug affordances must satisfy, plus the vocabulary rule.
 | **Never compile against `org.lwjglx`** | RESEARCH.md §6.1, DESIGN.md §G2.2 | `enable_lwjglx=false` (§4.6) plus the §4.3 bytecode assertion, which lists `org.lwjglx` among the forbidden prefixes | `[V:mcp]` |
 | **All engine GL goes through the facade**; no direct LWJGL outside `mod.glue` | DESIGN.md §G4.6 | The §4.3 bytecode assertion enforces the `:engine` half mechanically. The `mod.glue`-only half is a convention plus a `:mod` scan restricted to `org.lwjgl` references outside `com.schmaloogium.mod.glue`. §4.7.4 adds the other half of §G4.6 — the backend's obligation to issue `GlStateManager`-cached state through `GlStateManager` | `[V:design]` |
 | `const int countInstances = N` — **instanced re-render** with an incrementing `instanceId`, on a **composite/deferred** program | RESEARCH.md §3.2 and App A.3 for the directive; App **D.4** declares `instanceId` an `int` **uniform** ("0 original, 1..N instanced copies"). **the only observed form is RESEARCH.md §4.4's**, which is the only place the instancing *loop* is observed — "optional sub-viewport (`scale.<prog>`), `countInstances` instancing loop", in the composite-pass line | A **caller-side loop** over `DrawService.fullscreenQuad()` with `UniformService.upload(instanceIdLoc, i)` between copies. GLSL 120 has no `gl_InstanceID` (RESEARCH.md §3.5), so no single instanced draw can vary the uniform per copy — which is why the facade carries **no** instanced verb (`[D-P1-33]`, and §4.7.4's absent-verbs table says so). **The loop is Phase 7's, at `[v0.5]`**: `DESIGN.md` Part II names the `countInstances` instancing loop in Phase 7's *Scope — in*, under **Composite/final execution**, tagged `[v0.5]` there, and says it a second time and more explicitly in Phase 4's *Scope — in* — *"`countInstances` exposure to the pass executor (**execution is Phase 7, tag v0.5**)"* — which is the strongest citation on the point and the source of the milestone. Phase 5 — which owns the buffer estate the composite passes read and write — has no pass-execution bullet at all and puts "when copies/clears *happen* in the frame" in its *Scope — out*. The `instanceId` **upload** the loop makes between copies is **Phase 6's** entry point: `DESIGN.md` Phase 6's cadence model carries `instanceId` among the per-draw dynamics "at their hooks (Phases 7/9/10 invoke)" | `[V:doc]` |
-| `const int countInstances = N` on a **gbuffers/shadow** program — the other half of the same directive | RESEARCH.md §3.2 and App A.3 state it as a **vertex-stage** opt-in beside `mc_Entity`, `mc_midTexCoord` and `at_tangent` and impose **no program restriction**; `uniform int instanceId` sits in the *common* uniform block, above the GBuffers heading; RESEARCH.md §4.2 lists "instance count" among the per-program state carried by **all classic catalog slots** | **No Phase 1 design element — stated rather than omitted.** "The geometry" there is vanilla terrain/entity geometry drawn by Minecraft's own draw calls through Phase 7's hooks, which never reach the facade, so the caller-side loop above cannot satisfy this half and no facade verb would. Ownership is split and named: **Phase 3** detects the directive in its `const`-scan, **Phase 4** carries it as the per-slot instance count, **Phase 7** owns the re-render itself if the case proves real (`[D-P1-35]`, §11.4) | `[A]` — the *scope* is inferred: RESEARCH.md observes no non-composite instancing loop, so this is an open case handed onward, not designed here |
+| `const int countInstances = N` on a **gbuffers/shadow** program | RESEARCH §3.2/App A.3 require repeated vertex-stage geometry without program restriction; explicit maintainer choice on 2026-09-07 settles the submission boundary | P3 detects, P4 carries the effective provider's count, P7 policy/P10 existing adapters repeat prepared native submissions N times at v0.5; P8 traverses once. No new facade verb; complete authentication/restoration contract §5.2/§11.4 | D-P1-47; ordering is maintainer-approved, not reference-observed |
 | `alphaTest.<prog>` — per-program alpha-test state | RESEARCH.md App F.7 | `StateService.alphaTest(AlphaTestState)` (§4.7.4) — the verb only. **The "which program carries which value is Phase 5/6 policy" clause this row carried through the §0.13 revision was wrong (V14-2):** `DESIGN.md` routes the directive **3 (parse), 4 (apply), 7 (execute)** — its coverage row says exactly that (l. 2410), the value is parsed and stored by **Phase 3** (*"per-program render-state overrides (alphaTest/blend/scale/flip/enabled — stored; applied by Phase 4)"*, l. 1245), carried as per-slot registry state and locked at the use-program barrier by **Phase 4** (ll. 1334, 1365 — the *"per-program alpha/blend lock"* is one of the barrier's stated obligations), and executed by **Phase 7**. "alphaTest" occurs nowhere in `DESIGN.md` outside ll. 1245 and 2410, and "blend" occurs zero times in Phase 5's whole spec (ll. 1409–1525) — the 5/6 attribution was this row's alone, the same defect class V13-4 fixed in the mipmap row against the same coverage table | `[V:doc]` for the directive; the routing is `[V:design]` (`DESIGN.md` ll. 1245, 1334, 1365, 2410) |
 | `blend.<prog>` — per-program blend state | RESEARCH.md App F.7 | `StateService.blend(BlendState)` plus `snapshot()`/`restore()` (§4.7.4) — the verbs only; the routing is the row above's: parsed and stored by **Phase 3** (l. 1245), carried per slot and locked at the use-program barrier by **Phase 4** (ll. 1334, 1365), executed by **Phase 7** (l. 2410). **The "per-buffer routing decision is Phase 5's" clause this row carried through the §0.13 revision is deleted (V14-2), and not re-homed:** App F.7's form is `blend.<prog>=off\|<src> <dst> [<srcA> <dstA>]` (RESEARCH.md l. 1511) — per-program, with **no per-buffer axis to route**. Per-buffer blending in this project's sources is RESEARCH.md §3.6.7's Iris-side `PER_BUFFER_BLENDING` feature flag (l. 429), modern-superset material assigned to no phase at v0.1; its one adjacency in `DESIGN.md` is l. 1337's per-buffer `BufferBlendOverride` inside Phase **4**'s registry bullet's REV1 Pintonium cross-check — an inventory to check the slot model against, not an assignment, and in Phase 4's bullet, not Phase 5's | `[V:doc]` for the directive; the routing is `[V:design]` (ll. 1245, 1334, 1365, 2410) |
 | `scale.<prog>` — per-program sub-viewport | RESEARCH.md App F.7 | `StateService.viewport(x, y, w, h)` (§4.7.4), which §4.7.4's inclusion criterion already names the sub-viewport as its reason for existing. **Who computes the rectangle, this document does not say, and the reason is that `DESIGN.md` does not either.** Its three inputs have named owners — the **scale factor** is parsed and stored by **Phase 3** (*"per-program render-state overrides (alphaTest/blend/**scale**/flip/enabled — stored; applied by Phase 4)"*) and carried per slot by **Phase 4** (*"scale/flip storage"*); the **buffer dimensions** it multiplies are **Phase 5's** (*"Sizing: display size × render-quality multiplier; `superSamplingLevel`"*); and applying the result is **Phase 7's**, whose *Scope — in* part (a) lists *"`scale.<prog>` sub-viewports [v0.5]"* under **Composite/final execution**. Phase 5's *Scope — in* has no per-program sub-viewport bullet. The multiplication itself is assigned nowhere, so naming an owner here would be this document ruling on another phase's boundary — §G5.3's integration review is where a seam this shape gets settled | `[V:doc]` for the verb and the directive; the ownership is **`DESIGN.md`'s silence**, reported rather than filled |
@@ -3165,7 +3173,7 @@ public interface DrawService {
      *  caller-side loop over this primitive with an `instanceId` upload between copies, which is
      *  the only form RESEARCH.md §4.4 observes. The same directive on a gbuffers/shadow program
      *  re-renders VANILLA geometry and never reaches this verb at all — see §3's second row,
-     *  [D-P1-35] and §11.4 for who owns that case. */
+     *  [D-P1-47] and §11.4 for the approved prepared-submission owner/contract. */
     void fullscreenQuad();
 }
 
@@ -4408,9 +4416,10 @@ authenticated permission matrix is the binding §5.2 row below.
 | `CompileResult` / `LinkResult` / `ValidateResult` | never-throwing result types carrying driver logs | 4 |
 | `StateService` state verbs + `snapshot()` / `restore()` | the §G4.6 perturb-and-restore mechanism, over viewport, clears, depth mask, **depth test**, blend, alpha test and **fog** — the composite/final block RESEARCH.md §4.4 requires. `DrawService.fullscreenQuad()` establishes **no** state: the caller sets the block. The backend issues every `GlStateManager`-cached verb through `GlStateManager` (§4.7.4, `[D-P1-29]`). **Phase 4 is a consumer too (V14-2):** the per-program `alphaTest.<prog>`/`blend.<prog>` override values are Phase 4's to apply — its use-program barrier carries the *"per-program alpha/blend lock"* (`DESIGN.md` ll. 1245, 1365) — through `alphaTest(...)`/`blend(...)` here, with Phase 7 invoking the barrier (§3's rows) | **4** (the alpha/blend lock at the use-program barrier, `DESIGN.md` ll. 1245, 1365), 5, 6, **7** |
 | **Pixel-transfer verbs** — `FramebufferService.readDepthPixel(f,x,y)`, `initializeDepthTextureFromFramebuffer(src,dst,region)`, `copyDepthToTexture(src,dst,region)`, `TextureService.upload(t, TextureData)`, `UniformService.upload(loc,int,int)` (ivec2) and `upload(loc,int,int,int,int)` (**ivec4**) | §4.7.4; value types `TextureData` / `TextureRegion` / `PixelLayout` / `BlitSpec`. Depth initialization is first-copy exact-format storage definition on an owned destination; steady copy requires matching defined storage. Neither accepts a foreign destination, and both restore framebuffer/texture bindings | **6** (the v0.1 synchronous `centerDepthSmooth` readback; `atlasSize`/`eyeBrightness`; `blendFunc`), **5** (`depthtex1`/`depthtex2` first and steady copies plus formats), **8** (shadow depth→`shadowtex1`), **13** (noise, companion atlases, custom textures) |
-| **The facade's stated non-verbs**, with requesters and adjacent owners | §4.7.4's closing table remains binding: async/PBO and general colour/texture readback, `ivec3`/`mat3`, colour mask, face culling, free-standing pixel-store state, a **general** pre-link parameter setter, instanced draw, and binding Minecraft's own framebuffer. §0.25 serves the legacy geometry triple only; it is no longer an absent operation. Minecraft's FBO is not `bindDefault`'s name 0: Phase 7 must arrange the v0.1 final-to-vanilla bind through vanilla's path, with Phase 5 the second requester if its estate needs that FBO as a copy/blit source (§4.12). `bindsBalanced` cannot prove an internal/vanilla bind. `ivec4` is already served. The replacement for composite/deferred instancing remains Phase 7's caller-side loop at **v0.5**, Phase 6 uploads `instanceId`, and Phase 5 owns the unchanged estate/flip law. Gbuffers/shadow re-render remains an open Phase 7 case, not a facade instanced draw (D-P1-33/35) | **14** async; **13** texture readback; **7** colour mask/anaglyph, face culling, framebuffer bind and both re-render cases; **6** `instanceId` upload; **5** estate policy and second framebuffer requester; **3** flag-ownership map and `countInstances` detection; **4** any additional general pre-link parameter request and per-slot instance count |
+| **The facade's stated non-verbs**, with requesters and adjacent owners | §4.7.4's closing table remains binding: async/PBO and general colour/texture readback, `ivec3`/`mat3`, colour mask, face culling, free-standing pixel-store state, a **general** pre-link parameter setter, instanced draw, and binding Minecraft's own framebuffer. §0.25 serves the legacy geometry triple only; it is no longer an absent operation. Minecraft's FBO is not `bindDefault`'s name 0: Phase 7 must arrange the v0.1 final-to-vanilla bind through vanilla's path, with Phase 5 the second requester if its estate needs that FBO as a copy/blit source (§4.12). `bindsBalanced` cannot prove an internal/vanilla bind. `ivec4` is already served. Fullscreen and approved prepared-submission repetition use P7 v0.5 policy, P6 instance uploads and unchanged P5 estate/flip law; D-P1-47 replaces the gbuffers/shadow open case without granting an instanced draw | **14** async; **13** texture readback; **7** colour mask/anaglyph, face culling, framebuffer bind and repetition policy; **10** existing geometry adapters; **8** single shadow traversal; **6** `instanceId` upload; **5** estate policy and second framebuffer requester; **3** flag ownership and detection; **4** general pre-link requests and instance metadata |
 | **Legacy geometry source gate / adopted consumer migration** | The former mandatory-core-rewrite assumption is withdrawn. §11.4 is incorporated: Phase 3 must grant a legacy-preserving result with same-build options/macros, final declarations, exact source map and fingerprint; current `None` rejects a pair and `Translate` is incomplete. Phase 4's integration amendment conditionally adopts the native verb and its compile/fingerprint/failure transaction. Native source preservation is still ungranted; both owner/receiver remain unverified. Until source grant and fresh reviews, legacy programs remain unavailable with fallback. No new Phase 3 API or reverse dependency | **3**, **4** |
 | `DebugService` | present in v0.1, active at v0.5 | 4, 5 (call sites), **14** (implementation) |
+| **Approved prepared-submission countInstances boundary; no new facade verb** | §11.4/D-P1-47 incorporates the maintainer's 2026-09-07 v0.5 decision: N adjacent native submissions of already-prepared geometry, IDs `0..N-1`, private synchronous P7 policy/P10 draw adapters beneath authenticated main or shadow scopes; P8 traversal unchanged. No instanced draw, renderer-extension API, compilation-time expansion or world/event replay | **7**, **10**, **8**, **6** |
 
 **Explicit note to Phase 2:** your declared input is "`PHASE_1_DOC.md` (module layout, facade,
 `GLCapabilityProfile`)". All three are in §2.1, §4.7.4, and §4.7.2 respectively; the serialization
@@ -4983,6 +4992,7 @@ designed for, which is the best available evidence that it is drawn in the right
 | D-P1-44 | **Accept Phase 4 §5.4 item 1's native alternative:** one engine-enum pre-link legacy geometry operation; no asserted complete core translation | Phase 3's two-span contract lacks whole-source/version/interface translation, whereas the published ARB specification supplies native semantics. Keep core GL objects and opaque handles, map only inside `mod.glue`, and require explicit Phase 3 source and Phase 4 consumer migration before legacy support is usable (§0.25, §§4.7.4/5.2/11.4). This supersedes only D-P1-25's geometry assumption |
 | D-P1-45 | Grant Phase 2 R4B consumption of the existing diagnostic types only | P3/P4 source-free evidence uses stable codes, severity, channel and owner-supplied coordinates; no new diagnostic field/channel or source/log redistribution permission (§4.9.4/§5.3). |
 | D-P1-46 | Keep stage-one bootstrap on FML lifecycle; retain the non-fullscreen countInstances authority gate | RC2 expressly permits justified bootstrap deviation; P1 already selected it. Only fullscreen composite/deferred execution has an accepted owner/milestone; metadata publication does not settle gbuffers/shadow traversal semantics. |
+| D-P1-47 | Adopt the maintainer's 2026-09-07 prepared-submission countInstances boundary at v0.5; supersede D-P1-35/46's non-fullscreen authority-open posture only | RESEARCH §3.2 requires N renders; P4 §11.5 records author/OSS evidence limits and explicit maintainer selection of adjacent submission order. P7 policy/P10 adapters use P6's existing event; P8 traverses once; foundation grants no new GL or extension API. |
 
 ### 11.2 D-1..D-10 disposition
 
@@ -5165,8 +5175,8 @@ request. Until that grant and its fresh review, Phase 4 cannot use the native fa
 to compile legacy packs. Separately, `DESIGN.md` makes the **engine-flag ownership map** yours — §4.7.4's
 face-culling row defers to it rather than pre-empting it. One small thing your `const`-directive scan
 is named for by this document: `countInstances` is a *vertex-stage* directive that a **gbuffers**
-program may carry, and detecting it is the first step in a case Phase 1 deliberately leaves open
-(`[D-P1-35]`, §11.4's Phase 7 entry).
+program may carry. Detection feeds the approved prepared-submission contract at v0.5
+(D-P1-47, §11.4's Phase 7 entry), not an optional pack-discovery experiment.
 
 **To Phase 4** — your §5.4 fixed-function request is accepted as `[D-P1-39]`.
 `ShaderService.useFixedFunction()` selects program zero without a raw integer, null, or sentinel
@@ -5260,14 +5270,14 @@ between copies, because `instanceId` is an `int` **uniform** and GLSL 120 has no
 instanced verb could express it (`[D-P1-33]`). The upload itself is Phase 6's entry point — `DESIGN.md`
 carries `instanceId` among its per-draw dynamics, invoked at your hooks. Phase 5 owns the buffer estate
 the N draws run inside; the loop does not change its read/write/flip law. Until round eight this
-document attributed the loop to Phase 5; that was wrong and is corrected here. Distinguish it from the
-*open* case two paragraphs below: the composite loop is work `DESIGN.md` has already given you, at a
-milestone it has already set, and the gbuffers/shadow re-render is neither.
-**IR-18 disposition:** retain gbuffers/shadow repeated traversal as an explicit authority
-question for DESIGN/RESEARCH owners: specify the responsible traversal owner, exact replay
-scope and side-effect exclusions, state/instance restoration, and milestone before promising
-execution. P4 publishes positive count metadata but now promises only the accepted fullscreen
-consumer. No new facade instancing verb or inferred v0.5 non-fullscreen obligation is granted.
+document attributed the loop to Phase 5; that was wrong and is corrected here. The non-fullscreen
+case is now also explicitly approved by the maintainer, not inferred from this fullscreen loop.
+**IR-18 disposition (2026-09-07):** N adjacent native submissions of already-prepared geometry,
+IDs `0..N-1`, at v0.5; P7 owns policy through existing P10 draw adapters. P8 retains one shadow
+traversal. The complete contract and evidence in `docs/phase4/v1/PHASE_4_DOC.md` §11.5 bind
+this handoff: effective-provider count, authenticated main/shadow admission, no main scope inside
+shadow, nested instance restoration, no capture-time expansion, and stop/restore/abort on failure.
+No new facade instancing verb or renderer-extension API is granted.
 
 **Your Phase 7 package and replay-result requests are accepted as `[D-P1-41]` and
 `[D-P1-42]`.** Put pure frame policy and closed results in `engine.frame`, platform adaptation in
@@ -5315,19 +5325,22 @@ tendency, the request is a verb that forces the query, additive in your own §5 
 already names — Phase 1 declines to add it unasked. Whether any of this is worth placing, and where in
 the frame it goes, is yours; Phase 1 supplies the verb and deliberately does not design the placement.
 
-**One open case is yours, and it is open rather than designed** (`[D-P1-35]`, §3's second row).
-`const int countInstances = N` is a **vertex-stage** directive with no program restriction in
-RESEARCH.md §3.2 or App A.3, and `instanceId` sits in shaders.txt's **common** uniform block, so a
-**gbuffers or shadow** program may legitimately carry it. On such a program "the geometry" is vanilla
-terrain or entity geometry drawn by Minecraft's own draw calls — through your hooks, never through
-`engine.gl` — so §3's composite mapping (a caller-side loop over `DrawService.fullscreenQuad()`)
-cannot serve it and no facade verb would. What Phase 1 supplies is the honest boundary rather than a
-design: **Phase 3** detects the directive in its `const`-scan, **Phase 4** carries it as the per-slot
-instance count RESEARCH.md §4.2 lists for every classic catalog slot, and the re-render itself would be yours.
-Whether it needs building at all is genuinely open — RESEARCH.md §4.4 observes the instancing loop
-**only** in the composite-pass line, so there is no reference behavior here to be faithful to. If
-your hook catalog finds real packs relying on it, the work is yours and the request against this
-document (if any) is additive.
+**The non-fullscreen case is now decided, not optional** (D-P1-47).
+`countInstances` on gbuffers/shadow is served below existing render scopes by a private,
+synchronous mod-side adapter, not by a loop around world/entity/layer traversal. Prepared draws
+A and B with N=2 execute `A0,A1,B0,B1`. Build/upload/reset and Forge callbacks run once.
+VBO/client-array native submission repeats after setup and before teardown; geometry display
+lists compile once with no instance uploads/count expansion and repeat only during playback,
+with nested lower wrappers suppressed so the count is applied once. P10's hook coverage must
+establish replay-stable program/geometry/state, not import a replacement renderer.
+P7's accepted main scope or Valid shadow execution plus exact root-shadow selection/context is
+required; stale credentials cannot authorize any copy. P6's existing instance event changes only
+the copy ID; finally restores the enclosing value (outermost zero) before program release.
+Failed copies stop immediately, restore and follow the existing frame/shadow failure path;
+no replay of clears, depth splits, flips or mipmaps and no partial-pass success. P4 §11.5 records
+the independently consulted published/OSS sources and their limits; the ordering is an explicit
+maintainer decision, not a claim that those sources proved target-engine behavior. Fresh reviews
+remain due; the original audit/history and prior decisions remain historical, not current gates.
 
 **To Phase 5** — **the vanilla-owned texture set is yours to define, and this hand-off is new at the
 twelfth round because the eleventh gave it to Phase 6** (`[D-P1-36]`, §4.12, §5.1; V12-1). Your

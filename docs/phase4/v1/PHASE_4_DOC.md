@@ -337,6 +337,14 @@ remains ungranted. Historical addenda/reviews are preserved. This is documentati
 §5 changed, this document remains unverified, and fresh whole-document owner verification is
 required before implementation consumption. No build, test, formatter or fresh PASS is claimed.
 
+### 0.37 IR-18 authority and schema18 cutover (2026-09-07)
+
+RC3 remains governing. Research precedes the decision: §11.5 records published author docs and
+bounded licensed draw/source checks, then the maintainer's explicit prepared-submission/v0.5
+selection. §§4/5/11 adopt that choice and P3 schema18; §0.36's schema17/open-case posture is
+historical. P7 owns policy/P10 existing adapters/P8 one traversal. No renderer extension API,
+reference-code adoption, build/test/formatter/validation run or fresh PASS is claimed.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 4 owns
@@ -375,7 +383,7 @@ Phase 4 owns:
 | Sole fixed-name/unit policy, compatible candidate selection, texture-object binding and binding-lease snapshots | **Phase 5**; Phase 4 owns only the callback interface and immutable derived sampler metadata |
 | Sampler integer uploads, built-in locations/values/uploads, and uniform error isolation | **Phase 6**; adopted/unverified R7-10 uses Phase 5's resolver, preserving three participants |
 | Custom-uniform expression evaluation | **Phase 11**, integrated through Phase 6's barrier participant |
-| Pass execution, fullscreen draws and adopted fullscreen `countInstances`, hook-to-slot mapping, final-to-Minecraft-FBO handoff and frame restoration | **Phase 7**; non-fullscreen re-render remains authority-open (§4.9), not an accepted executor |
+| Pass execution, fullscreen and prepared-submission `countInstances`, hook-to-slot mapping, final-to-Minecraft-FBO handoff and frame restoration | **Phase 7**; approved v0.5 policy integrates existing Phase 10 draw adapters (§4.9/§11.5) |
 | Shadow camera, traversal, FBO use, and invocation | **Phase 8**; Phase 4 only supplies force-selection semantics |
 | Vertex-buffer layout and enabling the attributes pre-bound here | **Phase 10** |
 | Options UI, persistence, and reload triggers | **Phase 12**; Phase 4 supplies the generation signal |
@@ -917,7 +925,7 @@ Its extra modern slots and missing classic `terrain_cutout_mip` row do not alter
 | `mc_Entity` | `ExtendedAttribute.MC_ENTITY` → bind location 10 when declared | App A.3 `[V:doc]` |
 | `mc_midTexCoord` | `ExtendedAttribute.MC_MID_TEX_COORD` → 11 when declared | App A.3 `[V:doc]` |
 | `at_tangent` | `ExtendedAttribute.AT_TANGENT` → 12 when declared | App A.3 `[V:doc]` |
-| `countInstances` | positive `instanceCount`, exposed unchanged; Phase 7 executes | App A.3 `[V:doc]` |
+| `countInstances` | positive total `instanceCount`, exposed unchanged; Phase 7 v0.5 fullscreen/prepared-submission policy, with no repeated world traversal | App A.3 `[V:doc]`; maintainer decision §11.5 |
 | ARB geometry extension + `maxVerticesOut` | `LegacyGeometryStrategy`; topology is triangles → triangle strip, count is Phase 3's positive value | App A.3 plus behavioral digest; `D-P4-7` |
 | `DRAWBUFFERS` / `RENDERTARGETS` | `DrawRouting.Explicit`, validated in order and without deduplication | App A.3 `[V:doc]` |
 | Absent routing | `DrawRouting.AllUsedBuffers` resolved by Phase 5 against its estate | §3.2 `[V:doc]` |
@@ -1345,11 +1353,11 @@ cannot expose an unused high location. The numeric values never come from Pinton
 bindings at `ProgramCreator.java:21`–`:25` are the negative test fixture.
 
 `instanceCount` is always positive; absent means 1. It is retained for every slot, including
-gbuffers/shadow. Phase 7 accepts the v0.5 fullscreen composite/deferred loop only. The
-non-fullscreen gbuffers/shadow re-render remains an explicit authority-open case: neither
-execution owner, milestone nor repeated traversal/state-restoration contract is granted by
-integer retention. §11.5 requests that disposition; no extension API or modern instanced draw
-is inferred and no non-fullscreen execution support is claimed.
+gbuffers/shadow, and fallback carries the effective provider's complete count/state.
+The maintainer's 2026-09-07 decision adopts N adjacent submissions of the same prepared geometry,
+IDs `0..N-1`, at v0.5. P7 owns policy through existing P10 draw adapters; P8 retains one shadow
+traversal. The complete authentication, list-capture exclusion, restoration and failure contract
+in §11.5 is incorporated here and by §5.1. No extension API or modern instanced draw is granted.
 
 Pintonium's per-buffer blend override is not adopted: App F.7 and Phase 3 §5 publish one
 program-level `BlendSpec`, and Phase 1 has no indexed blend-state verb. The slot shape reserves no
@@ -1821,7 +1829,7 @@ local artifact and never enter this diagnostic.
 | `ProgramSamplerDeclaration`, `ProgramSamplerLayout`, fingerprints, `FixedUnitSamplerConflict`, `SamplerLayoutIssue`, `SamplerLayoutValidation`, `FixedSamplerLayoutPolicy` | All exact field types/orders, variants and method signatures in §2.2 are incorporated verbatim as monitored interfaces. Declaration retains full Phase3 type/order/sites; Shader(fingerprint,policyFingerprint,effectiveStage,validatedBands,declarations,validation), FixedFunctionEmpty(fingerprint,policyFingerprint), VirtualNotApplicable(fingerprint,policyFingerprint). Valid / ConflictingTypes(conflicts,otherIssues) / Unsupported(issues) preserve all canonical evidence. validate(StageId,StageBand,List<ProgramSamplerDeclaration>) and fingerprint() are pure callbacks implemented solely by Phase5; §4.7 defines mandatory all-band pre-GL checks and SHA-256/framing | Phase5 supplies; Phases5/6/7/13 consume metadata |
 | `ProgramBindingSelection`, `ProgramSelectionResult`, `ProgramBindingSelections`, `ProgramSelectionValidation`, `ProgramSelectionRejection` | Exact §2.2 accessors and variants are incorporated: Selected(selection), Skipped(requested), StalePublication(expectedGeneration,currentGeneration), ShadersOff(diagnosticId). Opaque selection exposes registryGeneration,registryFingerprint,requested,effectiveDescriptor,effectiveStage,actualBand,originatingContext; no constructor/handle/teardown. Static validateSelection(selection,context) → Valid or Rejected(INVALID_ISSUER / STALE_GENERATION / STALE_CONTEXT / WRONG_STAGE_BAND / PROVIDER_LAYOUT_MISMATCH). §4.10's private-origin checks/order/lifetime bind every consumer, not public equality | Phases5/7/8/13 |
 | Fixed attribute table | `mc_Entity=10`, `mc_midTexCoord=11`, `at_tangent=12` | Phase 10 |
-| Per-slot `instanceCount` | positive count retained for all programs; fullscreen composite/deferred repetition is Phase 7/v0.5; non-fullscreen execution remains authority-open (§4.9) | Phase 7 accepted fullscreen executor; Phase 6 uploads `instanceId` |
+| Per-slot `instanceCount` | positive total count from the effective provider; incorporates §4.9/§11.5 approved v0.5 adjacent prepared-submission contract as well as fullscreen repetition; metadata is not live draw authority | Phase 7 policy; Phase 10 existing draw adapters; Phase 6 existing `instanceId` event; Phase 8 single shadow traversal |
 | Phase 2 inspection candidate view | §5.6 explicitly permits `candidate.view().resolutions()` on the same inspection build, detached immutable rows and caller candidate closure without runtime publication; no new configuration-fingerprint accessor | Phase 2 |
 
 Phase 5 must not infer a resolved ping-pong side from `explicitFlips`; it owns the side state.
@@ -1867,8 +1875,8 @@ program zero. Phase 4 consumes that verified contract directly and continues to 
 ### 5.3 Consumed Phase 3 contracts
 
 The current Phase 3 dependency remains provisional. Consume exactly
-`schemaVersion == PackFrontEnd.CURRENT_SCHEMA_VERSION == 17`; reject any other schema before
-derivation or retention, without fabricated companion/declaration defaults or inferred upgrades.
+`schemaVersion == PackFrontEnd.CURRENT_SCHEMA_VERSION == 18`; reject any other schema, including
+17, before derivation or retention, without fabricated companion/declaration defaults or inferred upgrades.
 
 | Phase 3 §5 contract | Use here |
 |---|---|
@@ -1898,8 +1906,8 @@ materializer.
    translation/proof remains a separate possible owner change, not an assumed fallback.
 2. **Phase 3 registry projections: owner-designed/unverified, receiver-adopted/unverified.**
    §§4.7/4.9/5.3 adopt §0.57's direct `mipmappedAfterPass()` and `vertices()` values, preserving
-   Phase 5/10's independent uses. Source/materialization and current schema-17 cutover bind here;
-   schema 16's historical grants are preserved, not a compatibility path after IR-24.
+   Phase 5/10's independent uses. Source/materialization and current schema-18 cutover bind here;
+   schema 16/17 historical grants are preserved, not compatibility paths.
 
 Fresh Phase 1/3/4 reviews are still required; producer presence is not verified implementation
 permission. Native legacy support remains blocked on the source grant above.
@@ -2277,7 +2285,7 @@ animation/noise producers, and Phase7 owns every cross-owner orchestration check
 | Pipeline generation and fingerprints | `v0.1` | implemented now; Phase 12 consumes at `v0.4` |
 | Per-slot resolution/source-presence evidence projection | `v0.1` | one catalog-ordered handle-free value list serves candidate goldens and runtime manifests (`[D-P4-16]`) |
 | Typed virtual-pre descriptors | `v0.1` | Phase 4 supplies exact descriptors; Phase 5 owns transition execution and Phase 7 passes them unchanged (`[D-P4-17]`) |
-| `instanceCount` storage/exposure | `v0.1` | stored now; Phase 7 composite execution at `v0.5`, non-composite case remains its handoff |
+| `instanceCount` storage/exposure | `v0.1` | stored now; Phase 7 fullscreen and prepared-submission execution at `v0.5`, approved §11.5; no repeated world traversal |
 | Debug labels at creation sites | `v0.1` | calls exist; Phase 14 activates backend at `v0.5` |
 | `shadowcomp`, `prepare`, `begin`, setup population | `post-v0.5` | no type change, G8/S1 data/wiring |
 | Compute compile/dispatch, `_a`…`_z`, images/SSBO/barriers | `post-v0.5` | slots only now; G8/S2 owns semantics |
@@ -2323,6 +2331,8 @@ publication semantics.
 | D-P4-22 | Count every actual publication independently and limit execution promises to adopted fullscreen repetition | IR-07/18; compensated Ready→Off adds two, non-fullscreen authority remains open |
 | D-P4-23 | Adopt source-free golden enrichment by exact same inspection/build request association and detached resolution rows | IR-29; no invented view fingerprint, archive hash or runtime publication |
 | D-P4-24 | Receive R-P14→P4-1 explicitly, keep it pending and preserve synchronous compiler | IR-27; conceptual worker ownership is not an adopted callable async API |
+| D-P4-25 | Adopt the maintainer's 2026-09-07 adjacent prepared-submission choice, superseding D-P4-22's non-fullscreen gate | RESEARCH requires N total; the maintainer settles the boundary not supplied by published/OSS evidence. P7 policy/P10 adapters/v0.5, P8 one traversal, exact §11.5 semantics. |
+| D-P4-26 | Adopt P3 schema18, superseding only D-P4-20's schema17 assertion | Same-build catalog/materialization and effective-provider state remain unchanged; locale/session/source-macro changes enter through the new configuration identity, with no schema17 upgrade. |
 
 ### 11.2 D-1…D-10 disposition
 
@@ -2377,7 +2387,7 @@ publication semantics.
   only by `ProgramUniformCacheKey`; retain only the activity token for immediate signals; and
   surface per-uniform isolation results without retaining access or receiving a handle.
 - **Phase 7:** map hook phases to exact logical slots and gbuffers bands; execute pass arrays,
-  scale, mipmaps, fixed/passthrough terminals, and the adopted fullscreen `countInstances` loop;
+  scale, mipmaps, fixed/passthrough terminals, fullscreen and approved prepared-submission `countInstances`;
   use the candidate view for pre-publication composition/validation while retaining ownership of the opaque
   candidate. A retained snapshot remains metadata-only across rejection, recovery, close, or
   accepted transfer; reacquire `current()` for publication state. Quiesce before all rebuilds
@@ -2430,10 +2440,77 @@ publication semantics.
 - **COORDINATED LOCALLY — Phase 7 R7-2.** Phase 4's half is the existing immutable virtual
   `PassDescriptor`, now bound explicitly as the no-program typed transition input. Phase 5 owns
   `applyVirtualTransition`; Phase 7 passes the descriptor unchanged.
-- **OPEN AUTHORITY — non-fullscreen `countInstances`:** RESEARCH §3.2/App A.3 requires repeated
-  geometry, while the adopted P1/P7 executor covers fullscreen only. Request explicit execution
-  owner, milestone, authenticated gbuffers/shadow traversal scope, per-copy `instanceId`, nested
-  restoration and failure behavior. Retained integer metadata is not fulfillment.
+- **IR-18 — maintainer-approved prepared-submission contract (2026-09-07).** Geometry repetition
+  is already required by `docs/research/v1/RESEARCH.md` §3.2 (N total renders), not conditional
+  on discovering a convenient pack. After the bounded evidence below was reported, the
+  maintainer explicitly chose **Repeat prepared submissions**: for A and B with N=2,
+  `A0,A1,B0,B1`, not whole-subpass `A0,B0,A1,B1`. This settles architecture by explicit
+  authority, not a fabricated reference-behavior claim. No whole-world/Forge traversal repeats.
+
+  **Evidence and limits.** The published [OptiFine author specification](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.txt),
+  “Vertex Shader Configuration”, says geometry is rendered several times when countInstances>1;
+  its common-uniform `instanceId` row identifies zero as original. It names no submission,
+  display-list or traversal boundary. Its “1-N = copies” shorthand is not authority for N+1 draws
+  against RESEARCH's explicit N total. The [uniform documentation](https://optifine.readthedocs.io/shaders_dev/uniforms.html)
+  repeats the shorthand and supplies no missing ordering rule.
+  Scoped independent licensed checks: Angelica
+  [ProgramDirectives](https://github.com/GTNewHorizons/Angelica/blob/37a10eee3fc3d986475269b283b072b6adf7fbdc/src/main/java/net/coderbot/iris/shaderpack/ProgramDirectives.java)
+  and [Iris ProgramDirectives](https://github.com/IrisShaders/Iris/blob/1.21.1/common/src/main/java/net/irisshaders/iris/shaderpack/properties/ProgramDirectives.java)
+  expose no countInstances handling in those files. Angelica
+  [DisplayListVBO.SubVBO.render](https://github.com/GTNewHorizons/Angelica/blob/37a10eee3fc3d986475269b283b072b6adf7fbdc/glsm/src/main/java/com/gtnewhorizons/angelica/glsm/recording/DisplayListVBO.java)
+  prepares/binds and issues one VAO draw; its
+  [TessellatorStreamingDrawer.draw](https://github.com/GTNewHorizons/Angelica/blob/37a10eee3fc3d986475269b283b072b6adf7fbdc/glsm/src/main/java/com/gtnewhorizons/angelica/glsm/streaming/TessellatorStreamingDrawer.java)
+  prepares/uploads and resets the tessellator, not a countInstances loop.
+  Angelica's [license](https://github.com/GTNewHorizons/Angelica/blob/37a10eee3fc3d986475269b283b072b6adf7fbdc/LICENSE)
+  is LGPL-3.0. The checked Pintonium `reference-src/Pintonium-main/{common-shaders,forge122,modern}/src`
+  contain no `countInstances`/`instanceId` matches. These bounded negative findings supply no
+  interoperable replay-order oracle; no source code, renderer replacement or transformation
+  library is adopted.
+
+  **Approved owner/executor contract:** repeat each already-prepared vanilla geometry submission
+  N times with IDs `0..N-1`, P7 policy with P10's existing draw-hook ownership, at v0.5.
+  This is the explicitly approved timing, consistent with RC3:1537–1538, not inferred from
+  the fullscreen loop. P8 owns one unchanged shadow traversal. The adapter is private,
+  synchronous and mod-side beneath existing authenticated scopes; no new public renderer API.
+  The binding receiving obligations are:
+  - Count comes from the already-authenticated effective P4 selection, never the requested
+    child's metadata. Missing/fixed-function execution is one ordinary draw, not inherited
+    repetition from an unavailable shader; virtual passes have no geometry.
+  - P7 requires its live accepted main scope, or its currently Valid shadow execution plus
+    supplied root-shadow selection/context. P8 never opens main gbuffers scopes inside shadow.
+    Revalidate current frame/generation/selection/activity before copies; no public equality,
+    saved handle, stale token or retry with another provider authorizes drawing.
+  - P10's VBO/client-array routes repeat only the final native submission after pointer setup
+    and before teardown. Build/upload/reset and higher-level entity/layer calls run once.
+    Display-list compilation records once, without count expansion or instanceId uploads;
+    prepared geometry-list playback is the submission repeated N times under the live uniform.
+    A private dynamic-extent guard excludes nested lower wrappers, so each draw is multiplied
+    once, never N². Lists must preserve the same effective program and replay-stable geometry/
+    state; a mixed stateful list is not silently treated as repeatable. Hook coverage must
+    establish the supported vanilla paths before implementation claims; no renderer replacement.
+  - Preserve original draw ordering outside the chosen unit, vertex/attribute pointers, matrices,
+    textures, alpha/blend/depth state and all IDs/colors. Only instanceId changes between copies.
+    Use P6's existing event, not raw uniform handles; nested scope exit restores its predecessor
+    and outermost exit restores zero before program release. A loop must not replay ticks,
+    chunk scheduling, Forge callbacks/predicates, entity counters, uploads, clears, depth copies,
+    pass flips or mipmap generation.
+  - P8 keeps SOLID→CUTOUT_MIPPED→CUTOUT, configured clouds, Forge pass0, one depth split,
+    optional translucent terrain, Forge pass1 and postprocessing, with prior-pass/counter
+    restoration unchanged. Main scopes remain bypassed; shadow admission is not main admission.
+  - Before mutation, reject stale admission without draw. On a copy failure stop remaining
+    copies, restore nested instance/state in finally, and use the existing P7 frame-abort/off
+    or P8 abort/neutralization/result containment; never report a partially repeated pass as
+    complete or restart at zero. Failure after mutation is not a mutation-free rejection.
+    Preserve P6's existing per-uniform isolation semantics rather than inventing an upload result.
+
+  **Acceptance scenarios (planned, not run):** N=1 and N=3 exact total/IDs; overlapping A/B
+  observes adjacent ordering; fallback count differs from requested child; nested restoration
+  resumes outer ID; stale main/shadow credentials draw nothing; second-copy failure does not draw
+  the third; VBO/client-array/display-list playback totals match with one build/reset and no
+  count captured during list compilation; shadow Forge predicates/counters, split/clear/flip/
+  mipmap counts remain identical to N=1. P7/P10 receiving contracts and P8's unchanged-traversal
+  clause must match this decision. Fresh owner/receiver verification remains due; this is not
+  implementation proof, an extension API, or a changed v0.2 shadow exit milestone.
 - Apply and re-verify one complete legacy-geometry path from §5.4; update Phase 3/Phase 1
   interfaces consistently.
 - Add Phase 4 to Phase 12's declared dependency list, or state the generation is consumed

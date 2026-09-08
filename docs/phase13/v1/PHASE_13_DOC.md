@@ -152,7 +152,7 @@ loop is part of this build.
 ### 0.7 Integration consumer amendment — IR-03/04/06/08/21/23/24
 
 Active §§1–5/8/9/11/12 adopt Phase 3's catalog-bound same-build configuration and lossless
-texture declarations, schema 17 after the coordinated IR-24 codec amendment; independent
+texture declarations, schema18 after the IR-03/24 locale/session/macro cutover; independent
 decoded normal/specular preferences precede load. Phase 1 package, Phase 3 R1, Phase 6
 R7-10/11 and Phase 8 R7-12/13 grants are owner-designed and receiver-adopted here, **unverified**,
 not still absent. P7 owns authenticated current-bind delivery to P6; P5 retains all physical
@@ -195,7 +195,7 @@ Phase 13 owns the texture estate that is not a framebuffer attachment:
 | Uploading sampler integers for those units, and uploading the `atlasSize` ivec2 | **Phase 6**; Phase 13 is the *value source* for `atlasSize` only (`docs/design/v3/DESIGN.md:2479`–`:2481`) |
 | Tangent-frame math and any shading that consumes the sampled normals | **Phase 10** (`docs/design/v3/DESIGN.md:2485`–`:2486`) |
 | labPBR channel semantics — what the specular channels *mean* | **pack-side convention; engine-neutral.** G8 advertises it (`docs/design/v3/DESIGN.md:2486`); Phase 13 delivers bytes and interprets none of them |
-| Parsing texture keys, lossless declaration disposition, retained sidecar references and noise options | **Phase 3 §5.1**; schema 17 retains schema-16 lossless declarations; Phase 13 never reparses properties |
+| Parsing texture keys, lossless declaration disposition, retained sidecar references and noise options | **Phase 3 §5.1**; schema18 preserves the historical lossless declaration grant; Phase 13 never reparses properties |
 | Emitting `MC_NORMAL_MAP` / `MC_SPECULAR_MAP` | **Phase 3 §5.1**, R1 owner-designed and adopted here, unverified; Phase 13 supplies independent preliminary values before load, not completed linked demand |
 | Alias-derived id values, held-item and entity id delivery | **Phase 9** |
 | Frame/pass transactions, same-selector orchestration and coherent reload publication | **Phase 7**; Phase 13 contributes an owner, immutable publication, restricted lease source and hooks, not frame policy |
@@ -556,7 +556,7 @@ identifiers or a dependency's ungranted implementation.
 2. Phase5's full FixedSamplerName/candidate/binding protocol fulfills R2 architecturally.
    Phase6 R7-10/11 and Phase8 R7-12/13 are owner-designed and receiver-adopted, unverified,
    not missing grants. Old narrow fallback D-P13-11 is historical.
-3. Historical PASS covers historical bytes only. Current Phase3 schema17, Phase1 package
+3. Historical PASS covers historical bytes only. Current Phase3 schema18, Phase1 package
    grants and coordinated owner/consumer §5 contracts all require fresh whole-document reviews.
 4. C-TX01 remains unresolved: RESEARCH's `0xFF7F7FFF` wins over PD's `0x7F7FFFFF`
    (`docs/research/v1/RESEARCH.md:595-595`, `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:632-632`,
@@ -1244,7 +1244,7 @@ acquired lease only. Holding a stale lease delays deletion but never authorizes 
 
 | Owner / surface | Consumption |
 |---|---|
-| Phase3 §§2.2/5.1 | Current schema17 (=symbolic CURRENT_SCHEMA_VERSION); typed source specs/discriminators, canonical executable order plus separate lossless occurrence list, no suffix parsing; same-build retained companion pair and catalog-bound materialization |
+| Phase3 §§2.2/5.1 | Current schema18 (=symbolic CURRENT_SCHEMA_VERSION), reject 17 and every other version before derivation; typed source specs/discriminators, canonical executable order plus separate lossless occurrence list, no suffix parsing; same-build retained companion pair and catalog-bound materialization |
 | Phase3 §§4.10/5.1 | Canonical framing/fingerprints and exact noise/resource requirements; lossless declarations affect identity even with identical executable projection; no inferred older-schema upgrades |
 | Phase1 §§0.24/2.1/5.1 | Exact texture package trio granted and adopted here, unverified; seam constraints unchanged |
 | Phase4 `docs/phase4/v1/PHASE_4_DOC.md:1785–1796` | exact detached ProgramRegistryView, registry/policy fingerprints, ProgramSamplerLayout and opaque ProgramBindingSelection; line 1787: “resolve is detached handle-free inspection, not selection authority” |
@@ -1387,7 +1387,7 @@ that is not completion of required v0.5 custom/PBR execution.
 **R1 — Phase3 typed load input: owner-designed / receiver-adopted, unverified.**
 Phase3 §§0.55/5.1 grants required CompanionOptionMacros immediately after engineOptions,
 retained in MacroConfiguration and same-build materialization/fingerprints. This document
-adopts it under current schema17. Non-Off missing pair is INVALID_REQUEST, Off short-circuits;
+adopts it under current schema18. Non-Off missing pair is INVALID_REQUEST, Off short-circuits;
 earlier milestones supply explicit false/false. No unchanged-load/absent-input fallback.
 
 **R2 — Phase5 full domain:** fulfilled architecturally by the coordinated FixedSamplerName/
@@ -1671,6 +1671,7 @@ Two OQs touch this subsystem without belonging to it, recorded so a reader does 
 | D-P13-22 | Atlas size metadata is not current-bind proof; authenticated P7 actual-bind evidence selects P13 query and existing P6 sink, P5 retains physical binding (§4.4) |
 | D-P13-23 | Exact min/mag/wrap parameter projection and all-live-lease retirement are P14 constraints, not permission for sampler/async APIs; synchronous sampler0 baseline until grants (§5.5) |
 | D-P13-24 | Reconcile granted owner ledgers as adopted/unverified, retain genuinely missing U1/R4/P14 proposals separately (§§5.3/11.5) |
+| D-P13-25 | Adopt P3 schema18 configuration/fingerprint cutover, including locale-indexed data, session-only Internal options and old-light projection; independent preliminary normal/specular preference computation remains unchanged (IR-03/24) |
 
 ### 11.2 Binding decisions
 
@@ -1687,7 +1688,7 @@ mcmeta or that undocumented grammar proves absence survives. No authority text i
 
 ### 11.4 Hand-offs and blockers
 
-- **IR-03/04:** §§2.1/4.1/4.3/5 adopt P3 current schema17/lossless/same-build contracts and
+- **IR-03/04:** §§2.1/4.1/4.3/5 adopt P3 current schema18/lossless/same-build contracts and
   P1/P3/P6/P8 owner grants; all receiver and owner verification remains open.
 - **IR-06/08/24:** §§4.1.1/4.7 adopt independent canonical codec preferences before load,
   disabled allocation/candidates, and P12 resource-only NONE with configuration-preserving
@@ -1704,7 +1705,7 @@ mcmeta or that undocumented grammar proves absence survives. No authority text i
 | Request | Owner status / receiving disposition / remaining gate |
 |---|---|
 | U1 Phase3/DESIGN | Lossless declaration stream owner-designed and adopted; grammar/precedence/default/source applicability/invalid behavior and subsequent typed sampling-state publication still ungranted. No suffix parsing or fabricated support |
-| R1 Phase3 | Required typed pair, same-build materialization/fingerprints, non-Off INVALID_REQUEST and Off short-circuit granted and adopted under schema17; fresh reviews/implementation remain |
+| R1 Phase3 | Required typed pair, same-build materialization/fingerprints, non-Off INVALID_REQUEST and Off short-circuit granted and adopted under schema18; fresh reviews/implementation remain |
 | R4 Phase3 | Optional post-analysis memory optimization genuinely ungranted; baseline builds each preliminary-enabled kind only, no macro cycle |
 | R2 Phase5 | Full policy/candidate/binding protocol fulfilled architecturally and adopted, unverified |
 | R3 Phase1 | Exact texture package trio granted and adopted, unverified; no pending-name fallback |

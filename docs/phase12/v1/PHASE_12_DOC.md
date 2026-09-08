@@ -11,8 +11,8 @@ session was assigned v3 and its Part II Phase 12 spec at ll. 2357–2432).
 **Current amendment (2026-09-07):** architecture-only IR-03/05/06/07/08/16/17/24/25
 consumer cutover. §5 and its incorporated active contracts changed; this document is
 **unverified** and prior reviews certify historical bytes only. Current consumption uses
-Phase 3 §5 schema 17 (including catalog-bound state, lossless declarations and the IR-24
-codec amendment), Phase 4 generation ownership, Phase 7 reload/atlas orchestration and
+Phase 3 §5 schema18 (including catalog-bound state, lossless declarations and the approved
+IR-03/24 locale/session/old-light amendment), Phase 4 generation ownership, Phase 7 reload/atlas orchestration and
 Phase 11 direct diagnostics. No implementation, validation or fresh PASS is claimed.
 The original reading/status records in §§0.1–0.7 are historical; current adoption/gates are
 §§5/11. Additional authority read: RESEARCH §§0–1 and DESIGN v3 Phase 12/13 scopes.
@@ -278,7 +278,7 @@ public record OptionPresentationModel(
 
 public record PresentationScreen(
     ScreenId id,                       // null-free; ScreenId.MAIN for the root
-    String title,                      // already decorated; locale selection gated by R-P12-5
+    String title,                      // resolved from the frozen locale context, §4.3.5
     int resolvedColumns,               // post-`*`-expansion, per §4.3.4
     List<PresentationEntry> entries) {}
 
@@ -315,7 +315,8 @@ public interface OptionEditSession {
     ApplyOutcome resetToPackDefaults();
 }
 
-public record ApplyOutcome(boolean persisted, Optional<ReloadRequest> reload,
+public enum OptionApplyStatus { UNCHANGED, PERSISTED, SESSION_ACCEPTED, REJECTED, FAILED }
+public record ApplyOutcome(OptionApplyStatus status, Optional<ReloadRequest> reload,
                            List<EngineDiagnostic> diagnostics) {}
 
 // ---------- engine.config : the reload request ----------
@@ -487,7 +488,7 @@ abbreviates the full coordinates stated once in §0.1 —
 
 | Mechanism | Disposition | Evidence |
 |---|---|---|
-| Lang fallback chain: current game language → `en_us` → literal fallback | Desired resolution policy; **owner publication gated** by R-P12-5 (§4.3.5), not executable from current single LangDecorations | `[V:observed — Pintonium forge122/…/gui/VintageShaderPackOptionsScreen.java:324-345]` |
+| Lang fallback chain: current game language → `en_us` → literal fallback | Adopt P3 schema18 locale catalog and per-key presence semantics (§4.3.5); no consumer file reader | `[V:observed — Pintonium forge122/…/gui/VintageShaderPackOptionsScreen.java:324-345]`; P3 §4.3 |
 | Name prettification (`_`/`.`/`-` → space, lowercase, capitalize each word) as the last-resort label | **Adopted** (§4.3.5) | `[V:observed — …VintageShaderPackOptionsScreen.java:347-367]` |
 | Pending-change queue keyed by option id, Apply enabled only when non-empty | **Adopted** as the edit-session model (§4.5) | `[V:observed — …VintageShaderPackOptionsScreen.java:138,203,212,376]` |
 | Escape / back-at-root **clears** the queue (discard); Done applies then closes | **Adopted** as the apply/discard UX (`[D-P12-9]`, §4.5.3) | `[V:observed — …VintageShaderPackOptionsScreen.java:137-141,170,237]` |
@@ -524,15 +525,14 @@ Four invariants follow, and every algorithm below is written to preserve them.
   l. 1714). An edit produces a *pending overlay*, never an in-place change. A reload publishes a
   new configuration (P3 §5.1 l. 1622).
 - **I-3 — schema and fingerprint gating.** Admit only
-  `schemaVersion == PackFrontEnd.CURRENT_SCHEMA_VERSION` (17 in the current owner amendment);
+  `schemaVersion == PackFrontEnd.CURRENT_SCHEMA_VERSION` (18 in the current owner amendment);
   reject every other schema before deriving or retaining state, with no inferred upgrade.
   Retain presentation state only while schema, configuration fingerprint and locale match.
   A changed configuration replaces its catalog and invalidates pending catalog-issued preview
   states. Materialization-derived state additionally requires its materialization fingerprint;
   genuine registry-sensitive diagnostics observe Phase 4 generations separately (§5.3).
-- **I-4 — determinism.** Two builds from the same configuration produce byte-identical models,
-  including entry order, expanded-`*` order, and resolved column counts. This is what makes §8's
-  golden tests meaningful and what the ordering rulings in §4.3.3 exist to guarantee.
+- **I-4 — determinism.** Two builds from the same configuration and normalized requested locale
+  produce byte-identical models, including entry order, expanded-`*` order and resolved columns.
 
 ### 4.2 Screen identity and the model build
 
@@ -540,8 +540,8 @@ Four invariants follow, and every algorithm below is written to preserve them.
 screen model (§G4.1 forbids renaming). The build is a single pass:
 
 1. Reject the configuration unless `schemaVersion == PackFrontEnd.CURRENT_SCHEMA_VERSION` (I-3).
-2. Freeze current typed decoration maps once for the build. Locale-indexed resolution is
-   unavailable until R-P12-5; §4.3.5 gives the desired chain without consumer file access.
+2. Freeze `options().localizedDecorations()` and the normalized requested locale once for this
+   build. Apply §4.3.5 per-key fallback without pack-file or resource-manager access.
 3. Compute the **placement set**: the union of every option id appearing as an option entry in the
    main screen or any declared subscreen (§4.3.3).
 4. Compute the **expansion set** and assign it to the winning `*` entry (§4.3.3).
@@ -624,14 +624,20 @@ An empty default screen resolves to 2; a layout-only screen still counts all ret
 
 #### 4.3.5 Labels, values, and tooltips
 
-**Locale resolution — owner gate R-P12-5.** The desired per-build chain is client language,
-lowercased, then en_us, then literal fallback, retained as the reference-derived policy
-(`[V:observed — Pintonium …/VintageShaderPackOptionsScreen.java:324-345]`).
-Current P3 §5 publishes **one** `LangDecorations`, not locale-indexed data or a locale selector.
-Use its typed maps only as already-projected decorations; do not claim they identify a locale
-or implement the chain, and never reopen lang files. Missing typed values use literal fallbacks.
-Full locale selection requires the separate future owner publication in §5.4; it is not
-silently backfilled into schema17 or claimed complete by this consumer correction.
+**Locale resolution — R-P12-5 adopted in schema18.** Consume only
+`OptionConfiguration.localizedDecorations()`, the deep-immutable P3 locale catalog.
+P3 acquires all language files from the same bounded load snapshot and owns parsing,
+canonical order, duplicate/collision/error policy. Normalize the client locale with P3 §4.3's
+ASCII grammar `[A-Za-z]{2,8}(?:[_-][A-Za-z0-9]{1,8})*`, ASCII lowercasing and `-`→`_`;
+null/invalid requests use one absent-locale sentinel. No trimming, aliases, parent-language
+inference or JVM default locale. For **each individual key**, use requested locale then
+`en_us` (once when identical), then the entry-specific fallback below. Test key presence:
+an explicit empty string suppresses later fallback, including source tooltips.
+Missing locale and present-empty locale remain distinct owner values; neither chooses a
+first available translation. Freeze context for the whole model, not independently per label.
+Locale changes invalidate only presentation caches, keyed by schema/configuration fingerprint/
+normalized locale; no reload, persistence or shader work. All locale payloads already participate
+in P3's configuration identity; P12 never projects them back into a competing `lang()` authority.
 
 **Label chain**, per entry kind:
 
@@ -650,8 +656,9 @@ is applied **only** as a last-resort fallback — never over a lang-provided str
 omitted when absent (App F.3 l. 1469). Decoration applies to the *displayed* value only; the
 persisted value is always the raw one (§4.7.2).
 
-**Tooltips.** Use `OptionDefinition.tooltip()` and `LangDecorations.optionComments()`:
-the owner preserves decoded terminal `!`, not a precomputed GUI severity. Phase 12 splits
+**Tooltips.** Select `LangDecorations.optionComments()` through the same per-key chain,
+then `OptionDefinition.tooltip()` only if both locale keys are absent. A present empty comment
+means no tooltip. The owner preserves decoded terminal `!`, not a precomputed GUI severity. Phase 12 splits
 on literal `". "`, marks a resulting line ending in `!` as `TooltipSeverity.WARNING`,
 removes only that final marker for display, and otherwise preserves whitespace/punctuation.
 Both views render `WARNING` lines red (Phase 3 §5.1; App F.3). The profile/screen comment
@@ -709,11 +716,12 @@ The design is therefore the minimal reading of the contract `[D-P12-5]`:
 
 #### 4.4.4 Non-interactive rows
 
-`interactive=false` applies to ambiguous options and unshipped behavior owners. Internal-pack
-option edits/reset/profile apply are also inert: current P3 Internal load uses its catalog
-baseline and has no safe filesystem target or transient-option input. Display its inspectable
-model with a reason; global engine settings still work. No fake internal persistence success.
-Programmatic attempts to mutate Internal pack options reject INVALID_REQUEST before I/O.
+`interactive=false` applies to ambiguous options and unshipped behavior owners. Internal
+pack options use the same widgets/profile/reset operations once the P7 session committer is
+installed (§5.3(E)); the screen labels their durability **session only; restart restores defaults**.
+An empty Internal catalog simply has no editable pack rows. No filesystem target is requested.
+Missing committer disables only Internal pack mutation with a reason; global controls remain
+available. Rejections/failures preserve the pending preview and never claim persistence.
 
 ### 4.5 Profiles
 
@@ -745,6 +753,12 @@ the GUI never mutates a registry. No missing-profile-publication assumption rema
 
 #### 4.5.3 Apply, discard, reset
 
+For Internal, every commit action in the table below uses §5.3(E) instead of the filesystem
+codec: SESSION_ACCEPTED clears pending and queues REPUBLISH exactly once; REJECTED/FAILED
+retains pending. Reset captures `catalog.defaultState()` and has the same session durability.
+Done closes only for UNCHANGED/PERSISTED/SESSION_ACCEPTED, not for a failed commit.
+`ApplyOutcome.reload` describes the already-submitted effect; views never submit it again.
+`PERSISTED` means filesystem commit; `SESSION_ACCEPTED` is deliberately not disk durability.
 The edit session retains its exact catalog, its issued baseline and a catalog-issued preview.
 Pending differences are typed `OptionValue`s (`BooleanOptionValue` for switches,
 `TextOptionValue` otherwise), not consumer-constructed `OptionState`s. Each edit uses
@@ -807,7 +821,7 @@ loadable non-`Off` pack is selected — the reference's gating shape
 #### 4.6.2 The seven engine settings
 
 Phase 12 owns controls and apply timing, not a second codec. Phase 3 §5.1 is the sole
-canonical key/domain/default authority, amended with schema 17 for IR-24 `[D-P12-21]`.
+canonical key/domain/default authority, now schema18; schema17's codec spellings remain `[D-P12-21]`.
 The seven user controls are:
 
 | Setting | Canonical key | Domain / absent-key value | Behavior owner |
@@ -823,10 +837,11 @@ The seven user controls are:
 `TriStateValue.DEFAULT/ON/OFF` maps exactly to wire `default/true/false` and to the behavior
 owner's `DEFAULT/TRUE/FALSE`. Explicit user true/false wins over the pack; DEFAULT delegates
 to its pack flag, then the behavior owner's documented fallback. Phase 9/10's fallback
-decisions are local policy, not newly verified external behavior. `separateAo` has no global
-control and remains a pack flag resolved by Phase 10. Only explicit user true emits the P3
-`MC_OLD_* 1` macro; default/false omit it, so preprocessor policy is not confused with the
-later user-over-pack runtime decision.
+decisions were explicitly ratified by the maintainer on 2026-09-07 for this shared policy,
+not newly verified external behavior. `separateAo` has no global control. P3 first parses
+Properties using only standard A–G macros, then emits each `MC_OLD_* 1` iff user→pack→true
+resolves true, before shader preprocessing. Runtime owners independently consume those typed
+inputs; no macro-presence decoding, pack-flag preprocessing cycle or later macro rewrite.
 
 Choice ladders remain genuine owner gates: Phase 5/8/7 must publish ordered UI choices.
 Until then the row is inert, displaying the decoded current value or the codec default
@@ -899,6 +914,7 @@ exactly that.
 |---|---|---|
 | Per-pack changed-only options → Phase-3-issued `PackOptionsTarget` (exact direct-child host name plus `.txt`, archive extension retained) | `apply()`, `Done`-while-dirty, `resetToPackDefaults()` | `OptionPersistenceCodec` using same-bundle access and same-pack/catalog-issued state |
 | Global settings + current pack selection | any engine-setting change; any pack selection change | `GlobalShaderOptionsCodec` |
+| Internal session options (no file) | Apply/Done/profile/reset | P7 `InternalOptionCommitter` and P3 catalog capture; §5.3(E) |
 
 Never on hover, navigation, or discard. The persisted per-pack set is the **changed-only** set
 (RESEARCH §4.7 ll. 604–605): options whose effective value differs from the option's pack default.
@@ -917,8 +933,9 @@ Three ordered lifecycles and two additive flags, per §2.2:
 - **`NONE`** — no configuration discovery/load/publication; additive work still executes.
 - **`REPUBLISH`** — `PackFrontEnd.load` with unchanged authenticated selection and new
   engine inputs (including the independently computed required companion pair). Filesystem
-  options enter through Phase 3's integrated safe codec read. No re-discovery; a stale selection
-  is a typed rejection, not a hidden promotion to FULL.
+  options enter through Phase 3's integrated safe codec read; Internal uses the accepted
+  session snapshot through the new explicit `internalOptions` Optional. No re-discovery;
+  a stale selection is a typed rejection, not a hidden promotion to FULL.
 - **`FULL`** — discover then resolve/load, retaining the discovery-versus-republish distinction;
   Phase 7 owns dimension re-initialization and Off transition.
 - **`worldRendererReload`** — independent additive P10 geometry invalidation, meaningful with
@@ -1175,11 +1192,11 @@ the arrangement decision then costs nothing.
 
 | Exposed contract | Content | Consumer(s) |
 |---|---|---|
-| `OptionPresentationModel`, `PresentationScreen`, `PresentationEntry` (5 variants + `Blank`), `Tooltip`, `TooltipLine`, `ScreenId`, `OptionId` | Immutable resolved screen tree: expanded stars, resolved columns, current typed decorations and split/severity-tagged tooltips. Deterministic under I-4; locale selection explicitly R-P12-5-gated (§4.3.5) | two view adapters; Phase2 headless presentation projection |
-| `OptionEditSession`, `ApplyOutcome` | Pending-change overlay with `toggle`/`cycle`/`setValueIndex`/`cycleProfile`/`apply`/`discard`/`resetToPackDefaults`. `apply` invokes Phase 3's codec and yields at most one `ReloadRequest`. Never mutates a published configuration | the view adapters |
+| `OptionPresentationModel`, `PresentationScreen`, `PresentationEntry` (5 variants + `Blank`), `Tooltip`, `TooltipLine`, `ScreenId`, `OptionId` | Immutable screen tree, resolved columns and per-key locale→en_us→entry fallback with empty-preserving semantics; deterministic under I-4; §4.3.5 | view adapters; Phase2 source-free presentation projection |
+| `OptionEditSession`, `ApplyOutcome`, `OptionApplyStatus` | Same-catalog preview; filesystem codec commit or Internal session committer; exact §4.5.3 outcomes, at most one submitted reload and no published-state mutation | view adapters |
 | `ReloadLifecycle`, `ReloadRequest`, `ReloadCause`, `ReloadRequest.merge` | Exact §2.2 values and §4.7 max-lifecycle/independent-OR algebra; cause is diagnostic only | Phase 7 adapter/drain |
 | `ReloadCoordinator` — `void submit(ReloadRequest request)` | Phase 7 implements and installs this `engine.config` seam; RS-1 means one drain/final outcome, not one P4 bump; RS-2 requires quiescence | Phase 7 |
-| `EngineSettingsModel`, `EngineSettingEntry`, `TriStateValue` | Seven controls consuming Phase 3 schema-17 canonical keys and exact §4.6.2–4.6.3 domains, baseline, user-over-pack tri-state priority and no-AA reserved-zero rule; no old spelling aliases | Phases 5/7/8/9/10/13 |
+| `EngineSettingsModel`, `EngineSettingEntry`, `TriStateValue` | Seven controls consuming schema18 canonical keys and §4.6 domains/defaults, ratified user-over-pack old-light rule and reserved-zero AA; no aliases | Phases 5/7/8/9/10/13 |
 | `PackSelectionModel`, `PackSelectionRow`, `PackSelectionActions` | The selection screen's view model over `PackDiscoveryResult` — kind badge, status, compatibility badge, per-candidate diagnostics, current selection, last-action summary — plus `PackSelectionActions`, the **closed** set of intents a view reports back: select-candidate (by `PackCandidateId`), refresh, open-folder, open-options, close. **All three are declared in §2.2**, so a view adapter implements `showPackSelection` from the published shape and invents nothing. Contains no path, no root, no archive lease, and no unsanitized name (P3 §5.1 ll. 1578–1579, 1582) | the view adapters |
 | Persisted pack selection — `shaderPack` | §4.6.3 exact Off/Internal tokens or Phase-3 `FilesystemCandidateReference.canonicalValue()`; fresh discovery and all five closed resolver outcomes before safe-target acquisition | Phase 7 restart/selection |
 | `OptionScreenView` | The entire view seam (§2.2, §4.10.1). Implementing it is the whole cost of swapping UI frameworks — this is the OQ-9 hedge stated as an interface | `mod.gui` implementations only |
@@ -1198,19 +1215,19 @@ This inventory replaces the old open publication/merge assumptions. Consume the 
 |---|---|
 | `PackFrontEnds.create()` / `PackFrontEndServices` | One bundle/authentication domain supplies front end and codecs; only bundle-issued safe access, no consumer implementation or mixed receivers |
 | Discovery/reference/target | Preserve owner ordering and limits; IDs/generations nonserializable; §4.6.3 adopts durable canonical reference, five resolution outcomes, acquisition rejection and exact target/catalog pairing |
-| `PackLoadRequest` / `PackLoadResult` | REPUBLISH loads without discovery; FULL discovers/resolves/loads. Required companion pair immediately follows engineOptions; no missing-value fallback on non-Off. Off short-circuits. Filesystem options load through safe persistence before option-sensitive work |
-| `PackConfiguration` / source materializer | Symbolic CURRENT_SCHEMA_VERSION (=17), no inferred older-schema defaults; configuration/materialization fingerprints and same-build finalized option/macro retention |
+| `PackLoadRequest` / `PackLoadResult` | REPUBLISH loads, FULL discovers/resolves/loads; required companion pair follows engineOptions; required non-null internalOptions Optional follows internalPackSource, empty for filesystem, accepted session snapshot for Internal. Off short-circuits; no older operation fallback |
+| `PackConfiguration` / source materializer | CURRENT_SCHEMA_VERSION (=18), reject 17/all other versions before derivation; same-build finalized option/macros and configuration/materialization fingerprints |
 | `OptionDefinition` / `OptionCatalog` / `OptionState` | Definition source order, typed Boolean/text values, availability/default/allowed list/tooltip/occurrences; catalog-issued complete defaults and construct/update/validate with closed failures; safe out-of-list values warn and survive |
 | `OptionConfiguration` / profiles | `profiles()` source order, expanded `constraints()` and `disabledPrograms()`; preview `inferProfile` returns Inferred/InvalidState; GUI changes options only, P7 runtime evaluates the new configuration and selected profile |
-| `ScreenModel` / `SliderSet` / `LangDecorations` | Ordered entry algebra; deferred star expansion; all expanded retained slots counted, configured floor; typed decoration maps and retained tooltip marker processed by GUI |
+| `ScreenModel` / `SliderSet` / locale catalog | Ordered entry algebra, all-slot configured column floor; `localizedDecorations()` is the sole locale-keyed immutable publication; P3 §4.3 acquisition/normalization/order/collision/missing/empty semantics consumed in §4.3.5 |
 | Option persistence | Validate access domain, target's exact catalog pack credential and state's exact catalog identity before I/O. InvalidRequest has no state; Completed ABSENT/FAILED retains validated baseline. Writer computes changed-only against catalog defaults. GUI reload only after COMMITTED |
 | Global persistence / `EngineOptionData` | §4.6.3 owner baseline-overlay/result matrix, last-valid duplicate, all-entry writing and exact codec domains; GUI owns no alternate parsing |
 | Requirements / flags / compatibility / failure | Same-build vertex sets; P10 resolved lighting/AO bake policy; compatibility warning; P3 closed failures and primary sanitized diagnostic, never caller path/exception prose |
 
 The older R1 option-model and R2 load-merge requests are **fulfilled architecturally** by
-current P3 §5; this document adopts them, unverified. The current IR-24 meaning change
-requires schema 17; schema-16 data is not silently upgraded. Fresh owner and receiver
-whole-document reviews remain required before implementation consumption.
+current P3 §5; this document adopts them, unverified. The IR-03/24 follow-on requires
+schema18; neither schema17 nor any earlier data is silently upgraded.
+Fresh owner and receiver whole-document reviews remain required before implementation consumption.
 
 ### 5.2b Consumed from Phase 1 — owner-designed, receiver-adopted, unverified
 
@@ -1283,15 +1300,41 @@ current pipeline identity before accepting the batch. Closed results are
 `Rejected(INVALID_REQUEST|STALE_CONFIGURATION|UNKNOWN_OPTION|INVALID_VALUE|UNKNOWN_ENGINE_KEY|SHUTTING_DOWN)`
 or `FailedPersistence(FailureId failure,OptionPersistenceReceipt persistence)`.
 `OptionPersistenceReceipt(WriteDisposition pack,WriteDisposition global)` records each domain
-as `UNCHANGED|COMMITTED|FAILED|NOT_ATTEMPTED`; P7 owns these exact result types.
+as `UNCHANGED|COMMITTED|SESSION_ACCEPTED|FAILED|NOT_ATTEMPTED`; SESSION_ACCEPTED is legal only for Internal pack state, never global or filesystem storage.
 
-This bridge **explicitly persists like GUI apply**; it is not an ungranted transient P3 option
-input. Validate both domains completely first, serialize changed pack then global writes,
+For filesystem packs this bridge **persists like GUI apply**; Internal uses §5.3(E).
+Validate both domains completely first, serialize changed filesystem pack then global writes,
 skip unchanged domains, and enqueue one merged request only after all required writes commit.
 Failure keeps the complete pending overlay and reports each domain's committed/failed/not-attempted
 state, performs no reload and makes no cross-file atomicity/rollback claim. Retrying writes the
 same complete desired values. P2 uses isolated copied game/shaderpacks roots and polls the
 returned token/final receipt. A P3 new load, never the preview, produces same-build sources.
+
+**(E) Internal session commit — owner-issued, receiver-adopted.** P7 exposes and installs
+`InternalOptionCommitter.commit(PipelineIdentity expected,OptionState preview,
+EngineOptionData globals,ReloadRequest effects) -> ProgrammaticApplyResult`. Preview must be
+issued by the exact current Internal catalog; globals is the complete validated desired global
+value; effects uses REPUBLISH and the ordinary independently ORed resource/bake flags.
+P7 validates thread/admission/expected active Internal identity, both domains and effect fields
+before I/O. It calls that catalog's `captureInternalOptions(preview,diagnostics)` itself,
+consuming Captured or Invalid(NULL_INPUT|FOREIGN_CATALOG|NOT_INTERNAL|INVALID_STATE);
+invalid capture returns INVALID_REQUEST/INVALID_VALUE with no write, cache mutation or reload.
+The client-thread commit is serialized, without reentrant selection/publication: write changed
+globals first, then atomically accept the queue and P7's identity-keyed session preference.
+Failed global write returns FailedPersistence(pack=NOT_ATTEMPTED,global=FAILED); prior session
+preference and pending preview survive. Accepted Internal pack state reports SESSION_ACCEPTED,
+never COMMITTED. Unchanged domains report UNCHANGED. Queued acknowledges acceptance only;
+P7 final receipt separately reports load/render success or compensated Off.
+
+On reload P3 authenticates the same-bundle snapshot and exact Internal PackIdentity, validates
+all captured values against the newly discovered catalog and issues fresh state before shader
+preprocessing. Invalid input/identity/state returns INVALID_REQUEST, no partial/default retry.
+P7 preserves accepted preferences across Off/filesystem switches and after failed reload for
+retry, uses only the exact provider-identity entry, and clears all on shutdown/bundle replacement.
+Restart starts defaults. Reset submits complete catalog defaults, not a fabricated empty state.
+No PackOptionsTarget, durable filename or serialized token exists. Global settings retain their
+ordinary durability. The programmatic bridge and GUI call this same committer; views never
+submit a second ReloadRequest or pass a preview to source materialization.
 
 ### 5.4 Dependency request disposition
 
@@ -1308,16 +1351,13 @@ exists* — and P1 §12 item 43 is the fix; P1 §11.4 l. 5169 anticipated that i
 first". `[D-P12-14]`'s mod-dependency arrangement needs it. This is a restatement of an
 already-recorded Phase 1 work item, not a new interface request; no Phase 1 §5 row changes.
 
-**R-P12-5 — Phase 3 locale projection (genuinely ungranted).** Replace the single
-`OptionConfiguration.lang()` component in a future owner/schema amendment with
-`Map<String,LangDecorations> localizedDecorations` and its exact accessor. Keys are the
-owner-normalized locale codes in canonical unsigned-UTF-8 order; values retain the existing
-typed decoration-map semantics and are deeply immutable. Empty map means no lang files,
-missing key means no such locale. P3 owns parsing, duplicate/error policy and canonical
-fingerprinting of every locale payload. No consumer parser or second competing lang authority.
-P12 then resolves locale→en_us→literal from that map at one model build. Until the owner grant
-and next schema, §4.3.5 uses only current projected values and explicitly gates locale selection.
-This newly identified shape gap is separate from fulfilled historical requests 1–2.
+**R-P12-5 — fulfilled in P3 schema18; receiver-adopted, unverified.** §§4.3.5/5.2 consume
+`Map<String,LangDecorations> localizedDecorations()` and P3's complete §4.3 semantics.
+No `lang()` alias or selected-map provenance inference remains. Source-free goldens preserve
+the entire locale catalog's hashed text representation, not translated pack strings.
+**Internal mutation — fulfilled after maintainer choice.** P3 D-P3-65 and §5.3(E) adopt
+session-only editing across selection changes, restart defaults, exact-catalog validation,
+P7 acceptance/lifetime and same-build reload. Filesystem persistence stays separate.
 
 ---
 
@@ -1333,10 +1373,11 @@ shaders-off is always reachable from every screen.**
 | More than one `*`, or `*` on a screen whose expansion set is empty | First occurrence wins and later ones expand to nothing, each diagnosed (§4.3.3). No duplication, no crash | 2a |
 | Ambiguous option | Rendered non-interactive with its reported locations in the tooltip, excluded from `*` (§4.3.3). Phase 3 already disabled it (P3 §6 l. 1696) | 2a |
 | Cyclic profile or subscreen reference | Phase 3 ignores the cyclic edge and retains the rest (P3 §6 l. 1697); the navigation stack is additionally depth-bounded at 32 (§4.3.1) | 2a |
-| Current decoration map/key absent | Use literal fallback (§4.3.5); a pack with no decoration data remains usable. Locale-chain behavior requires R-P12-5, not a consumer lang-file reader | 2a |
+| Locale/key absent or explicit empty | Per-key requested→en_us→entry fallback only on absence; explicit empty suppresses fallback. Invalid requested locale uses en_us then entry fallback; no pack-file reader | 2a |
 | Current option value is not in the advertised list | Displayed and retained; first cycle moves to index 0 (`[D-P12-7]`). Never silently rewritten | 2a |
 | **Per-pack or global persistence write fails** | Warn; **retain the in-memory state**; keep the pending set intact so the user can retry; never turn the pack off, never lose the edit. Matches P3 §6 l. 1701 | 2a |
 | `PackFrontEnd.load` returns `Failed` | P7 owns final Failed/compensated-Off outcome; display its sanitized failure and Off state, never continue the prior pipeline as active. An inspectable detached prior model carries no runtime authority | 4 |
+| Internal capture/commit rejected or global write failed | Preserve pending preview and prior session preference; report closed failure, no reload. After queue acceptance, load/render failure follows P7 Off and retains accepted preference for retry | 2a/4 |
 | Discovery returns no candidates, or the shaderpacks directory is invalid | The list shows `(off)` and `(internal)` only, plus the attributed diagnostic; `discover` never throws (P3 §5.1 ll. 1571–1574) | 4 |
 | Stale `PackCandidateId` (a later discovery superseded the generation) | Re-run `discover` before acting (`[D-P12-8]`); a stale id that still reaches `load` fails as `INVALID_SELECTION` and is reported, not retried blindly | 4 |
 | `version.<mcver>` unmet | Warning badge, pack stays off, configuration remains inspectable (row C-1; P3 §6 l. 1699) | 4 |
@@ -1405,8 +1446,10 @@ All tests are headless `:engine` JUnit tests unless marked otherwise. None needs
 - `screenEntries_allFiveKindsPlusEmpty` — every App F.4 entry form materializes.
 - `screenEntries_emptyOccupiesACellAndIsNotInteractive`.
 - `screenEntries_unresolvedSubscreenLinkRendersDisabled` (`[D-P12-6]`).
-- `lang_projectedMapsThenLiteralFallback` — current published shape; separately gated
-  R-P12-5 future locale→en_us→literal conformance, not runnable schema17 coverage.
+- `lang_perKeyLocaleThenEnUsThenFallback` — missing requested key falls back independently
+  while present empty blocks fallback; invalid locale, same en_us, root screen and Custom cases.
+- `lang_localeSwitchIsPresentationOnly` — no load/write; canonical locale cache key changes,
+  immutable entire owner catalog retained; nonselected locale content changes configuration identity.
 - `lang_prettifyUnderscoreDotDash`.
 - `lang_valuePrefixAndSuffixDecoration` — App F.3 l. 1469.
 - `tooltip_splitsOnDotSpace` and `tooltip_trailingBangIsWarningSeverity` — App F.3 ll. 1457–1458.
@@ -1437,6 +1480,11 @@ All tests are headless `:engine` JUnit tests unless marked otherwise. None needs
 - `persistenceWriteFailure_retainsPendingStateAndPackStaysOn` — §6 row 7.
 - `roundTrip_optionsSurviveWriteThenReload` — **the v0.4 exit criterion** (RESEARCH §9 l. 950),
   driven through Phase 3's codecs against a temporary directory.
+- `internal_sessionCommitAndReset` — capture same-catalog preview, accept session-only receipt,
+  reload into new catalog with matched sources/macros/programs; reset submits full defaults.
+- `internal_switchRestartAndFailure` — Off/filesystem switch retains accepted preference,
+  restart/bundle replacement clears it; invalid capture/global failure leaves prior preference,
+  postacceptance load failure goes Off and retains accepted preference for retry.
 
 **Reload classification and coalescing**
 - `reload_triggerMatrixIsTotal` — a table-driven test asserting one classification for **every**
@@ -1480,18 +1528,20 @@ All tests are headless `:engine` JUnit tests unless marked otherwise. None needs
 
 **Structural**
 - `model_schemaVersionMismatchIsRejectedBeforeDerivation` — I-3, P3 §5.3 ll. 1644–1645.
-- `model_schemaGateRejectsPreviousSchema` — CURRENT_SCHEMA_VERSION17 accepted, all earlier
-  schemas including16 rejected before retaining presentation state; no fabricated codec defaults.
+- `model_schemaGateRejectsPreviousSchema` — CURRENT_SCHEMA_VERSION18 accepted, 17 and all
+  other schemas rejected before retaining state; no fabricated locale/session/codec defaults.
 - `model_buildNeverThrowsOnAnyMalformedScreenConfiguration` — a fuzz test over screen blocks
   (`[D-P12-18]`).
 - `model_isDeterministicAcrossBuilds` — I-4, byte-identical model snapshots.
 
 ### 8.2 Conformance-harness tests (`:conformance`, Phase 2)
 
-- **Presentation-model goldens** for the seven App G matrix packs: the resolved model is serialized
-  as a manifest (screen ids, entry kinds and order, resolved columns, label keys resolved) and
-  diffed. Per §G6's derived-artifacts clause the golden carries **no pack source text**
-  (`[D-P2-5]`) and **no images** (`[D-P2-6]`); regeneration is explicit via `-PupdateGoldens`.
+- **Presentation-model goldens** for matrix packs record normalized locale, screen ids,
+  entry kinds/order, columns and selected-key presence/provenance; translated labels/tooltips/
+  prefixes/suffixes use P3's exact `DecisionValue.TextHash(String sha256)` encoding
+  (SHA-256 of exact UTF-8 bytes), never a text-length field or pack
+  text. Requested/en_us/literal-source selection is consumer-derived evidence, not a second
+  lang authority. P2 owns the manifest adapter and update policy; no images are committed.
 - **Round-trip fixture run**: write a changed set for each matrix pack, reload through
   `PackFrontEnd`, assert the values survive — the v0.4 impl gate.
 - Packs are downloaded at test time under the §G6 fixture policy; none is committed.
@@ -1624,7 +1674,7 @@ re-open OQ-12.
 | `D-P12-12` | Resource reload preserves PackConfiguration; additive quiescent resource/ID refresh only | F3+T is not shader-pack rediscovery/recompilation; P7 owns reader draining and coherent resource replacement | §§4.7/5.3 |
 | `D-P12-13` | F3+R is observed via `InputEvent.KeyInputEvent`, gated on the engine being active; a **separate, rebindable** `KeyBinding` opens the screen | 1.12.2's `KeyBinding` cannot express a chord `[V:mcp]`, and App E.2 l. 1427 forbids a vanilla injection for hook need 11. Gating means the mod never shadows a combination it is not using | §4.8.1 |
 | `D-P12-14` | **ModularUI is an ordinary mod dependency, not jar-in-jar** | Mere aggregation carries no LGPL-3.0 redistribution obligation, while `contain` is distribution of the LGPL-3.0 work with notice/modification/relink obligations plus a version-collision risk. It is also the arrangement P1 §10.2 l. 4604 already designed as the fallback. Operator-confirmed at session start | §4.10.3 |
-| `D-P12-15` | Freeze decoration context per model build; locale-chain policy is R-P12-5-gated | Current LangDecorations lacks locale selection; no fabricated provenance or consumer parser | §§4.2/4.3.5/5.4 |
+| `D-P12-15` | Historical decoration-context freeze; R-P12-5 gate superseded by D-P12-27 | No consumer parser was permitted under the older single-map shape | §§4.2/4.3.5 |
 | `D-P12-16` | Reset writes an **empty changed set** rather than deleting the file | Makes "user reset this pack" an explicit persisted state instead of one inferred from a missing file | §4.5.3 |
 | `D-P12-17` | Coalescing is a **single-slot merge**, not an unbounded queue | The merge algebra makes "N clicks ⇒ one reload" a provable property (§8.1) and makes RS-1 structural rather than a discipline | §4.7.4 |
 | `D-P12-18` | Malformed presentation blocks cannot fail a schema-admitted model | Schema mismatch is separately rejected; off remains reachable | §§4.2/6 |
@@ -1635,7 +1685,10 @@ re-open OQ-12.
 | `D-P12-23` | Coalesce one drain/final composition outcome; invalidate on every independent P4 generation | Compensation may publish Ready then Off, so config counts cannot stand in for cache generations | §§4.7/5.3 |
 | `D-P12-24` | Direct immutable P11 diagnostics projection via P7 final-attempt publication | Preserve source-free channel/lifetime ownership without a fourth channel | §§4.9/5.3 |
 | `D-P12-25` | Programmatic applies use explicit safe persistence and identical reload algebra | P2 gets executable owner semantics, not a GUI simulation or transient-state bypass | §5.3(D) |
-| `D-P12-26` | Re-derived lang/Internal boundaries are explicit owner gates, not guessed adapters | Current single LangDecorations cannot select locales; Internal has no persisted option input. Gate locale publication and disable unavailable Internal pack mutations while preserving global controls | §§4.3.5/4.4.4/5.4 |
+| `D-P12-26` | Historical locale/Internal gates superseded by D-P12-27/28 | Older inert controls were not remediation; current owner contracts replace them | §§4.3.5/5.3(E) |
+| `D-P12-27` | Adopt schema18 complete locale publication, per-key empty-preserving fallback and full-catalog source-free identity | P3 parses; locale switches affect presentation only | §§4.3.5/5.2/8 |
+| `D-P12-28` | Adopt maintainer-approved session-only Internal edits through P7 commit and P3 fresh-catalog load | Exact outcomes distinguish acceptance from persistence and render success; no fake target | §§4.5/5.3(E) |
+| `D-P12-29` | Adopt ratified effective old-light shader macros and option-only superSamplingLevel/no-AA scope | 2026-09-07 maintainer choices, P3/P5 evidence; broader renderer identity OQ-7 remains separate | §§4.6/11.4 |
 
 ### 11.2 Binding-decision disposition (D-1 … D-10)
 
@@ -1661,7 +1714,7 @@ the contract and a change to a non-contract internal.
    §11.5 item 2.
 2. **Dependency history is not current clearance.** The older consumption breach and its
    review quotations remain in §0.2. Current P3 §5 closes the model/merge surface and is
-   re-derived in §5.2 with schema 17; its newer meaning and this receiving amendment remain
+  re-derived in §5.2 with schema18; its newer meaning and this receiving amendment remain
    unverified. Historical PASS cannot certify these bytes or waive implementation gates.
 3. **Sliders: §G11.5 vs the Phase 12 doc gate.** §G11.5 l. 978 records sliders as "Answered by
    gated Oculus evidence"; the Phase 12 doc gate ll. 2426–2427 says slider handling has **no**
@@ -1679,8 +1732,8 @@ the contract and a change to a non-contract internal.
 - **IR-03/16/25 — Phase 3:** §5.2 adopts current catalog-issued state, profiles, expanded-slot
   resolver, same-build options and safe persistence/reference outcomes. Current owner and
   receiver whole-document verification remain required; no open old-shape fallback.
-  R-P12-5 remains genuinely ungranted: current single LangDecorations cannot realize a
-  locale-indexed selection chain. §4.3.5 states the reachable baseline without claiming parity.
+  R-P12-5 and Internal session mutation now have owner grants adopted in §§4.3.5/5.3(E);
+  the historical gates are superseded, not renamed resolved without executable contracts.
 - **IR-06/07 — Phase 7/4:** §§4.7/5.3 adopt ReloadCoordinator, exact effect translation,
   additive quiescent resource/ID refresh, one final receipt and all actual P4 generation events.
   P7 owns execution and P4 owns generations; no configuration-count equivalence.
@@ -1691,6 +1744,9 @@ the contract and a change to a non-contract internal.
   independent pre-load normal/specular preferences and no-AA zero-only reserved field.
   Ordered renderResMul/shadowResMul/handDepthMul UI ladders remain unpublished/inert gates;
   codec-valid persisted values still read without silent rewriting.
+  The maintainer ratified effective-mode old-light projection with fallback true and approved
+  pack-option-only superSamplingLevel on 2026-09-07. Neither seven controls nor reserved zero
+  storage authorizes engine AA/SSAA, and broader OQ-7 identity experiments remain open.
 - **IR-17 — Phases 11/7:** §§4.9/5.3(C) direct source-free immutable expression diagnostics,
   final-attempt outcome and selected-pack lifetime, no store/channel invention.
 - **Remaining gates:** fresh whole-document owner/consumer review, actual implementation and

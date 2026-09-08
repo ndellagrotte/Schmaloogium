@@ -10,7 +10,7 @@
 
 **Assigned OQs:** none
 
-**Authored:** 2026-07-28 · **Last revised:** 2026-09-06 (§0.39)
+**Authored:** 2026-07-28 · **Last revised:** 2026-09-07 (§0.41)
 
 **Deliverable:** this document, following
 `docs/design/v2.0-RC3/DESIGN.md:790`–`:826` and its mandatory thirteen-section template.
@@ -367,6 +367,21 @@ Historical addenda/reviews remain unchanged. §5 changed; this document is unver
 fresh whole-document owner verification before implementation consumption. Documentation only:
 no builds, tests, formatting, implementation or new PASS claims.
 
+### 0.41 IR-12/24 sampling-authority investigation (2026-09-07)
+
+Research precedes the RC3 assignment. Fresh evidence in §11.6 preceded the maintainer's explicit
+2026-09-07 **Pack-option compatibility only** disposition: no engine SSAA requirement, no AA
+runtime/UI; preserve the selected constant and pack source uses. Historical research/design
+and §0.40 remain unchanged; §11 records the approved correction and D-P5-27 applies it.
+Reads covered this phase's §5 and incorporated sampling/sizing/lifecycle semantics, §11, P7 §§4.3/4.6/5.2/11.3,
+RESEARCH §§0–1/4.3–4.4/App A.3, RC3 §§G11/Phase 5 and the review's Resolutions.
+The historical `pintonium-9c2fcc1` directory is absent; the distinct available
+`reference-src/Pintonium-main` checkout was searched and its option recognizer and root GPL-3.0
+license read, not represented as the old LGPL snapshot. Published OptiFine docs and the current
+LGPL-3.0 Iris option recognizer were also read; §11.6 records exact sources and evidence limits.
+No prohibited source, implementation, validation, build, test or formatter was used. The
+subsequent approved scope correction closes the sampling-authority question, not verification.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 5 owns
@@ -399,9 +414,10 @@ Mixins observe and delegate; no flip, clear, sizing, or fallback policy lives in
 - **Owned by Phase 1:** `GLDevice`, services, opaque handles, `GLCapabilityProfile`, recording/replay,
   diagnostics, log channels, bring-up stage 2, and the verified authenticated borrowed-depth,
   combined depth/stencil, and first-versus-steady depth-copy facade shape consumed in §5.2.
-- **Owned by Phase 3:** parsing and validation of format/clear/mipmap/shadow/supersampling
-  directives, `ProgramStateModel`, `ResourceRequirements`, immutable configuration, and its
-  fingerprint. Phase 5 never reopens or rescans the pack.
+- **Owned by Phase 3:** parsing and validation of format/clear/mipmap/shadow directives,
+  pack-option recognition/materialization (including `superSamplingLevel`), `ProgramStateModel`,
+  `ResourceRequirements`, immutable configuration and fingerprint. Phase 5 never rescans packs
+  and does not consume the option as a resource/sampling directive.
 - **Owned by Phase 4:** stage/pass registry, sole fallback selection, effective program/state,
   lossless `ProgramSamplerLayout`, private selection authentication, and detached candidate view.
   Phase 5 resolves physical sides but never writes them into a Phase 4 value.
@@ -478,8 +494,7 @@ public enum PhysicalSide { A, B }
 
 public record BufferSizing(
     Extent2i mainExtent,
-    Optional<Extent2i> shadowExtent,
-    int superSamplingLevel) {}
+    Optional<Extent2i> shadowExtent) {}
 
 public sealed interface ResolvedBufferFormat {
     record Color(ColorInternalFormat value) implements ResolvedBufferFormat {}
@@ -1095,7 +1110,7 @@ generation authority is separate from layout content identity. ProgramUniformCac
 | legacy shadow-depth `R,R,R,1` sampling swizzle | `ShadowTexturePolicy` in §4.10 applies it to depth textures | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1630`–`:1637`; Pintonium mechanism evidence `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:273`–`:276` |
 | real shadow flip semantics | same generic `FlipState` over shadowcolor; no stub | Pintonium B4 is negative evidence at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:785`–`:791`; D-P5-8 |
 | main and shadow sizing | checked display × render-quality and shadow-resolution × shadow-quality formulas in §4.11.1 | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1638`–`:1644`; RESEARCH §4.3 |
-| `superSamplingLevel` | retained in `BufferSizing.superSamplingLevel()` without changing extent; level>1 execution is authority-open, not an adopted Phase 7 schedule | RESEARCH §1.2/§4.3/App A.3; RC3 §Phase 5; D-P5-23 |
+| `superSamplingLevel` | pack-option compatibility only; preserve source use, no engine sizing/sampling field or effect | Maintainer 2026-09-07 disposition §11.6; D-P5-27 corrects the historical App A.3/RC3 engine claim |
 | resize/recreate triggers and owned invalidation | §4.11.2 trigger matrix and complete owned-object/full-clear/notice checklist | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1638`–`:1646`; PD §5.3; D-P5-14 |
 | Final renders to Minecraft framebuffer | §4.5 returns `SCREEN`; §1.3 requires Phase 7's platform bind and anaglyph-aware color mask before drawing | `[V:doc]` `docs/research/v1/RESEARCH.md:526`; RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1647`–`:1649` |
 
@@ -1996,16 +2011,15 @@ shadowSide = max(1, round(shadowMapResolution * shadowQuality))
 All multiplication is checked in `double`; non-finite, overflow, or a result above
 `maxTextureSize` is a capability failure before allocation.
 
-`superSamplingLevel` is retained as the positive `BufferSizing.superSamplingLevel()` integer
-defined in §2.2, not an invented `SupersamplingPlan` API. It does not multiply the extent under
-the current §4.3 allocation formula. Retention is planning/evidence only, not SSAA execution.
-RESEARCH §1.2 excludes FXAA/AA/AF features, while App A.3 only says “SSAA multiplier” and RC3's
-Phase 5 sizing assignment names the directive without a sample/draw/resolve algorithm.
-There is no accepted Phase 7 nontrivial SSAA schedule. D-P5-23 therefore leaves level>1
-execution and conformance **blocked on explicit authority disposition** in §11.5; it is not
-silently normalized to level 1, implemented via extent multiplication, or advertised as supported.
-The ordinary level-1 synchronous rendering baseline remains specified. This is a documentation
-gate, not a newly invented runtime rejection policy for a valid parsed directive.
+`superSamplingLevel` is **pack-option compatibility only** under the maintainer's 2026-09-07
+disposition (D-P5-27, §11.6). Phase 3 preserves the declared/selected value and its ordinary
+GLSL source uses; Phase 5 does not receive or validate an engine sample count. `BufferSizing`
+contains only `mainExtent` and `shadowExtent`, with no sampling accessor, synthetic level 1,
+or retained resource-only level. For every declared option value the engine performs the
+ordinary allocation/draw/final schedule: no extent multiplication, jitter, extra world/shadow
+draw, accumulation or resolve is caused by the name. Pack GLSL may still use its value.
+Ordinary option changes can change configuration fingerprints/materialized code and therefore
+follow the existing rebuild path; this is not a special sampling-size invalidation rule.
 
 #### 4.11.2 Change classification
 
@@ -2359,7 +2373,7 @@ The recording backend must prove `noLeakedObjects()` and `noUseAfterDelete()`.
 | `BufferArchitecture.plan/create`, `BufferPlanRequest`, `BufferBuildRequest`, `BufferRuntimeInputs`, `BufferPlan`, `BufferPlanResult`, `BufferBuildResult`, `BufferFailure` | Phase-7-owned immutable configuration/registry/fingerprint/capability inputs plus runtime display extent, render quality, and shadow quality; all three runtime fields participate by value in planning identity and reuse, with no separate runtime revision or rebuild trigger; closed valid/invalid pure planning carries the complete `BufferResourceSnapshot` whenever derivable; `create` independently reruns identical planning from its request before render-thread creation; ready/awaiting-depth/closed-failure build results, no partial publication | Phase 7 bootstrap/reload; Phase 2 tests |
 | `BufferArchitectures.create()` | dependency-free public acquisition in `engine.buffers`; returns a non-null stateless `BufferArchitecture`, no public constructor, GL/context/provider work or retained request/runtime. Pure `plan` is available before estate construction; `create(BufferBuildRequest)` retains its separate render-thread requirements | Phase 7; Phase 2 inspection |
 | `BufferEstateCandidate`, `BufferEstateInspection`, `BufferEstatePublisher`, `PublishedBufferEstate`, `BufferPublicationResult` | exact §2.2 signatures and §4.11 transaction. Inspection is handle/generation-free; acceptance transfers ownership and issues the sole estate generation; ProvenanceRejected retains caller ownership; ConsumerFailed is an already installed off outcome with exact preceding-success deliveredCount. Phase4→Phase5 acceptance does not admit drawing until Phase13 pairing/registration and Phase9 geometry invalidation succeed. Failure compensates accepted publishers off, never revives an old registry | Phase 7; Phase 12 indirectly |
-| `BufferEstateView`, `BufferSizing`, `Extent2i`, `BufferInventory`, `BufferInventoryEntry`, `ResolvedBufferFormat` | accepted immutable non-owning estate metadata and publisher-assigned generation; `Extent2i(int width, int height)` is the exact immutable extent pair and performs no constructor validation, while positive display dimensions remain a sizing precondition; structural sizing equality over exact main extent, optional shadow extent, and supersampling level; `shadowExtent` is present exactly when either Phase 3 shadow-depth or shadow-color minimum is positive; immutable domain/index-ordered logical inventory with per-domain counts and final resolved color/depth format; `resources()` is the candidate's identical handle-free available projection | Phases 6, 7, 8, 13, 14 |
+| `BufferEstateView`, `BufferSizing`, `Extent2i`, `BufferInventory`, `BufferInventoryEntry`, `ResolvedBufferFormat` | accepted immutable non-owning estate metadata and publisher-assigned generation; `Extent2i(int width, int height)` is the exact immutable extent pair and performs no constructor validation, while positive display dimensions remain a sizing precondition; `BufferSizing(Extent2i mainExtent, Optional<Extent2i> shadowExtent)` has structural equality over exactly those two fields; `shadowExtent` is present exactly when either Phase 3 shadow-depth or shadow-color minimum is positive; immutable domain/index-ordered logical inventory with per-domain counts and final resolved color/depth format; `resources()` is the candidate's identical handle-free available projection | Phases 6, 7, 8, 13, 14 |
 | `BufferResourceSnapshot`, `BufferResourceProjection`, `ColorBufferResource`, `ShadowResourceProjection`, `ShadowTextureResource`, `VertexAttributeResource`, `InstanceResource`, `CapabilityGate`, `CapabilityLimit`, `CapabilityShortfall` | immutable exact Phase 2 `resources.*` owner projection: dense color rows and RGBA, depth/shadow counts/properties, center-depth/noise, sorted attribute/instance rows, and `OK|SHORTFALL` with the three exact canonical limit names. `Available` requires the complete grammar even for shortfall; `Unavailable` serializes only `resources.available=false`. No handles, sides, source, or inferred behavior (`[D-P5-20]`) | **2**, **7** |
 | `refreshMainDepth`, `MainDepthRefreshResult` | public render-thread comparison against the published estate; closed unchanged/reattached/resize-required/failed outcomes; successful same-extent reattachment invalidates open snapshots but permits same-frame continuation only after Phase 7 abandons them and reacquires pass/binding snapshots; resize-required carries exactly `BufferFailureCode.MAIN_DEPTH_RESIZE_REQUIRED`, performs no GL or mutation, and requires abort/normalize plus prepare/build/publication; every failed outcome advances the attachment epoch, retains the cached prior identity, makes the estate stale/unusable, and requires abort/normalize plus shaders-off publication until safe-point replacement succeeds; no shader draw is permitted during either recovery | Phase 7 |
 | `FrameProtocolRejection`, frame/pass result types, `PassDrawTarget`, `PassBufferSnapshot` | exact §2.2 schemas; `snapshot(PassDescriptor pass,ProgramBindingSelection selection)` stamps that mandatory selector after authentication. Snapshot fields are estateGeneration, depthAttachmentEpoch, frameId, pass, selection, colorAttachments, readableTextures, flipAfterPass, drawTarget. Acquired alone is not drawable; Bound plus same-selection activation is required. Completion alone commits flips; frame commit/abort and SCREEN semantics remain §§4.4–4.5 | Phase 7 |
@@ -2390,9 +2404,13 @@ PassDescriptor pass,ProgramBindingSelection selection,FramebufferHandle framebuf
 List<ColorAttachment> colorAttachments,Map<LogicalBuffer,TextureHandle> readableTextures,
 Set<LogicalBuffer> flipAfterPass)` replace descriptor-only acquisition and freeze both readable domains.
 
-The `BufferSizing.superSamplingLevel()` publication is data only. §4.11.1's authority gate for
-level>1 is part of this interface; it grants neither SSAA execution nor a different allocation
-formula. Phase 7 must not report retained level as an executed sample/resolve schedule.
+**IR-12 approved cutover (D-P5-27).** `BufferSizing` has exactly two fields as published above;
+the former `superSamplingLevel()` accessor and constructor argument are removed, not aliased.
+Consumers compare only those extents and obtain pack-option provenance from P3, never resource
+metadata. All option values use P7's existing once-per-frame camera/history/uniform/shadow/
+depth/flip/Final/before-present capture sequence. No engine SSAA effect, level gate, new sample
+identity, resolve API or engine AA control is promised. P3 source materialization preserves
+pack-authored uses, so this is not permission to normalize or erase the constant.
 
 **IR-29 inspection acquisition (D-P5-25).** Phase 2 obtains `BufferArchitectures.create()` and
 calls only `plan(BufferPlanRequest(configuration, registryView, registryView.fingerprint(),
@@ -2432,16 +2450,18 @@ literal-PASS review.
 
 | Phase 3 §5 contract | Use |
 |---|---|
-| `PackConfiguration`, schema/fingerprint | sole pack/config truth; accept exactly `PackFrontEnd.CURRENT_SCHEMA_VERSION` (17 after the IR-24 owner amendment), rejecting older values before derivation without inferred upgrades |
+| `PackConfiguration`, schema/fingerprint | sole pack/config truth; accept exactly `PackFrontEnd.CURRENT_SCHEMA_VERSION` (18 after the coordinated owner amendment), rejecting 17 and older values before derivation without inferred upgrades |
 | `ProgramStateModel` | explicit flip values retained through Phase 4 |
-| `ResourceRequirements` | color/depth/shadow counts, formats, clear policy, routing minima, shadow policy, supersampling |
+| `ResourceRequirements` | color/depth/shadow counts, formats, clear policy, routing minima and shadow policy; no engine supersampling requirement |
 | `MacroConfiguration` | no parsing; only configuration fingerprint participates |
 | immutable publication/version discipline | no pack reopen/rescan or retained parser builders |
 
 Runtime display/render/shadow quality values remain `BufferRuntimeInputs` supplied by Phase 7.
 The adapter uses decoded current Phase 3 `renderResMul`/`shadowResMul`; display extent remains
 platform-owned. These three values are the complete runtime planning identity. No legacy GUI
-key alias or separate revision is inferred; reserved zero-only `antialiasingLevel` enables no AA.
+key alias or separate revision is inferred. Engine AA runtime/UI are excluded by the recorded
+§11.6 disposition; `MC_FXAA_LEVEL` is absent, not emitted as zero. `superSamplingLevel` remains
+a distinct pack option, not an AA setting, a resource requirement or `renderResMul`.
 
 
 #### 5.3.1 Coordinated producer and downstream migration requests
@@ -2682,7 +2702,8 @@ No 2^N FBO variant cache exists.
 - `inventory_minFourScanDrivenNotSixteen`;
 - `growth_nonNegativeIdentityNoHardcodedModelCap`;
 - `shadowEstate_plannedForIndependentDepthOrColorDemand`; and
-- `supersampling_doesNotChangeBufferExtent`;
+- `packSamplingOption_doesNotChangeEngineSizing` (different selected values preserved in P3
+  materialized source, equal otherwise-identical P5 extents; no sample-count resource);
 - `depthCopy_worldOrderWeatherThenTranslucent`;
 - `resourceProjection_exactCanonicalFullAndAbsentGrammar`;
 - `resourceProjection_capabilityShortfallRemainsAvailable`;
@@ -2821,8 +2842,8 @@ Phase 5 has no assigned open question. No spike is invented. The Phase 1 and Pha
 requests and the Phase 5 target-profile request are granted; §0.25 records their verified state.
 This dependency-adoption surface now requires its own fresh Phase 5 verification round.
 
-The unresolved `superSamplingLevel` authority question is §11.5's blocking gate for level>1
-execution/conformance, not a completed fallback or a Phase-5 implementation spike.
+The former `superSamplingLevel` authority question is resolved by the maintainer's
+2026-09-07 option-only disposition in §11.6; it is not an implementation spike or SSAA gate.
 
 ## 11. Decisions & open items
 
@@ -2839,7 +2860,7 @@ execution/conformance, not a completed fallback or a Phase-5 implementation spik
 | D-P5-7 | Allocate a contiguous minimum-four G6 inventory through the highest required index, never unconditional 16. This satisfies App B.1 and RC3's scan-driven ruling while retaining growth-shaped IDs. |
 | D-P5-8 | Use the generic real flip machine for shadowcolor and reject Pintonium B4's stub. Structure is reusable; the stub is contract-visible missing behavior. |
 | D-P5-9 | Reproduce the fixed App B.3 map, including depthtex1 at unit 11, and reject dynamic allocation. |
-| D-P5-10 | Retain display × render-quality extent independently of the parsed supersampling integer; the original execution handoff is narrowed by D-P5-23 because no receiving schedule or complete authority semantics exists. |
+| D-P5-10 | **Historical, superseded by D-P5-27:** retain display × render-quality extent independently of the parsed supersampling integer; the original execution handoff was narrowed by D-P5-23 because no receiving schedule or complete authority semantics existed. |
 | D-P5-11 | Use candidate ownership plus equality generation tied to `RegistryFingerprint`, so no partial or cross-registry estate can publish. |
 | D-P5-12 | Pack FBO color attachments into route order while retaining logical buffer identity. This preserves G6 behavior and avoids hardcoding logical colortex index as the future physical attachment limit. |
 | D-P5-13 | Use the observed G6 null-allocation transfer layout for all 37 formats: non-integer `BGRA`, integer `RGBA_INTEGER`, and `UNSIGNED_INT_8_8_8_8_REV` with null data. The full pack-facing pixel vocabulary remains available for Phase 13 raw uploads. |
@@ -2852,9 +2873,11 @@ execution/conformance, not a completed fallback or a Phase-5 implementation spik
 | D-P5-20 | Publish one immutable canonical Phase 2 resource projection from planning through accepted runtime, with `Available` meaning structurally complete even under capability shortfall and `Unavailable` serializing only the false availability bit. Capture never infers allocation facts. |
 | D-P5-21 | One full exact-name AppB.3 policy/resolver with lossless target-specific candidate cells. AppF.5 requires per-program type selection (`docs/research/v1/RESEARCH.md:1484-1490`); compatibility filtering then greatest canonical ordinal makes distinct discriminators deterministic without inventing property order. Fixed units and watershadow semantics remain authoritative. |
 | D-P5-22 | One authenticated sixteen-row physical binding operation for ordinary/shadow passes, distinct preflight/degradation/backend outcomes, Bound-only lease transfer and local no-flip discard. Expiry never removes closure duty; Phase 8 R7-12 consumption is now adopted/unverified. |
-| D-P5-23 | IR-12: retain SSAA metadata, retract false Phase 7 execution agreement and gate level>1 pending no-AA/directive reconciliation plus exact sample/resolve/failure authority; no invented algorithm or runtime fallback. |
+| D-P5-23 | **Historical, superseded by D-P5-27:** IR-12 retained SSAA metadata, retracted false Phase 7 execution agreement and gated level>1 pending no-AA/directive reconciliation plus exact sample/resolve/failure authority; no invented algorithm or runtime fallback. |
 | D-P5-24 | IR-03/04: adopt current Phase 3 schema/companion/lossless contracts and Phase 6/8 R7-10..13 grants while preserving fresh-review and genuinely missing authority/source gates. |
 | D-P5-25 | IR-29: publish dependency-free BufferArchitectures.create acquisition for the existing pure planner and same-build source-free capability projection | Exact shortfalls are P5-owned; P4 failure and P3 minima cannot substitute |
+| D-P5-26 | Investigation distinguished published integer/default and licensed option recognition from unproven engine SSAA and bundled FXAA settings. Its recommendation is evidence in §11.6; the subsequent maintainer disposition is D-P5-27. |
+| D-P5-27 | Apply the maintainer's explicit 2026-09-07 Pack-option compatibility only decision: remove engine SSAA requirement and sampling-only P5 API/identity, preserve declared/selected source values and normal pack execution, retain no-AA runtime/UI. Historical authority bytes remain unchanged; this recorded disposition controls the active phase contract. |
 
 ### 11.2 D-1…D-10 disposition
 
@@ -2890,9 +2913,10 @@ execution/conformance, not a completed fallback or a Phase-5 implementation spik
    distinct `attachDepthStencil` and `initializeDepthTextureFromFramebuffer` operations alongside
    depth-only attachment and storage-preserving steady copy. **Ruling: consume the explicit
    operations and their distinct recorder events; never infer backend state.**
-7. **`superSamplingLevel` authority gap.** RESEARCH §1.2 excludes AA; App A.3 supplies only
-   “SSAA multiplier”; §4.3 defines display × render-quality sizing. D-P5-23 removes the
-   unaccepted executor promise and keeps level>1 execution/conformance authority-blocked.
+7. **RESOLVED — `superSamplingLevel` authority contradiction.** §11.6's prior evidence
+   establishes author declaration/default and licensed option recognition, not an executor.
+   The maintainer selected pack-option compatibility only on 2026-09-07. D-P5-27 removes the
+   engine requirement and preserves source semantics; RESEARCH/RC3 historical text is not edited.
 8. **Pintonium format superset.** Its enum includes 8/16-bit integer targets absent from App B.4.
    **Ruling: exactly 37**, no imported additions.
 9. **Pintonium copy strategy does not handle combined stencil without GL3.** **Ruling:** capability
@@ -2941,14 +2965,10 @@ execution/conformance, not a completed fallback or a Phase-5 implementation spik
    authenticated borrowed-depth issuance/permissions, combined depth/stencil attachment, and
    first-copy initialization requested in §5.5. The literal PASS at
    `docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75` closes the amended dependency surface.
-2. **PENDING AUTHORITY, BLOCKING level>1 SSAA execution/conformance.** Reconcile RESEARCH §1.2's
-   no-AA boundary with App A.3's “SSAA multiplier” and RC3's sizing assignment. If nontrivial pack
-   supersampling is required, specify admitted levels, any extent/rounding effect, per-sample
-   camera/jitter and frame/uniform cadence, draw coverage, accumulation/filtering, final resolve
-   into Minecraft's framebuffer, depth/flip interactions, failure cleanup and execution owner/
-   milestone. Otherwise explicitly amend the authority requirement. P5/P7 cannot choose either
-   interpretation. Level 1 retains the synchronous baseline; a retained higher integer proves
-   neither support nor an adopted execution schedule. No new AA feature is added here.
+2. **RESOLVED BY MAINTAINER — IR-12/24 (2026-09-07).** `superSamplingLevel` is pack-option
+   compatibility only, with declared/selected value and source use preserved and no engine
+   allocation/draw/resolve effect. Engine AA runtime/UI remain excluded. D-P5-27/§11.6 apply
+   that explicit disposition; no engine sampling domain, algorithm or separate grant is pending.
 3. **GRANTED — verification target.** The data-only
    `verification/targets/phase-5.json` profile exists, resolves RC3 and this artifact, and has
    already driven the completed Phase 5 reviews.
@@ -2969,8 +2989,51 @@ execution/conformance, not a completed fallback or a Phase-5 implementation spik
 8. **CURRENT GRANTS ADOPTED/UNVERIFIED:** §5.3.1/§5.5 reconcile Phase 6 R7-10 resolver/R7-11
    retirement and Phase 8 R7-12 shared binding/R7-13 planning. Phase 3 companion/lossless/direct
    projections and Phase 1 package/native-configure grants are present. Native legacy source,
-   suffix semantics, jcpp permission, SSAA authority and fresh owner reviews remain open;
+   suffix semantics, jcpp permission and fresh owner reviews remain open;
    unrelated Phase 10/14 proposals are not granted. Phase 13 R2 is designed, not verified.
+
+### 11.6 Sampling evidence and approved authority disposition (D-P5-26/27)
+
+**Evidence gathered 2026-09-07, before this amendment:**
+
+| Source and exact location | What it establishes; what it does not |
+|---|---|
+| `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:413–425`, especially 421 | The shipped author document says `const int superSamplingLevel = 1;` with effect `superSamplingLevel = 1`; the Comment cell is empty. It establishes spelling, integer example/default notation and configuration recognition, not “N samples,” “N² samples,” admitted levels, changed extents, jitter or resolve. |
+| `[V:web]` [official OptiFine shader author document](https://github.com/sp614x/optifine/blob/07ec2ca62f81aa52cb9ed1a7fd49a4489c131b1e/OptiFineDoc/doc/shaders.txt#L555), Fragment Shader Configuration | The current published document repeats the same row without an explanatory comment. The revision was obtained from the author's commit API. This is corroboration, not permission to import modern engine semantics into G6. |
+| `[V:doc]` shipped `doc/shaders.txt:653–661`; [official Standard Macros H](https://github.com/sp614x/optifine/blob/07ec2ca62f81aa52cb9ed1a7fd49a4489c131b1e/OptiFineDoc/doc/shaders.txt#L779-L787) | `MC_FXAA_LEVEL` is present **when FXAA is enabled**, with values 2/4. Render quality has its own macro/domain. Neither statement links the FXAA setting to `superSamplingLevel`; zero-only settings must not emit a false enabled macro. |
+| Licensed local engine evidence: `reference-src/Pintonium-main/common-shaders/src/main/java/net/irisshaders/iris/shaderpack/option/OptionAnnotatedSource.java:54–96,202–309`; root `LICENSE:1–3` says GPL v3 | The name is in the const-option allowlist; numeric options pass through the generic value-list recognizer. A case-insensitive checkout search for `superSampling`, `supersampling`, `SSAA` and `MC_FXAA` found only that allowlist occurrence. This supports option compatibility and supplies **no** engine executor. It is a bounded absence observation, not proof of all historical engines' behavior or a license ruling on every bundled dependency. No code is copied. |
+| Published [Iris 26.1 option recognizer](https://github.com/IrisShaders/Iris/blob/26.1/common/src/main/java/net/irisshaders/iris/shaderpack/option/OptionAnnotatedSource.java), static allowlist and `parseConst`; [LGPL-3.0 license](https://github.com/IrisShaders/Iris/blob/26.1/LICENSE) | Independently confirms the same option-recognition path. Only this file was used; no whole-Iris absence claim or transformer implementation is used. Option recognition is not renderer support. |
+| Governing `docs/research/v1/RESEARCH.md:65–86,518,533–547,1181` and `docs/design/v2.0-RC3/DESIGN.md:1638–1646` | RESEARCH excludes bundled AA/AF and separately claims “SSAA multiplier”; baseline sizing/frame flow gives no supersampling operation. RC3 repeats the directive and explicitly says Pintonium supplies no implementation help. RC3 cannot override RESEARCH or turn its label into an algorithm. |
+
+**Result.** Actual purpose beyond recognized configuration/option compatibility, the supported
+engine-level domain above 1 and an engine sampling algorithm remain unestablished by these
+sources. A shader may consume its own constant through ordinary materialized GLSL; preserving
+that source behavior is different from supplying an engine SSAA pass. Neither the word
+“supersampling” nor the generic concept of antialiasing authorizes a rendering design. The
+prior observed-behavior digest in §0.3 supplies only the same label and no missing schedule.
+Search-result summaries and unsourced examples are not authority.
+
+**Maintainer disposition — 2026-09-07, after the evidence above:** **“Pack-option compatibility
+only.”** Remove the engine-SSAA requirement for `superSamplingLevel`; preserve the declared/
+selected option value and source use, with no engine allocation, draw or resolve effect.
+AA UI/runtime remain excluded. This is the explicit authority correction to the earlier
+App A.3/RC3 engine interpretation, recorded here rather than rewriting historical research,
+design, addenda or reviews. The alternative engine-SSAA exception was not selected.
+
+**Active cross-owner cutover (D-P5-27):**
+
+| Owner | Required contract |
+|---|---|
+| P3/P12 | Preserve catalog-issued state-free materialization and selectable pack-option values; remove obsolete engine sampling resource meaning and any engine-only positive-level restriction. P12 exposes the pack option through normal pack-option rules, never as an engine AA control. Engine AA runtime/UI are excluded; no `MC_FXAA_LEVEL` enabled macro. P3's coordinated schema 18 owns this semantic cutover; consumers reject older schemas. |
+| P5 | `BufferSizing(Extent2i mainExtent, Optional<Extent2i> shadowExtent)` replaces the three-field shape; structural equality has exactly these two extents. No retained sampling resource, alias/accessor, extra allocation, extent multiplier or forced level 1. Ordinary configuration rebuild and resource declaration changes still work. |
+| P7/P6/P8 | Use the existing ordinary synchronous frame for every option value. No engine jitter, additional sample/world/shadow draws, history rotation, uniform sampling or tick advancement is triggered by the option's name. Shadow cadence, PRE_WEATHER/PRE_TRANSLUCENT depth moments, flips, one Final and existing early-exit/failure/lease cleanup remain unchanged. Pack-authored GLSL uses are preserved. |
+| P2/P7 capture | Capture remains after ordinary Final/before present with the existing camera/history manifest facts. No SSAA sample count, resolve success or engine-supersampling conformance claim. P3 option/configuration evidence records the selected value where its existing schema requires it; P5 resource evidence does not fabricate one. |
+| P6/P7/P8/P13/P14 sizing consumers | Migrate constructors, accessors, equality, resize registration baselines and inspection assumptions to the two-field `BufferSizing`; no inferred upgrade or ignored third argument. Main owns cross-document adoption; P5 supplies this exact changed §5 contract. |
+
+The engine-level authority gate is closed by explicit scope disposition, **not** by treating
+metadata as execution. The published evidence does not become proof that every historical
+OptiFine engine lacked an effect; it supports the chosen project contract. §5 remains changed
+and unverified; no implementation or verification clearance follows.
 
 ## 12. Implementation checklist
 

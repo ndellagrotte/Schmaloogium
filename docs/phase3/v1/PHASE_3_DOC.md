@@ -3,7 +3,7 @@
 ## 0. Header
 
 **Phase:** 3 — Pack front-end: ingestion, preprocessing, and configuration model
-**Date:** 2026-08-03 · **Last revised:** 2026-09-07 (§0.58)
+**Date:** 2026-08-03 · **Last revised:** 2026-09-07 (§0.59)
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 3
 specification only. RC3 governs this phase only; this document does not change the Phase 1 or
 Phase 2 governance pins.
@@ -453,6 +453,18 @@ reconciliation is architectural only: this changed §5 and every affected consum
 **unverified pending fresh whole-document review**. No implementation, validation, or PASS
 claim is made; historical addenda retain their original schema/evidence.
 
+### 0.59 Locale publication and old-light resolution — 2026-09-07
+
+Architecture-only IR-03/24 amendment under the unchanged RC3 header. D-P3-63 replaces the
+single decoration component with the complete locale-keyed catalog; D-P3-64 replaces
+explicit-user-only old-light macros with cycle-free effective-policy resolution. D-P3-65 records
+approved session-only Internal edits; D-P3-66 records approved option-only sampling and removes
+the world supersampling component. These changes share one increment to **schema 18**, including
+`IdMappingInput`. §5 incorporates the exact acquisition, fallback and fingerprint rules below.
+Research preceded decisions: RC3 Phase 3, RESEARCH §§3.5/4.7/7.5/App F, shipped/published author
+docs and the narrowly identified licensed language reader were read. §11 records evidence and
+limits; OQ-7 is not self-ratified. Historical addenda/reviews remain unchanged; fresh review is required.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 3 owns
@@ -562,7 +574,7 @@ public final class PackFrontEndServices {
 }
 
 public interface PackFrontEnd {
-    int CURRENT_SCHEMA_VERSION = 17;
+    int CURRENT_SCHEMA_VERSION = 18;
     DiscoveryLimits discoveryLimits();
     PackDiscoveryResult discover(PackDiscoveryRequest request);
     FilesystemCandidateResolution resolveFilesystemCandidate(
@@ -652,6 +664,7 @@ public record PackLoadRequest(
     RendererFeatureData rendererFeatures,
     PersistenceFileAccess persistenceFiles,
     InternalPackSource internalPackSource,
+    Optional<InternalOptionSnapshot> internalOptions,
     DiagnosticReporter diagnostics) {}
 public record RuntimeIdentityData(
     int mcMajor,
@@ -814,6 +827,8 @@ public sealed interface OptionCatalog permits OptionCatalogValue {
     OptionStateResult updateState(
         OptionState baseline, String name, OptionValue value, DiagnosticReporter diagnostics);
     OptionStateValidation validate(OptionState candidate);
+    InternalOptionCaptureResult captureInternalOptions(
+        OptionState state, DiagnosticReporter diagnostics);
 }
 public sealed interface OptionState permits OptionStateValue {
     Map<String, OptionValue> values();
@@ -830,6 +845,12 @@ public enum OptionStateFailure {
     NULL_INPUT, FOREIGN_CATALOG, UNKNOWN_OPTION, MISSING_OPTION, NULL_VALUE,
     KIND_MISMATCH, DISABLED_AMBIGUOUS, UNSAFE_TEXT
 }
+public sealed interface InternalOptionSnapshot permits InternalOptionSnapshotValue {}
+public sealed interface InternalOptionCaptureResult {
+    record Captured(InternalOptionSnapshot snapshot) implements InternalOptionCaptureResult {}
+    record Invalid(InternalOptionFailure failure) implements InternalOptionCaptureResult {}
+}
+public enum InternalOptionFailure { NULL_INPUT, FOREIGN_CATALOG, NOT_INTERNAL, INVALID_STATE }
 public record OptionConfiguration(
     OptionCatalog catalog,
     OptionState state,
@@ -837,7 +858,7 @@ public record OptionConfiguration(
     ScreenModel mainScreen,
     Map<String, ScreenModel> namedScreens,
     SliderSet sliders,
-    LangDecorations lang) {
+    Map<String, LangDecorations> localizedDecorations) {
     public ProfileInferenceResult inferProfile(OptionState candidate) {
         return ProfileEvaluator.infer(this, candidate);
     }
@@ -1401,13 +1422,20 @@ The selection-first, pre-I/O request validation in §5.1 precedes step 1, includ
    and construct its default baseline;
 6. for a filesystem selection, derive the target from the authenticated selected candidate, read
    it through `persistenceFiles`, and finalize the default-plus-persistence `OptionState`; `Internal`
-   uses the baseline. Validate the supplied global engine options separately;
-7. assemble immutable macro-configuration data from `RuntimeIdentityData`, `GLCapabilityProfile`,
-   `EngineOptionData`, `CompanionOptionMacros`, and `RendererFeatureData`, retaining the typed
-   companion pair in `MacroConfiguration` option state without applying it to shader text;
-8. safely preprocess and parse `shaders.properties`, capturing decoded texture declarations before
-   collapse; derive the known texture specs and validate profiles/screens/textures/custom
-   declarations/program state while preserving unresolved and invalid texture occurrences;
+   uses the baseline or reissues the authenticated session snapshot as a fresh catalog-bound state
+   under D-P3-65 below. Validate the supplied global engine options separately;
+7. assemble standard A–G macros from the validated identity/capability data, retaining the
+   required companion pair and global settings as immutable inputs; do not finalize old-light
+   option macros yet;
+8. preprocess `shaders.properties` exactly once with A–G only and parse it, capturing decoded
+   texture declarations before collapse; derive known specs and validate profiles/screens/textures/
+   custom declarations/program state while preserving unresolved/invalid texture occurrences.
+   Resolve D-P3-64's old-light booleans from those parsed flags and global preferences, then
+   finalize `MacroConfiguration` before any shader jcpp. Acquire every locale under §4.3;
+   Option discovery above reads original source declarations and include topology, not shader
+   jcpp output. Thus keeping catalog discovery/default/session finalization before this properties
+   parse introduces no dependency on old-light macro results; properties never receive option
+   macros and shader analysis starts only in the next step.
 9. run plan-independent analysis of active shader roots with that same finalized option state
    and companion pair: expand includes with numeric `#line` attribution, establish the standard
    and option macro environment before jcpp,
@@ -1559,7 +1587,7 @@ without clearing a previously valid value.
 | `centerDepthHalflife` | `SmoothingConstants.centerDepthHalfLifeTicks` | `directive_centerDepthHalflife` |
 | `sunPathRotation` | `WorldRenderConstants.sunPathRotation` | `directive_sunPathRotation` |
 | `ambientOcclusionLevel` | `WorldRenderConstants.ambientOcclusionLevel` constrained 0…1 | `directive_ambientOcclusionLevel` |
-| `superSamplingLevel` | `WorldRenderConstants.superSamplingLevel` positive integer | `directive_superSamplingLevel` |
+| `superSamplingLevel` | option/source compatibility only under D-P3-66; no ResourceRequirements field, engine-positive-level restriction, allocation, repeated draw or resolve request. Ordinary option safety/type rules still apply | `option_superSamplingLevelCompatibilityOnly` |
 | `noiseTextureResolution` | `NoiseRequirement.resolution` and enabled flag | `directive_noiseTextureResolution` |
 | `colortexNFormat` / `gcolorFormat`, `gdepthFormat`, `gnormalFormat`, `compositeFormat`, `gaux1-4Format` | the shared §4.7 normalizer selects the attachment; a valid format becomes `ColorAttachmentFormat.Explicit`, while absent input remains distinct `DefaultRgba` | `directive_colortexFormatsAndAliases`, `directive_colortexFormatDomainAcceptedRejected`, `bufferNameNormalizer_allParserFamilies`, `directive_attachmentFormatDefaultExplicitAndGdepthFold` |
 | `colortexNClear=false` | `clear=false` and only for `DEFERRED`/`COMPOSITE` program families; no clear is issued, while any `clearColorOverride` remains explicit published data | `directive_colortexClearFamilyFilterAndOrdering` |
@@ -1603,8 +1631,8 @@ smoothing formula; this phase does not import an alternate unit.
 | Companion option-macro input | `CompanionOptionMacros` is captured before load-time shader jcpp, retained in `MacroConfiguration`, and reused by same-build materialization with both booleans hashed | RESEARCH §3.5; `docs/phase13/v1/PHASE_13_DOC.md:1343-1347` requests "every same-build materialization" and "Include both booleans"; D-P3-58; `macro_companionTypedStateBeforeJcpp`, `macro_companionMissingNonOffAndOffShortCircuit`, `macro_companionSameBuildAndFingerprints` |
 | Conditional preprocessing and substitution | jcpp adapters implement define/undef/if-family/defined/substitution for shaders and properties | RESEARCH §3.5; `preprocess_completeConditionalGrammarAllInputs` |
 | Public discovery/load and identity values | sealed tokens, explicit invalid generations, durable references, snapshot lifecycle, closed resolver/load outcomes, identity, and fingerprints | §2.2/§5; `discovery_invalidGenerationOrderingAndPublication`, `discovery_referenceRestartResolutionOutcomes` |
-| Block/item/entity short, namespaced, property, and legacy `id:meta` entry rules | schema-v17 `IdMappingInput` retains typed entry rules, selector order, file state, origin, and classic era for Phase 9 | RESEARCH §3.7; `idMap_allDocumentedRuleForms` |
-| `%namespace:path` tag-selector interpretation | Under D-P3-47/D-P3-49, schema-v17 `IdMappingInput` uses `%` plus the exact provisional lower-case ASCII identifier grammar in §§4.9/5.1 to retain `SelectorKind.TAG`; Phase 9 supplies the 1.12 shim and entries-before-tags priority | RESEARCH §3.6.8 supports only the generic modern-tag risk/shim/priority; concrete grammar remains local pending clarification; `idMap_selectorKindEntryAndTag`, `idMap_tagIdentifierGrammarBoundaries` |
+| Block/item/entity short, namespaced, property, and legacy `id:meta` entry rules | schema-v18 `IdMappingInput` retains typed entry rules, selector order, file state, origin, and classic era for Phase 9 | RESEARCH §3.7; `idMap_allDocumentedRuleForms` |
+| `%namespace:path` tag-selector interpretation | Under D-P3-47/D-P3-49, schema-v18 `IdMappingInput` uses `%` plus the exact provisional lower-case ASCII grammar in §§4.9/5.1 to retain `SelectorKind.TAG`; Phase 9 supplies the 1.12 shim and entries-before-tags priority | RESEARCH §3.6.8 supplies generic shim/priority only; concrete grammar remains local pending clarification; `idMap_selectorKindEntryAndTag`, `idMap_tagIdentifierGrammarBoundaries` |
 | Entity compatibility preprocessing extension | a present entity file publishes ordinary A–G results and a separate result made by replacing only `MC_VERSION` with `11300`; no selection or merge occurs here | RESEARCH §3.7 supplies the preprocessing base; DESIGN.md Phase 9 §Scope and PD §8.1; `idMap_entityForced11300Isolated` |
 | Mod-provided ID-map contributions | public pure `IdMappingParser` accepts optional bounded bytes, mapping kind, the published parser environment, and `MappingOrigin` from Phase 9 | RESEARCH §3.7; `idMap_modContributionOriginPreserved` |
 | `layer.solid/cutout/cutout_mipped/translucent` and opaque-solid exclusion | typed `LayerRule` with the same selector/era provenance plus deferred resolution constraint | RESEARCH §3.7; `idMap_layersAndOpaqueSolidExclusion` |
@@ -1740,8 +1768,107 @@ correctness without weakening App F.3's same-file rule.
 Tooltips are split on the literal `. ` for display. `OptionDefinition.tooltip()` preserves the
 decoded tooltip string exactly, including a terminal `!`; Phase 12 marks any resulting line ending
 in `!` as warning/red and removes only that final marker from displayed text. No other whitespace
-or punctuation is trimmed. `LanguageMap` loads only immediate `shaders/lang/*.lang` files as
-UTF-8, normalizes locale codes, and retains the complete App F.3 decoration key families.
+or punctuation is trimmed. The locale catalog is acquired and frozen as follows (D-P3-63);
+§5 incorporates these rules, not a second language parser or preselected decoration copy.
+
+1. From the same bounded, immutable pack snapshot used by load, enumerate regular immediate
+   children of the effective root's `shaders/lang/`; do not recurse, follow links, read dimension
+   lang folders or consult Minecraft/resource-pack translations. Paths use existing safety and
+   byte/entry limits. Accept exact case-sensitive `.lang` suffix and a nonempty stem matching
+   `[A-Za-z]{2,8}(?:[_-][A-Za-z0-9]{1,8})*`. Invalid candidate stems diagnose and are omitted;
+   non-lang files are ignored. Normalize only ASCII upper case to lower case and `-` to `_`,
+   without trimming, Unicode case folding, locale aliases or JVM-default-locale dependence.
+2. Sort eligible canonical pack paths by unsigned UTF-8 bytes. For stems normalizing to the
+   same locale, diagnose each later file and retain the first entire file; never merge collision
+   files, including when the winner is empty or fails decoding. This is a deliberate local
+   deterministic collision policy, not claimed OptiFine behavior.
+3. Decode the selected file as strict UTF-8 with optional leading BOM, then Java Properties
+   logical-line/escape semantics via a character reader, never ISO-8859-1 byte decoding and
+   never jcpp. Byte decoding failure diagnoses and omits that locale. Malformed logical
+   occurrences diagnose and are skipped without erasing prior valid entries. Last valid
+   duplicate decoded key wins in physical logical-line order; escaped values preserve their
+   exact decoded text, including empty strings, spaces, punctuation and terminal `!`.
+4. Dispatch exact App F.3 families into the existing nine `LangDecorations` maps:
+   `option.NAME[.comment]`, `value.NAME.VALUE`, `prefix.NAME`, `suffix.NAME`,
+   `profile.NAME[.comment]`, and `screen.NAME[.comment]`. For value keys split after the option
+   identifier, retaining the entire remaining value token (e.g. `0.4f`). `.comment` is a terminal
+   discriminator for option/profile/screen families only. Named entries use nonempty exact
+   identities; bare `screen` and `screen.comment` map to empty-string keys in `screenLabels`
+   and `screenComments`, respectively, for the main screen. This explicit root-key exception
+   is local P12 compatibility, not a new named screen. Unknown decoration targets remain for
+   later lookup and never mutate catalogs. Unsupported keys diagnose/omit; values stay unchanged.
+5. Publish `OptionConfiguration.localizedDecorations()` as the sole deep-immutable authority:
+   locale keys ascending unsigned UTF-8; each string-keyed map in that order; `ProfileName`
+   keys by their exact `value()` bytes; `ValueDecorationKey` by option-name then value bytes.
+   No null map/key/value is legal. A successfully decoded empty/no-recognized-key file produces
+   a present locale with nine empty maps. Missing directory, no usable files, or all decode
+   failures produce an empty outer map; a missing locale/key is absence, never an empty value.
+   Constructors reject noncanonical keys/order-independent conflicting input rather than
+   inventing a selected locale. All maps are defensive immutable copies in canonical order.
+6. Phase 12 normalizes its requested client locale by rule 1's stem grammar/normalization;
+   null/invalid requests act as missing locale. For each individual decoration key, consult
+   requested locale then `en_us` (once if identical), testing key presence, not nonempty text.
+   A present empty string intentionally suppresses fallback. Do not choose a first available
+   locale, infer a parent language, or merge/prepublish fallback maps. If both keys are absent,
+   Phase 12 §4.3.5 owns final literal/source/prettification fallback: option label uses nonempty
+   source tooltip else prettified name; value uses raw text; named profile/screen uses prettified
+   name; Custom uses `profile.Custom` then literal `Custom`. P12 owns the root title fallback.
+   Option comment falls back to source tooltip; absent profile/screen comments mean no comment
+   and absent affixes empty. Tooltip splitting/warning markers apply after selection, never
+   trimming a present translation or treating empty as missing.
+7. Locale selection is presentation-only: change locale without load, persistence, shader
+   rebuild or source reopening. A presentation cache keys on schema, configuration fingerprint
+   and normalized requested locale (one invalid/absent sentinel); reload drops old projections.
+   The entire catalog, not a selected/fallback projection, participates in §4.10's fingerprint
+   and §5.1.1's source-free inspection. Materializers retain their same-build state/inputs;
+   a locale selection never changes configuration or materialization identity.
+
+**Internal session options (D-P3-65, maintainer choice 2026-09-07).** Internal edits survive
+switching away/back during this client session and return to defaults after restart. No durable
+file, display-name target or filesystem candidate is created. `captureInternalOptions` validates
+non-null state/reporter, exact state/catalog identity, Internal-origin catalog, then ordinary
+catalog-state validity, in that order, returning the corresponding closed failure above.
+Capture is pure, emits no I/O and does not mutate the configuration. The issuer is the existing
+catalog: success creates the package-private final sealed snapshot implementation containing
+defensive immutable complete option values, the issuing bundle's authentication domain, and that
+Internal load's exact `PackIdentity`. The snapshot is opaque, nonserializable, identity-equal,
+thread-safe, contains no catalog/reader/provider callback, and outlives selection changes.
+`INVALID_STATE` reports any ordinary state-validity failure; no partial snapshot escapes.
+
+Every non-Off load requires a non-null `internalOptions` Optional. Filesystem loads require it
+empty. Internal accepts empty (defaults) or an authentic same-bundle snapshot; wrong-domain tokens
+fail `INVALID_REQUEST` before provider access. After the bounded Internal snapshot and stable
+identity check, a present token must match the exact structural `PackIdentity` (selected root and
+entire canonical content-hash map), not display text. Mismatch is `INVALID_REQUEST` before shader
+preprocessing, with no silent discard/retry. After original-source option discovery, revalidate
+its complete stored values against the fresh catalog using `constructState`; any invalid outcome
+is `INVALID_REQUEST`, never partial/default overlay. A valid outcome issues a fresh catalog-bound
+state before properties validation, directive analysis or any shader jcpp. Old preview state is
+never passed to materialization. Empty and a captured default state have equal semantic
+fingerprints; token/domain/object identity is excluded, final option values remain included.
+
+Phase 7 owns one session map keyed by exact `PackIdentity`, with at most one accepted snapshot
+per identity, for its long-lived front-end bundle. It selects only the entry for the current
+Internal provider identity; a new identity starts from defaults while older entries remain for
+a switch back. Identity changing during a load is still the existing provider failure, not a
+new key discovered mid-transaction. Switching Off/filesystem retains the map; shutdown or bundle
+replacement clears it and restart cannot deserialize it. Phase 12 submits its catalog-issued
+preview/profile/reset state to P7's `InternalOptionCommitter` with expected active identity,
+global settings and reload effects. P7 serializes admission, authenticates expected active
+Internal identity, validates/captures through that configuration's catalog, then writes any
+changed globals before atomically accepting the queued republish and session preference.
+Global write/capture/identity failure leaves the prior session preference and active state;
+no token trust is delegated to GUI callers. Acceptance is `SESSION_ACCEPTED`, not filesystem
+`COMMITTED`. A later load/render failure follows shaders-off recovery but retains the accepted
+preference for retry. Discard never submits. Reset supplies complete catalog defaults, never a
+caller-constructed empty state. Filesystem Apply retains its safe-write-before-reload route.
+P3 owns capture/load validation but never mutates P7's session cache or accepts raw preview state
+in materialization. P7/P12 own their commit/UI result algebra.
+
+This contract is part of §5's incorporated load/options surface. P7/P12 must propagate each
+closed capture/load outcome; no `PackOptionsTarget` is granted for Internal and sentinel
+target rejection remains `NON_FILESYSTEM`. Inspection uses the same optional input and projects
+only finalized option values, never snapshot credentials or the session map.
 
 `OptionLineRewriter` changes only the captured token/value span, never regex-replaces a name
 globally. For traceability it may append the stable comment
@@ -1848,8 +1975,8 @@ replacement where supported. Phase 12 owns apply/discard timing; codecs never mu
 configuration. `ScreenModel.resolvedColumns` retains negative-input rejection and uses the expanded
 screen-slot count under the exact floor rule below.
 An `updateState` result is preview/persistence input, not a mutation of a published configuration.
-Applying it requires writing/applying persistence and completing a fresh atomic `load`; only the
-newly published configuration may then be materialized or evaluated by Phase 4.
+Applying it requires a safe filesystem write or D-P3-65 Internal session acceptance followed
+by a fresh atomic `load`; only its new configuration may be materialized or evaluated by Phase 4.
 
 Every main or named `ScreenModel` stores configured columns separately from its ordered entries;
 absence means two. Phase 12 expands `*` first, then passes the complete retained screen-array length
@@ -1917,11 +2044,13 @@ Phase 7 adapts Phase 13's static preliminary state before load, without requirin
 registry, declarations, atlas, or completed texture plan. The staged v0.1 caller supplies an explicit
 `CompanionOptionMacros(false,false)`; active v0.5 policy is supplied before preprocessing, not
 inferred from later allocation success. Post-analysis demand may optimize physical allocation only;
-it cannot revise the chosen pair. The remaining six option positions use D-P3-61:
+it cannot revise the chosen pair. The remaining six option positions use D-P3-64:
 `renderResMul`, `shadowResMul`, and `handDepthMul` always emit `MC_RENDER_QUALITY`,
-`MC_SHADOW_QUALITY`, and `MC_HAND_DEPTH`; only explicit user `true` emits
-`MC_OLD_HAND_LIGHT 1` / `MC_OLD_LIGHTING 1`. User `default` and `false` omit these macros.
-This is a cycle-free user-setting projection, not runtime pack-flag resolution. Reserved
+`MC_SHADOW_QUALITY`, and `MC_HAND_DEPTH`. Each old-light setting resolves explicit user
+TRUE/FALSE first, else explicit parsed pack TRUE/FALSE, else `true` (the existing P9/P10 local
+fallback). Emit `MC_OLD_HAND_LIGHT 1` / `MC_OLD_LIGHTING 1` iff its resolved value is true.
+The single A–G-only properties parse precedes this projection, so no shader-preprocessing cycle
+exists. Retain the resulting macro list unchanged for every same-build materialization.
 `antialiasingLevel=0` omits `MC_FXAA_LEVEL`; there is no positive AA input or runtime AA feature.
 
 A multiplier replacement is exactly `Float.toString(Float.parseFloat(input))` on the accepted
@@ -2219,8 +2348,7 @@ public record ShadowRequirements(int resolution, Optional<Float> fov, float dist
 public record CenterDepthRequirements(boolean required) {}
 public record SmoothingConstants(float wetnessHalfLifeTicks, float drynessHalfLifeTicks,
     float eyeBrightnessHalfLifeTicks, float centerDepthHalfLifeTicks) {}
-public record WorldRenderConstants(float sunPathRotation, float ambientOcclusionLevel,
-    int superSamplingLevel) {}
+public record WorldRenderConstants(float sunPathRotation, float ambientOcclusionLevel) {}
 public record NoiseRequirement(boolean enabled, int resolution) {}
 public enum VertexAttribute { MC_ENTITY, MC_MID_TEX_COORD, AT_TANGENT }
 public record VertexRequirements(Set<VertexAttribute> attributes) {}
@@ -2444,7 +2572,7 @@ receives only the eligible projected/virtual-pre flip map.
 
 ### 4.9 Schema-versioned ID-mapping input
 
-`PackConfiguration.idMappings()` is the schema-v17 `IdMappingInput` in §2.2, not a flattened list.
+`PackConfiguration.idMappings()` is the schema-v18 `IdMappingInput` in §2.2, not a flattened list.
 Its four `IdMappingFileInput`s have exactly matching `MappingKind`s and immutable source order.
 For pack input, paths are exactly `shaders/block.properties`, `shaders/item.properties`,
 `shaders/entity.properties`, and `shaders/block.properties`'s `layer.*` family: block rules and
@@ -2548,15 +2676,15 @@ Only level 3 may fail the pack load. Levels 1–2 produce defaults/partial model
 The immutable configuration fingerprint hashes pack bytes, normalized paths, the finalized
 default-plus-persistence option state, load-time macro policy, both companion booleans,
 renderer-feature availability, capability identity fields, parser schema version, the computed
-`CompatibilityStatus` as its exact enum name after all minimum-edition rules are evaluated, and the canonical schema-v17
+`CompatibilityStatus` as its exact enum name after all minimum-edition rules are evaluated, and the canonical schema-v18
 `IdMappingInput` including every file state and ordinary/forced rule-list fingerprint.
 Hidden domain, pack-key, catalog-identity, and discovery token identities are excluded from
 canonical fingerprints; their authenticated semantic values and the complete option value map are
 included, so equal pack/configuration inputs remain byte-deterministic across service instances.
-Schema 17 also hashes the canonical complete known engine-setting input after missing-key
+The current schema also hashes the canonical complete known engine-setting input after missing-key
 defaults, with domain `engineSettings`, schema integer, then the eight `(key,value)` pairs in
-§5.1 key order using `seq`/`atom` below. This retains `default` versus explicit `false` even
-when both omit the old-light macro: their runtime precedence differs. Values are the canonical
+§5.1 key order using `seq`/`atom` below. This retains `default` versus explicit preferences even
+when their effective macros coincide: their runtime precedence differs. Values are canonical
 wire tokens, multipliers use the macro-normalized float spelling, and AA is exact `0`.
 The configuration fingerprint also hashes every published component of `ResourceRequirements`
 through one canonical payload. Define `atom(s)` as decimal UTF-8 byte length, `:`, then the exact
@@ -2576,6 +2704,14 @@ attachment format is exactly `DefaultRgba` with no payload or `Explicit` followe
 `ColorInternalFormat` name. Equivalent maps/sets yield identical bytes regardless of insertion
 history, while any published leaf mutation changes the payload. This is producer canonicalization,
 not a portable digest or downstream wire-format promise.
+The locale payload is exactly
+`seq(atom("localizedDecorations"), atom(schemaVersion), encode(options.localizedDecorations()))`.
+The existing codec encodes all nine `LangDecorations` record components in declaration order,
+all locale/decorated keys, empty strings, empty inner maps and outer-map presence in their
+published canonical order. Missing locale differs from present-empty locale; every retained
+translation change changes this payload. Original file bytes/paths already participate in pack
+identity, including collision losers and malformed files. No host locale, selected language,
+fallback result or lookup history enters it. Locale-only client switching needs no new fingerprint.
 The §0.57 Phase 4 projections read the existing `ProgramRequirements` components in that one
 payload. They add no consumer tag, duplicated resource payload, lookup history, derived registry
 bitmask, or object identity to either fingerprint. Reading a projection cannot change the
@@ -2658,21 +2794,23 @@ The following are the complete Phase 3 publication surface. Every consumer recei
 |---|---|---|
 | `PackFrontEnds.create` / `PackFrontEndServices` | dependency-free public acquisition of one immutable, thread-safe, final bundle with no public constructor; it exposes four readable receivers plus typed acquisition of bundle-owned safe persistence access, and owns one bounded authentication lifetime, the published finite discovery-retention policy, and no open handles | Phases 7, 9, 12 |
 | `PackFrontEnd.discover` / `discoveryLimits` / `resolveFilesystemCandidate` / `PackDiscoveryRequest` / `PackDiscoveryResult` / `DiscoveryLimits` / `PackCandidate` / `FilesystemCandidateReference` / `FilesystemCandidateResolution` | deterministic immutable discovery snapshots; exact candidate/byte overflow result; completion-LRU bounded directory retention; directory-keyed or explicit non-directory-keyed invalid generations; exact sentinel, supersession, eviction, and invalid-snapshot behavior; durable references and closed resolution outcomes | Phase 7 bootstrap/reload; Phase 12 selection UI |
-| `PackFrontEnd` / `CURRENT_SCHEMA_VERSION` / `packOptionsTarget` / `PackOptionsTargetAcquisition` / `PackOptionsTargetRejection` / `PackLoadRequest` / `PackLoadResult` | atomic load entry point with current schema literal `17`; required `CompanionOptionMacros companionOptionMacros` immediately follows `engineOptions` in the incorporated request declaration; target acquisition rejects null, foreign, unknown, superseded, sentinel, and unavailable IDs before persistence I/O; filesystem loads incorporate catalog-validated persisted state before option-sensitive work; missing required non-Off companion data is `INVALID_REQUEST`; `OFF` short-circuits without validating other fields | Phase 7 bootstrap/reload; Phase 12 selection; Phase 2 inspection |
+| `PackFrontEnd` / `CURRENT_SCHEMA_VERSION` / `packOptionsTarget` / `PackOptionsTargetAcquisition` / `PackOptionsTargetRejection` / `PackLoadRequest` / `PackLoadResult` | atomic schema18 load; canonical §2.2 request includes required companion pair and non-Off non-null `internalOptions` Optional. §4.3/§5 bind every selection-first validation, target rejection and safe filesystem persistence rule, plus D-P3-65 Internal fresh-catalog rebinding. Off short-circuits all other fields. No old-shape load fallback | Phase 7 bootstrap/reload; Phase 12 selection; Phase 2 inspection |
 | `PackConfiguration` | single validated downstream truth, immutable and fingerprinted; its evaluator takes no option state and uses exactly `options().state()` finalized by the same atomic load; nested `macros()` retains the load's companion pair unchanged, while `properties()` now includes the lossless texture declaration stream. Both booleans and §4.10's complete declaration payload participate in the configuration fingerprint | Phases 4–13 as listed below |
 | `PackIdentity`, `CompatibilityStatus`, `DimensionKey`, `DimensionConfiguration`, `DimensionMode` | `PackIdentity` is `(NormalizedPackPath selectedRoot, Map<NormalizedPackPath,String> contentHashes)` with immutable canonical-path order; `CompatibilityStatus` is the closed `COMPATIBLE`/`REQUIRES_NEWER_EDITION` result, and dimensions are the ordered base/override/disabled map; absent world keys select the base entry, overrides expose only their own source roots, and disabled entries expose none | Phases 7, 12 |
 | `PackSelection`, `PackCandidateId`, `DiscoveryGeneration`, `RuntimeIdentityData`, `RendererFeatureData`, `PackInputLimits`, `PackLoadFailure`, `PackLoadFailureCode`, `PackCandidateKind`, `PackCandidateStatus`, `ConfigurationFingerprint` | exhaustive selection/failure/value domains; runtime identity accepts exactly MC `(1,12,2)`, the bounded edition grammar, and bounded canonical decimal engine version; the fingerprint includes final `CompatibilityStatus`, so compatibility-changing edition comparisons invalidate retained state, and §4.10's companion payload; renderer-feature shape remains unchanged but no longer gates companion emission; each failure has the exhaustive cause/precedence mapping below and one immutable Phase-1 primary diagnostic, with exact-once delivery only when a non-null reporter exists; permitted token classes and their package-private issuer share `com.schmaloogium.engine.pack` under the unnamed module, authenticate owning instance and generation kind, use identity equality/hash, and are nonserializable | Phases 7, 12 |
 | `SourceCatalog`, `SourceDocument`, `SourceKey`, `SourceId`, `IncludeEdge`, `SourceMap`, `MaterializedSource`, `MaterializationFingerprint`, `SourceMaterializer`, `MaterializationResult`, `SourceSpan`, `LegacyGeometryConfig`, `LegacyGeometryRewriteSite`, `GeometryTranslationRequest`, `GeometryTranslationPlan` | one `SourceId`/document/graph node per indexed physical path and one edge per physical include location; only roots carry dimension/program/stage `SourceKey` context; immutable roots/edges; `executablePrograms()` is the distinct ascending dimension/name projection of all `.vsh`/`.fsh`/`.gsh` roots, excluding virtual-pre and including partial stage sets; materialization takes no option or companion state and uses the containing configuration's finalized option state and macro snapshot, including both booleans before jcpp and in its fingerprint | Phase 4; Phase 7; Phase 12 |
-| `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, `IdMappingMacroEnvironment`, `IdMappingFileFingerprint`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, closed `MappingOrigin` variants | schema-v17 per-kind `ABSENT`/`PRESENT_EMPTY`/`PRESENT_RULES`; ordered entry/tag rules retain classic grammar plus D-P3-47/D-P3-49's local `%` tag syntax: lower-case ASCII namespace `[a-z0-9][a-z0-9._-]*`, nonempty slash-separated `[a-z0-9._-]+` path segments other than `.`/`..`, at most one colon, no empty component, short-path expansion to `minecraft:`, and rejection rather than case folding; only a short unslashed `[0-9]+` tag ID is numeric and rejected, so `%123` rejects while `%minecraft:123`, `%123:foo`, and `%123/foo` canonicalize to `minecraft:123`, `123:foo`, and `minecraft:123/foo`; the immutable typed macro environment, fingerprint, predicates, provenance, and isolated forced-11300 result are binding; semantics unchanged except containing schema | Phase 9; resolved layer result handed onward to Phase 7 |
-| `MacroConfiguration`, `CompanionOptionMacros`, `MacroDefinition`, `MacroOverride`, `MacroContributor`, `MacroContribution`, reserved `phase6.centerDepthSmoothRedirect` slot | immutable OF A–G with exact `MC_VERSION=11202`, bounded decimal `SCHMALOOGIUM_VERSION`, GL/GLSL formulas, OS/vendor/renderer projection and the eight-name option family; the required typed companion pair immediately follows `optionMacros` and supplies its first two positions, while D-P3-61 supplies the remaining six (tri-state explicit-user macros and reserved-zero AA). Base order is A–G, option, capability, identity, then unsigned-UTF-8-ordered overrides before the Phase 6 contribution; protected targets reject; for allowed absent/present names `ADD` inserts/rejects, `SUPPRESS` no-ops/removes, and `FORCE` inserts/replaces with §4.4's pre-I/O diagnostic precedence. §4.10's pair payload participates in both fingerprints and canonical engine-setting input in configuration identity; the singular Phase 6 contribution algebra, slot, validation and placement are unchanged | Phase 6 contributor; Phase 4 materialization; Phase 7 typed input; Phase 12 global settings; Phase 13 preliminary policy through Phase 7; G8/S3 |
+| `IdMappingInput`, `IdMappingFileInput`, `IdMappingParser`, `IdMappingMacroEnvironment`, mapping rule/state/kind/era/selector types, `PropertyPredicate`, `MappingOrigin` | schema-v18 canonical §2.2/§4.9 declarations and complete immutable ordering, fingerprints, provenance and isolated forced-11300 parsing; all existing D-P3-47/D-P3-49 tag grammar and numeric boundary rules remain binding. Mapping semantics unchanged except containing schema | Phase 9; resolved layer results to Phase 7 |
+| `MacroConfiguration`, `CompanionOptionMacros`, `MacroDefinition`, `MacroOverride`, `MacroContributor`, `MacroContribution`, reserved `phase6.centerDepthSmoothRedirect` slot | immutable §2.2/§4.4 graph, exact A–G projection, eight-name option family, required independent companion pair and D-P3-64 cycle-free effective old-light macros; reserved zero AA emits no FXAA. Full merge/override validation/action order and same-build fingerprints in §§4.4/4.10 remain binding. Singular Phase 6 contribution is unchanged; no consumer-supplied later macro/option state | Phase 6 contributor; Phase 4 materialization; Phase 7 inputs; Phase 12 global settings; Phase 13 preliminary policy through Phase 7; G8/S3 |
 | `OptionConfiguration`, sealed `OptionCatalog` / `OptionState`, `OptionDefinition`, option values/enums, `OptionStateResult`, `OptionStateValidation`, `OptionStateFailure`, profiles/screens/sliders/decorations | catalog-issued complete default/constructed/updated states with closed failures and safe out-of-list warnings; profile inference returns `Inferred` or `InvalidState`; `ScreenModel.resolvedColumns(expandedSlotCount)` treats configured columns (default two) as a floor, counts the retained array after `*` expansion including ordinary option, applicable profile/subscreen, and empty slots, and raises the floor to `ceil(expandedSlotCount/9)` | Phase 4; Phase 12 |
 | `PersistenceRootConfiguration`, safe-access/target types, both persistence codecs, and their request/result/failure types | exact direct-child files and safe-write lifecycle; option operations authenticate domain and same-pack target/catalog pairing plus exact state/catalog identity before I/O; global operations authenticate access and implement §4.3's baseline-overlay/result matrix, §5.1 value-domain invariant, and exact all-entry output | Phase 7 load; Phase 12 standalone settings |
 | `ShaderPropertiesModel`, `EngineFlags`, `MinimumEditionRule`, `UnknownProperty`, `EngineOptionData` | closed immutable Appendix F model includes `List<TexturePropertyDecl> textureDeclarations` immediately after `textures`, with §5.1's exact capture/classification/reduction semantics; decoded `texture.*` occurrences are excluded from `unknownProperties`, whose other-key retention is unchanged. The separate eight-known-setting/unknown-safe global domain now uses D-P3-61 tri-state/zero-only semantics; pack engine flags are unchanged. `MinimumEditionRule` accessors retain exact decoded suffix/value text; source order, canonical map order and nested collections are frozen | behavior owners in §3.1; Phase 12 persistence/UI; Phase 13 texture publication |
-| `ProgramStateModel`, `ProgramKey`, state value types, `ProgramStateEvaluationResult`, `EvaluatedProgramStates`, `EvaluatedProgramState` | schema-v17 declarations; runtime evaluation takes no option state, uses the containing configuration's finalized state, returns one state per `SourceCatalog.executablePrograms()` key, diagnoses/omits source-absent raw properties, and publishes flips only for projected eligible or virtual-pre keys; semantics unchanged except containing schema | Phase 4; Phase 5 flip state |
-| `ResourceRequirements` | the schema-v17 closed immutable record graph and exact leaf declarations below, including positional `DrawSlot` values and `ColorAttachmentFormat.DefaultRgba|Explicit(ColorInternalFormat)`. Last active valid scalar wins, malformed retains prior/baseline, and minima aggregate monotonically. New attachment entries use `DefaultRgba`; explicit directives use `Explicit`, and active `gdepth` forces `Explicit(RGBA32F)`. Absence is only empty collections, `Optional.empty()`, or typed baselines—never null/sentinel. Maps/sets/lists are immutable and ordered as declared; the complete graph uses §4.10's canonical codec. §0.57 explicitly grants Phase 4 direct `ProgramRequirements.mipmappedAfterPass()` and `vertices()` projections through `resources().programs()` under the binding lookup below; resource shapes, values, defaults and canonical payload are unchanged | Phase 4 routing/instance count/legacy geometry plus direct pass-mipmap and declared-vertex requirements; Phase 5 sizing/format/clear/pass-mipmap; Phase 6 center depth/smoothing; Phase 8 shadow; Phase 13 noise; Phase 7 per-program execution; Phase 10 vertex layout |
+| `ProgramStateModel`, `ProgramKey`, state value types, `ProgramStateEvaluationResult`, `EvaluatedProgramStates`, `EvaluatedProgramState` | schema-v18 declarations; state-free evaluation uses finalized containing configuration; one state per executable catalog key, no source-absent raw properties, only eligible/virtual-pre flips. Complete §2.2/§4.8 and binding rules below remain unchanged apart from containing schema | Phase 4; Phase 5 flip state |
+| `ResourceRequirements` | schema-v18 immutable closed graph and complete leaf/default/fold/ordering rules below and §4.7; includes positional DrawSlot and explicit/unsized format distinction, gdepth RGBA32F force, direct per-program mipmap/vertices projections and full §4.10 codec. D-P3-66 removes `WorldRenderConstants.superSamplingLevel`; all other resource semantics remain unchanged | Phase 4 routing/instances/legacy geometry/mipmap/vertices; Phase 5 sizing/formats/clear/mipmap; Phase 6 depth/smoothing; Phase 8 shadow; Phase 13 noise; Phase 7 execution; Phase 10 vertices |
 | `CustomTextureSpec`, `NoiseTextureSpec`, `TexturePropertyStage`, `TextureBindingKey`, `TextureTarget`, `ColorInternalFormat`, `PixelFormat`, `PixelType`, `TextureSidecarRef`, `TexturePropertyDecl`, `TexturePropertyDisposition` | canonical §2.2 declarations and the exact §5.1 capture/reduction contract are binding. `properties().textureDeclarations()` retains all decoded active occurrences before collapse, including unresolved requests; executable `textures()`/`noise()` remain separate projections. The existing raw format domains, PNG rule, stage mapping, and sidecar retention remain unchanged. §4.10 hashes every declaration; retention does not claim suffix support or permit downstream parsing | Phase 13 specs and declaration diagnostics; Phase 3 alone owns semantic decoding |
 | `InternalPackSource` / `InternalPackReadException` / `InternalPackSnapshot` / `InternalPackEntry` / `NormalizedPackPath` | stable content identity plus bounded, ordered, directory-aware manifest; `snapshot` may raise only the declared provider-only checked exception, which is reduced to an attributed failure; defensive byte copies and the canonical path projection are binding | Phase 7 supplies content and consumes the projection |
 | `PackFrontEnd.inspect`, `PackInspectionResult`, `PackDecisionSnapshot`, `DecisionValue`, `DecisionSource`, `DecisionDiagnostic` | §5.1.1's complete one-load acquisition, allowlisted source-free projection and same-read archive provenance; P4 same-request resolution and P5 pure sizing/capability are separate required enrichments for a complete golden | **Phase 2** |
+| `InternalOptionSnapshot`, `InternalOptionCaptureResult`, `InternalOptionFailure`, `OptionCatalog.captureInternalOptions` | D-P3-65's opaque same-bundle/exact-Internal-identity snapshot, closed capture failures and fresh-catalog atomic-load rebinding; optional request input after `internalPackSource`; session-only P7 ownership, no persistence target or materializer state argument | Phase 7 reload/session lifetime; Phase 12 Apply/profile/reset; Phase 2 inspection |
+| `OptionConfiguration.localizedDecorations` / `LangDecorations` | sole schema18 deep-immutable locale authority; §4.3's acquisition, normalization, collisions, per-key empty-preserving fallback and cache rules; §4.10 complete fingerprint and §5.1.1 source-free catalog | Phase 12 presentation; Phase 2 inspection |
 The public declarations in §2.2 are incorporated into binding rows above, not merely illustrative.
 The dependency-free `PackFrontEnds.create()` factory is the only public construction route for
 `PackFrontEndServices`; the final class has no public constructor. Each call creates four non-null,
@@ -2785,8 +2923,8 @@ False means absent, not `0`; all four pairs are legal, and neither engine option
 features add a second emission gate. The remaining six positions use `EngineOptionData`:
 `renderResMul→MC_RENDER_QUALITY`, `shadowResMul→MC_SHADOW_QUALITY`, and
 `handDepthMul→MC_HAND_DEPTH` always;
-`oldHandLight→MC_OLD_HAND_LIGHT 1` and `oldLighting→MC_OLD_LIGHTING 1` only for explicit
-user `true`; `default` and `false` omit the definition. `antialiasingLevel=0` always omits
+`oldHandLight→MC_OLD_HAND_LIGHT 1` and `oldLighting→MC_OLD_LIGHTING 1` iff D-P3-64's
+user→parsed-pack→true resolution is true. `antialiasingLevel=0` always omits
 `MC_FXAA_LEVEL`. Missing-key defaults are
 `true,true,1.0,1.0,0.125,default,default,0` in the eight-known-key order above, not defaults
 for the required companion pair. The Phase 7/12 global-input path supplies that complete
@@ -2799,18 +2937,21 @@ the unchanged global codec, but do not override the typed pair in Phase 3. It ha
 default: every non-`Off` caller supplies it explicitly. The v0.1 caller uses `(false,false)`; Phase 7
 adapts the v0.5 preliminary policy before load. This replaces D-P3-31's former producer gates.
 
-**D-P3-61 priority and no-AA boundary.** Macro projection reads user preference only before
-shader preprocessing; it never needs already-evaluated pack engine flags. At runtime P7
-adapts explicit `true`/`false` unchanged; `default` delegates to the pack's corresponding
-tri-state, then to the named behavior owner's fallback (P9 old hand light; P10 old lighting).
-The configuration fingerprint also incorporates §4.10's exact `engineSettings` payload,
-so user `default` and explicit `false` do not alias despite identical absent old-light macros.
-Those fallback decisions are not Phase 3 parsing defaults or evidence of external semantics.
-RESEARCH App F.1 supplies user-over-pack precedence; the explicit-true-only macro policy is
-a local compatibility decision pending OQ-7 ratification. RESEARCH §1.2 forbids FXAA/AA/AF,
-despite §4.7's reference eight-control inventory and §3.5's macro-name inventory. Zero-only
-storage plus omitted FXAA macro preserves the existing disabled behavior without adding a
-feature. §11.5 records the exact remaining authority clarification.
+**D-P3-64 priority and no-AA boundary.** After the one A–G-only properties parse, resolve each
+old-light Boolean: explicit user TRUE/FALSE, else explicit pack TRUE/FALSE, else true.
+The last fallback matches P9 §4.11 and P10 §5's incorporated §4.8.1 local decisions; it is not
+an externally documented missing-value default. Emit the corresponding macro iff enabled.
+P7 uses the same inputs and precedence for the P9/P10 runtime policy; no runtime edit of the
+immutable macro list, callback into behavior owners, registry, GL state or shader-analysis result
+is required. Properties and ID maps never receive option macros, so they cannot depend on this
+result. Pack options do not change that A–G-only properties environment.
+The complete `engineSettings` fingerprint retains raw preference identity even when effective
+macros coincide. G6 author docs explicitly require macros “When ... enabled” and user-over-pack
+precedence; they do not specify absent fallback. D-P3-64 therefore replaces D-P3-61's unsupported
+explicit-user-only divergence while leaving the fallback openly local. OQ-7 concerns final
+renderer identity/feature posture and still requires its upstream pack-matrix experiment.
+RESEARCH §1.2's no-AA scope means reserved zero-only storage and no `MC_FXAA_LEVEL`; it grants
+no AA control or algorithm. The independent AA/SSAA authority disposition is in §11.5.
 
 The binding standard A–F projection is exact. `MC_VERSION` is ASCII decimal `11202`, and a non-
 `Off` MC tuple other than `(1,12,2)` is pre-I/O `INVALID_REQUEST`. `engineVersion` matches
@@ -2921,7 +3062,7 @@ occurrences means an empty list. It has these complete rules:
 Authority closure must be implemented by Phase 3 at this same pre-collapse boundary: recognize
 the approved full key, retain the exact declaration, publish the validated base key and typed
 sampling state together, and apply only the approved duplicate/discriminator/sidecar precedence.
-Do not retrofit sampling fields into a schema-17 configuration or reinterpret its unresolved
+Do not retrofit sampling fields into a schema-18 configuration or reinterpret its unresolved
 records in Phase 13. A new owner amendment/schema and fresh load are required. This is the
 required migration boundary, not a grant of unspecified grammar or a second downstream parser.
 
@@ -2983,10 +3124,15 @@ Every record rejects null/invalid components and defensively freezes its collect
 
 The binding `ResourceRequirements` shape is
 `(BufferMinima minima, Map<ColorAttachmentKey,ColorAttachmentRequirement> colorAttachments, ShadowRequirements shadow, CenterDepthRequirements centerDepth, Map<ProgramRequirementKey,ProgramRequirements> programs, SmoothingConstants smoothing, WorldRenderConstants world, NoiseRequirement noise)`.
-Its nested records are exactly: `BufferMinima(int colorBuffers,int mainDepthTextures,int shadowDepthBuffers,int shadowColorBuffers)`; `ColorAttachmentKey(int colortexIndex)` (0…15); `ColorAttachmentRequirement(ColorAttachmentFormat format,boolean clear,Optional<Vec4f> clearColorOverride)`; `ProgramRequirementKey(DimensionKey dimension,String programName)`; `ProgramRequirements(DrawRouting routing,Set<ColorAttachmentKey> mipmappedAfterPass,VertexRequirements vertices,int instanceCount,Optional<LegacyGeometryConfig> legacyGeometry)`; `ShadowRequirements(int resolution,Optional<Float> fov,float distance,float distanceRenderMultiplier,float intervalSize,Set<ShadowTextureKey> mipmapped,Set<ShadowTextureKey> nearest,Set<ShadowDepthKey> hardwarePcf)`; `CenterDepthRequirements(boolean required)`; `SmoothingConstants(float wetnessHalfLifeTicks,float drynessHalfLifeTicks,float eyeBrightnessHalfLifeTicks,float centerDepthHalfLifeTicks)`; `WorldRenderConstants(float sunPathRotation,float ambientOcclusionLevel,int superSamplingLevel)`; and `NoiseRequirement(boolean enabled,int resolution)`.
+Its nested records are exactly the canonical closed §4.7 declarations, incorporated here with their component order and types: `BufferMinima`, `ColorAttachmentKey`, `ColorAttachmentRequirement`, `ProgramRequirementKey`, `ProgramRequirements`, `ShadowRequirements`, `CenterDepthRequirements`, `SmoothingConstants`, `WorldRenderConstants(float sunPathRotation,float ambientOcclusionLevel)`, and `NoiseRequirement`. D-P3-66 removes the former world supersampling component; no alias or inert resource leaf remains.
 `VertexAttribute` is exactly `MC_ENTITY|MC_MID_TEX_COORD|AT_TANGENT`, and
 `VertexRequirements` is exactly `(Set<VertexAttribute> attributes)` with a non-null immutable set
 iterating in enum order. `ShadowTextureKey` is exactly `DEPTH_0|DEPTH_1|COLOR_0|COLOR_1`;
+D-P3-66 retains `superSamplingLevel` only as an ordinary recognized const option and pack source
+value. It is not a resource directive, has no engine-positive-level constraint or engine default
+in this record graph, and cannot drive P5 sizing or P7 allocation/traversal/final resolve.
+The declared source default, allowed values, chosen option value and safe rewrite remain
+fingerprinted through source/options. P2 reports those values only when actually discovered.
 `ShadowDepthKey` is exactly `DEPTH_0|DEPTH_1`; both iterate in declaration order.
 `Vec4f` is exactly `(float red,float green,float blue,float alpha)`, with every component finite.
 `ColorInternalFormat` is the closed enum, in order:
@@ -3000,8 +3146,8 @@ non-null and contains one of the 37 values above, so explicit `RGBA8` is not the
 `DrawRouting` is sealed as `AllUsed` or `Explicit(List<DrawSlot> slots)`; `DrawSlot` is sealed as
 `Attachment(ColorAttachmentKey target)` or payload-free `None`. Explicit slot lists are non-empty
 and preserve character order and duplicates. Program maps order by ascending dimension then name,
-attachment maps/sets by index, and enum sets by enum order. Published resolutions, instance counts,
-and supersampling levels are positive integers; routing attachment indices are 0…7 at v0.1;
+attachment maps/sets by index, and enum sets by enum order. Published resolutions and instance
+counts are positive integers; routing attachment indices are 0…7 at v0.1;
 ambient occlusion and viewport scale/offset values are 0…1. A present
 `ShadowRequirements.fov` selects perspective projection and is finite degrees strictly between 0
 and 180; either endpoint is invalid. All other published floats are finite and every resource
@@ -3014,7 +3160,7 @@ feature sets empty; center depth and noise disabled; noise resolution 256; shado
 `fov=Optional.empty()` (orthographic projection), distance 160, distance-render multiplier -1, and
 interval 2;
 smoothing half-lives 600, 200, 10, and 1 ticks; and world constants 0-degree sun-path rotation,
-ambient-occlusion level 1, and supersampling level 1. When an attachment entry is first created,
+ambient-occlusion level 1. When an attachment entry is first created,
 its baseline is `new ColorAttachmentFormat.DefaultRgba()`, clear enabled, and
 `clearColorOverride=Optional.empty()`. With clear enabled, Phase 5 resolves clear-color absence by
 index: colortex0 uses the current fog color, colortex1 uses solid `Vec4f(1,1,1,1)`, and every other
@@ -3179,6 +3325,9 @@ fields. A null `companionOptionMacros` returns `Failed(INVALID_REQUEST)` before 
 internal-provider, or jcpp work; no default is synthesized. A null reporter
 is the special `INVALID_REQUEST` delivery branch below. Other null or structurally invalid required
 data likewise returns `Failed(INVALID_REQUEST)` rather than throwing.
+`internalOptions` is validated under D-P3-65: null Optional, a nonempty Filesystem value, or foreign
+Internal token is pre-I/O `INVALID_REQUEST`; exact identity and fresh-catalog value checks happen
+after provider acquisition/discovery and before jcpp, also `INVALID_REQUEST`. `Off` ignores it.
 
 `RuntimeIdentityData` is the immutable `(mcMajor, mcMinor, mcPatch, engineEdition, engineVersion,
 osFamily, perPackIdentityOverrides)` tuple. The MC components must be exactly `(1,12,2)`.
@@ -3315,7 +3464,7 @@ record graphs, except `programStates` uses `evaluateProgramStates(Optional.empty
 on finalized state, not raw enabled-expression execution by P2. Its closed Evaluated/InvalidState
 outcome is retained as a variant. Evaluation diagnostics join the inspection diagnostics in
 emission order. The `options` projection includes catalog definitions, complete finalized values,
-profiles/constraints/disabled programs, main/named screens, sliders and language decorations;
+profiles/constraints/disabled programs, main/named screens, sliders and the entire locale catalog;
 `properties` includes engine flags, compatibility rules, texture declarations/specs/noise,
 custom-expression declarations and unknown-property metadata. No node is silently dropped.
 The opaque `ProgramEnabledExpression` within raw properties contributes only `TextHash` of
@@ -3336,6 +3485,10 @@ standard numeric/Boolean macro replacements whose exact grammar is already bound
 Opaque/custom macro replacements, option text/ranges, tooltip/lang text, raw expressions,
 unknown keys/values and texture declaration text are hashed even when they look harmless.
 Hashing preserves ordering/equality/range identity, never grants text redistribution.
+The locale catalog uses the same map-entry sequence and record-component projection, preserving
+all locales, nine map families, empty strings and missing versus present-empty locale. Locale
+keys are `TextHash`, not a new string allowlist exception; translation values remain `TextHash`
+even when empty. No selected locale or fallback-rendered labels replace this source-free graph.
 
 `sources` is canonical-path ordered, one row per indexed physical source; line count is the
 existing logical-line count, and SHA-256 hashes the original bounded source bytes retained by
@@ -3400,7 +3553,7 @@ golden serialization, the adapter, CI job and matrix acquisition/verdicts.
 
 ### 5.3 Interface/version discipline
 
-`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `17`, and every configuration produced by this revision
+`PackFrontEnd.CURRENT_SCHEMA_VERSION` is `18`, and every configuration produced by this revision
 publishes that value. A consumer supports exactly `schemaVersion == CURRENT_SCHEMA_VERSION`; every
 other value is rejected before derived state is created or retained. The schema is separate from
 the content fingerprint. Any record-component change, changed component meaning/default, or removal
@@ -3417,9 +3570,13 @@ it does not increment schema 16. It nevertheless changes binding §5's consumer 
 fresh whole-document verification; it does not waive any consumer's outstanding schema adoption.
 The §0.58 IR-24 amendment changes old-light global defaults/domains and the option-macro
 component meaning, requiring schema 17. Schema 16 and 17 reject one another before deriving
-state; no default injection upgrades a configuration. `IdMappingInput.schemaVersion` equals
-the containing schema (17), even though its mapping grammar is unchanged. The separately
-versioned inspection projection below is not a `PackConfiguration` compatibility mechanism.
+state; no default injection upgrades a configuration. The §0.59 locale component replacement,
+effective old-light meaning, session-only load rebinding and removal of engine supersampling
+require schema 18 together. `IdMappingInput.schemaVersion`
+equals the containing schema (18), although its grammar is unchanged. Consumers reject schema17
+and earlier rather than inventing locale maps or reinterpreting old macros. Inspection remains
+`projectionVersion=1`: its generic graph encoding is unchanged; configuration schema gates the
+changed component graph, not a projection-version compatibility escape.
 
 Round 40's program-state meaning required schema 6; Round 41's program-state and macro-default
 changes required schema 7. Round 42 changed binding operations but no component meaning, so retained
@@ -3467,7 +3624,7 @@ where pack order matters. Enums intended for forward-compatible storage include 
 is never a silently executable state. Closed executable enums reject unknown values; in particular,
 `GeometryInputPrimitive` and `GeometryOutputPrimitive` contain only their declared primitive sets.
 `IdMappingInput.schemaVersion` must equal its containing `PackConfiguration.schemaVersion`; Phase 9
-rejects a mismatch before parsing mod bytes or building aliases. Versions 1 through 16 are
+rejects a mismatch before parsing mod bytes or building aliases. Versions 1 through 17 are
 incompatible with the current surface and are never upgraded by inference.
 Closing the already-named `NormalizedPackPath` value with its canonical string projection does not
 add or reinterpret a `PackConfiguration` component and therefore did not itself increment the
@@ -3501,7 +3658,8 @@ Phase 3 interfaces supplied by later `:mod` work as plain data.
 
 **R1 grant and remaining dependency gates.** Phase 3 publishes the typed preliminary pair
 in §5.1. Phase 7/13's integration amendment adopts pre-load adaptation and independent user
-preferences; Phase 4/7/9/11/12/13 consume the current schema 17 through symbolic equality.
+preferences; all consumers adopt current schema 18 through symbolic equality, including the
+required non-Off `internalOptions` Optional (empty for Filesystem) and complete locale replacement.
 This is owner-designed/receiver-adopted architecture, not fresh verification or PBR conformance.
 The old load shape is not a fallback. Phase 1 already grants Phase 13 package placement;
 that request is not a missing Phase 3 dependency. Phase 13 R4 post-analysis demand and U1
@@ -3522,7 +3680,7 @@ After approval, Phase 3 owns a new schema-bound parser/publication amendment at 
 boundary; Phase 13 must separately amend its active §§3/4/5/11 to consume only the resulting
 typed request and honor it in effective parameters and identity. The integration amendment
 reconciles Phase 13's producer description to lossless capture; it does not adopt executable
-suffix semantics. All configuration consumers must support current schema 17 and all changed
+suffix semantics. All configuration consumers must support current schema 18 and all changed
 §5 surfaces require fresh verification. U1 suffix-honoring conformance remains blocked; source
 forms and independent `.mcmeta` retention do not depend on an invented suffix rule. Phase 3
 gains no dependency on a Phase 13 type, policy, or GL operation.
@@ -3541,14 +3699,12 @@ schema/fingerprint migration. Today's `None` and two-span `Translate` are not us
 The jcpp build/seam and U1 authority/typed-sampling requests remain separate from immutable
 projection access. This ledger distinguishes existing grants from genuinely missing contracts.
 
-**R-P12-5 — explicit ungranted locale extension.** The existing `OptionConfiguration.lang()`
-publishes one decoration map set, not a selectable locale catalog. P12 adopts it as already-
-projected values; no locale→en_us lookup or source reopening is authorized. Its exact requested
-replacement is `Map<String,LangDecorations> localizedDecorations()` with complete immutable
-locale payloads, canonical normalized-locale ordering, empty/no-file and missing-locale absence,
-and unchanged decoration domains. Normalization/collision/selection and fingerprint semantics
-must be closed in a separate next-schema owner amendment (§11.4). Neither schema-17 backfill
-nor a second authoritative `lang` copy is granted; requested locale fallback remains gated.
+**R-P12-5 — owner-granted in schema 18.** §2.2 replaces `lang()` (removed, no alias) with
+`Map<String,LangDecorations> localizedDecorations()`. §4.3's complete acquisition, normalization,
+collision, ordering, missing/empty and per-key requested-locale→en_us→literal/source fallback
+rules are incorporated into §5.1. §4.10 hashes the full catalog, and §5.1.1 preserves it source-free.
+Phase 12 adopts those rules without file access or another authoritative language map; Phase 2
+projects all locales, not a selected UI result. Internal option durability remains separate.
 
 ## 6. Failure modes & degradation
 
@@ -3609,6 +3765,30 @@ directories/zip files and Phase-3-authored synthetic `GLCapabilityProfile` value
 context or Minecraft type needed.
 
 ### 8.1 Unit and property tests
+
+- Locale catalog: `lang_allLocalesSameSnapshotAndImmutable` covers multiple locales after lease
+  closure; `lang_normalizationCollisionOrder` covers en_US/en-us collision in reversed discovery
+  order and a malformed winner; `lang_missingEmptyAndPerKeyFallback` covers absent locale,
+  present-empty file, empty translated value suppressing en_us, independent comment/value/affix
+  fallback and invalid requested locale; `lang_utf8BomEscapesAndDuplicates` covers non-ASCII,
+  duplicate logical keys, malformed occurrence retention and exact whitespace/terminal markers.
+  `lang_fingerprintAndSourceFreeInspection` distinguishes missing/present-empty/changed translations
+  while locale selection alone leaves configuration/materialization fingerprints unchanged.
+- Old-light resolution: `macro_oldLightUserPackFallbackBeforeShaderJcpp` covers all nine user/pack
+  tri-state pairs for each key, both-default local true, explicit-false override, one A–G-only
+  properties parse, shader branches and unchanged same-build materialization. No registry/GL or
+  shader-analysis callback participates; runtime P9/P10 resolution must agree.
+- Schema cutover: schema17 producers are rejected by schema18 consumers and vice versa before
+  deriving state; no fabricated locale map or legacy explicit-user macro reinterpretation.
+- Internal session: `internalOptions_captureRejectsForeignAndFilesystem` covers null/foreign/
+  filesystem failures without I/O; `internalOptions_freshCatalogSameIdentity` covers capture,
+  fresh-load rebinding and immutable old configuration; `internalOptions_sessionSwitchAndRestart`
+  covers Apply→switch away/back, restart defaults, reset defaults, discarded preview,
+  preacceptance rejection and postacceptance failed-load preference retention. Changed identity
+  and wrong bundle reject before jcpp rather than silently dropping edits.
+- Sampling compatibility: changing retained `superSamplingLevel` changes declared/source option
+  metadata and fingerprint as appropriate but never derives an engine AA macro, size multiplier,
+  extra draw or resolve request; AA reserved zero round-trips with no UI control.
 
 - Discovery/path/lifetime: `discovery_caseFoldThenNatural`,
   `discovery_nestedRootDeterministic`, `discovery_offAndInternal`,
@@ -3851,7 +4031,7 @@ context or Minecraft type needed.
   (holds pack bytes and every other fingerprint input fixed and asserts both status and fingerprint change),
   `materializedFingerprintChangesWithContributionOrGeometryPlan`,
   `materializedFingerprintChangesWithUniformCatalogSchemaOrContent`,
-  `schema_currentValuePublished` (accepts current schema 17), `schema_recordComponentChangeBumps`,
+  `schema_currentValuePublished` (accepts current schema 18), `schema_recordComponentChangeBumps`,
   `schema_incompatibleChangeBumps`, `schema_unsupportedVersionRejected`,
   `schema7RejectedBySchema8`, `schema8RejectedBySchema9`, `schema9RejectedBySchema10`,
   `schema10RejectedBySchema11`, `schema11ProducerRejectedBySchema12Consumer`,
@@ -3968,9 +4148,9 @@ milestone.
 | P3-C12 | table-driven legacy Appendix A.3 directive scanner with exact family applicability and positional `DRAWBUFFERS` slots, excluding `RENDERTARGETS` | `v0.1` |
 | P3-C13 | immutable resource-requirement aggregator with exact closed public leaves, positional routing, program-family filters, complete canonical codec, and direct Phase 4 mipmap/vertex projections preserving Phase 5/10 consumers | `v0.1` |
 | P3-C14 | complete Appendix F model with exact decoded edition accessors, provisional edition grammar/comparator, source-projected program evaluation, D-P3-38 PNG interpretation, lossless pre-collapse texture declarations and dispositions under the U1 authority gate, closed flags/state, other-key unknown retention, and custom expressions | `v0.1` |
-| P3-C15 | schema-v17 ID-mapping/layer parser, classic/modern provenance, file-state/selector/era provenance, and forced-11300 entity parse | `v0.1` |
+| P3-C15 | schema-v18 ID-mapping/layer parser, classic/modern provenance, file-state/selector/era provenance, and forced-11300 entity parse | `v0.1` |
 | P3-C16 | same-build macro-snapshot source materializer and local processed-source debug dump | `v0.1` |
-| P3-C17 | schema-v17 validation, companion/engine-setting/compatibility-status/resource/custom-expression/texture-declaration fingerprint payloads, and atomic `PackConfiguration` publication | `v0.1` |
+| P3-C17 | schema-v18 validation, companion/engine-setting/locale/compatibility-status/resource/custom-expression/texture-declaration fingerprint payloads, and atomic `PackConfiguration` publication | `v0.1` |
 | P3-C18 | loader-neutral diagnostics, null-reporter handling, and exhaustive load-failure classification/degradation adapter | `v0.1` |
 | P3-C19 | global `.csh` source recognition/materialization reserved for G8/S2 | `post-v0.5` |
 | P3-C20 | headless manifests, fuzz fixtures, and the specified Phase 2 front-end hand-off | `v0.1` |
@@ -4097,8 +4277,17 @@ not a decision (PD §7.6).
 | D-P3-58 | Grant Phase 13 R1 through Phase-3-owned `CompanionOptionMacros`, captured before jcpp and retained/hash-bound for the whole build, rather than a post-analysis producer or another `MacroContribution`. The shipped `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:655-656` says "When the normal map is enabled" / "When the specular map is enabled"; `docs/research/v1/RESEARCH.md:313-319` places these in the standard shader header. Phase 7 adapts preliminary policy; Phase 3 projects the supplied booleans without reapplying D-P3-31's gates. |
 | D-P3-59 | Preserve every active decoded `texture.*` occurrence before collapse in schema-16 `TexturePropertyDecl`, with closed disposition, exact value, order and provenance; only Phase 3 reduces known sources or later decodes approved sampling syntax. RC3 `docs/design/v2.0-RC3/DESIGN.md:2441-2443` says "ours must honor them"; `docs/research/v1/RESEARCH.md:1484-1490` defines numeric discriminators and sidecars, not filter/wrap key grammar. Retention prevents owner-side data loss without falsely claiming honoring; U1 remains an explicit authority/consumer gate. |
 | D-P3-60 | Grant Phase 4 direct existing `ProgramRequirements.mipmappedAfterPass()` and `vertices()` reads through the one configuration's dimension/name-keyed resource map, preserving Phase 5/10 consumers rather than introducing reverse dependencies or another parser. `docs/phase4/v1/PHASE_4_DOC.md:1866-1871` requests the "same immutable owner-defined values directly"; `docs/research/v1/RESEARCH.md:1159` says "enable extended vertex attribute for this program" and `:1186` specifies "per-pass mipmap gen (composite/deferred/final)". Publication changes, not record meaning, canonical identity, schema 16, or fingerprint encoding. |
-| D-P3-61 | Use exact tri-state global old-light settings, explicit-user-true-only pre-load macros, and reserved exact-zero AA storage with omitted FXAA macro; distinguish runtime user-over-pack resolution. RESEARCH §1.2/App F.1 support scope/priority, not a claimed external default. Changed option-macro meaning requires schema 17; OQ-7 authority clarification stays explicit. |
+| D-P3-61 | Historical schema17 decision: tri-state global old-light settings and zero-only AA storage remain; its explicit-user-only macro projection is **superseded by D-P3-64**. No authority ratification was claimed by that amendment. |
 | D-P3-62 | Publish one engine-owned inspection result from the existing load transaction, with an allowlisted source-free projection and same-read archive digest. Phase 2 owns fixture provenance and formatting; Phase 4 supplies separate same-build resolution enrichment. No engine-to-conformance dependency or hash-identity conflation. |
+| D-P3-63 | Replace the single language component with the schema-18 immutable full locale catalog and §4.3's explicit local normalization/collision/fallback policy. G6 author `doc/shaders.properties:192–208,277–284,319–324` uses `en_US`; published [OptiFine shaders.properties](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.properties) (read 2026-09-07, language examples) uses `en_us`. `reference-src/Pintonium-main/common-shaders/src/main/java/net/irisshaders/iris/shaderpack/LanguageMap.java:25–58,62–69` independently demonstrates immediate files, ROOT lowercase, UTF-8 Properties and immutable locale maps; its nondeterministic collision replacement is not adopted. The checkout's `LICENSE:1–4` identifies GPL v3 (not this document's historical blanket LGPL label); this amendment uses observation only and copies no code. Hyphen normalization, strict grammar, collision winner and empty-preserving per-key fallback are explicit local design decisions, not attributed external guarantees. |
+| D-P3-64 | Supersede only D-P3-61's explicit-user-only macro policy: resolve user→pack→local true after the single A–G-only properties parse, before shader jcpp, and emit iff effective true. G6 `doc/shaders.txt:660–661` says “When Old Hand Light is enabled” / “When Old Lighting is enabled”; `doc/shaders.properties:9–11` excludes option macros and `:17–29` gives user priority. Published [OptiFine shaders.txt](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.txt) and [shaders.properties](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.properties) (read 2026-09-07, option macros and old-light settings) corroborate enabled/priority but modern properties preprocessing differs and is not backported. True absent fallback is expressly P9 D-P9-8 / P10 D-P10-11 local policy, not author evidence. Schema 18 records the changed macro meaning; OQ-7 final identity posture remains open under RC3:1351–1354 and RESEARCH:854–871. |
+| D-P3-65 | Maintainer explicitly selected session-only Internal edits on 2026-09-07: preserve across selection changes within the client session, restart defaults. §4.3 grants an authenticated opaque snapshot and fresh-catalog load rebinding, no filesystem identity or durable target. RC3:1417–1421 and RESEARCH:603–605 did not supply Internal durability; this recorded maintainer choice supplies the missing product authority, not an invented external behavior. |
+| D-P3-66 | Maintainer explicitly selected “Pack-option compatibility only” for `superSamplingLevel` on 2026-09-07: preserve declared option/source use, remove engine SSAA sizing/traversal/resolve effects; AA UI/runtime remain excluded. Shipped G6 `doc/shaders.properties:189` lists the const option and RESEARCH's directive inventory supplies default 1; neither defines an execution algorithm. This approved scope disposition overrides earlier phase-local engine-SSAA assignments without rewriting historical research/design. Retained resource meaning changes share schema18. It does not ratify old-light defaults or OQ-7. |
+
+  D-P3-64's effective-mode projection, shared true fallback, unchanged `default` wire baseline,
+  distinct DEFAULT/false fingerprint identity and zero-only AA storage were explicitly ratified
+  by the maintainer on 2026-09-07. This is product authority, not a fabricated author-doc default.
+  The ratification closes IR-24's narrow old-light question and does **not** choose OQ-7 identity.
 
 ### 11.2 Binding-decision disposition
 
@@ -4179,12 +4368,12 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
   and latest §5 surface receive a fresh literal-PASS review; it owns expression grammar/evaluation,
   duplicate diagnostics and first-valid policy, and expression-relative spans, and must not reopen
   or reparse Properties bytes.
-- Phase 12 obtains all receivers and persistence access through `PackFrontEnds.create`, derives a
-  per-pack target only by matching `PackOptionsTargetAcquisition.Acquired` from
-  `frontEnd().packOptionsTarget(currentResolvedId)`, handles every rejection without file I/O,
-  and treats constructed/updated state as preview or persistence input. Apply writes persistence
-  and requests a fresh atomic load; it never sends updated state to an existing configuration's
-  materializer/evaluator. It owns discard timing and global-setting UX and uses the retained tooltip
+- Phase 12 obtains receivers and persistence access through `PackFrontEnds.create`. Filesystem
+  Apply derives only an authenticated `Acquired` target, writes safe persistence and requests a
+  fresh load. Internal Apply/profile/reset uses P7's D-P3-65 commit adapter and no pack target.
+  It handles every closed failure without mutating an existing configuration and never supplies
+  preview state to its materializer/evaluator.
+  It owns discard timing and global-setting UX and uses the retained tooltip
   marker for warning/red classification and display-only removal.
 - Phase 13 receives typed existing source specs plus the lossless, attributed declaration stream.
   Unresolved declarations are diagnostic data, not sampling state. Phase 3 alone must implement
@@ -4192,22 +4381,20 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
   resolves; Phase 13 must then adopt it in its own active contracts. No consumer reparses properties,
   splits unknown keys, or infers requests from `.mcmeta`. Retention alone never clears the U1 gate.
 - Phase 13 R1 and P1 package placement are owner-designed and receiver-adopted by the
-  coordinated integration amendment, as are Phase 4's direct projections. Current schema-17
+  coordinated integration amendment, as are Phase 4's direct projections. Current schema-18
   consumption and all changed §5 surfaces remain unverified. Native source preservation,
   jcpp, post-analysis R4 and executable U1 remain separate gates; see §5.4.
 - Phase 2 adopts `inspect`/snapshot/archive-provenance in §5.1.1 and P1 diagnostic permission;
   P4 adopts the same-request resolution enrichment. All are architectural receipts, not
   completed matrix evidence. P2 alone owns golden formatting, acquisition metadata and verdicts.
-- **R-P12-5 locale projection remains ungranted.** Current `OptionConfiguration.lang()` is
-  one `LangDecorations`, not a locale-indexed public lookup. P12 may use those already-projected
-  values only; it cannot claim locale→en_us→literal fallback or reopen files. Requested next
-  schema replaces `lang()` with immutable `Map<String,LangDecorations> localizedDecorations()`,
-  keyed by P3-normalized locale in canonical order, empty map=no files, missing key=absent
-  locale, with existing decoration value/ordering rules. Exact normalization/collision/selection
-  semantics and fingerprint payload must be published in that owner amendment; no fake schema-17
-  backfill or duplicate authoritative `lang` projection. P12's explicit locale fallback waits
-  for it. Current Internal selection has no pack-option persistence target; global settings
-  remain writable, but Internal pack-option write controls cannot invent a transient load input.
+- **R-P12-5 owner grant complete.** P12 replaces all `lang()` calls with the full
+  `localizedDecorations()` catalog and §4.3's per-key fallback; P2 projects the entire catalog
+  using the existing source-free codec. Neither consumer may synthesize schema18 from schema17.
+- **Internal session grant complete (D-P3-65).** P7 owns accepted snapshots for the client
+  session across switches; P12 submits Apply/profile/reset to P7's commit adapter, which captures
+  through §4.3's closed operation. All non-Off callers supply the Optional; Filesystem uses empty.
+  `PackOptionsTarget` still rejects Internal. Restart starts defaults and no session token is
+  serialized. Closed rejection and failed-load retention rules replace the former inert controls.
 - G8/S3 owns OQ-7's final policy after §10's spike.
 - G8/S2 consumes P3-C19; it must not alter legacy dimension-file rules silently.
 
@@ -4237,11 +4424,15 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
 5. RESEARCH/App F.2 clarification: ratify or replace D-P3-52's edition grammar,
    canonicalization, comparator, aggregation, and malformed-rule policy; Appendix F.2 currently
    specifies only that `version.<mcver>` declares a minimum edition.
-6. **IR-24 / OQ-7 — authority clarification, not AA implementation.** Ratify or replace
-   D-P3-61's `default`→omitted old-light macro projection independently of runtime pack
-   precedence, and reconcile RESEARCH §4.7's reference AA inventory / §3.5's FXAA name with
-   §1.2's no-AA product boundary. Until then exact-zero-only storage and omitted FXAA remain
-   the conservative local contract; no AA control, algorithm, interlock or positive level.
+6. **IR-24 resolved; broader OQ-7 remains.** D-P3-64's author-evidence-backed enabled semantics
+   and existing shared true fallback were explicitly ratified by the maintainer on 2026-09-07,
+   with wire `default` baseline, raw-preference fingerprint distinction and no aliases.
+   No narrow default/macro ratification request remains. The broader renderer-identity/feature
+   posture experiment remains G8/S3's OQ-7 responsibility, not approval by this phase.
+   The maintainer's 2026-09-07 D-P3-66 disposition resolves the AA/SSAA inventory conflict as
+   pack-option compatibility only: no engine SSAA; reserved exact-zero global AA storage,
+   omitted FXAA macro, and no AA control/runtime. Historical inventory text remains immutable
+   evidence, not an active eight-visible-control promise.
 
 ## 12. Implementation checklist
 
@@ -4337,7 +4528,7 @@ Each item is independently actionable and names its test hook.
     `fingerprint_attachmentFormatVariantAndExplicitValue`,
     `fingerprint_resourceCodecEveryLeafAndInsertionOrder`, all routing-slot tests, eligible/wrong-
     family orderings, and hand-verify one classic pack's resource requirements.
-13. `[v0.1]` Implement P3-C15's schema-v17 `IdMappingInput`, four per-kind file states, pure
+13. `[v0.1]` Implement P3-C15's schema-v18 `IdMappingInput`, four per-kind file states, pure
     bounded-byte parser, exact provisional tag identifier and numeric-short exclusion grammar,
     classic/modern provenance, entry/tag classification, per-rule era, and isolated forced-11300
     entity result; run all `idMap_*` tests, including the four explicit numeric-boundary outcomes
@@ -4356,15 +4547,17 @@ Each item is independently actionable and names its test hook.
     every code-selected field and exact primary-value delivery once to each non-null reporter, and
     prove a null reporter returns its table-defined primary `INVALID_REQUEST` with no callback,
     I/O, or throw.
-16. `[v0.1]` Implement P3-C17 schema-v17 validation/fingerprint/atomic publication, including
+16. `[v0.1]` Implement P3-C17 schema-v18 validation/fingerprint/atomic publication, including
     canonical physical source identity, catalog-bound option state, executable-program projection,
     renderer features, both companion booleans, computed compatibility status, the closed custom-texture nominal algebra,
     complete resource codec, custom-expression and texture-declaration payloads; prove `PackConfiguration` is the only
     success output, run `fingerprintChangesWhenMinimumEditionCrossesCompatibility`, and run
     schema-12/schema-13, schema-13/schema-14, schema-14/schema-15, schema-15/schema-16, and
-    schema-16/schema-17 producer-consumer rejection directions.
+    schema-16/schema-17 and schema-17/schema-18 producer-consumer rejection directions.
 17. `[v0.1]` Implement P3-C21's in-memory `(internal)` bridge with a synthetic engine-only pack;
     hash/order/serialize only canonical-string UTF-8 bytes and leave actual content to Phase 7.
+    Implement D-P3-65 capture/rebind/session identity failures and D-P3-63 full locale acquisition,
+    fingerprint and source-free projection; P7 owns session retention, P12 final presentation.
 18. `[v0.1]` Implement P3-C20 manifest/fuzz/fixture emission and the specified Phase 2 hand-off;
     Phase 2 runs the seven downloaded pack front-ends and the classic resource-sizing check under
     its existing harness rules.
@@ -4410,3 +4603,8 @@ was performed.*
 global settings and source-free inspection with P4/P5 enrichment. All changed owner/receiver
 documents remain unverified pending fresh review. Native-source, jcpp, U1, OQ-7/no-AA authority
 clarification and R-P12-5 locale projection gates remain explicit. No tests or verification ran.*
+
+*§0.59 supersedes locale/Internal gates and explicit-user-only old-light policy with schema18
+owner contracts, including approved session-only Internal edits and option-only sampling scope.
+Only broader OQ-7 identity/feature posture remains open for this slice. No historical
+review or audit was rewritten. No builds, tests, formatters or validation ran; Main owns validation.*

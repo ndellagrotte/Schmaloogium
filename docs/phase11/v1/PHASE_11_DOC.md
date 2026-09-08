@@ -18,7 +18,7 @@ module map puts that code in `engine.expr` and requires `:engine` to have zero M
 Cleanroom, Mixin, or LWJGL dependencies (`docs/design/v3/DESIGN.md:468`–`:500`).
 
 The historical dependency reviews below record authoring provenance only. Current Phase 3
-schema17 and Phase 6 retirement amendments are adopted provisionally in §5; their current bytes
+schema18 and Phase 6 retirement amendments are adopted provisionally in §5; their current bytes
 and this receiver's amended surface require fresh verification before implementation.
 
 ### 0.1 Inputs actually read
@@ -1088,7 +1088,7 @@ for Phase 11 diagnostics, and every record field and the ordered list participat
 projection without reopening pack files or reinterpreting Properties syntax
 (Phase 3 §§2.2/5.1 custom-expression declaration algebra and §5.3 schema discipline).
 Before extracting declarations, composition accepts exactly current `CURRENT_SCHEMA_VERSION`
-(17 after IR-24), never upgrades older configurations or manufactures missing declarations.
+(18 after the IR-03/24 follow-on), rejects 17 and every other version, never upgrades older configurations or manufactures missing declarations.
 The compile adapter copies this same configuration's ordered list and fingerprint unchanged;
 it neither materializes a different option catalog nor uses stale pack declarations with new macros.
 
@@ -1460,6 +1460,7 @@ session does not run the spike or update RESEARCH.md.
 | D-P11-15 | Publish the direct source-free immutable GUI projection with final P7 attempt outcome and selected-pack lifetime | IR-17; existing diagnostic channels remain unchanged and raw source never enters GUI |
 | D-P11-16 | P11 original vectors/providers are the exact RUN-EXPRESSION-CONFORMANCE receiving contract, with P2-owned adapter and source-free reports | IR-20; function/smooth evaluation and effects, not Properties parsing, determine conformance |
 | D-P11-17 | P14 accepts OQ-22 method/metrics and measured decision while P11 retains semantics/SPI | IR-15; interpreter remains the baseline absent a demonstrated real-pack miss |
+| D-P11-18 | Adopt P3 schema18 same-load declarations and fingerprint cutover, superseding D-P11-14's schema17 reference only | Locale/session-option/old-light changes invalidate configuration-derived plans; evaluator and P6 lifecycle semantics are unchanged |
 
 ### 11.2 Contradictions, gaps, and rulings
 
