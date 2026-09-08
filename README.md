@@ -4,6 +4,20 @@ Mod development template for Cleanroom, uses a custom [Unimined fork](https://gi
 ### WARNING: Custom Unimined Fork
 May have issues, report here or [here](https://github.com/kappa-maintainer/Unimined) when you encountered impossible field names or impossible Scala compiler errors. 
 
+## DOs and DON'Ts
+### Choose Branch
+Choose mixin branch if you want to use Mixin.
+
+Use scala and kotlin branch if you want to use those languages. 
+
+There are 4 branches available:
+- main
+- mixin
+- scala
+- kotlin
+
+If you want to use non-main branches, after clicked *Create a new repository* under *Use this template*, check the *Include all branches* checkbox.
+
 ### Running Client or Server
 If you are using IntelliJ, **DO NOT** use the `Minecraft Client` configure with a blue icon. Just use the `2. Run Client` Gradle task.
 
@@ -11,6 +25,8 @@ If you are using IntelliJ, **DO NOT** use the `Minecraft Client` configure with 
 You can find dependencies block in `gradle/scripts/dependencies.gradle`.
 
 No more `rfg.deobf()` or `fg.deobf`. You **MUST** add mods by using `modImplementation` or `modRuntimeOnly`, or the game will crash when running.
+
+Use `modLibrary` for libs/mods that you don't want to remap.
 
 ### Non-Mod Dependencies
 Two new configuration types `contain` and `shadow` are available, check more details in `dependencies.gradle`.
@@ -30,10 +46,11 @@ You should change its location to fit your new package name.
 You can find its template under `src/main/java-templates`.
 
 ### Mixin
-1. Rename json config file to include your modid. You will need one json per phase (`PRE_INIT`, `DEFAULT`, `MOD`) 
-2. Add your mixin classes there.
-3. Use `IMixinConfigPlugin` to control if certain mixin should be enabled. You can call `Loader.isModLoaded()` for `MOD` phase mixins.
-4. Don't worry about refmap, Unimined will handle it automatically. You can still `disableRefmap()` manually though
+1. Rename json config file to use your modid. 
+2. Add **all** your mixin classes there.
+3. Use `IMixinConfigPlugin` to control if certain mixin should be enabled.
+4. mixin classes will be passed to the plugin only when target class is loading, so you don't need to call `Loader.isModLoaded()`
+5. Don't worry about refmap, Unimined will handle it automatically. You can still `disableRefmap()` manually though
 
 ### Access Transformer
 You **MUST** write AT file in MCP name. It will be remapped back to SRG name in artifact jar.
@@ -57,3 +74,8 @@ This template comes with three workflows.
 You need to fill in your project IDs and configure your tokens in GitHub repository first.
 
 By default, you will need to manually trigger the workflow in web page, but you can also enable tag triggering by merging the third yml into `release.yml`.
+
+### Credit
+Thanks @Karnatour for fixing shadow plugin
+
+Thanks @ghostflyby for making kotlin branch
