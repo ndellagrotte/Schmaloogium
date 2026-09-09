@@ -1,10 +1,16 @@
-if (publish_to_maven.toBoolean()) {
+if (publish_to_maven.toBoolean() || publish_to_local_maven.toBoolean()) {
     publishing {
         repositories {
-            maven {
-                name = maven_name.replaceAll("\\s", "")
-                url = maven_url
-                credentials(PasswordCredentials)
+            if (publish_to_maven.toBoolean()) {
+                maven {
+                    name = maven_name.replaceAll("\\s", "")
+                    url = maven_url
+                    credentials(PasswordCredentials)
+                }
+            }
+            // Good for debugging artifacts before uploading to a remote maven.
+            if (publish_to_local_maven.toBoolean()) {
+                mavenLocal()
             }
         }
         publications {

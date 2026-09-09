@@ -38,3 +38,6 @@ docs/**/chatlogs/
 # Eclipse language-server compiler output
 /bin/
 .omp/rules/java-completion-verification.md
+
+# Mixin dev-flag export dir (enable_mixin_debug)
+.mixin.out/

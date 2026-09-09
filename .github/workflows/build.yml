@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 the Schmaloogium contributors
 name: Build mod jar
 
 on:
@@ -20,14 +22,46 @@ jobs:
         distribution: 'temurin'
     - uses: gradle/actions/setup-gradle@v6
       with:
-        gradle-version: 9.6.1
+        gradle-version: 9.7.0
       name: Set up Gradle
     - name: Add permission
       run: chmod +x ./gradlew
+    # The named seam steps run BEFORE ./gradlew build: build runs all four seam tests
+    # itself through check->test and would go red first under an anonymous name, so a
+    # step placed after would never run on the failure it names (PHASE_1_DOC §4.11,
+    # D-P1-24). C-1 lives in :engine; C-2 and C-3 live in :mod, so both module test
+    # tasks are named.
+    - name: Seam architecture test
+      run: ./gradlew :engine:test :mod:test
+    - name: Conformance module test (C-4)
+      run: ./gradlew :conformance:test
     - name: Execute Gradle build
       run: ./gradlew build
-        
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v7
       with:
-        path: build/libs
+        path: '**/build/libs/*.jar'
+    - name: Upload test reports on failure
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        path: '**/build/reports/tests/**'
+        name: test-reports
+
+  # Phase 2 extension point (PHASE_1_DOC §4.11): deliberately visible and empty.
+  # dispatch-gated so it never runs on push. Phase 2 fills it, including the OQ-10
+  # headless-GL question. The actions/cache step keys on pack version IDs (the §G6
+  # fixture policy is download-at-test-time with a local cache; no pack is ever
+  # committed).
+  conformance:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - name: Cache pack fixtures
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/schmaloogium/conformance-packs
+        key: packs-${{ hashFiles('docs/conformance/pack-ids.txt') }}
+    - name: Placeholder (Phase 2 owns everything inside this job)
+      run: echo "Phase 2 conformance harness slot"

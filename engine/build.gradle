@@ -1,0 +1,52 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 the Schmaloogium contributors
+
+// The seam, by construction (PHASE_1_DOC §4.2.3): no Unimined, no Blossom, no shadow,
+// no gradle/scripts/dependencies.gradle. Only core Gradle plus test-fixtures for the
+// shared GLCapabilityProfile fixtures (§8.3).
+plugins {
+    id 'java-test-fixtures'
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    // Consumable form of :engine's main classes for :mod's jar merge (§4.2.5): a
+    // dependency-derived merge instead of cross-project sourceSet access.
+    classesForMerge {
+        canBeConsumed = true
+        canBeResolved = false
+    }
+}
+
+artifacts {
+    // Provider<Directory> notation; the merge consumes the classes tree (resources, if
+    // the engine ever gains any, would need their own artifact).
+    classesForMerge(sourceSets.main.java.classesDirectory)
+}
+
+dependencies {
+    // P3 production dependency, admitted by D-P1-49 after pin verification (PINS.md).
+    // One exact implementation-selected version, never a dynamic selector. The POM's
+    // CLI-only compile dependencies (ant, jopt-simple, java-semver) and its
+    // annotation-only findbugs dependency are excluded from the runtime closure;
+    // the library path (org.anarres.cpp minus Main/CppTask) references only slf4j-api.
+    implementation("org.anarres:jcpp:${jcpp_version}") {
+        exclude group: 'org.apache.ant'
+        exclude group: 'net.sf.jopt-simple'
+        exclude group: 'com.github.zafarkhaja'
+        exclude group: 'com.google.code.findbugs'
+    }
+    // C-1 remains enforced over the complete main compile/runtime dependency closure.
+    testImplementation "org.ow2.asm:asm:${asm_version}"     // bytecode scan, test scope only
+}
+
+// Hand the architecture test the exact classpath it must assert over — lazily (§4.2.3).
+tasks.named('test') {
+    jvmArgumentProviders.add(new SeamClasspathArguments(
+        sourceSets.main.compileClasspath,
+        sourceSets.main.runtimeClasspath,
+        sourceSets.main.output.classesDirs))
+}

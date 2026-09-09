@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 the Schmaloogium contributors
+
+// The empty slot, wired (PHASE_1_DOC §4.2.4a). Phase 2 fills the harness; the repository
+// block below is load-bearing (without it, ./gradlew build fails at :conformance:compileTestJava).
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':engine')
+    testImplementation testFixtures(project(':engine'))
+    testImplementation "org.ow2.asm:asm:${asm_version}"      // C-4's bytecode half
+    // Never :mod. C-4 (SeamConformanceDependencyTest) asserts exactly that.
+}
+
+// The same lazy form §4.2.3 explains, for the same reason.
+tasks.named('test') {
+    jvmArgumentProviders.add(new SeamClasspathArguments(
+        sourceSets.main.compileClasspath,
+        sourceSets.main.runtimeClasspath,
+        sourceSets.main.output.classesDirs))
+}

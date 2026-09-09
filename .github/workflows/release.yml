@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: 9.6.1
+          gradle-version: 9.7.0
         name: Set up Gradle
       - name: Add permission
         run: chmod +x ./gradlew
@@ -28,5 +28,7 @@ jobs:
 
       - uses: ncipollo/release-action@v1.21.0
         with:
-          artifacts: "build/libs/*"
+          # Targeted at :mod: a release never publishes :engine's or :conformance's jars
+          # (PHASE_1_DOC §4.11).
+          artifacts: "mod/build/libs/*"
           generateReleaseNotes: true

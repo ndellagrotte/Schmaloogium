@@ -1,8 +1,8 @@
 // You may write any gradle buildscript component in this file
 // This file is automatically applied after build.gradle + dependencies.gradle is ran
 
-// Helper methods (assertProperty, assertSubProperties, setDefaultProperty) are
-// defined directly in build.gradle's script scope and exported via ext.
+// Note: build.gradle's script scope defines no helper methods; this script uses only
+// the project object (§12 item 45 keeps this comment truthful).
 
 // Buildship otherwise misses dependencies Unimined adds directly to the source set.
 plugins.withId('eclipse') {

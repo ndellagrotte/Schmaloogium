@@ -1,0 +1,198 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 the Schmaloogium contributors
+
+// Everything loader-facing (PHASE_1_DOC §4.2.4): the template's root machinery moved
+// here verbatim with four changes — loader pin from property, AT path project-relative,
+// Blossom `package` override to root_package, and the :engine class merge (§4.2.5).
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.gradleup.shadow'
+    id 'xyz.wagyourtail.unimined'
+    id 'net.kyori.blossom'
+}
+
+ext {
+    //noinspection GroovyAssignabilityCheck
+    access_transformer_locations = "${mod_id}_at.cfg"
+}
+
+base {
+    archivesName = mod_id
+}
+
+configurations {
+    contain
+    implementation.extendsFrom(contain)
+    modCompileOnly
+    compileOnly.extendsFrom(modCompileOnly)
+    modRuntimeOnly
+    runtimeOnly.extendsFrom(modRuntimeOnly)
+    // `modImplementation` is created and remap-registered natively by Unimined
+    // (ModsProvider.maybeCreate), which is §12 item 43's fix in this fork version.
+    // Consumes :engine's main classes for the jar merge (dependency-derived form, §4.2.5).
+    engineClasses {
+        canBeConsumed = false
+        canBeResolved = true
+    }
+}
+
+def remapTaskName = enable_shadow.toBoolean() ? "remapShadowJar" : "remapJar"
+
+//noinspection GroovyAssignabilityCheck
+unimined.minecraft {
+    version "1.12.2"
+
+    mappings {
+        mcp("stable", "39-1.12")
+    }
+
+    cleanroom {
+        if (use_access_transformer.toBoolean()) {
+            accessTransformer "${project.projectDir}/src/main/resources/$access_transformer_locations"
+        }
+        loader cleanroom_loader_version
+        runs.all {
+            args += ['--username', minecraft_username]
+            def extraArgs = extra_jvm_args
+            if (extraArgs != null && !extraArgs.trim().isEmpty()) {
+                jvmArgs += extraArgs.trim().split(/\s+/).toList()
+            }
+            if (enable_foundation_debug.toBoolean()) {
+                systemProperty("foundation.dump", "true")
+                systemProperty("foundation.verbose", "true")
+            }
+            if (is_coremod.toBoolean()) {
+                systemProperty("fml.coreMods.load", coremod_plugin_class_name)
+            }
+            if (enable_mixin_debug.toBoolean()) {
+                systemProperty("mixin.debug.export", "true")
+                systemProperty("mixin.checks.interfaces", "true")
+            }
+            return
+        }
+    }
+
+    defaultRemapJar = false
+
+    String jarTaskName = enable_shadow.toBoolean() ? "shadowJar" : "jar"
+
+    remap(tasks.named(jarTaskName).get())
+
+    mods {
+        remap(configurations.modCompileOnly)
+        remap(configurations.modRuntimeOnly)
+    }
+}
+
+dependencies {
+    implementation project(':engine')
+    engineClasses project(path: ':engine', configuration: 'classesForMerge')
+
+    // D-P1-49: ship the verified jcpp runtime closure through `contain` (third-party
+    // jars keep their identity; see PINS.md). Exclusions mirror :engine's declaration.
+    contain("org.anarres:jcpp:${jcpp_version}") {
+        exclude group: 'org.apache.ant'
+        exclude group: 'net.sf.jopt-simple'
+        exclude group: 'com.github.zafarkhaja'
+        exclude group: 'com.google.code.findbugs'
+    }
+    contain "org.slf4j:slf4j-api:1.7.12"
+
+    // C-2 and C-3 are bytecode scans over :mod's own classes, so :mod needs the same
+    // test-scope ASM :engine has (§4.2.4, [D-P1-3]).
+    testImplementation "org.ow2.asm:asm:${asm_version}"
+    testImplementation testFixtures(project(':engine'))
+}
+
+// [D-P1-3] Unimined's inherited dev classpath drags in the SHADED asm-debug-all 5.x
+// (split package, not a version conflict — no resolutionStrategy can fix it).
+// ASM 5 cannot read Java 25 class files, so it must lose. Declared on
+// testImplementation: both resolvable test configurations extend it.
+configurations.testImplementation {
+    exclude group: 'org.ow2.asm', module: 'asm-debug-all'
+}
+
+sourceSets {
+    main {
+        blossom {
+            javaSources {
+                property('mod_id', mod_id)
+                property('mod_name', mod_name)
+                property('mod_version', mod_version)
+                // NOT "${root_package}.${mod_id}" — Reference lives at com.schmaloogium (§2.3).
+                property('package', root_package)
+            }
+            resources {
+                property('mod_id', mod_id)
+                property('mod_name', mod_name)
+                property('mod_version', mod_version)
+                property('mod_description', mod_description)
+                property('mod_authors', mod_authors.toString().split(',').findAll { !it.isBlank() }.collect { "\"${it.strip()}\"" }.join(', '))
+                property('mod_credits', mod_credits)
+                property('mod_url', mod_url)
+                property('mod_update_json', mod_update_json)
+                property('mod_logo_path', mod_logo_path)
+                property('mod_issue_tracker', mod_issue_tracker)
+            }
+        }
+    }
+}
+
+if (!enable_shadow.toBoolean()) {
+    shadowJar.enabled = false
+}
+
+jar {
+    archiveClassifier = 'dev'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // :engine's compiled classes merged directly into the mod jar, before remapJar
+    // (§4.2.5, D-P1-4) — dependency-derived, so resolution stays lazy.
+    from configurations.engineClasses
+    if (configurations.contain.size() > 0) {
+        into('/') {
+            from configurations.contain
+        }
+    }
+    doFirst {
+        manifest {
+            def attribute_map = [:]
+            attribute_map['ModType'] = "CRL"
+            if (configurations.contain.size() > 0) {
+                attribute_map['ContainedDeps'] = configurations.contain.collect { it.name }.join(' ')
+                attribute_map['NonModDeps'] = true
+            }
+            if (is_coremod.toBoolean()) {
+                attribute_map['FMLCorePlugin'] = coremod_plugin_class_name
+                if (coremod_includes_mod.toBoolean()) {
+                    attribute_map['FMLCorePluginContainsFMLMod'] = true
+                }
+            }
+            if (use_access_transformer.toBoolean()) {
+                attribute_map['FMLAT'] = access_transformer_locations
+            }
+            // §4.5: the loader discovers the mixin configs through the jar manifest.
+            attribute_map['MixinConfigs'] = mixin_configs
+            attributes(attribute_map)
+        }
+    }
+    finalizedBy(tasks.named(remapTaskName).get())
+}
+
+shadowJar {
+    //noinspection GroovyAssignabilityCheck,GroovyAccessibility
+    configurations = [project.configurations.shadow]
+    archiveClassifier = "shadow"
+}
+
+// Hand C-2 and C-3 the exact classpath and class directory they must assert over —
+// the same three properties and lazy form as :engine (§4.2.4).
+tasks.named('test') {
+    jvmArgumentProviders.add(new SeamClasspathArguments(
+        sourceSets.main.compileClasspath,
+        sourceSets.main.runtimeClasspath,
+        sourceSets.main.output.classesDirs))
+}
+
+apply from: rootProject.file('gradle/scripts/publishing.gradle')
+apply from: rootProject.file('gradle/scripts/extra.gradle')

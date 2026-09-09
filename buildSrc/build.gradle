@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 the Schmaloogium contributors
+
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+// Bytecode must load into the Gradle daemon JVM (PHASE_1_DOC §4.2.3); 17 is the
+// lowest version a Gradle 9 daemon can run, so it loads on every supported daemon.
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
