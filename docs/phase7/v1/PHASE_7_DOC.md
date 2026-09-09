@@ -54,22 +54,22 @@ The `cleanroom` MCP server was used on 2026-08-02 as assigned:
 
 ### 0.2 Dependency PHASE docs consumed
 
-This inventory names the current architectural dependencies, not a verified-consumption certificate.
-The initial-build PASS receipts below certify only their historical frozen baselines. Coordinated
-owner grants incorporated in current §5 have changed since those receipts and remain unverified.
+This inventory names the current architectural dependencies. The initial-build PASS receipts below
+certify only their historical frozen baselines; the attempt-11 wave's whole-document reviews
+(2026-09-08, per §G1.3) verified every current counterpart listed here — P7's own R47 literal PASS included.
 
 | Dependency | Current artifact consumed | Binding material | Historical baseline only; current standing |
 |---|---|---|---|
-| Phase 1 | `docs/phase1/v14/PHASE_1_DOC.md` | §5 facade and backend contracts incorporated below | current coordinated grants unverified; no historical PASS substituted |
-| Phase 2 | `docs/phase2/v2/PHASE_2_DOC.md` | §§4.5/5 current capture and evidence contracts | Review 15 PASS concerned v1, not current v2; current changed contract unverified |
-| Phase 3 | `docs/phase3/v1/PHASE_3_DOC.md` | §5 and incorporated schema23/configuration contracts | Review 22 PASS is historical; current changed contract unverified |
-| Phase 4 | `docs/phase4/v1/PHASE_4_DOC.md` | §5 and incorporated selection/barrier/provider contracts | Review 18 PASS is historical; current changed contract unverified |
-| Phase 5 | `docs/phase5/v1/PHASE_5_DOC.md` | §5 and incorporated estate/binding/resource contracts | Review 30 PASS is historical; current changed contract unverified |
-| Phase 6 | `docs/phase6/v1/PHASE_6_DOC.md` | §5 and incorporated runtime/event/replay contracts | Review 7 PASS is historical; current changed contract unverified |
+| Phase 1 | `docs/phase1/v14/PHASE_1_DOC.md` | §5 facade and backend contracts incorporated below | R38 PASS-WITH-CORRECTIONS 2026-09-08; fix-up resolutions recorded — verified per §G1.3 |
+| Phase 2 | `docs/phase2/v2/PHASE_2_DOC.md` | §§4.5/5 current capture and evidence contracts | R49 2026-09-08; fix-up resolutions recorded — verified per §G1.3 |
+| Phase 3 | `docs/phase3/v1/PHASE_3_DOC.md` | §5 and incorporated schema23/configuration contracts | R63 PASS-WITH-CORRECTIONS 2026-09-08; fix-up resolutions recorded — verified per §G1.3 |
+| Phase 4 | `docs/phase4/v1/PHASE_4_DOC.md` | §5 and incorporated selection/barrier/provider contracts | R41 PASS-WITH-CORRECTIONS 2026-09-08; fix-up resolutions recorded — verified per §G1.3 |
+| Phase 5 | `docs/phase5/v1/PHASE_5_DOC.md` | §5 and incorporated estate/binding/resource contracts | R48 PASS-WITH-CORRECTIONS 2026-09-08; fix-up resolutions recorded — verified per §G1.3 |
+| Phase 6 | `docs/phase6/v1/PHASE_6_DOC.md` | §5 and incorporated runtime/event/replay contracts | R35 PASS-WITH-CORRECTIONS 2026-09-08; fix-up resolutions recorded — verified per §G1.3 |
 
-Only the actual owner §5 grants are adopted architecturally. Fresh whole-document owner and
-receiver reviews are required before verified downstream consumption; §5.4 records unresolved
-receiving work. IR-01, final §G5.3 and implementation gates remain open.
+Only the actual owner §5 grants are adopted architecturally. The fresh whole-document owner and
+receiver reviews completed at the attempt-11 wave (2026-09-08); §5.4's unresolved receiving work
+is request-ledger state, not a review gate. IR-01 closes per the final §G5.3 review (2026-09-09).
 
 ### 0.3 Reading-list deviations and reasons
 
@@ -4409,9 +4409,9 @@ Unexecuted architecture checks; these do not report successful validation.
 
 | Order | Assembly increment | Observable gate |
 |---:|---|---|
-| 1 | reverify adopted R7-8 and current P3 before manifest/digest production consumes R7-9 | package/seam proof plus fresh owner literal PASS where §5 changed |
+| 1 | reverify adopted R7-8 and current P3 before manifest/digest production consumes R7-9 | package/seam proof plus fresh owner verification of subjects — satisfied 2026-09-08: R47 literal PASS (P7); R38/R63 PASS-WITH-CORRECTIONS with recorded fix-ups, verified per §G1.3 (P1/P3) |
 | 2 | install Phase 1 bootstrap/GL-ready providers and the Phase 2 capture-plan skeleton required by D-10 | startup reaches `Off` and exits cleanly without renderer |
-| 3 | supply/load Phase 7's internal pack through Phase 3; after Phase 3 owner reverification, consume granted `canonicalString()` to produce its canonical manifest/digest and run the headless golden; build Phase 6 runtime | headless internal golden and uniform-runtime tests |
+| 3 | supply/load Phase 7's internal pack through Phase 3; after Phase 3 owner reverification, consume granted `canonicalString()` to produce its canonical manifest/digest and run the headless golden; build Phase 6 runtime | headless internal golden and uniform-runtime tests (Phase 3 review gate closed: R63 + recorded fix-up, verified per §G1.3, 2026-09-08) |
 | 4 | install Phase4/5 sampler-layout/select-once/pure fixed-policy infrastructure at v0.1 under R7-10/11 gates; execute §5.3 coherent transaction with explicit empty texture publication before v0.5; shadow remains NotInstalled under R7-12/13 | §8.4 same-selection, stale-before-mutation and ownership traces |
 | 5 | wire H-FRAME core transaction and fixed/final passthrough | empty world renders and early-return test finalizes once |
 | 6 | prove reference-free H-SKY, H-CLOUD, H-WEATHER first | dev hook report plus one fixed scene per family |
@@ -4614,8 +4614,8 @@ slice, or continue partially. Any selected alternative is recorded by a Phase 7 
   effective-state receiver; no observer-only lock or pending receiver.
   D-P7-42 retains P2 option/profile/plan evidence; D-P7-44 receives P5 exact main-mipmap,
   copy-consumption and staged resource contracts in §§4.5/4.6/4.13/5.2.
-  R38's excluded-source qualification survives: no pristine §G1.2 certification, and fresh clean
-  review, IR-01, final §G5.3 and implementation gates remain open.
+  R38's excluded-source qualification survives: no pristine §G1.2 certification; the fresh clean
+  review closed at the attempt-11 wave, IR-01 is disposed (2026-09-09), and implementation gates remain open.
 - **D-P7-41 wire receipt:** active §§1/4.13/5.1/5.2 adopt the coordinated `/4` labels;
   older /3 decision and amendment receipts remain historical, not compatibility authority.
   D-P7-42 completes P2 option/profile/plan receipt; D-P7-44 completes the P5 resource receipt.
@@ -4625,13 +4625,13 @@ slice, or continue partially. Any selected alternative is recorded by a Phase 7 
   Native conversion has explicit maintainer scope, not actual topology/provoking/primitive-ID
   conformance. Fresh owner/receiver reviews and native proof remain (§5.1/§8.5).
 - R7-1…R7-7 are granted and consumed; they impose no remaining feature, COMPLETE, or T3 gate.
-- R7-8 package placement is granted/adopted; fresh Phase 1/7 verification remains.
-- R7-9 is granted; internal-pack manifest/digest production requires fresh Phase 3 PASS.
-- R7-10/11 and R7-12/13 are owner-designed/receiver-adopted, unverified; real shadow stays
-  NotInstalled pending fresh Phase 4/5/6/7/8/13 owner reviews and applicable upstream gates.
+- R7-8 package placement is granted/adopted; Phase 1/7 verification closed at the attempt-11 wave (2026-09-08).
+- R7-9 is granted; its Phase 3 review precondition is met (R63 + recorded fix-up, verified per §G1.3, 2026-09-08).
+- R7-10/11 and R7-12/13 are owner-designed/receiver-adopted (provenance tags per the wave); the
+  review gates closed 2026-09-08 — real shadow stays NotInstalled as the implementation state.
 - P3 CURRENT_SCHEMA_VERSION/assets/native-source/companion/lossless projection is adopted; P4 effective-geometry
   receipt and separate P1 jcpp/facade grant remain independently tracked. U1's narrow scope
-  correction from `docs/decisions/U1_TEXTURE_SAMPLING.md` survives unchanged; fresh reviews remain.
+  correction from `docs/decisions/U1_TEXTURE_SAMPLING.md` survives unchanged; reviews closed 2026-09-08.
 - **IR-12 scope approved, not SSAA support:** on 2026-09-07 the maintainer selected
   pack-option compatibility only for `superSamplingLevel`, retaining source use but removing
   engine allocation/sample/resolve effects. P5 §4.11.1 supplies the evidence and adopted
@@ -4773,6 +4773,6 @@ research, reference, prior review, manifest or code file is edited; no directory
 
 ---
 
-*End of PHASE_7_DOC.md. Review36's literal PASS certifies only pre-rebuild bytes.*
+*End of PHASE_7_DOC.md.* **Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review (docs/phase7/reviews/PHASE_7_REVIEW_47.md, frozen SHA-256 ac1ae83e76ca056086eb0ae9dca094844bc9631eca9fd65a9c428eb6fd3faf67) returned literal PASS — 0 blocking, 0 corrections, 2 notes (N1/N2 recorded in the review file; no document change ordered). No §5 change outstanding. Per §G1.3 the document is verified.
 
-§5 changed in this coordinated rebuild. Unverified; a fresh whole-document review returning literal PASS is required before verified downstream consumption. v1 retained; no directory roll.
+v1 retained; no directory roll; no further verification round required.

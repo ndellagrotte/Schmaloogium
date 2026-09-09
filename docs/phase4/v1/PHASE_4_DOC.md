@@ -67,18 +67,18 @@ configs, or Pintonium's stale `DESIGN.md`.
 
 - `docs/phase1/v14/PHASE_1_DOC.md`: Review 20's literal PASS
   (`docs/phase1/reviews/PHASE_1_REVIEW_20.md`) verified the §0.19/§0.20-era surface
-  historically; per P1's own §G1.3 status (P1 §0.35), the current P1 bytes carry later §5
-  amendments and are not verified until a fresh whole-document review returns literal PASS.
+  historically; attempt-11 review R38 (2026-09-08) returned PASS-WITH-CORRECTIONS (0
+  blocking), its fix-up recorded resolutions — P1 verified per §G1.3.
   Its §5 was read completely. Its §4.7 `engine.gl` facade was read to obtain the exact service
   and recording signatures that §5 makes binding, including the now-published
   `ShaderService.useFixedFunction()` operation and its zero-argument recorder event. The
   post-Review-20 grants this phase consumes are already tracked as owner-granted and unverified
   in §5.2/§5.4; Phase 1's framebuffer/depth amendment is outside Phase 4's use.
 - Historical dependency read: Phase3 Review20 verified the surface originally consumed here.
-  Current `docs/phase3/v1/PHASE_3_DOC.md` has Review36 applied resolutions and changed §5
-  without a fresh PASS; it is provisional under this rebuild authorization, not freshly verified.
-  Its published closed declaration/materialization contracts are preserved, with outstanding
-  legacy-geometry/attribute grants retained in §5.4.
+  P3's attempt-11 whole-owner review (R63) returned PASS-WITH-CORRECTIONS (0 blocking); the
+  2026-09-08 fix-up wave applied all corrections and recorded resolutions; no §5 change
+  outstanding — verified per §G1.3. Its published closed declaration/materialization contracts
+  are preserved, with outstanding legacy-geometry/attribute grants retained in §5.4.
 
 Only the dependencies' §5 surfaces bind this phase. Clarifying prose is not silently promoted to
 an interface.
@@ -319,15 +319,15 @@ Additional reads: this whole document and Review31; `AGENTS.md` and `docs/MOVES.
 the whole Phase13 Review3; RC3 G1/G5.3/G9/G11.4/G12 and Phase4 assignment at
 `docs/design/v2.0-RC3/DESIGN.md:198-341,630-660,790-828,916-934,979-1109,1471-1571`;
 Phase3 sampler/materialization/load and canonical framing at
-`docs/phase3/v1/PHASE_3_DOC.md:532-666,1389-1410,3233-3249`;
+`docs/phase3/v1/PHASE_3_DOC.md:532-666,1389-1410,3258-3285`;
 `docs/research/v1/RESEARCH.md:1228-1255,1482-1492` for fixed units/shared targets; and
 `docs/phase6/v1/PHASE_6_DOC.md:970-1097,1342-1360` for the existing alias, participants,
 cache and retirement gap; `docs/phase8/v1/PHASE_8_DOC.md:225-257,560-607,932-981,2028-2033`
 for the current planning cycle, invocation and ungranted four-row request. These narrow extra reads
 are needed to close the coordinated seam.
-RC3 remains governing even though Review31 used a verification-only v3 override. Phase3's
-Review36 applied resolutions remain provisional with changed §5 and no fresh PASS; this
-authorization permits coordinated drafting, not verified consumption.
+RC3 remains governing even though Review31 used a verification-only v3 override. P3's attempt-11
+whole-owner review (R63) returned PASS-WITH-CORRECTIONS (0 blocking); the 2026-09-08 fix-up wave
+applied all corrections and recorded resolutions; no §5 change outstanding — verified per §G1.3.
 
 §5 changed in this coordinated rebuild. Unverified; a fresh whole-document review returning literal PASS is required before verified downstream consumption. v1 retained; no directory roll.
 
@@ -1454,7 +1454,7 @@ compute/unwired domains remain explicitly unsupported, not silently composite.
 The new sampler/policy digests use SHA-256 as a design choice, with distinct
 `ProgramSamplerLayout/v1` and `FixedSamplerPolicy/v1` domain/schema tags and Phase3 §4.10's
 length-prefixed scalar/string/list framing
-(`docs/phase3/v1/PHASE_3_DOC.md:3233-3249`). Hash provider identity, effective stage, permitted
+(`docs/phase3/v1/PHASE_3_DOC.md:3258-3285`). Hash provider identity, effective stage, permitted
 bands in enum declaration order, full ordered declarations/sites/materialization fingerprints,
 policy fingerprint, and the validation variant/full canonical payload. FixedFunctionEmpty and
 VirtualNotApplicable have distinct tags and include policy identity. Requested child identity is
@@ -2743,7 +2743,7 @@ animation/noise producers, and Phase7 owns every cross-owner orchestration check
 | Classic G6 configuration and full App A catalog | `v0.1` | implemented now; row coverage is cardinality-independent |
 | Sparse modern configuration fixture with dormant families | `v0.1` | implemented as data/test, not executed |
 | Program-state/declaration adapter, uniform-layout merge, route/attribute validation, fallback resolver | `v0.1` | implemented now; conflicts fail before GL |
-| Synchronous materialize/compile/link/validate transaction | `v0.1` | implemented after the §5.4 legacy-geometry dependency gap closes |
+| Synchronous materialize/compile/link/validate transaction | `v0.1` | implemented after fresh owner/receiver verification; §5.4 legacy-geometry gap closed |
 | Barrier, bound-uniform lookup/activity capability, alpha/blend lock, fixed Phase 6 participant slots | `v0.1` | interface and P4 mechanics now; P6 implementations later |
 | Shadow force-selection branch | `v0.1` | interface/mechanics now; Phase 8 invokes at `v0.2` |
 | Pipeline generation and fingerprints | `v0.1` | implemented now; Phase 12 consumes at `v0.4` |
@@ -2819,7 +2819,7 @@ publication semantics.
 positional realization are adopted here. P7 must integrate HEAD hooks/effective notifications,
 retain existing nested selector semantics and adopt the new before-participant lock ordering.
 P2/P7/P5 treat positional-route-v2 as opaque changed identity; no old-object upgrades.
-IR-01/final G5.3 remain open; this owner correction is not implementation authorization.
+IR-01 is disposed in the final review (2026-09-09); this owner correction is not implementation authorization.
 
 ### 11.2 D-1…D-10 disposition
 
@@ -2902,8 +2902,8 @@ IR-01/final G5.3 remain open; this owner correction is not implementation author
   ShadersOff, no source-bearing golden input and no publication solely for inspection.
 - **Current geometry closure:** P3 source API and P1 configure/cached-link projection are granted
   and adopted; P4 publishes R10-5. Fresh owner/receiver reviews, P1 jcpp pin/closure checks,
-  native/fullscreen real-context coverage, conditional adapter conformance and final integration
-  remain gates. IR-01 stays open; no BUILD clearance or G6 parity result is implied.
+  native/fullscreen real-context coverage and conditional adapter conformance remain gates;
+  final integration ran 2026-09-09 (IR-01 disposed); no BUILD clearance or G6 parity result is implied.
 
 #### 11.4.1 R39-3 / R55 receiving receipt — 2026-09-08
 
@@ -2917,8 +2917,8 @@ owner field or any `/1`–`/3` manifest alias. Other consumers of registry ident
 provider uniform/sampler identity and fallback selection semantics are unchanged.
 D-P4-32's schema21 receipt in §5.3 is a separate P3-owned configuration cutover, including
 nested IdMappingInput and same-request inspection; assets retain D-P3-69 semantics.
-Original reviews remain historical, and fresh whole-document producer/receiver reviews,
-IR-01 and final integration remain required. No implementation clearance or PASS is claimed.
+Original reviews remain historical; the fresh whole-document producer/receiver reviews closed at
+the attempt-11 wave (2026-09-08) and IR-01 is disposed (2026-09-09). No implementation clearance is claimed.
 
 #### 11.4.2 C35-1 / schema23 receiving receipt — 2026-09-08
 
@@ -2948,9 +2948,9 @@ N35-1's narrower corroboration are preserved; no fresh PASS, implementation or r
   `docs/phase1/v14/PHASE_1_DOC.md:4220-4226` publishes its distinct
   `shaders.useFixedFunction` recorder/replay semantics. Review 20's literal PASS at
   `docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75` verified the §0.19/§0.20-era surface
-  historically; per P1's own §G1.3 status (P1 §0.35), current P1 bytes carry later §5 amendments
-  and are not verified until a fresh whole-document review returns literal PASS, with the
-  post-Review-20 grants this phase consumes tracked as owner-granted/unverified in §5.2/§5.4.
+  historically; attempt-11 review R38 (2026-09-08) returned PASS-WITH-CORRECTIONS (0 blocking)
+  and its fix-up recorded resolutions — P1 verified per §G1.3 — with the post-Review-20 grants
+  this phase consumes now owner-granted and verified in §5.2/§5.4.
 - **GRANTED AND VERIFIED — Phase 5 candidate-view clarification.** Section 5.1 publishes the
   existing `CompiledRegistryCandidate.view()` as the non-owning, generationless pre-publication
   `ProgramRegistryView` for Phases 5 and 7 without exposing registry/handle access or weakening
@@ -3141,4 +3141,4 @@ N35-1's narrower corroboration are preserved; no fresh PASS, implementation or r
     Until grants, keep honest typed gates and never claim empty texture publication completes v0.5.
 ---
 
-§5 changed in this coordinated rebuild; Review 40 (2026-09-08) then audited the full document: PASS-WITH-CORRECTIONS with no §5 impact. All eight corrections are applied in this revision and note N1 is dispositioned (§0.42; resolutions recorded in `docs/phase4/reviews/PHASE_4_REVIEW_40.md`). With all corrections resolved and no §5 change outstanding, Phase 4 satisfies the §G1.3 fix-up verification condition. v1 retained; no directory roll.
+**Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review (`docs/phase4/reviews/PHASE_4_REVIEW_41.md`, frozen SHA-256 `c165be30da48a23bee807fd81646c43659375d35ef110abf6adc33f6b1c587b1`) returned PASS-WITH-CORRECTIONS — 0 blocking, 2 corrections, 2 notes. This fix-up wave applied every correction and recorded resolutions in the review file; no §5 bytes changed and no §5 change is outstanding. Per §G1.3 the document is **verified**. v1 retained; no directory roll.

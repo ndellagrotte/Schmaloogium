@@ -12,7 +12,7 @@
   (`docs/design/v3/DESIGN.md:2438`)
 - **Governing design:** `docs/design/v3/DESIGN.md`, Part I §G0–§G12 and the Phase 13 specification
   only
-- **Design status:** architecture-only integration amendment through §0.14; unverified
+- **Design status:** architecture-only integration amendment through §0.16 plus the 2026-09-08 attempt-11 fix-up; verified per §G1.3
 - **Date:** 2026-09-07
 
 The commissioning request explicitly selected v3, so every `DESIGN.md` coordinate in this document
@@ -185,8 +185,8 @@ describes blur/clamp. Only these documented mechanisms are adopted, not modern f
 This notice supersedes earlier U1 requirement/gate statements in historical addenda and
 decisions; those records, old reviews, RESEARCH and original design text remain unchanged.
 Existing defaults/error policy are not newly ratified (§11.3 records the separate concern).
-No parser/payload behavior or type changes: schema18 remains. §5 changes require fresh
-whole-document owner/receiver reviews; IR-01 still gates implementation. No PASS,
+No parser/payload behavior or type changes: schema18 remains. §5 changes received their fresh whole-document
+owner/receiver reviews at the attempt-11 wave; IR-01's disposition is recorded 2026-09-09. No PASS,
 implementation, build, test or verification claim is made.
 
 ### 0.9 Source-specific sidecar policy and schema19 receipt — 2026-09-07
@@ -200,7 +200,7 @@ are maintainer policy, not G6 author-document or runtime evidence. Generated noi
 all prior schema18 receipts remain historical and are superseded for current consumption.
 Reads: complete P13, v3 globals/P13 specification, RESEARCH §§0–1/App F.5, the decision,
 P3 complete §5/§11 and exact native provenance declarations, and complete affected consumer §5.
-No implementation, validation, PASS or conformance claim; IR-01 and fresh reviews remain.
+No implementation, validation, PASS or conformance claim; reviews closed at the attempt-11 wave; IR-01 disposition recorded 2026-09-09.
 
 ### 0.10 Snapshot-bound binary acquisition — 2026-09-08
 
@@ -297,7 +297,7 @@ N3's history-preservation and fresh-verify mechanics are honored here. No new de
 §5 changed in this fix-up wave (one §5.2 Phase 7 consumption-row coordinate,
 `docs/phase7/v1/PHASE_7_DOC.md:3880-3972` → `:3901-3993`). Per §G1.3 the document requires a
 fresh whole-document verify session before verified downstream consumption; the standing
-unverified posture above covers these bytes.
+unverified posture above covers these bytes. **Attempt-11 sweep note (2026-09-08):** the P7 coordinates recorded in §0.15/§0.16 above (`:1863-1864`, `:1657-1680`, `:3901-3993` and their sub-ranges) are the pre-sweep fix-up-time values, now historical; the attempt-11 anchor sweep repointed the live §1.1/§4.6/§5.2 citations to `:1884-1885`/`:1690-1698`/`:3923-4015`, all verified against current P7 bytes. Recorded in place — no byte above the P3-pinned `:865-877` window moved.
 
 ## 1. Scope & boundaries
 
@@ -904,11 +904,11 @@ snapshots and atlasSize before vanilla replacement. No Minecraft object reaches 
 
 Resolution and enablement come from Phase3 §5.1's `ResourceRequirements.noise`,
 `NoiseRequirement(boolean enabled,int resolution)`, whose absent-directive baseline
-is disabled/resolution256. The texture is
-`resolution × resolution`, internal format RGB, unsigned-byte transfer, wrap `REPEAT`, filter
-`LINEAR` — the contract's noise sampling is a repeating field sampled with interpolation
-(`docs/research/v1/RESEARCH.md:596`–`:597`; behavioral corroboration at
-`reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md:469`–`:471`).
+is disabled/resolution256. The texture is `resolution × resolution`, internal format
+RGB, unsigned-byte transfer, wrap `REPEAT`, filter `LINEAR` — authority: the design
+decision record (D-P13-27's noise-role baseline; PD §11 "GL_RGB, LINEAR/REPEAT, `Random(0)`"
+at `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:621-625`), behaviorally
+corroborated at `reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md:469-471`).
 
 #### 4.2.2 The generator, specified so it is reproducible
 
@@ -2312,8 +2312,8 @@ regeneration (`docs/design/v3/DESIGN.md:692-728`). No new fixture or test file i
 
 Full AppF5 binding is no longer conditional on old R2. R1/R3/R7-10..13 are owner-designed
 and receiver-adopted, unverified. U1's documented-mechanism correction is adopted (§0.8);
-no missing suffix grant gates full v0.5 scope. Optional R4/P14 extensions, actual implementation,
-IR-01, fresh whole-document reviews and §11.3's separate parameter-legality closure remain distinct.
+no missing suffix grant gates full v0.5 scope. IR-01's disposition is recorded (2026-09-09); fresh
+whole-document reviews closed 2026-09-08; optional R4/P14 extensions, actual implementation and §11.3's parameter-legality closure remain distinct.
 The v0.5 implementation gate remains the full classic matrix at T3 plus correctly rendered
 MC_NORMAL_MAP packs (`docs/design/v3/DESIGN.md:2507-2508`).
 
@@ -2386,7 +2386,7 @@ Two OQs touch this subsystem without belonging to it, recorded so a reader does 
 | D-P13-42 | R7 C1: explicit local companion/default min/mag/wrap policy derived from accepted mip count; same ReadyAsset, fingerprint and complete setter, no grammar or confidence expansion |
 | D-P13-43 | R7 C2: actual accepted base-object/atlas association through opaque P7 evidence and context-bound lease; P5 exact matching/default branch and sole before-draw refresh, reciprocal P7/P8 lifetime receiver |
 | D-P13-44 | R8 C1: §4.3.2 acquisition gate enforces exact CURRENT_SCHEMA_VERSION=23 equality under D-P13-37 — matching nested IdMappingInput, required same-load assets, exact configuration pairing and `assets.pack()` — and rejects 22/all other schemas without repair; no other gate text moves |
-| D-P13-45 | R8 C2, coordinates re-corrected 2026-09-08 under Review9 C1: stale sibling-phase anchors re-resolved to current frozen coordinates (P4 `:2144`; P5 `:2734-2743` ownership rows and `:2737` Bound-only sentence; P7 `:1884-1885` DEFERRED(P13,v0.5) rows, `:1690-1698` §4.10.1 catalog/health classes and audit, `:3923-4015` Phase13 downstream slot plus complete ten-step transaction; P6 `:1221-1225`); unverifiable P7 line-quote dropped, no semantic claim changed; the R8 P7 values (`:1792-1793`, `:1598-1605,2933`, `:3880-3928`) had drifted and are historical; R10 C1/C2/C3 (2026-09-08): Review9's landed intermediate values (`:1846-1847`, `:1650-1660`, `:3880-3972`) were themselves stale and are historical, and the three re-pointed coordinates above re-verified against current P7 bytes (ledger heading `:1845`, literal DEFERRED rows `:1863`/`:1864`; §4.10.1 class table `:1667-1674` and audit `:1676-1680`; slot `:3901-3922` plus complete ten-step transaction `:3945-3993`) |
+| D-P13-45 | R8 C2, coordinates re-corrected 2026-09-08 under Review9 C1: stale sibling-phase anchors re-resolved to current frozen coordinates (P4 `:2144`; P5 `:2734-2743` ownership rows and `:2737` Bound-only sentence; P7 `:1884-1885` DEFERRED(P13,v0.5) rows, `:1690-1698` §4.10.1 catalog/health classes and audit, `:3923-4015` Phase13 downstream slot plus complete ten-step transaction; P6 `:1221-1225`); unverifiable P7 line-quote dropped, no semantic claim changed; the R8 P7 values (`:1792-1793`, `:1598-1605,2933`, `:3880-3928`) had drifted and are historical; R10 C1/C2/C3 (2026-09-08): Review9's landed intermediate values (`:1846-1847`, `:1650-1660`, `:3880-3972`) were themselves stale and are historical, and the three re-pointed coordinates above re-verified against current P7 bytes (ledger heading `:1866`, literal DEFERRED rows `:1884-1885`; §4.10.1 class table `:1690-1695` and require=0/plugin-audit `:1697-1698`; slot `:3923-3944` plus complete ten-step transaction `:3967-4015`) |
 | D-P13-46 | 2026-09-08 Review9 C2 receiver: current opaque P4 registry identity is D-P4-43's `RegistryFingerprint/profile-selection-v3` (`docs/phase4/v1/PHASE_4_DOC.md:1953-1954`), carried and compared opaquely at the existing identity checks with older-cache invalidation keyed to that domain; D-P13-31's own-build-v1 mention historical/superseded, mirroring P5 D-P5-48 and P7; no profile codec, inference, schema or cross-phase signature change |
 
 ### 11.2 Binding decisions
@@ -2525,3 +2525,5 @@ Future coding work only; §8 rows specify the observable checks and §9 fixes th
 ---
 
 §5 changed in this coordinated rebuild. Unverified; a fresh whole-document review returning literal PASS is required before verified downstream consumption. v1 retained; no directory roll.
+
+**Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review (`docs/phase13/reviews/PHASE_13_REVIEW_11.md`, frozen SHA-256 `71710eb9aa5e39f4c0fa390a4913ebeaea9a9dccdeb3af43c72f264847774fe7`) returned PASS-WITH-CORRECTIONS — 0 blocking, 2 corrections, 2 notes. This fix-up wave applied every correction and recorded resolutions in the review file; no §5 bytes changed and no §5 change is outstanding. Per §G1.3 the document is **verified**.

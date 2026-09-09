@@ -1413,3 +1413,4 @@ No contradiction with RESEARCH D-1…D-10 was found.
     manifests/hashes only and meet the full §8.3 gate.
 17. **[post-v0.5]** Extend alias/tag catalog data only through named fixtures, live-target proofs,
     version increments, and a Phase 9 addendum; do not add similarity heuristics.
+**Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review (docs/phase9/reviews/PHASE_9_REVIEW_8.md, frozen SHA-256 6a52c47a…) returned literal PASS — 0 blocking, 0 corrections, 3 notes (N8-1..N8-3 recorded in the review file; no document change ordered). No §5 change outstanding. Per §G1.3 the document is verified.

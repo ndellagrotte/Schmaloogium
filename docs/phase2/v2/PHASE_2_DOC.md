@@ -2,7 +2,7 @@
 
 > **Phase:** 2 — Conformance harness · **Milestone:** v0.1 (design; implementation starts week one)
 > **Depends on:** Phase 1 · **OQs assigned:** OQ-10
-> **Date:** 2026-07-25 · **v2 rebuild/adoption:** 2026-08-03 (§0.36)
+> **Date:** 2026-07-25 · **v2 rebuild/adoption:** 2026-08-03 (§0.36) · **last revised:** 2026-09-08 (attempt-11 fix-up wave)
 > **Session type:** Maintainer-authorized §G1.1 rebuild after Review 36's FAIL, adopting
 > `docs/design/v3/DESIGN.md` for Phase 2. No source code was written and no paid verification round
 > was launched; Round 37 is the next independent §G1.2 review.
@@ -33,6 +33,8 @@
 | `docs/phase2/reviews/PHASE_2_REVIEW_44.md` | whole-owner assessment of the frozen attempt6 owner | PASS with zero required corrections and one nonblocking provenance note; historical verdict, not certification |
 | `docs/phase2/reviews/PHASE_2_REVIEW_45.md` | whole-owner assessment of the frozen attempt7 owner | PASS with zero corrections and one informational note; historical verdict, not certification |
 | `docs/phase2/reviews/PHASE_2_REVIEW_46.md` | whole-owner assessment of the frozen attempt8 owner | PASS-WITH-CORRECTIONS with required provenance correction C46-1 (header inputs and closing history stopping at R42), repaired as D-P2-72 and extended to R46 itself as D-P2-73; historical verdict, not certification |
+| `docs/phase2/reviews/PHASE_2_REVIEW_47.md` | whole-owner assessment of the frozen attempt9 owner | PASS-WITH-CORRECTIONS with zero blocking findings; C47-1 (R46 absent from §0.1 and the closing history) repaired as D-P2-73 and C47-2 (stale current-tense `schema21` in the §5.1.2 receipt) reworded by the attempt-9 fix-up wave; historical verdict, not certification |
+| `docs/phase2/reviews/PHASE_2_REVIEW_48.md` | whole-owner assessment of the frozen attempt10 owner | PASS with zero corrections and three provenance-hygiene notes recorded as requiring no document change; the attempt-11 citation sweep's line-count-preserving citation-text edit subsequently altered the bytes it read; historical verdict, not certification |
 
 ### 0.2 Dependency PHASE docs consumed
 
@@ -325,7 +327,7 @@ is the reason the harness is not one program:
 
 Context A is everything that can run **before any renderer exists**, which is what `D-10`'s "week
 one" means (§G6's second testability slice). Context B is designable now and runnable at v0.1.
-Context C is deliberately never automated: `OF` is not redistributable (§8.2, §10.3) and a first
+Context C is deliberately never automated: `OF` is not redistributable (§2.1, §2.3 of RESEARCH.md) and a first
 baseline that nobody looked at is not an oracle.
 
 ### 2.2 Module placement, and the C-4 wall
@@ -504,7 +506,7 @@ path and every run name.
 
 | Scene id | Family | Required static content and moving path | Contract / behavior rows it exercises |
 |---|---|---|---|
-| `terrain-day` | terrain + sky, the baseline frame | open landscape, mixed solid / cutout / cutout-mipped blocks, clear sky, midday; `path terrain-pan` translates and yaws across the skyline | App A.1 `gbuffers_terrain` family and backup chain; `gbuffers_skybasic` / `gbuffers_skytextured` / `gbuffers_clouds`; §4.4's gbuffers order; §3.2's `mc_Entity` stamping. Sky coverage is intentionally reference-free because Pintonium leaves it fixed-function (PD §4) |
+| `terrain-day` | terrain + sky, the baseline frame | open landscape, mixed solid / cutout / cutout-mipped blocks, clear sky, midday; `path terrain-pan` translates and yaws across the skyline | App A.1 `gbuffers_terrain` family and backup chain; `gbuffers_skybasic` / `gbuffers_skytextured` / `gbuffers_clouds`; §4.4's gbuffers order; §4.4's `mc_Entity` stamping. Sky coverage is intentionally reference-free because Pintonium leaves it fixed-function (PD §4) |
 | `water-translucent` | translucency and the depth split | shoreline with water and glass plus static above/under-water shots; `path shoreline-track` translates parallel to the waterline without crossing the eye-in-water boundary | App A.1 `gbuffers_water`; §4.3's `depthtex1` copy before translucent terrain; `isEyeInWater` (App D); deferred ordering |
 | `night-shadows` | the shadow pass | long cast shadows, moon, block light; `path shadow-parallax` translates laterally across foreground and shadow edges | §4.5 in whole; App A.1 `shadow`; App B.2. This is intentionally reference-free coverage because Pintonium's working packs do not validate a 1.12.2 shadow pass (PD §4) |
 | `weather-rain` | weather and the second depth copy | rain, wet surfaces, settled wetness; `path rain-track` translates and yaws across rain geometry and reflections | App A.1 `gbuffers_weather`; §4.3's `depthtex2` copy before weather; `wetness`/`wetnessHalflife` (§3.2, App A.3). This is intentionally reference-free because Pintonium has no weather hook (PD §4) |
@@ -1662,7 +1664,7 @@ own baselines has no oracle at all.
 
 ### 4.8 The T2 protocol — capturing OptiFine G6 oracle renders
 
-Manual, outside CI, and documented step by step, because OptiFine is not redistributable (§10.3) and
+Manual, outside CI, and documented step by step, because OptiFine is not redistributable (§2.1 of RESEARCH.md) and
 the oracle images are local artifacts (§G6). This is a procedure, not a program; the only code
 involved is the differ that consumes its output.
 
@@ -3292,9 +3294,9 @@ must receive the expanded index and authenticated comparison closure. P12's exis
 owner codec supplies effective option values, not a new P2 encoder. P1 profile ownership,
 P3 schema21 and nine-tree goldens remain unchanged. The separately recorded D-P2-45/46
 receiving amendment below now incorporates the settled backend/resource owner result.
-Separate C40-1/2/3 and N40-1 Resolutions preserve R40's original verdict. Fresh review,
-cross-owner receiving integration, IR-01 and final §G5.3 remain open; no implementation,
-validation, runtime comparison, calibration or approval is claimed.
+Separate C40-1/2/3 and N40-1 Resolutions preserve R40's original verdict. The fresh review
+closed at the attempt-11 wave (2026-09-08) and IR-01's disposition is recorded 2026-09-09;
+receiving integration, implementation, validation, runtime comparison and approval remain open.
 
 **2026-09-08 current R32/R39 receiving receipt — D-P2-45/46, unverified.** P5 §2.2/§4.1.1
 and D-P5-30/32, P1 D-P1-57 and P4 D-P4-33/34 are received in §§4/5/8/11/12.
@@ -3302,14 +3304,14 @@ SIZING is PLANNED; accepted live snapshots are REALIZED; requests, allocation pr
 declarative fog remain distinct. No earlier review body or authority is rewritten. C40 complete
 option identity, authenticated comparison closure and sole gl.profile_text /4 transport remain
 binding unchanged. This receipt is not a new verdict, validation, implementation clearance or
-runtime evidence; fresh review, IR-01 and final §G5.3 remain open.
+runtime evidence; its fresh review closed 2026-09-08 and IR-01's disposition is recorded 2026-09-09.
 
 **2026-09-08 Review41 architecture repair — D-P2-47–49, unverified.** §§4/5/8/9/11/12
 now bind exact named-run evidence domains, complete generation selection/receipts and canonical
 image placement. Existing /4 wire majors remain; required world identities are corrected within
 that unimplemented contract. Separate Resolutions preserve Review41's original body and verdict.
-P7 receiving integration and fresh whole-document review remain required; IR-01 and final §G5.3
-remain open. No validation, implementation, capture, approval, calibration or PASS is claimed.
+The fresh whole-document review closed at the attempt-11 wave (2026-09-08); IR-01's disposition is
+recorded 2026-09-09; P7 receiving integration remains. No validation, implementation, capture, approval, calibration or PASS is claimed.
 
 ### 11.2 Disposition of `D-1` … `D-10`
 
@@ -3351,8 +3353,8 @@ or this receipt clears runtime, implementation, OQ or final integration.
    `docs/phase2/v2/PHASE_2_DOC.md` under the §0.36 exception, while v1 remains history.
 3. **Phase 1's old gating exception is historical only.** V1 recorded that it began before an
    earlier Phase 1 correction chain closed. The current manifest-selected
-   `docs/phase1/v14/PHASE_1_DOC.md` now has integration-amended §5 contracts; their fresh
-   verification gate remains open. Architectural receipt here does not upgrade a prior PASS.
+   `docs/phase1/v14/PHASE_1_DOC.md` now has integration-amended §5 contracts; attempt-11
+   review R38 + recorded fix-up resolutions (2026-09-08) closed that gate per §G1.3.
 4. **The historical camera-path narrowing is closed.** `[D-P2-3]` is superseded by
    `[D-P2-24]`; `/2` supplies actual dense motion in every initial family and no longer treats a
    static shot as a path.
@@ -3543,9 +3545,9 @@ pack acquisition, rendered/calibration/OQ result or approval was performed.*
 receipts change §5 without changing any wire/schema/projection version. Fresh review
 remains required. No builds, tests, formatting, validation or runtime execution performed.*
 
-*2026-09-08 Review41 D-P2-47–49 repair changes §5; fresh whole-document review and P7
-receipt integration pending. Original review preserved. No validation commands, execution or
-PASS claim; IR-01 and final §G5.3 remain open.*
+*2026-09-08 Review41 D-P2-47–49 repair changes §5; its fresh whole-document review closed at
+the attempt-11 wave (2026-09-08) and P7 receipt integration remains. Original review preserved. No validation commands, execution or
+PASS claim; reviews closed at the attempt-11 wave; IR-01's disposition is recorded 2026-09-09.*
 
 *2026-09-08 R42 D-P2-50–52: core `/4` durable owner timing, schema22 admission and P11
 typed diagnostic receiving seam amend §§4/5/9/11/12. R42's original review body is preserved.
@@ -3573,3 +3575,22 @@ correction: C46-1 (header inputs and closing verification history stopping at R4
 repaired as D-P2-72, and this fix-up records R46 itself in §0.1 and here as D-P2-73. R46's
 verdict is a historical architecture verdict over the bytes it read: it does not certify the
 current document, grant implementation clearance, or supersede fresh whole-document review.*
+
+*2026-09-08 R47/R48/R49 provenance wave: R47 (frozen attempt9 owner) returned
+PASS-WITH-CORRECTIONS and its two corrections were applied by the attempt-9 fix-up wave
+(R46 recorded in §0.1 and in this history as D-P2-73; the §5.1.2 receipt's stale
+current-tense schema21 clause reworded as historical under D-P2-55). R48 (frozen attempt10
+owner) returned PASS with three provenance-hygiene notes requiring no document change. The
+attempt-11 citation sweep then applied a line-count-preserving citation-text edit, and the
+document was re-frozen at SHA-256
+2da8ddea08c9aaf7dc08c0e3fea8fe719034710167dd4d7af5edf9dd364605ae. R49 over that freeze
+returned PASS-WITH-CORRECTIONS (2 corrections, 2 notes, §5 impact none); the 2026-09-08
+fix-up wave applied both corrections (R47/R48 rows added to §0.1 and this closing-history
+entry per C49-1; the two OF licence anchors in §2.1 and §4.8 repointed to RESEARCH.md §2.1
+and §2.3 per C49-2), fixed the §3.4 `mc_Entity` stamping attribution to RESEARCH §4.4
+(N49-1), split the header date into authored/last-revised (N49-2), and recorded every
+disposition in the review file. All review verdicts remain historical over the bytes they
+read: none certifies the current document, grants implementation clearance, or supersedes
+fresh whole-document review.*
+
+**Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review (`docs/phase2/reviews/PHASE_2_REVIEW_49.md`, frozen SHA-256 `2da8ddea08c9aaf7dc08c0e3fea8fe719034710167dd4d7af5edf9dd364605ae`) returned PASS-WITH-CORRECTIONS — 0 blocking, 2 corrections, 2 notes. This fix-up wave applied every correction and recorded resolutions in the review file; no §5 bytes changed and no §5 change is outstanding. Per §G1.3 the document is **verified**.

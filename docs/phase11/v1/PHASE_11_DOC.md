@@ -7,7 +7,7 @@
 - **Module/package:** `:engine`, `com.schmaloogium.engine.expr`
 - **Declared dependencies:** Phase 3 and Phase 6; no Phase 7 dependency
 - **Governing design:** `docs/design/v3/DESIGN.md`
-- **Design status:** integration fix-up unverified; historical Review 10 PASS does not verify this §5 amendment
+- **Design status:** verified per §G1.3 (attempt-11 wave, R18 2026-09-08); historical Review 10 PASS certified only its dated baseline
 - **Date:** 2026-08-03
 
 The commissioning request explicitly selected v3. This document therefore derives its pins from
@@ -19,8 +19,8 @@ Cleanroom, Mixin, or LWJGL dependencies (`docs/design/v3/DESIGN.md:468`–`:500`
 
 The historical dependency reviews below record authoring provenance only. Current Phase 3
 exact-current schema (23 received by D-P11-25; newest §5.2 receipt governs) and Phase 6
-retirement amendments are adopted provisionally in §5; their current bytes and this receiver's
-amended surface require fresh verification before implementation.
+retirement amendments are adopted in §5; all three documents closed verified per §G1.3 at
+the attempt-11 wave (2026-09-08).
 
 ### 0.1 Inputs actually read
 
@@ -28,7 +28,7 @@ amended surface require fresh verification before implementation.
 |---|---|---|
 | `AGENTS.md` | complete | repository and document-session rules |
 | `docs/MOVES.md` | complete | resolve versioned paths and the six `DESIGN.md` collision |
-| `docs/design/v3/DESIGN.md` | Part I, §G0–§G12; Phase 11 spec at lines 2279–2353 | governing global rules, template, and assignment |
+| `docs/design/v3/DESIGN.md` | Part I, §G0–§G12; Phase 11 spec at lines 2279–2353 | governing global rules, template, and assignment; the `:630`–`:632` soft-7 precedent is the recorded basis for the handoff-only P7 lifecycle read disclosed in §0.2 |
 | `docs/research/v1/RESEARCH.md` | §0, §1, §3.4 item 4, §6.3 expression row, Appendix D, Appendix F.6 | authority, inputs, cadence, built-in types/exclusions, expression contract |
 | `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties` | custom-uniform section, lines 326–425 | shipped pack-author expression specification |
 | `docs/phase3/v1/PHASE_3_DOC.md` | complete | declaration-capture dependency contract |
@@ -44,9 +44,9 @@ amended surface require fresh verification before implementation.
 
 ### 0.2 Extra reads, deviations, and tool disposition
 
-Three genuine gaps required narrow reads beyond the listed inputs:
+Three genuine gaps required narrow reads beyond the listed inputs; one further deviation from the assigned reading list is disclosed here: the current `docs/phase7/v1/PHASE_7_DOC.md` lifecycle publication was read solely for its published consumer handoff (the §1.2 basis), a legitimate non-dependency read per the Phase 12 soft-7 precedent (`docs/design/v3/DESIGN.md:630`–`:632`) — Phase 11 declares no Phase 7 dependency and asserts none.
 
-1. `docs/research/v1/RESEARCH.md:999`–`:1028` was read to quote the exact OQ-22 ledger text that
+1. `docs/research/v1/RESEARCH.md:1005`–`:1028` was read to quote the exact OQ-22 ledger text that
    the Phase 11 spec explicitly hands to Phase 14.
 2. `reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md:594`–`:622` was read because the
    shipped `shaders.properties` says only “time-corrected” and does not publish the correction
@@ -67,7 +67,7 @@ Phase 11's v3 adoption is complete: `verification/targets/phase-11.json` derives
 v3, its dry-run preflight has succeeded, and `docs/MOVES.md:89`–`:92` records the adoption. The
 per-round verification chronology is stated in exactly one place, the §0.4-onward round addenda,
 whose newest entry always restates whether a fresh verification round is still required. It is:
-§0.13's integration §5 change is unverified and requires a fresh round before closure.
+**Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review (`docs/phase11/reviews/PHASE_11_REVIEW_18.md`, frozen SHA-256 `840850c8ac575f974d4d7c71f96dd0e679f1c9646eb25708265fe91177a714be`) returned PASS-WITH-CORRECTIONS — 0 blocking, 1 correction, 3 notes; this fix-up wave applied every correction and recorded resolutions in the review file, no §5 bytes changed and no §5 change is outstanding from this wave, and per §G1.3 the document is **verified**, while §0.13's standing fresh-verification requirement remains open exactly as that addendum states.
 
 ### 0.3 Legal and provenance posture
 
@@ -168,7 +168,7 @@ Historical Pintonium pin claims remain provenance, not verified current byte ide
 N14-1 records their unavailability. This correction relies on the directly read shipped author
 document, not a replacement OSS checkout or unresolved stareval source.
 
-### 0.15 Review-16 contract corrections — unverified
+### 0.15 Review-16 contract corrections — unverified (anchor coordinates historical as of 2026-09-08)
 
 Review 16 (2026-09-08) corrections applied: the D-P11-20 receipt in §5.2 now marks P4's
 `RegistryFingerprint/own-build-v1` as the receipt-time composition identity and names the current
@@ -178,7 +178,7 @@ amendments (C-2). C-3 was rejected with evidence: current Phase 2 v2 bytes adopt
 RUN-EXPRESSION-CONFORMANCE at D-P2-28, so §5.6's adoption claim stands. §5 text changed; a fresh
 verification round remains required and §0.13's standing requirement is unchanged.
 
-### 0.16 Review-17 correction fix-up — unverified
+### 0.16 Review-17 correction fix-up — unverified (anchor coordinates historical as of 2026-09-08)
 
 Review 17 (2026-09-08) applied three dependency-anchor coordinate repoints: the §1.2 Phase 3
 declaration-capture citation now ends at `docs/phase3/v1/PHASE_3_DOC.md:1748` (C17-1) and the

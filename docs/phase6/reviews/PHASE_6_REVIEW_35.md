@@ -94,3 +94,23 @@ Severity: note.
 No blocking findings. All corrections are local text/anchor repairs; none requires structural rebuild, and none touches §5.
 
 **Verdict: PASS-WITH-CORRECTIONS** (blocking=0; corrections=4; notes=2). No build, test, Gradle, GL, capture, or network command was executed; this review is documentary only.
+
+---
+
+## Resolutions
+
+**Date:** 2026-09-08 · Attempt-11 fix-up wave (§G1.3). Certified-bytes SHA-256 (pre-fix-up): `5e8fed4690d3cf5eb8d1bfeb5c0b2ead81319055baf68f4877b830d3a8fef8e2`. Post-fix-up SHA-256: `14e28587494bd2941ba4197f778bcf389ee47c03da252dc476173486f6270ebc`.
+
+- **F1 (correction) — resolved.** §0.23's R7-10 citation repointed in place from `docs/phase7/v1/PHASE_7_DOC.md:4047` to `:4069` (`docs/phase6/v1/PHASE_6_DOC.md:244`). The quoted sentence “The unchanged Phase 6 sampler participant calls it using binding.samplerLayout and context” was verified verbatim at `PHASE_7_DOC.md:4069` in current bytes before repointing. No line shift.
+
+- **F2 (correction) — resolved.** §0.24's R7-11 citation repointed in place from `docs/phase7/v1/PHASE_7_DOC.md:4055` to `:4077` (`docs/phase6/v1/PHASE_6_DOC.md:277`). “UniformRetirementResult retire(UniformRetirementReason reason)” verified at `:4077` (sentence spans 4077–4078) before repointing. No line shift.
+
+- **F3 (correction) — resolved.** §3 rows at `docs/phase6/v1/PHASE_6_DOC.md:620-621` reworded in place: the overstated “verified dependency contracts” / “verified Phase 4 contract” labels replaced with the wave-completion truth — “granted in current bytes; Phase 4 owner verification: attempt-11 whole-owner review (R41) returned PASS-WITH-CORRECTIONS (0 blocking) with corrections applied and resolutions recorded in the 2026-09-08 fix-up wave — verified per §G1.3”. The cited P4 coordinates `:1926` (merged layout fingerprints) and `:2147` (access/token/participant row) were re-verified against current P4 bytes and retained.
+
+- **F4 (correction) — resolved.** §0.18 (`docs/phase6/v1/PHASE_6_DOC.md:208-212`) reworded in place, same line count, per this review's explicit dated-addendum order: the passage now states the resolved-upstream state — current Appendix F.6 excludes the same full union (every D.4 dynamic plus `fogMode`/`fogColor`) and “does not override or narrow” D.4, with the F.6 citation repointed to the verified current range `RESEARCH.md:1495`–`:1506`; the prior present-tense claims (F.6 naming only the five names; conflict “still requires an explicitly authorized RESEARCH-maintainer action”) are explicitly marked historical and recorded as resolved upstream (§4.13, §11.2, §11.4, D-P6-30). The schema contract is identical in both states; no §5 consequence.
+
+- **N1 (note) — disposition.** Applied. Inline historical qualifier added to the D-P6-26 decision-log row at `docs/phase6/v1/PHASE_6_DOC.md:2255` (§11.1): “(historical; supersedes older current-version assertions, superseded by D-P6-36)”, matching D-P6-24's supersession phrasing and making the log self-contained. §0.26 (l.323) was left unchanged — the note requires no edit there and its dated prose already records the at-date state.
+
+- **N2 (note) — disposition.** No action. The note qualifies this review's own verification scope (`reference-src/**` and prior review files unopened) and asserts no document defect; recorded here per the review, nothing to apply to the phase document.
+
+Wave verification: `git diff -U0` shows exactly six hunks starting at lines 208, 244, 277, 300, 620, and 2255 — none inside §5 (ll.1807–2009); `wc -l` unchanged at 2453, so the binding zero-shift rule holds and sibling citation pins at `:300-301`, `:751-753`, `:1818` remain coordinate-valid. The closing status block was updated in place at `:300-306` with the attempt-11 wave close-out wording, superseding every earlier not-verified status statement in §0. Per §G1.3 the document is **verified**.

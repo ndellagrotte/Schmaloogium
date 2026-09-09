@@ -12,12 +12,12 @@
 revision's headings, not shifted from another revision.  
 **Declared dependencies:** Phases 4, 7, and 9.  
 **Assigned questions:** OQ-5 and OQ-14; neither is resolved by this document.  
-**Status:** architecture authored; unverified. No implementation, build, test, spike,
+**Status:** architecture authored; verified per §G1.3 on 2026-09-08 (attempt-11 wave close-out). No implementation, build, test, spike,
 verification loop, or adversarial review was performed in this build session.
 
-**Integration fix-up (2026-09-07), unverified:** IR-03/04/05/09/24 amend active
-lighting and owner/consumer contracts in §§4.8.1/5/11 (D-P10-11/12). No implementation,
-fresh PASS, lighting parity or OQ-5/OQ-14 result is claimed.
+**Integration fix-up (2026-09-07), verified with the whole document by attempt-11 review
+8 (2026-09-08; no §5 change required):** IR-03/04/05/09/24 amend active lighting and
+owner/consumer contracts in §§4.8.1/5/11 (D-P10-11/12). No implementation, lighting parity or OQ-5/OQ-14 result is claimed.
 
 ### 0.1 Dependency gate and maintainer-authorized exception
 
@@ -28,9 +28,9 @@ exception to §G5.3**, not a PASS, implementation approval, or grant of any miss
 
 | Input | Current artifact and evidence | Consumption status |
 |---|---|---|
-| Phase 4 | `docs/phase4/v1/PHASE_4_DOC.md`, §0.35 coordinated rebuild, 2026-09-06; closing status says §5 changed and is unverified | Provisional. `docs/phase4/reviews/PHASE_4_REVIEW_31.md` passes the older §0.34 surface, not this rebuild |
-| Phase 7 | `docs/phase7/v1/PHASE_7_DOC.md`, §0.40 coordinated rebuild, 2026-09-06; closing status says §5 changed and is unverified | Provisional. `docs/phase7/reviews/PHASE_7_REVIEW_36.md` predates the rebuild |
-| Phase 9 | `docs/phase9/v1/PHASE_9_DOC.md`, initial build, 2026-08-03; no Phase 9 review artifact found | Provisional under the explicit exception |
+| Phase 4 | `docs/phase4/v1/PHASE_4_DOC.md`, addenda §0.36–§0.42 through 2026-09-08; attempt-11 whole-owner review `docs/phase4/reviews/PHASE_4_REVIEW_41.md` returned PASS-WITH-CORRECTIONS (0 blocking); the 2026-09-08 fix-up wave applied all corrections and recorded resolutions; no §5 change outstanding — verified per §G1.3 | Current, verified per §G1.3; no longer provisional |
+| Phase 7 | `docs/phase7/v1/PHASE_7_DOC.md`, §0.40 coordinated rebuild, 2026-09-06; attempt-11 R47 (`PHASE_7_REVIEW_47.md`, 2026-09-08) returned literal PASS (0 blocking, 0 corrections) | Current, verified per §G1.3; no longer provisional (`PHASE_7_REVIEW_36.md` was the dated pre-rebuild record) |
+| Phase 9 | `docs/phase9/v1/PHASE_9_DOC.md`, initial build, 2026-08-03; whole-owner reviews `docs/phase9/reviews/PHASE_9_REVIEW_1.md` through `PHASE_9_REVIEW_8.md` on record, attempt-11 `PHASE_9_REVIEW_8.md` a literal PASS (0 blocking, 0 corrections; no §G1.3 fix-up required) | Current, verified — literal PASS (R8, 2026-09-08); the maintainer's provisional-consumption exception is dated history |
 
 Phase 10 must be reconciled against the freshly verified versions of all three before
 implementation. If reconciliation changes this document's §5, a fresh Phase 10 verify
@@ -2279,9 +2279,9 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
 7. **Governance files mention a retired executable profile system.** MOVES records
    its removal and per-header authority. Initial v3 adoption is declared and indexed;
    no dry-run output or target-profile modification is claimed.
-8. **Current dependencies are unverified despite older PASS files.** The maintainer
-   explicitly extended the exception after this was discovered. All consumed current
-   surfaces remain provisional, including incorporated details with shifted lines.
+8. **Current dependencies were unverified despite older PASS files (resolved).** The maintainer
+   explicitly extended the exception after this was discovered; at the attempt-11 wave
+   (2026-09-08) all fourteen documents closed verified per §G1.3, this one included.
 
 ### 11.3 Open items and integration gates
 
@@ -2436,7 +2436,7 @@ specific verification hook; this list does not authorize implementation before �
 
 ---
 
-**Build-session result:** complete Phase 10 architecture authored under the explicit
-provisional-dependency exception. **Unverified.** Fresh review, upstream interface
-grants and dependency reconciliation remain required; no spike or runtime success is
-claimed by this document.
+**Build-session result:** complete Phase 10 architecture authored under the explicit provisional-dependency exception; no spike or runtime success is claimed by this document.
+**Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review (`docs/phase10/reviews/PHASE_10_REVIEW_8.md`, frozen SHA-256 `4b460a999a732248de47a080a9c3c4d5bf112df2b91bcad6011acf1d87790ba4`) returned PASS-WITH-CORRECTIONS — 0 blocking, 2 corrections, 1 note.
+This fix-up wave applied every correction and recorded resolutions in the review file; no §5 bytes changed and no §5 change is outstanding.
+Per §G1.3 the document is **verified**.

@@ -1931,3 +1931,130 @@ only the fourteen phase documents and this review modified. These are documentar
 implementation, native, client or pack-tier evidence. Ten phases changed and P4/P5/P8/P9 have
 changed dependency boundaries, so all fourteen require another frozen whole-owner review
 before the final eligible G5.3 integration. IR-01 remains open; no milestone is implemented.
+
+## Final §G5.3 item-4 integration review — 2026-09-09 (attempt-11 verified set)
+
+### Method and eligibility basis
+
+Commissioned after the attempt-11 fix-up wave closed all fourteen owner corrections. Inputs were
+the fourteen post-fix-up documents at the freeze verified by all four auditors before any read:
+
+| Document | Reviewed freeze (SHA-256 prefix) | Review of record | Verdict of record |
+|---|---|---|---|
+| `docs/phase1/v14/PHASE_1_DOC.md` | `8395347f…` | R38 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase2/v2/PHASE_2_DOC.md` | `82c2958a…` | R49 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase3/v1/PHASE_3_DOC.md` | `4e94d087…` | R63 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase4/v1/PHASE_4_DOC.md` | `91b26764…` | R41 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase5/v1/PHASE_5_DOC.md` | `0a1827a2…` | R48 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase6/v1/PHASE_6_DOC.md` | `5e8feda6…` | R35 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase7/v1/PHASE_7_DOC.md` | `ac1ae83e…` | R47 | literal PASS (0 blocking, 0 corrections) |
+| `docs/phase8/v1/PHASE_8_DOC.md` | `0f99f61b…` | R15 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase9/v1/PHASE_9_DOC.md` | `750e4e0b…` | R8 | literal PASS (0 blocking, 0 corrections) |
+| `docs/phase10/v1/PHASE_10_DOC.md` | `245b820a…` | R8 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase11/v1/PHASE_11_DOC.md` | `71950240…` | R18 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase12/v1/PHASE_12_DOC.md` | `e231846d…` | R12 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase13/v1/PHASE_13_DOC.md` | `c25142ef…` | R11 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+| `docs/phase14/v1/PHASE_14_DOC.md` | `51aa812b…` | R8 | PASS-WITH-CORRECTIONS (0 blocking); fix-up resolutions recorded |
+
+Per §G1.3 all fourteen are verified: two by literal PASS, twelve by PASS-WITH-CORRECTIONS with
+every correction applied, resolutions recorded in the review files, and no §5 change outstanding.
+Four independent read-only audits (P1-4, P5-8, P9-11, P12-14) then ran §G5.3 item 4 against this
+set: SHA-256 freeze verification first, complete §0/§1/§5/§11 reads, every §G5.1 dependency edge
+plus the soft P7→P12 edge bidirectionally (consumed-vs-exposed symmetry), all six named seams,
+identity currency (schema23/MaterializedSource-v23, profile-selection-v3, flattened-v3,
+application-v2, capture-plan/4 + run-manifest/4, scene/2), and §11 hand-off orphan checks.
+
+### Group results
+
+- **P1-4:** zero blocking; all edges and seams symmetric, zero identity drift, no orphaned
+  hand-offs. Findings FA-1…FA-6 (corrections), FA-7…FA-9 (notes).
+- **P5-8:** zero blocking; consumed-vs-exposed symmetry intact, four named seams close, no
+  orphaned §11 hand-offs. Findings FB-1…FB-4 (corrections), FB-5 (note).
+- **P9-11:** zero blocking; every declared edge and export symmetric; all named seams confirmed.
+  Findings FC-1…FC-2 (corrections), FC-3…FC-4 (notes).
+- **P12-14:** zero blocking; all structural seams closed, every export received, P14 grants
+  verified on owner sides. Findings FD-1…FD-7 (corrections), FD-8 (note).
+
+One defect class accounts for every correction: pre-wave present-tense verification-posture
+sentences ("unverified"/"provisional"/"fresh reviews remain gates"/"IR-01 open") superseded by the
+attempt-11 close-outs, plus three owner-side request-ledger receipts (FD-5…FD-7). No contract,
+schema, identity, anchor or adoption mismatch was found anywhere in the fourteen documents.
+
+### Verdict
+
+**PASS-WITH-CORRECTIONS — zero blocking findings across all four groups.** This is the final
+§G5.3 item-4 review on the all-verified set that IR-01 requires.
+
+### Resolutions (fix-up per §G1.3, recorded 2026-09-09)
+
+**Rule applied.** (a) Non-§5 sites: corrected in place with resolutions recorded here, all
+line-count-preserving (one sanctioned exception: P6 +3 lines for the FD-5 receipt; every recorded
+citation into P6 targets lines < 2372 and is unaffected). (b) §5-frozen sites: NOT edited —
+editing §5 would mechanically reopen verified documents for zero contract delta, which §G1.3's
+re-verify trigger exists to prevent; each site is dispositioned as superseded by its document's
+EOF close-out and by this section, per the established latest-status-block precedence convention.
+(c) P9 is a literal-PASS frozen document: no byte was touched. P7 (literal PASS) received only
+non-§5 documentary corrections; its §5 remains exactly the R47-frozen bytes.
+
+**Byte-fixed sites.** P1 :6670. P2 :3297-3299, :3307, :3313-3314, :3356-3357 (FA-3), :3548-3550.
+P3 :498-499, :5212-5213 (FA-6 — grant condition discharged by R63 + recorded fix-up, §G1.3-verified;
+not relabeled as literal PASS), :5295-5296, :5341-5342, :5547-5548. P4 :70-71, :2951-2953 (FA-1),
+:2822, :2905-2906, :2920-2921. P5 :3455-3456, :3471, :3539-3540, :3550-3551, :3485-3486 (FB-4).
+P6 :2303-2305 (FA-4/FB-1), :2374-2375 (FD-5 receipt inserted), :2379. P7 :57-72 (FA-5/FB-2 §0.2),
+:4412, :4414 (FB-2 §9 gates annotated satisfied), :4617-4618, :4628-4634 (FB-2 §11.3).
+P8 :230-231, :345-351 (FB-3 §1.3), :2575-2576. P10 :32-33 (FC-1 §0.1), :2282-2284 (FC-1 §11.2).
+P11 :10, :22-23 (FC-2 §0). P12 :106-114 (FD-1 §0.3, quoting the superseded pre-review closing
+note as dated history), :2189-2191 (FD-2 §11.4). P13 :188-189, :203, :2315-2316 (FD-3-adjacent
+§0/§11 sites). P14 :12 (FD-4 header), :2930-2932 (FD-4 §11.6). Every verdict label states the
+recorded outcome: R47/R8 literal PASS; all others PASS-WITH-CORRECTIONS with fix-up resolutions —
+no historical PASS relabeled, and IR-01's closure nowhere upgrades a review verdict.
+
+**§5-frozen dispositions (superseded, no byte edit).** P2 :2547-2548. P3 :4382-4383.
+P4 :2215 (FA-2), :2251-2252. P5 :2776, :2868-2869, :2881-2882, :2928-2929, :3006-3007, :3013,
+:3033 (FB-4 §5). P6 :1942-1959 (FA-4/FB-1 §5.2 gate paragraph), :2000-2001. P7 :3189, :4041,
+:4055, :4058, :4126-4127 (FB-2 §5); :4025-4028's P9-dormancy condition is satisfied — P9 §5.1
+publishes all six named exports. P8 :2043-2046, :2102-2103, :2175-2179 (FB-3 §5.5).
+P9 :994-995, :1001-1002. P10 :1799 (FC-1 §5.2). P11 :1247, :1253, :1257 (FC-2 §5.3 lead).
+P12 §5.2/§5.2b/§5.3 headings and dated receiver-receipt "unverified" tags (FD-2), :1521, :1537.
+P13 §5.4 stale posture sentence and dated receipt tags (FD-3), :1827-1828, :2023-2024; the dated
+decision-row tails in D-P13-26/D-P13-28 stand as dated records. P14 :1704, :1762, :1808 (FD-4
+§5), :2018-2019, :2037-2038, :2046-2047. All remaining pre-wave verification-posture sentences
+anywhere in the fourteen documents, listed or not, are likewise superseded by the close-outs.
+
+**Owner-side ledger receipts.** FD-5: P6 §11.4 now records R-P14→P6-1 received/pending against
+the D-P6-1 synchronous baseline (substance was already owner-recorded in the "To Phase 14" note).
+FD-6: P7's owner-side knowledge of R-P14→P7-1/-2 is recorded at §5.5 row 14 (async proposals
+separately unadopted, synchronous baseline retained) and D-P7-64 (naming D-P14-32); the named-ID
+receipt is recorded here. FD-7: P2's owner-side answer to H-P14→P2-1/S-CD-1 is D-P2-57 (existing
+P6 CenterDepthSource/FrameBeginInput suffice — declined); S-CD-1 remains proposed-only with that
+disposition, recorded here. Consumed-vs-exposed symmetry holds at the integration level through
+these records; P14's requester-side entries stay ungranted-pending, as accurate.
+
+**Notes (record-only).** FA-7, FA-8 (P2 §5.2 D-P2-71 row placement), FA-9, FB-5 (P13 :1702
+application-v1 attribution wording; operative v2 symmetric on all three sides), FC-3 (P9's
+superseded in-document gate labels), FC-4 (v3 DESIGN's Phase 11 five-name exclusion row is
+maintainer-owned upstream authority; P11 §11.4.1's correction request stands), FD-8 (P14 §0.11
+dated pin; live §5.4 pin correct).
+
+### Post-disposition state (SHA-256, full digests)
+
+P1 `b9c906136ad67ba1484203bc4683ece59f72904cca30755568c6d63329d021fb` · P2 `eb846cdf90c5a365d64cbb3f392ecfecdf41f9d0cbb02ba951f8310e3e8e1789` · P3 `070babd7557c2ae9d75f2cf93d2017c134aa34092f8ce144d784ae032646bccd` · P4 `2482c3f33fb639c5d4711fd56b9efcd5125f282063dea8be02afb658bbc81863` · P5 `fddd55f9da23550fa2426910072ff7b54e0cb6d47867369fb285f2ae68c0732d` · P6 `e3bb0b377eedb559c946f453c478ee0915c5dcf97349a311c7ff290adbd5aa3b` · P7 `3ca25a02ff637235b208d88689bcaab463dd4d48b6602d98a3c9c4a460e6fd50` ...
+
+No §5 bytes changed in any document relative to the reviewed freeze, so per §G1.3 no verification
+state reopens: P9's literal-PASS freeze is byte-identical; P7's §5 equals its R47 freeze; the
+twelve §G1.3-verified documents retain their verified state with these resolutions recorded. This
+review is documentary: no build, test, Gradle, GL capture or network command was executed, and no
+implementation, runtime or conformance result is claimed. The documents' own implementation
+milestones, OQ gates and runtime-evidence requirements are unchanged.
+
+### IR-01 disposition — satisfied
+
+IR-01 ("Final integration eligibility is unmet") is **closed**. Its required disposition — finish
+owner/consumer amendments and their individual verification, then rerun the integration review on
+that verified set — is met exactly: all fourteen phases are verified per §G1.3 (two literal PASS,
+twelve PASS-WITH-CORRECTIONS with corrections applied and resolutions recorded; nothing relabeled
+and no provisional PASS treated as clearance), and this section is the final §G5.3 item-4 review
+on that frozen, hash-verified set, returning PASS-WITH-CORRECTIONS with zero blocking findings,
+every correction resolved as recorded above, and no §5 change outstanding. Implementation
+eligibility is met. Implementation itself remains governed by the unchanged per-document §8/§9
+gates, runtime-evidence requirements and licensing boundaries.

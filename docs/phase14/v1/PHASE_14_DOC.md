@@ -9,7 +9,7 @@
 - **Declared dependencies:** Phases 5, 6, 7, 13 (`docs/design/v3/DESIGN.md:626`)
 - **Assigned open questions:** OQ-15, OQ-22 (`docs/design/v3/DESIGN.md:626`, `:878`, `:885`)
 - **Governing design:** `docs/design/v3/DESIGN.md`
-- **Design status:** documentation integration fix-up; changed contracts unverified, no implementation or new PASS claim
+- **Design status:** verified per §G1.3 (attempt-11 wave close-out, review R8, 2026-09-08); no implementation claim
 - **Date:** 2026-09-07 (initial build: 2026-08-08; last revised 2026-09-08 — §§0.9–0.11 fix-up)
  
 **Integration change notice — IR-15/23/26/27.** The current owner contracts supersede the
@@ -479,7 +479,7 @@ element is the mechanism that guarantees each one is not perturbed. A row here i
 | **Filter and wrap state of every colortex** — `CLAMP_TO_EDGE` S/T; NEAREST for integer formats, LINEAR otherwise | A1 derives `SamplerKey` **from Phase 5's `TextureParameters` value**, never independently; the equivalence test in §8.1 asserts the bound sampler's state equals the texture's configured state for every texture in the estate | `[V:doc]` Phase 5's policy at `docs/phase5/v1/PHASE_5_DOC.md:1439`–`:1440`; **D-P14-1** |
 | **Shadow filter, mipmap, and hardware-PCF compare mode** | `SamplerKey` carries `compareMode`; derived from Phase 5's `ShadowTextureResource(hardwareFiltering, mipmap, nearest)` (`docs/phase5/v1/PHASE_5_DOC.md:631`–`:632`) | `[V:doc]` `docs/research/v1/RESEARCH.md:524`–`:526` via `docs/phase5/v1/PHASE_5_DOC.md:1205`; §4.1.3 |
 | **`centerDepthSmooth` — declared-trigger readback, App D `float`, tick-domain smoothing** | A3 replaces only *how the depth pixel arrives*. The EMA, the half-life, the tick domain, the declaration trigger, and the uploaded value's type all stay in Phase 6. The added latency is **contracted**, not hidden (§4.3.6, R-P14→P6-1) | `[V:observed]` `docs/research/v1/RESEARCH.md:642`, `:773`; Phase 6's design at `docs/phase6/v1/PHASE_6_DOC.md:1145`–`:1153`; **D-P14-8** |
-| **Frame-begin sampling completes before any buffer resize or clear** | A3 runs *inside* `CenterDepthSource.readCenter`, which Phase 6 calls at step 6 of `beginFrame` (`docs/phase6/v1/PHASE_6_DOC.md:1065`–`:1066`); A3 issues no resize and no clear and adds no frame moment | governing REV1 constraint at `docs/design/v3/DESIGN.md:526`–`:528`; exported ordering contract at `docs/phase6/v1/PHASE_6_DOC.md:1816` |
+| **Frame-begin sampling completes before any buffer resize or clear** | A3 runs *inside* `CenterDepthSource.readCenter`, which Phase 6 calls at step 6 of `beginFrame` (`docs/phase6/v1/PHASE_6_DOC.md:1065`–`:1066`); A3 issues no resize and no clear and adds no frame moment | governing REV1 constraint at `docs/design/v3/DESIGN.md:526`–`:528`; exported ordering contract at `docs/phase6/v1/PHASE_6_DOC.md:1818` |
 | **Everything refreshes on program switch; matrices always upload** | A1–A7 touch no uniform upload and no barrier participant. A5's debug groups are gated `isActive()` and issue no GL when inactive | `[V:observed]` `docs/research/v1/RESEARCH.md:1380`–`:1381` via `docs/phase6/v1/PHASE_6_DOC.md:604`–`:605`; **D-P14-15** excludes contract cadence from optimization |
 | **Stage semantics, program set, backup chains** | A4 moves `glCompileShader` to another thread of the same share group. It does not choose, order, name, resolve, or fall back between programs — all Phase 4's | `[V:doc]` `docs/research/v1/RESEARCH.md:626`; **D-P14-11** keeps link, uniform location and the `Program.use()` barrier on the render thread |
 | **`_n`/`_s` companion atlases; missing sprites → `0xFF7F7FFF` / zero-specular** | A4's async upload changes *when bytes reach the driver*, never the byte values or the defaults, which are Phase 13's | `[V:doc]` `docs/research/v1/RESEARCH.md:638`; spec at `docs/design/v3/DESIGN.md:2451`–`:2454`; **spec-derived — R-P14→P13-1** |
@@ -966,7 +966,7 @@ full.**
 #### 4.3.1 What Phase 6 actually exposes, and what it forbids
 
 The seam is small and this design consumes it exactly as it exists
-(`docs/phase6/v1/PHASE_6_DOC.md:716`–`:736`, `:740`–`:749`):
+(`docs/phase6/v1/PHASE_6_DOC.md:716`–`:736`, `:751`–`:753`):
 
 ```java
 public interface CenterDepthSource { CenterDepthResult readCenter(CenterDepthRequest request); }
@@ -2927,9 +2927,9 @@ Stated so a verify session does not have to discover them:
 2. **P13 stageable upload does not exist as a granted API.** Its synchronous build, exact effective
    parameters, source pairing and deferred retirement do exist and are consumed in §5.5.
    Compile-only optimization requires its independent P4/P7 grants; atlas upload stays synchronous.
-3. **Current coordinated P4/P5/P6/P7/P13 contracts remain unverified.** Their actual binding,
-   lifetime and ten-step ordering details matter, not merely the existence of interface names.
-   R-P14→P4-1/P7-1/P13-1 and P5-2 are still optional ungranted extensions.
+3. **Current coordinated P4/P5/P6/P7/P13 contracts: verified per §G1.3 (attempt-11 wave,
+   2026-09-08).** Their actual binding, lifetime and ten-step ordering details matter, not
+   merely the existence of interface names; R-P14→P4-1/P7-1/P13-1 and P5-2 stay optional ungranted extensions.
 4. **A2's driver-behavior claim is untestable headlessly.** No test we can write proves a given
    driver's DSA path is correct; §9.2's per-tier T1 run and the runtime `FORCE_OFF` are the whole
    mitigation, and that is stated rather than implied.
@@ -2994,10 +2994,10 @@ droppable with safe synchronous fallback; dropping them does not waive that crit
 
 ---
 
-*End of `PHASE_14_DOC.md`. v1 remains governed by `docs/design/v3/DESIGN.md`; the IR-15/23/26/27
-documentation fix-up and the Review 1–6 correction rounds (§0.4–§0.11) change cross-phase
-consumption and remain **unverified**. Initial-build departures and quotations are preserved as
-history in §0.3/§11.2, not present-day absence claims. Current P5 binding/P6 resolver/P7
-transaction/P13 lifetime and P11 measurement handoffs are adopted as documentation contracts;
-optional extensions, authority changes and implementation experiments remain gated. No
-implementation, test/validation result, OQ closure or fresh PASS is claimed.*
+*End of `PHASE_14_DOC.md`. v1 remains governed by `docs/design/v3/DESIGN.md`. **Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review
+(`docs/phase14/reviews/PHASE_14_REVIEW_8.md`, frozen SHA-256 `b185b50dea626f77eeee38c962c8236ee3d18134b703d384d4186bb9d5f699c5`) returned PASS-WITH-CORRECTIONS —
+0 blocking, 2 corrections, 1 note; this fix-up wave applied every correction and recorded resolutions
+in the review file; no §5 bytes changed and no §5 change is outstanding, so per §G1.3 the document is
+**verified**. The §0.4–§0.11 rounds and initial-build departures stay history (§0.3/§11.2); the
+P5/P6/P7/P13/P11 handoffs stay adopted documentation contracts, extensions and authority changes gated;
+no implementation, test/validation result or OQ closure is claimed.*

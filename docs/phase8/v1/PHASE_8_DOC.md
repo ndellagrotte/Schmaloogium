@@ -168,7 +168,7 @@ verified implementation consumption. Each consumed phase retains its declared RC
 No reference implementation, review or forbidden transcript was read for this amendment.
 
 Phase 6 now records R7-10/R7-11 as “adopted in” its current bytes, “not verified grants”
-(`docs/phase6/v1/PHASE_6_DOC.md:298-299`); active readiness wording below reflects that owner
+(`docs/phase6/v1/PHASE_6_DOC.md:300-301`); active readiness wording below reflects that owner
 status without changing its APIs or Phase 7's still-unsynchronized request rows. R7-12/R7-13
 are both adopted here, not verified. Remaining ungranted dependencies and owner synchronization/
 verification gates are explicit in §5.5. **§5 changed: fresh whole-document Phase 8 verification
@@ -227,8 +227,8 @@ replay-delivery prerequisite explicit before shadow drawing; it is P7 R39's rece
 not a third P8 finding or new API. Earlier amendment descriptions remain historical.
 The original R7 review/counts/verdict are preserved with separate Resolutions. §§2/4/5/6/8/9/11/12
 carry the current contract; P7 owns its construction/admission and replay receiver implementation
-description. §5 remains changed/unverified pending fresh coordinated review. No validation,
-implementation or runtime proof is claimed; IR-01 and final G5.3 remain open.
+description. §5's changed bytes closed their fresh coordinated review at the attempt-11 wave
+(2026-09-08). No validation, implementation or runtime proof is claimed; IR-01 is disposed (2026-09-09).
 
 ### 0.14 R8 forced traversal and schema22 correction (2026-09-08)
 
@@ -343,12 +343,12 @@ renderer. Mixins remain dumb adapters. All policy and math are pure `:engine`; M
 Mixin, and LWJGL types remain in `:mod` glue.
 
 The current dependency surfaces grant R8-1/R8-2/R8-4 and Phase 7's part of R8-5 in architecture,
-subject to their fresh-verification gates. Phase 8 consumes R7-12's replacement binding contract
-in §0.7, not the obsolete four-row proposal. R7-13 is now adopted by §0.8: planning is
-registry-independent and final construction explicitly receives the new registry fingerprint.
-R8-3 package placement and both R8-5 halves are granted/adopted architecture. Fresh owner/
-receiver verification and separate upstream gates in §5.5 remain blockers. Neither an old
-registry nor prior-frame bindings substitute for a gated real shadow slot.
+their fresh-verification gates having closed at the attempt-11 wave (2026-09-08, §G1.3). Phase 8
+consumes R7-12's replacement binding contract in §0.7, not the obsolete four-row proposal. R7-13
+is now adopted by §0.8: planning is registry-independent and final construction explicitly
+receives the new registry fingerprint. R8-3 package placement and both R8-5 halves are
+granted/adopted architecture. Neither an old registry nor prior-frame bindings substitute for
+a gated real shadow slot (NotInstalled until implementation assembly).
 
 ---
 
@@ -508,7 +508,7 @@ public record ShadowPlan(
     ShadowPlanFingerprint fingerprint) {}
 
 public record ShadowPlanFingerprint(String canonicalSha256) {}
-// Phase-5-owned shape, consumed unchanged.
+// ShadowPcfPolicy is Phase-8-local (:engine), not a Phase-5 shape: P5 carries hardware PCF as §4.10 candidate creation from P3's ResourceRequirements shadow policy. ShadowMipmapPolicy is Phase-5-owned (P5 :2200, §5.1 :2732), consumed unchanged.
 public record ShadowMipmapPolicy(List<LogicalBuffer> buffers) {}
 public record ShadowPcfPolicy(Set<LogicalBuffer> compareDepthBuffers) {}
 
@@ -674,7 +674,7 @@ on exceptions and after pass invalidation; it never closes any borrowed publicat
 | water-shadow depth split | §4.8.3 exactly one `SHADOW_PRE_TRANSLUCENT` copy | `[V:doc]` `docs/research/v1/RESEARCH.md:1224`–`:1226` |
 | optional translucent terrain | resolved `shadowTranslucent` in §4.8.4 | `[V:doc]` `docs/research/v1/RESEARCH.md:578`–`:579`; F.1 `:1441`–`:1445` |
 | per-config shadow mipmaps | §4.9 typed post-pass request | `[V:doc]` `docs/research/v1/RESEARCH.md:1173`–`:1175`; R8-2 |
-| hardware PCF | Phase 5 construction applies compare policy; Phase 8 gates/diagnoses it | `[V:doc]` `docs/research/v1/RESEARCH.md:1174`; verified dependency at `docs/phase5/v1/PHASE_5_DOC.md:2095`–`:2100` |
+| hardware PCF | Phase 5 construction applies compare policy; Phase 8 gates/diagnoses it | `[V:doc]` `docs/research/v1/RESEARCH.md:1174`; current Phase 5 contract at `docs/phase5/v1/PHASE_5_DOC.md:2095`–`:2100` — P5's attempt-11 whole-owner review (R48) returned PASS-WITH-CORRECTIONS (0 blocking), corrections applied and resolutions recorded in the 2026-09-08 fix-up wave; P5 verified per §G1.3 |
 | blob-shadow suppression | H8-BLOB-01 redirects only the blob call, retaining fire | `[V:observed]` `docs/research/v1/RESEARCH.md:580`; §4.13 |
 | clouds only per shadow config | §4.8.1 pre-split optional cloud draw | `[V:observed]` `docs/research/v1/RESEARCH.md:580`–`:581` |
 | force root `shadow` program for the shadow draw interval | §4.10: begin immediately before the first shadow draw; end before fixed-function/state restoration | `[V:doc]` assignment `docs/design/v2.0-RC3/DESIGN.md:2000`–`:2001`; Phase 4 force-shadow barrier `docs/phase4/v1/PHASE_4_DOC.md:1777`–`:1780` and `:1861`–`:1872` |
@@ -707,7 +707,7 @@ capitalization aliases. Phase 8 consumes only the resolved result.
 | shadowtex0 = everything | real Phase 5 depth attachment; clear then all shadow draws | `[V:doc]` `docs/research/v1/RESEARCH.md:1224`; `docs/phase5/v1/PHASE_5_DOC.md` §4.10 |
 | shadowtex1 excludes shadow translucents | exact split point in §4.8.3 | `[V:doc]` `docs/research/v1/RESEARCH.md:1225` |
 | shadowcolor0/1 | Phase 5 typed color attachments and generic completion flip | `[V:doc]` `docs/research/v1/RESEARCH.md:1226`; `docs/phase5/v1/PHASE_5_DOC.md` §3.2 and §4.10 |
-| unit 4 = shadowtex0/watershadow/conditional shadow | Phase 5 sole fixed policy and shared sixteen-row physical binding; Phase 6 uploads fixed integers only after Bound/activation, with R7-10 still gated | `[V:doc]` `docs/research/v1/RESEARCH.md:1236`; Phase 5 shared table `docs/phase5/v1/PHASE_5_DOC.md:2723`; §5.3 |
+| unit 4 = shadowtex0/watershadow/conditional shadow | Phase 5 sole fixed policy and shared sixteen-row physical binding; Phase 6 uploads fixed integers only after Bound/activation, with R7-10 still gated | `[V:doc]` `docs/research/v1/RESEARCH.md:1236`; Phase 5 shared fixed-unit row `docs/phase5/v1/PHASE_5_DOC.md:2470`; sixteen-row binding protocol `docs/phase5/v1/PHASE_5_DOC.md:2731`; §5.3 |
 | unit 5 = shadowtex1/conditional shadow | same | `[V:doc]` `docs/research/v1/RESEARCH.md:1237` |
 | unit 13 = shadowcolor0/shadowcolor | same | `[V:doc]` `docs/research/v1/RESEARCH.md:1245` |
 | unit 14 = shadowcolor1 | same | `[V:doc]` `docs/research/v1/RESEARCH.md:1246` |
@@ -2572,8 +2572,8 @@ These outcomes do not modify RESEARCH §11.
 terminal release and result handling; P7 §§4.3/5.1 receives continuation/containment.
 D-P8-25 completes the P1/P4 lock, P5 compatible neutral/mipmap and P2/P7 `/4` evidence
 receipts in §§5.2/5.3/5.5; these sections incorporate the invocation/cleanup semantics.
-No second owner mechanism is introduced. Fresh owner/receiver reviews, IR-01 and final §G5.3
-remain open; this receipt is architecture correction, not runtime proof or review PASS.
+No second owner mechanism is introduced. Fresh owner/receiver reviews closed at the attempt-11
+wave; IR-01 is disposed (2026-09-09); this receipt is architecture correction, not runtime proof.
 D-P8-24/25 supersede the older `/3` receipt for current consumption; no fallback encoding
 or independent resource reconstruction is admitted.
 
@@ -2599,9 +2599,9 @@ or independent resource reconstruction is admitted.
    shared physical binding, typed mipmaps and runtime neutralization. R8-2 consumes that contract,
    not its historical four-row view; Phase 8 owns only lease/binding closure, never object binds.
    Phase 5's current §5 still needs fresh whole-document verification.
-8. **PCF ownership wording:** the Phase 8 assignment names the feature, while verified Phase 5
-   already owns texture-parameter setup. Phase 8 owns policy disposition/timing diagnostics and
-   consumes Phase 5's operation; it does not duplicate the GL call.
+8. **PCF ownership wording:** the Phase 8 assignment names the feature, while Phase 5 owns texture-parameter setup —
+   P5's attempt-11 whole-owner review returned PASS-WITH-CORRECTIONS (0 blocking); corrections applied and resolutions
+   recorded 2026-09-08; P5 verified per §G1.3. Phase 8 owns policy disposition/timing diagnostics and consumes Phase 5's operation; it does not duplicate the GL call.
 9. **Digest `glFlush`:** the behavioral digest reports one before post-processing, but RESEARCH
    constrains pass order rather than a flush. D-P8-11 relies on same-context command ordering and
    leaves any evidence-driven synchronization change to a governed correction, not an incidental
@@ -2771,3 +2771,10 @@ is required. Prior decisions and frozen review verdicts remain historical, not a
 Real shadow stays NotInstalled/unavailable until remaining gates close. This fix-up changes
 only owner architecture prose and appends R10 Resolutions; no implementation, builds, tests,
 lint, formatters, validation commands, native/runtime evidence, IR-01 or final §G5.3 clearance.
+
+**Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner
+review (`docs/phase8/reviews/PHASE_8_REVIEW_15.md`, frozen SHA-256
+`b0f95f1b2bf73ac10b862f28296ac2c6df37f5fb982c0ad6b5213e96dc618151`) returned PASS-WITH-CORRECTIONS —
+0 blocking, 4 corrections, 1 note. This fix-up wave applied every correction and recorded resolutions
+in the review file; no §5 bytes changed and no §5 change is outstanding. Per §G1.3 the document is
+**verified**.

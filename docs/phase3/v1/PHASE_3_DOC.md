@@ -357,7 +357,7 @@ pack-buffer spelling projection, and brings the closing ledger through this §0.
 ### 0.55 Downstream-request addendum (Phase 13 R1 companion option macros — 2026-09-07)
 
 This maintainer-authorized architecture-only amendment grants the Phase-3-owned input requested
-at `docs/phase13/v1/PHASE_13_DOC.md:846-852` (§4.1.6): the new typed pair belongs "immediately
+at `docs/phase13/v1/PHASE_13_DOC.md:865-877` (§4.1.6): the new typed pair belongs "immediately
 after engineOptions"; Off short-circuits, and §4.1.6's following paragraph keeps the separate
 materializer contribution "Empty/DefineCenterDepthSmooth, not a general macro bag". Active §§2–5
 now carry that immutable pair through load-time shader analysis, the published option-macro
@@ -423,7 +423,7 @@ authority documents, builds/tests/verification, or directory rolls are changed o
 ### 0.57 Downstream-request addendum (Phase 4 per-program projections — 2026-09-07)
 
 This maintainer-authorized architecture-only amendment grants the Phase-3-owned publication
-requested at `docs/phase4/v1/PHASE_4_DOC.md:2263-2266` (§5.4 item 2). P4's request-time phrase
+requested at `docs/phase4/v1/PHASE_4_DOC.md:2279-2283` (§5.4 item 2). P4's request-time phrase
 "same immutable owner-defined values directly" no longer occurs there: its §5.4 item 2 now
 consumes "direct `mipmappedAfterPass()`/`vertices()` values", and §11.3 ruling 6 records the
 §0.57 grant as adopted/unverified while Phase 5/10 keep their existing pass-mipmap and
@@ -495,8 +495,8 @@ source-kind default, or ratification of Phase 13's existing defaults/error polic
 The published parser, typed source specs, sidecar references, lossless declarations, dispositions,
 duplicate reduction and fingerprint payload are **unchanged**; schema **18** remains current
 under §5.3. No shim, synthesized schema, or sampling API is introduced. This is authority
-adoption, not runtime evidence or a PASS. Changed §5 requires fresh independent whole-document
-review; IR-01, other owner grants and implementation gates remain in force.
+adoption, not runtime evidence or a PASS. Changed §5 received its fresh independent review at the
+attempt-11 wave (2026-09-08); IR-01 is disposed in the final review (2026-09-09); other owner grants and implementation gates remain in force.
 
 ### 0.61 Native-preserving geometry owner grant — 2026-09-07
 
@@ -621,12 +621,12 @@ evidence, fresh PASS or implementation clearance is claimed.
 ### 0.67 Round 62 fix-up — 2026-09-08
 
 Review 62's correction repairs evidence anchors only, applied at the named sites on current
-bytes: §0.55 now cites Phase 13 §4.1.6 at `docs/phase13/v1/PHASE_13_DOC.md:846-852` and quotes
+bytes: §0.55 now cites Phase 13 §4.1.6 at `docs/phase13/v1/PHASE_13_DOC.md:865-877` and quotes
 P13's current "Off short-circuits" / materializer-contribution wording in place of the
 no-longer-verbatim sentence; §0.56 re-attributes P13's "stripped and ignored" phrasing to the
 2026-09-07 request revision, recording that it no longer occurs in current Phase 13 and keeping
 the old coordinates as dated history rather than current pins; §0.57 and D-P3-60 keep the
-resolving `docs/phase4/v1/PHASE_4_DOC.md:2263-2266` pin, anchor P4 §5.4 item 2 and §11.3
+resolving `docs/phase4/v1/PHASE_4_DOC.md:2279-2283` pin, anchor P4 §5.4 item 2 and §11.3
 ruling 6, quote P4's current "direct `mipmappedAfterPass()`/`vertices()` values", and mark the
 request-time phrase as no-longer-extant; §0.33 records P11 §5.2's direct consumed-contract
 statement superseding its request prose at unchanged coordinates; §10's duplicated OQ-7
@@ -638,9 +638,9 @@ repaired citations. No build, test, Gradle, GL, capture, or network command ran;
 only. Resolution records live in `docs/phase3/reviews/PHASE_3_REVIEW_62.md` under
 `## Resolutions`.
 
-**Current §G1.3 status:** all review 62 corrections and notes are resolved with no §5 change
-outstanding, so Phase 3 is verified for this surface under §G1.3; the pending separate
-citation-anchor re-derivation pass covers only line-level drift from this round.
+**Current §G1.3 status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review
+(`docs/phase3/reviews/PHASE_3_REVIEW_63.md`, frozen SHA-256 `fe2206dc934f5cbf432048e89b6fda36fec1acfd91c715ad37e724b3d1fd585c`) returned
+PASS-WITH-CORRECTIONS — 0 blocking, 2 corrections, 1 note; this fix-up wave applied every correction, recorded resolutions in the review file, and changed no §5 bytes: verified per §G1.3.
 
 ## 1. Scope & boundaries
 
@@ -5108,7 +5108,7 @@ not a decision (PD §7.6).
 | D-P3-57 | Close Phase 3 diagnostic arguments to four tagged boxed scalar classes and make the fixed discovery-overflow diagnostic argument-free, so exact snapshot accounting cannot depend on erased `Object` values or input-derived detail. |
 | D-P3-58 | Grant Phase 13 R1 through Phase-3-owned `CompanionOptionMacros`, captured before jcpp and retained/hash-bound for the whole build, rather than a post-analysis producer or another `MacroContribution`. The shipped `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:655-656` says "When the normal map is enabled" / "When the specular map is enabled"; `docs/research/v1/RESEARCH.md:313-319` places these in the standard shader header. Phase 7 adapts preliminary policy; Phase 3 projects the supplied booleans without reapplying D-P3-31's gates. |
 | D-P3-59 | Preserve every active decoded `texture.*` occurrence before collapse in schema-16 `TexturePropertyDecl`, with closed disposition, exact value, order and provenance; only Phase 3 reduces known sources or later decodes approved sampling syntax. RC3 `docs/design/v2.0-RC3/DESIGN.md:2441-2443` says "ours must honor them"; `docs/research/v1/RESEARCH.md:1484-1490` defines numeric discriminators and sidecars, not filter/wrap key grammar. Retention prevents owner-side data loss without falsely claiming honoring; U1 remains an explicit authority/consumer gate. |
-| D-P3-60 | Grant Phase 4 direct existing `ProgramRequirements.mipmappedAfterPass()` and `vertices()` reads through the one configuration's dimension/name-keyed resource map, preserving Phase 5/10 consumers rather than introducing reverse dependencies or another parser. `docs/phase4/v1/PHASE_4_DOC.md:2263-2266` (§5.4 item 2) consumes these values as the adopted §0.57 grant; P4's request-time phrase "same immutable owner-defined values directly" no longer occurs there. `docs/research/v1/RESEARCH.md:1159` says "enable extended vertex attribute for this program" and `:1186` specifies "per-pass mipmap gen (composite/deferred/final)". Publication changes, not record meaning, canonical identity, schema 16, or fingerprint encoding. |
+| D-P3-60 | Grant Phase 4 direct existing `ProgramRequirements.mipmappedAfterPass()` and `vertices()` reads through the one configuration's dimension/name-keyed resource map, preserving Phase 5/10 consumers rather than introducing reverse dependencies or another parser. `docs/phase4/v1/PHASE_4_DOC.md:2279-2283` (§5.4 item 2) consumes these values as the adopted §0.57 grant; P4's request-time phrase "same immutable owner-defined values directly" no longer occurs there. `docs/research/v1/RESEARCH.md:1159` says "enable extended vertex attribute for this program" and `:1186` specifies "per-pass mipmap gen (composite/deferred/final)". Publication changes, not record meaning, canonical identity, schema 16, or fingerprint encoding. |
 | D-P3-61 | Historical schema17 decision: tri-state global old-light settings and zero-only AA storage remain; its explicit-user-only macro projection is **superseded by D-P3-64**. No authority ratification was claimed by that amendment. |
 | D-P3-62 | Publish one engine-owned inspection result from the existing load transaction, with an allowlisted source-free projection and same-read archive digest. Phase 2 owns fixture provenance and formatting; Phase 4 supplies separate same-build resolution enrichment. No engine-to-conformance dependency or hash-identity conflation. |
 | D-P3-63 | Replace the single language component with the schema-18 immutable full locale catalog and §4.3's explicit local normalization/collision/fallback policy. G6 author `doc/shaders.properties:192–208,277–284,319–324` uses `en_US`; published [OptiFine shaders.properties](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.properties) (read 2026-09-07, language examples) uses `en_us`. `reference-src/Pintonium-main/common-shaders/src/main/java/net/irisshaders/iris/shaderpack/LanguageMap.java:25–58,62–69` independently demonstrates immediate files, ROOT lowercase, UTF-8 Properties and immutable locale maps; its nondeterministic collision replacement is not adopted. The checkout's `LICENSE:1–4` identifies GPL v3 (not this document's historical blanket LGPL label); this amendment uses observation only and copies no code. Hyphen normalization, strict grammar, collision winner and empty-preserving per-key fallback are explicit local design decisions, not attributed external guarantees. |
@@ -5209,8 +5209,8 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
 - Phase 9 consumes `IdMappingInput`, selects BLOCK/ENTITY ordinary/forced results under the documented
   present-empty rule, parses bounded mod bytes only through the published operation/environment,
   and owns mod precedence, tag expansion, registry resolution, and aliases.
-- Phase 11 consumes `PackConfiguration.customExpressions()` only after the latest Phase 3 revision
-  and latest §5 surface receive a fresh literal-PASS review; it owns expression grammar/evaluation
+- Phase 11 consumes `PackConfiguration.customExpressions()`; the fresh whole-document review
+  condition is discharged (attempt-11 R63, 2026-09-08: PASS-WITH-CORRECTIONS, 0 blocking, fix-up resolutions recorded — verified per §G1.3). It owns expression grammar/evaluation
   and expression-relative spans, including the D-P11-27 deterministic first-owner
   duplicate/collision policy and its exact DUPLICATE_NAME/UNKNOWN_NAME diagnostics, and must not
   reopen or reparse Properties bytes.
@@ -5292,8 +5292,8 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
   That amendment requested each receiver named in §5.3 to record a dated schema21 receipt with exact-current,
   containing/nested identity checks before derived state, including current materialization
   identity and cache retirement where owned. P1 rereads changed §5; its facade does not change.
-  This owner document does not certify sibling adoption. Separate producer/consumer reviews,
-  all applicable phase gates, IR-01 and final integration remain required.
+  This owner document does not certify sibling adoption. The attempt-11 producer/consumer reviews
+  closed 2026-09-08; other applicable phase gates remain; IR-01 is disposed in the final review (2026-09-09).
 - **Historical D-P3-72/schema22 receiver handoff — 2026-09-08, owner-designed/unverified.** P9 must
   adopt §4.9's same-source BLOCK producer and exact PRESENT_EMPTY/nonempty-alternate selection
   in §§4.6/5.2/5.4, its resolved identity and v0.3 evidence plan; an assigned MODERN test record
@@ -5338,8 +5338,8 @@ and fixtures handed to Phase 2, whose adapter/job owns `:conformance`.
    blur/clamp, removing the unspecified property-key filter/wrap requirement. No future grammar
    grant, typed sampling schema or parser expansion is required. Existing source forms, lossless
    declarations and `UNRESOLVED_KEY` behavior are unchanged within current-schema; U1 itself added no schema.
-   Phase 13 records its own adoption; each changed §5 surface requires fresh independent review,
-   and IR-01 remains. Existing sidecar defaults/error policy are not newly ratified, and no
+   Phase 13 records its own adoption; each changed §5 surface received its attempt-11 review,
+   and IR-01 is disposed (2026-09-09). Existing sidecar defaults/error policy are not newly ratified, and no
    implementation or rendering conformance is claimed. Historical authority/research/reviews
    and prior addenda remain evidence rather than being rewritten to imply this earlier decision.
 4. DESIGN/RESEARCH clarification: either standardize the concrete `%` tag-selector spelling,
@@ -5544,8 +5544,8 @@ review or audit was rewritten. No builds, tests, formatters or validation ran; M
 
 *§0.60 adopts the maintainer's documented-mechanism U1 correction under D-P3-67, superseding
 only prior pending suffix-authority/future typed-publication requirements. Schema18 and the
-published parser/payload remain unchanged. Fresh independent whole-document verification and
-IR-01 remain outstanding; no PASS, runtime test or blanket defaults ratification is claimed.
+published parser/payload remain unchanged. The attempt-11 whole-document verification closed
+2026-09-08 and IR-01 is disposed (2026-09-09); no runtime test or blanket defaults ratification is claimed.
 No code, historical review, research/design document, build, test, formatter or validation
 command was changed or run in this Phase 3 adoption.*
 
@@ -5574,8 +5574,8 @@ its own verdicts; §8.1's named gate and a fresh independent whole-document revi
 required. No validation commands, implementation, runtime evidence, fresh PASS or
 implementation clearance are claimed.*
 
-*§0.67 records the R62 fix-up: evidence-anchor repairs in §0.33/§0.55/§0.56/§0.57/D-P3-60 and
-the §10 OQ-7 Fallback collapse, with no binding §5, schema, fingerprint, or receiver change.
-Review 62's PASS-WITH-CORRECTIONS resolves to verified under §G1.3 with all corrections resolved
-and no §5 change outstanding; Resolutions are recorded in the review file. No validation
-commands, implementation, runtime evidence, or implementation clearance are claimed.*
+*Verification status — 2026-09-08 (attempt-11 wave close-out): the attempt-11 fresh whole-owner review
+(`docs/phase3/reviews/PHASE_3_REVIEW_63.md`, frozen SHA-256 `fe2206dc934f5cbf432048e89b6fda36fec1acfd91c715ad37e724b3d1fd585c`)
+returned PASS-WITH-CORRECTIONS — 0 blocking, 2 corrections, 1 note. This fix-up wave applied every correction
+and recorded resolutions in the review file; no §5 bytes changed and no §5 change is outstanding. Per §G1.3 the
+document is **verified**. No validation commands, implementation, runtime evidence, or implementation clearance are claimed.*

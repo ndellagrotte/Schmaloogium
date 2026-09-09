@@ -49,7 +49,7 @@ row restatements are textual; unverified, with no new source/runtime evidence or
 
 | Doc | Verified state at read time | Extent read |
 |---|---|---|
-| `docs/phase1/v14/PHASE_1_DOC.md` | **verified** — `docs/phase1/reviews/PHASE_1_REVIEW_25.md` l. 61 literal `PASS`, l. 63 `Interface changed: no`; round 25 is the latest Phase 1 round | §2.1 package tables (ll. 1741–1814), §4.9.4 diagnostics (ll. 5004–5046), §4.2.6/§4.8.4 dependency mechanics as reached from §5.3, §5 whole (ll. 5454–5583), §10.2 OQ-12 (ll. 5971–6000), §11.3 item 2 and §11.4's "To Phase 12" block (ll. 6747–6751), §9 row for `SHADER_GUI` (l. 5899) |
+| `docs/phase1/v14/PHASE_1_DOC.md` | **verified** — attempt-11 whole-owner review (R38, 2026-09-08) returned `PASS-WITH-CORRECTIONS` (0 blocking); the fix-up wave applied all corrections and recorded resolutions; no §5 change outstanding (§G1.3) | §2.1 package tables (ll. 1741–1814), §4.9.4 diagnostics (ll. 5004–5046), §4.2.6/§4.8.4 dependency mechanics as reached from §5.3, §5 whole (ll. 5454–5583), §10.2 OQ-12 (ll. 5971–6000), §11.3 item 2 and §11.4's "To Phase 12" block (ll. 6747–6751), §9 row for `SHADER_GUI` (l. 5899) |
 | `docs/phase3/v1/PHASE_3_DOC.md` | **NOT verified at read time** — the then-latest round was `docs/phase3/reviews/PHASE_3_REVIEW_36.md` l. 270 `PASS-WITH-CORRECTIONS`, l. 272 `Interface changed: yes`, with a §5 change outstanding. **Current: verified** — the latest round is R62, whose `PASS-WITH-CORRECTIONS` resolves to verified under §G1.3 with no §5 change outstanding (P3 §0.67, `PHASE_3_DOC.md` ll. 5577–5581). Ledger below | §2.2 public shape (ll. 721–1637), §3.1 flag-ownership map (ll. 1710–1740), §3.2 rows for sliders/profiles/screens (ll. 1762–1767), §4.3 (ll. 2087–2325), §4.8 (ll. 2859–3041), §5 whole (ll. 3393–4407), §6 (ll. 4409–4436), §7 (ll. 4438–4461), §11.4 (ll. 5177–5326), §11.5 (ll. 5328–5359) |
 
 **Phase 3 is a hard dependency (DESIGN.md §G5.1 l. 624), it was not verified at consumption time, and this session
@@ -104,14 +104,14 @@ dependency, and this document claims no such sanction. Therefore:
 ### 0.3 Phase 7 — the sanctioned soft-dependency exception
 
 Phase 12's dependency on Phase 7 is **soft** (DESIGN.md §G5.1 l. 624, ll. 630–632): it needs only
-Phase 7's reload-lifecycle section. `PHASE_7_DOC.md` is **not verified** — its latest round is
-R46, returned `PASS-WITH-CORRECTIONS` in the attempt-10 wave, superseding round 36's literal
-`PASS` (`docs/phase7/reviews/PHASE_7_REVIEW_36.md` l. 107, l. 109 `Interface changed: no`,
-l. 121 *"Next required action: none for Phase 7"*) and round 32's `PASS-WITH-CORRECTIONS`
-(`PHASE_7_REVIEW_32.md` l. 299, `Interface changed: yes` at l. 301) that the first build round
-of this document cited. Phase 7's own closing note (`PHASE_7_DOC.md` ll. 4776–4778) says the
-same — *"§5 changed … Unverified; a fresh whole-document review returning literal PASS is
-required"*; §G1.3 defines the state by the reviews.
+Phase 7's reload-lifecycle section. `PHASE_7_DOC.md` is **verified per §G1.3**: the attempt-11 wave's
+whole-document review R47 (`docs/phase7/reviews/PHASE_7_REVIEW_47.md`, 2026-09-08) returned literal
+`PASS` — 0 blocking, 0 corrections, no §G1.3 fix-up required — superseding round 46's attempt-10
+`PASS-WITH-CORRECTIONS`, round 36's literal `PASS` (`docs/phase7/reviews/PHASE_7_REVIEW_36.md` l. 107,
+l. 109 `Interface changed: no`, l. 121 *"Next required action: none for Phase 7"*) and round 32's
+`PASS-WITH-CORRECTIONS` (`PHASE_7_REVIEW_32.md` l. 299, `Interface changed: yes` at l. 301). The
+pre-review closing note ("§5 changed … Unverified; a fresh whole-document review returning literal
+PASS is required", since refreshed) is that dated record; R47 answered it, per §G1.3.
 
 `PHASE_7_DOC.md` is nonetheless **not a Required input** for Phase 12 — the spec's list
 (ll. 2409–2417) names `PHASE_1_DOC.md` and `PHASE_3_DOC.md` only — and §G1.1 forbids reading beyond
@@ -1430,7 +1430,7 @@ profiles with no ordinary widgets. No ModularUI event bypasses session preflight
 
 **Dependency arrangement `[D-P12-14]`: ModularUI is an ordinary mod dependency, not bundled.**
 Phase 1 deliberately left it unpinned and handed the decision here (P1 §4.2.6 as indexed by §5.3
-l. 5559). Of the two arrangements P1 §4.8.4 describes, the mod-dependency form is **mere
+l. 5577). Of the two arrangements P1 §4.8.4 describes, the mod-dependency form is **mere
 aggregation** and carries no LGPL-3.0 redistribution obligation, whereas `contain` jar-in-jar *is*
 distribution of the LGPL-3.0 work and brings notice, modification-marking and relink obligations
 with it — plus a version-collision risk against a user-installed copy. It is also the fallback P1
@@ -1719,7 +1719,7 @@ shaders-off is always reachable from every screen.**
 | P11 source-less diagnostic or empty-entry final snapshot | Render producer summary and identity/outcome directly, with no invented attribution; absent snapshot clears only the P11 display, not P1 records | 2a |
 | `PackFrontEnd.load` returns `Failed` | P7 owns final Failed/compensated-Off outcome; display its sanitized failure and Off state, never continue the prior pipeline as active. An inspectable detached prior model carries no runtime authority | 4 |
 | Internal capture/commit rejected or global write failed | Preserve pending preview and prior session preference; report closed failure, no reload. After queue acceptance, load/render failure follows P7 Off and retains accepted preference for retry | 2a/4 |
-| Discovery returns no candidates, or the shaderpacks directory is invalid | The list shows `(off)` and `(internal)` only, plus the attributed diagnostic; `discover` never throws (P3 §5.1 l. 3404) | 4 |
+| Discovery returns no candidates, or the shaderpacks directory is invalid | The list shows `(off)` and `(internal)` only, plus the attributed diagnostic; `discover` never throws (P3 §5.1 l. 3404, ll. 3903–3905) | 4 |
 | Stale `PackCandidateId` (a later discovery superseded the generation) | Re-run `discover` before acting (`[D-P12-8]`); a stale id that still reaches `load` fails as `INVALID_SELECTION` and is reported, not retried blindly | 4 |
 | `version.<mcver>` unmet | Warning badge, pack stays off, configuration remains inspectable (row C-1; P3 §6 l. 4420) | 4 |
 | Per-program compile/link/validate failure | Not ours to handle — Phase 4 deletes the program and resolves through the backup chain (P1 §6 l. 5597). Ours is to **display** the `SHADER_GUI` record with its driver log (§4.9) | 3 (displayed) |
@@ -2186,9 +2186,9 @@ the contract and a change to a non-contract internal.
   storage authorizes engine AA/SSAA, and broader OQ-7 identity experiments remain open.
 - **IR-17 — Phases 11/7:** §§4.9/5.3(C) direct source-free immutable expression diagnostics,
   final-attempt outcome and selected-pack lifetime, no store/channel invention.
-- **Remaining gates:** fresh whole-document owner/consumer review, actual implementation and
-  conformance, OQ-9 ModularUI spike/dependency work, and the separate §11.5 authority requests.
-  None is closed by this architecture-only amendment.
+- **Remaining gates:** actual implementation and conformance, OQ-9 ModularUI spike/dependency
+  work, and the separate §11.5 authority requests. The fresh whole-document owner/consumer
+  review gate closed at the attempt-11 wave (2026-09-08, R12 + recorded fix-up; verified per §G1.3).
 
 
 ### 11.5 Requested upstream changes
@@ -2287,3 +2287,4 @@ implementation consumption. Historical reviews and resolved old publication requ
 Prior build/review history remains in §0. Current adopted owner contracts and remaining gates
 are §§5/11; no implementation, test execution, fresh PASS or integration clearance is claimed.*
 
+**Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review (`docs/phase12/reviews/PHASE_12_REVIEW_12.md`, frozen SHA-256 `9dc49eb09ada749611e60700b415427aec9a34b1183647f6ec4c4da1c8cfcf47`) returned PASS-WITH-CORRECTIONS — 0 blocking, 3 corrections, 2 notes. This fix-up wave applied every correction and recorded resolutions in the review file; no §5 bytes changed and no §5 change is outstanding. Per §G1.3 the document is **verified**.

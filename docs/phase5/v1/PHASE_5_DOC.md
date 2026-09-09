@@ -24,7 +24,7 @@
 | Input | Material read and use |
 |---|---|
 | `AGENTS.md` | Complete repository and document-system instructions. |
-| `docs/MOVES.md` | Path/version manifest and the five `DESIGN.md` collision warning. |
+| `docs/MOVES.md` | Path/version manifest and the six `DESIGN.md` collision warning. |
 | `docs/design/v2.0-RC3/DESIGN.md` | All of Part I, §G0–§G12 (`docs/design/v2.0-RC3/DESIGN.md:92`–`:1109`), and the complete Phase 5 assignment (`docs/design/v2.0-RC3/DESIGN.md:1572`–`:1685`). Other phase specifications were not read. |
 | `docs/research/v1/RESEARCH.md` | Mandatory §0–§1; assigned §3.6.3, §4.1, §4.3, and Appendix B whole. Two narrow extra reads are disclosed in §0.3: App A.3 at `docs/research/v1/RESEARCH.md:1181` and App F.7 at `docs/research/v1/RESEARCH.md:1514`–`:1521`. |
 | `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md` (`PD`) | Assigned §5 whole, §17 rows B4/B13, and §18 flip row; narrow extra §6.5 and §18 texture-unit reads are disclosed in §0.3. |
@@ -231,8 +231,8 @@ borrowed-handle issuance route required by review, and reconverged at literal PA
 `docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75`. Phase 4 published its existing candidate
 view in binding §5, completed the retained-view lifecycle as an immutable detached metadata
 snapshot, and reconverged at literal PASS in
-`docs/phase4/reviews/PHASE_4_REVIEW_15.md:59`–`:72`. The already-present
-`verification/targets/phase-5.json` also grants the tooling request recorded below.
+`docs/phase4/reviews/PHASE_4_REVIEW_15.md:59`–`:72`. The verification-target tooling request is
+withdrawn: the profile belonged to the retired verification loop (retired 2026-08-08 per `docs/MOVES.md`), and the completed reviews were instead driven by fresh §G1.2 verify sessions; no already-present granted anchor exists.
 
 Sections 4, 5, 6, 9, 10, 11, and 12 now consume those verified contracts and remove the historical
 blocked-until-granted wording. The future `superSamplingLevel` authority clarification remains
@@ -3452,8 +3452,8 @@ The former `superSamplingLevel` authority question is resolved by the maintainer
     requires display × render quality. **Ruling: D-P5-15 safe-point preparation**; a mismatch is
     never attached or stretched.
 12. **CURRENT SHADOW GRANT ADOPTED, UNVERIFIED.** Phase 8 §§0.7–0.8 adopts D-P5-22/R7-12
-    binding and R7-13 planning. Mipmap/neutralization remain unchanged; fresh owner verification
-    and remaining dependency gates still precede real execution. Physical selection stays Phase 5.
+    binding and R7-13 planning. Mipmap/neutralization remain unchanged; the attempt-11 wave
+    (2026-09-08) closed the review gates per §G1.3; real execution stays implementation-gated. Physical selection stays Phase 5.
 
 **R32/R39 coordinated owner receipt — 2026-09-08, unverified.** Adopt P1 D-P1-57 typed
 framebuffer slots; P4 D-P4-33 positional-route-v2 was the historical identity at that receipt.
@@ -3468,7 +3468,7 @@ N1 independently checked at https://raw.githubusercontent.com/Xplodin/Pintonium/
 flip toggles flipped[target], getColorTextureId chooses alt/main via isFlipped. Historical PD/RC3
 and report bodies remain unchanged. This narrow observation neither licenses copying nor proves
 shadow pipeline correctness; the report's GPL provenance warning governs future source reuse.
-All changed §5 contracts await fresh whole-document reviews; IR-01 and final G5.3 remain open.
+Changed §5 contracts closed whole-document verification at the attempt-11 wave (2026-09-08); IR-01 disposition recorded 2026-09-09.
 
 **R40 owner resolution receipt — 2026-09-08, unverified.** C40-1 is adopted as D-P5-36 in
 §§2/4/5/6/8/9/12. P7 must consume the new Failed variant in §4.4 ordinary acquisition and
@@ -3482,8 +3482,8 @@ every publication/checklist. N40-2 corrects sizing wording without a new field o
 N40-1 is retained: the pinned root LICENSE identifies GNU GPL Version 3, not blanket LGPL;
 the historical §0 licensing label is not future reuse authority. The pinned flip/accessor bodies
 qualify historical B4 wording, not whole-shadow-pipeline correctness. No source is copied and
-historical authority/review bodies remain intact. Fresh owner/receiver review remains required;
-IR-01 and final G5.3 remain open. No validation, test or implementation execution is claimed.
+historical authority/review bodies remain intact. The fresh owner/receiver review closed at the
+attempt-11 wave and IR-01 is disposed (2026-09-09). No validation, test or implementation execution is claimed.
 
 ### 11.4 Hand-offs
 
@@ -3527,17 +3527,17 @@ IR-01 and final G5.3 remain open. No validation, test or implementation executio
    compatibility only, with declared/selected value and source use preserved and no engine
    allocation/draw/resolve effect. Engine AA runtime/UI remain excluded. D-P5-27/§11.6 apply
    that explicit disposition; no engine sampling domain, algorithm or separate grant is pending.
-3. **GRANTED — verification target.** The data-only
-   `verification/targets/phase-5.json` profile exists, resolves RC3 and this artifact, and has
-   already driven the completed Phase 5 reviews.
+3. **WITHDRAWN — verification target.** The claimed data-only
+   `verification/targets/phase-5.json` profile belonged to the retired verification loop (retired
+   2026-08-08 per `docs/MOVES.md`); the completed Phase 5 reviews were driven by fresh §G1.2 verify sessions instead, and the already-present-granted-anchor claim is withdrawn.
 4. **GRANTED — Phase 4 candidate-view binding.** Phase 4 §5 publishes the immutable detached,
    non-owning, generationless pre-publication `CompiledRegistryCandidate.view()` required by
    §5.5 while preserving opaque-candidate ownership and provenance. The literal PASS at
    `docs/phase4/reviews/PHASE_4_REVIEW_15.md:59`–`:72` closes that dependency change.
 5. **SUPERSEDED BINDING GRANT — Phase 8 R8-2.** §0.32's old four-row binding model is historical;
    §§2.4/4.10/4.12/5.1 now publish the full shared protocol. Mipmap and neutralization semantics
-   survive. Phase 8 now adopts §5.3.1 R7-12/13, but fresh verification and remaining dependency
-   gates still keep real shadow NotInstalled/unavailable.
+   survive. Phase 8 now adopts §5.3.1 R7-12/13; the review gates closed at the attempt-11 wave
+   (2026-09-08, §G1.3), and real shadow stays NotInstalled/unavailable as the implementation state.
 6. **GRANTED DOWNSTREAM — Phase 7 R7-1/R7-2/R7-3.** Sections 0.38, 2, 4–6, 8–9, 11, and 12
    publish the corrected depth order, typed virtual transition, and balanced overlay lease.
 7. **GRANTED DOWNSTREAM — Phase 2 R10A / Phase 7 R7-5.** The same sections publish the complete
@@ -3547,8 +3547,8 @@ IR-01 and final G5.3 remain open. No validation, test or implementation executio
 8. **CURRENT GRANTS ADOPTED/UNVERIFIED:** §5.3.1/§5.5 reconcile Phase 6 R7-10 resolver/R7-11
    retirement and Phase 8 R7-12 shared binding/R7-13 planning. Phase 3 companion/lossless/direct
    projections and Phase 1 package/native-configure grants are present. Native legacy source,
-   suffix semantics, jcpp permission and fresh owner reviews remain open;
-   unrelated Phase 10/14 proposals are not granted. Phase 13 R2 is designed, not verified.
+   suffix semantics and jcpp permission remain open; fresh owner reviews closed 2026-09-08.
+   Unrelated Phase 10/14 proposals are not granted. Phase 13 R2 is designed; its implementation verifies separately.
 
 ### 11.6 Sampling evidence and approved authority disposition (D-P5-26/27)
 
@@ -3658,4 +3658,4 @@ direct engine-side LWJGL call.
 
 ---
 
-§5 changed in this coordinated rebuild. Unverified; a fresh whole-document review returning literal PASS is required before verified downstream consumption. v1 retained; no directory roll.
+**Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh whole-owner review (`docs/phase5/reviews/PHASE_5_REVIEW_48.md`, frozen SHA-256 `0a187a72712f5755a66e6bee0d8ad623404199fa7665045092a4a6f7b5a904b3`) returned PASS-WITH-CORRECTIONS — 0 blocking, 2 corrections, 2 notes. This fix-up wave applied every correction and recorded resolutions in the review file; no §5 bytes changed and no §5 change is outstanding. Per §G1.3 the document is **verified**. v1 retained; no directory roll.

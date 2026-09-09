@@ -205,11 +205,11 @@ surfaces. It does not assume Phase 11 evaluator internals.
 
 The permitted schema and runtime view retain the conservative union already recorded here:
 Appendix D.4 calls its entire five-row table “excluded from custom-uniform expressions”
-(`docs/research/v1/RESEARCH.md:1370`), while Appendix F.6 separately names only
-`entityColor entityId blockEntityId fogMode fogColor`
-(`docs/research/v1/RESEARCH.md:1501`–`:1505`). Therefore all five D.4 names plus `fogMode` and
-`fogColor` remain excluded. The conflicting protected-source wording is reported, not claimed
-resolved, and still requires an explicitly authorized RESEARCH-maintainer action.
+(`docs/research/v1/RESEARCH.md:1370`); current Appendix F.6 excludes the same full union —
+every D.4 dynamic plus `fogMode`/`fogColor` — and states it does not override or narrow
+D.4 (`docs/research/v1/RESEARCH.md:1495`–`:1506`). Historical note: this addendum was written
+while F.6 still named only `entityColor entityId blockEntityId fogMode fogColor` and the
+protected-source conflict was open; that discrepancy is resolved upstream (§4.13, §11.2, §11.4, D-P6-30).
 
 Review 18 had verified the preceding bytes with `PASS` and `blocking=0; corrections=0`
 (`docs/phase6/reviews/PHASE_6_REVIEW_18.md:49`–`:50`). Because this addendum changes §5, RC3's
@@ -241,7 +241,7 @@ incorporates §2.2's complete consumer-visible runtime signatures and synchroniz
 ### 0.23 R7-10 sole-sampler-policy adoption (2026-09-07)
 
 This maintainer-authorized architecture-only amendment adopts R7-10 from
-`docs/phase7/v1/PHASE_7_DOC.md:4047`: “The unchanged Phase 6 sampler participant calls it
+`docs/phase7/v1/PHASE_7_DOC.md:4069`: “The unchanged Phase 6 sampler participant calls it
 using binding.samplerLayout and context”. `UniformRuntimeFactory.create` now receives Phase 5's
 `FixedSamplerResolver` immediately after configuration. Active §§1–5/7–9/11–12 consume that sole
 policy instead of publishing or implementing a second map. The `afterBind` signature, three
@@ -274,7 +274,7 @@ builds, tests, verification runs, other documents, or directory rolls are part o
 ### 0.24 R7-11 permanent-runtime retirement adoption (2026-09-07)
 
 This maintainer-authorized architecture-only amendment adopts
-`docs/phase7/v1/PHASE_7_DOC.md:4055`: “UniformRetirementResult retire(UniformRetirementReason
+`docs/phase7/v1/PHASE_7_DOC.md:4077`: “UniformRetirementResult retire(UniformRetirementReason
 reason)”. The adoption-time clause “its owner must reconcile that rule, not add a conflicting
 alias” is historical; current bytes state “Phase 6 removed reset(CLOSE); Phase 11's own terminal
 controller CLOSE is distinct and precedes this retirement after final custom use”. Sections 2.2/4.14/5
@@ -297,13 +297,13 @@ supersedes their terminal-close, replacement-only-adoption, and R7-11-ungranted 
 not their record of what earlier sessions changed. Active contracts, threading, failure handling,
 testability, staging and implementation hand-offs now distinguish reset from terminal retirement.
 
-**Current §G1.3 status (superseding earlier status notes):** R7-10 and R7-11 are adopted in
-Phase 6's current binding bytes, not verified grants. Changed §5, including incorporated
-§§2.2/4.9/4.13/4.14, requires fresh whole-document verification returning literal PASS with
-zero blocking findings and zero corrections before verified downstream consumption
-(`docs/design/v2.0-RC3/DESIGN.md:327-332`, “before any dependent consumes it”).
-Section 5.2 preserves ungranted dependency and owner-verification gates. No code, reviews,
-builds, tests, verification runs, other documents, or directory rolls are part of this amendment.
+**Verification status — 2026-09-08 (attempt-11 wave close-out):** the attempt-11 fresh
+whole-owner review (`docs/phase6/reviews/PHASE_6_REVIEW_35.md`, frozen SHA-256
+`5e8fed4690d3cf5eb8d1bfeb5c0b2ead81319055baf68f4877b830d3a8fef8e2`) returned
+PASS-WITH-CORRECTIONS — 0 blocking, 4 corrections, 2 notes. This fix-up wave applied every
+correction and recorded resolutions in the review file; no §5 bytes changed and no §5
+change is outstanding. Per §G1.3 the document is **verified**; this supersedes every other
+not-verified status note or dated statement in §0. No code, builds, tests, or directory rolls are part of this amendment.
 
 ### 0.25 Integration remediation (2026-09-07)
 
@@ -617,8 +617,8 @@ means participate in the activation sweep; it does not mean resample Minecraft o
 | Full Appendix D names, types, and values | §4.4 exhaustive inventory | `[V:doc]`; source inventory begins at `docs/research/v1/RESEARCH.md:1319`, “Built-in uniform inventory” |
 | Everything refreshes on program switch | §4.3 activation sweep and §4.10 participant trace | `[V:observed]`; `docs/research/v1/RESEARCH.md:1380`, “everything refreshes on program switch” |
 | Per-program location cache and redundant skip; matrices always upload | §4.3, §4.10, §4.11 | `[V:observed]`; `docs/research/v1/RESEARCH.md:1380`, “matrices always upload” |
-| Final declaration/type truth without source reopening | Phase 3 catalog → Phase 4 merged effective layout → Phase 6 plan validation, §§4.9–4.10/5.3 | verified dependency contracts at `docs/phase3/v1/PHASE_3_DOC.md:1485` and `docs/phase4/v1/PHASE_4_DOC.md:1926` |
-| Bound lookup and between-activation proof without a program handle | callback-scoped access, generation/provider/layout cache key, and operation-free activity token in §4.10 | verified Phase 4 contract at `docs/phase4/v1/PHASE_4_DOC.md:2147`; D-6 |
+| Final declaration/type truth without source reopening | Phase 3 catalog → Phase 4 merged effective layout → Phase 6 plan validation, §§4.9–4.10/5.3 | granted in current bytes; Phase 4 owner verification: attempt-11 whole-owner review (R41) returned PASS-WITH-CORRECTIONS (0 blocking) with corrections applied and resolutions recorded in the 2026-09-08 fix-up wave — verified per §G1.3; contracts at `docs/phase3/v1/PHASE_3_DOC.md:1485` and `docs/phase4/v1/PHASE_4_DOC.md:1926` |
+| Bound lookup and between-activation proof without a program handle | callback-scoped access, generation/provider/layout cache key, and operation-free activity token in §4.10 | granted in current bytes; Phase 4 owner verification: attempt-11 whole-owner review (R41) returned PASS-WITH-CORRECTIONS (0 blocking) with corrections applied and resolutions recorded in the 2026-09-08 fix-up wave — verified per §G1.3, at `docs/phase4/v1/PHASE_4_DOC.md:2147`; D-6 |
 | Celestial, shadow, and per-draw event moments | typed `UniformEventSink`, §4.6/§4.12 | `[V:observed]`; exact cadence list at `docs/research/v1/RESEARCH.md:1380` |
 | Custom expressions consume a fixed typed input set and upload `float/int/bool/vec2/vec3/vec4` only after built-ins | versioned schema, conforming runtime view, typed command/disposition algebra, and third barrier participant in §4.13 | `[V:doc]`; declaration types at `docs/research/v1/RESEARCH.md:1495`, “`uniform.<float\|int\|bool\|vec2\|vec3\|vec4>`”; cadence at `docs/research/v1/RESEARCH.md:1383`, “custom uniforms … after built-ins” |
 | Fixed unit map, including stage variants | Phase 5 sole resolver consumed by §4.9; no Phase 6 map | `[V:doc]`; `docs/research/v1/RESEARCH.md:1228`, “packs rely on these numbers”; owner interface at `docs/phase5/v1/PHASE_5_DOC.md:2734`, “same fingerprint, exact spellings and conditional watershadow rule” |
@@ -2252,7 +2252,7 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
 | D-P6-23 | Consume P7's v0.5 prepared-submission instance sequence and saved-parent restoration through the existing immediate event sink | Per-copy instance uploads do not rotate history, sample providers or refresh expressions; P7/P8 retain traversal and failure ownership (IR-18) |
 | D-P6-24 | 2026-09-08: adopt P3 D-P3-69 schema20, matching nested IDs and exact same-load assets/configuration identity in §5.2 | Supersedes older current-version assertions only; no depth/contribution/upload changes, binary acquisition or historical PASS promotion |
 | D-P6-25 | Grant actual accepted-frame timing query to P7/P2, 2026-09-08 | No inferred shader counters, no GL, no second clock; only authenticated P7 capture changes supplied seconds, smoothing remains ticks |
-| D-P6-26 | Adopt P3 R55 schema21 and payload-free profile metadata, 2026-09-08 | Current equality across configuration/nested ID/inspection/materialization; retained assets/nine-tree meanings unchanged |
+| D-P6-26 | Adopt P3 R55 schema21 (historical; supersedes older current-version assertions, superseded by D-P6-36) and payload-free profile metadata, 2026-09-08 | Current equality across configuration/nested ID/inspection/materialization; retained assets/nine-tree meanings unchanged |
 | D-P6-27 | 2026-09-08: grant required P7-owned replay sink and immutable per-drain report, synchronous barrier/immediate evidence and failure containment | R25-1; P1 verdict law preserved, no logging loss, inferred attribution, facade verb or extra participant |
 | D-P6-28 | 2026-09-08: receive P8 pure angular result through P7 mod provider and later actual main camera | Pre-camera scalar needs no fabricated frame vectors; existing P6 records and publication/restoration remain unchanged |
 | D-P6-29 | 2026-09-08: all active instance instructions require N total/0…N−1 including N=1 | R25-2; retain fullscreen neutral-zero versus nested saved-parent restoration |
@@ -2300,9 +2300,9 @@ does not reopen D-P6-1 without the declaration/unit prerequisites.
    change, it is not a verified grant until the fresh loop returns literal PASS.
 10. **ADOPTED IN CURRENT BYTES, FRESH VERIFICATION OWED — R7-10.** §§2.2/4.9/5 replace Phase 6's
     independent map with Phase 5's required pure resolver. Appendix B.3 numbers, conditional
-    declaration rule, participant order and cache/error mechanics are preserved. Phase 4/5's
-    coordinated owner contracts remain unverified, with Phase 3's provisional input gate intact;
-    §5.2 records those blockers. R7-11 is independently adopted by §0.24, not verified by R7-10.
+    declaration rule, participant order and cache/error mechanics are preserved. The attempt-11
+    wave's whole-owner reviews (2026-09-08) verified Phases 3/4/5 and this document per §G1.3,
+    closing the §5.2 gate paragraph's review blockers. R7-11 is independently adopted by §0.24.
 11. **ADOPTED IN CURRENT BYTES, FRESH VERIFICATION OWED — R7-11.** The old teardown-only
     `reset(CLOSE)` rule could not dispose a replaced/unpublished runtime. §§2.2/4.14/5 now remove
     CLOSE, distinguish runtime retirement from generation adoption, and preserve shutdown before
@@ -2372,8 +2372,11 @@ Texture/normal/specular changes do not change fixed sampler integers.
 **To Phase 14:** D-P6-1 leaves the PBO/fence async-center-depth ledger item live. Measure against the
 one-read-per-frame synchronous baseline; synchronous fallback remains mandatory.
 
+**R-P14→P6-1 received, pending (recorded 2026-09-09 per final integration review FD-5):** Phase 14's
+async PBO-fence request against the D-P6-1 synchronous baseline above; substance owner-recorded here; ungranted.
+
 **To Phase 6 implementers:** consume the declaration/layout/access mechanics directly and the sole
-Phase 5 resolver under §5.2's current owner-verification gates. Do not replace them with source
+Phase 5 resolver under §5.2's contracts (review gates closed 2026-09-08). Do not replace them with source
 strings, a parallel declaration parser, a local sampler map, retained `BoundProgramUniformAccess`,
 or `ProgramHandle`.
 
