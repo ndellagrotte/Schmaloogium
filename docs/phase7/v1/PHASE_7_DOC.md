@@ -4,7 +4,7 @@
 
 **Phase:** 7, both mandated parts: (a) engine-side frame driver and (b) Mixin hook catalog.  
 **Document version:** v1, initial build.  
-**Date:** 2026-08-03 · **Last revised:** 2026-09-08 (§0.50).
+**Date:** 2026-08-03 · **Last revised:** 2026-09-08 (§0.52).
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`; its Phase 7 assignment begins at
 `docs/design/v2.0-RC3/DESIGN.md:1805` and names dependencies 2–6 at
 `docs/design/v2.0-RC3/DESIGN.md:1807`. The heading and ranges were derived from this
@@ -62,7 +62,7 @@ owner grants incorporated in current §5 have changed since those receipts and r
 |---|---|---|---|
 | Phase 1 | `docs/phase1/v14/PHASE_1_DOC.md` | §5 facade and backend contracts incorporated below | current coordinated grants unverified; no historical PASS substituted |
 | Phase 2 | `docs/phase2/v2/PHASE_2_DOC.md` | §§4.5/5 current capture and evidence contracts | Review 15 PASS concerned v1, not current v2; current changed contract unverified |
-| Phase 3 | `docs/phase3/v1/PHASE_3_DOC.md` | §5 and incorporated schema21/configuration contracts | Review 22 PASS is historical; current changed contract unverified |
+| Phase 3 | `docs/phase3/v1/PHASE_3_DOC.md` | §5 and incorporated schema23/configuration contracts | Review 22 PASS is historical; current changed contract unverified |
 | Phase 4 | `docs/phase4/v1/PHASE_4_DOC.md` | §5 and incorporated selection/barrier/provider contracts | Review 18 PASS is historical; current changed contract unverified |
 | Phase 5 | `docs/phase5/v1/PHASE_5_DOC.md` | §5 and incorporated estate/binding/resource contracts | Review 30 PASS is historical; current changed contract unverified |
 | Phase 6 | `docs/phase6/v1/PHASE_6_DOC.md` | §5 and incorporated runtime/event/replay contracts | Review 7 PASS is historical; current changed contract unverified |
@@ -340,9 +340,9 @@ Additional reads for this rebuild: the entire owned document and Review 36; the 
 plan; RC3 §§G1/G5.3/G9/G11.4/G12 and Phase 7 assignment; Phase 3 public load/materialization/type,
 fingerprint and texture contracts (`docs/phase3/v1/PHASE_3_DOC.md:387–405`, `:532–666`,
 `:749–750`, `:1389–1410`, `:1422–1520`); Phase 6 factory, sampler and retirement rules
-(`docs/phase6/v1/PHASE_6_DOC.md:325–357`, `:970–1097`, `:1342–1443`); Phase 8 planning,
-invocation and R8-2 (`docs/phase8/v1/PHASE_8_DOC.md:225–257`, `:560–607`, `:932–981`,
-`:1081–1133`); RESEARCH B.3/F.5 (`docs/research/v1/RESEARCH.md:1228–1255`, `:1482–1492`).
+(`docs/phase6/v1/PHASE_6_DOC.md:437–573`, `:1187–1271`, `:1676–1803`); Phase 8 planning,
+invocation and R8-2 (`docs/phase8/v1/PHASE_8_DOC.md:735–863`, `:865–1014`,
+`:2141–2154`); RESEARCH B.3/F.5 (`docs/research/v1/RESEARCH.md:1228–1255`, `:1482–1492`).
 The completed coordinated Phase 4 §2.2 selector/descriptor schemas and §5.1 binding rows were also
 read for exact consumer matching; prior numeric Phase 4 pins in active text are refreshed here.
 These narrow additional reads resolve the sampler, preprocessing and shadow planning cycles;
@@ -490,10 +490,31 @@ U7-1 is closed as satisfied by upstream (mirroring the U7-3 treatment). §3.6 ro
 Phase 4's virtual-pre condition at `docs/phase4/v1/PHASE_4_DOC.md:2124`. The §5.2 receipt for
 D-P7-42/45-47 cites the detached-resolve quote at `docs/phase4/v1/PHASE_4_DOC.md:2128` and the
 selection/result/validation exposure at `:1794`–`:1802`. The six Phase 6 anchors in §4.2/§5.4
-re-point to `:1066`–`:1071` (§5.1 row `:1812`), `:786`–`:795`, `:525`–`:528`, `:736`–`:746`,
-`:791`–`:792`, and `:793`–`:795`/`:807`; §3.4 row 5's RESEARCH confirmation re-points to
-`docs/research/v1/RESEARCH.md:1402`. Every re-pointed quote was byte-verified against current
-dependency bytes; coordinates only. A fresh whole-document verification round remains required.
+re-point to `:1068`–`:1072` (§5.1 row `:1814`), `:788`–`:797`, `:525`–`:530`, `:738`–`:748`,
+`:793`–`:794`, and `:795`–`:797`/`:809`–`:810`; §3.4 row 5's RESEARCH confirmation re-points to
+`docs/research/v1/RESEARCH.md:1402`. Except for the six Phase 6 anchors, every re-pointed quote
+was byte-verified against current dependency bytes at apply time; the Phase 6 cluster initially
+shipped ending short of its quoted content and is completed in the attempt-10 fix-up (§0.52).
+Coordinates only. A fresh whole-document verification round remains required.
+
+### 0.52 Attempt-10 review-46 correction fix-up (2026-09-08)
+
+Review 46 (PASS-WITH-CORRECTIONS, five corrections, three notes) applied as citation-coordinate
+repairs only; no §5 interface addition, removal, or semantic change. C1 completes the §5.1 Phase 6
+cluster's validation coordinate through the end of the full-int-domain sentence and qualifies
+§0.51's byte-verification sentence for that cluster; the cluster's remaining anchors verify
+byte-exact against current Phase 6 bytes. C2/C3 re-point the §5.2 Phase 5 and Phase 13 receipts to
+the owners' §5.1 exposed-contract rows by section anchor, and C4/C5 re-point the §3.5 engine-flag
+provenance and the §3.6 jcpp-ordering row to Phase 3's §3.1 Appendix F.1 ownership map, §3.2 F.6
+precipitation row, and §2.3 load-pipeline steps: line pins into the concurrently growing
+P3/P5/P13 documents rotted within this wave, so correction-rewritten citations carry section
+anchors and the post-wave anchor re-derivation pass owns final coordinates (verified fix-up-time
+coordinates are recorded in the review's Resolutions). §0.2's Phase 3 input row is reconciled to
+the current schema23 identity (D-P7-57); renamed reference-src checkout roots remain as historical
+input records. Review-46 notes: N1 cosmetic ledger order, no renumbering; N2 already satisfied
+(the parenthetical names P6's `FrameBeginInput`/`FrameBeginResult` row); N3 no action. No new
+decision IDs. §5 bytes changed (§§5.1/5.2 prose), so the fresh whole-document verification round
+remains required.
 
 ## 1. Scope & boundaries
 
@@ -733,13 +754,13 @@ source/resize/event inputs and retires before borrowed services disappear.
 | frame world-state sampling | §4.3 `open` calls Phase 6 first | `[V:observed]` `docs/research/v1/RESEARCH.md:533`–`:537` — “sample world state” and previous snapshots |
 | fixed gbuffers texture set | Phase 5 snapshot/fixed table binding in §4.6 | `[V:doc]` `docs/research/v1/RESEARCH.md:538` — “fixed unit map” |
 | shadow before main gbuffers | §4.3 main-estate bind and one clear plan precede vanilla sky; the shadow slot then precedes every terrain and later gbuffers draw (D-P7-76, §3.6 ruling) | `[V:observed]` `docs/research/v1/RESEARCH.md:538`–`:540` |
-| complete gbuffers phase order | §3.2 + §4.4 dispatch table and hook rows | `[V:observed]` `docs/research/v1/RESEARCH.md:540`–`:542` |
-| depthtex1 then deferred before translucents | §4.5 `beforeTranslucent` | `[V:observed]` `docs/research/v1/RESEARCH.md:543`–`:544` |
-| water, hand solid, hand translucent/depth scale | §4.4/§4.10 H-HAND | `[V:observed]` `docs/research/v1/RESEARCH.md:544`, `docs/research/v1/RESEARCH.md:560`–`:561` |
-| composite ping-pong and final | §4.6 | `[V:observed]` `docs/research/v1/RESEARCH.md:545`–`:546` |
-| push/pop around leash/glint | `NestedRenderScopeStack` in §4.4 | `[V:observed]` `docs/research/v1/RESEARCH.md:551`–`:552` |
-| precise depth copies and center depth | §4.3/§4.5; Phase 6 samples prior center depth at frame begin | `[V:observed]` `docs/research/v1/RESEARCH.md:557`–`:559` |
-| identity fullscreen state, mipmaps, scale, instances | `FullscreenPassExecutor` §4.6 | `[V:observed]` `docs/research/v1/RESEARCH.md:562`–`:564` |
+| complete gbuffers phase order | §3.2 + §4.4 dispatch table and hook rows | `[V:observed]` `docs/research/v1/RESEARCH.md:541`–`:543` |
+| depthtex1 then deferred before translucents | §4.5 `beforeTranslucent` | `[V:observed]` `docs/research/v1/RESEARCH.md:544`–`:545` |
+| water, hand solid, hand translucent/depth scale | §4.4/§4.10 H-HAND | `[V:observed]` `docs/research/v1/RESEARCH.md:545`, `docs/research/v1/RESEARCH.md:560`–`:561` |
+| composite ping-pong and final | §4.6 | `[V:observed]` `docs/research/v1/RESEARCH.md:546`–`:547` |
+| push/pop around leash/glint | `NestedRenderScopeStack` in §4.4 | `[V:observed]` `docs/research/v1/RESEARCH.md:552`–`:553` |
+| precise depth copies and center depth | §4.3/§4.5; Phase 6 samples prior center depth at frame begin | `[V:observed]` `docs/research/v1/RESEARCH.md:558`–`:560` |
+| identity fullscreen state, mipmaps, scale, instances | `FullscreenPassExecutor` §4.6 | `[V:observed]` `docs/research/v1/RESEARCH.md:563`–`:565` |
 | composite guarantee | outer render wrapper + idempotent `finish` | `[V:observed]` `docs/research/v1/RESEARCH.md:566` — “guarantees composites run even on early exits” |
 | `(internal)` is a real pack and `Off` is no shaders | §4.7 separates `PackSelection.Internal` from `PackSelection.Off` | `[V:doc]` `docs/research/v1/RESEARCH.md:478`–`:481` |
 | dimension cache and all uninit/reinit triggers | §4.8 per-`DimensionKey` cache plus pack-, option-, resource-, dimension-, resolution-, registry-remap-, and ID-source/catalog/policy-triggered safe-point rebuild | `[V:doc]` `docs/research/v1/RESEARCH.md:483`–`:490`; assigned Pintonium mechanism, not contract, at `docs/design/v2.0-RC3/DESIGN.md:1853`–`:1855`; Phase 9 R9-2 adds the identity triggers |
@@ -775,7 +796,7 @@ source/resize/event inputs and retires before borrowed services disappear.
 
 The names and fallbacks are not re-resolved here. Phase 4 publishes the entire mapping and warns
 Phase 7 not to overlay requested-slot state on the effective provider
-(`docs/phase4/v1/PHASE_4_DOC.md:2152–2153`: “Phase 7 must not re-resolve backup chains
+(`docs/phase4/v1/PHASE_4_DOC.md:2168–2169`: “Phase 7 must not re-resolve backup chains
 or overlay requested-slot state on the effective provider”).
 
 ### 3.3 RESEARCH §7.1 hook-needs 1–11
@@ -794,7 +815,7 @@ or overlay requested-slot state on the effective provider”).
 | 10 display/framebuffer resize | H-RESIZE rows; OQ-3 decides context-layer reach | `[D-5]` `docs/research/v1/RESEARCH.md:796`–`:819` |
 | 11 GUI/reload | GUI/screens/F3+R/command owned by P12; P7 implements exact ReloadCoordinator and internal controller drain, no vanilla GUI mixin | `[D-5]` RESEARCH §7.1; §5.1 |
 
-This is zero-unmapped coverage of `docs/research/v1/RESEARCH.md:802`–`:819`.
+This is zero-unmapped coverage of `docs/research/v1/RESEARCH.md:803`–`:820`.
 
 ### 3.4 Seven-row Pintonium timeline disposition
 
@@ -816,18 +837,18 @@ high-risk and are front-loaded in v0.1 assembly.
 
 | Phase 3 field | Exact owner behavior | Provenance |
 |---|---|---|
-| `clouds` | resolve `DEFAULT/FAST/FANCY/OFF` once per publication; a corresponding explicit video setting wins; OFF cancels, FAST/FANCY is returned to vanilla's cloud-mode query | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:697` and precedence at `docs/research/v1/RESEARCH.md:1442`–`:1448`; runtime mapping `[D-P7-11]` |
-| `backFaceSolid/CutoutMipped/Cutout/Translucent` | TRUE temporarily disables culling for exactly that terrain-layer scope; FALSE/DEFAULT preserves vanilla state; scope exit restores | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:706`–`:709`; runtime mapping `[D-P7-11]` |
-| `underwaterOverlay` | FALSE cancels only the WATER `RenderBlockOverlayEvent`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:702`; runtime mapping `[D-P7-11]` |
-| `sun`, `moon` | FALSE suppresses only the corresponding textured sky draw; TRUE/DEFAULT preserves vanilla | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md:703`–`:704`; runtime mapping `[D-P7-11]` |
-| `vignette` | FALSE cancels only `RenderGameOverlayEvent.Pre(VIGNETTE)`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:705`; runtime mapping `[D-P7-11]` |
+| `clouds` | resolve `DEFAULT/FAST/FANCY/OFF` once per publication; a corresponding explicit video setting wins; OFF cancels, FAST/FANCY is returned to vanilla's cloud-mode query | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md` §3.1 Appendix F.1 ownership map (`clouds` row) and precedence at `docs/research/v1/RESEARCH.md:1442`–`:1448`; runtime mapping `[D-P7-11]` |
+| `backFaceSolid/CutoutMipped/Cutout/Translucent` | TRUE temporarily disables culling for exactly that terrain-layer scope; FALSE/DEFAULT preserves vanilla state; scope exit restores | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md` §3.1 Appendix F.1 ownership map (`backFace.*` rows); runtime mapping `[D-P7-11]` |
+| `underwaterOverlay` | FALSE cancels only the WATER `RenderBlockOverlayEvent`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md` §3.1 Appendix F.1 ownership map (`underwaterOverlay` row); runtime mapping `[D-P7-11]` |
+| `sun`, `moon` | FALSE suppresses only the corresponding textured sky draw; TRUE/DEFAULT preserves vanilla | `[V:doc]` fields/owner at `docs/phase3/v1/PHASE_3_DOC.md` §3.1 Appendix F.1 ownership map (`sun`/`moon` rows); runtime mapping `[D-P7-11]` |
+| `vignette` | FALSE cancels only `RenderGameOverlayEvent.Pre(VIGNETTE)`; TRUE/DEFAULT preserves vanilla | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md` §3.1 Appendix F.1 ownership map (`vignette` row); runtime mapping `[D-P7-11]` |
 | `rainDepth` | TRUE forces depth writes with `StateService.depthMask(true)`; FALSE forces `depthMask(false)`; DEFAULT leaves vanilla write-mask behavior unchanged; every exit restores the exact prior write mask, never changes depth testing | `[V:doc]` shipped `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:53–55`; runtime mapping `[D-P7-39]` |
 | `beaconBeamDepth` | TRUE forces depth writes with `depthMask(true)`; FALSE forces `depthMask(false)` for beacon/crystal beam scopes; DEFAULT preserves vanilla write-mask behavior; every exit restores the exact prior mask, never changes depth testing | `[V:doc]` shipped beacon property `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:57–59`; crystal-scope routing remains Phase 7 policy `[D-P7-39]` |
-| `frustumCulling` | FALSE makes only the catalogued world-render frustum queries return visible; TRUE/DEFAULT delegates unchanged | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md:713`; runtime mapping `[D-P7-11]` |
+| `frustumCulling` | FALSE makes only the catalogued world-render frustum queries return visible; TRUE/DEFAULT delegates unchanged | `[V:doc]` field/owner at `docs/phase3/v1/PHASE_3_DOC.md` §3.1 Appendix F.1 ownership map (`frustum.culling` row); runtime mapping `[D-P7-11]` |
 
 All are tri-state-preserving; unset never silently becomes TRUE. The precipitation helper retains the
 Phase 3 handoff exactly: none for `PPT_NONE`, rain at temperature `>= 0.15`, snow below
-(`docs/phase3/v1/PHASE_3_DOC.md:757`).
+(`docs/phase3/v1/PHASE_3_DOC.md` §3.2 F.6 precipitation-rule row).
 
 ### 3.6 Input contradictions and binding rulings
 
@@ -836,11 +857,11 @@ Phase 3 handoff exactly: none for `PPT_NONE`, rain at temperature `>= 0.15`, sno
 | Round-1 observation (historical, resolved upstream): Appendix E was read as listing the one-argument `func_174982_a` overload while the actual world loop calls the four-argument overload (`reference-src/cleanroom-0.6.6-alpha/patches/minecraft/net/minecraft/client/renderer/EntityRenderer.java.patch:200`–`:206`); MCP confirmed `func_174977_a (...;DILnet/minecraft/entity/Entity;)I`. Current `docs/research/v1/RESEARCH.md:1402` already carries the qualification: four-argument `renderBlockLayer(BlockRenderLayer,D,I,Entity)I` -> `func_174977_a` (world-loop entry), one-argument `renderBlockLayer(BlockRenderLayer)V` -> `func_174982_a` (private per-layer draw helper, not the world-loop entry). | H-TERRAIN targets `func_174977_a`; the one-argument method remains a validated but non-world-loop overload. U7-1 closed 2026-09-08 as satisfied by upstream; no narrowing owed. |
 | RC3/Pintonium row 3 calls the ordinal-zero-clear site a matrix-capture moment, but the Cleanroom patch orders that clear before camera setup (`reference-src/cleanroom-0.6.6-alpha/patches/minecraft/net/minecraft/client/renderer/EntityRenderer.java.patch:175`–`:179`). | RESEARCH and Phase 6 win: split the hook and capture after `setupCameraTransform`. |
 | Phase 5's depth protocol must follow RESEARCH's world order: weather before translucent (`docs/research/v1/RESEARCH.md:542`–`:559`). | The granted contract now orders `FRAME_BEGUN -> PRE_WEATHER -> PRE_TRANSLUCENT -> FRAME_COMMITTED`; the driver calls those moments in that order. |
-| Phase 4 makes `*_pre` virtual with no program (`docs/phase4/v1/PHASE_4_DOC.md:2124`: “no resolved program, selection or draw”). | Phase 5's granted `applyVirtualTransition` consumes the exact planned descriptor without a program; Phase 7 never fabricates one. |
+| Phase 4 makes `*_pre` virtual with no program (`docs/phase4/v1/PHASE_4_DOC.md:2140`: “no resolved program, selection or draw”). | Phase 5's granted `applyVirtualTransition` consumes the exact planned descriptor without a program; Phase 7 never fabricates one. |
 | Manifest facts have distinct owners. | Phase 7 copies Phase 4 `resolutions()`, Phase 5 `resources()`, Phase 2's replay-aware GL result, and the capture-plan provenance fields verbatim; it performs no parallel introspection. |
 | shared units require program-specific full sampler shapes | Phase 4 authenticates the effective layout, Phase 13 retains all candidates and Phase 5 filters before canonical-ordinal ranking; §§4.4/4.6/8.4, D-P7-14. `[V:doc]` `docs/research/v1/RESEARCH.md:1484–1490` |
 | fixed App B.3 map is one authority | inject Phase 5 pure policy before compile and adopted resolver before Phase 6 construction; no local map/free-unit search | RESEARCH App B.3; D-P7-14 |
-| coherent texture publication and preprocessing inputs | preliminary macros before load, Phase 13 build after actual estate acceptance, failures off; §§4.1/5.3/8.4. `[D-P7-15]`; jcpp precedes configuration at `docs/phase3/v1/PHASE_3_DOC.md:644–666` |
+| coherent texture publication and preprocessing inputs | preliminary macros before load, Phase 13 build after actual estate acceptance, failures off; §§4.1/5.3/8.4. `[D-P7-15]`; jcpp precedes configuration at `docs/phase3/v1/PHASE_3_DOC.md` §2.3 load-pipeline steps (catalog/macro finalization before jcpp; `PackConfiguration` published as the final step) |
 | RESEARCH's shadow-before-main-clear frame order (`docs/research/v1/RESEARCH.md:538`–`:540`) meets vanilla 1.12.2 `renderWorldPass`, which draws sky and below-y=128 clouds before `setupTerrain`: `GlStateManager.clear(16640)` (`EntityRenderer.java:1345`, mirror `KealJones/mc-1.12.2-source_files`) → `setupCameraTransform` (`:1347`) → `renderglobal.renderSky` (`:1367`) → early `renderCloudsCheck` under `posY+eyeHeight<128` (`:1379`) → `renderglobal.setupTerrain` with `this.frameCount++` (`:1387`); H-FRAME-05 anchors `func_174970_a` after that sky site. | `D-P7-76`: RESEARCH's rule binds shadow-pass completion against main gbuffers draws, not the position of the main-estate clear. The driver binds the main estate and executes Phase 5's one fog-RGB clear immediately after matrix capture (§4.3 step 4), vanilla sky and below-y=128 cloud scopes draw into that cleared estate, and the H-FRAME-05 shadow slot still completes — followed only by the main-estate rebind — before every terrain and later scoped gbuffers draw. |
 
 ### 3.7 OptiFine replacement-list cross-check
@@ -1076,7 +1097,7 @@ window is mutation-free `WRONG_ORDER`-rejected.
 `open` rejects a second frame, wrong thread, stale Phase 4/5/9/13 composition or resource/policy
 pairing, non-world pass or missing world/camera without GL. A duplicate Phase 6 begin may continue;
 `REJECTED_STALE_FRAME` or `REJECTED_GENERATION` forbids shader drawing and reacquires the current
-publication as required by `docs/phase6/v1/PHASE_6_DOC.md:1066`–`:1071` (§5.1 row `:1812`).
+publication as required by `docs/phase6/v1/PHASE_6_DOC.md:1070`–`:1074` (§5.1 row `:1816`).
 
 H-FRAME-06 calls `finish(NORMAL)` on ordinary TAIL. H-FRAME-00 wraps the containing
 `renderWorld` invocation and calls `finish(EARLY_RETURN|THROWN)` from `finally`. Both use the
@@ -3028,10 +3049,10 @@ active eye from vanilla per-pass state and `FrameRenderPort.bind` applies/restor
 through mod-side vanilla `GlStateManager` state, **not** the P1 facade (color mask is a non-verb).
 The non-anaglyph pass carries LEFT; its mask remains vanilla's full mask. Each `UniformSignal`
 variant carries exactly the non-identity fields of its Phase 6 binding sample
-(`docs/phase6/v1/PHASE_6_DOC.md:786`–`:795`): the bridge copies `worldEpoch`/`frameId` from the
+(`docs/phase6/v1/PHASE_6_DOC.md:790`–`:799`): the bridge copies `worldEpoch`/`frameId` from the
 frame's accepted `FrameBeginSignal` and forwards every payload field verbatim —
 `Celestial`→`updateCelestial`, `Fog`→`updateFog`, `Blend`→`updateBlend`
-(`docs/phase6/v1/PHASE_6_DOC.md:525`–`:528`) — with no resampling. `Float3` remains Phase 6's
+(`docs/phase6/v1/PHASE_6_DOC.md:527`–`:532`) — with no resampling. `Float3` remains Phase 6's
 engine record. D-P7-72 obtains unchanged CelestialSample from P8's public static
 `CelestialMath.sample(ShadowFrameView frame,CameraSnapshot mainCamera,float sunPathRotationDegrees)`.
 At H-SKY-02 the actual receiver authenticates this frame's accepted main-camera association and
@@ -3043,11 +3064,11 @@ permits continuation; Rejected/Failed/throw latches frame failure and invokes ex
 At v0.1 only, before the celestial producer is installed, no event is emitted and pending-neutral
 defaults stand. Installation is independent of installation of shadow traversal.
 `sunAngle`/`shadowAngle`/`rainStrength` are frame/tick-provider values Phase 6 samples itself
-(`docs/phase6/v1/PHASE_6_DOC.md:736`–`:746`), not signal fields, and H-FOG-01's
+(`docs/phase6/v1/PHASE_6_DOC.md:740`–`:750`), not signal fields, and H-FOG-01's
 observed fog start/end are not forwarded because `FogSample` carries no start/end
-(`docs/phase6/v1/PHASE_6_DOC.md:791`–`:792`). `BlendStateValue` mirrors `BlendSample`'s
+(`docs/phase6/v1/PHASE_6_DOC.md:795`–`:796`). `BlendStateValue` mirrors `BlendSample`'s
 non-identity fields exactly; glue translates the observed `SourceFactor`/`DestFactor` enums into
-Phase 6's full-int-domain factor encoding (`docs/phase6/v1/PHASE_6_DOC.md:793`–`:795`, validation `:807`).
+Phase 6's full-int-domain factor encoding (`docs/phase6/v1/PHASE_6_DOC.md:797`–`:799`, validation `:811`–`:812`).
 
 **Installed effective-blend route (D-P7-43).** The existing GL-ready composition root that installs
 the P1 device and `UniformPlatformProvider` also wires P1's mod-only
@@ -3802,9 +3823,9 @@ Receive `RegistryFingerprint/profile-selection-v3` as opaque current owner ident
 `RegistryFailureKind.INVALID_PROGRAM_STATE` as registry-wide ShadersOff with sanitized
 reason and empty programFailures. Preserve failed-composition containment and incomplete
 evidence; do not manufacture resolution rows, retry with empty intent or relabel old identity.
-The source contracts are `docs/phase4/v1/PHASE_4_DOC.md:2128` (“resolve is detached
+The source contracts are `docs/phase4/v1/PHASE_4_DOC.md:2144` (“resolve is detached
 handle-free inspection, not selection authority”) and
-`docs/phase4/v1/PHASE_4_DOC.md:1794`–`:1802` (exact selection/result/validation exposure).
+`docs/phase4/v1/PHASE_4_DOC.md:1810`–`:1818` (exact selection/result/validation exposure).
 
 **D-P7-43 P1/P4 consumption.** Receive P1 `StateService.lockAlphaBlend(
 Optional<AlphaTestState>,Optional<BlendState>) -> AlphaBlendOverride`, opaque idempotent
@@ -3860,9 +3881,10 @@ the immutable complete ordinary+shadow `Map<LogicalBuffer,TextureHandle>`, never
 read. `discardPass(PassBufferSnapshot) -> PassDiscardResult.Discarded(long frameId)|
 Rejected(FrameProtocolRejection reason)` authenticates like completePass but consumes only an
 undrawn pass, with no flip or post-draw mipmap work.
-The exact producer signatures and incorporated lifecycle are at
-`docs/phase5/v1/PHASE_5_DOC.md:2344–2375`; the binding row at line 2363 states
-“Bound alone transfers lease into closeable sixteen-row snapshot with BoundObject/Unused”.
+The exact producer signatures and incorporated lifecycle are the §5.1 exposed-contract rows of
+`docs/phase5/v1/PHASE_5_DOC.md` (the `snapshot`/`discardPass` producer rows and the `textureBindings`
+binding row, which states “Bound alone transfers lease into closeable sixteen-row snapshot with
+BoundObject/Unused”).
 
 `TextureBindingResult` is exactly `Bound(TextureBindingSnapshot)`,
 `Degraded(TextureBindingDegradation)`, `Rejected(TextureBindingRejection)`, or
@@ -3900,8 +3922,8 @@ per-draw byte hashing or fallback retry occurs. Undeclared shader rows are Unuse
 
 #### Phase 13 downstream slot
 
-Consume `docs/phase13/v1/PHASE_13_DOC.md:1147–1163` only after fresh owner verification.
-The exact frozen request at line 1150 contains configuration, registry, atlases, sources,
+Consume the §5.1 “Frozen inputs” row of `docs/phase13/v1/PHASE_13_DOC.md` only after fresh owner
+verification. The exact frozen request in that row contains configuration, registry, atlases, sources,
 companionPolicy, macroState, capabilities, registryFingerprint, estateGeneration, registryGeneration,
 resourceReloadEpoch in that order and the types declared there. `TextureBuildRequest(TexturePlanRequest
 planRequest,TextureBuildSources sources)` validates prepared identities before allocation; macroState preserves the pre-jcpp choice.

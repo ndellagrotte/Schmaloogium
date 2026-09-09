@@ -63,3 +63,14 @@
 ## 6. Verdict
 
 **PASS-WITH-CORRECTIONS** — 0 blocking, 3 corrections (C17-1, C17-2, C17-3 — all dependency-anchor coordinate repoints with zero contract-text change), 3 notes. No structural rebuild is needed; the settled attempt-10 architecture stands. C17-3 touches §5.3 citation endpoints, so the document's own standing rule applies: a fresh verification round remains required before closure, exactly as §0.15 already records. No build, test, or GL command was executed by this review; frozen hash verified at start.
+
+## Resolutions
+
+2026-09-08 fix-up (attempt-10 wave):
+
+- **C17-1:** applied — §1.2 Phase 3 declaration-capture anchor extended to `docs/phase3/v1/PHASE_3_DOC.md:1745`–`:1748`; P3 current bytes re-verified (`:1745` uniform `CustomExpressionDecl` row "no expression evaluation occurs here", `:1746` variable duplicates-retained row, `:1747` lossless-vocabulary row, `:1748` F.6 precipitation-handoff row). New §0.16 addendum records the round.
+- **C17-2:** applied — already current, no edit: §1.3 cites P3 `:1748`, which is the "F.6 precipitation rule → Phase 7" row at current P3 bytes (the interstitial anchor sweep had already landed the Review-17 target).
+- **C17-3:** applied — (a) §5.3 bridge-signature endpoint tightened to P6 `:1537`–`:1541` (third parameter `CustomUniformUploadSink uploads` on `:1541`; the sweep value `:1542` was the interface closing brace); (b) §5.3 lookup/values range widened to `:1544`–`:1562` (sweep value `:1548` missed the `BuiltInExpressionView.lookup` declaration at `:1546`; Mat4 record `:1561`, block close `:1562` verified); (c) §4.8 install/retention citation already at target `:1590`–`:1597`, no edit.
+- **N17-1:** note — no action per review; §4.8 keeps `:1659–:1668`; the superseding sentence at P6 `:1669–:1670` stays outside the range, which the reviewer found substantively verifiable.
+- **N17-2:** note — no action; §3.3 keeps `RESEARCH.md:1498–:1501` (superset of the list).
+- **N17-3:** note — no action; `reference-src/**` pins remain declared provenance per the §0.14/N14-1 posture.

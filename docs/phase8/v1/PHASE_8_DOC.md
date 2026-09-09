@@ -138,7 +138,7 @@ The authorizing request permits this provisional architecture alignment with cha
 contracts, not verified implementation consumption. Phase 5 §0.39 says the prior evidence “does
 not certify this rebuild” (`docs/phase5/v1/PHASE_5_DOC.md:340-342`); Phase 7 §0.40 says “Unverified;
 a fresh whole-document review returning literal PASS is required” in its closing status
-(`docs/phase7/v1/PHASE_7_DOC.md:355`). Phase 4's newly coordinated selector surface likewise awaits
+(`docs/phase7/v1/PHASE_7_DOC.md:357`). Phase 4's newly coordinated selector surface likewise awaits
 fresh verification, as recorded in `docs/phase5/v1/PHASE_5_DOC.md:350-354`.
 Phase 8 Review 4's PASS (`docs/phase8/reviews/PHASE_8_REVIEW_4.md:51-61`) covers only pre-amendment
 bytes. **§5 changed: Phase 8 is unverified and requires fresh whole-document verification returning
@@ -151,7 +151,7 @@ No code, reviews, builds, tests, verification, or directory roll are part of thi
 This maintainer-authorized architecture-only amendment adopts Phase 7 §5.4 R7-13:
 “Final publication identity and build validation include that registry; planning never borrows an old”
 (`docs/phase7/v1/PHASE_7_DOC.md:2348`), continued by “registry to break the cycle” at `:2349` —
-historical pins retained; the quoted text’s current location is `docs/phase7/v1/PHASE_7_DOC.md:4068-4069`
+historical pins retained; the quoted text’s current location is `docs/phase7/v1/PHASE_7_DOC.md:4107-4108`
 (2026-09-08 fix-up note).
 `ShadowPlanInput` and `ShadowPlan` now contain no registry identity. Policy and hook health
 determine the pure plan fingerprint; `ShadowPassFactory.create` receives the final new
@@ -168,7 +168,7 @@ verified implementation consumption. Each consumed phase retains its declared RC
 No reference implementation, review or forbidden transcript was read for this amendment.
 
 Phase 6 now records R7-10/R7-11 as “adopted in” its current bytes, “not verified grants”
-(`docs/phase6/v1/PHASE_6_DOC.md:296-297`); active readiness wording below reflects that owner
+(`docs/phase6/v1/PHASE_6_DOC.md:298-299`); active readiness wording below reflects that owner
 status without changing its APIs or Phase 7's still-unsynchronized request rows. R7-12/R7-13
 are both adopted here, not verified. Remaining ungranted dependencies and owner synchronization/
 verification gates are explicit in §5.5. **§5 changed: fresh whole-document Phase 8 verification
@@ -660,42 +660,42 @@ on exceptions and after pass invalidation; it never closes any borrowed publicat
 
 | Contract item | Design element | Provenance |
 |---|---|---|
-| pass inside frame begin, completed before main gbuffers draws (P7 main bind/clear precede vanilla sky, D-P7-76) | Phase 7 H-FRAME-05 slot and §4.2 transaction | `[V:observed]` `docs/research/v1/RESEARCH.md:568`–`:581`; `docs/phase7/v1/PHASE_7_DOC.md:648`–`:655`, ordering `:1129`–`:1136` and `:1153`–`:1159` |
+| pass inside frame begin, completed before main gbuffers draws (P7 main bind/clear precede vanilla sky, D-P7-76) | Phase 7 H-FRAME-05 slot and §4.2 transaction | `[V:observed]` `docs/research/v1/RESEARCH.md:568`–`:581`; `docs/phase7/v1/PHASE_7_DOC.md` §2.2 `ActivePipeline` slot composition, ordering `:1130`–`:1140` and `:1167`–`:1174` |
 | force third person, restore afterward | `ShadowStateLease` in §4.4 | `[V:observed]` `docs/research/v1/RESEARCH.md:570` |
 | ortho ±`shadowDistance`, near 0.05, far 256 | exact matrix in §4.5.2 | `[V:observed]` `docs/research/v1/RESEARCH.md:570`–`:571` |
 | perspective when `shadowMapFov` is set | exact square-aspect perspective in §4.5.3 | `[V:observed]` `docs/research/v1/RESEARCH.md:571`–`:572` |
-| sun by day, moon by night, `sunPathRotation` | §4.5.1/§4.5.4 | `[V:observed]` `docs/research/v1/RESEARCH.md:572`; App A.3 at `docs/research/v1/RESEARCH.md:1179` |
+| sun by day, moon by night, `sunPathRotation` | §4.5.1/§4.5.4 | `[V:observed]` `docs/research/v1/RESEARCH.md:572`–`:573`; App A.3 at `docs/research/v1/RESEARCH.md:1179` |
 | portable camera/snap structure | §4.5 re-derives the projection/model-view/snap values and rejects the reference's perspective bottom-right value and perspective snapping | PD §10 (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:594`–`:618`); `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/modern/src/main/shaders_java/net/irisshaders/iris/shadows/ShadowMatrices.java:13–83]`; contract check against `docs/research/v1/RESEARCH.md:570`–`:573`; D-P8-1/D-P8-2 |
 | texel snap by `shadowIntervalSize` | §4.5.5, Java-remainder formula, ortho only | `[V:observed]` `docs/research/v1/RESEARCH.md:573`; behavioral cross-check `reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md:366`–`:371`; D-P8-1/D-P8-2 |
 | shadow MVP planes plus light side planes | §4.6 exact plane algebra | `[V:observed]` `docs/research/v1/RESEARCH.md:574`–`:575` |
-| sun-aligned optimized traversal | §4.7 dominant-axis/prism plan + scoped vanilla setup; no modern collector is adopted | `[V:observed]` `docs/research/v1/RESEARCH.md:575`–`:576`; PD §10 (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:605`–`:609`) confirms the 1.12 renderer is absent; D-P8-4 |
+| sun-aligned optimized traversal | §4.7 dominant-axis/prism plan + scoped vanilla setup; no modern collector is adopted | `[V:observed]` `docs/research/v1/RESEARCH.md:575`–`:576`; PD §10 (`docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:603`–`:609`) confirms the 1.12 renderer is absent; D-P8-4 |
 | terrain solid -> cutout-mipped -> cutout | §4.8.1 | `[V:observed]` `docs/research/v1/RESEARCH.md:576`–`:577` |
 | Forge entity passes | §4.8.2 pass 0/pass 1 protocol | `[V:observed]` `docs/research/v1/RESEARCH.md:577`; Cleanroom verification in §0.2 |
 | water-shadow depth split | §4.8.3 exactly one `SHADOW_PRE_TRANSLUCENT` copy | `[V:doc]` `docs/research/v1/RESEARCH.md:1224`–`:1226` |
 | optional translucent terrain | resolved `shadowTranslucent` in §4.8.4 | `[V:doc]` `docs/research/v1/RESEARCH.md:578`–`:579`; F.1 `:1441`–`:1445` |
 | per-config shadow mipmaps | §4.9 typed post-pass request | `[V:doc]` `docs/research/v1/RESEARCH.md:1173`–`:1175`; R8-2 |
-| hardware PCF | Phase 5 construction applies compare policy; Phase 8 gates/diagnoses it | `[V:doc]` `docs/research/v1/RESEARCH.md:1174`; verified dependency at `docs/phase5/v1/PHASE_5_DOC.md:2091`–`:2096` |
+| hardware PCF | Phase 5 construction applies compare policy; Phase 8 gates/diagnoses it | `[V:doc]` `docs/research/v1/RESEARCH.md:1174`; verified dependency at `docs/phase5/v1/PHASE_5_DOC.md:2095`–`:2100` |
 | blob-shadow suppression | H8-BLOB-01 redirects only the blob call, retaining fire | `[V:observed]` `docs/research/v1/RESEARCH.md:580`; §4.13 |
 | clouds only per shadow config | §4.8.1 pre-split optional cloud draw | `[V:observed]` `docs/research/v1/RESEARCH.md:580`–`:581` |
-| force root `shadow` program for the shadow draw interval | §4.10: begin immediately before the first shadow draw; end before fixed-function/state restoration | `[V:doc]` assignment `docs/design/v2.0-RC3/DESIGN.md:2000`–`:2001`; Phase 4 force-shadow barrier `docs/phase4/v1/PHASE_4_DOC.md:1761`–`:1763` and `:1861`–`:1872` |
+| force root `shadow` program for the shadow draw interval | §4.10: begin immediately before the first shadow draw; end before fixed-function/state restoration | `[V:doc]` assignment `docs/design/v2.0-RC3/DESIGN.md:2000`–`:2001`; Phase 4 force-shadow barrier `docs/phase4/v1/PHASE_4_DOC.md:1777`–`:1780` and `:1861`–`:1872` |
 
 ### 3.2 Appendix A.3 shadow-directive coverage
 
 | A.3 row | Phase 8 disposition | Provenance |
 |---|---|---|
-| `shadow`/`shadowtex0`/`shadowtex1`/`watershadow` declarations | P7 derives requested from accepted P3 shadow minima before planning; execution additionally requires P5 available estate; no rescan | `[V:doc]` `docs/research/v1/RESEARCH.md:1162`; `docs/phase5/v1/PHASE_5_DOC.md:2086`–`:2087` and §5.1 `:2710` |
-| `shadowcolor`/`shadowcolor0/1` declarations | Phase 5 snapshot owns zero-to-two v0.2 color attachments; Phase 8 draws and completes their flips | `[V:doc]` `docs/research/v1/RESEARCH.md:1163`; `docs/phase5/v1/PHASE_5_DOC.md:1349`–`:1352` |
+| `shadow`/`shadowtex0`/`shadowtex1`/`watershadow` declarations | P7 derives requested from accepted P3 shadow minima before planning; execution additionally requires P5 available estate; no rescan | `[V:doc]` `docs/research/v1/RESEARCH.md:1162`; `docs/phase5/v1/PHASE_5_DOC.md:2090`–`:2091` and §5.1 `:2730` |
+| `shadowcolor`/`shadowcolor0/1` declarations | Phase 5 snapshot owns zero-to-two v0.2 color attachments; Phase 8 draws and completes their flips | `[V:doc]` `docs/research/v1/RESEARCH.md:1163`; `docs/phase5/v1/PHASE_5_DOC.md` §4.10 |
 | `shadowMapResolution` / `SHADOWRES` | Phase 5 extent is authoritative; Phase 8 uses it as viewport and rejects non-positive mismatch | `[V:doc]` `docs/research/v1/RESEARCH.md:1168` |
 | `shadowMapFov` / `SHADOWFOV` | optional perspective branch in §4.5.3 | `[V:doc]` `docs/research/v1/RESEARCH.md:1169` |
 | `shadowDistance` / `SHADOWHPL` | orthographic half-plane and traversal basis | `[V:doc]` `docs/research/v1/RESEARCH.md:1170` |
 | `shadowDistanceRenderMul` | positive values enable §4.7 optimization; non-positive values select full-view traversal | `[V:doc]` `docs/research/v1/RESEARCH.md:1171` |
 | `shadowIntervalSize` | §4.5.5, default 2.0 | `[V:doc]` `docs/research/v1/RESEARCH.md:1172` |
 | `generateShadowMipmap` / `generateShadowColorMipmap` | unioned with per-texture requests in immutable `ShadowMipmapPolicy` | `[V:doc]` `docs/research/v1/RESEARCH.md:1173` |
-| `shadowHardwareFiltering`, `0`, `1` | preserved per depth texture; Phase 5 applies compare mode at creation | `[V:doc]` `docs/research/v1/RESEARCH.md:1174`; `docs/phase5/v1/PHASE_5_DOC.md:2091`–`:2096` |
+| `shadowHardwareFiltering`, `0`, `1` | preserved per depth texture; Phase 5 applies compare mode at creation | `[V:doc]` `docs/research/v1/RESEARCH.md:1174`; `docs/phase5/v1/PHASE_5_DOC.md:2095`–`:2100` |
 | per-texture shadow mipmap aliases | canonical per-logical-buffer set; generated only after draws/copy | `[V:doc]` `docs/research/v1/RESEARCH.md:1175` |
 | per-texture nearest aliases | immutable Phase 5 texture policy; Phase 8 never mutates ordinary min/mag choice | `[V:doc]` `docs/research/v1/RESEARCH.md:1176` |
 | `sunPathRotation` | model-view and celestial-vector rotation in §4.5 | `[V:doc]` `docs/research/v1/RESEARCH.md:1179` |
-| shadow program `DRAWBUFFERS` | consumed through Phase 4 `ProgramStateBundle` and Phase 5 `ShadowPassSnapshot`; order and duplicates retained | `[V:doc]` generic row `docs/research/v1/RESEARCH.md:1188`; dependency `docs/phase4/v1/PHASE_4_DOC.md:1373` |
+| shadow program `DRAWBUFFERS` | consumed through Phase 4 `ProgramStateBundle` and Phase 5 `ShadowPassSnapshot`; order and duplicates retained | `[V:doc]` generic row `docs/research/v1/RESEARCH.md:1188`; dependency `docs/phase4/v1/PHASE_4_DOC.md:617-618` |
 
 The Phase 3 front end remains responsible for recognizing both const and comment forms, including
 capitalization aliases. Phase 8 consumes only the resolved result.
@@ -704,9 +704,9 @@ capitalization aliases. Phase 8 consumes only the resolved result.
 
 | Contract row | Design element | Provenance |
 |---|---|---|
-| shadowtex0 = everything | real Phase 5 depth attachment; clear then all shadow draws | `[V:doc]` `docs/research/v1/RESEARCH.md:1224`; `docs/phase5/v1/PHASE_5_DOC.md:1334`–`:1343` |
+| shadowtex0 = everything | real Phase 5 depth attachment; clear then all shadow draws | `[V:doc]` `docs/research/v1/RESEARCH.md:1224`; `docs/phase5/v1/PHASE_5_DOC.md` §4.10 |
 | shadowtex1 excludes shadow translucents | exact split point in §4.8.3 | `[V:doc]` `docs/research/v1/RESEARCH.md:1225` |
-| shadowcolor0/1 | Phase 5 typed color attachments and generic completion flip | `[V:doc]` `docs/research/v1/RESEARCH.md:1226`; `docs/phase5/v1/PHASE_5_DOC.md:990`, `:2088`–`:2094` |
+| shadowcolor0/1 | Phase 5 typed color attachments and generic completion flip | `[V:doc]` `docs/research/v1/RESEARCH.md:1226`; `docs/phase5/v1/PHASE_5_DOC.md` §3.2 and §4.10 |
 | unit 4 = shadowtex0/watershadow/conditional shadow | Phase 5 sole fixed policy and shared sixteen-row physical binding; Phase 6 uploads fixed integers only after Bound/activation, with R7-10 still gated | `[V:doc]` `docs/research/v1/RESEARCH.md:1236`; Phase 5 shared table `docs/phase5/v1/PHASE_5_DOC.md:2723`; §5.3 |
 | unit 5 = shadowtex1/conditional shadow | same | `[V:doc]` `docs/research/v1/RESEARCH.md:1237` |
 | unit 13 = shadowcolor0/shadowcolor | same | `[V:doc]` `docs/research/v1/RESEARCH.md:1245` |
@@ -722,8 +722,8 @@ irrelevant. The shared result covers all sixteen App B.3 rows, not just the four
 |---|---|---|
 | `shadowAngle` | public CelestialMath.angles supplies P7's frame provider independently of shadow availability; delegating policy drives camera identically | `[V:doc]` RESEARCH App D.2; §§4.3/4.5.1 |
 | `sunPosition`, `moonPosition`, `shadowLightPosition`, `upPosition` | public CelestialMath.sample for P7 main celestial moment, reused for same association; real-shadow event still before activation | `[V:doc]` RESEARCH App D.3; §§4.3/4.5.4 |
-| `shadowProjection`, `shadowModelView` | one `ShadowMatrixSample` after FF camera installation and before activation | `[V:doc]` `docs/research/v1/RESEARCH.md:1365`; Phase 6 event at `docs/phase6/v1/PHASE_6_DOC.md:280`–`:284` |
-| `shadowProjectionInverse`, `shadowModelViewInverse` | Phase 6 deterministic inversion of the same two primary matrices | `[V:doc]` `docs/phase6/v1/PHASE_6_DOC.md:785`–`:810` |
+| `shadowProjection`, `shadowModelView` | one `ShadowMatrixSample` after FF camera installation and before activation | `[V:doc]` `docs/research/v1/RESEARCH.md:1365`; Phase 6 event at `docs/phase6/v1/PHASE_6_DOC.md` §4.2 (`ShadowMatrixSample`) |
+| `shadowProjectionInverse`, `shadowModelViewInverse` | Phase 6 deterministic inversion of the same two primary matrices | `[V:doc]` `docs/phase6/v1/PHASE_6_DOC.md` §4.7 |
 
 All matrices use Phase 6's column-major `Matrix4Value` upload order. A singular inverse disables
 only that inverse; it does not suppress the original matrix or the pass.
@@ -832,7 +832,7 @@ requires a newly paired publication; never patch the pure plan with a late regis
 At invocation, compare the borrowed published registry fingerprint with the retained construction
 fingerprint and validate the plan fingerprint as well as the separate live execution/slot/registry/
 estate generations. Hash equality cannot authenticate live publication ownership.
-`RegistryFingerprint` excludes generation (`docs/phase4/v1/PHASE_4_DOC.md:1921`,
+`RegistryFingerprint` excludes generation (`docs/phase4/v1/PHASE_4_DOC.md:1937`,
 “It does not hash” ... “generation”); accepted-generation adoption remains Phase 7's subsequent
 publication handshake, not a predicted generation or part of pure planning.
 
@@ -1490,11 +1490,11 @@ no stale chain is advertised as fresh. If that restoration fails, result-level
 `Neutralized(buffer,failure,diagnosticId,true)` already aborts without flips, invalidates snapshots
 and makes the estate unavailable/neutral. Phase 8 stops without another complete/abort/neutralize
 call, restores its state and still closes a transferred binding in `finally`. These are the
-current Phase 5 §5 semantics (`docs/phase5/v1/PHASE_5_DOC.md:2249-2253`, `:2724`), not a new Phase 8 GL path.
+current Phase 5 §5 semantics (`docs/phase5/v1/PHASE_5_DOC.md:2257-2261`, `:2731`), not a new Phase 8 GL path.
 
 Hardware PCF is not toggled per frame. Phase 5 already applies per-depth compare mode and the
 legacy depth swizzle during candidate creation
-(`docs/phase5/v1/PHASE_5_DOC.md:2111-2115`). Phase 8 checks the resulting estate disposition:
+(`docs/phase5/v1/PHASE_5_DOC.md:2119-2123`). Phase 8 checks the resulting estate disposition:
 creation failure yields `ShadowEstateUnavailable` plus neutral compare-compatible bindings and
 does not abort the main pipeline. Phase 8 performs no duplicate texture-parameter call.
 `ShadowPcfPolicy.compareDepthBuffers` admits only shadow depth 0 and shadow depth 1; any shadowcolor
@@ -1790,7 +1790,7 @@ collection, or physical shadowcolor side.
 
 The complete §2.2 plan/factory/publication shapes and §4.1 construction, identity, validation,
 failure and lifecycle rules are incorporated into this binding §5 interface. R7-13 at
-`docs/phase7/v1/PHASE_7_DOC.md:4063-4069` is granted by this owner: pure planning before the
+`docs/phase7/v1/PHASE_7_DOC.md:4102-4108` is granted by this owner: pure planning before the
 provider; final-registry `create` after compile/compose. `ShadowPlanFingerprint` excludes registry;
 the retained publication fingerprint hashes the ordered canonical pair `(plan.fingerprint(),
 registry)`. Phase 7 checks the supplied registry against its final candidate and intended tuple
@@ -1842,7 +1842,7 @@ dependency, new participant or synthetic shadow matrix event accompanies main-on
 | `RegistryFingerprint` / generation | final construction/publication pairing and invocation stale rejection; deterministic content fingerprint is separate from live generation and absent from pure planning |
 
 These are the incorporated contracts at `docs/phase4/v1/PHASE_4_DOC.md:1782-1796`, with exact
-selection accessors/validation/request shapes at `:700-750` (`validateSelection` at `:728-729`) and
+selection accessors/validation/request shapes at `:700-750` (`validateSelection` at `:745-746`) and
 authentication/activation/lifetime at `:1740-1800`. Phase 8 never calls the compiler, publisher, program lookup service, selector or
 fallback resolver. The newly changed owner surface requires fresh verification before implementation.
 
@@ -1882,9 +1882,9 @@ distinct. P8 adds no allocator, direct GL, reinterpretation of depth layout or c
 | Actual-base association/refresh — D-P8-39 | P5 BaseAtlasContext Atlas(AtlasId)/NonAtlas/Unavailable and overlay baseAtlasContext(), baseTexture(), atlasContext(TextureHandleRef); compatible custom-first selection, then only exact accepted-base matching companion, otherwise explicit DefaultFill(kind); retained-root refresh in §4.10 uses unchanged shadowBindings and result/closure ownership |
 
 The exact Phase-5-owned signatures, field types/order, variants and semantics incorporated here are
-`docs/phase5/v1/PHASE_5_DOC.md:943-1029`, `:1816-1968`, `:2174-2297` and §5.1 `:2356-2375`.
+`docs/phase5/v1/PHASE_5_DOC.md` §§2.2/2.4/4.10/4.12 and §5.1's shadow-estate, binding and policy rows.
 The binding row says “Shared sixteen-row closeable binding protocol, never separate four rows”
-at `:2357`. All §4.2 ownership, suppression, timing and cleanup rules are incorporated into this
+at §5.1. All §4.2 ownership, suppression, timing and cleanup rules are incorporated into this
 §5 interface; they are not optional implementation commentary.
 
 D-P8-25 receives P5's policy-keyed fully-far/opaque-white neutral backings unchanged.
@@ -1924,7 +1924,7 @@ The closed `TextureBindingRejection` domain is `INVALID_INPUT`, `WRONG_THREAD`,
 `STALE_REGISTRY_GENERATION`, `SAMPLER_LAYOUT_MISMATCH`, `CLOSED_OVERLAY_LEASE`,
 `OVERLAY_PUBLICATION_ID_MISMATCH`, `REGISTRY_FINGERPRINT_MISMATCH`,
 `CONFIGURATION_FINGERPRINT_MISMATCH`. Phase 5's exact selector-rejection mappings and overlay
-registry-generation check in `:2571-2593` remain binding; this is not the narrower
+registry-generation check in `:2579-2601` remain binding; this is not the narrower
 `ShadowProtocolRejection` algebra used by non-texture operations.
 
 Phase 5 resolves full sampler shape/target/format/comparison capability against the effective
@@ -1959,10 +1959,11 @@ borrowed publication/source. §§4.2/4.12 incorporate the same exactly-one final
 | synchronous replay delivery and P7 collector failure | §4.10 prerequisite after Activated and every immediate event, before another draw; phase6.replay.delivery.failed/collector latch forces Failed/off, unlike ordinary isolated uniform degradation; no new API |
 
 The current runtime/event and sampler contracts are incorporated by
-`docs/phase6/v1/PHASE_6_DOC.md` §5.1 at `:1613`, `:1617-1618`; R7-10/R7-11 are adopted but
-not verified per `:296-300`. Phase 7, not Phase 8, owns runtime construction, accepted-generation
+`docs/phase6/v1/PHASE_6_DOC.md` §5.1's `UniformRuntime`, `UniformEventSink` and
+`SamplerRepointParticipant` rows; R7-10/R7-11 are adopted but
+not verified per `:300-301`. Phase 7, not Phase 8, owns runtime construction, accepted-generation
 adoption and retirement under that owner's §5.1/§5.2. Its required consumer synchronization and
-owner-verification gates at `:1688-1707` remain; no Phase 8 runtime-close authority is added.
+owner-verification gates at `:1942-1951` remain; no Phase 8 runtime-close authority is added.
 `CelestialSample` remains exactly `(long worldEpoch,long frameId,Float3 sunPosition,
 Float3 moonPosition,Float3 shadowLightPosition,Float3 upPosition)`. P8 supplies identity from
 the current `ShadowFrameView` and eye vectors from the actual `CameraSnapshot.modelView()`;
@@ -1983,7 +1984,7 @@ rules. The pure angular result is not a P6 event or runtime dependency.
 | `IdScopeAdmission` and current-bind adapter | exact P7 §5.1 opaque admission/authentication and AtlasBindingEvidence/AtlasBindingSink; P8 admits owned traversal IDs only while current execution is Valid, restores before release, never mints credentials itself |
 | `ShadowExecutionView.currentBaseBinding()` and `installBaseBindingReceiver(ShadowBaseBindingReceiver)` | P7-issued current evidence; install returns SignalResult and accepts once/live invocation, rejecting wrong/stale/duplicate; receiver refreshBaseBinding(evidence)→SignalResult is synchronously dispatched before draws under §4.10, removed on execution close; no native binder or second execution bridge |
 
-The exact field order incorporated from `docs/phase7/v1/PHASE_7_DOC.md:2697-2708` is:
+The exact field order incorporated from `docs/phase7/v1/PHASE_7_DOC.md:2735-2746` is:
 
 ```java
 public record ShadowInvocationContext(
@@ -2000,9 +2001,9 @@ public record ShadowInvocationContext(
     TextureLeaseSource textureLeases) {}
 ```
 
-The appended types/order are R7-12's exact request at `:4051-4061`; Phase 8 adopts that request here.
+The appended types/order are R7-12's exact request at `:4090-4100`; Phase 8 adopts that request here.
 The record is Phase-7-owned, not a second Phase 8 constructor authority. Frame sample, bridge and
-result semantics are incorporated unchanged from `:2717-2760`, together with §4.2's
+result semantics are incorporated unchanged from `:2747-2798`, together with §4.2's
 ownership and post-mutation result mapping. Borrowed publication, source, selection/context and
 execution are never closed or retained by the slot.
 `CameraSnapshot` remains exactly `(Matrix4Value modelView,Matrix4Value projection)`. P7 owns
@@ -2021,7 +2022,7 @@ AtlasBindingEvidence baseBinding)` returning exactly `TextureLeaseResult.Acquire
 owner/expected ID/selection, then base-evidence issuer/thread/composition and latest serial/resource
 epoch before incrementing its lease count. Later serial invalidation is P5 CLOSED_OVERLAY_LEASE;
 rejection transfers nothing. There is no two-call `lease()`/`publicationId()` path. These producer
-semantics are incorporated through `docs/phase7/v1/PHASE_7_DOC.md:3875-3897`; Phase 8 acquires no
+semantics are incorporated through `docs/phase7/v1/PHASE_7_DOC.md:3932-3944`; Phase 8 acquires no
 texture owner or new direct composition authority. A present empty publication is not publication
 absence and still uses this protocol. Phase 13's required fresh verification remains a gate.
 
@@ -2521,8 +2522,8 @@ These outcomes do not modify RESEARCH §11.
 | D-P8-9 | Keep all Minecraft traversal/state behind `ShadowWorldPort` | preserves D-6 and makes pure camera/culling/traversal headless-testable |
 | D-P8-10 | Do not execute shadowcomp at v0.2 | explicit scope-out/G8 ownership |
 | D-P8-11 | Do not add an unconditional `glFlush` to the pass contract | ordered commands on one GL context already order draws, copy, mipmaps, and completion; the digest's flush is not a RESEARCH contract and would create an avoidable driver-submission policy |
-| D-P8-12 | Adopt R7-12's same-selection, full shared physical binding and Bound-only closure contract | Phase 7 §5.4 `docs/phase7/v1/PHASE_7_DOC.md:2332-2342` and Phase 5 §5.1 `docs/phase5/v1/PHASE_5_DOC.md:2357-2363` supply the operation; preserves RESEARCH App B.3 `docs/research/v1/RESEARCH.md:1228-1255` without a second map or four-row success |
-| D-P8-13 | Adopt R7-13: pure policy/hook plan first; final-registry validation and fingerprinting only at publication construction | Phase 7 §5.4 `docs/phase7/v1/PHASE_7_DOC.md:2344-2349` requires registry-independent metadata and final-registry create; breaks the provider/compile cycle without borrowing an old registry or weakening live generation/epoch authentication |
+| D-P8-12 | Adopt R7-12's same-selection, full shared physical binding and Bound-only closure contract | Phase 7 §5.4 `docs/phase7/v1/PHASE_7_DOC.md:4090-4100` and Phase 5 §5.1 (`docs/phase5/v1/PHASE_5_DOC.md`) supply the operation; preserves RESEARCH App B.3 `docs/research/v1/RESEARCH.md:1228-1255` without a second map or four-row success |
+| D-P8-13 | Adopt R7-13: pure policy/hook plan first; final-registry validation and fingerprinting only at publication construction | Phase 7 §5.4 `docs/phase7/v1/PHASE_7_DOC.md:4102-4108` requires registry-independent metadata and final-registry create; breaks the provider/compile cycle without borrowing an old registry or weakening live generation/epoch authentication |
 | D-P8-14 | accept authenticated shadow execution as alternate P9 ID admission and independent P7 color producer | delivers IDs without illegal main gbuffers scopes; preserves Forge pass order and nested restoration |
 | D-P8-15 | adopt current producer grants/schema and authenticated current-bind atlas route | distinguish architecture adoption from verification; no second binder, stale atlas inference or historical schema fallback |
 | D-P8-16 | Adopt the maintainer-approved v0.5 prepared-submission boundary, leaving shadow traversal/cadence intact | P4 §11.5 records exact evidence and 2026-09-07 authority; §4.8.5 defines shadow authentication/restoration/failure and excludes world/Forge replay. No new renderer API. |
@@ -2606,7 +2607,7 @@ or independent resource reconstruction is admitted.
    leaves any evidence-driven synchronization change to a governed correction, not an incidental
    glue call.
 10. **Planning cycle architecturally closed:** R7-13 is adopted in §§2/4/5 with the exact
-    input/factory order requested at `docs/phase7/v1/PHASE_7_DOC.md:2344-2349`. The pure plan
+    input/factory order requested at `docs/phase7/v1/PHASE_7_DOC.md:4102-4108`. The pure plan
     precedes the provider/runtime and compilation; final publication validation/fingerprinting
     includes the final new registry. An old registry fingerprint is never a workaround.
 11. **Shared pipeline gates:** current P6 R7-10/11 and P8 R7-12/13 are owner-designed and

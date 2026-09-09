@@ -1987,7 +1987,7 @@ projection remains unchanged. The following table summarizes meanings, not alter
 | `evidence_stage=PLANNED`, `colorBuffers.count`, `colorBuffers.<n>.requested_format` | P5 planned inventory and P3 request distinction: DEFAULT_RGBA is not explicit RGBA8 |
 | `colorBuffers.1.requested_format` | P3's conditional gdepth resolution is preserved verbatim; do not unconditionally overwrite an explicit format |
 | `colorBuffers.<n>.clear`, `.clear_policy`, conditional `.clear_color_r/g/b/a` | App A.3 clear declarations and P5 ResourceClearPolicy: default colortex0 fog policy, colortex1 constant ones, other defaults constant zeros; no fabricated frame fog |
-| `depthTextures.count` | §3.2's `depthtex0/1/2` allocation |
+| `depthTextures.count` | App A.3's `depthtex0/1/2` allocation |
 | `shadow.depthTextures`, `shadow.colorTextures`, `shadow.resolution`, `shadow.hardwareFiltering`, `shadow.mipmap`, `shadow.nearest` | App A.3's shadow directive block |
 | `centerDepthSmooth.enabled` | §3.2's "declaring `centerDepthSmooth` enables the center-depth readback" |
 | `noise.resolution` | `noiseTextureResolution` (default 256, App A.3) |

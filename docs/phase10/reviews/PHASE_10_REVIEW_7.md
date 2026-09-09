@@ -62,3 +62,11 @@
 ## 6. Verdict
 
 **PASS-WITH-CORRECTIONS.** One correction (P2 citation version segment, §11.1 :2252 and §11.3 :2315) and one cosmetic note (:1696). The wave's three declared changes landed correctly and verify against current owner/consumer bytes: C1's R10-5 clause is corroborated by P4's live D-P4-28 grant; C2's content and line number are exact in `docs/phase2/v2/PHASE_2_DOC.md:2962` (only the version segment is missing); D-P10-30 remains a single coherent decision with all references resolving and no phantom D-P10-33. No finding requires structural rebuild; no §5 interface content changes. No build, test, or GL was executed.
+
+## Resolutions
+
+2026-09-08 fix-up (attempt-10 wave):
+
+- **Correction 1:** applied — both sites re-located by search against current bytes (§11.1 D-P10-32 row :2252; §11.3 R10-8 bullet :2315, matching this review's coordinates, no drift) and `PHASE_2_DOC.md:2962` replaced with `docs/phase2/v2/PHASE_2_DOC.md:2962`; citation line number and all other text unchanged. Post-edit grep: exactly 2 occurrences of `PHASE_2_DOC.md:2962` in the doc, both version-qualified.
+- **Note 1:** applied — :1696 "remains56" → "remains 56"; grep confirms zero remaining `remains56` occurrences.
+- **Note (§4 items 2–4, unnumbered observations):** note — no action required: schema18/17 historicality stands via the §0.5–§0.9 supersession chain and the operative equality gate (doc :1815-1818); §0.1 review-file existence claims left as listing-confirmed; review performed no builds/tests (unchanged).

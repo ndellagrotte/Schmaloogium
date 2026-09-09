@@ -253,3 +253,18 @@ the dependencies' current self-declared states. No contract shape, grant, receiv
 scope boundary, or §5 interface is affected; the underlying contracts all exist at the
 dependency coordinates given in the corrections. No structural rebuild is required. No
 build/test/GL execution was performed by this review.
+
+## Resolutions
+
+2026-09-08 fix-up (attempt-10 wave):
+
+- **C1:** applied — §3.1 provenance cell repointed to `docs/phase3/v1/PHASE_3_DOC.md:3379,1591-1594`; both targets verified at current P3 bytes (§5.1 source/materialization row; "the binding data contract is the closed type algebra" at 1591-1594), and the old pins verified to land on publication-closure (:3360), resource-map-sparsity (:3787-3791) and dimension-mode (:3823-3826) prose.
+- **C2:** applied — §3.1 algebra pin repointed to `docs/phase3/v1/PHASE_3_DOC.md:1468-1484` (`DeclaredGlslType` sealed interface incl. `Sampler(SampledKind, TextureDimension, arrayed, shadow, multisample)`, verified); the post-freeze current pin `3587-3596,3660-3665` verified to land on `TextureBindingKey`/texture-declaration prose, not the sampler type algebra.
+- **C3:** applied — §11.5 pin set to `docs/phase1/v14/PHASE_1_DOC.md:4202-4208` (verified: `GLCall("shaders.useFixedFunction", List.of())` with `calledInOrder`/`neverCalled`/`noUseAfterDelete`); post-freeze drift had left near-miss `4201-4208` (a bullet-intro line).
+- **C4:** applied — §3.1 P6 pin set to `docs/phase6/v1/PHASE_6_DOC.md:1187-1226` (verified: §4.9 heading + "Phase 5 is the sole policy owner" passage; post-freeze drift had left `1189-1226`); the RESEARCH `:1228-1255` pin kept as accurate.
+- **C5:** applied at current bytes — the post-freeze pin `docs/phase3/v1/PHASE_3_DOC.md:3233-3249` verified to already contain §4.10's canonical framing (`atom` defined at 3233, `seq` at 3234, `encode`/payload at 3236-3244); the review's `3236-3243` was computed against pre-drift bytes and would now truncate the `atom`/`seq` definitions, so the verified current pin is retained (recomputed evidence, not a skip).
+- **C6:** applied — §4.5 pin completed to `docs/research/v1/RESEARCH.md:1143-1145` (verified: :1142 blank; the Count: 60 quote spans 1143-1145).
+- **C7:** applied — §0.2 P1 paragraph and the §11.5 Phase 1 bullet reworded to P1's actual posture (Review 20's literal PASS historical for the §0.19/§0.20-era surface; current P1 bytes **not verified** per P1's §G1.3 status, read at P1:7015-7023; post-Review-20 grants this phase consumes already tracked owner-granted/unverified in §5.2/§5.4). No new line pins introduced; section anchors only.
+- **C8:** applied — §3.1 provenance cell reworded to "adopted downstream request (P6 §5.2 owner-review gate open, P6 currently unverified)"; the P6:1279–1299 pin kept (interface block verified present at P6:1280-1302; P6:1278 "subject to §5.2's owner-review gate"); P6's not-verified §G1.3 status verified at P6:139-142.
+- **N1:** note — acknowledged; the `PHASE_1_DOC.md:3290` pin left unchanged for the dedicated anchor re-derivation pass (content present in the pinned `ShaderService` block; :3306 is the exact member line per the review).
+- **post-freeze drift (sweep note):** document bytes differ from this review's frozen SHA-256 (`244150ae…` → `13e4a47b…` before this fix-up, same 3125 lines): C2–C6 pins had been partially repointed post-freeze with near-miss targets while C1/C7/C8 were untouched. All eight corrections were re-verified against current dependency bytes and converged here; P1/P3/P6 self-statuses re-read at current bytes (P1:7015-7023, P3:5531-5547, P6:139-142).

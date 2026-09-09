@@ -4,7 +4,7 @@
 
 **Phase:** 4 — Stage/program registry & compilation
 
-**Date:** 2026-07-29 · **Last revised:** 2026-09-08 (§0.41)
+**Date:** 2026-07-29 · **Last revised:** 2026-09-08 (§0.42)
 
 **Milestone:** v0.1, with the full modern-superset shape present but later families dormant
 
@@ -65,12 +65,15 @@ configs, or Pintonium's stale `DESIGN.md`.
 
 ### 0.2 Dependency PHASE docs consumed
 
-- `docs/phase1/v14/PHASE_1_DOC.md` is verified by the literal PASS in
-  `docs/phase1/reviews/PHASE_1_REVIEW_20.md`. Its §5 was read completely. Its §4.7
-  `engine.gl` facade was read to obtain the exact service and recording signatures that §5 makes
-  binding, including the now-published `ShaderService.useFixedFunction()` operation and its
-  zero-argument recorder event. Phase 1's later framebuffer/depth amendment is outside Phase 4's
-  use, but round twenty's literal PASS is the current dependency gate.
+- `docs/phase1/v14/PHASE_1_DOC.md`: Review 20's literal PASS
+  (`docs/phase1/reviews/PHASE_1_REVIEW_20.md`) verified the §0.19/§0.20-era surface
+  historically; per P1's own §G1.3 status (P1 §0.35), the current P1 bytes carry later §5
+  amendments and are not verified until a fresh whole-document review returns literal PASS.
+  Its §5 was read completely. Its §4.7 `engine.gl` facade was read to obtain the exact service
+  and recording signatures that §5 makes binding, including the now-published
+  `ShaderService.useFixedFunction()` operation and its zero-argument recorder event. The
+  post-Review-20 grants this phase consumes are already tracked as owner-granted and unverified
+  in §5.2/§5.4; Phase 1's framebuffer/depth amendment is outside Phase 4's use.
 - Historical dependency read: Phase3 Review20 verified the surface originally consumed here.
   Current `docs/phase3/v1/PHASE_3_DOC.md` has Review36 applied resolutions and changed §5
   without a fresh PASS; it is provisional under this rebuild authorization, not freshly verified.
@@ -316,10 +319,10 @@ Additional reads: this whole document and Review31; `AGENTS.md` and `docs/MOVES.
 the whole Phase13 Review3; RC3 G1/G5.3/G9/G11.4/G12 and Phase4 assignment at
 `docs/design/v2.0-RC3/DESIGN.md:198-341,630-660,790-828,916-934,979-1109,1471-1571`;
 Phase3 sampler/materialization/load and canonical framing at
-`docs/phase3/v1/PHASE_3_DOC.md:532-666,1389-1410,1482-1510`;
+`docs/phase3/v1/PHASE_3_DOC.md:532-666,1389-1410,3233-3249`;
 `docs/research/v1/RESEARCH.md:1228-1255,1482-1492` for fixed units/shared targets; and
 `docs/phase6/v1/PHASE_6_DOC.md:970-1097,1342-1360` for the existing alias, participants,
-cache and retirement gap; `docs/phase8/v1/PHASE_8_DOC.md:225-257,560-607,932-981,1081-1133`
+cache and retirement gap; `docs/phase8/v1/PHASE_8_DOC.md:225-257,560-607,932-981,2028-2033`
 for the current planning cycle, invocation and ungranted four-row request. These narrow extra reads
 are needed to close the coordinated seam.
 RC3 remains governing even though Review31 used a verification-only v3 override. Phase3's
@@ -395,6 +398,19 @@ RC3, P3 schema23, virtual preludes, provider-wide fallback and historical eviden
 unchanged. N36-1's pinned-source limitation remains; no new reference mining was needed.
 This architecture-only correction is unverified: no validation, implementation, fresh PASS
 or integration clearance is claimed.
+
+### 0.42 Review 40 correction addendum
+
+Review 40 (`docs/phase4/reviews/PHASE_4_REVIEW_40.md`, 2026-09-08) returned PASS-WITH-CORRECTIONS
+over the full document with no §5 impact. All eight corrections are resolved: four dependency-pin
+repoints (§3.1's P3 declaration/materialization row to the P3 §5.1 source/materialization row plus
+the closed type algebra, §3.1's sampler algebra row to P3's `DeclaredGlslType`, §3.1's P6 consumer
+row to P6 §4.9, §11.5's recorder/replay pin to P1's published events), one pin verified already
+landed at current dependency bytes (§4.7's P3 framing pin `3233-3249`), one range completion
+(§4.5's RESEARCH slot-count quote to `1143-1145`), and two verification-status rewordings (§0.2 and
+§11.5 now state P1's actual posture per P1 §0.35; §3.1's P6 row reads "adopted downstream request"
+with the P6 §5.2 owner-review gate open). No contract, interface, decision-ID, or §5 change;
+resolutions are recorded in the review file.
 
 ## 1. Scope & boundaries
 
@@ -949,14 +965,14 @@ Fixed attribute table ── Phase 10 vertex-source inputs
 | Core program/shader object facade, no ARB object entry points | only Phase 1 `ShaderService` is consumed | `[U]` opportunity adopted by governing spec; `docs/research/v1/RESEARCH.md:766`–`:770` |
 | Core-layout and native ARB geometry retain their distinct source forms | §4.8 consumes current P3 preserving materialization; actual linked input must agree before READY, with full fallback on failure | `[V:doc]`, `docs/research/v1/RESEARCH.md:213`–`:216`, App A.3; D-P4-27/28/30/32 |
 | Invalid compile/link/validate result deletes program and reports to GUI/log | `ProgramBuildFailure`, cleanup ledger, backup re-resolution | `[V:observed]`, `docs/research/v1/RESEARCH.md:501`–`:505` |
-| Final materialized declarations are not reopened or inferred from driver activity | Merge Phase3 DeclaredUniformCatalogs into attributed uniform and sampler layouts; reject unequal structural types before GL, keep optimized-out declarations | Phase3 closed published algebra/materialization contract at `docs/phase3/v1/PHASE_3_DOC.md:3360,3787-3791,3823-3826`; current provisional state in §0.2 |
+| Final materialized declarations are not reopened or inferred from driver activity | Merge Phase3 DeclaredUniformCatalogs into attributed uniform and sampler layouts; reject unequal structural types before GL, keep optimized-out declarations | Phase3 closed published algebra/materialization contract at `docs/phase3/v1/PHASE_3_DOC.md:3379,1591-1594`; current provisional state in §0.2 |
 | Program use re-points samplers, refreshes built-ins, evaluates customs, locks alpha/blend | ordered `ProgramStateBarrier` in §4.10 | `[V:observed]`, `docs/research/v1/RESEARCH.md:505`–`:507`; adoption `D-P4-5` |
-| Phase 6 participants require bound lookup and between-activation activity proof without a program handle | callback-scoped `BoundProgramUniformAccess`, generation/provider/layout cache key, and retainable operation-free epoch token | D-6; verified downstream request at `docs/phase6/v1/PHASE_6_DOC.md:1279`–`:1299` |
+| Phase 6 participants require bound lookup and between-activation activity proof without a program handle | callback-scoped `BoundProgramUniformAccess`, generation/provider/layout cache key, and retainable operation-free epoch token | D-6; adopted downstream request (P6 §5.2 owner-review gate open, P6 currently unverified) at `docs/phase6/v1/PHASE_6_DOC.md:1279`–`:1299` |
 | Shadow pass overrides hook-requested program | barrier selection step 1 | `[V:observed]`, `docs/research/v1/RESEARCH.md:506`–`:507` |
 | Reload invalidates downstream derived caches | `PublishedRegistry.generation` equality protocol | `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/pipeline/PipelineManager.java:87, "versionCounterForSodiumShaderReload++"]`; `D-P4-8` |
 | Per-program target-specific custom textures on fixed units | Full sampler projection + pure Phase5 policy + authenticated single selection; §8.6 sharedUnit_programSpecificTargets/effectiveFallbackLayout | `[D-P4-18]`, `[D-P4-19]`; `docs/research/v1/RESEARCH.md:1484-1490` |
-| Same-unit incompatible sampler declarations | Pre-GL SAMPLER_LAYOUT evidence and ordinary provider-local fallback; §8.6 sharedUnit_incompatibleAliasesBeforeBind/fullSamplerShape | `[D-P4-18]`; `docs/research/v1/RESEARCH.md:1488-1490`; complete algebra `docs/phase3/v1/PHASE_3_DOC.md:3568-3576,3660-3665` |
-| Fixed0–15 map and conditional shadow alias | Phase5 alone validates/resolves names; Phase6 consumer migration pending; §8.6 sharedUnit_fixedRangeAndShadowAlias | `[D-P4-18]`; `docs/research/v1/RESEARCH.md:1228-1255`; `docs/phase6/v1/PHASE_6_DOC.md:993-998` |
+| Same-unit incompatible sampler declarations | Pre-GL SAMPLER_LAYOUT evidence and ordinary provider-local fallback; §8.6 sharedUnit_incompatibleAliasesBeforeBind/fullSamplerShape | `[D-P4-18]`; `docs/research/v1/RESEARCH.md:1488-1490`; complete algebra `docs/phase3/v1/PHASE_3_DOC.md:1499-1515` |
+| Fixed0–15 map and conditional shadow alias | Phase5 alone validates/resolves names; Phase6 consumer migration pending; §8.6 sharedUnit_fixedRangeAndShadowAlias | `[D-P4-18]`; `docs/research/v1/RESEARCH.md:1228-1255`; `docs/phase6/v1/PHASE_6_DOC.md:1187-1226` |
 | Stale selection/lease must not authorize mutation or draw | Pure credential check, same selection through Phase5 bind then activation, coherent off compensation; §8.6 binding_* and pipeline_textureFailureCompensates | `[D-P4-19]`; coordinated architecture decision, not observed implementation |
 
 ### 3.2 Appendix A.1 program/fallback map
@@ -1192,7 +1208,7 @@ It is not constructed with a fixed catalog-size array.
 
 The governing inputs now agree:
 
-- `docs/research/v1/RESEARCH.md:1142` says
+- `docs/research/v1/RESEARCH.md:1143-1145` says
   "Count: 60 named shader/virtual slots, excluding the external `<none>` sentinel";
 - that table names 3 shadow slots, 22 gbuffers slots, 17 deferred entries including pre,
   17 composite entries including pre, and final: **60** named shader/virtual slots, excluding the
@@ -1438,7 +1454,7 @@ compute/unwired domains remain explicitly unsupported, not silently composite.
 The new sampler/policy digests use SHA-256 as a design choice, with distinct
 `ProgramSamplerLayout/v1` and `FixedSamplerPolicy/v1` domain/schema tags and Phase3 §4.10's
 length-prefixed scalar/string/list framing
-(`docs/phase3/v1/PHASE_3_DOC.md:1403-1410`). Hash provider identity, effective stage, permitted
+(`docs/phase3/v1/PHASE_3_DOC.md:3233-3249`). Hash provider identity, effective stage, permitted
 bands in enum declaration order, full ordered declarations/sites/materialization fingerprints,
 policy fingerprint, and the validation variant/full canonical payload. FixedFunctionEmpty and
 VirtualNotApplicable have distinct tags and include policy identity. Requested child identity is
@@ -2926,12 +2942,15 @@ N35-1's narrower corroboration are preserved; no fresh PASS, implementation or r
   60-row Appendix A.1 count, and `docs/design/v2.0-RC3/DESIGN.md` now uses cardinality-neutral
   Phase 4 wording. Every named row remains; §4.5 and §8 retain equality/coverage tests without
   making the corrected count behavioral.
-- **GRANTED — Phase 1 §0.15, currently verified by round 20.**
-  `docs/phase1/v14/PHASE_1_DOC.md:3290` publishes
+- **GRANTED — Phase 1 §0.15.**
+  `docs/phase1/v14/PHASE_1_DOC.md:3324` publishes
   `ShaderService.useFixedFunction()`, and
-  `docs/phase1/v14/PHASE_1_DOC.md:3532` publishes its distinct
-  `shaders.useFixedFunction` recorder/replay semantics. The literal PASS at
-  `docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75` closes the current dependency surface.
+  `docs/phase1/v14/PHASE_1_DOC.md:4220-4226` publishes its distinct
+  `shaders.useFixedFunction` recorder/replay semantics. Review 20's literal PASS at
+  `docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75` verified the §0.19/§0.20-era surface
+  historically; per P1's own §G1.3 status (P1 §0.35), current P1 bytes carry later §5 amendments
+  and are not verified until a fresh whole-document review returns literal PASS, with the
+  post-Review-20 grants this phase consumes tracked as owner-granted/unverified in §5.2/§5.4.
 - **GRANTED AND VERIFIED — Phase 5 candidate-view clarification.** Section 5.1 publishes the
   existing `CompiledRegistryCandidate.view()` as the non-owning, generationless pre-publication
   `ProgramRegistryView` for Phases 5 and 7 without exposing registry/handle access or weakening
@@ -3122,4 +3141,4 @@ N35-1's narrower corroboration are preserved; no fresh PASS, implementation or r
     Until grants, keep honest typed gates and never claim empty texture publication completes v0.5.
 ---
 
-§5 changed in this coordinated rebuild. Unverified; a fresh whole-document review returning literal PASS is required before verified downstream consumption. v1 retained; no directory roll.
+§5 changed in this coordinated rebuild; Review 40 (2026-09-08) then audited the full document: PASS-WITH-CORRECTIONS with no §5 impact. All eight corrections are applied in this revision and note N1 is dispositioned (§0.42; resolutions recorded in `docs/phase4/reviews/PHASE_4_REVIEW_40.md`). With all corrections resolved and no §5 change outstanding, Phase 4 satisfies the §G1.3 fix-up verification condition. v1 retained; no directory roll.

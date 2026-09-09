@@ -178,6 +178,16 @@ amendments (C-2). C-3 was rejected with evidence: current Phase 2 v2 bytes adopt
 RUN-EXPRESSION-CONFORMANCE at D-P2-28, so §5.6's adoption claim stands. §5 text changed; a fresh
 verification round remains required and §0.13's standing requirement is unchanged.
 
+### 0.16 Review-17 correction fix-up — unverified
+
+Review 17 (2026-09-08) applied three dependency-anchor coordinate repoints: the §1.2 Phase 3
+declaration-capture citation now ends at `docs/phase3/v1/PHASE_3_DOC.md:1748` (C17-1) and the
+§1.3 precipitation-ownership citation stands verified at `:1748` (C17-2); the §4.8 and §5.3
+Phase 6 §4.13 sub-ranges were recomputed to the Review-17 targets `:1537`–`:1541` and
+`:1544`–`:1562`, with the §4.8 install/retention range already at `:1590`–`:1597` (C17-3). No
+§5 grant, interface, or semantic text changed; citation coordinates only. The standing
+requirement is unchanged: §0.13's fresh verification round before closure remains open.
+
 ---
 
 ## 1. Scope & boundaries
@@ -204,7 +214,7 @@ This is the full Objective: “grammar, functions, input binding, evaluation cad
 
 - **Phase 3** reads `shaders.properties`, validates declaration keys/types/names, preserves raw
   expression text and source order, and never invokes this grammar
-  (`docs/phase3/v1/PHASE_3_DOC.md:2891`–`:2908`). Phase 11 never reopens pack files or reparses
+  (`docs/phase3/v1/PHASE_3_DOC.md:1776`–`:1779`). Phase 11 never reopens pack files or reparses
   Java Properties syntax.
 - **Phase 6** owns fixed built-in acquisition, current typed values, the post-built-in custom
   callback, active-program location/type checks, GL uploads, upload replay, and GL-error isolation.
@@ -234,7 +244,7 @@ The following are prohibited within `engine.expr`:
 
 The Appendix F.6 precipitation sentence is explicitly a Phase 7 behavior handoff, not an
 expression-engine feature; Phase 3 records the same ownership
-(`docs/phase3/v1/PHASE_3_DOC.md:1726`–`:1729`).
+(`docs/phase3/v1/PHASE_3_DOC.md:1779`).
 
 ---
 
@@ -455,7 +465,7 @@ runtime errors for the one uniform that reaches them; Phase 11 never invents zer
 Appendix F.6 authoritatively excludes every D.4 per-draw dynamic—`entityColor`, `entityId`,
 `blockEntityId`, `blendFunc`, and `instanceId`—plus `fogMode` and `fogColor`, and expressly says it
 does not narrow D.4 (`docs/research/v1/RESEARCH.md:1501`–`:1505`). Phase 6's verified schema matches
-that seven-name rule (`docs/phase6/v1/PHASE_6_DOC.md:1602`–`:1606`). The stale five-name restatement
+that seven-name rule (`docs/phase6/v1/PHASE_6_DOC.md:1605`–`:1610`). The stale five-name restatement
 in the Phase 11 design row (`docs/design/v3/DESIGN.md:2300`–`:2303`) is reported in §11.
 
 ### 3.4 Pintonium do-not-inherit disposition
@@ -789,7 +799,7 @@ ordinary Phase 6 redundant-upload skip.
 ### 4.8 Program-switch cadence and Phase 6 bridge
 
 One `CustomExpressionController` is installed through Phase 6 before first use and retained for the
-runtime lifetime, as Phase 6 requires (`docs/phase6/v1/PHASE_6_DOC.md:1588`–`:1591`). It holds an
+runtime lifetime, as Phase 6 requires (`docs/phase6/v1/PHASE_6_DOC.md:1592`–`:1599`). It holds an
 atomic current-plan slot changed only by composition lifecycle calls.
 
 On `refresh(program, values, uploads)`:
@@ -813,7 +823,7 @@ On `refresh(program, values, uploads)`:
 Expression-local errors never produce `Aborted`. `Aborted` is reserved for a corrupt plan,
 generation mismatch, provider protocol failure, or backend invariant that makes the remainder
 unsafe. Phase 6 commits any already accepted prefix exactly as its contract states, subject to the
-invalid-counter branch that supersedes it (`docs/phase6/v1/PHASE_6_DOC.md:1659`–`:1668`).
+invalid-counter branch that supersedes it (`docs/phase6/v1/PHASE_6_DOC.md:1663`–`:1672`).
 Every `Aborted(diagnosticId,accepted,skippedAbsent,rejected)` reports those same three counters for
 the submitted prefix before the structural failure; Phase 11 never estimates or resets the ledger.
 
@@ -1247,10 +1257,10 @@ historical; current producer/receiver reviews and IR-01 are not closed by this r
 Phase 11 adopts the current, unverified Phase 6 §5 contracts:
 
 - one `CustomUniformBridge.refresh(ResolvedProgramDescriptor, BuiltInExpressionView,
-  CustomUniformUploadSink)` (`docs/phase6/v1/PHASE_6_DOC.md:1535`–`:1540`);
+  CustomUniformUploadSink)` (`docs/phase6/v1/PHASE_6_DOC.md:1539`–`:1543`);
 - exact-name `Present(ExpressionValue)` / `Absent` lookup and the closed scalar/vector/mat4
-  runtime values (`:1542`–`:1560`);
-- typed immutable upload submission and closed refresh result (`:1561`–`:1585`);
+  runtime values (`:1546`–`:1564`);
+- typed immutable upload submission and closed refresh result (`:1565`–`:1589`);
 - built-ins-first execution on every successful activation, with Phase 11 owning expression errors
   and Phase 6 owning GL uploads (P6 §4.13);
 - definition-order submission, finite values, type/location checks, duplicate rejection, and
@@ -1270,7 +1280,7 @@ also consumes `CustomUploadCommand.Bool1(name,boolean)`, with Phase 6 owning lin
 validation and 0/1 GL encoding. The sink's closed outcomes are `Accepted`, normal no-warning/no-GL
 `SkippedAbsent`, and `Rejected(stableDiagnosticId)`; only actual invalid names, type mismatches, and
 duplicates reject. These grants and their three authoritative refresh counters are binding in
-Phase 6 §4.13 (`docs/phase6/v1/PHASE_6_DOC.md:1521`–`:1673`). Phase 6 retains ownership of active-layout
+Phase 6 §4.13 (`docs/phase6/v1/PHASE_6_DOC.md:1525`–`:1676`). Phase 6 retains ownership of active-layout
 validation, GL encoding, diagnostics, and upload isolation.
 
 ### 5.5 Composition handoff without a Phase 7 dependency
@@ -1672,7 +1682,7 @@ session does not run the spike or update RESEARCH.md.
 | D-P11-28 | C15-1: state the current Phase 3 admission constant as 23 received by D-P11-25 in the §0 header and the §5.2 body, deferring to the newest §5.2 receipt; D-P11-21 and older numeric statements are historical | Textual consistency with D-P11-25 and current P3 bytes; no schema bump, admission-gate or grammar change |
 | D-P11-29 | C15-2: repoint §§1.2/1.3/3.3/4.8/5.3/5.4 dependency anchors to current P3 declaration-capture/algebra/precipitation bytes and current P6 §4.13 coordinates, section-level where the review verified no sub-range | Coordinates only; the bullets' incorporated semantics already match the verified endpoints; no §5 grant content or receiver change |
 | D-P11-30 | C15-3: restate §1.1 dependency-analysis scope as the shared uniform/variable definition graph per D-P11-27 | Closes the §1 cutover residue; §§4.1/4.4/4.5 and the incorporated §5.1 compiler row already define one shared namespace |
-| D-P11-31 | C16-1: the §5.2 D-P11-20 receipt marks P4 D-P4-31's own-build-v1 as the receipt-time opaque composition identity; the current domain is D-P4-43's RegistryFingerprint/profile-selection-v3 | P4 :1937–:1938 supersedes positional-route-v2 two generations past own-build-v1; supersedes D-P11-20's present-tense identity statement only; opacity treatment and scheme-23 admission logic unchanged |
+| D-P11-31 | C16-1: the §5.2 D-P11-20 receipt marks P4 D-P4-31's own-build-v1 as the receipt-time opaque composition identity; the current domain is D-P4-43's RegistryFingerprint/profile-selection-v3 | P4 :1953–:1954 supersedes positional-route-v2 two generations past own-build-v1; supersedes D-P11-20's present-tense identity statement only; opacity treatment and scheme-23 admission logic unchanged |
 
 ### 11.2 Contradictions, gaps, and rulings
 

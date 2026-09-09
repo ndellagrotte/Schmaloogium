@@ -32,10 +32,10 @@ the adoption.
 | `reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md` | §8 "Texture system" only (`:456`–`:487`) | the one section the spec grants (`docs/design/v3/DESIGN.md:2491`), under §G7 item 2 |
 | `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties` | custom-texture and noise block (`:78`–`:125`) | legally clean shipped pack-author doc, citable freely (§G7 item 3, `docs/design/v3/DESIGN.md:743`–`:745`) |
 | `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt` | sampler/unit tables (`:190`–`:207`, `:272`–`:326`), `atlasSize` row (`:177`), noise const row (`:422`), option-macro rows (`:655`–`:656`) | same shipped-doc grant |
-| `docs/phase3/v1/PHASE_3_DOC.md` | §1.2 ownership row (`:309`), §3.2 texture rows (`:749`–`:753`), §3.3 noise row (`:803`), §4.4 macros (`:957`–`:996`), §5.1 in full (`:1422`–`:1625`) | dependency contract |
+| `docs/phase3/v1/PHASE_3_DOC.md` | §1.2 ownership row (`:663`), §3.2 texture rows (`:1737`–`:1744`), §3.3 noise row (`:1795`), §4.4 macros (`:2296`–`:2442`), §5.1 in full (`:3368`–`:4161`) | dependency contract |
 | `docs/phase5/v1/PHASE_5_DOC.md` | Original-build historical reads: §1.2 ownership (`:382`), resize consumer types (`:617`–`:621`), `addResizeConsumer` (`:1807`), §4.12 (`:1869`–`:1957`), §5.1 (`:2000`–`:2020`), §6 (`:2116`), §9 (`:2321`); coordinated current contracts are cited in §5.2 | historical input record; not current line pins |
 | `docs/phase7/v1/PHASE_7_DOC.md` | Original-build §1.2 ownership, hook need9, executor step5, §4.10.1 catalog, AppE10/11 deferral, atlas event, reload and hand-off contracts | originally provisional; Review36 cleared that history, coordinated §5 is newly unverified (§0.2/§5.4) |
-| `docs/phase1/v14/PHASE_1_DOC.md` | package tables (`:1526`–`:1558`), seam constraints C-1…C-4 (`:2229`–`:2244`) | module placement and the D-6 seam |
+| `docs/phase1/v14/PHASE_1_DOC.md` | package tables (`:1723`–`:1796`), seam constraints C-1…C-4 (`:2541`–`:2559`) | module placement and the D-6 seam |
 | MCP `cleanroom` | `resolve_symbol` for `TextureMap`, `TextureAtlasSprite`, `AbstractTexture#getGlTextureId`, `TextureManager#getTexture`; `get_class_details` for both texture classes; `search_cleanroom_api("texture stitch", kind=event)` and `get_api_class` for `TextureStitchEvent` | the spec's named MCP recipes (`docs/design/v3/DESIGN.md:2493`–`:2494`) |
 
 Dependency PHASE docs consumed: Phase 3 (custom-texture and noise algebra, macro configuration),
@@ -68,7 +68,7 @@ Phase 5 (texture-overlay lease, fixed unit table, format vocabulary, resize cons
    dependency review files were read as repository governance.** `docs/MOVES.md` is the path
    authority for a tree with six files named `DESIGN.md`; the review files are the only place a
    phase states whether it is verified. This matches the reading the Phase 7 build session recorded
-   (`docs/phase7/v1/PHASE_7_DOC.md:19`).
+  (`docs/phase7/v1/PHASE_7_DOC.md:18`).
 6. **`OCULUS_DESIGN.md` (`OD`) was deliberately not read.** §G12.6 maps P13 to OD §3, §9, §11–§17
    but states plainly that the map "does not amend any phase's current Required inputs"
    (`docs/design/v3/DESIGN.md:1113`–`:1116`), and the Phase 13 Required-inputs list does not name
@@ -265,8 +265,8 @@ Applied under §G1.3 from `docs/phase13/reviews/PHASE_13_REVIEW_9.md` (PASS-WITH
 blocking=0, corrections=2, notes=3; resolutions recorded in that review's `## Resolutions`).
 C1: three P7 coordinates D-P13-45 had claimed re-resolved were stale and are re-pointed with no
 semantic claim change — §1.1 item 6 and D-P13-45 now cite the `DEFERRED(P13,v0.5)` rows at
-`docs/phase7/v1/PHASE_7_DOC.md:1846-1847`, §4.6's catalog/health sentence cites the §4.10.1
-class table, audit and plugin rows at `:1650-1660`, and §5.2's Phase 7 row cites `:3880-3972`
+`docs/phase7/v1/PHASE_7_DOC.md:1863-1864`, §4.6's catalog/health sentence cites the §4.10.1
+class table, audit and plugin rows at `:1657-1680`, and §5.2's Phase 7 row cites `:3901-3993`
 (downstream slot plus complete ten-step transaction). C2: the document's only named P4 registry
 identity domain was the superseded own-build-v1; §5.2's Phase 4 consumption row now records P4
 D-P4-43 `RegistryFingerprint/profile-selection-v3` as the current opaque identity, D-P13-46
@@ -277,6 +277,27 @@ superseded. The review's notes were recorded, not applied; none is incorporated 
 fresh whole-document verify session before verified downstream consumption; the standing
 unverified posture above covers these bytes.
 
+
+### 0.16 Attempt-10 fix-up — Review 10 coordinate corrections — 2026-09-08
+
+Applied under §G1.3 from `docs/phase13/reviews/PHASE_13_REVIEW_10.md` (PASS-WITH-CORRECTIONS;
+blocking=0, corrections=3, notes=3; resolutions recorded in that review's `## Resolutions`).
+All three corrections are coordinate repoints of the Review9 P7 anchors with no interface shape,
+semantic, ownership, or identity change. Re-verified at fix-up time against current P7 bytes:
+§1.1 item 6 cites the `DEFERRED(P13,v0.5)` rows at `docs/phase7/v1/PHASE_7_DOC.md:1863-1864`
+(ledger heading `:1845`, rows `:1863`/`:1864`); §4.6's catalog/health sentence cites the §4.10.1
+class table and plugin audit at `:1657-1680` (table `:1667-1674`, `require=0`/`expect=1` audit
+`:1676-1680`); §5.2's Phase 7 consumption row cites `:3901-3993` (downstream slot `:3901-3922`
+plus the complete ten-step transaction `:3945-3993`). D-P13-45 records Review9's stale
+intermediate values as historical. The review's notes were recorded, not applied: N1 is a
+Phase 7-side coordinate defect left to the Phase 7 owner (current P7 bytes repoint it to this
+document's §5.1 frozen-inputs row, which verifies); N2 independently confirms §4.2.2's arithmetic;
+N3's history-preservation and fresh-verify mechanics are honored here. No new decision IDs.
+
+§5 changed in this fix-up wave (one §5.2 Phase 7 consumption-row coordinate,
+`docs/phase7/v1/PHASE_7_DOC.md:3880-3972` → `:3901-3993`). Per §G1.3 the document requires a
+fresh whole-document verify session before verified downstream consumption; the standing
+unverified posture above covers these bytes.
 
 ## 1. Scope & boundaries
 
@@ -301,13 +322,13 @@ Phase 13 owns the texture estate that is not a framebuffer attachment:
    expected-id lease acquisition, ownership and retirement. Shared candidate/snapshot/lease/result
    shapes belong to Phase 5; source and parameterization content semantics belong to Phase 13.
 6. **App E rows 10 and 11** — the `TextureMap` and `TextureAtlasSprite` hook sites Phase 7 deferred
-   to this phase (`docs/phase7/v1/PHASE_7_DOC.md:1846–1847`: “DEFERRED(P13,v0.5)”).
+   to this phase (`docs/phase7/v1/PHASE_7_DOC.md:1884–1885`: “DEFERRED(P13,v0.5)”).
 
 ### 1.2 Adjacent ownership — explicit "owned by Phase Y" lines
 
 | Concern this phase touches | Owner outside Phase 13 |
 |---|---|
-| The sole fixed App B.3 name/policy/resolver, shared candidate/snapshot/lease/result shapes, full-shape compatibility and physical unit binding | **Phase 5**, `docs/phase5/v1/PHASE_5_DOC.md:2726–2735`; Phase 13 produces candidates and never assigns units |
+| The sole fixed App B.3 name/policy/resolver, shared candidate/snapshot/lease/result shapes, full-shape compatibility and physical unit binding | **Phase 5**, `docs/phase5/v1/PHASE_5_DOC.md:2734–2743`; Phase 13 produces candidates and never assigns units |
 | Uploading sampler integers for those units, and uploading the `atlasSize` ivec2 | **Phase 6**; Phase 13 is the *value source* for `atlasSize` only (`docs/design/v3/DESIGN.md:2479`–`:2481`) |
 | Tangent-frame math and any shading that consumes the sampled normals | **Phase 10** (`docs/design/v3/DESIGN.md:2485`–`:2486`) |
 | labPBR channel semantics — what the specular channels *mean* | **pack-side convention; engine-neutral.** G8 advertises it (`docs/design/v3/DESIGN.md:2486`); Phase 13 delivers bytes and interprets none of them |
@@ -648,7 +669,7 @@ architectural checks**, specified with input → observable outcome in §8, not 
 | B3-3 | `noisetex`15 wired shader domains → §4.2.5; virtual/unwired explicit | `[V:doc]` `docs/research/v1/RESEARCH.md:1247-1247` | `sharedUnit_fixedRangeAndShadowAlias` |
 | B3-4 | gaux1–4 at7–10, aliases/fullscreen names retained → §4.3.4 | `[V:doc]` `docs/research/v1/RESEARCH.md:1239-1242` | `custom_fullscreenFixedOverrides` |
 | B3-5 | Generated companions world/shadow only; not a prohibition on fullscreen custom2/3 → §4.1.5 | `[V:observed]` `docs/research/v1/RESEARCH.md:595-596`; `reference-src/schlorbium-HD_U_G6_pre1/SHADER_ENGINE_IMPL.md:464-465` | `custom_stageExpansionExact` |
-| B3-6 | Fixed map, depthtex1=11, gbuffers12 unused; conditional shadow from effective watershadow → Phase5 resolver | `[D-P13-16]` `docs/design/v3/DESIGN.md:953-954`; `docs/research/v1/RESEARCH.md:1236-1255`; `docs/phase6/v1/PHASE_6_DOC.md:1217-1221` | `sharedUnit_fixedRangeAndShadowAlias` |
+| B3-6 | Fixed map, depthtex1=11, gbuffers12 unused; conditional shadow from effective watershadow → Phase5 resolver | `[D-P13-16]` `docs/design/v3/DESIGN.md:953-954`; `docs/research/v1/RESEARCH.md:1236-1255`; `docs/phase6/v1/PHASE_6_DOC.md:1221-1225` | `sharedUnit_fixedRangeAndShadowAlias` |
 
 ### 3.3 Texture-system rows
 
@@ -1490,7 +1511,7 @@ R7-11 retire(reason) and closed outcomes, never UniformRuntime.close/reset(CLOSE
 
 ### 4.6 Hook catalog — App E rows 10 and 11
 
-Use `docs/phase7/v1/PHASE_7_DOC.md:1650–1660`'s catalog and health classes: CORE disables the shader group, FEATURE disables
+Use `docs/phase7/v1/PHASE_7_DOC.md:1690–1698`'s catalog and health classes: CORE disables the shader group, FEATURE disables
 the feature, OBSERVER observes. Phase13 uses FEATURE rows, `require=0`, normally `expect=1`;
 Phase7's plugin audits application. Forge stitch events supply timing, read-only accessor
 mixins supply private data. `[D-P13-7]`
@@ -1770,9 +1791,9 @@ acquired lease only. Holding a stale lease delays deletion but never authorizes 
 | Phase3 `PackConfiguration.assets()` | Exact PackAssetSnapshot/metadata/closed acquisition/read-only bytes §4.3.2; same-load provenance, bounds, sidecar-only error classification, acyclic fingerprint and post-archive lifetime. P13 interprets; P7 retains/transports. Inspection's ninth assets section is metadata only, never preparation input |
 | Phase1 §§0.24/2.1/5.1 | Exact texture package trio granted and adopted here, unverified; seam constraints unchanged |
 | Phase1 §§4.7.2/4.7.7a/D-P1-66 — D-P13-41 | Exact immutable maxTextureSize/max3DTextureSize/maxRectangleTextureSize and target gates, native positive-or-unsupported-zero capture, required decimal replay keys; §4.3.3 pure per-axis comparison/failure classification applies to every prepared owned source and atlas capture, never guessed 2D limits for 3D/RECT |
-| Phase4 `docs/phase4/v1/PHASE_4_DOC.md:2128` | exact detached ProgramRegistryView, registry/policy fingerprints, ProgramSamplerLayout and opaque ProgramBindingSelection; line 2128: “resolve is detached handle-free inspection, not selection authority”. Current opaque identity is P4 D-P4-43 `RegistryFingerprint/profile-selection-v3` (`docs/phase4/v1/PHASE_4_DOC.md:1938`), received opaquely at the existing identity checks under D-P13-46; D-P13-31's historical own-build-v1 mention is superseded |
-| Phase5 `docs/phase5/v1/PHASE_5_DOC.md:2726–2735` | sole fixed-name/policy/resolver, candidate/binding results, accepted estate generation, formats and resize; line 2729: “Bound alone transfers lease into closeable sixteen-row snapshot with BoundObject/Unused” |
-| Phase7 `docs/phase7/v1/PHASE_7_DOC.md:3880–3972` | active-tuple owner/publication/lease source, select-once orchestration, complete ten-step transaction |
+| Phase4 `docs/phase4/v1/PHASE_4_DOC.md:2144` | exact detached ProgramRegistryView, registry/policy fingerprints, ProgramSamplerLayout and opaque ProgramBindingSelection; line 2144: “resolve is detached handle-free inspection, not selection authority”. Current opaque identity is P4 D-P4-43 `RegistryFingerprint/profile-selection-v3` (`docs/phase4/v1/PHASE_4_DOC.md:1953-1954`), received opaquely at the existing identity checks under D-P13-46; D-P13-31's historical own-build-v1 mention is superseded |
+| Phase5 `docs/phase5/v1/PHASE_5_DOC.md:2734–2743` | sole fixed-name/policy/resolver, candidate/binding results, accepted estate generation, formats and resize; line 2737: “Bound alone transfers lease into closeable sixteen-row snapshot with BoundObject/Unused” |
+| Phase7 `docs/phase7/v1/PHASE_7_DOC.md:3923–4015` | active-tuple owner/publication/lease source, select-once orchestration, complete ten-step transaction |
 | Phase6 §§0.23–0.24/5 | Adopted FixedSamplerResolver input and retire(reason); unchanged afterBind descriptor/context/uniform access, three participants, caches/tokens; fresh owner/receiver reviews required |
 | Phase8 §§0.7–0.8/5 | Adopted registry-independent planning and full shared selector/context/publication/lease invocation; traversal and neutralization unchanged; real slot still gated on implementation/verification |
 
@@ -1843,7 +1864,7 @@ Phase13 invokes lookup but does not independently resolve units.
 This is a mirror of Phase5's sole authority, checked against
 `docs/research/v1/RESEARCH.md:1228-1255`. `shadow`→5 iff the effective layout contains a direct
 sampler-compatible watershadow declaration, otherwise4; never a shadow-buffer-count heuristic
-(`docs/phase6/v1/PHASE_6_DOC.md:1217-1221`). Both gbuffers bands share mapping. Virtual has no
+(`docs/phase6/v1/PHASE_6_DOC.md:1221-1225`). Both gbuffers bands share mapping. Virtual has no
 binding and unsupported compute/unwired domains return UnsupportedDomain, not composite.
 
 ```java
@@ -2365,8 +2386,8 @@ Two OQs touch this subsystem without belonging to it, recorded so a reader does 
 | D-P13-42 | R7 C1: explicit local companion/default min/mag/wrap policy derived from accepted mip count; same ReadyAsset, fingerprint and complete setter, no grammar or confidence expansion |
 | D-P13-43 | R7 C2: actual accepted base-object/atlas association through opaque P7 evidence and context-bound lease; P5 exact matching/default branch and sole before-draw refresh, reciprocal P7/P8 lifetime receiver |
 | D-P13-44 | R8 C1: §4.3.2 acquisition gate enforces exact CURRENT_SCHEMA_VERSION=23 equality under D-P13-37 — matching nested IdMappingInput, required same-load assets, exact configuration pairing and `assets.pack()` — and rejects 22/all other schemas without repair; no other gate text moves |
-| D-P13-45 | R8 C2, coordinates re-corrected 2026-09-08 under Review9 C1: stale sibling-phase anchors re-resolved to current frozen coordinates (P4 `:2128`; P5 `:2726-2735` ownership rows and `:2729` Bound-only sentence; P7 `:1846-1847` DEFERRED(P13,v0.5) rows, `:1650-1660` §4.10.1 catalog/health classes and audit, `:3880-3972` Phase13 downstream slot plus complete ten-step transaction; P6 `:1217-1221`); unverifiable P7 line-quote dropped, no semantic claim changed; the R8 P7 values (`:1792-1793`, `:1598-1605,2933`, `:3880-3928`) had drifted and are historical |
-| D-P13-46 | 2026-09-08 Review9 C2 receiver: current opaque P4 registry identity is D-P4-43's `RegistryFingerprint/profile-selection-v3` (`docs/phase4/v1/PHASE_4_DOC.md:1938`), carried and compared opaquely at the existing identity checks with older-cache invalidation keyed to that domain; D-P13-31's own-build-v1 mention historical/superseded, mirroring P5 D-P5-48 and P7; no profile codec, inference, schema or cross-phase signature change |
+| D-P13-45 | R8 C2, coordinates re-corrected 2026-09-08 under Review9 C1: stale sibling-phase anchors re-resolved to current frozen coordinates (P4 `:2144`; P5 `:2734-2743` ownership rows and `:2737` Bound-only sentence; P7 `:1884-1885` DEFERRED(P13,v0.5) rows, `:1690-1698` §4.10.1 catalog/health classes and audit, `:3923-4015` Phase13 downstream slot plus complete ten-step transaction; P6 `:1221-1225`); unverifiable P7 line-quote dropped, no semantic claim changed; the R8 P7 values (`:1792-1793`, `:1598-1605,2933`, `:3880-3928`) had drifted and are historical; R10 C1/C2/C3 (2026-09-08): Review9's landed intermediate values (`:1846-1847`, `:1650-1660`, `:3880-3972`) were themselves stale and are historical, and the three re-pointed coordinates above re-verified against current P7 bytes (ledger heading `:1845`, literal DEFERRED rows `:1863`/`:1864`; §4.10.1 class table `:1667-1674` and audit `:1676-1680`; slot `:3901-3922` plus complete ten-step transaction `:3945-3993`) |
+| D-P13-46 | 2026-09-08 Review9 C2 receiver: current opaque P4 registry identity is D-P4-43's `RegistryFingerprint/profile-selection-v3` (`docs/phase4/v1/PHASE_4_DOC.md:1953-1954`), carried and compared opaquely at the existing identity checks with older-cache invalidation keyed to that domain; D-P13-31's own-build-v1 mention historical/superseded, mirroring P5 D-P5-48 and P7; no profile codec, inference, schema or cross-phase signature change |
 
 ### 11.2 Binding decisions
 

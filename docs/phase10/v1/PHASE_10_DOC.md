@@ -1693,7 +1693,7 @@ R10-1 and R10-5 are now owner-granted/receiver-adopted, unverified. No dependenc
 
 | Contract | Exact content and ownership | Consumer |
 |---|---|---|
-| `VertexLayout` / `VertexField` / `VertexInputPlan` | Immutable named physical fields/stride and complete plan: layoutFingerprint, pointers, nonnull immutable Set<ConventionalInput> conventionalInputs, expectedGeometryInput; enum POSITION,COLOR,UV0,UV1,NORMAL. §§2.2/4.1/4.6 D-P10-29 source participation and full authenticated product identity incorporated; CLASSIC_56 remains56 | mod adapters, P1 existing facade, P7 prepared submission, conformance; G8 growth |
+| `VertexLayout` / `VertexField` / `VertexInputPlan` | Immutable named physical fields/stride and complete plan: layoutFingerprint, pointers, nonnull immutable Set<ConventionalInput> conventionalInputs, expectedGeometryInput; enum POSITION,COLOR,UV0,UV1,NORMAL. §§2.2/4.1/4.6 D-P10-29 source participation and full authenticated product identity incorporated; CLASSIC_56 remains 56 | mod adapters, P1 existing facade, P7 prepared submission, conformance; G8 growth |
 | `VertexEpoch` | Independent vertex serial, world epoch, ID generation, layout fingerprint; equality necessary, not sufficient, for product admission | task/upload/state adapters; Phase 7 composition |
 | `VertexPipelineLifecycle` | Exact accepted P7 §5.1 begin/poll/prepare/activate/restore operations below; no active frame or stale worker overlaps mutation | P7 installed participant, unverified |
 | `VertexProgramInputSink` | Exact accepted P7 §5.1 authenticated main/shadow enter/leave/reset; no program selection or GL upload | P7 installed adapter, unverified |
@@ -2249,7 +2249,7 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
 | D-P10-29 (2026-09-08) | Resolve R3/C1 by immutable authenticated conventionalInputs distinct from physical CLASSIC_56 storage; absent COLOR/UV1 remain inherited on live draws and every cached playback, never filler arrays or capture-time constants. Complete source/plan identity follows Forge projection, state/client/VBO and original/derived capture products; preserve source-provided BLOCK and existing normal/tangent/other-attribute/off policy. R10-9 requests exact P1/P7 receipts; unverified architecture only |
 | D-P10-30 (2026-09-08) | Resolve R4 C1 by separating authenticated partial ITEM BakedQuad ingress from final BLOCK producer participation, with real func_178962_a four-vertex UV1 completion before eligibility and exact CORE health receipt; no filler promotion, arbitrary union, cached-source mutation or OLDMODEL inheritance change. Adopt P1 D-P1-70 complete capturePlan recorder factory before first replay; architecture only, unverified |
 | D-P10-31 (2026-09-08) | Resolve R5 C1 by naming the current `RegistryFingerprint/profile-selection-v3` domain (P4 D-P4-43; D-P4-31's own-build fields retained within it) as the opaque identity carried normally through P7 in §5.2; ledger-text repair only, no schema or carrier-semantics change |
-| D-P10-32 (2026-09-08) | Resolve R5 C2 by restating the R10-8/R10-9 receiver receipts as received in §5.1/§5.3/§11.3 — P7 D-P7-62 (seven H10-WRITER-* rows), D-P7-75 (H10-BRIGHTNESS-4 full-v0.3/v0.5-only), D-P7-70 (conventionalInputs) and P2's planned forwarding (PHASE_2_DOC.md:2962) — receiver-adopted/unverified with fresh applicable review retained as outstanding, and naming H10-BRIGHTNESS-4 in the §11.4 enumeration |
+| D-P10-32 (2026-09-08) | Resolve R5 C2 by restating the R10-8/R10-9 receiver receipts as received in §5.1/§5.3/§11.3 — P7 D-P7-62 (seven H10-WRITER-* rows), D-P7-75 (H10-BRIGHTNESS-4 full-v0.3/v0.5-only), D-P7-70 (conventionalInputs) and P2's planned forwarding (docs/phase2/v2/PHASE_2_DOC.md:2962) — receiver-adopted/unverified with fresh applicable review retained as outstanding, and naming H10-BRIGHTNESS-4 in the §11.4 enumeration |
 
 ### 11.2 Input contradictions and rulings
 
@@ -2312,7 +2312,7 @@ incompatibilities. Changes to exposed lifecycle requirements require fresh revie
 - R10-8 receipts are received, not outstanding: P7 D-P7-62 grants all seven H10-WRITER-*
   IDs with exact descriptors, fingerprint recompute, unchanged v0.1 subset and identical P2
   forwarding, and D-P7-75 grants H10-BRIGHTNESS-4 full-v0.3/v0.5-only with P2's planned
-  evidence case (PHASE_2_DOC.md:2962). Receiver-adopted, unverified; fresh applicable review,
+  evidence case (docs/phase2/v2/PHASE_2_DOC.md:2962). Receiver-adopted, unverified; fresh applicable review,
   T10-INGRESS and transformed/runtime proofs remain future obligations.
 - R10-9/C1's conventional participation surface requires exact P1/P7 receiver review;
   T10-CONVENTIONAL-INHERITED/PROVIDED remain planned observable proof, not executed evidence.

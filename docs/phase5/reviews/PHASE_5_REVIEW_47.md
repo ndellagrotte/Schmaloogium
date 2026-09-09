@@ -74,3 +74,16 @@
 ## 6. Verdict
 
 **PASS-WITH-CORRECTIONS** — 3 corrections (Correction 1 spans six pin sites; Correction 2 one site; Correction 3 one header line), 4 notes, 0 blocking findings. All defects are citation-coordinate and header hygiene; the underlying claims are true at corrected coordinates and no §5 contract bytes change. Per §G1.3, applying the corrections and recording resolutions closes this round's findings without mandating a fresh §5-driven verify cycle beyond the whole-document PASS this document already declares outstanding. No build, test, gradle, GL, or network execution was performed by this review.
+
+## Resolutions
+
+2026-09-08 fix-up (attempt-10 wave):
+
+- **Correction 1:** applied — all six prescribed targets recomputed against current P3 bytes and verified to land (`:1752` `flip.<prog>.<buf>` row; `:1777` gdepth→`Explicit(RGBA32F)` row; `:2670-2677` `normalizeColorBufferName`; `:2730-2745` `BufferMinima` algebra; `:3365-3368` publication-surface intro + §5.1 heading; `:3680-3681` source-kind + duplicate-complete-key last-valid-wins-before-ordering). Four sites edited: §3.2 algebra `:2711-2724`→`:2730-2745`, §3.2 binding input `:3368`→`:3365-3368`, §3.5 canonicalization `:2688-2693`→`:2670-2677`, §4.12.2 ordering `:3660-3663`→`:3680-3681`. The §3.1 colortex1/gdepth and explicit-flip sites already carried the prescribed `:1777`/`:1752` at current bytes (post-freeze same-line-count drift; doc hash now `9623442c…` vs frozen `ffdc6ba6…`) and were verified, not re-edited. No prose changed.
+- **Correction 2:** applied — P6 `:1219-1221` recomputed and verified verbatim (conditional `shadow` rule: direct sampler-compatible `watershadow` → unit 5, otherwise unit 4, driver-location/shadow-count irrelevance); the §4.12.1 site already cited `:1219-1221` at current bytes and was verified, not re-edited.
+- **Correction 3:** applied — header now `**Last revised:** 2026-09-08 (§0.48)`. The round appends its own §0.48 log entry (document convention; §0.36/§0.37 hygiene-round precedents), one slot deeper than the named `§0.47`, so the pointer truthfully indexes the newest amendment. The §0.48 insertion shifts later P5 lines by +8; inbound pins citing P5 line numbers (e.g. P6:1217→`PHASE_5_DOC.md:2499-2502`, P6:1223→`PHASE_5_DOC.md:2478`) are intentionally left for the dedicated anchor re-derivation pass per the drift-avoidance contract.
+- **Note 1:** note — §0.42–§0.44 gap left as-is: cosmetic, no dependent references, renumbering prohibited; only §0.48 appended.
+- **Note 2:** note — no action; reviewer boundary acknowledged; reference-src pins remain PD/RESEARCH-corroborated per review §2.
+- **Note 3:** note — no action; §0.39 read-record ranges preserved as dated historical records, not live pins.
+- **Note 4:** note — no action; flagged deviation stands under D-P5-21/22 with recorded P6/P7/P8/P13 adoption.
+- **Note 5:** note — no action; clean quote-drift check, nothing to change.

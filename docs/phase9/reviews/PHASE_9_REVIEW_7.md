@@ -66,3 +66,16 @@
 ## 6. Verdict
 
 **PASS-WITH-CORRECTIONS** — 3 corrections (C7-1 stale P7 pins across five sites; C7-2 dual-pin drift in conformance row :402; C7-3 off-by-one macro pin in row :388), 2 notes, 0 blocking. All findings are anchor-hygiene; the wave's four change classes verify as semantically correct (C1 four of five repoints exact; C2 receiver-adopted claims true against current P7/P10 bytes with D-P7-54/D-P10-26 confirmed; C3 and C4 fully consistent). No structural defect; no §5 contract semantic change required. Per §G1.3 the pin fix-up does not alter cross-phase interface content, so the corrected doc closes without re-verification of §5 semantics. No build, test, verify loop, gradle, GL, or network fetch was executed.
+
+## Resolutions
+
+2026-09-08 fix-up (attempt-10 wave):
+
+Doc bytes drifted post-freeze (SHA-256 now `ea72e865…e7dae` vs frozen `f1a18d42…4593`; 1415 lines unchanged — pin-digit swaps only). Corrections were found already materialized in current bytes and were re-verified against current producer bytes rather than re-edited; exhaustive greps show zero residual stale pins.
+
+- **C7-1:** applied — all five named sites (§5.4 R9-2 row, §5.6 preamble, §5.6 H-ENTITY-03 bullet, §5.6 batch-rows bullet, §11.4 item 3; current doc :1058, :1073–:1074, :1078, :1085, :1371–:1372) cite `PHASE_7_DOC.md:1727` and `:1735`–`:1737`; coordinates re-derived in current P7 bytes (:1710 = H-SKY-02 celestial redirect, :1717–:1719 = `func_174982_a`/U7-1 note; :1727 = `func_192854_a(Lnet/minecraft/tileentity/TileEntity;DDDFIF)V` AROUND/finally with "no duplicate convenience-overload hook" and "not a fixed runtime call count"; :1735–:1737 = `preDrawBatch()V` / single `renderTileEntityFast` / `drawBatch(I)V`). P10 D-P10-26 pointer untouched as prescribed.
+- **C7-2:** applied — row :402 cites `RESEARCH.md:1329` and `PHASE_6_DOC.md:798`–`:800` (verified: RESEARCH :1327 = D.1 separator, :1328 = `heldItemId` row, :1329 = `heldBlockLightValue` row; P6 `HeldItemSample` four-int tuple at :799–:800); companion `:809`–`:813` pin unchanged and correct (brighter-hand-wins law at :811–:813). Row :401's `:1323`–`:1328` left as-is (correctly belongs to `heldItemId`).
+- **C7-3:** applied — row :388 cites `RESEARCH.md:463` (verified: "All these files are macro-preprocessed (standard macros A–G, no option macros)" at :463; :460–:462 carry the mod-extension/custom-render-layer sentences). Row :384's `:455`–`:460` left as-is per review.
+- **Note 1:** note — accepted; §5.3's five-step P9-relevant excerpt with "follow Phase 7" is an honest condensation of P7's ten-step transaction; no action.
+- **Note 2:** note — accepted; out-of-bounds reference-src/historical pins stand on their own recorded terms (§0.2 :118–:124 alias ruling, §0.3 :155 byte-identity disclaimer).
+- **Sweep 1 (doc :115 `verification/targets/phase-8.json`):** note — accepted recommended disposition: provenance-only §0.2 cite of an input actually inspected before Phase 9 scope was known (verification/ tree retired and deleted 2026-08-08 per docs/MOVES.md); left untouched — a rewrite would falsify the record of what the build session read.

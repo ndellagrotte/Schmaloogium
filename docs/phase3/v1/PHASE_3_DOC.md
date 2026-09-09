@@ -3,7 +3,7 @@
 ## 0. Header
 
 **Phase:** 3 — Pack front-end: ingestion, preprocessing, and configuration model
-**Date:** 2026-08-03 · **Last revised:** 2026-09-08 (§0.66)
+**Date:** 2026-08-03 · **Last revised:** 2026-09-08 (§0.67)
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`, Part I §G0–§G12 and the Phase 3
 specification only. RC3 governs this phase only; this document does not change the Phase 1 or
 Phase 2 governance pins.
@@ -235,10 +235,12 @@ The jcpp request now distinguishes missing build/seam work from the existing not
 RESEARCH defines the two declaration families and their upload/intermediate distinction at
 `docs/research/v1/RESEARCH.md:1492-1496` ("`uniform.<float|int|bool|vec2|vec3|vec4>.<name>=<expr>`
 uploads on program change" and "`variable.<type>.<name>=<expr>` defines reusable intermediates").
-Phase 11 then requests the missing dependency boundary at
-`docs/phase11/v1/PHASE_11_DOC.md:853-870`: "Before implementation, request a Phase 3 fix-up to
-publish" the closed enums/record/accessor, and "The list must be immutable, source ordered,
-lossless after Properties unescaping, retain duplicates" and participate in fingerprinting.
+Phase 11 then requested the missing dependency boundary at
+`docs/phase11/v1/PHASE_11_DOC.md:1184-1203`: its request-time "Before implementation, request a
+Phase 3 fix-up to publish" prose has since been superseded by P11 §5.2's direct consumed-contract
+statement at those same coordinates, still requiring publication of the closed
+enums/record/accessor with "The list must be immutable, source ordered, lossless after Properties
+unescaping, retain duplicates" and participation in fingerprinting.
 Sections 1–5, 8–9, 11, and 12 now publish that boundary as closed `CustomExpressionKind` and
 `CustomExpressionType` enums, a source-attributed `CustomExpressionDecl`, and the immutable
 source-ordered `PackConfiguration.customExpressions()` projection. Every valid occurrence,
@@ -354,11 +356,12 @@ pack-buffer spelling projection, and brings the closing ledger through this §0.
 
 ### 0.55 Downstream-request addendum (Phase 13 R1 companion option macros — 2026-09-07)
 
-This maintainer-authorized architecture-only amendment grants the Phase-3-owned input requested at
-`docs/phase13/v1/PHASE_13_DOC.md:1341-1348`: the new typed pair belongs "immediately after engineOptions";
-"Off still short-circuits. Do not overload MacroContribution." Active §§2–5 now carry that
-immutable pair through load-time shader analysis,
-the published option-macro state, every same-build materialization, and both fingerprints.
+This maintainer-authorized architecture-only amendment grants the Phase-3-owned input requested
+at `docs/phase13/v1/PHASE_13_DOC.md:846-852` (§4.1.6): the new typed pair belongs "immediately
+after engineOptions"; Off short-circuits, and §4.1.6's following paragraph keeps the separate
+materializer contribution "Empty/DefineCenterDepthSmooth, not a general macro bag". Active §§2–5
+now carry that immutable pair through load-time shader analysis, the published option-macro
+state, every same-build materialization, and both fingerprints.
 The pair replaces Phase 3's former engine-option/renderer-availability emission gates; it does not
 add a second macro producer. D-P3-58 records this cutover. The changed nested `MacroConfiguration`
 shape and meaning advance the configuration schema from 14 to 15.
@@ -378,10 +381,12 @@ are part of this amendment.
 
 ### 0.56 Downstream-request addendum (Phase 13 U1 lossless texture declarations — 2026-09-07)
 
-This maintainer-authorized architecture-only amendment answers the owner-side portion of
-`docs/phase13/v1/PHASE_13_DOC.md:531-541` and `:1647-1653`. Those sections quote the older
-Phase 3 boundary as "stripped and ignored"; their Phase 3 line coordinates no longer resolve to
-that contract. They are reported as stale, not reused as current pins. Round 47 already removed
+This maintainer-authorized architecture-only amendment answers the owner-side portion of Phase
+13's U1 request. Its request-time wording quoted the older Phase 3 boundary as "stripped and
+ignored" (`docs/phase13/v1/PHASE_13_DOC.md:531-541` and `:1647-1653` as of 2026-09-07); after
+Phase 13's subsequent revisions — including its adoption of D-P3-67's documented-mechanism
+boundary — that phrasing no longer occurs anywhere in current Phase 13, and those coordinates
+are retained here as dated request history, not reused as current pins. Round 47 already removed
 that destructive normalization; the pre-amendment active §§3.2/4.8/5.1 instead diagnosed and
 omitted undocumented keys. Neither rule supplied a lossless sampling-request boundary.
 
@@ -418,9 +423,11 @@ authority documents, builds/tests/verification, or directory rolls are changed o
 ### 0.57 Downstream-request addendum (Phase 4 per-program projections — 2026-09-07)
 
 This maintainer-authorized architecture-only amendment grants the Phase-3-owned publication
-requested at `docs/phase4/v1/PHASE_4_DOC.md:1866-1871`: Phase 4 must receive the
-"same immutable owner-defined values directly" while retaining the "existing Phase 5 pass-mipmap
-and Phase 10 vertex-layout consumers". Active §§3/4/5 now explicitly expose
+requested at `docs/phase4/v1/PHASE_4_DOC.md:2263-2266` (§5.4 item 2). P4's request-time phrase
+"same immutable owner-defined values directly" no longer occurs there: its §5.4 item 2 now
+consumes "direct `mipmappedAfterPass()`/`vertices()` values", and §11.3 ruling 6 records the
+§0.57 grant as adopted/unverified while Phase 5/10 keep their existing pass-mipmap and
+vertex-layout consumer roles. Active §§3/4/5 now explicitly expose
 `ProgramRequirements.mipmappedAfterPass()` and `ProgramRequirements.vertices()` to Phase 4 through
 the existing `PackConfiguration.resources().programs()` map. The lookup uses the published
 dimension and exact program name; Phase 4 neither reparses sources nor calls Phase 5/10 to obtain
@@ -610,6 +617,30 @@ No build, test, Gradle, GL, capture or network command ran, and no historical ad
 review verdict or receipt was rewritten. §8.1's named gate and a fresh independent
 whole-document review remain required. This is documentation only: no implementation, runtime
 evidence, fresh PASS or implementation clearance is claimed.
+
+### 0.67 Round 62 fix-up — 2026-09-08
+
+Review 62's correction repairs evidence anchors only, applied at the named sites on current
+bytes: §0.55 now cites Phase 13 §4.1.6 at `docs/phase13/v1/PHASE_13_DOC.md:846-852` and quotes
+P13's current "Off short-circuits" / materializer-contribution wording in place of the
+no-longer-verbatim sentence; §0.56 re-attributes P13's "stripped and ignored" phrasing to the
+2026-09-07 request revision, recording that it no longer occurs in current Phase 13 and keeping
+the old coordinates as dated history rather than current pins; §0.57 and D-P3-60 keep the
+resolving `docs/phase4/v1/PHASE_4_DOC.md:2263-2266` pin, anchor P4 §5.4 item 2 and §11.3
+ruling 6, quote P4's current "direct `mipmappedAfterPass()`/`vertices()` values", and mark the
+request-time phrase as no-longer-extant; §0.33 records P11 §5.2's direct consumed-contract
+statement superseding its request prose at unchanged coordinates; §10's duplicated OQ-7
+**Fallback:** paragraph is collapsed. No §5 row, export, schema, fingerprint payload, or
+receiver obligation changes, so per review 62 no fresh §5 re-verification is triggered.
+
+Inputs read for this repair: review 62 and the current Phase 4/11/13 dependency sections at the
+repaired citations. No build, test, Gradle, GL, capture, or network command ran; documentary
+only. Resolution records live in `docs/phase3/reviews/PHASE_3_REVIEW_62.md` under
+`## Resolutions`.
+
+**Current §G1.3 status:** all review 62 corrections and notes are resolved with no §5 change
+outstanding, so Phase 3 is verified for this surface under §G1.3; the pending separate
+citation-anchor re-derivation pass covers only line-level drift from this round.
 
 ## 1. Scope & boundaries
 
@@ -1832,7 +1863,7 @@ smoothing formula; this phase does not import an alternate unit.
 | Source identity and compiler attribution | `SourceCatalog` publishes ordered stage roots and one distinct ascending dimension/name `executablePrograms` projection; `SourceMap` and materializer retain attribution | RESEARCH §§3.2/4.2 and App A.2 source presence; `sourceCatalog_programProjectionStagesDimensionsAndAbsence`, `sourceMap_numericLookupAndMaterializedLifetime` |
 | Global compute-source recognition (`post-v0.5`) | For each known non-gbuffers program `p`, P3-C19 indexes only base-folder `p.csh` and `p_a.csh`…`p_z.csh`; the `SourceKey` uses associated name `p`, stage `COMPUTE`, and the distinct physical `SourceId`, then materializes through the same include/source-map path. Dimension folders remain `.vsh`/`.fsh` only | RESEARCH §§3.1/3.6.2; `sourceCatalog_computeRootsApplicabilityAndDimensions` (`post-v0.5`) |
 | Standard macro identity families | `MacroConfiguration` closes OF A–G plus the exact shader-only option set `MC_NORMAL_MAP`, `MC_SPECULAR_MAP`, `MC_RENDER_QUALITY`, `MC_SHADOW_QUALITY`, `MC_HAND_DEPTH`, `MC_OLD_HAND_LIGHT`, `MC_OLD_LIGHTING`, `MC_FXAA_LEVEL`, and the separately named capability-feature, engine-identity, override, and reserved-contributor families; it adopts PD's version/parser shape but rejects enumerate-all extension emission | RESEARCH §3.5; PD §7.6 `[V:observed — Pintonium common-shaders/src/main/java/net/irisshaders/iris/gl/shader/StandardMacros.java]`; D-P3-9; `macro_standardAndShaderPayloadFamiliesClosed`, `macro_optionFamilyMembershipAndValues`, `macro_optionNumericSerializationAliasesAndThresholds` |
-| Companion option-macro input | `CompanionOptionMacros` is captured before load-time shader jcpp, retained in `MacroConfiguration`, and reused by same-build materialization with both booleans hashed | RESEARCH §3.5; `docs/phase13/v1/PHASE_13_DOC.md:846-852` states the preliminary demand — the required pair supplied before load/jcpp and retained by Phase 3 §5.1 in `MacroConfiguration`, same-build materialization and both fingerprints — with the R1 adoption record at `docs/phase13/v1/PHASE_13_DOC.md:1940-1944` and its §11.5 R1 row at `:2430`; D-P3-58; `macro_companionTypedStateBeforeJcpp`, `macro_companionMissingNonOffAndOffShortCircuit`, `macro_companionSameBuildAndFingerprints` |
+| Companion option-macro input | `CompanionOptionMacros` is captured before load-time shader jcpp, retained in `MacroConfiguration`, and reused by same-build materialization with both booleans hashed | RESEARCH §3.5; `docs/phase13/v1/PHASE_13_DOC.md:867-873` states the preliminary demand — the required pair supplied before load/jcpp and retained by Phase 3 §5.1 in `MacroConfiguration`, same-build materialization and both fingerprints — with the R1 adoption record at `docs/phase13/v1/PHASE_13_DOC.md:1961-1965` and its §11.5 R1 row at `:2451`; D-P3-58; `macro_companionTypedStateBeforeJcpp`, `macro_companionMissingNonOffAndOffShortCircuit`, `macro_companionSameBuildAndFingerprints` |
 | Conditional preprocessing and substitution | jcpp adapters implement define/undef/if-family/defined/substitution for shaders and properties | RESEARCH §3.5; `preprocess_completeConditionalGrammarAllInputs` |
 | Public discovery/load and identity values | sealed tokens, explicit invalid generations, durable references, snapshot lifecycle, closed resolver/load outcomes, identity, and fingerprints | §2.2/§5; `discovery_invalidGenerationOrderingAndPublication`, `discovery_referenceRestartResolutionOutcomes` |
 | Block/item/entity short, namespaced, property, and legacy `id:meta` entry rules | D-P3-73 current-schema typed metadata interval unions and Literal/IntegerInterval property alternatives, one rule per selector with unchanged source order/state/origin/era; bounded matching is P9-only | RESEARCH §3.7; shipped `doc/shaders.txt:544` → `doc/properties_files.txt:97–122`; `idMap_allDocumentedRuleForms`, `idMap_typedMetadataSetsAndPropertyRanges`, `idMap_rangeBoundariesNoExpansionOrOvermatch`, `idMap_rangeIdentityAndInspection` |
@@ -4995,9 +5026,6 @@ evidence. All review/implementation gates remain. P3-C19 does not change legacy 
    configuration-only.
 6. Record the evidence and final status in RESEARCH §11 and append the chosen policy/result to this
    section; do not silently change defaults.
-**Fallback:** choose option 1 globally—OF standard A–G identity (`MC_VERSION`, GL/GLSL, OS, vendor,
-renderer, and on-demand extension families), no `IS_IRIS`, no `IRIS_VERSION`, and no Iris feature
-macros—while retaining `SCHMALOOGIUM` only if it is demonstrably inert for the matrix.
 **Success criteria:** a candidate has no classic-pack regression relative to option 1; no pack
 selects an unsupported path; all advertised feature flags correspond to implemented/tested
 behavior; and it improves or preserves dual-spec T0/T1 results on the same scenes. Option 3 is
@@ -5080,7 +5108,7 @@ not a decision (PD §7.6).
 | D-P3-57 | Close Phase 3 diagnostic arguments to four tagged boxed scalar classes and make the fixed discovery-overflow diagnostic argument-free, so exact snapshot accounting cannot depend on erased `Object` values or input-derived detail. |
 | D-P3-58 | Grant Phase 13 R1 through Phase-3-owned `CompanionOptionMacros`, captured before jcpp and retained/hash-bound for the whole build, rather than a post-analysis producer or another `MacroContribution`. The shipped `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:655-656` says "When the normal map is enabled" / "When the specular map is enabled"; `docs/research/v1/RESEARCH.md:313-319` places these in the standard shader header. Phase 7 adapts preliminary policy; Phase 3 projects the supplied booleans without reapplying D-P3-31's gates. |
 | D-P3-59 | Preserve every active decoded `texture.*` occurrence before collapse in schema-16 `TexturePropertyDecl`, with closed disposition, exact value, order and provenance; only Phase 3 reduces known sources or later decodes approved sampling syntax. RC3 `docs/design/v2.0-RC3/DESIGN.md:2441-2443` says "ours must honor them"; `docs/research/v1/RESEARCH.md:1484-1490` defines numeric discriminators and sidecars, not filter/wrap key grammar. Retention prevents owner-side data loss without falsely claiming honoring; U1 remains an explicit authority/consumer gate. |
-| D-P3-60 | Grant Phase 4 direct existing `ProgramRequirements.mipmappedAfterPass()` and `vertices()` reads through the one configuration's dimension/name-keyed resource map, preserving Phase 5/10 consumers rather than introducing reverse dependencies or another parser. `docs/phase4/v1/PHASE_4_DOC.md:1866-1871` requests the "same immutable owner-defined values directly"; `docs/research/v1/RESEARCH.md:1159` says "enable extended vertex attribute for this program" and `:1186` specifies "per-pass mipmap gen (composite/deferred/final)". Publication changes, not record meaning, canonical identity, schema 16, or fingerprint encoding. |
+| D-P3-60 | Grant Phase 4 direct existing `ProgramRequirements.mipmappedAfterPass()` and `vertices()` reads through the one configuration's dimension/name-keyed resource map, preserving Phase 5/10 consumers rather than introducing reverse dependencies or another parser. `docs/phase4/v1/PHASE_4_DOC.md:2263-2266` (§5.4 item 2) consumes these values as the adopted §0.57 grant; P4's request-time phrase "same immutable owner-defined values directly" no longer occurs there. `docs/research/v1/RESEARCH.md:1159` says "enable extended vertex attribute for this program" and `:1186` specifies "per-pass mipmap gen (composite/deferred/final)". Publication changes, not record meaning, canonical identity, schema 16, or fingerprint encoding. |
 | D-P3-61 | Historical schema17 decision: tri-state global old-light settings and zero-only AA storage remain; its explicit-user-only macro projection is **superseded by D-P3-64**. No authority ratification was claimed by that amendment. |
 | D-P3-62 | Publish one engine-owned inspection result from the existing load transaction, with an allowlisted source-free projection and same-read archive digest. Phase 2 owns fixture provenance and formatting; Phase 4 supplies separate same-build resolution enrichment. No engine-to-conformance dependency or hash-identity conflation. |
 | D-P3-63 | Replace the single language component with the schema-18 immutable full locale catalog and §4.3's explicit local normalization/collision/fallback policy. G6 author `doc/shaders.properties:192–208,277–284,319–324` uses `en_US`; published [OptiFine shaders.properties](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.properties) (read 2026-09-07, language examples) uses `en_us`. `reference-src/Pintonium-main/common-shaders/src/main/java/net/irisshaders/iris/shaderpack/LanguageMap.java:25–58,62–69` independently demonstrates immediate files, ROOT lowercase, UTF-8 Properties and immutable locale maps; its nondeterministic collision replacement is not adopted. The checkout's `LICENSE:1–4` identifies GPL v3 (not this document's historical blanket LGPL label); this amendment uses observation only and copies no code. Hyphen normalization, strict grammar, collision winner and empty-preserving per-key fallback are explicit local design decisions, not attributed external guarantees. |
@@ -5545,3 +5573,9 @@ fingerprint or schema change. The prior review history, including R60, remains h
 its own verdicts; §8.1's named gate and a fresh independent whole-document review remain
 required. No validation commands, implementation, runtime evidence, fresh PASS or
 implementation clearance are claimed.*
+
+*§0.67 records the R62 fix-up: evidence-anchor repairs in §0.33/§0.55/§0.56/§0.57/D-P3-60 and
+the §10 OQ-7 Fallback collapse, with no binding §5, schema, fingerprint, or receiver change.
+Review 62's PASS-WITH-CORRECTIONS resolves to verified under §G1.3 with all corrections resolved
+and no §5 change outstanding; Resolutions are recorded in the review file. No validation
+commands, implementation, runtime evidence, or implementation clearance are claimed.*

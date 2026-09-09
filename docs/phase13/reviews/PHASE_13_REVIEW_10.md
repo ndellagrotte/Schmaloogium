@@ -67,3 +67,15 @@
 ## 6. Verdict
 
 **PASS-WITH-CORRECTIONS.** The document is architecturally complete, interface-honest in both directions, identity-current, and licensing-compliant; this wave's C2 change verifies exactly. All three corrections concern one root cause — Review9's C1 repoint of the three P7 anchors used coordinates that do not resolve against the current `docs/phase7/v1/PHASE_7_DOC.md` bytes — and are fixable by coordinate repointing with no semantic rebuild. No build, test, gradle, GL, or network execution was performed.
+
+## Resolutions
+
+2026-09-08 fix-up (attempt-10 wave):
+
+- **C1:** applied — verified in place at fix-up time: §1.1 item 6 and D-P13-45 carry `docs/phase7/v1/PHASE_7_DOC.md:1863-1864`, re-verified against current P7 bytes (`:1845` §4.10.8 ledger heading, `:1847` intro, literal `DEFERRED(P13,v0.5)` at `:1863` TextureMap / `:1864` TextureAtlasSprite). The §0.15 site already carried the prescribed values in post-review bytes (worktree sha256 `81fddc3f5bae41c977638e51b5fb22ba37a9d903feed30488ab11501cfd0dd5a` ≠ review-frozen `7606a6af…`, 2506 lines both); grep confirms no `:1846-1847` site remains, so no edit was needed at §0.15.
+- **C2:** applied — verified in place: §4.6's opening sentence and D-P13-45 carry `:1657-1680`, re-verified against current P7 bytes (`:1657` §4.10.1 heading, four failure-classes table `:1667-1674`, `require = 0`/`expect = 1` plugin audit `:1676-1680`); grep confirms no `:1650-1660` site remains.
+- **C3:** applied — verified in place: §5.2's Phase 7 consumption row and D-P13-45 carry `:3901-3993`, re-verified against current P7 bytes (downstream slot `:3901-3922`, §5.3 ten-step transaction `:3945-3993`; step 7's first line is `:3972` and step 10 ends `:3993`, so the span covers the slot plus the complete transaction); grep confirms no `:3880-3972` endpoint remains.
+- **N1:** note — receiver-side (P7 owner), no phase-13 change per the review. Current P7 bytes already repoint P7 `:3903-3904` to this document's `:1706`/line 1706; FixP7 notified with verification that P13 `:1706` (§5.1 frozen-inputs row) holds the exact frozen `TexturePlanRequest`/`TextureBuildRequest` signatures P7 transcribes.
+- **N1 (update, same wave):** FixP7 confirms the handoff. My §0.16 insert (+21 lines at `:281`) had shifted this document under their read — Frozen-inputs row `:1706`→`:1727`, `TexturePlanRequest` declaration `:407-418`→`:428-439` — and their C3 row now cites the §5.1 Frozen-inputs row by section anchor instead of a line pin. Both sides defer final cross-document coordinates to the post-wave anchor re-derivation pass.
+- **N2:** note — no action; the review's arithmetic recomputation agrees with §4.2.2's specified signed-32 wrapping/`>>17`/truncated-remainder vectors.
+- **N3:** applied — D-P13-45 appends the R10 layer recording Review9's stale intermediate values (`:1846-1847`, `:1650-1660`, `:3880-3972`) as historical alongside the retained R8 values, with the re-verified coordinates; new §0.16 addendum records the §5 delta (`:3880-3972` → `:3901-3993`) and the re-triggered §G1.3 fresh whole-document verify obligation; standing unverified posture unchanged.

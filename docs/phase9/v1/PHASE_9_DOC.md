@@ -385,7 +385,7 @@ policy version. A consumer never combines components from different identities.
 | short `red_flower`, namespaced `minecraft:red_flower` | `RegistryName` normalization and exact selector pass (§4.5) | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:546`–`:553` |
 | property-matched block forms | typed predicate compilation against canonical state tuples (§4.5) | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/properties_files.txt:109`–`:122` |
 | legacy numeric `id:meta` | live numeric-ID index plus metadata filter (§4.5) | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:550`–`:553` |
-| standard A–G macros, no option macros | consumed Phase 3 result; forced retry delegates to Phase 3 | `[V:doc]` `docs/research/v1/RESEARCH.md:460`–`:462`; no parser duplication |
+| standard A–G macros, no option macros | consumed Phase 3 result; forced retry delegates to Phase 3 | `[V:doc]` `docs/research/v1/RESEARCH.md:463`; no parser duplication |
 | per-mod block/item/entity files | bounded active-mod snapshot and deterministic merge (§4.3) | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:537`–`:540`, `:576`–`:595` |
 | pack wins over mod | precedence tier 0 before mod tiers (§4.4) | Governing Phase 9 assignment `docs/design/v2.0-RC3/DESIGN.md:2069`–`:2071`; D-P9-2 |
 | first-writer-wins and order significance | fill-only table writes within each precedence class (§4.4) | `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/net/irisshaders/iris/shaderpack/materialmap/VintageBlockMaterialMapping.java]` `reference-src/pintonium-9c2fcc1/forge122/src/shaders/java/net/irisshaders/iris/shaderpack/materialmap/VintageBlockMaterialMapping.java:54`–`:67`; PD §8.1; contract checked by D-P9-2 |
@@ -399,7 +399,7 @@ policy version. A consumer never combines components from different identities.
 | custom `layer.solid/cutout/cutout_mipped/translucent` | resolved state-layer table (§4.9) | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:555`–`:568` |
 | solid opaque cubes excluded from custom layer | snapshot predicate rejects layer assignment (§4.9) | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:570`–`:574` |
 | `heldItemId` / `heldItemId2` | item alias lookup from both hand samples (§4.11) | `[V:doc]` `docs/research/v1/RESEARCH.md:1323`–`:1328`; no Pintonium 1.12 producer inherited |
-| `heldBlockLightValue` / `2`, brighter-hand-wins old mode | static held-state light and exact Phase 6 tuple (§4.11) | `[V:doc]` `docs/research/v1/RESEARCH.md:1327`–`:1328`; Phase 6 contract `docs/phase6/v1/PHASE_6_DOC.md:796`–`:798` plus `:809`–`:813` |
+| `heldBlockLightValue` / `2`, brighter-hand-wins old mode | static held-state light and exact Phase 6 tuple (§4.11) | `[V:doc]` `docs/research/v1/RESEARCH.md:1329`; Phase 6 contract `docs/phase6/v1/PHASE_6_DOC.md:800`–`:802` plus `:811`–`:815` |
 | `dynamicHandLight` | optional external-provider suppression only (§4.11) | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.properties:23`–`:25`; dynamic lights non-goal preserved |
 | `entityId` | balanced H9-ENTITY-ID scope (§4.12) | `[V:doc]` `docs/research/v1/RESEARCH.md:1373`–`:1375`; App E row 13 `docs/research/v1/RESEARCH.md:1413` |
 | `blockEntityId` is current TE's aliased block ID | balanced H9-BLOCK-ENTITY-ID scope (§4.12) | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:178`–`:180`; App E row 14 `docs/research/v1/RESEARCH.md:1414` |
@@ -1055,7 +1055,7 @@ after the final frame and worker borrows drain. No failure pairs a new registry/
 | ID | Owner | Current disposition | Remaining gate |
 |---|---|---|---|
 | R9-1 | Phase 3 | Current schema23 typed selector grant received by D-P9-22/§5.2; real BLOCK/ENTITY alternate provenance retains §4.7 selection | fresh Phase 3/9 verification; P3 owns selector/tag grammar, P9 registry resolution |
-| R9-2 | Phase 7 | existing publication/held/reset/color handoff retained; C2/C3 retarget and deferred-batch amendments specified in §5.6 are receiver-adopted in current P7/P10 (`PHASE_7_DOC.md:1710`, `:1718`–`:1720`; P10 D-P10-26) | fresh Phase 7/9 verification of the adopted rows; receiver adoption is present, so no integration step remains |
+| R9-2 | Phase 7 | existing publication/held/reset/color handoff retained; C2/C3 retarget and deferred-batch amendments specified in §5.6 are receiver-adopted in current P7/P10 (`PHASE_7_DOC.md:1748`, `:1756`–`:1758`; P10 D-P10-26) | fresh Phase 7/9 verification of the adopted rows; receiver adoption is present, so no integration step remains |
 | R10-3 | Phase 10 → Phase 9 | adopted §§4.1/5.3: failure-to-off and matched lookup/ordinal lifetime until worker drain | fresh Phase 9/10 verification; no new publisher or generation equality |
 
 ### 5.5 Downstream hand-offs
@@ -1070,19 +1070,19 @@ after the final frame and worker borrows drain. No failure pairs a new registry/
 ### 5.6 C2/C3 exact coordinated receiver amendments
 
 These changes are specified here and already receiver-adopted in the receivers' current
-documents: P7's H-ENTITY-03 lower-dispatch row (`PHASE_7_DOC.md:1710`) and owner7 CORE
-`H7-TE-BATCH-*` rows (`PHASE_7_DOC.md:1718`–`:1720`), and P10's native-range receiver under
+documents: P7's H-ENTITY-03 lower-dispatch row (`PHASE_7_DOC.md:1748`) and owner7 CORE
+`H7-TE-BATCH-*` rows (`PHASE_7_DOC.md:1756`–`:1758`), and P10's native-range receiver under
 D-P10-26. They are not permissions to invoke absent APIs and no integration step remains;
 fresh owner/receiver verification of the adopted rows stays mandatory.
 
-- **P7 H-ENTITY-03 (receiver-adopted, `PHASE_7_DOC.md:1710`):** the row already carries one
+- **P7 H-ENTITY-03 (receiver-adopted, `PHASE_7_DOC.md:1748`):** the row already carries one
   AROUND/finally on
   `TileEntityRendererDispatcher.func_192854_a(Lnet/minecraft/tileentity/TileEntity;DDDFIF)V`
   with "no duplicate convenience-overload hook", matching the semantics specified here.
   Verification confirms its main `gbuffers_block` or authenticated shadow admission outside
   H9-BLOCK-ENTITY-ID-01, one method target and one enclosing finally per row, and runtime
   invocations — including nested and damaged calls — each balancing, not a fixed per-frame count.
-- **P7 batch rows (receiver-adopted, `PHASE_7_DOC.md:1718`–`:1720`):** owner7 CORE
+- **P7 batch rows (receiver-adopted, `PHASE_7_DOC.md:1756`–`:1758`):** owner7 CORE
   `H7-TE-BATCH-BEGIN` on `preDrawBatch()V`, `H7-TE-BATCH-FAST` around the dispatcher's single
   `renderTileEntityFast` invocation, and `H7-TE-BATCH-DRAW` around `drawBatch(I)V` already
   exist, each one static application, with the semantics specified here: BEGIN borrows exact
@@ -1368,8 +1368,8 @@ No contradiction with RESEARCH D-1…D-10 was found.
 - Freshly verify Phase 3's current ID and engine-option schema grant and this receiver's §5.2.
 - Freshly verify the coordinated Phase 7/9/10 §5 lifecycle, shadow-admission and color producer
   amendments; no historical PASS is promoted to current integration clearance.
-- Freshly verify §5.6's adopted P7 dispatch/batch catalog rows (`PHASE_7_DOC.md:1710`,
-  `:1718`–`:1720`) and P10's owner-sidecar/permutation/native-range receiver (D-P10-26) before
+- Freshly verify §5.6's adopted P7 dispatch/batch catalog rows (`PHASE_7_DOC.md:1748`,
+  `:1756`–`:1758`) and P10's owner-sidecar/permutation/native-range receiver (D-P10-26) before
   implementation; the rows are already receiver-adopted, so verification — not integration — is
   the outstanding step.
 - In the next design candidate, qualify PD §8's “tag expansion … working in production” summary as

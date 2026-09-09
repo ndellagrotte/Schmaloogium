@@ -10,7 +10,7 @@
 
 **Assigned OQs:** none
 
-**Authored:** 2026-07-28 · **Last revised:** 2026-09-07 (§0.41)
+**Authored:** 2026-07-28 · **Last revised:** 2026-09-08 (§0.48)
 
 **Deliverable:** this document, following
 `docs/design/v2.0-RC3/DESIGN.md:790`–`:826` and its mandatory thirteen-section template.
@@ -411,6 +411,14 @@ P13 producer/parameter authority and P7 ordinary/nested/shadow dispatch. Histori
 source-pin/licence confidence and existing gates remain; no validation command, runtime proof,
 implementation, fresh PASS or optional native grant is claimed.
 
+### 0.48 Attempt-10 citation-anchor fix-up — 2026-09-08
+
+Review 47's corrections repoint the Phase 3 algebra, B.5-prefix canonicalization, and
+complete-key-ordering pins and set this header's latest-revision pointer; the colortex1/gdepth,
+explicit-flip, and Phase 6 conditional-shadow pins already carried the corrected coordinates at
+current bytes and were verified rather than re-edited. No §5 contract bytes change; the outstanding
+whole-document verify gate is unchanged.
+
 ## 1. Scope & boundaries
 
 ### 1.1 What Phase 5 owns
@@ -476,7 +484,7 @@ load a custom texture, or introduce a direct LWJGL call in `:engine`. `Final` ha
 FBO. Its buffer plan returns a `SCREEN` terminal that obliges Phase 7 to bind Minecraft's framebuffer
 through its platform path and apply Minecraft's anaglyph-aware color mask before drawing, consistent
 with `docs/research/v1/RESEARCH.md:527` and
-`docs/phase1/v14/PHASE_1_DOC.md:5513`, which warns that `bindDefault` means GL framebuffer name zero,
+`docs/phase1/v14/PHASE_1_DOC.md:5531`, which warns that `bindDefault` means GL framebuffer name zero,
 not Minecraft's world FBO.
 
 ## 2. Architecture overview
@@ -1171,13 +1179,13 @@ generation authority is separate from layout content identity. ProgramUniformCac
 | Contract item | Design element | Provenance |
 |---|---|---|
 | colortex0 / gcolor, fog clear | §4.6 default table; fog RGB with alpha forced to 1.0 | `[V:doc]` `docs/research/v1/RESEARCH.md:1201`–`:1204`; deployed alpha quirk `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/ClearPassCreator.java]` at `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/ClearPassCreator.java:35`–`:42`; D-P5-2 |
-| colortex1 / gdepth, white clear, conditional RGBA32F | §4.2 format resolution and §4.6 clear table | `[V:doc]` `docs/research/v1/RESEARCH.md:1205`; Phase 3 already publishes the conditional upgrade at `docs/phase3/v1/PHASE_3_DOC.md:1758` |
+| colortex1 / gdepth, white clear, conditional RGBA32F | §4.2 format resolution and §4.6 clear table | `[V:doc]` `docs/research/v1/RESEARCH.md:1205`; Phase 3 already publishes the conditional upgrade at `docs/phase3/v1/PHASE_3_DOC.md:1808` |
 | colortex2–7 transparent black | §4.6 default table | `[V:doc]` `docs/research/v1/RESEARCH.md:1206`–`:1208` |
 | at least 4, up to 8 in G6 | §4.1 capability/count gate and contiguous scan-driven inventory | `[V:doc]` `docs/research/v1/RESEARCH.md:1210` |
 | main/alt pair for every color, allocated up front with contract parameters | `ColorPair(A,B)` allocation in §4.3; §4.2 applies `CLAMP_TO_EDGE`, NEAREST for integer formats, and LINEAR otherwise to both sides | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1595`–`:1597`; `[V:doc]` `docs/research/v1/RESEARCH.md:1211`; `[V:observed — Pintonium reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTarget.java]` at `reference-src/pintonium-9c2fcc1/common-shaders/src/main/java/net/irisshaders/iris/targets/RenderTarget.java:36`–`:46`; D-P5-1 |
 | gbuffers reads/writes main | `PassMode.GBUFFERS_MAIN` in §4.5 | `[V:doc]` `docs/research/v1/RESEARCH.md:1210`–`:1212` |
 | deferred/composite read main, write alt, then flip written buffers | pass snapshot + `completePass` transition in §4.4–§4.5 | `[V:doc]` `docs/research/v1/RESEARCH.md:1210`–`:1212`; D-P5-1 |
-| explicit `flip.*`; virtual `*_pre` | transition rows in §4.4 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:33`–`:39`; Phase 3 publication at `docs/phase3/v1/PHASE_3_DOC.md:1733` |
+| explicit `flip.*`; virtual `*_pre` | transition rows in §4.4 | `[V:doc]` `reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:33`–`:39`; Phase 3 publication at `docs/phase3/v1/PHASE_3_DOC.md:1783` |
 | last writer leaves flip enabled for later reads | relative flip remains set through final; frame end rebases the physical committed side and clears only the relative bit | `[V:doc]` `docs/research/v1/RESEARCH.md:1519`–`:1520`; D-P5-4 |
 | composite blend/read-write rules | Phase 7/4 disable blending while a composite writes color attachments; independently, the buffer snapshot reports a read/write intersection diagnostic | `[V:doc]` `docs/research/v1/RESEARCH.md:1213`–`:1215`; explicit Phase 7 boundary |
 | per-buffer clear enable/color overrides and flip-aware clears | §4.6 resolves Phase 3 overrides, preserves mandatory full clears, and selects one/both physical sides from flip state | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1606`–`:1613`; Phase 3 clear policy |
@@ -1192,7 +1200,7 @@ generation authority is separate from layout content identity. ProgramUniformCac
 | depthtex2 = pre-weather/no-hand copy | owned copy texture + `PRE_WEATHER` operation; Phase 7 calls it | `[V:doc]` `docs/research/v1/RESEARCH.md:1223`; §4.9 |
 | shadowtex0 everything | sfb real depth attachment | `[V:doc]` `docs/research/v1/RESEARCH.md:1224`; §4.10 |
 | shadowtex1 pre-shadow-translucent copy | owned shadow split target; Phase 8 calls the copy | `[V:doc]` `docs/research/v1/RESEARCH.md:1225`; §4.10 |
-| sfb created when Phase 3 reports shadow depth or shadow color use | §4.10 plans the sfb when either `ResourceRequirements.minima().shadowDepthBuffers()` or `.shadowColorBuffers()` is positive | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1630`–`:1633`; Phase 3 algebra `docs/phase3/v1/PHASE_3_DOC.md:2711`–`:2724` and binding input `docs/phase3/v1/PHASE_3_DOC.md:3367` |
+| sfb created when Phase 3 reports shadow depth or shadow color use | §4.10 plans the sfb when either `ResourceRequirements.minima().shadowDepthBuffers()` or `.shadowColorBuffers()` is positive | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1630`–`:1633`; Phase 3 algebra `docs/phase3/v1/PHASE_3_DOC.md:2761`–`:2774` and binding input `docs/phase3/v1/PHASE_3_DOC.md:3417` |
 | shadowcolor0/1, future 2–7 | paired `ShadowColorPair` indexed without a hard cap; v0.1 allocation gate ≤2 | `[V:doc]` `docs/research/v1/RESEARCH.md:1226`; growth source `docs/research/v1/RESEARCH.md:386` |
 | optional hardware PCF and filter/mipmap | `ShadowTexturePolicy` in §4.10 | `[V:doc]` `docs/research/v1/RESEARCH.md:524`–`:526` |
 | legacy shadow-depth `R,R,R,1` sampling swizzle | `ShadowTexturePolicy` in §4.10 applies it to depth textures | RC3 assignment `docs/design/v2.0-RC3/DESIGN.md:1630`–`:1637`; Pintonium mechanism evidence `docs/reference/pintonium/v1.0/PINTONIUM_DESIGN.md:273`–`:276` |
@@ -1244,8 +1252,8 @@ The eight four-member families plus five mixed formats total exactly 37. Pintoni
 ### 3.5 Draw-buffer prefixes and growth
 
 Phase 3 already canonicalizes every B.5 prefix into an index
-(`docs/phase3/v1/PHASE_3_DOC.md:2651`–`:2658`), and Phase 4 preserves ordered routing
-(`docs/phase4/v1/PHASE_4_DOC.md:2142`). Phase 5 consumes only `BufferRef`; it never parses
+(`docs/phase3/v1/PHASE_3_DOC.md:2719`–`:2724`), and Phase 4 preserves ordered routing
+(`docs/phase4/v1/PHASE_4_DOC.md:2158`). Phase 5 consumes only `BufferRef`; it never parses
 `gcolor` or `DRAWBUFFERS`. The growth model accepts non-negative indices and sparse route sets, but
 v0.1's G6 realization rejects a required colortex index above 7 with a named unsupported-post-v0.5
 failure rather than silently dropping it. `RENDERTARGETS`, 16/32 colortex, custom images, SSBOs, and
@@ -1682,7 +1690,7 @@ The same generic machine is used for shadowcolor pairs. A local no-op flip or ha
 
 Phase 4 exposes exact/symbolic writes and explicitly warns:
 *"Phase 5 must not infer a resolved ping-pong side from `explicitFlips`; it owns the side state"*
-(`docs/phase4/v1/PHASE_4_DOC.md:2149`–`:2151`). Phase 5 obeys that division.
+(`docs/phase4/v1/PHASE_4_DOC.md:2165`). Phase 5 obeys that division.
 
 `PassBufferPlanner`:
 
@@ -1985,11 +1993,11 @@ Phase 1 now supplies this exact narrow route. Its binding §5 distinguishes ordi
 `borrowDepthAttachment`, `attachDepthStencil`, and
 `initializeDepthTextureFromFramebuffer`, and preserves Phase 5 ownership of format, freshness,
 cadence, allocation/copy tier, restoration policy, and Minecraft lifetime
-(`docs/phase1/v14/PHASE_1_DOC.md:5489`). The whole-document service contract additionally
+(`docs/phase1/v14/PHASE_1_DOC.md:5507`). The whole-document service contract additionally
 requires forged, wrong-origin, wrong-device, stale, and illegal owned-versus-borrowed uses to fail
 before GL; only an authenticated borrowed value may be sampled/labeled or used by depth-only and
 combined depth/stencil attachment operations
-(`docs/phase1/v14/PHASE_1_DOC.md:5494`). Round twenty verified that amended surface
+(`docs/phase1/v14/PHASE_1_DOC.md:5512`). Round twenty verified that amended surface
 (`docs/phase1/reviews/PHASE_1_REVIEW_20.md:61`–`:75`).
 
 Phase 5 therefore uses `attachDepth` for depth-only snapshots and
@@ -2475,7 +2483,7 @@ UnsupportedDomain; the layout is mandatory for conditional SHADOW.
 The normative table is `docs/research/v1/RESEARCH.md:1228-1255`. `shadow` resolves to5 iff the
 effective provider's complete layout has a **direct sampler-compatible watershadow declaration**,
 otherwise4; shadow-buffer count is irrelevant, preserving
-`docs/phase6/v1/PHASE_6_DOC.md:993-998`. Both gbuffers bands share this map. Virtual steps have
+`docs/phase6/v1/PHASE_6_DOC.md:1221-1223`. Both gbuffers bands share this map. Virtual steps have
 no bindings; compute/unwired domains are unsupported, never treated as composite.
 
 Policy validation preserves every full Phase 3 type and ordered declaration witness. Same-unit
@@ -2509,7 +2517,7 @@ Custom entries expand GBUFFERS→GBUFFERS+SHADOW, DEFERRED→DEFERRED,
 COMPOSITE→COMPOSITE+FINAL, preserving original `TextureBindingKey`, exact name, discriminator and
 one canonical Phase 3 ordinal in every copy. Multiple targets remain in a cell. Phase 3 already
 applied complete-key last-valid-wins before canonical stage/unsigned-UTF8-name/absent-then0–9/
-source-kind ordering (`docs/phase3/v1/PHASE_3_DOC.md:3660`–`:3663`). Companion/noise origins never
+source-kind ordering (`docs/phase3/v1/PHASE_3_DOC.md:3710`–`:3713`). Companion/noise origins never
 fabricate custom keys. The new greatest-compatible-ordinal precedence is D-P5-21, not original
 properties occurrence order.
 
@@ -2980,7 +2988,7 @@ or optional P14 API. P1 D-P1-66 also supplies actual target maxima to §4.2/§5.
    `borrowDepthAttachment(platformTexture)` issuance route, the ordinary-versus-borrowed
    permission matrix, `attachDepthStencil`, and
    `initializeDepthTextureFromFramebuffer`, with distinct recorder/replay operations
-   (`docs/phase1/v14/PHASE_1_DOC.md:5489`). The whole document retains the detailed
+   (`docs/phase1/v14/PHASE_1_DOC.md:5507`–`:5513`). The whole document retains the detailed
    owned/borrowed validation, forged/wrong-origin rejection, combined depth/stencil behavior, and
    first-versus-steady copy semantics while assigning Phase 5 the downstream format, freshness,
    cadence, tier, restoration-policy, and Minecraft-lifetime decisions. The literal PASS in
@@ -2989,7 +2997,7 @@ or optional P14 API. P1 D-P1-66 also supplies actual target maxima to §4.2/§5.
    `CompiledRegistryCandidate.view()` as the non-owning, immutable detached pre-publication
    `ProgramRegistryView` for Phases 5 and 7, without a generation, close operation, handle,
    private-registry accessor, or provenance credential
-   (`docs/phase4/v1/PHASE_4_DOC.md:817`–`:820`). Candidate ownership, opacity, and
+   (`docs/phase4/v1/PHASE_4_DOC.md:2143`). Candidate ownership, opacity, and
    compiler/publication provenance remain with the opaque candidate. The literal PASS in
    `docs/phase4/reviews/PHASE_4_REVIEW_15.md:59`–`:72` closes that binding clarification.
 3. **COORDINATED LOCALLY — Phase 4 virtual-transition input.** Phase 4 §0.22/§5 binds its existing
