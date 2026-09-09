@@ -20,7 +20,7 @@ public final class LanguageScanner {
     private static final Pattern EXTENSION = Pattern.compile(
         "^\\s*#extension\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*:\\s*(enable|require|warn|disable)\\s*$");
 
-    public static ShaderLanguage scan(String text) {
+    public static ShaderLanguage scan(String text, SourceId rootSource) {
         Integer version = null;
         Optional<GlslProfile> profile = Optional.empty();
         List<ShaderExtensionDirective> extensions = new ArrayList<>();
@@ -41,7 +41,7 @@ public final class LanguageScanner {
             if (ext.matches()) {
                 extensions.add(new ShaderExtensionDirective(ext.group(1),
                     behaviorOf(ext.group(2)), new AttributedSourceLocation(
-                        nullSafeSource(), i + 1, 1)));
+                        rootSource, i + 1, 1)));
             }
         }
         if (version == null) {
@@ -57,9 +57,5 @@ public final class LanguageScanner {
             case "warn" -> ExtensionBehavior.WARN;
             default -> ExtensionBehavior.DISABLE;
         };
-    }
-
-    private static com.schmaloogium.engine.pack.SourceId nullSafeSource() {
-        throw new IllegalStateException("extension locations require the root source");
     }
 }

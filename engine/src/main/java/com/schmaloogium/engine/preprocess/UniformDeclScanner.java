@@ -3,7 +3,6 @@
 
 package com.schmaloogium.engine.preprocess;
 
-import com.schmaloogium.engine.pack.SourceId;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,7 +31,7 @@ public final class UniformDeclScanner {
         List<Finding> out = new ArrayList<>();
         String[] lines = text.split("\\n", -1);
         for (int i = 0; i < lines.length; i++) {
-            Matcher m = UNIFORM.matcher(ConstScanner.stripComments(lines[i]));
+            Matcher m = UNIFORM.matcher(CommentStripper.stripComments(lines[i]));
             if (!m.matches()) {
                 continue;
             }

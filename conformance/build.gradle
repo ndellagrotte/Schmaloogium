@@ -21,3 +21,44 @@ tasks.named('test') {
         sourceSets.main.runtimeClasspath,
         sourceSets.main.output.classesDirs))
 }
+
+// The §4.14 task split: the default `test` task is hermetic (it runs on every push
+// through build.yml and ./gradlew build), so anything needing the fixture cache must
+// tag itself `fixtures` and land in `conformanceTest` instead. `gl` is reserved for
+// :mod-side GL-context tests and is excluded here for the same reason.
+tasks.named('test') {
+    useJUnitPlatform {
+        excludeTags 'fixtures', 'gl'
+    }
+}
+
+tasks.register('conformanceTest', Test) {
+    group = 'verification'
+    description = 'Fixture-dependent headless conformance runs (§4.14); CI conformance job only.'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags 'fixtures'
+    }
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(25)
+    })
+    // No `fixtures`-tagged tests exist yet; the CI job stays green until week-one
+    // item 1 (fixture downloader) lands its tagged runs.
+    filter {
+        setFailOnNoMatchingTests(false)
+    }
+    jvmArgumentProviders.add(new SeamClasspathArguments(
+        sourceSets.main.compileClasspath,
+        sourceSets.main.runtimeClasspath,
+        sourceSets.main.output.classesDirs))
+}
+
+// The golden-update workflow's opt-in switch (PHASE_2_DOC §4.11.5):
+//   ./gradlew :conformance:test -PupdateGoldens
+// rewrites the committed goldens, then the run is expected to fail for review.
+// Default (no property) is compare-only.
+def updateGoldens = providers.gradleProperty('updateGoldens').isPresent()
+tasks.withType(Test).configureEach {
+    systemProperty 'schmaloogium.conformance.updateGoldens', String.valueOf(updateGoldens)
+}

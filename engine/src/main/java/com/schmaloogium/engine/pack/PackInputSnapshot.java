@@ -46,11 +46,12 @@ final class PackInputSnapshot {
         Map<NormalizedPackPath, byte[]> files = new TreeMap<>(NormalizedPackPath.ORDER);
         long[] total = {0};
         int[] count = {0};
-        walk(shadersDir, shadersDir, files, limits, total, count);
+        walk(shadersDir, shadersDir, rootRelative + "/", files, limits, total, count);
         return new PackInputSnapshot(new NormalizedPackPath(rootRelative), files);
     }
 
-    private static void walk(Path root, Path dir, Map<NormalizedPackPath, byte[]> files,
+    private static void walk(Path root, Path dir, String prefix,
+            Map<NormalizedPackPath, byte[]> files,
             PackInputLimits limits, long[] total, int[] count) throws IOException {
         try (var stream = Files.newDirectoryStream(dir)) {
             for (var child : stream) {
@@ -58,9 +59,10 @@ final class PackInputSnapshot {
                     continue; // folder symlinks are not followed during discovery
                 }
                 if (Files.isDirectory(child)) {
-                    walk(root, child, files, limits, total, count);
+                    walk(root, child, prefix, files, limits, total, count);
                 } else if (Files.isRegularFile(child)) {
-                    String relative = root.relativize(child).toString().replace('\\', '/');
+                    String relative = prefix
+                        + root.relativize(child).toString().replace('\\', '/');
                     byte[] bytes = readBounded(child, limits, total, count, relative);
                     files.put(new NormalizedPackPath(relative), bytes);
                 }
@@ -101,8 +103,9 @@ final class PackInputSnapshot {
                 if (entry.isDirectory() || !entry.getName().startsWith(shadersRootPrefix)) {
                     continue;
                 }
-                String relative = entry.getName().substring(shadersRootPrefix.length())
-                    .replace('\\', '/');
+                String relative = shadersRootPrefix
+                    + entry.getName().substring(shadersRootPrefix.length())
+                        .replace('\\', '/');
                 if (relative.isEmpty() || relative.endsWith("/")) {
                     continue;
                 }

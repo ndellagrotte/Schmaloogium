@@ -1,0 +1,15 @@
+[{
+	"modid": "schmaloogium",
+	"name": "Schmaloogium",
+	"version": "0.1.0",
+	"mcversion": "1.12.2",
+	"description": "OptiFine/Iris-format shader-pack support for Cleanroom on Minecraft 1.12.2",
+	"authorList": ["the Schmaloogium contributors"],
+	"credits": "GPL-3.0-or-later. See LICENSE and THIRD-PARTY.md.",
+	"url": "https://github.com/ndellagrotte/Schmaloogium",
+	"updateJSON": "",
+	"logoFile": "",
+	"modProperties": {
+		"issueTrackerUrl": ""
+	}
+}]

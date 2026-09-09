@@ -4,6 +4,7 @@
 package com.schmaloogium.engine.config;
 
 import org.junit.jupiter.api.Test;
+import com.schmaloogium.engine.pack.CompanionOptionMacros;
 
 import java.util.List;
 import java.util.Map;
@@ -112,5 +113,16 @@ class OptionStateInvariantTest {
         assertEquals("Fancy graphics", catalog().find("FANCY").orElseThrow()
             .tooltip().orElseThrow());
         assertTrue(catalog().find("absent").isEmpty());
+    }
+    @Test
+    void macroConfigurationConstructionValidatesCompanionProjection() {
+        // agreeing projection constructs (and never NPEs inside the compact ctor)
+        new MacroConfiguration(MacroIdentityPolicy.OPTION_1, List.of(),
+            List.of(new MacroDefinition("MC_NORMAL_MAP", "")),
+            new CompanionOptionMacros(true, false), List.of(), List.of(), Map.of(), List.of());
+        // disagreeing projection is rejected with the documented failure, not an NPE
+        assertThrows(IllegalArgumentException.class, () -> new MacroConfiguration(
+            MacroIdentityPolicy.OPTION_1, List.of(), List.of(),
+            new CompanionOptionMacros(true, false), List.of(), List.of(), Map.of(), List.of()));
     }
 }

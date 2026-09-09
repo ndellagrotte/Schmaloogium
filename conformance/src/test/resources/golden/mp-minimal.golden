@@ -1,0 +1,87 @@
+# schmaloogium golden · kind=frontend · schema=1
+engine.version = 0.1.0-dev
+input.configurationFingerprint = 7533b1351e9d078c7a986ce489ca2e52745243185ccb879794c7738e9ef0531e
+input.configurationSchema = 23
+input.pack = mp-minimal@1.0.0
+input.packSha512 = 
+input.profile = synthetic-gl33
+input.projectionVersion = 1
+
+[sources]
+count = 2
+shaders/gbuffers_terrain.fsh = lines=11 sha256=1763ec5b3a4e5e7df2c87060996a4fb173c094d6a9d720130cf540cfa4bf5008
+shaders/gbuffers_terrain.vsh = lines=9 sha256=c04cc61eef08481f7e5b1cd19a661faf09a1fa3a81edebd4924803b15ddd7d76
+
+[programs]
+owner.programStates.$type = Evaluated
+owner.programStates.programs.0.$type = EvaluatedProgramState
+owner.programStates.programs.0.alphaTest = absent
+owner.programStates.programs.0.blend = absent
+owner.programStates.programs.0.finalEnabled = true
+owner.programStates.programs.0.key.$type = ProgramKey
+owner.programStates.programs.0.key.dimension.$type = DimensionKey
+owner.programStates.programs.0.key.dimension.legacyId = absent
+owner.programStates.programs.0.key.programName = gbuffers_terrain
+owner.programStates.programs.0.profileDisabled = false
+owner.programStates.programs.0.propertyEnabled = true
+owner.programStates.programs.0.scale = absent
+
+[sizing]
+owner.resources.centerDepth.$type = CenterDepthRequirements
+owner.resources.centerDepth.required = false
+owner.resources.minima.$type = BufferMinima
+owner.resources.minima.colorBuffers = 8
+owner.resources.minima.mainDepthTextures = 1
+owner.resources.minima.shadowColorBuffers = 0
+owner.resources.minima.shadowDepthBuffers = 1
+owner.resources.noise.$type = NoiseRequirement
+owner.resources.noise.enabled = false
+owner.resources.noise.resolution = 128
+owner.resources.shadow.$type = ShadowRequirements
+owner.resources.shadow.distance = 160
+owner.resources.shadow.distanceRenderMultiplier = -1
+owner.resources.shadow.fov = absent
+owner.resources.shadow.intervalSize = 4
+owner.resources.shadow.resolution = 1024
+owner.resources.smoothing.$type = SmoothingConstants
+owner.resources.smoothing.centerDepthHalfLifeTicks = 1
+owner.resources.smoothing.drynessHalfLifeTicks = 600
+owner.resources.smoothing.eyeBrightnessHalfLifeTicks = 10
+owner.resources.smoothing.wetnessHalfLifeTicks = 600
+owner.resources.world.$type = WorldRenderConstants
+owner.resources.world.ambientOcclusionLevel = 0.5
+owner.resources.world.sunPathRotation = 0
+
+[options]
+owner.options.mainScreen.$type = ScreenModel
+owner.options.mainScreen.explicitColumns = absent
+
+[properties]
+owner.dimensions.0.key.$type = DimensionKey
+owner.dimensions.0.key.legacyId = absent
+owner.dimensions.0.value.$type = DimensionConfiguration
+owner.dimensions.0.value.baseDimension = absent
+owner.dimensions.0.value.key.$type = DimensionKey
+owner.dimensions.0.value.key.legacyId = absent
+owner.dimensions.0.value.mode = BASE
+owner.dimensions.0.value.sourceRoots.0.$type = SourceKey
+owner.dimensions.0.value.sourceRoots.0.dimension.$type = DimensionKey
+owner.dimensions.0.value.sourceRoots.0.dimension.legacyId = absent
+owner.dimensions.0.value.sourceRoots.0.programName = gbuffers_terrain
+owner.dimensions.0.value.sourceRoots.0.source = shaders/gbuffers_terrain.fsh
+owner.dimensions.0.value.sourceRoots.0.stage = FRAGMENT
+owner.dimensions.0.value.sourceRoots.1.$type = SourceKey
+owner.dimensions.0.value.sourceRoots.1.dimension.$type = DimensionKey
+owner.dimensions.0.value.sourceRoots.1.dimension.legacyId = absent
+owner.dimensions.0.value.sourceRoots.1.programName = gbuffers_terrain
+owner.dimensions.0.value.sourceRoots.1.source = shaders/gbuffers_terrain.vsh
+owner.dimensions.0.value.sourceRoots.1.stage = VERTEX
+
+[macros]
+owner.macros.companionOptionMacros.$type = CompanionOptionMacros
+owner.macros.companionOptionMacros.normalMap = false
+owner.macros.companionOptionMacros.specularMap = false
+owner.macros.identityPolicy = OPTION_1
+
+[diagnostics]
+count = 0

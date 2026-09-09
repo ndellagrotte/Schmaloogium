@@ -3,6 +3,7 @@
 
 package com.schmaloogium.engine.preprocess;
 
+import com.schmaloogium.engine.diag.EngineDiagnostic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public final class GeometryClassifier {
         LegacyGeometryConfig legacy = null;
         for (int i = 0; i < lines.length; i++) {
             int lineNo = i + 1;
-            String line = ConstScanner.stripComments(lines[i]);
+            String line = CommentStripper.stripComments(lines[i]);
             Matcher extension = EXTENSION_STMT.matcher(line);
             if (extension.matches()) {
                 // legacy form: extension statement plus MAXVERTICES comment directive

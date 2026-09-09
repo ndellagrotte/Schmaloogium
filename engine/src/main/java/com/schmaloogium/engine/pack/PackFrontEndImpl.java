@@ -191,14 +191,38 @@ final class PackFrontEndImpl implements PackFrontEnd {
 
     @Override
     public PackInspectionResult inspect(PackLoadRequest request) {
-        LoadOutcome outcome = runLoad(request);
+        // section 5.1.1: the ordered sanitized projection of this call's emitted events
+        List<com.schmaloogium.engine.diag.EngineDiagnostic> events = new ArrayList<>();
+        DiagnosticReporter reporter = diagnostic -> {
+            events.add(diagnostic);
+            request.diagnostics().report(diagnostic);
+        };
+        LoadOutcome outcome = runLoad(withDiagnostics(request, reporter));
+        List<DecisionDiagnostic> projected = projectDiagnostics(events);
         return switch (outcome) {
             case LoadOutcome.Off o -> new PackInspectionResult.Off();
             case LoadOutcome.Failed f -> new PackInspectionResult.Failed(f.failure(),
-                List.of());
+                projected);
             case LoadOutcome.Done d -> new PackInspectionResult.Inspected(d.configuration(),
-                decisionSnapshot(d.configuration()), Optional.empty());
+                decisionSnapshot(d.configuration(), projected), Optional.empty());
         };
+    }
+
+    private static PackLoadRequest withDiagnostics(PackLoadRequest request,
+            DiagnosticReporter reporter) {
+        return new PackLoadRequest(request.shaderpacksDirectory(), request.selection(),
+            request.runtimeIdentity(), request.capabilities(), request.engineOptions(),
+            request.companionOptionMacros(), request.rendererFeatures(),
+            request.persistenceFiles(), request.internalPackSource(),
+            request.internalOptions(), reporter);
+    }
+
+    private static List<DecisionDiagnostic> projectDiagnostics(
+            List<com.schmaloogium.engine.diag.EngineDiagnostic> events) {
+        return events.stream()
+            .map(event -> new DecisionDiagnostic(event.messageKey(), event.severity(),
+                event.channel(), Optional.empty()))
+            .toList();
     }
 
     private sealed interface LoadOutcome {
@@ -378,10 +402,20 @@ final class PackFrontEndImpl implements PackFrontEnd {
         OptionCatalog catalog = OptionCatalogs.create(definitions, packKey, internal);
         OptionState state = catalog.defaultState();
 
-        // 4. macro configuration
+        // 4. macro configuration: companions default closed, and the option-macro
+        // projection is derived from them so the catalog invariant holds by construction
+        CompanionOptionMacros companions = request.companionOptionMacros() != null
+            ? request.companionOptionMacros() : new CompanionOptionMacros(false, false);
+        List<MacroDefinition> companionDefines = new ArrayList<>();
+        if (companions.normalMap()) {
+            companionDefines.add(new MacroDefinition("MC_NORMAL_MAP", ""));
+        }
+        if (companions.specularMap()) {
+            companionDefines.add(new MacroDefinition("MC_SPECULAR_MAP", ""));
+        }
         MacroConfiguration macros = new MacroConfiguration(
-            MacroIdentityPolicy.OPTION_1, List.of(), List.of(),
-            request.companionOptionMacros(), List.of(), List.of(), Map.of(), List.of());
+            MacroIdentityPolicy.OPTION_1, List.of(), companionDefines, companions,
+            List.of(), List.of(), Map.of(), List.of());
 
         // 5. profiles / screens / sliders from the retained stream
         List<ProfileModel> profiles = new ArrayList<>();
@@ -414,7 +448,10 @@ final class PackFrontEndImpl implements PackFrontEnd {
             mainScreen, namedScreens, new SliderSet(sliders), Map.of());
 
         // 6. source catalog view + dimension configurations
-        SourceCatalogView catalogView = new SourceCatalogView(index);
+        Map<String, String> macroEnv =
+            MacroEnvironmentBuilder.shaderMacros(request, macros);
+        SourceCatalogView catalogView = new SourceCatalogView(index, macroEnv,
+            effectiveGlslVersion(request.capabilities().glslVersion()));
         Map<DimensionKey, DimensionConfiguration> dimensions = dimensionsOf(index);
 
         // 7. id mapping inputs
@@ -448,9 +485,30 @@ final class PackFrontEndImpl implements PackFrontEnd {
         return new LoadOutcome.Done(configuration);
     }
 
-    private static PackDecisionSnapshot decisionSnapshot(PackConfiguration configuration) {
+    private static PackDecisionSnapshot decisionSnapshot(PackConfiguration configuration,
+            List<DecisionDiagnostic> decisionDiagnostics) {
+        // section 5.1.1: allowlisted source projection from the load's identity hashes
+        List<DecisionSource> sources = new ArrayList<>();
+        configuration.pack().contentHashes().entrySet().stream()
+            .sorted(Map.Entry.comparingByKey(NormalizedPackPath.ORDER))
+            .forEach(entry -> {
+                int logicalLines = configuration.sources().source(
+                    new com.schmaloogium.engine.preprocess.SourceId(entry.getKey()))
+                    .map(document -> document.originalLogicalLines().size())
+                    .orElse(0);
+                sources.add(new DecisionSource(entry.getKey(), logicalLines, entry.getValue()));
+            });
+        // one evaluation pass feeds both the programStates section and its diagnostics
+        List<com.schmaloogium.engine.diag.EngineDiagnostic> evaluation = new ArrayList<>();
+        DiagnosticReporter evaluationReporter = evaluation::add;
+        Map<String, DecisionValue> sections =
+            DecisionValueProjector.sections(configuration, evaluationReporter);
+        List<DecisionDiagnostic> projected = new ArrayList<>(decisionDiagnostics);
+        evaluation.forEach(diagnostic -> projected.add(new DecisionDiagnostic(
+            diagnostic.messageKey(), diagnostic.severity(), diagnostic.channel(),
+            Optional.empty())));
         return new PackDecisionSnapshot(1, configuration.schemaVersion(),
-            configuration.fingerprint(), List.of(), Map.of(), List.of());
+            configuration.fingerprint(), sources, sections, projected);
     }
 
     private PackAssetSnapshot emptyAssets(PackIdentity identity) {
@@ -464,6 +522,13 @@ final class PackFrontEndImpl implements PackFrontEnd {
             out.add(new LogicalProperties.Entry(line.key(), line.value(), line.line()));
         }
         return out;
+    }
+
+    /** Leading integer of the GL_SHADING_LANGUAGE_VERSION string; 120 when unparseable. */
+    private static int effectiveGlslVersion(String glslVersion) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+            .compile("([0-9]+)").matcher(glslVersion == null ? "" : glslVersion);
+        return m.find() ? Integer.parseInt(m.group(1)) : 120;
     }
 
     /** Screen/slider/profile mentions confirm switch candidates (documented App F.3). */
@@ -536,9 +601,13 @@ final class PackFrontEndImpl implements PackFrontEnd {
     /** Read-only view over the built index implementing the public catalog. */
     private static final class SourceCatalogView implements SourceCatalog {
         private final SourceIndex index;
+        private final Map<String, String> macros;
+        private final int effectiveVersion;
 
-        SourceCatalogView(SourceIndex index) {
+        SourceCatalogView(SourceIndex index, Map<String, String> macros, int effectiveVersion) {
             this.index = index;
+            this.macros = macros;
+            this.effectiveVersion = effectiveVersion;
         }
 
         @Override
@@ -568,9 +637,8 @@ final class PackFrontEndImpl implements PackFrontEnd {
 
         @Override
         public com.schmaloogium.engine.preprocess.SourceMaterializer materializer() {
-            return (root, contribution, geometry) ->
-                new com.schmaloogium.engine.preprocess.MaterializationResult.Unavailable(root,
-                    List.of());
+            return new com.schmaloogium.engine.preprocess.MaterializerImpl(
+                index, macros, effectiveVersion);
         }
     }
 }

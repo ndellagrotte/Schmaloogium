@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.schmaloogium.mod.mixin.compat",
+  "compatibilityLevel": "JAVA_8",
+  "target": "@env(MOD)",
+  "minVersion": "0.8.7",
+  "setSourceFile": true,
+  "plugin": "com.schmaloogium.mod.mixin.SchmaloogiumMixinPlugin",
+  "client": [],
+  "mixins": [],
+  "server": []
+}

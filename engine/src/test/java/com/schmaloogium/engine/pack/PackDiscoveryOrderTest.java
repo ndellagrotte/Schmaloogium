@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
+import com.schmaloogium.engine.diag.EngineDiagnostic;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,5 +108,36 @@ class PackDiscoveryOrderTest {
             = other.resolveFilesystemCandidate(candidate.filesystemReference().orElseThrow(),
                 generation);
         assertInstanceOf(FilesystemCandidateResolution.InvalidSnapshot.class, resolution);
+    }
+    @Test
+    void folderSnapshotKeysCarryShadersPrefixForSourceIndex() throws Exception {
+        Path shaders = packs.resolve("packA/shaders");
+        Files.createDirectories(shaders);
+        Files.writeString(shaders.resolve("composite.fsh"), "uniform vec4 color;\n");
+        PackInputSnapshot snapshot = PackInputSnapshot.ofDirectory(shaders,
+            new PackInputLimits(65536, 1024 * 1024, 128, 8), "shaders");
+        assertTrue(snapshot.files.keySet().stream()
+                .allMatch(p -> p.canonicalString().startsWith("shaders/")),
+            "directory keys must be canonical pack paths under shaders/");
+
+        List<EngineDiagnostic> diags = new ArrayList<>();
+        var index = com.schmaloogium.engine.preprocess.SourceIndex.build(snapshot.files, diags);
+        assertFalse(index.roots().isEmpty(),
+            "snapshot keys must satisfy the SourceIndex shaders/ requirement");
+    }
+
+    @Test
+    void archiveSnapshotKeysCarryShadersPrefix() throws Exception {
+        Path zip = packs.resolve("packA.zip");
+        try (var out = new java.util.zip.ZipOutputStream(
+                Files.newOutputStream(zip))) {
+            out.putNextEntry(new java.util.zip.ZipEntry("shaders/composite.fsh"));
+            out.write("uniform vec4 color;\n".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            out.closeEntry();
+        }
+        PackInputSnapshot snapshot = PackInputSnapshot.ofArchive(zip, "shaders",
+            new PackInputLimits(65536, 1024 * 1024, 128, 8));
+        assertTrue(snapshot.files.containsKey(new NormalizedPackPath("shaders/composite.fsh")),
+            "archive keys must retain the shaders/ prefix");
     }
 }

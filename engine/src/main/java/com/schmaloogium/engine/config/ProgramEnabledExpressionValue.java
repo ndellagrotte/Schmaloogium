@@ -14,7 +14,8 @@ final class ProgramEnabledExpressionValue implements ProgramEnabledExpression {
         this.expressionBytes = expressionBytes.clone();
     }
 
-    byte[] expressionBytes() {
+    @Override
+    public byte[] capturedExpressionBytes() {
         return expressionBytes.clone();
     }
 

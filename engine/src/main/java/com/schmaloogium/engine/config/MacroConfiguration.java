@@ -33,15 +33,16 @@ public record MacroConfiguration(
         ordered.putAll(java.util.Objects.requireNonNull(perPackOverrides, "perPackOverrides"));
         perPackOverrides = java.util.Collections.unmodifiableSortedMap(ordered);
         reservedContributors = List.copyOf(reservedContributors);
-        if (!companionProjectionAgrees()) {
+        if (!companionProjectionAgrees(optionMacros, companionOptionMacros)) {
             throw new IllegalArgumentException("companion pair disagrees with optionMacros projection");
         }
     }
 
-    private boolean companionProjectionAgrees() {
+    private static boolean companionProjectionAgrees(List<MacroDefinition> optionMacros,
+            CompanionOptionMacros companions) {
         boolean normal = optionMacros.stream().anyMatch(m -> m.name().equals("MC_NORMAL_MAP"));
         boolean specular = optionMacros.stream().anyMatch(m -> m.name().equals("MC_SPECULAR_MAP"));
-        return normal == companionOptionMacros.normalMap()
-            && specular == companionOptionMacros.specularMap();
+        return normal == companions.normalMap()
+            && specular == companions.specularMap();
     }
 }

@@ -48,11 +48,9 @@ jobs:
         path: '**/build/reports/tests/**'
         name: test-reports
 
-  # Phase 2 extension point (PHASE_1_DOC §4.11): deliberately visible and empty.
-  # dispatch-gated so it never runs on push. Phase 2 fills it, including the OQ-10
-  # headless-GL question. The actions/cache step keys on pack version IDs (the §G6
-  # fixture policy is download-at-test-time with a local cache; no pack is ever
-  # committed).
+  # Filled per PHASE_2_DOC §4.14 (the v0.1 "CI task split + filled conformance job"
+  # row): the fixture cache and :conformance:conformanceTest live only in this
+  # dispatch-gated job, keeping the push-path :conformance:test hermetic ([D-P2-8]).
   conformance:
     if: false
     runs-on: ubuntu-latest
@@ -63,5 +61,18 @@ jobs:
       with:
         path: ~/.cache/schmaloogium/conformance-packs
         key: packs-${{ hashFiles('docs/conformance/pack-ids.txt') }}
-    - name: Placeholder (Phase 2 owns everything inside this job)
-      run: echo "Phase 2 conformance harness slot"
+    - name: Set up JDK
+      uses: actions/setup-java@v5
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+    - name: Conformance (headless, fixture-dependent)
+      run: ./gradlew :conformance:conformanceTest
+    - name: Upload conformance report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: conformance-report
+        path: |
+          conformance/build/reports/conformance/**
+          **/build/reports/tests/**

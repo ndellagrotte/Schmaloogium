@@ -45,11 +45,11 @@ public final class MaterializerImpl implements SourceMaterializer {
         StringBuilder expandedText = new StringBuilder();
         lines.forEach(l -> expandedText.append(l.text()).append('\n'));
 
-        ShaderLanguage language = LanguageScanner.scan(expandedText.toString());
+        ShaderLanguage language = LanguageScanner.scan(expandedText.toString(), root.source());
         int version = language.explicitVersion() ? language.version() : effectiveVersion;
 
         Map<String, String> effectiveMacros = new java.util.LinkedHashMap<>(macros);
-        List<EngineDiagnostic> diags = new ArrayList<>();
+        List<EngineDiagnostic> diags = new ArrayList<>(index.diagnostics());
         if (contribution instanceof MacroContribution.DefineCenterDepthSmooth define) {
             effectiveMacros.putIfAbsent("centerDepthSmooth", define.replacementTokens());
         }
@@ -94,7 +94,7 @@ public final class MaterializerImpl implements SourceMaterializer {
             return new MaterializationResult.Unavailable(root, diags);
         }
 
-        String fingerprint = com.schmaloogium.engine.pack.Sha256.hex(
+        String fingerprint = hexSha256(
             (transformed + "|" + uniforms + "|" + language.version()).getBytes(StandardCharsets.UTF_8));
         return new MaterializationResult.Available(new MaterializedSource(root, transformed,
             sourceMap(), new DeclaredUniformCatalog(
@@ -107,8 +107,8 @@ public final class MaterializerImpl implements SourceMaterializer {
             return true; // no expectation: native legacy absence is fine even for .gsh
         }
         if (request instanceof GeometrySourceRequest.PreserveNative expected) {
-            return form instanceof GeometrySourceForm.NativeLegacy native
-                && native.config().equals(expected.expected());
+            return form instanceof GeometrySourceForm.NativeLegacy legacy
+                && legacy.config().equals(expected.expected());
         }
         return false;
     }
@@ -117,6 +117,19 @@ public final class MaterializerImpl implements SourceMaterializer {
         Map<Integer, SourceId> files = new java.util.LinkedHashMap<>();
         index.fileNumbers().forEach((id, number) -> files.put(number, id));
         return new SourceMap(files, List.of());
+    }
+
+    private static String hexSha256(byte[] bytes) {
+        try {
+            byte[] digest = java.security.MessageDigest.getInstance("SHA-256").digest(bytes);
+            StringBuilder hex = new StringBuilder(digest.length * 2);
+            for (byte b : digest) {
+                hex.append(String.format(java.util.Locale.ROOT, "%02x", b));
+            }
+            return hex.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private static EngineDiagnostic diag(DiagnosticSeverity severity, String key, String detail) {

@@ -1,0 +1,14 @@
+# schmaloogium golden · kind=frontend · schema=1
+engine.version = 0.1.0-dev
+input.configurationFingerprint = 8c48022ae557c058a2c74ae6137a653312ffba8d32ada52e685bac4562fd2945
+input.configurationSchema = 23
+input.pack = mp-buffers@1.0.0
+input.packSha512 = 
+input.profile = synthetic-gl33
+input.projectionVersion = 1
+
+[sources]
+count = 0
+
+[diagnostics]
+count = 0
