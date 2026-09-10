@@ -53,6 +53,12 @@ public final class SchmaloogiumMod {
         LOGGER.info("Schmaloogium {} initializing", Reference.VERSION);
     }
 
+    /** Client init: the Phase 12 GUI surface installs through the side boundary. */
+    @Mod.EventHandler
+    public void init(net.minecraftforge.fml.common.event.FMLInitializationEvent event) {
+        proxy.installGui();
+    }
+
     /**
      * Bail evaluation point 1 (PHASE_1_DOC §4.10): before engine bootstrap, after all
      * mods have loaded — the moment where another mod's presence can first be answered

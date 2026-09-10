@@ -174,7 +174,7 @@ final class PackFrontEndImpl implements PackFrontEnd {
                 PackOptionsTargetRejection.UNAVAILABLE);
         }
         return new PackOptionsTargetAcquisition.Acquired(new PackOptionsTargetValue(
-            entry.reference(), entry.displayName(), domain, token));
+            entry.reference(), entry.displayName() + ".txt", domain, token));
     }
 
     // ------------------------------------------------------------------ load
@@ -398,7 +398,9 @@ final class PackFrontEndImpl implements PackFrontEnd {
         List<OptionDefinition> definitions = OptionCatalogBuilder.build(
             new OptionCatalogBuilder.Raw(switchOcc, switchDefaults, switchValues,
                 constOcc, constValues, tooltips));
-        Object packKey = new Object();
+        // section 4.8: the catalog's hidden pack key is the issuing bundle domain, which
+        // is exactly the credential the persistence codecs verify via matchesDomain
+        Object packKey = domain;
         OptionCatalog catalog = OptionCatalogs.create(definitions, packKey, internal);
         OptionState state = catalog.defaultState();
 

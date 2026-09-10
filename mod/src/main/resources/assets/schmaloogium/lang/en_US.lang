@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 the Schmaloogium contributors
+
+# Phase 12 GUI (PHASE_12_DOC §4.6/§4.8/§4.9): pack selection, engine settings,
+# options screens, diagnostics panel, reload-trigger acknowledgement.
+
+schmaloogium.gui.screen.main=Shader Pack Options
+schmaloogium.gui.settingsTitle=Shader Pack Settings
+schmaloogium.gui.noProfiles=No profiles available
+schmaloogium.gui.internalUnavailable=Internal option editing unavailable
+schmaloogium.gui.persistenceUnavailable=Option persistence unavailable for this pack
+schmaloogium.gui.noPendingChanges=No pending changes
+schmaloogium.gui.unsavedCount=Unsaved changes: %s
+schmaloogium.gui.pendingProfile=Pending profile selection: %s
+schmaloogium.gui.pendingProfileCleared=Pending profile selection: cleared
+schmaloogium.gui.profiles=Profile
+schmaloogium.gui.custom=Custom
+schmaloogium.gui.issues=Shader issues: %s
+schmaloogium.gui.outOfList=Current value is not in the list
+schmaloogium.gui.done=Done
+schmaloogium.gui.apply=Apply
+schmaloogium.gui.reset=Reset
+schmaloogium.gui.back=Back
+schmaloogium.gui.off=(off)
+schmaloogium.gui.internal=(internal)
+schmaloogium.gui.openFolder=Open folder
+schmaloogium.gui.refresh=Refresh
+schmaloogium.gui.settings=Shader pack settings…
+
+schmaloogium.gui.setting.normalMapEnabled=Normal map
+schmaloogium.gui.setting.specularMapEnabled=Specular map
+schmaloogium.gui.setting.renderResMul=Render quality
+schmaloogium.gui.setting.shadowResMul=Shadow quality
+schmaloogium.gui.setting.handDepthMul=Hand depth
+schmaloogium.gui.setting.oldHandLight=Old hand light
+schmaloogium.gui.setting.oldLighting=Old lighting
+
+schmaloogium.gui.selected=Selected: %s
+schmaloogium.gui.refreshed=Refreshed
+schmaloogium.gui.persistFailed=Could not persist the selection
+schmaloogium.gui.selectionUnavailable=That pack is not available
+schmaloogium.gui.restoreKeptOff=Previous pack kept off (%s)
+schmaloogium.gui.optionsUnavailable=No active shader pack to configure yet
+
+schmaloogium.command.reloadshaders.done=Shader reload requested: %s (%s)
+schmaloogium.command.reloadshaders.inert=Shader reload requested, but no engine coordinator is installed; the request is inert.
+
+key.categories.schmaloogium=Schmaloogium
+key.schmaloogium.openShaderPacks=Open shader pack screen

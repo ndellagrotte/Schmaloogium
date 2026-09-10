@@ -95,9 +95,10 @@ final class PersistenceFileAccessValue implements PersistenceFileAccess {
             return gameRoot.resolve("optionsshaders.txt");
         }
         if (target instanceof PackOptionsTargetValue pack) {
-            // target authentication: same-pack issuance verified by the codecs via credential
-            if (!FilesystemCandidateReferences.decode(pack.reference())
-                    .equals(pack.fileName())) {
+            // target authentication: same-pack issuance verified by credential; the issued
+            // file name is the exact direct-child host name plus .txt (section 4.8.1)
+            String hostName = FilesystemCandidateReferences.decode(pack.reference());
+            if (!pack.fileName().equals(hostName + ".txt")) {
                 throw new TargetFailure(new PersistenceFailure(PersistenceFailureCode.UNSAFE_TARGET,
                     "pack target file name does not match its reference"));
             }

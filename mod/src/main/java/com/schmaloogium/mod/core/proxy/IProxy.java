@@ -18,4 +18,12 @@ public interface IProxy {
      */
     default void installSideServices() {
     }
+
+    /**
+     * Installs the Phase 12 client GUI surface during {@code init} (keybindings,
+     * client command, resource listener, screens). The common side leaves it
+     * uninstalled.
+     */
+    default void installGui() {
+    }
 }
