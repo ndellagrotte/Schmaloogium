@@ -11,6 +11,5 @@
 	"logoFile": "{{ mod_logo_path }}",
 	"modProperties": {
 		"issueTrackerUrl": "{{ mod_issue_tracker }}"
-	},
-	"guiFactory": "com.schmaloogium.mod.gui.SchmaloogiumGuiFactory"
+	}
 }]

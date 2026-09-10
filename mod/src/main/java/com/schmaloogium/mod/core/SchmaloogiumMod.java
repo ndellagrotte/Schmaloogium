@@ -35,7 +35,8 @@ import java.util.List;
  * <p>This shared class never touches a client-only type; client work goes through the
  * side boundary ({@code IProxy}).
  */
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION)
+@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
+        guiFactory = "com.schmaloogium.mod.gui.SchmaloogiumGuiFactory")
 public final class SchmaloogiumMod {
 
     public static final Logger LOGGER = LogManager.getLogger(Reference.MOD_NAME);

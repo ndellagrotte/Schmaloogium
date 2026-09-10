@@ -3,6 +3,7 @@
 
 package com.schmaloogium.mod.gui;
 
+import com.schmaloogium.mod.core.SchmaloogiumMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -13,14 +14,16 @@ import java.util.Set;
 
 /**
  * The Forge Mods-menu {@code Config} entry point (PHASE_12_DOC §4.8 access surfaces).
- * The button is enabled by declaring this factory in {@code mcmod.info} under
- * {@code guiFactory}; selecting it opens the same vanilla pack-selection screen the
+ * The button is enabled by declaring this factory in the {@code @Mod} annotation's
+ * {@code guiFactory} attribute (Cleanroom's FML reads only that path; the mcmod.info
+ * key is inert); selecting it opens the same vanilla pack-selection screen the
  * {@code P} convenience keybind reaches. When the GUI assembly is degraded (missing
  * {@code shaderpacks/} bindings — the same condition {@link ShaderGui#showPackSelection}
  * guards), a minimal notice screen returns instead so the Forge contract (never null)
  * holds without crashing the Mods menu.
  */
 public final class SchmaloogiumGuiFactory implements IModGuiFactory {
+
 
     @Override
     public void initialize(Minecraft minecraftInstance) {
@@ -34,6 +37,7 @@ public final class SchmaloogiumGuiFactory implements IModGuiFactory {
 
     @Override
     public GuiScreen createConfigGui(GuiScreen parentScreen) {
+        SchmaloogiumMod.LOGGER.info("Mods-menu Config invoked; opening pack selection");
         GuiScreen before = Minecraft.getMinecraft().currentScreen;
         ShaderGui.showPackSelection();
         GuiScreen current = Minecraft.getMinecraft().currentScreen;
