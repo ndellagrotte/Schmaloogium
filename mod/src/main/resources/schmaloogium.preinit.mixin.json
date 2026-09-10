@@ -2,7 +2,9 @@
   "required": true,
   "package": "com.schmaloogium.mod.mixin.preinit",
   "mixins": [],
-  "client": [],
+  "client": [
+    "MixinOpenGlHelper"
+  ],
   "server": [],
   "compatibilityLevel": "JAVA_8",
   "target": "@env(DEFAULT)",

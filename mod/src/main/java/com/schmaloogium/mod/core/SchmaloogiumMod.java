@@ -94,9 +94,12 @@ public final class SchmaloogiumMod {
 
         @Override
         public com.schmaloogium.engine.gl.GLCapabilityProfile capabilities() {
-            // The capability profile exists only after stage 2 (display init); before
-            // bootstrap there is nothing to gate on. Phase 7 populates this.
-            throw new IllegalStateException("capability profile is not available before display init");
+            // Populated by the stage-2 probe (P1 §4.12) at the H-BOOT-02 hook: the
+            // OpenGlHelper.initializeTextures RETURN capture published through
+            // CapabilityHolder. Before display init there is nothing to gate on.
+            return com.schmaloogium.mod.glue.frame.CapabilityHolder.peek()
+                    .orElseThrow(() -> new IllegalStateException(
+                            "capability profile is not available before display init"));
         }
     }
 }

@@ -59,8 +59,12 @@ class MixinConfigAgreementTest {
                     .filter(e -> inPackage(e.getKey(), config.declaredPackage())
                             && otherDeclaredPackages.stream().noneMatch(
                             other -> inPackage(e.getKey(), other)))
-                    .map(Map.Entry::getValue)
-                    .flatMap(Set::stream)
+                    .map(Map.Entry::getKey)
+                    .map(name -> {
+                        String prefix = config.declaredPackage() + ".";
+                        return name.startsWith(prefix)
+                                ? name.substring(prefix.length()) : name;
+                    })
                     .sorted()
                     .toList();
 
@@ -132,13 +136,14 @@ class MixinConfigAgreementTest {
             }
             try (Stream<Path> classes = Files.walk(dir)) {
                 classes.filter(p -> p.toString().endsWith(".class"))
-                        .forEach(p -> inspect(p, annotated));
+                        .forEach(p -> inspect(dir, p, annotated));
             }
         }
         return annotated;
     }
 
-    private static void inspect(Path classFile, Map<String, Set<String>> annotated) {
+    private static void inspect(Path root, Path classFile,
+            Map<String, Set<String>> annotated) {
         String fileName = classFile.getFileName().toString();
         if (fileName.contains("$") || fileName.toLowerCase(Locale.ROOT).contains("mixinplugin")) {
             return;
@@ -155,13 +160,11 @@ class MixinConfigAgreementTest {
                 }
             }, ClassReader.SKIP_CODE);
             if (isMixin[0]) {
-                String binaryName = classFile.toString()
-                        .replace(File.separatorChar, '.');
-                int classesIdx = binaryName.indexOf(".classes.");
-                if (classesIdx >= 0) {
-                    binaryName = binaryName.substring(classesIdx + ".classes.".length(),
-                            binaryName.length() - ".class".length());
-                }
+                String binaryName = root.relativize(classFile).toString()
+                        .replace(File.separatorChar, '.')
+                        .substring(0,
+                                root.relativize(classFile).toString().length()
+                                        - ".class".length());
                 annotated.put(binaryName, Set.of(binaryName));
             }
         } catch (IOException e) {

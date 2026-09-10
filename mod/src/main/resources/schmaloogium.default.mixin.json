@@ -5,7 +5,17 @@
   "target": "@env(DEFAULT)",
   "minVersion": "0.8.7",
   "setSourceFile": true,
-  "client": [],
+  "client": [
+    "frame.MixinEntityRenderer",
+    "frame.MixinFramebuffer",
+    "frame.MixinGlStateManager",
+    "frame.MixinItemRenderer",
+    "frame.MixinMinecraft",
+    "frame.MixinParticleManager",
+    "frame.MixinRenderGlobal",
+    "frame.MixinSimpleReloadableResourceManager",
+    "frame.MixinTileEntityRendererDispatcher"
+  ],
   "mixins": [],
   "server": []
 }

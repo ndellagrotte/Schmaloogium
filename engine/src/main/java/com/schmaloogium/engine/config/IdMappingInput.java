@@ -24,8 +24,8 @@ public record IdMappingInput(
                 || entities.kind() != MappingKind.ENTITY || layers.kind() != MappingKind.LAYER) {
             throw new IllegalArgumentException("kind/file mismatch in IdMappingInput");
         }
-        if (!blocks.forced11300Rules().isEmpty() || !items.forced11300Rules().isEmpty()
-                || !layers.forced11300Rules().isEmpty()) {
+        // D-P3-72: BLOCK/ENTITY may publish forced11300Rules; ITEM/LAYER never do
+        if (!items.forced11300Rules().isEmpty() || !layers.forced11300Rules().isEmpty()) {
             throw new IllegalArgumentException("forced rules are legal only on BLOCK and ENTITY");
         }
         for (IdMappingFileInput f : List.of(blocks, items, entities, layers)) {

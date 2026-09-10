@@ -106,4 +106,31 @@ class IdMappingAndEditionTest {
         assertNull(MinimumEditionRules.parse("version.1.20.x", "nope"));
         assertNull(MinimumEditionRules.parse("version.1..2", "nope"));
     }
+    @Test
+    void inputConstructsWithBlockForcedRulesAndRejectsItemLayerForced() {
+        IdMappingMacroEnvironment env = new IdMappingMacroEnvironment(11202, List.of(
+            new MacroDefinition("MC_VERSION", "11202")));
+        IdMappingFileInput blocks = parse(MappingKind.BLOCK, "1001=minecraft:stone\n");
+        assertFalse(blocks.forced11300Rules().isEmpty(),
+            "a parsed block.properties must carry its D-P3-72 forced run");
+        IdMappingFileInput items = parse(MappingKind.ITEM, "1001=minecraft:stone\n");
+        IdMappingFileInput entities = parse(MappingKind.ENTITY, "1001=minecraft:cow\n");
+        IdMappingFileInput layers = parse(MappingKind.LAYER, null);
+
+        // a real parsed block.properties with non-empty forced rules must construct
+        IdMappingInput input = new IdMappingInput(23, env, blocks, items, entities, layers);
+        assertEquals(1, input.blocks().forced11300Rules().size());
+
+        // ITEM/LAYER alternates stay empty per D-P3-72; a forced item rule is rejected
+        IdMappingFileInput itemWithForced = new IdMappingFileInput(MappingKind.ITEM,
+            MappingFileState.PRESENT_RULES, items.ordinaryRules(), blocks.forced11300Rules(),
+            items.fingerprint());
+        assertThrows(IllegalArgumentException.class,
+            () -> new IdMappingInput(23, env, blocks, itemWithForced, entities, layers));
+        IdMappingFileInput layerWithForced = new IdMappingFileInput(MappingKind.LAYER,
+            MappingFileState.PRESENT_RULES, layers.ordinaryRules(), blocks.forced11300Rules(),
+            layers.fingerprint());
+        assertThrows(IllegalArgumentException.class,
+            () -> new IdMappingInput(23, env, blocks, items, entities, layerWithForced));
+    }
 }
