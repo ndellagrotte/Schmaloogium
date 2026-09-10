@@ -5,11 +5,13 @@ versions, ranges, or `mavenLocal()` snapshots in any module. The re-pin procedur
 PHASE_1_DOC §4.2.6 (trigger: every milestone, every release run, any suspected
 platform-caused failure; never on a schedule).
 
-## Current baseline — 2026-09-09 (implementation session, D-P1-51)
+## Current baseline — 2026-09-09 (implementation session, D-P1-51) — build-gate verified
 
-Inspected from the current files; runtime/resolution verification pending until the
-Phase 1 build gate (`./gradlew build` + all four seam tests + `:mod:runClient` smoke)
-completes. No bump is performed and no pin is declared last-known-good by test here.
+Verified by the Phase 1 build gate on 2026-09-09: `./gradlew build` green,
+all four seam tests green (C-1..C-4), `:mod:runClient` reached the 1.12.2 main menu on
+Cleanroom 0.6.10-alpha with the mod loaded (12 mods active), and the refmap probe
+confirmed SRG generation (`func_71410_x`) before removal. Milestone re-pins per §4.2.6
+were performed at the phases-2-4 and phases-8/10/12 landings; no pin changed value.
 
 | Component | Pinned value | Where it lives | Status |
 |---|---|---|---|
