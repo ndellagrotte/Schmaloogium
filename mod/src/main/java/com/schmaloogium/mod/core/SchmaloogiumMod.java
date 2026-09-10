@@ -10,6 +10,7 @@ import com.schmaloogium.engine.diag.EngineDiagnostic;
 import com.schmaloogium.engine.diag.UserChannel;
 import com.schmaloogium.engine.log.LogChannels;
 import com.schmaloogium.engine.log.Logs;
+import com.schmaloogium.mod.glue.frame.BootstrapHooks;
 import com.schmaloogium.mod.compat.BailRegistry;
 import com.schmaloogium.mod.compat.CompatContext;
 import com.schmaloogium.mod.compat.CompatEvaluation;
@@ -80,7 +81,11 @@ public final class SchmaloogiumMod {
         } else if (!evaluation.degradations().isEmpty()) {
             LOGGER.warn("{} compat degradation(s) in effect", evaluation.degradations().size());
         }
+        // H-BOOT-01 (PHASE_7_DOC §4.10.2): both prerequisites — preInit configuration
+        // and load completion — now delivered; latch the loader-events bridge.
+        BootstrapHooks.onEarlyConfigurationLoaded();
     }
+
 
     /** FML-backed {@link CompatContext}: mod-list and class probes plus the GL profile slot. */
     static final class FmlCompatContext implements CompatContext {

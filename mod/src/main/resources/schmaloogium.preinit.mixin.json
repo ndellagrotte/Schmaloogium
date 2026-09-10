@@ -4,6 +4,7 @@
   "refmap": "schmaloogium.refmap.json",
   "mixins": [],
   "client": [
+    "MixinGuiMainMenu",
     "MixinOpenGlHelper"
   ],
   "server": [],
