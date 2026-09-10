@@ -33,6 +33,7 @@ import java.nio.FloatBuffer;
 public final class FrameHooks {
 
     private static volatile FrameToken currentFrame;
+    private static volatile boolean firstFrameLogged;
     private static volatile int reservedTerrainToken;
 
     private FrameHooks() {
@@ -53,6 +54,13 @@ public final class FrameHooks {
                 McFrameState.priorCompletedFramebuffer(),
                 McFrameState.anaglyphEye());
         FrameOpenResult result = driver().open(signal);
+        if (!firstFrameLogged) {
+            firstFrameLogged = true;
+            com.schmaloogium.engine.log.Logs.channel(
+                    com.schmaloogium.engine.log.LogChannels.FRAME).info(
+                    "H-FRAME-01 first frame-begin hook observed: pass {}, counter {}, result {}",
+                    pass, frameCounter, result.getClass().getSimpleName());
+        }
         if (result instanceof FrameOpenResult.Opened opened) {
             currentFrame = opened.token();
             reservedTerrainToken = frameCounter;
