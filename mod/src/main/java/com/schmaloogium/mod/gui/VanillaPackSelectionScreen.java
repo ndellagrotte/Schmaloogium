@@ -54,6 +54,8 @@ final class VanillaPackSelectionScreen extends GuiScreen {
     private PackSelectionActions actions;
 
     private boolean settingsOpen;
+    /** An intent ran: the producer re-publishes on the next tick (never mid-click). */
+    private boolean intentPending;
     private int scrollOffset;
 
     private int listTop;
@@ -341,10 +343,24 @@ final class VanillaPackSelectionScreen extends GuiScreen {
     private void guard(String what, Runnable intent) {
         try {
             intent.run();
+            // The controller's state moved (selection, summary, discovery generation);
+            // this screen renders a snapshot, so ask the producer to re-publish. Deferred
+            // to the next tick: rebuilding buttonList inside actionPerformed would mutate
+            // the list vanilla is iterating over.
+            intentPending = true;
         } catch (Exception e) {
             SchmaloogiumMod.LOGGER.error(
                     "Shader GUI: pack selection {} failed; closing the screen", what, e);
             owner.close();
+        }
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+        if (intentPending) {
+            intentPending = false;
+            owner.refreshPackSelection();
         }
     }
 

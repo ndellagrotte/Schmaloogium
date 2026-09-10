@@ -152,10 +152,33 @@ public final class PackSelectionController implements PackSelectionActions {
 
     @Override
     public void selectCandidate(PackCandidateId candidate) {
-        // Always re-run discovery first; never forward a stale id (D-P12-8).
-        retainReferenceAndRefresh();
-        Optional<PackCandidate> target = candidate(candidate);
+        // The clicked id belongs to the generation that rendered the row, and
+        // PackCandidateId equality is generation identity: it must be read against the
+        // discovery that produced it BEFORE the mandatory re-discovery, then carried
+        // across as its durable reference (D-P12-8) - never forwarded as an id.
+        Optional<PackCandidate> clicked = candidate(candidate);
+        if (clicked.isEmpty() || clicked.get().status() != PackCandidateStatus.AVAILABLE) {
+            lastActionSummary = Optional.of(text.gui("schmaloogium.gui.selectionUnavailable"));
+            return;
+        }
+        PackCandidateKind kind = clicked.get().kind();
+        String displayName = clicked.get().displayName();
+        Optional<FilesystemCandidateReference> reference = clicked.get().filesystemReference();
+
+        discovery = frontEnd.discover(new PackDiscoveryRequest(shaderpacksDirectory, null));
+        Optional<PackCandidate> target = switch (kind) {
+            case OFF -> currentByKind(PackCandidateKind.OFF);
+            case INTERNAL -> currentByKind(PackCandidateKind.INTERNAL);
+            case DIRECTORY, ARCHIVE -> reference
+                    .map(ref -> frontEnd.resolveFilesystemCandidate(ref, discovery))
+                    .flatMap(resolution ->
+                            resolution instanceof FilesystemCandidateResolution.Resolved resolved
+                                    ? candidate(resolved.candidate())
+                                    : Optional.empty());
+        };
         if (target.isEmpty() || target.get().status() != PackCandidateStatus.AVAILABLE) {
+            // The row vanished or degraded between render and click: keep shaders off.
+            selected = offRow();
             lastActionSummary = Optional.of(text.gui("schmaloogium.gui.selectionUnavailable"));
             return;
         }
@@ -163,9 +186,15 @@ public final class PackSelectionController implements PackSelectionActions {
         if (!persistDurableSelection(target.get())) {
             return; // write failure: summary already set; nothing queued
         }
-        lastActionSummary = Optional.of(text.gui("schmaloogium.gui.selected",
-                target.get().displayName()));
+        lastActionSummary = Optional.of(text.gui("schmaloogium.gui.selected", displayName));
         submitPackSelection();
+    }
+
+    /** The current generation's row of the given kind (OFF/INTERNAL are singletons). */
+    private Optional<PackCandidate> currentByKind(PackCandidateKind kind) {
+        return discovery.candidates().stream()
+                .filter(row -> row.kind() == kind)
+                .findFirst();
     }
 
     @Override

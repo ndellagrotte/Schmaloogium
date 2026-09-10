@@ -161,8 +161,10 @@ public final class ShaderGui {
             this.services = PackFrontEnds.create();
             this.access = BundleIo.acquire(services, new PersistenceRootConfiguration(
                     shaderpacks, gameDir), Diagnostics::report).orElse(null);
-            this.text = new GuiText(Map.of(), Map.of(),
-                    client.getLanguageManager().getCurrentLanguage().getLanguageCode());
+            String languageCode =
+                    client.getLanguageManager().getCurrentLanguage().getLanguageCode();
+            this.text = new GuiText(Map.of(), GuiMessageAssets.load(languageCode),
+                    languageCode);
             if (access == null) {
                 // Degraded: no usable roots; screens stay closed rather than lying.
                 this.settings = null;
@@ -177,6 +179,9 @@ public final class ShaderGui {
             this.selection = new PackSelectionController(services.frontEnd(),
                     access.shaderpacksDirectory(), settings, new SelectionHost(), text);
             this.view = new VanillaOptionScreens(client);
+            // Intents mutate controller state; the screen holds a snapshot, so it asks
+            // the producer for a fresh publish (selection marker, status line, rows).
+            this.view.installPackSelectionRepublisher(ShaderGui::showPackSelection);
             // F3+R arms itself the moment Phase 7 installs its coordinator; before
             // that the chord is inert and the key is never shadowed (D-P12-13).
             this.bindings = new ShaderPackKeyBindings(

@@ -45,9 +45,24 @@ public final class VanillaOptionScreens implements OptionScreenView {
     private VanillaPackSelectionScreen packSelectionScreen;
     private VanillaOptionsScreen optionsScreen;
     private DiagnosticsPanelScreen diagnosticsScreen;
+    private Runnable packSelectionRepublisher = () -> { };
 
     public VanillaOptionScreens(Minecraft client) {
         this.client = client;
+    }
+
+    /**
+     * Installs the producer's re-publish trigger. The pack screen renders one immutable
+     * snapshot, so after an intent mutates controller state it must be handed a fresh
+     * model; only the producer (which owns the controllers) can build one.
+     */
+    public void installPackSelectionRepublisher(Runnable republisher) {
+        this.packSelectionRepublisher = java.util.Objects.requireNonNull(republisher);
+    }
+
+    /** Re-publishes the pack-selection snapshots after an intent (screen-internal). */
+    void refreshPackSelection() {
+        packSelectionRepublisher.run();
     }
 
     @Override
