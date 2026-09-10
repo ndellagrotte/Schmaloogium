@@ -41,3 +41,8 @@ docs/**/chatlogs/
 
 # Mixin dev-flag export dir (enable_mixin_debug)
 .mixin.out/
+
+# IDE-generated class output (Eclipse/IntelliJ bin dirs)
+engine/bin/
+mod/bin/
+conformance/bin/
