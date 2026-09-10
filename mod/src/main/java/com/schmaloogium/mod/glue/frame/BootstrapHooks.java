@@ -17,6 +17,15 @@ public final class BootstrapHooks {
     private static volatile boolean clientLoadingComplete;
     private static volatile boolean earlyConfigurationLoaded;
 
+    static {
+        // H-BOOT-02 fires inside startGame, BEFORE FML preInit installs the engine's
+        // log4j sink; without this the capability-probe evidence line lands in the
+        // engine's pre-install no-op sink. Idempotent with the preInit install.
+        com.schmaloogium.engine.log.Logs.install(
+                new com.schmaloogium.mod.core.Log4jLogSink());
+    }
+
+
     private BootstrapHooks() {
     }
 
@@ -37,9 +46,15 @@ public final class BootstrapHooks {
         glReady = true;
         // Stage-2 probe placement (P1 §4.12): the first GL-context-guaranteed point.
         GLCapabilityProfile profile = CapabilityProbe.capture();
+        // RUN_BOOT_PROFILE evidence (OQ-3): one boot-channel line proving H-BOOT-02
+        // fired and what it saw. Silent-failure case logs through Diagnostics already.
+        if (profile != null) {
+            com.schmaloogium.engine.log.Logs.channel(com.schmaloogium.engine.log.LogChannels.BOOT).info(
+                "H-BOOT-02 capability probe captured: GL {}.{} ({}), glsl {}, extensions {}",
+                profile.glVersionMajor(), profile.glVersionMinor(), profile.vendor(),
+                profile.glslVersion(), profile.extensions().size());
+        }
         CapabilityHolder.publish(profile);
-        FrameRuntime.installRenderThreadPredicate(
-                net.minecraft.client.Minecraft.getMinecraft()::isCallingFromMinecraftThread);
     }
 
     /** The captured profile, or empty before H-BOOT-02 has run. */

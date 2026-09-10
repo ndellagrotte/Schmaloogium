@@ -10,15 +10,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * H-BOOT-02 (PHASE_7_DOC §4.10.2): RETURN of {@code OpenGlHelper.func_77474_a} — the
+ * H-BOOT-02 (PHASE_7_DOC §4.10.2): RETURN of {@code OpenGlHelper.initializeTextures} — the
  * first point at which a current GL context is guaranteed. Runs the stage-2 capability
  * probe exactly once; no GL work is attempted before it. SRG method target per D-5.
  */
 @Mixin(net.minecraft.client.renderer.OpenGlHelper.class)
 public abstract class MixinOpenGlHelper {
 
-    @Inject(method = "func_77474_a()V", at = @At("RETURN"), require = 0, expect = 1)
-    private void schmaloogium$onGlReady(CallbackInfo ci) {
+    @Inject(method = "initializeTextures()V", at = @At("RETURN"), require = 0, expect = 1)
+    private static void schmaloogium$onGlReady(CallbackInfo ci) {
         BootstrapHooks.onGlReady();
     }
 }

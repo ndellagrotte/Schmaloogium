@@ -24,25 +24,25 @@ public abstract class MixinGlStateManager {
 
     // ---------------------------------------------------------- H-ALPHA (3 HEAD anchors)
 
-    @Inject(method = "func_179141_d()V", at = @At("HEAD"), cancellable = true,
+    @Inject(method = "enableAlpha()V", at = @At("HEAD"), cancellable = true,
             require = 0, expect = 1)
-    private void schmaloogium$suppressEnableAlpha(CallbackInfo ci) {
+    private static void schmaloogium$suppressEnableAlpha(CallbackInfo ci) {
         if (AlphaBlendOverrideHooks.suppressAlphaMutation()) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "func_179118_c()V", at = @At("HEAD"), cancellable = true,
+    @Inject(method = "disableAlpha()V", at = @At("HEAD"), cancellable = true,
             require = 0, expect = 1)
-    private void schmaloogium$suppressDisableAlpha(CallbackInfo ci) {
+    private static void schmaloogium$suppressDisableAlpha(CallbackInfo ci) {
         if (AlphaBlendOverrideHooks.suppressAlphaMutation()) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "func_179092_a(IF)V", at = @At("HEAD"), cancellable = true,
+    @Inject(method = "alphaFunc(IF)V", at = @At("HEAD"), cancellable = true,
             require = 0, expect = 1)
-    private void schmaloogium$suppressAlphaFunc(int func, float ref, CallbackInfo ci) {
+    private static void schmaloogium$suppressAlphaFunc(int func, float ref, CallbackInfo ci) {
         if (AlphaBlendOverrideHooks.suppressAlphaMutation()) {
             ci.cancel();
         }
@@ -50,36 +50,36 @@ public abstract class MixinGlStateManager {
 
     // ---------------------------------------------------------- H-BLEND (6 HEAD + 6 RETURN)
 
-    @Inject(method = "func_179147_l()V", at = @At("HEAD"), cancellable = true,
+    @Inject(method = "enableBlend()V", at = @At("HEAD"), cancellable = true,
             require = 0, expect = 1)
-    private void schmaloogium$suppressEnableBlend(CallbackInfo ci) {
+    private static void schmaloogium$suppressEnableBlend(CallbackInfo ci) {
         if (AlphaBlendOverrideHooks.suppressBlendMutation()) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "func_179147_l()V", at = @At("RETURN"), require = 0, expect = 1)
-    private void schmaloogium$publishEnableBlend(CallbackInfo ci) {
+    @Inject(method = "enableBlend()V", at = @At("RETURN"), require = 0, expect = 1)
+    private static void schmaloogium$publishEnableBlend(CallbackInfo ci) {
         AlphaBlendOverrideHooks.publishEffectiveBlend();
     }
 
-    @Inject(method = "func_179084_k()V", at = @At("HEAD"), cancellable = true,
+    @Inject(method = "disableBlend()V", at = @At("HEAD"), cancellable = true,
             require = 0, expect = 1)
-    private void schmaloogium$suppressDisableBlend(CallbackInfo ci) {
+    private static void schmaloogium$suppressDisableBlend(CallbackInfo ci) {
         if (AlphaBlendOverrideHooks.suppressBlendMutation()) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "func_179084_k()V", at = @At("RETURN"), require = 0, expect = 1)
-    private void schmaloogium$publishDisableBlend(CallbackInfo ci) {
+    @Inject(method = "disableBlend()V", at = @At("RETURN"), require = 0, expect = 1)
+    private static void schmaloogium$publishDisableBlend(CallbackInfo ci) {
         AlphaBlendOverrideHooks.publishEffectiveBlend();
     }
 
-    @Inject(method = "func_187401_a(Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;"
+    @Inject(method = "blendFunc(Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;"
             + "Lnet/minecraft/client/renderer/GlStateManager$DestFactor;)V",
             at = @At("HEAD"), cancellable = true, require = 0, expect = 1)
-    private void schmaloogium$suppressTryBlendFactorPair(
+    private static void schmaloogium$suppressTryBlendFactorPair(
             GlStateManager.SourceFactor srcFactor, GlStateManager.DestFactor dstFactor,
             CallbackInfo ci) {
         if (AlphaBlendOverrideHooks.suppressBlendMutation()) {
@@ -87,34 +87,34 @@ public abstract class MixinGlStateManager {
         }
     }
 
-    @Inject(method = "func_187401_a(Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;"
+    @Inject(method = "blendFunc(Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;"
             + "Lnet/minecraft/client/renderer/GlStateManager$DestFactor;)V",
             at = @At("RETURN"), require = 0, expect = 1)
-    private void schmaloogium$publishTryBlendFactorPair(
+    private static void schmaloogium$publishTryBlendFactorPair(
             GlStateManager.SourceFactor srcFactor, GlStateManager.DestFactor dstFactor,
             CallbackInfo ci) {
         AlphaBlendOverrideHooks.publishEffectiveBlend();
     }
 
-    @Inject(method = "func_179112_b(II)V", at = @At("HEAD"), cancellable = true,
+    @Inject(method = "blendFunc(II)V", at = @At("HEAD"), cancellable = true,
             require = 0, expect = 1)
-    private void schmaloogium$suppressBlendFunc(int srcFactor, int dstFactor, CallbackInfo ci) {
+    private static void schmaloogium$suppressBlendFunc(int srcFactor, int dstFactor, CallbackInfo ci) {
         if (AlphaBlendOverrideHooks.suppressBlendMutation()) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "func_179112_b(II)V", at = @At("RETURN"), require = 0, expect = 1)
-    private void schmaloogium$publishBlendFunc(int srcFactor, int dstFactor, CallbackInfo ci) {
+    @Inject(method = "blendFunc(II)V", at = @At("RETURN"), require = 0, expect = 1)
+    private static void schmaloogium$publishBlendFunc(int srcFactor, int dstFactor, CallbackInfo ci) {
         AlphaBlendOverrideHooks.publishEffectiveBlend();
     }
 
-    @Inject(method = "func_187428_a(Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;"
+    @Inject(method = "tryBlendFuncSeparate(Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;"
             + "Lnet/minecraft/client/renderer/GlStateManager$DestFactor;"
             + "Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;"
             + "Lnet/minecraft/client/renderer/GlStateManager$DestFactor;)V",
             at = @At("HEAD"), cancellable = true, require = 0, expect = 1)
-    private void schmaloogium$suppressTryBlendSeparate(
+    private static void schmaloogium$suppressTryBlendSeparate(
             GlStateManager.SourceFactor srcFactor, GlStateManager.DestFactor dstFactor,
             GlStateManager.SourceFactor srcFactorAlpha, GlStateManager.DestFactor dstFactorAlpha,
             CallbackInfo ci) {
@@ -123,29 +123,29 @@ public abstract class MixinGlStateManager {
         }
     }
 
-    @Inject(method = "func_187428_a(Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;"
+    @Inject(method = "tryBlendFuncSeparate(Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;"
             + "Lnet/minecraft/client/renderer/GlStateManager$DestFactor;"
             + "Lnet/minecraft/client/renderer/GlStateManager$SourceFactor;"
             + "Lnet/minecraft/client/renderer/GlStateManager$DestFactor;)V",
             at = @At("RETURN"), require = 0, expect = 1)
-    private void schmaloogium$publishTryBlendSeparate(
+    private static void schmaloogium$publishTryBlendSeparate(
             GlStateManager.SourceFactor srcFactor, GlStateManager.DestFactor dstFactor,
             GlStateManager.SourceFactor srcFactorAlpha, GlStateManager.DestFactor dstFactorAlpha,
             CallbackInfo ci) {
         AlphaBlendOverrideHooks.publishEffectiveBlend();
     }
 
-    @Inject(method = "func_179120_a(IIII)V", at = @At("HEAD"), cancellable = true,
+    @Inject(method = "tryBlendFuncSeparate(IIII)V", at = @At("HEAD"), cancellable = true,
             require = 0, expect = 1)
-    private void schmaloogium$suppressBlendFuncSeparate(int srcFactor, int dstFactor,
+    private static void schmaloogium$suppressBlendFuncSeparate(int srcFactor, int dstFactor,
             int srcFactorAlpha, int dstFactorAlpha, CallbackInfo ci) {
         if (AlphaBlendOverrideHooks.suppressBlendMutation()) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "func_179120_a(IIII)V", at = @At("RETURN"), require = 0, expect = 1)
-    private void schmaloogium$publishBlendFuncSeparate(int srcFactor, int dstFactor,
+    @Inject(method = "tryBlendFuncSeparate(IIII)V", at = @At("RETURN"), require = 0, expect = 1)
+    private static void schmaloogium$publishBlendFuncSeparate(int srcFactor, int dstFactor,
             int srcFactorAlpha, int dstFactorAlpha, CallbackInfo ci) {
         AlphaBlendOverrideHooks.publishEffectiveBlend();
     }

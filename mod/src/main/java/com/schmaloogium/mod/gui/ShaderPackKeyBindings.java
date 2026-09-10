@@ -45,6 +45,9 @@ public final class ShaderPackKeyBindings {
     /** The stored convenience binding; {@code null} until {@link #register()}. */
     private KeyBinding openScreenBinding;
 
+    /** F3 hold state, tracked from key events (polling is unavailable; see onKeyInput). */
+    private boolean f3Held;
+
     /**
      * @param engineActive        whether a reload is currently meaningful (gate, [D-P12-13])
      * @param submitter           receives the classified {@link ReloadTrigger#F3R_KEYBIND} request
@@ -92,11 +95,22 @@ public final class ShaderPackKeyBindings {
      */
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        boolean rDown = Keyboard.isKeyDown(Keyboard.KEY_R);
-        boolean rWasDown =
-                !(Keyboard.getEventKey() == Keyboard.KEY_R && Keyboard.getEventKeyState());
-        if (!chordActivated(engineActive.getAsBoolean(), false,
-                Keyboard.isKeyDown(Keyboard.KEY_F3), rDown, rWasDown)) {
+        // Event-state observation only: LWJGLX's Keyboard.isKeyDown polls the GLFW
+        // window handle, which Cleanroom's input path never installs — every poll
+        // throws NPE and would crash the client mid-frame (§G2.4 forbids that). The
+        // queued-event accessors carry the same information without touching GL/GLFW.
+        int eventKey = Keyboard.getEventKey();
+        boolean eventState = Keyboard.getEventKeyState();
+        if (eventKey == Keyboard.KEY_F3) {
+            f3Held = eventState;
+            return;
+        }
+        if (eventKey != Keyboard.KEY_R || !eventState) {
+            return;
+        }
+        // A pressed R is the rising edge by construction: rWasDown is false.
+        boolean screenOpen = net.minecraft.client.Minecraft.getMinecraft().currentScreen != null;
+        if (!chordActivated(engineActive.getAsBoolean(), screenOpen, f3Held, true, false)) {
             return;
         }
         submitter.accept(ReloadTrigger.F3R_KEYBIND.request());

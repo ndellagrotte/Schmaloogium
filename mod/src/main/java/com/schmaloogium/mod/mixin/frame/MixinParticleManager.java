@@ -15,19 +15,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * The particle scopes (PHASE_7_DOC §4.10.5, H-PARTICLE-01/02): unlit (gbuffers_textured)
- * and lit (gbuffers_textured_lit) particle rendering. SRG method targets per D-5.
+ * and lit (gbuffers_textured_lit) particle rendering. MCP-named targets; remapJar generates the SRG refmap (D-5).
  */
 @Mixin(ParticleManager.class)
 public abstract class MixinParticleManager {
 
     /** H-PARTICLE-01: gbuffers_textured. */
-    @Inject(method = "func_78874_a(Lnet/minecraft/entity/Entity;F)V", at = @At("HEAD"),
+    @Inject(method = "renderParticles(Lnet/minecraft/entity/Entity;F)V", at = @At("HEAD"),
             require = 0, expect = 1)
     private void schmaloogium$unlitEnter(Entity entityIn, float partialTicks, CallbackInfo ci) {
         this.unlitScope = FrameHooks.enterSection(RenderSection.PARTICLES_UNLIT);
     }
 
-    @Inject(method = "func_78874_a(Lnet/minecraft/entity/Entity;F)V", at = @At("RETURN"),
+    @Inject(method = "renderParticles(Lnet/minecraft/entity/Entity;F)V", at = @At("RETURN"),
             require = 0, expect = 1)
     private void schmaloogium$unlitExit(Entity entityIn, float partialTicks, CallbackInfo ci) {
         FrameHooks.exitSection(RenderSection.PARTICLES_UNLIT, this.unlitScope);
@@ -37,13 +37,13 @@ public abstract class MixinParticleManager {
     private ScopeOpenResult unlitScope;
 
     /** H-PARTICLE-02: gbuffers_textured_lit. */
-    @Inject(method = "func_78872_b(Lnet/minecraft/entity/Entity;F)V", at = @At("HEAD"),
+    @Inject(method = "renderLitParticles(Lnet/minecraft/entity/Entity;F)V", at = @At("HEAD"),
             require = 0, expect = 1)
     private void schmaloogium$litEnter(Entity entityIn, float partialTicks, CallbackInfo ci) {
         this.litScope = FrameHooks.enterSection(RenderSection.PARTICLES_LIT);
     }
 
-    @Inject(method = "func_78872_b(Lnet/minecraft/entity/Entity;F)V", at = @At("RETURN"),
+    @Inject(method = "renderLitParticles(Lnet/minecraft/entity/Entity;F)V", at = @At("RETURN"),
             require = 0, expect = 1)
     private void schmaloogium$litExit(Entity entityIn, float partialTicks, CallbackInfo ci) {
         FrameHooks.exitSection(RenderSection.PARTICLES_LIT, this.litScope);

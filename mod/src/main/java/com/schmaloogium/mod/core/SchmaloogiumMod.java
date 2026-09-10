@@ -44,6 +44,7 @@ public final class SchmaloogiumMod {
             serverSide = "com.schmaloogium.mod.core.proxy.CommonProxy")
     public static IProxy proxy;
 
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         Logs.install(new Log4jLogSink());

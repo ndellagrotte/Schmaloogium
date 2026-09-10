@@ -12,18 +12,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * H-OVERLAY-01 (PHASE_7_DOC §4.10.5): first-person overlay lease around
- * {@code ItemRenderer.func_78447_b}. SRG method target per D-5.
+ * {@code ItemRenderer.renderOverlays}. SRG method target per D-5.
  */
 @Mixin(ItemRenderer.class)
 public abstract class MixinItemRenderer {
 
-    @Inject(method = "func_78447_b(F)V", at = @At("HEAD"), require = 0, expect = 1)
+    @Inject(method = "renderOverlays(F)V", at = @At("HEAD"), require = 0, expect = 1)
     private void schmaloogium$overlayEnter(float partialTicks, CallbackInfo ci) {
         this.overlayScope = FrameHooks.enterSection(
                 com.schmaloogium.engine.frame.dispatch.RenderSection.FIRST_PERSON_OVERLAY);
     }
 
-    @Inject(method = "func_78447_b(F)V", at = @At("RETURN"), require = 0, expect = 1)
+    @Inject(method = "renderOverlays(F)V", at = @At("RETURN"), require = 0, expect = 1)
     private void schmaloogium$overlayExit(float partialTicks, CallbackInfo ci) {
         FrameHooks.exitSection(
                 com.schmaloogium.engine.frame.dispatch.RenderSection.FIRST_PERSON_OVERLAY,

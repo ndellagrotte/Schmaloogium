@@ -8,7 +8,157 @@ input.profile = synthetic-gl33
 input.projectionVersion = 1
 
 [sources]
-count = 0
+count = 4
+shaders/gbuffers_terrain.fsh = lines=11 sha256=1763ec5b3a4e5e7df2c87060996a4fb173c094d6a9d720130cf540cfa4bf5008
+shaders/gbuffers_terrain.vsh = lines=13 sha256=1b08004ec6001dd472870cc33e55614edcb23df36ca636c0835b6dde0b7cf9f0
+shaders/gbuffers_water.fsh = lines=12 sha256=ab66d2432ff29da6e9a7542eb7f6a187416ca920a45e931387042f5d5929885a
+shaders/gbuffers_water.vsh = lines=10 sha256=d27e7fb7f77dc47d2bf4c0f35c5e57b66f7f171bacad7183eb38c5d6fc3c3ac7
+
+[programs]
+owner.programStates.$type = Evaluated
+owner.programStates.programs.0.$type = EvaluatedProgramState
+owner.programStates.programs.0.alphaTest = absent
+owner.programStates.programs.0.blend = absent
+owner.programStates.programs.0.finalEnabled = true
+owner.programStates.programs.0.key.$type = ProgramKey
+owner.programStates.programs.0.key.dimension.$type = DimensionKey
+owner.programStates.programs.0.key.dimension.legacyId = absent
+owner.programStates.programs.0.key.programName = gbuffers_terrain
+owner.programStates.programs.0.profileDisabled = false
+owner.programStates.programs.0.propertyEnabled = true
+owner.programStates.programs.0.scale = absent
+owner.programStates.programs.1.$type = EvaluatedProgramState
+owner.programStates.programs.1.alphaTest = absent
+owner.programStates.programs.1.blend = absent
+owner.programStates.programs.1.finalEnabled = true
+owner.programStates.programs.1.key.$type = ProgramKey
+owner.programStates.programs.1.key.dimension.$type = DimensionKey
+owner.programStates.programs.1.key.dimension.legacyId = absent
+owner.programStates.programs.1.key.programName = gbuffers_water
+owner.programStates.programs.1.profileDisabled = false
+owner.programStates.programs.1.propertyEnabled = true
+owner.programStates.programs.1.scale = absent
+
+[sizing]
+owner.resources.centerDepth.$type = CenterDepthRequirements
+owner.resources.centerDepth.required = false
+owner.resources.minima.$type = BufferMinima
+owner.resources.minima.colorBuffers = 8
+owner.resources.minima.mainDepthTextures = 1
+owner.resources.minima.shadowColorBuffers = 0
+owner.resources.minima.shadowDepthBuffers = 1
+owner.resources.noise.$type = NoiseRequirement
+owner.resources.noise.enabled = false
+owner.resources.noise.resolution = 128
+owner.resources.shadow.$type = ShadowRequirements
+owner.resources.shadow.distance = 160
+owner.resources.shadow.distanceRenderMultiplier = -1
+owner.resources.shadow.fov = absent
+owner.resources.shadow.intervalSize = 4
+owner.resources.shadow.resolution = 1024
+owner.resources.smoothing.$type = SmoothingConstants
+owner.resources.smoothing.centerDepthHalfLifeTicks = 1
+owner.resources.smoothing.drynessHalfLifeTicks = 600
+owner.resources.smoothing.eyeBrightnessHalfLifeTicks = 10
+owner.resources.smoothing.wetnessHalfLifeTicks = 600
+owner.resources.world.$type = WorldRenderConstants
+owner.resources.world.ambientOcclusionLevel = 0.5
+owner.resources.world.sunPathRotation = 0
+
+[options]
+owner.options.mainScreen.$type = ScreenModel
+owner.options.mainScreen.explicitColumns = absent
+
+[properties]
+owner.dimensions.0.key.$type = DimensionKey
+owner.dimensions.0.key.legacyId = absent
+owner.dimensions.0.value.$type = DimensionConfiguration
+owner.dimensions.0.value.baseDimension = absent
+owner.dimensions.0.value.key.$type = DimensionKey
+owner.dimensions.0.value.key.legacyId = absent
+owner.dimensions.0.value.mode = BASE
+owner.dimensions.0.value.sourceRoots.0.$type = SourceKey
+owner.dimensions.0.value.sourceRoots.0.dimension.$type = DimensionKey
+owner.dimensions.0.value.sourceRoots.0.dimension.legacyId = absent
+owner.dimensions.0.value.sourceRoots.0.programName = gbuffers_terrain
+owner.dimensions.0.value.sourceRoots.0.source = shaders/gbuffers_terrain.fsh
+owner.dimensions.0.value.sourceRoots.0.stage = FRAGMENT
+owner.dimensions.0.value.sourceRoots.1.$type = SourceKey
+owner.dimensions.0.value.sourceRoots.1.dimension.$type = DimensionKey
+owner.dimensions.0.value.sourceRoots.1.dimension.legacyId = absent
+owner.dimensions.0.value.sourceRoots.1.programName = gbuffers_terrain
+owner.dimensions.0.value.sourceRoots.1.source = shaders/gbuffers_terrain.vsh
+owner.dimensions.0.value.sourceRoots.1.stage = VERTEX
+owner.dimensions.0.value.sourceRoots.2.$type = SourceKey
+owner.dimensions.0.value.sourceRoots.2.dimension.$type = DimensionKey
+owner.dimensions.0.value.sourceRoots.2.dimension.legacyId = absent
+owner.dimensions.0.value.sourceRoots.2.programName = gbuffers_water
+owner.dimensions.0.value.sourceRoots.2.source = shaders/gbuffers_water.fsh
+owner.dimensions.0.value.sourceRoots.2.stage = FRAGMENT
+owner.dimensions.0.value.sourceRoots.3.$type = SourceKey
+owner.dimensions.0.value.sourceRoots.3.dimension.$type = DimensionKey
+owner.dimensions.0.value.sourceRoots.3.dimension.legacyId = absent
+owner.dimensions.0.value.sourceRoots.3.programName = gbuffers_water
+owner.dimensions.0.value.sourceRoots.3.source = shaders/gbuffers_water.vsh
+owner.dimensions.0.value.sourceRoots.3.stage = VERTEX
+owner.idMappings.blocks.$type = IdMappingFileInput
+owner.idMappings.blocks.fingerprint = sha256:08fd55f4752aaa76b51734ac92ac4053235b27541e8477f7eee3919b7fc8ce1f
+owner.idMappings.blocks.kind = BLOCK
+owner.idMappings.blocks.state = ABSENT
+owner.idMappings.entities.$type = IdMappingFileInput
+owner.idMappings.entities.fingerprint = sha256:f01846e0235cb1387beb11ba4461a171561e61e5de4f6e871780fe50fbc8515a
+owner.idMappings.entities.kind = ENTITY
+owner.idMappings.entities.state = ABSENT
+owner.idMappings.items.$type = IdMappingFileInput
+owner.idMappings.items.fingerprint = sha256:97ae4ff6db33f8c139fda5363e7fcc66b4e362a2d83866eca6215566991a72eb
+owner.idMappings.items.kind = ITEM
+owner.idMappings.items.state = ABSENT
+owner.idMappings.layers.$type = IdMappingFileInput
+owner.idMappings.layers.fingerprint = sha256:74d887a3f12a5a4e973e30a3d9000ac62fb957380fad795e4e378d99cee2e13b
+owner.idMappings.layers.kind = LAYER
+owner.idMappings.layers.state = ABSENT
+owner.idMappings.parserEnvironment.$type = IdMappingMacroEnvironment
+owner.idMappings.parserEnvironment.mcVersion = 11202
+owner.idMappings.parserEnvironment.standardMacros.0.$type = MacroDefinition
+owner.idMappings.parserEnvironment.standardMacros.0.name = MC_VERSION
+owner.idMappings.parserEnvironment.standardMacros.0.replacement = sha256:d9fe91d61ee11e9fa91494f9775b2acdea63ea237393bc5f71b28c201c0da199
+owner.idMappings.schemaVersion = 23
+owner.pack.compatibility = COMPATIBLE
+owner.pack.identity.contentHashes.0.key = shaders/gbuffers_terrain.fsh
+owner.pack.identity.contentHashes.0.value = sha256:24ae9d071ec9493d500fccbb3b9d54636f3542269e0282c5f774fd49920132ee
+owner.pack.identity.contentHashes.1.key = shaders/gbuffers_terrain.vsh
+owner.pack.identity.contentHashes.1.value = sha256:4c0c110088d305700a16cbdef4b0071a3195a7a7ce912aec1f0aacaa53d02cb1
+owner.pack.identity.contentHashes.2.key = shaders/gbuffers_water.fsh
+owner.pack.identity.contentHashes.2.value = sha256:67d8bf852a69dcd6692c200ad1782090ca3cd4c4d0d857ab84965e343306cd17
+owner.pack.identity.contentHashes.3.key = shaders/gbuffers_water.vsh
+owner.pack.identity.contentHashes.3.value = sha256:34be52c32ac4579dfae107af460f76381601ba3a28080bce836f7242bc87091b
+owner.pack.identity.selectedRoot = shaders
+owner.pack.schemaVersion = 23
+owner.properties.engineFlags.backFaceCutout = DEFAULT
+owner.properties.engineFlags.backFaceCutoutMipped = DEFAULT
+owner.properties.engineFlags.backFaceSolid = DEFAULT
+owner.properties.engineFlags.backFaceTranslucent = DEFAULT
+owner.properties.engineFlags.beaconBeamDepth = DEFAULT
+owner.properties.engineFlags.clouds = DEFAULT
+owner.properties.engineFlags.dynamicHandLight = DEFAULT
+owner.properties.engineFlags.frustumCulling = DEFAULT
+owner.properties.engineFlags.moon = DEFAULT
+owner.properties.engineFlags.oldHandLight = DEFAULT
+owner.properties.engineFlags.oldLighting = DEFAULT
+owner.properties.engineFlags.rainDepth = DEFAULT
+owner.properties.engineFlags.separateAo = DEFAULT
+owner.properties.engineFlags.shadowTranslucent = DEFAULT
+owner.properties.engineFlags.sun = DEFAULT
+owner.properties.engineFlags.underwaterOverlay = DEFAULT
+owner.properties.engineFlags.vignette = DEFAULT
+owner.properties.noise = absent
+present = true
+
+[macros]
+owner.macros.companionOptionMacros.$type = CompanionOptionMacros
+owner.macros.companionOptionMacros.normalMap = false
+owner.macros.companionOptionMacros.specularMap = false
+owner.macros.identityPolicy = OPTION_1
 
 [diagnostics]
 count = 0

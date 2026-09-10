@@ -22,14 +22,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(TileEntityRendererDispatcher.class)
 public abstract class MixinTileEntityRendererDispatcher {
 
-    @Inject(method = "func_192854_a(Lnet/minecraft/tileentity/TileEntity;DDDFIF)V",
+    @Inject(method = "render(Lnet/minecraft/tileentity/TileEntity;DDDFIF)V",
             at = @At("HEAD"), require = 0, expect = 1)
     private void schmaloogium$blockEntityEnter(TileEntity tileEntity, double x, double y, double z,
             float partialTicks, int destroyStage, float partialTickOffset, CallbackInfo ci) {
         this.blockEntityScope = FrameHooks.enterSection(RenderSection.BLOCK_ENTITIES);
     }
 
-    @Inject(method = "func_192854_a(Lnet/minecraft/tileentity/TileEntity;DDDFIF)V",
+    @Inject(method = "render(Lnet/minecraft/tileentity/TileEntity;DDDFIF)V",
             at = @At("RETURN"), require = 0, expect = 1)
     private void schmaloogium$blockEntityExit(TileEntity tileEntity, double x, double y, double z,
             float partialTicks, int destroyStage, float partialTickOffset, CallbackInfo ci) {

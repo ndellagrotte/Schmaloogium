@@ -171,8 +171,9 @@ jar {
             if (use_access_transformer.toBoolean()) {
                 attribute_map['FMLAT'] = access_transformer_locations
             }
-            // §4.5: the loader discovers the mixin configs through the jar manifest.
-            attribute_map['MixinConfigs'] = mixin_configs
+            // §4.5 deviation (dev-mixin): the single config registration authority is
+            // SchmaloogiumCoreMod#getMixinConfigs (MixinBooter early loader). Manifest
+            // MixinConfigs discovery cannot see the dev run's classes directories.
             attributes(attribute_map)
         }
     }

@@ -62,7 +62,9 @@ public final class ShaderGui {
             return;
         }
         instance = new Instance(client);
-        instance.bindings.register();
+        if (instance.bindings != null) {
+            instance.bindings.register();
+        }
         FMLCommonHandler.instance().bus().register(new Object() {
             @SubscribeEvent
             public void onClientTick(TickEvent.ClientTickEvent event) {
@@ -145,9 +147,20 @@ public final class ShaderGui {
         Instance(Minecraft client) {
             this.client = client;
             Path gameDir = client.gameDir.toPath();
+            Path shaderpacks = gameDir.resolve("shaderpacks");
+            try {
+                // First launch: the persistence root does not exist yet. The engine's
+                // root acquisition validates existence only, so the composition root
+                // creates it here (§G2.4: a missing folder must degrade, never crash).
+                java.nio.file.Files.createDirectories(shaderpacks);
+            } catch (Exception e) {
+                Diagnostics.report(new EngineDiagnostic(DiagnosticSeverity.WARN,
+                        UserChannel.LOG_ONLY, "schmaloogium.warn.gui.rootCreateFailed",
+                        List.of(), String.valueOf(e), "schmaloogium.config"));
+            }
             this.services = PackFrontEnds.create();
             this.access = BundleIo.acquire(services, new PersistenceRootConfiguration(
-                    gameDir.resolve("shaderpacks"), gameDir), Diagnostics::report).orElse(null);
+                    shaderpacks, gameDir), Diagnostics::report).orElse(null);
             this.text = new GuiText(Map.of(), Map.of(),
                     client.getLanguageManager().getCurrentLanguage().getLanguageCode());
             if (access == null) {

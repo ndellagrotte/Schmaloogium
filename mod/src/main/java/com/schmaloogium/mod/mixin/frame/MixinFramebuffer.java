@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * observation: the vanilla main framebuffer's depth attachment identity feeds
  * {@link DepthTex0Bridge} so the engine's Phase 5 can borrow it as {@code depthtex0}.
  * No vanilla handle is retained beyond its epoch — the bridge keeps only opaque
- * identity/version facts. SRG method targets per D-5.
+ * identity/version facts. MCP-named targets; remapJar generates the SRG refmap (D-5).
  */
 @Mixin(Framebuffer.class)
 public abstract class MixinFramebuffer {
@@ -29,16 +29,16 @@ public abstract class MixinFramebuffer {
     public int framebufferTextureHeight;
 
     @Shadow
-    public int depthTexture;
+    public int depthBuffer;
 
     /** H-FBO-01: vanilla-FBO attachment epoch increment + safe-boundary rebuild offer. */
-    @Inject(method = "func_147613_a(II)V", at = @At("RETURN"), require = 0, expect = 1)
+    @Inject(method = "createBindFramebuffer(II)V", at = @At("RETURN"), require = 0, expect = 1)
     private void schmaloogium$onCreateBindFramebuffer(int width, int height, CallbackInfo ci) {
         observeDepth();
     }
 
     /** H-FBO-02: final-target boundary observation. */
-    @Inject(method = "func_147610_a(Z)V", at = @At("RETURN"), require = 0, expect = 1)
+    @Inject(method = "bindFramebuffer(Z)V", at = @At("RETURN"), require = 0, expect = 1)
     private void schmaloogium$onBindFramebuffer(boolean viewPort, CallbackInfo ci) {
         observeDepth();
     }
@@ -49,7 +49,7 @@ public abstract class MixinFramebuffer {
         if (self.framebufferWidth == net.minecraft.client.Minecraft.getMinecraft().displayWidth
                 && self.framebufferHeight
                         == net.minecraft.client.Minecraft.getMinecraft().displayHeight) {
-            DepthTex0Bridge.observe(this.depthTexture,
+            DepthTex0Bridge.observe(this.depthBuffer,
                     this.framebufferTextureWidth, this.framebufferTextureHeight);
         }
     }

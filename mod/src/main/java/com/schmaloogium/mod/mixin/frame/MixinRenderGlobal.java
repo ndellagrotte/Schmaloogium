@@ -27,12 +27,12 @@ import java.util.Set;
 public abstract class MixinRenderGlobal {
 
     /** H-SKY-01: enter gbuffers_skybasic around the whole sky pass. */
-    @Inject(method = "func_174976_a(FI)V", at = @At("HEAD"), require = 0, expect = 1)
+    @Inject(method = "renderSky(FI)V", at = @At("HEAD"), require = 0, expect = 1)
     private void schmaloogium$skyBasicEnter(float partialTicks, int pass, CallbackInfo ci) {
         this.skyScope = FrameHooks.enterSection(RenderSection.SKY_BASIC);
     }
 
-    @Inject(method = "func_174976_a(FI)V", at = @At("RETURN"), require = 0, expect = 1)
+    @Inject(method = "renderSky(FI)V", at = @At("RETURN"), require = 0, expect = 1)
     private void schmaloogium$skyBasicExit(float partialTicks, int pass, CallbackInfo ci) {
         FrameHooks.exitSection(RenderSection.SKY_BASIC, this.skyScope);
         this.skyScope = null;
@@ -41,7 +41,7 @@ public abstract class MixinRenderGlobal {
     private ScopeOpenResult skyScope;
 
     /** H-TERRAIN-01: solid/cutout/cutout-mipped terrain scopes. */
-    @Inject(method = "func_174977_a(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I",
+    @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I",
             at = @At("HEAD"), require = 0, expect = 1)
     private void schmaloogium$terrainEnter(BlockRenderLayer layer, double partialTicks, int pass,
             Entity viewEntity, CallbackInfoReturnable<Integer> cir) {
@@ -51,7 +51,7 @@ public abstract class MixinRenderGlobal {
         }
     }
 
-    @Inject(method = "func_174977_a(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I",
+    @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I",
             at = @At("RETURN"), require = 0, expect = 1)
     private void schmaloogium$terrainExit(BlockRenderLayer layer, double partialTicks, int pass,
             Entity viewEntity, CallbackInfoReturnable<Integer> cir) {
@@ -75,14 +75,14 @@ public abstract class MixinRenderGlobal {
     }
 
     /** H-ENTITY-01: main entity pass scope. */
-    @Inject(method = "func_180446_a(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V",
+    @Inject(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V",
             at = @At("HEAD"), require = 0, expect = 1)
     private void schmaloogium$entitiesEnter(Entity viewEntity, net.minecraft.client.renderer.culling.ICamera camera,
             float partialTicks, CallbackInfo ci) {
         this.entitiesScope = FrameHooks.enterSection(RenderSection.ENTITIES);
     }
 
-    @Inject(method = "func_180446_a(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V",
+    @Inject(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V",
             at = @At("RETURN"), require = 0, expect = 1)
     private void schmaloogium$entitiesExit(Entity viewEntity, net.minecraft.client.renderer.culling.ICamera camera,
             float partialTicks, CallbackInfo ci) {
@@ -93,13 +93,13 @@ public abstract class MixinRenderGlobal {
     private ScopeOpenResult entitiesScope;
 
     /** H-CLOUD-01: clouds scope. */
-    @Inject(method = "func_180447_b(FIDDD)V", at = @At("HEAD"), require = 0, expect = 1)
+    @Inject(method = "renderClouds(FIDDD)V", at = @At("HEAD"), require = 0, expect = 1)
     private void schmaloogium$cloudsEnter(float partialTicks, int pass, double viewEntityX,
             double viewEntityY, double viewEntityZ, CallbackInfo ci) {
         this.cloudScope = FrameHooks.enterSection(RenderSection.CLOUDS);
     }
 
-    @Inject(method = "func_180447_b(FIDDD)V", at = @At("RETURN"), require = 0, expect = 1)
+    @Inject(method = "renderClouds(FIDDD)V", at = @At("RETURN"), require = 0, expect = 1)
     private void schmaloogium$cloudsExit(float partialTicks, int pass, double viewEntityX,
             double viewEntityY, double viewEntityZ, CallbackInfo ci) {
         FrameHooks.exitSection(RenderSection.CLOUDS, this.cloudScope);
@@ -109,13 +109,13 @@ public abstract class MixinRenderGlobal {
     private ScopeOpenResult cloudScope;
 
     /** H-BORDER-01: world-border scope. */
-    @Inject(method = "func_180449_a(Lnet/minecraft/entity/Entity;F)V", at = @At("HEAD"),
+    @Inject(method = "renderWorldBorder(Lnet/minecraft/entity/Entity;F)V", at = @At("HEAD"),
             require = 0, expect = 1)
     private void schmaloogium$borderEnter(Entity viewEntity, float partialTicks, CallbackInfo ci) {
         this.borderScope = FrameHooks.enterSection(RenderSection.WORLD_BORDER);
     }
 
-    @Inject(method = "func_180449_a(Lnet/minecraft/entity/Entity;F)V", at = @At("RETURN"),
+    @Inject(method = "renderWorldBorder(Lnet/minecraft/entity/Entity;F)V", at = @At("RETURN"),
             require = 0, expect = 1)
     private void schmaloogium$borderExit(Entity viewEntity, float partialTicks, CallbackInfo ci) {
         FrameHooks.exitSection(RenderSection.WORLD_BORDER, this.borderScope);
@@ -125,7 +125,7 @@ public abstract class MixinRenderGlobal {
     private ScopeOpenResult borderScope;
 
     /** H-DAMAGE-01: damaged-block overlay scope. */
-    @Inject(method = "func_174981_a(Lnet/minecraft/client/renderer/Tessellator;"
+    @Inject(method = "drawBlockDamageTexture(Lnet/minecraft/client/renderer/Tessellator;"
             + "Lnet/minecraft/client/renderer/BufferBuilder;Lnet/minecraft/entity/Entity;F)V",
             at = @At("HEAD"), require = 0, expect = 1)
     private void schmaloogium$damageEnter(net.minecraft.client.renderer.Tessellator tessellator,
@@ -134,7 +134,7 @@ public abstract class MixinRenderGlobal {
         this.damageScope = FrameHooks.enterSection(RenderSection.DAMAGED_BLOCK);
     }
 
-    @Inject(method = "func_174981_a(Lnet/minecraft/client/renderer/Tessellator;"
+    @Inject(method = "drawBlockDamageTexture(Lnet/minecraft/client/renderer/Tessellator;"
             + "Lnet/minecraft/client/renderer/BufferBuilder;Lnet/minecraft/entity/Entity;F)V",
             at = @At("RETURN"), require = 0, expect = 1)
     private void schmaloogium$damageExit(net.minecraft.client.renderer.Tessellator tessellator,
