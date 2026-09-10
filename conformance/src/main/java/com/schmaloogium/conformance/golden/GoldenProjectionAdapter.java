@@ -85,18 +85,31 @@ public final class GoldenProjectionAdapter {
         GoldenDocument document = GoldenDocument.create(header);
 
         document.section("sources", sourcesSection(snapshot.sources()));
-        for (Map.Entry<String, java.util.List<String>> mapped : OWNER_SECTIONS.entrySet()) {
-            DecisionValue tree = snapshot.sections().get(mapped.getKey());
+        // Several P3 section keys project into the SAME golden section (§4.11.4's
+        // table; e.g. "properties" receives pack/dimensions/properties/idMappings/
+        // assets). GoldenDocument.section replaces wholesale, so the contributions
+        // must be merged BEFORE the single per-section call, and the walk order must
+        // not depend on Map.of iteration order (which varies per JVM): OWNER_SECTIONS
+        // is therefore walked in its key-sorted order and every row key carries its
+        // owner prefix, making the merge lossless and the render deterministic.
+        Map<String, Map<String, String>> merged = new java.util.TreeMap<>();
+        for (String sectionKey : OWNER_SECTIONS.keySet().stream().sorted().toList()) {
+            DecisionValue tree = snapshot.sections().get(sectionKey);
             if (tree == null) {
                 continue;
             }
-            Map<String, String> rows = new LinkedHashMap<>();
-            flatten("owner." + mapped.getKey(), tree, rows);
-            if (rows.isEmpty()) {
+            List<String> target = OWNER_SECTIONS.get(sectionKey);
+            Map<String, String> rows = merged.computeIfAbsent(target.get(0), k -> new LinkedHashMap<>());
+            Map<String, String> treeRows = new LinkedHashMap<>();
+            flatten(target.get(1), tree, treeRows);
+            if (treeRows.isEmpty()) {
                 // An owner tree that exists but declares nothing is still a decision.
-                rows.put("present", "true");
+                treeRows.put("present", "true");
             }
-            document.section(mapped.getValue().get(0), rows);
+            rows.putAll(treeRows);
+        }
+        for (Map.Entry<String, Map<String, String>> section : merged.entrySet()) {
+            document.section(section.getKey(), section.getValue());
         }
         document.section("diagnostics", diagnosticsSection(snapshot.diagnostics()));
         return document;
