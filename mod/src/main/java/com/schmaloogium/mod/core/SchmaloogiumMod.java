@@ -78,15 +78,16 @@ public final class SchmaloogiumMod {
                     DiagnosticSeverity.ERROR, UserChannel.CHAT, reasonKey, args,
                     "bail point 1: " + evaluation.bails().size() + " bail verdict(s)",
                     LogChannels.COMPAT));
-        } else if (!evaluation.degradations().isEmpty()) {
-            LOGGER.warn("{} compat degradation(s) in effect", evaluation.degradations().size());
+        } else {
+            if (!evaluation.degradations().isEmpty()) {
+                LOGGER.warn("{} compat degradation(s) in effect", evaluation.degradations().size());
+            }
+            // H-BOOT-01 (PHASE_7_DOC §4.10.2): both prerequisites — preInit configuration
+            // and load completion — delivered and the session did not bail; latch the
+            // loader-events bridge. A bail keeps startup Off, so the latch waits.
+            BootstrapHooks.onEarlyConfigurationLoaded();
         }
-        // H-BOOT-01 (PHASE_7_DOC §4.10.2): both prerequisites — preInit configuration
-        // and load completion — now delivered; latch the loader-events bridge.
-        BootstrapHooks.onEarlyConfigurationLoaded();
     }
-
-
     /** FML-backed {@link CompatContext}: mod-list and class probes plus the GL profile slot. */
     static final class FmlCompatContext implements CompatContext {
         @Override
