@@ -487,7 +487,6 @@ final class Lwjgl3FramebufferService implements FramebufferService {
         private final boolean savedDither;
         private final boolean savedDiscard;
         private final boolean savedSrgb;
-        private final boolean savedClamp;
 
         TypedClear(Lwjgl3FramebufferHandle fb, int drawBufferIndex, ColorClearValue value,
                    boolean integerStorage) {
@@ -505,8 +504,6 @@ final class Lwjgl3FramebufferService implements FramebufferService {
             this.savedDiscard = GL11.glIsEnabled(GL30.GL_RASTERIZER_DISCARD);
             this.savedSrgb = profile.atLeast(3, 0)
                     && GL11.glIsEnabled(GL30.GL_FRAMEBUFFER_SRGB);
-            this.savedClamp = profile.hasExtension("GL_ARB_color_buffer_float")
-                    && GL11.glIsEnabled(ARB_CLAMP_FRAGMENT_COLOR);
         }
 
         void run() {
@@ -517,9 +514,6 @@ final class Lwjgl3FramebufferService implements FramebufferService {
                 disable(GL30.GL_RASTERIZER_DISCARD, savedDiscard);
                 if (savedSrgb) {
                     GL11.glDisable(GL30.GL_FRAMEBUFFER_SRGB);
-                }
-                if (savedClamp) {
-                    GL11.glDisable(ARB_CLAMP_FRAGMENT_COLOR);
                 }
                 GlStateManager.colorMask(true, true, true, true);
                 issueClear();
@@ -556,9 +550,6 @@ final class Lwjgl3FramebufferService implements FramebufferService {
                 if (savedSrgb) {
                     GL11.glEnable(GL30.GL_FRAMEBUFFER_SRGB);
                 }
-                if (savedClamp) {
-                    GL11.glEnable(ARB_CLAMP_FRAGMENT_COLOR);
-                }
                 if (savedScissor) {
                     GL11.glEnable(GL11.GL_SCISSOR_TEST);
                 }
@@ -577,7 +568,9 @@ final class Lwjgl3FramebufferService implements FramebufferService {
         }
     }
 
-    private static final int ARB_CLAMP_FRAGMENT_COLOR = 0x8912; // GL_CLAMP_FRAGMENT_COLOR_ARB
+    // GL_CLAMP_FRAGMENT_COLOR_ARB is a glClampColor mode, not an enable capability:
+    // glIsEnabled/glEnable on it raise INVALID_ENUM, and glClearBuffer* is unaffected by
+    // fragment clamping, so the typed clear neither saves nor restores it.
 
     private static void getBooleanv(int pname, boolean[] out) {
         try (var stack = org.lwjgl.system.MemoryStack.stackPush()) {

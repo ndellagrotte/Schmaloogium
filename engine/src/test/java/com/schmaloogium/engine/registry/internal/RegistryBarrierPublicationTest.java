@@ -190,6 +190,37 @@ class RegistryBarrierPublicationTest {
         assertEquals(1L, publisher.current().generation());
     }
 
+    @Test
+    void readyPublicationAcceptsReleaseContextFromTheOldPublicationSource() {
+        // §4.10: the release context is "issued by the old publication's
+        // BarrierContextSource" — publisher.current().contexts() — the only mint a caller
+        // outside this package (the composition root) can reach.
+        ScriptedGLDevice device = new ScriptedGLDevice();
+        Fixture fixture = fixture(device);
+        var publisher = com.schmaloogium.engine.registry.ProgramRegistries.publisher();
+        BarrierContext release = mintedRelease(publisher);
+        PublicationResult result = publisher.publish(new RegistryPublication.Ready(
+            fixture.candidate(), compose(fixture.candidate(), new ArrayList<>())), release);
+        PublishedRegistry published =
+            assertInstanceOf(PublicationResult.Accepted.class, result).published();
+        assertEquals(1L, published.generation());
+        // A second replacement mints from the now-current (migrated) source.
+        Fixture second = fixture(device);
+        PublicationResult replaced = publisher.publish(new RegistryPublication.Ready(
+            second.candidate(), compose(second.candidate(), new ArrayList<>())),
+            mintedRelease(publisher));
+        assertEquals(2L, assertInstanceOf(PublicationResult.Accepted.class, replaced)
+            .published().generation());
+        // A stale context (older epoch) is still rejected by epoch, not source.
+        BarrierContext stale = mintedRelease(publisher);
+        publisher.current().contexts().beginFrame();
+        PublicationResult rejected = publisher.publish(
+            new RegistryPublication.ShadersOff(new RegistryBuildFailure(
+                RegistryFailureKind.UNEXPECTED_BACKEND, java.util.List.of(), "t", "t")), stale);
+        assertEquals(com.schmaloogium.engine.registry.PublicationFailureKind.CONTEXT_EPOCH,
+            assertInstanceOf(PublicationResult.Rejected.class, rejected).cause().kind());
+    }
+
     private static BarrierContext mintedRelease(
             com.schmaloogium.engine.registry.ProgramRegistryPublisher publisher) {
         return ((PublishedRegistry) publisher.current()).contexts().beginFrame().release();

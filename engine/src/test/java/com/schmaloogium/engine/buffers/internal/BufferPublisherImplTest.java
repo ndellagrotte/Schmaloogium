@@ -232,4 +232,17 @@ class BufferPublisherImplTest {
         candidate.close();
         assertThrows(IllegalStateException.class, () -> candidate.internal());
     }
+
+    @Test
+    void acceptanceStampsThePublicationGenerationOnTheEstateView() {
+        BufferEstatePublisher publisher = BufferEstatePublishers.create();
+        BufferEstateCandidate candidate = candidate(device(), "accepted", new Extent2i(32, 32));
+        BufferPublicationResult result = publisher.publish(candidate, ACCEPTED);
+        BufferPublicationResult.Published published =
+            org.junit.jupiter.api.Assertions.assertInstanceOf(
+                BufferPublicationResult.Published.class, result);
+        org.junit.jupiter.api.Assertions.assertEquals(published.publication().generation(),
+            published.publication().estate().orElseThrow().generation(),
+            "the accepted estate view must answer the publication's generation (§5.1)");
+    }
 }

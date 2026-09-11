@@ -90,6 +90,9 @@ public final class BufferPublisherImpl implements BufferEstatePublisher {
             : previous.registryFingerprint();
         installed = impl;
         lastGeneration = generation;
+        // Acceptance issues the sole estate generation (§5.1): the view, its shadow
+        // disposition and every per-frame protocol check key on this stamp.
+        impl.core().generation = generation;
         generationSizings.put(generation, impl.sizing());
         current = new PublishedBufferEstate(generation,
             Optional.of(impl.view()), impl.resources());

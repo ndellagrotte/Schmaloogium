@@ -97,7 +97,7 @@ class DiagnosticRoutingTest {
         new ClientDiagnosticRouter().report(
                 diagnostic(UserChannel.LOG_ONLY, DiagnosticSeverity.ERROR, LogChannels.GL));
         assertTrue(sink.events.contains(LogChannels.GL + "|" + LogLevel.ERROR
-                + "|test.message.detail"));
+                + "|test.message.detail: {}"));
     }
 
     @Test

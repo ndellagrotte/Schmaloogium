@@ -35,31 +35,70 @@ public final class FrameHooks {
     private static volatile FrameToken currentFrame;
     private static volatile boolean firstFrameLogged;
     private static volatile int reservedTerrainToken;
+    private static volatile long installEpoch;
+    private static volatile boolean firstOpenAfterInstallLogged = true;
+    private static volatile String lastOpenVerdict = "";
+    private static volatile String lastClearVerdict = "";
+    private static volatile boolean containmentLogged;
+    private static volatile String lastFinishVerdict = "";
+    private static final java.util.Set<String> scopeVerdictsLogged =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     private FrameHooks() {
     }
 
-    /** H-FRAME-01: HEAD of {@code EntityRenderer.func_175068_a(IFJ)V}. */
+    /**
+     * H-FRAME-01: HEAD of {@code EntityRenderer.func_175068_a(IFJ)V}. Vanilla numbers the
+     * mono world pass 2 and the two anaglyph eyes 0/1; the engine's {@code vanillaPass} is
+     * zero for the one shader-bearing world pass (PHASE_7_DOC §5.1: the non-anaglyph pass
+     * carries LEFT), so the bridge normalizes 2 → 0 and leaves anaglyph passes vanilla-only.
+     */
     public static void open(int pass, float partialTicks, long finishTimeNano, int frameCounter) {
+        int enginePass = pass == 2 ? 0 : 1;
         FrameBeginSignal signal = new FrameBeginSignal(
                 McFrameState.worldEpoch(),
                 McFrameState.logicalTick(),
                 McFrameState.smoothingTimeTicks(),
                 finishTimeNano,
                 McFrameState.dimension(),
-                pass,
+                enginePass,
                 frameCounter,
                 partialTicks,
                 McFrameState.targetView(),
                 McFrameState.priorCompletedFramebuffer(),
                 McFrameState.anaglyphEye());
-        FrameOpenResult result = driver().open(signal);
+        FrameOpenResult result;
+        try {
+            result = driver().open(signal);
+        } catch (RuntimeException e) {
+            contain("open", null, e);
+            currentFrame = null;
+            return;
+        }
         if (!firstFrameLogged) {
             firstFrameLogged = true;
             com.schmaloogium.engine.log.Logs.channel(
                     com.schmaloogium.engine.log.LogChannels.FRAME).info(
                     "H-FRAME-01 first frame-begin hook observed: pass {}, counter {}, result {}",
                     pass, frameCounter, result.getClass().getSimpleName());
+        }
+        String verdict = result.getClass().getSimpleName()
+                + (result instanceof FrameOpenResult.VanillaOnly vanilla
+                        ? " (" + vanilla.reason() + ")" : "");
+        if (!firstOpenAfterInstallLogged) {
+            firstOpenAfterInstallLogged = true;
+            lastOpenVerdict = verdict;
+            com.schmaloogium.engine.log.Logs.channel(
+                    com.schmaloogium.engine.log.LogChannels.FRAME).info(
+                    "H-FRAME-01 first frame-begin after composition install #{}: result {}",
+                    installEpoch, verdict);
+        } else if (!verdict.equals(lastOpenVerdict)) {
+            // Steady-state evidence: every change of the open verdict, never per frame.
+            lastOpenVerdict = verdict;
+            com.schmaloogium.engine.log.Logs.channel(
+                    com.schmaloogium.engine.log.LogChannels.FRAME).info(
+                    "H-FRAME-01 open verdict changed (install #{}, counter {}): now {}",
+                    installEpoch, frameCounter, verdict);
         }
         if (result instanceof FrameOpenResult.Opened opened) {
             currentFrame = opened.token();
@@ -73,7 +112,11 @@ public final class FrameHooks {
     public static void normalizeVanillaState() {
         FrameToken token = currentFrame;
         if (token != null) {
-            driver().beforeFirstClear(token);
+            try {
+                driver().beforeFirstClear(token);
+            } catch (RuntimeException e) {
+                contain("beforeFirstClear", token, e);
+            }
         }
     }
 
@@ -81,7 +124,27 @@ public final class FrameHooks {
     public static void afterFirstClear() {
         FrameToken token = currentFrame;
         if (token != null) {
-            driver().afterFirstClear(token, McFrameState.mainDepthPreparation());
+            com.schmaloogium.engine.frame.FrameStepResult result;
+            try {
+                result = driver().afterFirstClear(token, McFrameState.mainDepthPreparation());
+            } catch (RuntimeException e) {
+                contain("afterFirstClear", token, e);
+                return;
+            }
+            String verdict = result.getClass().getSimpleName()
+                    + (result instanceof com.schmaloogium.engine.frame.FrameStepResult.Aborted aborted
+                            ? " (" + aborted.reason() + ")" : "");
+            if (!verdict.equals(lastClearVerdict)) {
+                lastClearVerdict = verdict;
+                com.schmaloogium.engine.log.Logs.channel(
+                        com.schmaloogium.engine.log.LogChannels.FRAME).info(
+                        "H-FRAME-03 after-first-clear verdict changed (install #{}): now {}",
+                        installEpoch, verdict);
+            }
+            if (result instanceof com.schmaloogium.engine.frame.FrameStepResult.Aborted) {
+                currentFrame = null;
+                restoreVanilla();
+            }
         }
     }
 
@@ -91,9 +154,23 @@ public final class FrameHooks {
         if (token == null) {
             return;
         }
-        Matrix4Value modelView = readMatrix(0x1700); // GL_MODELVIEW_MATRIX
-        Matrix4Value projection = readMatrix(0x1701); // GL_PROJECTION_MATRIX
-        driver().captureMainCamera(token, new CameraSnapshot(modelView, projection));
+        // glGetFloatv takes the *_MATRIX query enums (0x0BA6/0x0BA7), not the matrix-mode
+        // enums GL_MODELVIEW/GL_PROJECTION (0x1700/0x1701): the latter raise INVALID_ENUM,
+        // leave the scratch zeroed (singular matrices) and poison the next error drain.
+        Matrix4Value modelView = readMatrix(0x0BA6); // GL_MODELVIEW_MATRIX
+        Matrix4Value projection = readMatrix(0x0BA7); // GL_PROJECTION_MATRIX
+        try {
+            var result = driver().captureMainCamera(token, new CameraSnapshot(modelView, projection));
+            noteScopeVerdict("captureMainCamera",
+                    result instanceof com.schmaloogium.engine.frame.FrameStepResult.Aborted
+                            ? result.toString() : null);
+            if (result instanceof com.schmaloogium.engine.frame.FrameStepResult.Aborted) {
+                currentFrame = null;
+                restoreVanilla();
+            }
+        } catch (RuntimeException e) {
+            contain("captureMainCamera", token, e);
+        }
     }
 
     /**
@@ -109,7 +186,11 @@ public final class FrameHooks {
             return;
         }
         original.run();
-        driver().afterTerrainSetup(token);
+        try {
+            driver().afterTerrainSetup(token);
+        } catch (RuntimeException e) {
+            contain("afterTerrainSetup", token, e);
+        }
     }
 
     /** H-FRAME-06: TAIL of {@code func_175068_a} on normal return. */
@@ -128,7 +209,15 @@ public final class FrameHooks {
         if (token == null) {
             return null; // vanilla-only frame: the mixin skips its scope entirely
         }
-        return driver().enter(token, section);
+        try {
+            ScopeOpenResult result = driver().enter(token, section);
+            noteScopeVerdict("enter " + section, result instanceof ScopeOpenResult.Opened ? null
+                    : result.toString());
+            return result;
+        } catch (RuntimeException e) {
+            contain("enter " + section, token, e);
+            return null;
+        }
     }
 
     /** Balanced scope pop; {@code opened} is the exact result this thread's enter produced. */
@@ -139,13 +228,33 @@ public final class FrameHooks {
         ScopeToken scope = ((ScopeOpenResult.Opened) opened).scope();
         FrameToken token = currentFrame;
         if (token != null) {
-            driver().exit(token, scope);
+            try {
+                var result = driver().exit(token, scope);
+                noteScopeVerdict("exit " + section,
+                        result instanceof com.schmaloogium.engine.frame.ScopeCloseResult.Closed
+                                ? null : result.toString());
+            } catch (RuntimeException e) {
+                contain("exit " + section, token, e);
+            }
         }
     }
 
     /** H-RESIZE-01/02: window or framebuffer extent changed off any open frame. */
     public static void onFramebufferExtentChanged() {
         McFrameState.noteExtentChanged();
+    }
+
+    /** Composition root: a new publication was installed; log the next open's verdict. */
+    public static void noteCompositionInstalled() {
+        installEpoch++;
+        firstOpenAfterInstallLogged = false;
+        containmentLogged = false;
+        scopeVerdictsLogged.clear();
+    }
+
+    /** True while a frame token is held (the reload drain must not run then). */
+    public static boolean hasOpenFrame() {
+        return currentFrame != null;
     }
 
     private static FrameDriver driver() {
@@ -156,8 +265,86 @@ public final class FrameHooks {
         FrameToken token = currentFrame;
         currentFrame = null;
         if (token != null) {
-            driver().finish(token, kind);
+            try {
+                com.schmaloogium.engine.frame.FrameFinishResult result = driver().finish(token, kind);
+                String verdict = result instanceof com.schmaloogium.engine.frame.FrameFinishResult.Finalized
+                        ? "Finalized" : result.toString();
+                if (!verdict.equals(lastFinishVerdict)) {
+                    lastFinishVerdict = verdict;
+                    com.schmaloogium.engine.log.Logs.channel(
+                            com.schmaloogium.engine.log.LogChannels.FRAME).info(
+                            "H-FRAME-06 finish verdict changed (install #{}): now {}",
+                            installEpoch, verdict);
+                }
+                if (!(result instanceof com.schmaloogium.engine.frame.FrameFinishResult.Finalized)) {
+                    restoreVanilla();
+                }
+            } catch (RuntimeException e) {
+                contain("finish " + kind, token, e);
+            }
         }
+    }
+
+    /** One line per distinct non-success scope verdict per install (never per frame). */
+    private static void noteScopeVerdict(String hook, String failure) {
+        if (failure == null) {
+            return;
+        }
+        String key = hook + ": " + failure;
+        if (scopeVerdictsLogged.add(key)) {
+            com.schmaloogium.engine.log.Logs.channel(
+                    com.schmaloogium.engine.log.LogChannels.FRAME).warn(
+                    "H-SCOPE scope verdict (install #{}) {}", installEpoch, key);
+        }
+    }
+
+    /**
+     * Hands the frame back to vanilla after an abort or containment: fixed function, no
+     * engine framebuffer bound, Minecraft's own main framebuffer re-bound for the rest of the
+     * frame. The estate's own abort already released its objects; this only re-establishes
+     * the vanilla-visible bindings.
+     */
+    private static void restoreVanilla() {
+        try {
+            DeviceHolder.current().ifPresent(device -> {
+                device.shaders().useFixedFunction();
+                device.framebuffers().bindDefault(com.schmaloogium.engine.gl.FramebufferTarget.READ_AND_DRAW);
+            });
+            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
+            if (mc != null && mc.getFramebuffer() != null) {
+                mc.getFramebuffer().bindFramebuffer(true);
+            }
+        } catch (RuntimeException e) {
+            com.schmaloogium.engine.log.Logs.channel(
+                    com.schmaloogium.engine.log.LogChannels.FRAME).warn(
+                    "vanilla restore after abort failed: {}", e.toString());
+        }
+    }
+
+    /**
+     * Containment (PHASE_7_DOC §4.10: a hook never propagates into vanilla): the failing
+     * frame is aborted as HOOK_UNHEALTHY, its token dropped so the rest of the vanilla frame
+     * runs untouched, and the defect is logged once per composition install.
+     */
+    private static void contain(String hook, FrameToken token, RuntimeException failure) {
+        currentFrame = null;
+        if (!containmentLogged) {
+            containmentLogged = true;
+            com.schmaloogium.engine.log.Logs.channel(
+                    com.schmaloogium.engine.log.LogChannels.FRAME).error(failure,
+                    "H-FRAME-00 engine exception contained at {} (install #{}); the frame is "
+                            + "aborted and later frames of this publication stay vanilla-only until "
+                            + "the driver latches or a reload replaces it",
+                    hook, installEpoch);
+        }
+        if (token != null) {
+            try {
+                driver().abort(token, com.schmaloogium.engine.frame.FrameAbortReason.HOOK_UNHEALTHY);
+            } catch (RuntimeException ignored) {
+                // The driver is already unhealthy; nothing further can be done this frame.
+            }
+        }
+        restoreVanilla();
     }
 
     private static Matrix4Value readMatrix(int glMatrixEnum) {

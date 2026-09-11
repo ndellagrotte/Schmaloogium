@@ -36,7 +36,9 @@ public final class ClientDiagnosticRouter implements DiagnosticReporter {
         };
         Logs.sink().emit(d.logChannel(), level, d.messageKey(), d.args().toArray(), null);
         if (d.detail() != null && !d.detail().isEmpty()) {
-            Logs.sink().emit(d.logChannel(), level, d.messageKey() + ".detail",
+            // The sink renders parameterized messages: without a placeholder the detail
+            // text would be dropped and only the key would reach the log.
+            Logs.sink().emit(d.logChannel(), level, d.messageKey() + ".detail: {}",
                     new Object[]{d.detail()}, null);
         }
 

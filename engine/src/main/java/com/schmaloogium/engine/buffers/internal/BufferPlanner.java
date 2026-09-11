@@ -52,6 +52,7 @@ import com.schmaloogium.engine.registry.DrawRoutingSlot;
 import com.schmaloogium.engine.registry.PassDescriptor;
 import com.schmaloogium.engine.registry.ProgramResolutionProjection;
 import com.schmaloogium.engine.registry.ProgramSlotId;
+import com.schmaloogium.engine.registry.ProgramResolutionStatus;
 import com.schmaloogium.engine.registry.ResolvedProgramDescriptor;
 import com.schmaloogium.engine.registry.StageStep;
 
@@ -261,26 +262,48 @@ public final class BufferPlanner {
     }
 
     /**
-     * Highest required COLORTEX index: the P3 minimum count, every explicit attachment
-     * reference and every readable/writable/mipmapped/flip/composite reference in the
-     * registry (§4.1 step 2; scan-driven growth through the highest required index).
+     * Highest required COLORTEX index (§4.1 step 2, D-P5-7): the P3 minimum count plus every
+     * index an <em>executable</em> pass actually writes, flips or mipmaps — exact explicit
+     * routing included. Two Phase 4 shapes are deliberately not requirements: the stage-wide
+     * {@code readable} set is permission over "all allocated colortex buffers" (a symbolic
+     * 0..15 range Phase 5 itself bounds, PHASE_4_DOC §4 "stage-readable permission"), and a
+     * slot whose resolution is ABSENT or FAILED (an unsourced {@code deferredN}/{@code
+     * compositeN} still resolves to Phase 4's terminal answer) executes nothing and requires
+     * nothing. Counting either would size every pack past the v0.1 limit.
      */
     private static int scanHighestRequiredColorIndex(BufferPlanRequest request,
             BufferMinima minima) {
         int highest = minima.colorBuffers() - 1;
+        Map<ProgramSlotId, ProgramResolutionStatus> statuses = new HashMap<>();
+        for (ProgramResolutionProjection projection : request.registry().resolutions()) {
+            statuses.put(projection.slot(), projection.status());
+        }
         for (StageStep step : request.registry().stages().schedule()) {
             for (PassDescriptor descriptor : request.registry().stages().passes(step)) {
-                highest = Math.max(highest, refIndex(descriptor.resources().readable(), highest));
+                ProgramResolutionStatus status = statuses.get(descriptor.slot());
+                if (status != ProgramResolutionStatus.SOURCED
+                        && status != ProgramResolutionStatus.CHAIN) {
+                    continue; // no executable program: no requirement
+                }
+                Optional<ResolvedProgramDescriptor> resolved =
+                    request.registry().resolve(descriptor.slot());
+                if (resolved.isEmpty()) {
+                    continue;
+                }
                 highest = Math.max(highest, refIndex(descriptor.resources().writes(), highest));
                 highest = Math.max(highest,
                     refIndex(descriptor.resources().mipmappedBeforeRead(), highest));
                 highest = Math.max(highest,
                     refIndex(descriptor.resources().explicitFlips().keySet(), highest));
-                Optional<ResolvedProgramDescriptor> resolved =
-                    request.registry().resolve(descriptor.slot());
-                if (resolved.isPresent()) {
-                    highest = Math.max(highest,
-                        refIndex(resolved.get().state().compositeMipmaps(), highest));
+                highest = Math.max(highest,
+                    refIndex(resolved.get().state().compositeMipmaps(), highest));
+                if (resolved.get().state().drawRouting() instanceof DrawRouting.Explicit explicit) {
+                    for (DrawRoutingSlot slot : explicit.slots()) {
+                        if (slot instanceof DrawRoutingSlot.Attachment attachment
+                                && attachment.buffer().domain() == BufferDomain.COLORTEX) {
+                            highest = Math.max(highest, attachment.buffer().index());
+                        }
+                    }
                 }
             }
         }

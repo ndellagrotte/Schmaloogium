@@ -375,7 +375,11 @@ final class Lwjgl3TextureService implements TextureService {
         boolean pboSupported = profile.atLeast(2, 1);
         int savedPbo = pboSupported ? GL21.glGetInteger(GL21.GL_PIXEL_UNPACK_BUFFER_BINDING) : 0;
         try {
-            GL11.glPixelStorei(GL11.GL_UNPACK_SWAP_BYTES, 0);
+            // Engine producers hand over any ByteBuffer (heap, wrapped, big-endian); LWJGL
+            // needs a direct address, and GL decodes multi-byte texels in native order, so
+            // a foreign byte order is declared through UNPACK_SWAP_BYTES rather than copied.
+            GL11.glPixelStorei(GL11.GL_UNPACK_SWAP_BYTES,
+                    src.order() == java.nio.ByteOrder.nativeOrder() ? 0 : 1);
             GL11.glPixelStorei(GL11.GL_UNPACK_LSB_FIRST, 0);
             GL11.glPixelStorei(GL11.GL_UNPACK_ROW_LENGTH, r.width());
             GL11.glPixelStorei(GL12.GL_UNPACK_IMAGE_HEIGHT, r.height());
@@ -388,9 +392,7 @@ final class Lwjgl3TextureService implements TextureService {
             }
             GlStateManager.setActiveTexture(savedActiveUnit);
             GL11.glBindTexture(GlNames.glTextureTarget(tex.target), tex.glName());
-            ByteBuffer fromStart = src.duplicate().order(src.order());
-            fromStart.position(0);
-            issueSubImage(tex, data, fromStart);
+            issueSubImage(tex, data, directTexels(src));
         } finally {
             restoreUnpackSettings(unpack);
             if (pboSupported) {
@@ -411,6 +413,18 @@ final class Lwjgl3TextureService implements TextureService {
             return GlNames.bytesPerPixel(c.format(), c.type());
         }
         return 4; // both depth transfer layouts are 4 bytes per texel
+    }
+
+    /** The remaining bytes as a direct buffer (a slice when already direct, else a copy). */
+    private static ByteBuffer directTexels(ByteBuffer src) {
+        ByteBuffer remaining = src.slice();
+        if (remaining.isDirect()) {
+            return remaining;
+        }
+        ByteBuffer direct = org.lwjgl.BufferUtils.createByteBuffer(remaining.remaining());
+        direct.put(remaining.duplicate());
+        direct.flip();
+        return direct;
     }
 
     private void issueSubImage(Lwjgl3OwnedTexture tex, TextureData data, ByteBuffer texels) {

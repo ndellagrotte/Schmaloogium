@@ -42,14 +42,13 @@ public final class RegistryPublisherImpl implements com.schmaloogium.engine.regi
     }
 
     /**
-     * The first accepted ready publication donates its context source; every later
-     * snapshot and validation reuses it so epochs stay monotonic across replacements.
+     * Each accepted ready publication migrates the live context source to its product, so
+     * barrier liveness checks and the next replacement's release context share one source
+     * (the published snapshot's {@code contexts()}).
      */
     private RegistryContexts effectiveContexts(CompiledProgramRegistryImpl accepted) {
-        if (!contextsAdopted) {
-            contexts = accepted.contexts();
-            contextsAdopted = true;
-        }
+        contexts = accepted.contexts();
+        contextsAdopted = true;
         return contexts;
     }
 
@@ -65,19 +64,20 @@ public final class RegistryPublisherImpl implements com.schmaloogium.engine.regi
             return reject(PublicationFailureKind.NULL_PUBLICATION);
         }
         // Every publication accepts only a release-kind context from the current
-        // source/epoch (§4.10); first failing kind wins. The first accepted ready
-        // publication donates its context source, so a ready pair validates against
-        // the donated source from the start.
-        if (publication instanceof RegistryPublication.Ready early
-                && early.registry() != null) {
-            // Each ready publication migrates the live context source to the incoming
-            // registry product, keeping barrier liveness checks on one source.
-            contexts = early.registry().registry().contexts();
-            contextsAdopted = true;
-        }
-        RegistryContexts validationContexts = contexts;
+        // source/epoch (§4.10): the one "issued by the old publication's
+        // BarrierContextSource", i.e. current().contexts() — the only source a caller
+        // outside this package can mint from. A ready pair may equally present a context
+        // minted from the incoming product's own source (the pre-2026-09-11 shape); the
+        // live source migrates to the accepted product only on acceptance.
         if (!(releaseContext instanceof MintedBarrierContext minted)) {
             return reject(PublicationFailureKind.CONTEXT_SOURCE);
+        }
+        RegistryContexts validationContexts = contexts;
+        if (!minted.source().equals(validationContexts.identity())
+                && publication instanceof RegistryPublication.Ready early
+                && early.registry() != null
+                && minted.source().equals(early.registry().registry().contexts().identity())) {
+            validationContexts = early.registry().registry().contexts();
         }
         if (!minted.source().equals(validationContexts.identity())) {
             return reject(PublicationFailureKind.CONTEXT_SOURCE);

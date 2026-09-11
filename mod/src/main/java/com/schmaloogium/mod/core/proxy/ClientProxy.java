@@ -19,5 +19,8 @@ public class ClientProxy implements IProxy {
     @Override
     public void installGui() {
         ShaderGui.install(net.minecraft.client.Minecraft.getMinecraft());
+        // The composition root wires itself on the first GL-ready client tick.
+        com.schmaloogium.mod.core.pipeline.PipelineBootstrap.install(
+                net.minecraft.client.Minecraft.getMinecraft());
     }
 }

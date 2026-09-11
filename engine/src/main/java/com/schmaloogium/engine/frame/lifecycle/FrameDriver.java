@@ -339,7 +339,7 @@ public final class FrameDriver implements FrameHookSink {
         // Suspend an open parent before pushing the child scope (§4.4 step 1).
         OpenScope parent = f.scopes.peek();
         if (parent != null && parent.snapshot != null) {
-            BarrierResult released = f.barrier().releaseToFixedFunction(parent.context);
+            BarrierResult released = f.barrier().releaseToFixedFunction(f.contexts.release());
             if (!(released instanceof BarrierResult.FixedFunction)) {
                 return suspensionFailed(f);
             }
@@ -413,8 +413,14 @@ public final class FrameDriver implements FrameHookSink {
             drainScopes(f);
             runDeferredAndFinal(f);
         } catch (RuntimeException e) {
-            abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.finish-work");
-            return new FrameFinishResult.Failed(failure(CHANNEL + ".failure.finish-work"));
+            String cause = e instanceof RuntimeFailureSignal signal
+                    ? signal.failure.diagnosticId() : e.toString();
+            if (!(e instanceof RuntimeFailureSignal)) {
+                com.schmaloogium.engine.log.Logs.channel(com.schmaloogium.engine.log.LogChannels.FRAME)
+                        .error(e, "frame {} finish work threw", f.frameId);
+            }
+            abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.finish-work:" + cause);
+            return new FrameFinishResult.Failed(failure(CHANNEL + ".failure.finish-work:" + cause));
         }
         FrameEndResult committed = f.estateView().commitFrame(f.frameId);
         if (!(committed instanceof FrameEndResult.Committed)) {
@@ -553,9 +559,13 @@ public final class FrameDriver implements FrameHookSink {
         if (activation instanceof BarrierResult.StalePublication) {
             throw new StalePublicationSignal();
         }
+        // Carry the barrier's own diagnostic so the failure names its cause.
+        String cause = activation instanceof BarrierResult.ShadersOff off ? off.diagnosticId()
+                : activation instanceof BarrierResult.FailedSafe safe ? safe.diagnosticId()
+                : activation.getClass().getSimpleName();
         latchShadersOff();
         abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.activate");
-        throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.activate"));
+        throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.activate:" + cause));
     }
 
     private boolean closeScope(Frame f, OpenScope scope) {
@@ -564,25 +574,36 @@ public final class FrameDriver implements FrameHookSink {
             if (drawn) {
                 PassCompletionResult completed = f.estateView().completePass(scope.snapshot);
                 if (!(completed instanceof PassCompletionResult.Completed)) {
+                    logCloseFailure(f, scope, "completePass", completed);
                     return false;
                 }
                 scope.snapshot = null;
             } else if (scope.discardSnapshotOnClose || scope.disposition != DrawDisposition.DRAW_SHADER) {
                 PassDiscardResult discarded = f.estateView().discardPass(scope.snapshot);
                 if (!(discarded instanceof PassDiscardResult.Discarded)) {
+                    logCloseFailure(f, scope, "discardPass", discarded);
                     return false;
                 }
                 scope.snapshot = null;
             }
         }
         if (scope.activated) {
-            BarrierResult released = f.barrier().releaseToFixedFunction(scope.context);
+            // Release takes a RELEASE-kind context minted from this frame's contexts (P4
+            // §4.10), never the scope's activation context.
+            BarrierResult released = f.barrier().releaseToFixedFunction(f.contexts.release());
             if (!(released instanceof BarrierResult.FixedFunction)) {
+                logCloseFailure(f, scope, "releaseToFixedFunction", released);
                 return false;
             }
             scope.activated = false;
         }
         return true;
+    }
+
+    /** Evidence for a failed scope close: the step and the closed result it answered. */
+    private static void logCloseFailure(Frame f, OpenScope scope, String step, Object result) {
+        com.schmaloogium.engine.log.Logs.channel(com.schmaloogium.engine.log.LogChannels.FRAME)
+                .warn("frame {} scope {} close failed at {}: {}", f.frameId, scope.section, step, result);
     }
 
     private boolean reactivate(Frame f, OpenScope parent) {
@@ -636,11 +657,19 @@ public final class FrameDriver implements FrameHookSink {
         for (StageStep step : registry.schedule()) {
             if (step.band() == StageBand.BETWEEN_GBUFFERS) {
                 for (PassDescriptor descriptor : registry.passes(step)) {
+                    if (isVirtualPrelude(descriptor)) {
+                        applyVirtualPrelude(f, descriptor);
+                        continue;
+                    }
                     executeFullscreen(f, descriptor);
                 }
                 f.phase = Phase.DEFERRED_DONE;
             } else if (step.band() == StageBand.SCREEN) {
                 for (PassDescriptor descriptor : registry.passes(step)) {
+                    if (isVirtualPrelude(descriptor)) {
+                        applyVirtualPrelude(f, descriptor);
+                        continue;
+                    }
                     executeFullscreen(f, descriptor);
                     sawFinal = true;
                 }
@@ -649,15 +678,43 @@ public final class FrameDriver implements FrameHookSink {
         // A registry without a SCREEN step composites nothing (internal pack always has one).
     }
 
+    /**
+     * The programless {@code deferred_pre}/{@code composite_pre} prelude (§4.5, §4.7): no
+     * index, no resources, no compute slots. It bypasses selection and only forwards its
+     * flips to Phase 5's {@code applyVirtualTransition}.
+     */
+    private static boolean isVirtualPrelude(PassDescriptor descriptor) {
+        return descriptor.index().isEmpty()
+                && descriptor.computeSlots().isEmpty()
+                && descriptor.resources().readable().isEmpty()
+                && descriptor.resources().writes().isEmpty()
+                && descriptor.resources().mipmappedBeforeRead().isEmpty()
+                && descriptor.slot().packName().endsWith("_pre");
+    }
+
+    private void applyVirtualPrelude(Frame f, PassDescriptor descriptor) {
+        var result = f.estateView().applyVirtualTransition(f.frameId, descriptor);
+        if (result instanceof com.schmaloogium.engine.buffers.VirtualTransitionResult.Rejected rejected) {
+            boolean requestedFlip = descriptor.resources().explicitFlips().containsValue(Boolean.TRUE);
+            if (requestedFlip) {
+                latchShadersOff();
+                throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.virtual-prelude:"
+                        + descriptor.slot().packName() + ":" + rejected.reason()));
+            }
+            // A flip-less prelude the estate does not plan is a no-op by construction.
+        }
+    }
+
     private void executeFullscreen(Frame f, PassDescriptor descriptor) {
         BarrierContext context = f.contexts.activation(descriptor.step(), false);
         ProgramSelectionResult selected = f.barrier().select(descriptor.slot(), context);
         if (selected instanceof ProgramSelectionResult.Skipped) {
             return;
         }
-        if (selected instanceof ProgramSelectionResult.ShadersOff) {
+        if (selected instanceof ProgramSelectionResult.ShadersOff off) {
             latchShadersOff();
-            throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-select"));
+            throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-select:"
+                    + descriptor.slot().packName() + ":" + off.diagnosticId()));
         }
         if (selected instanceof ProgramSelectionResult.StalePublication) {
             throw new StalePublicationSignal();
@@ -696,7 +753,7 @@ public final class FrameDriver implements FrameHookSink {
         if (!(completed instanceof PassCompletionResult.Completed)) {
             throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-complete"));
         }
-        BarrierResult released = f.barrier().releaseToFixedFunction(context);
+        BarrierResult released = f.barrier().releaseToFixedFunction(f.contexts.release());
         if (!(released instanceof BarrierResult.FixedFunction)) {
             throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-release"));
         }
@@ -707,6 +764,9 @@ public final class FrameDriver implements FrameHookSink {
             return;
         }
         f.terminal = true;
+        // One line per aborted frame (never per hook): the reason and the step diagnostic.
+        com.schmaloogium.engine.log.Logs.channel(com.schmaloogium.engine.log.LogChannels.FRAME)
+                .warn("frame {} aborted: {} ({})", f.frameId, reason, diagnosticId);
         // Best-effort, order-stable drain: scopes, then the open Phase-5 frame.
         try {
             drainScopes(f);
@@ -727,6 +787,19 @@ public final class FrameDriver implements FrameHookSink {
 
     private void latchShadersOff() {
         shadersOff = true;
+    }
+
+    /**
+     * Composition-root entry (§4.1 step 9 "admit frames"): a newly accepted publication
+     * re-opens admission after an earlier failure latched shaders-off. Render thread, with
+     * no frame open; the latch stays set while the failed publication remains installed.
+     */
+    public void resetShadersOffLatch() {
+        requireRenderThread();
+        if (frame != null && !frame.terminal) {
+            throw new IllegalStateException("resetShadersOffLatch requires no open frame");
+        }
+        shadersOff = false;
     }
 
     private ScopeOpenResult suspensionFailed(Frame f) {
@@ -794,9 +867,11 @@ public final class FrameDriver implements FrameHookSink {
         }
 
         StageStep stepFor(ProgramSlotId requested) {
-            // The first schedule step that names this slot carries the exact StageStep.
+            // The first schedule step that contains this slot carries the exact StageStep.
+            // Scanned through passes(): P4's named() rejects wrong keys/kinds (sparse and
+            // singleton steps, undeclared names) rather than answering absence.
             for (StageStep step : registryView().schedule()) {
-                if (registryView().named(step, requested).isPresent()) {
+                if (contained(step, requested).isPresent()) {
                     return step;
                 }
             }
@@ -806,13 +881,23 @@ public final class FrameDriver implements FrameHookSink {
 
         PassDescriptor descriptorFor(ProgramSlotId requested) {
             StageStep step = stepFor(requested);
-            Optional<PassDescriptor> named = registryView().named(step, requested);
-            return named.orElseGet(() -> new PassDescriptor(
+            Optional<PassDescriptor> found = step == null ? Optional.empty()
+                    : contained(step, requested);
+            return found.orElseGet(() -> new PassDescriptor(
                     step,
                     requested,
                     Optional.empty(),
                     com.schmaloogium.engine.registry.PassResourceAccess.empty(),
                     java.util.Set.of()));
+        }
+
+        private Optional<PassDescriptor> contained(StageStep step, ProgramSlotId requested) {
+            for (PassDescriptor descriptor : registryView().passes(step)) {
+                if (descriptor.slot().equals(requested)) {
+                    return Optional.of(descriptor);
+                }
+            }
+            return Optional.empty();
         }
 
         FinalizedFrame summary(boolean healthy, int consecutive, FailureId failure) {

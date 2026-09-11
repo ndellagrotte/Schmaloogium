@@ -189,10 +189,9 @@ final class Lwjgl3StateService implements StateService {
     public AlphaBlendOverride lockAlphaBlend(
             Optional<AlphaTestState> alpha, Optional<BlendState> blend) {
         device.requireRenderThread("state.lockAlphaBlend");
-        if (alpha.isEmpty() && blend.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "state.lockAlphaBlend: a lock that changes nothing is not expressible");
-        }
+        // Both optionals empty is the common case (a program with no alphaTest/blend
+        // override): Phase 4 §4 step 6 acquires the lease for every shader activation, so
+        // the answer is a lease that holds and restores nothing, not a rejection.
         if (device.alphaLeaseHeld()) {
             throw new IllegalStateException("state.lockAlphaBlend: a lease is already active");
         }

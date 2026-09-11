@@ -187,6 +187,11 @@ public final class EngineSettingsController {
 
     // ------------------------------------------------------- durable pack selection
 
+    /** The committed engine option values (the composition root's load input). */
+    public EngineOptionData committed() {
+        return committed;
+    }
+
     /** The current durable selection string; absent file reads as {@code off}. */
     public String shaderPack() {
         return current(SHADER_PACK_KEY);

@@ -172,8 +172,12 @@ public final class ClearExecutor {
             }
             List<GLError> errors = device.drainErrors();
             if (!errors.isEmpty()) {
+                GLError first = errors.get(0);
                 core.diagnostics.report(BufferDiagnostics.backendFailure(
-                    "schmaloogium.buffers.error.clear.backend", errors.get(0).detail()));
+                    "schmaloogium.buffers.error.clear.backend",
+                    first.kind() + " during " + first.op() + " on " + first.subjectLabel()
+                        + (first.detail() == null ? "" : ": " + first.detail())
+                        + (errors.size() > 1 ? " (+" + (errors.size() - 1) + " more)" : "")));
                 return ClearExecutionResult.BACKEND_FAILED;
             }
         }

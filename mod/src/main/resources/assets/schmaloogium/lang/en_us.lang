@@ -47,3 +47,23 @@ schmaloogium.command.reloadshaders.inert=Shader reload requested, but no engine 
 
 key.categories.schmaloogium=Schmaloogium
 key.schmaloogium.openShaderPacks=Open shader pack screen
+
+schmaloogium.info.pipeline.active=Shader pipeline active: %s
+schmaloogium.info.pipeline.off=Shader pipeline off (%s)
+schmaloogium.warn.pipeline.internalUnavailable=The internal shader pack is not available in this build; shaders stay off.
+schmaloogium.warn.uniforms.replay=Uniform replay errors in program %s (%s)
+schmaloogium.error.pipeline.unexpected=Shader pipeline failed unexpectedly for %s: %s
+schmaloogium.error.pipeline.load=Shader pack %s could not be loaded: %s
+schmaloogium.error.pipeline.schema=Shader pack %s has an unsupported configuration schema: %s
+schmaloogium.error.pipeline.uniforms=Shader pack %s: uniform runtime could not be built: %s
+schmaloogium.error.pipeline.compile=Shader pack %s failed to compile: %s
+schmaloogium.error.pipeline.estate=Shader pack %s: framebuffers could not be allocated: %s
+schmaloogium.error.pipeline.awaiting-main-depth=Shader pack %s: the main depth buffer is not ready yet (%s)
+schmaloogium.error.pipeline.barrier=Shader pack %s: program state barrier invalid: %s
+schmaloogium.error.pipeline.publish=Shader pack %s: program registry publication failed: %s
+schmaloogium.error.pipeline.adopt=Shader pack %s: uniform runtime rejected the registry generation: %s
+schmaloogium.error.pipeline.estate-provenance=Shader pack %s: framebuffer estate provenance mismatch: %s
+schmaloogium.error.pipeline.estate-consumer=Shader pack %s: a framebuffer resize consumer failed: %s
+schmaloogium.error.pipeline.estate-view=Shader pack %s: framebuffer estate view unavailable: %s
+schmaloogium.error.pipeline.shadow-mismatch=Shader pack %s: shadow estate disposition mismatch: %s
+schmaloogium.error.pipeline.shadow-neutralize=Shader pack %s: shadow estate could not be neutralized: %s

@@ -703,6 +703,12 @@ class FrameDriverScriptedTest {
         assertEquals(FrameOpenRejection.SHADERS_OFF,
                 ((FrameOpenResult.VanillaOnly) next).reason());
         assertTrue(h.driver().isShadersOff());
+
+        // The latch belongs to the failed publication: the composition root re-opens
+        // admission when it installs an accepted replacement (§4.1 step 9).
+        h.driver().resetShadersOffLatch();
+        assertTrue(!h.driver().isShadersOff());
+        assertTrue(h.driver().open(signal()) instanceof FrameOpenResult.Opened);
     }
 
     @Test

@@ -1286,7 +1286,11 @@ Planning steps:
 
 1. verify Phase 3 schema/fingerprint, Phase 4 registry fingerprint and its fixed-policy fingerprint;
 2. derive the contiguous v0.1 colortex inventory:
-   `0 .. max(3, highestRequiredColorIndex)`, rejecting a required index >7 at v0.1;
+   `0 .. max(3, highestRequiredColorIndex)`, rejecting a required index >7 at v0.1
+   (fix-up 2026-09-11, first P4→P5 live chaining: "required" counts the P3 minimum and the
+   writes/flips/mipmaps/explicit routing of slots whose resolution is SOURCED or CHAIN;
+   Phase 4's stage-wide `readable` permission range and ABSENT/FAILED slots are not
+   requirements);
 3. derive depth count 1–3 and shadow counts 0–2 from `ResourceRequirements`;
 4. resolve every Phase 4 `AllUsedBuffers(COLORTEX)` to the sorted inventory and retain explicit route
    order exactly;

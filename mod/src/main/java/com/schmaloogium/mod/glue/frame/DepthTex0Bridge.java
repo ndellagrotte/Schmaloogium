@@ -67,6 +67,16 @@ public final class DepthTex0Bridge implements MainDepthSource {
         observedHeight = height;
     }
 
+    /** The last observed vanilla depth attachment GL name (0 before any observation). */
+    public static long observedIdentity() {
+        return observedTextureIdentity;
+    }
+
+    /** The monotonically advancing P5 version of the observed attachment. */
+    public static long version() {
+        return versionSource;
+    }
+
     @Override
     public MainDepthPreparation prepare(Extent2i requiredExtent) {
         MainDepthSnapshot.Available available = mintedSnapshot();

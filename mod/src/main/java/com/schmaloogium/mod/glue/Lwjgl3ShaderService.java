@@ -246,7 +246,9 @@ final class Lwjgl3ShaderService implements ShaderService {
     private LinkedGeometryInputPrimitive acquireLinkedGeometryInput(Lwjgl3ProgramHandle program,
                                                                     ProgramRecord rec) {
         if (!rec.geometryAttached) {
-            return LinkedGeometryInputPrimitive.POINTS; // unreachable value; caller gates on geometryAttached
+            // No geometry stage: the linked geometry input is absent (Phase 4 compares the
+            // Optional's presence against the program's expected geometry form).
+            return null;
         }
         if (profile.atLeast(3, 2)) {
             int[] type = new int[1];

@@ -49,8 +49,15 @@ public final class FrameRuntime {
         return COMPOSITIONS;
     }
 
-    /** Composition-root entry: atomically installs or clears the active publication. */
+    /**
+     * Composition-root entry: atomically installs or clears the active publication. A
+     * present publication re-opens admission (the driver's shaders-off latch belongs to the
+     * publication that failed, never to its accepted replacement).
+     */
     public static void installComposition(Optional<FrameComposition> composition) {
         COMPOSITIONS.install(composition);
+        if (composition != null && composition.isPresent()) {
+            driver().resetShadersOffLatch();
+        }
     }
 }

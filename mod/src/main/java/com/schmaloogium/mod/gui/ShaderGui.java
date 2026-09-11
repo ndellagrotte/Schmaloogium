@@ -81,6 +81,24 @@ public final class ShaderGui {
         });
     }
 
+    /** The Phase 3 services bundle, once installed (composition-root read seam). */
+    public static Optional<PackFrontEndServices> services() {
+        Instance current = instance;
+        return current == null ? Optional.empty() : Optional.ofNullable(current.services);
+    }
+
+    /** The persistence access, once installed and not degraded. */
+    public static Optional<BundleIo.Access> access() {
+        Instance current = instance;
+        return current == null ? Optional.empty() : Optional.ofNullable(current.access);
+    }
+
+    /** The one {@code optionsshaders.txt} owner, once installed and not degraded. */
+    public static Optional<EngineSettingsController> settings() {
+        Instance current = instance;
+        return current == null ? Optional.empty() : Optional.ofNullable(current.settings);
+    }
+
     /** Replaces the live-configuration source (the Phase 7 publication bridge). */
     public static void installConfigurationSource(
             Supplier<Optional<OptionConfiguration>> source) {
