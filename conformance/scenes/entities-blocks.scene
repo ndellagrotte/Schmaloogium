@@ -1,0 +1,69 @@
+# per-draw identity (§3.4): summoned entities and block entities in frame. Reported at v0.3.
+[scene]
+schema = schmaloogium.scene/2
+id = entities-blocks
+description = a cow and a chest at exact positions in front of the camera (untuned until v0.3)
+family = entities
+minMilestone = v0.3
+
+[world]
+seed = 20260912
+worldType = default
+generateStructures = true
+dimension = 0
+time = 6000
+weather = clear
+weatherTicks = 1000000
+difficulty = peaceful
+gamemode = creative
+gamerule.doDaylightCycle = false
+gamerule.doWeatherCycle = false
+gamerule.doMobSpawning = false
+gamerule.randomTickSpeed = 0
+gamerule.doFireTick = false
+gamerule.mobGriefing = false
+gamerule.doTileDrops = false
+gamerule.doEntityDrops = false
+prepTicks = 200
+entity.0.type = minecraft:cow
+entity.0.pos = -208.5 75.0 243.5
+entity.0.nbt = {NoAI:1b,Silent:1b,PersistenceRequired:1b}
+
+[client]
+width = 854
+height = 480
+fov = 70.0
+gamma = 0.0
+renderDistance = 8
+guiScale = 2
+mipmapLevels = 4
+particles = 2
+fancyGraphics = true
+clouds = 2
+ao = 2
+hideGui = true
+
+[pack]
+shaderpack = mp-pingpong@1.0.0
+
+[shot main]
+pos = -211.5 75.0 240.5
+look = 45.0 15.0
+warmupFrames = 4800
+captureFrames = 2
+note = untuned (gated at v0.3): a NoAI cow in frame for gbuffers_entities
+
+[path entity-orbit]
+warmupFrames = 4800
+samples.count = 4
+sample.0.pos = -211.5 75.0 240.5
+sample.0.look = 40.0 15.0
+sample.1.pos = -211.5 75.0 240.5
+sample.1.look = 45.0 15.0
+sample.2.pos = -211.5 75.0 240.5
+sample.2.look = 50.0 15.0
+sample.3.pos = -211.5 75.0 240.5
+sample.3.look = 55.0 15.0
+captureStartSample = 1
+captureSampleCount = 2
+note = untuned (gated at v0.3): yaw sweep across the entity

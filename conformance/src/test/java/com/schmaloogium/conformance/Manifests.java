@@ -63,9 +63,25 @@ public final class Manifests {
             .token("pack.optionStateSha256", hex64());
         b.row("pack.options", 0, optionsRow("SHADOWS", "true"));
         b.row("pack.engineOptions", 0, optionsRow("mipmap_level", "4"));
-        // availability
+        // availability + the REALIZED resources block (§4.5.4, P5 §4.1.1)
         b.bool("resources.available", true)
             .bool("hooks.available", true);
+        b.token("resources.evidence_stage", "REALIZED")
+            .integer("resources.depthTextures.count", 2)
+            .integer("resources.shadow.depthTextures", 0)
+            .integer("resources.shadow.colorTextures", 0)
+            .integer("resources.shadow.resolution", 0)
+            .bool("resources.centerDepthSmooth.enabled", false)
+            .integer("resources.noise.resolution", 256)
+            .token("resources.capabilityGate", "OK");
+        b.row("resources.colorBuffers", 0, colorRow("DEFAULT_RGBA", true, "FOG_RGB_ALPHA_ONE", null,
+            "RGBA", "REQUESTED"));
+        b.row("resources.colorBuffers", 1, colorRow("RGBA8", true, "CONSTANT",
+            new double[] {1.0, 1.0, 1.0, 1.0}, "RGBA8", "REQUESTED"));
+        b.count("resources.shadow.depth", 0).count("resources.shadow.color", 0)
+            .count("resources.vertexAttributes", 0).count("resources.instances", 0)
+            .count("resources.capabilityShortfalls", 0);
+        b.count("hooks.rows", 0).count("hooks.subreports", 0);
         // timing
         b.bool("timing.available", true)
             .bool("timing.complete", true)
@@ -92,10 +108,10 @@ public final class Manifests {
         b.row("images", 0, imageRow("SHOT", "shot-a", 1, 0));
         b.row("images", 1, imageRow("SHOT", "shot-a", 2, 1));
         // programs: terrain SOURCED, water CHAIN from terrain, hand ABSENT
-        b.row("programs", 0, programRow("gbuffers_terrain", "SOURCED", "", true, true, "", 0));
+        b.row("programs", 0, programRow("gbuffers_terrain", "SOURCED", "", true, "SUCCEEDED", "", 0));
         b.row("programs", 1, programRow("gbuffers_water", "CHAIN", "gbuffers_terrain", true,
-            true, "", 1));
-        b.row("programs", 2, programRow("gbuffers_hand", "ABSENT", "", false, false, "", 2));
+            "FAILED", "", 1));
+        b.row("programs", 2, programRow("gbuffers_hand", "ABSENT", "", false, "NO_SOURCE", "", 2));
         // diagnostics, gl_errors: none
         b.count("diagnostics", 0);
         b.count("gl_errors", 0);
@@ -125,6 +141,25 @@ public final class Manifests {
         base.entries().forEach(b::set);
         return mutator.apply(b).build();
     }
+    static java.util.SortedMap<String, RunManifest.Value> colorRow(String requested, boolean clear,
+            String policy, double[] constant, String allocated, String origin) {
+        java.util.SortedMap<String, RunManifest.Value> row = new java.util.TreeMap<>();
+        row.put("requested_format", new RunManifest.Value.Text(requested));
+        row.put("clear", new RunManifest.Value.Bool(clear));
+        row.put("clear_policy", new RunManifest.Value.Token(policy));
+        if (constant != null) {
+            row.put("clear_color_r", new RunManifest.Value.Dec(constant[0]));
+            row.put("clear_color_g", new RunManifest.Value.Dec(constant[1]));
+            row.put("clear_color_b", new RunManifest.Value.Dec(constant[2]));
+            row.put("clear_color_a", new RunManifest.Value.Dec(constant[3]));
+        }
+        if (allocated != null) {
+            row.put("allocated_format", new RunManifest.Value.Text(allocated));
+            row.put("allocation_origin", new RunManifest.Value.Token(origin));
+        }
+        return row;
+    }
+
     private static java.util.SortedMap<String, RunManifest.Value> modsRow(String id) {
         java.util.SortedMap<String, RunManifest.Value> row = new java.util.TreeMap<>();
         row.put("id", new RunManifest.Value.Text(CanonicalText.encodeJson(id)));
@@ -174,7 +209,7 @@ public final class Manifests {
         row.put("frameCounter", new RunManifest.Value.Int(clockStep));
         row.put("logicalTick", new RunManifest.Value.Int(clockStep));
         row.put("animationTick", new RunManifest.Value.Int(clockStep));
-        row.put("smoothingTimeTicks", new RunManifest.Value.Int(0));
+        row.put("smoothingTimeTicks", new RunManifest.Value.Dec(0.0));
         row.put("frameTimeSeconds", new RunManifest.Value.Dec(0.05));
         row.put("frameTimeCounter", new RunManifest.Value.Dec(clockStep * 0.05));
         row.put("clockStep", new RunManifest.Value.Int(clockStep));
@@ -198,13 +233,13 @@ public final class Manifests {
     }
 
     private static java.util.Map<String, RunManifest.Value> programRow(String slot, String status,
-            String from, boolean sourcePresent, boolean ownBuild, String driverLog, int index) {
+            String from, boolean sourcePresent, String ownBuild, String driverLog, int index) {
         java.util.SortedMap<String, RunManifest.Value> row = new java.util.TreeMap<>();
         row.put("slot", new RunManifest.Value.Token(slot));
         row.put("status", new RunManifest.Value.Token(status));
         row.put("from", new RunManifest.Value.Text(from.isEmpty() ? "" : from));
         row.put("sourcePresent", new RunManifest.Value.Bool(sourcePresent));
-        row.put("ownBuild", new RunManifest.Value.Bool(ownBuild));
+        row.put("ownBuild", new RunManifest.Value.Token(ownBuild));
         row.put("driverLog", new RunManifest.Value.Text(
             driverLog.isEmpty() ? "" : CanonicalText.encodeJson(driverLog)));
         return row;
@@ -221,7 +256,7 @@ public final class Manifests {
         row.put("frameId", new RunManifest.Value.Int(clockStep));
         row.put("worldEpoch", new RunManifest.Value.Int(0));
         row.put("logicalTick", new RunManifest.Value.Int(clockStep));
-        row.put("smoothingTimeTicks", new RunManifest.Value.Int(0));
+        row.put("smoothingTimeTicks", new RunManifest.Value.Dec(0.0));
         row.put("frameTimeSeconds", new RunManifest.Value.Dec(0.05));
         row.put("frameCounter", new RunManifest.Value.Int(clockStep));
         row.put("frameTimeCounter", new RunManifest.Value.Dec(clockStep * 0.05));

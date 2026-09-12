@@ -186,6 +186,7 @@ public final class DeviceRenderPort implements FrameRenderPort {
             device.draw().fullscreenQuad();
             List<GLError> errors = device.drainErrors();
             if (!errors.isEmpty()) {
+                GlErrorLedger.record(errors, false);
                 return new PortResult.Failed(new FailureId(
                         "schmaloogium.frame.port.draw:" + errors.get(0).detail()));
             }

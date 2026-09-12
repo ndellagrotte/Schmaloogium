@@ -121,6 +121,11 @@ class RunManifestWireTest {
             notReached = Manifests.with(notReached, b -> b.unset(key));
         }
         notReached = Manifests.with(notReached, b -> b.unset("gl.profile_text"));
+        for (String key : notReached.entries().keySet().stream()
+            .filter(k -> k.startsWith("resources.") && !k.equals("resources.available"))
+            .toList()) {
+            notReached = Manifests.with(notReached, b -> b.unset(key));
+        }
         RunManifestReader.parse(RunManifestWriter.render(notReached)); // accepted grammar-wise
 
         // available=true with restoration=NOT_REACHED parses but is nonsense; the

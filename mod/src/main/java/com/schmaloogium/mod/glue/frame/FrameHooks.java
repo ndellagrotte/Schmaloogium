@@ -55,11 +55,16 @@ public final class FrameHooks {
      */
     public static void open(int pass, float partialTicks, long finishTimeNano, int frameCounter) {
         int enginePass = pass == 2 ? 0 : 1;
+        // Under the controlled capture clock the elapsed input is the plan's fixed seconds
+        // (PHASE_2_DOC §5.1.1); otherwise vanilla's finish time flows through unchanged.
+        float frameTimeSeconds = com.schmaloogium.mod.conformance.ControlledClock.isArmed()
+                ? com.schmaloogium.mod.conformance.ControlledClock.frameTimeSeconds()
+                : (float) finishTimeNano;
         FrameBeginSignal signal = new FrameBeginSignal(
                 McFrameState.worldEpoch(),
                 McFrameState.logicalTick(),
                 McFrameState.smoothingTimeTicks(),
-                finishTimeNano,
+                frameTimeSeconds,
                 McFrameState.dimension(),
                 enginePass,
                 frameCounter,
@@ -103,6 +108,7 @@ public final class FrameHooks {
         if (result instanceof FrameOpenResult.Opened opened) {
             currentFrame = opened.token();
             reservedTerrainToken = frameCounter;
+            acceptedFrames++;
         } else {
             currentFrame = null;
         }
@@ -288,8 +294,15 @@ public final class FrameHooks {
     }
 
     /** The count of composition installs so far (one-shot evidence lines key on it). */
-    static long installEpoch() {
+    public static long installEpoch() {
         return installEpoch;
+    }
+
+    private static long acceptedFrames;
+
+    /** Count of frames the driver accepted (Opened) since boot; the capture agent diffs it. */
+    public static long acceptedFrames() {
+        return acceptedFrames;
     }
 
     /** True while a frame token is held (the reload drain must not run then). */

@@ -15,7 +15,11 @@
     "frame.MixinParticleManager",
     "frame.MixinRenderGlobal",
     "frame.MixinSimpleReloadableResourceManager",
-    "frame.MixinTileEntityRendererDispatcher"
+    "frame.MixinTileEntityRendererDispatcher",
+    "frame.MixinTimer",
+    "frame.MixinIntegratedServer",
+    "frame.MixinNetHandlerPlayClient",
+    "frame.MixinTextureManager"
   ],
   "mixins": [],
   "server": []

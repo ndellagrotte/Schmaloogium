@@ -1,0 +1,66 @@
+# weather and the second depth copy (§3.4): rain with settled wetness. Gated at v0.5.
+[scene]
+schema = schmaloogium.scene/2
+id = weather-rain
+description = rain over the spawn landscape with wetness settled (untuned until v0.5)
+family = weather
+minMilestone = v0.5
+
+[world]
+seed = 20260912
+worldType = default
+generateStructures = true
+dimension = 0
+time = 6000
+weather = rain
+weatherTicks = 1000000
+difficulty = peaceful
+gamemode = creative
+gamerule.doDaylightCycle = false
+gamerule.doWeatherCycle = false
+gamerule.doMobSpawning = false
+gamerule.randomTickSpeed = 0
+gamerule.doFireTick = false
+gamerule.mobGriefing = false
+gamerule.doTileDrops = false
+gamerule.doEntityDrops = false
+prepTicks = 200
+
+[client]
+width = 854
+height = 480
+fov = 70.0
+gamma = 0.0
+renderDistance = 8
+guiScale = 2
+mipmapLevels = 4
+particles = 2
+fancyGraphics = true
+clouds = 2
+ao = 2
+hideGui = true
+
+[pack]
+shaderpack = mp-pingpong@1.0.0
+
+[shot main]
+pos = -211.5 75.0 240.5
+look = 45.0 15.0
+warmupFrames = 4800
+captureFrames = 2
+note = untuned (gated at v0.5): rain, wet surfaces; the longest warm-up family
+
+[path rain-track]
+warmupFrames = 4800
+samples.count = 4
+sample.0.pos = -211.5 75.0 240.5
+sample.0.look = 45.0 15.0
+sample.1.pos = -211.5 75.0 241.0
+sample.1.look = 45.0 15.0
+sample.2.pos = -211.5 75.0 241.5
+sample.2.look = 45.0 15.0
+sample.3.pos = -211.5 75.0 242.0
+sample.3.look = 45.0 15.0
+captureStartSample = 1
+captureSampleCount = 2
+note = untuned (gated at v0.5): forward dolly under rain

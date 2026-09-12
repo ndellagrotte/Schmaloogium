@@ -84,5 +84,9 @@ public final class SchmaloogiumMixinPlugin implements IMixinConfigPlugin {
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName,
                           IMixinInfo mixinInfo) {
+        // The structural hook-application evidence (R18): which mixin applied to which target,
+        // handed to the game-loader side through a JVM-global property (this package is
+        // classloader-excluded, so a direct reference is not loadable from game code).
+        System.setProperty("schmaloogium.hooks.applied." + mixinClassName, targetClassName);
     }
 }

@@ -508,12 +508,14 @@ public final class CandidateBuilder {
             ledger.commitAllocation();
         } catch (RuntimeException realFailure) {
             ledger.dropAllocation(); // contained: real handles go, neutral cache stays
+            // The diagnostic id carries the contained backend failure so a log reader can see
+            // which stage and which facade refusal neutralized the shadow estate.
             return new ShadowEstate(neutrals, List.of(), List.of(), List.of(), null,
                 failure(stage.equals("sfb")
                         ? BufferFailureCode.FRAMEBUFFER_INCOMPLETE
                         : BufferFailureCode.TEXTURE_ALLOCATION,
                     "schmaloogium.buffers.error.shadow.estate-failed",
-                    "schmaloogium.buffers.error.shadow.estate-failed"));
+                    "schmaloogium.buffers.error.shadow.estate-failed[" + stage + "]: " + realFailure));
         }
         return new ShadowEstate(neutrals, depths, sidesA, sidesB, sfb, null);
     }

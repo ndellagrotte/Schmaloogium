@@ -52,6 +52,12 @@ public final class BufferDiagnostics {
             messageKey, List.of(), detail, LogChannels.SHADOW);
     }
 
+    /** The deliberate neutralization (explicit feature disable): informational, never an error. */
+    public static EngineDiagnostic shadowNeutralizedByDesign(String detail) {
+        return new EngineDiagnostic(DiagnosticSeverity.INFO, UserChannel.LOG_ONLY,
+            "schmaloogium.buffers.info.shadow.neutralized", List.of(), detail, LogChannels.SHADOW);
+    }
+
     public static EngineDiagnostic depthCopyDegraded(String point, String detail) {
         return new EngineDiagnostic(DiagnosticSeverity.WARN, UserChannel.LOG_ONLY,
             "schmaloogium.buffers.warning.depth-copy-degraded",

@@ -1,0 +1,73 @@
+# translucency and the depth split (§3.4): shoreline above water, then the eye under water.
+[scene]
+schema = schmaloogium.scene/2
+id = water-translucent
+description = shoreline with a water volume seen from above, then from under the surface
+family = water
+minMilestone = v0.1
+
+[world]
+seed = 20260912
+worldType = default
+generateStructures = true
+dimension = 0
+time = 6000
+weather = clear
+weatherTicks = 1000000
+difficulty = peaceful
+gamemode = creative
+gamerule.doDaylightCycle = false
+gamerule.doWeatherCycle = false
+gamerule.doMobSpawning = false
+gamerule.randomTickSpeed = 0
+gamerule.doFireTick = false
+gamerule.mobGriefing = false
+gamerule.doTileDrops = false
+gamerule.doEntityDrops = false
+prepTicks = 200
+
+[client]
+width = 854
+height = 480
+fov = 70.0
+gamma = 0.0
+renderDistance = 8
+guiScale = 2
+mipmapLevels = 4
+particles = 2
+fancyGraphics = true
+clouds = 2
+ao = 2
+hideGui = true
+
+[pack]
+shaderpack = mp-pingpong@1.0.0
+
+[shot above]
+pos = -211.5 69.0 240.5
+look = 90.0 25.0
+warmupFrames = 4800
+captureFrames = 2
+note = camera above the water surface looking down the shoreline; tuned live
+
+[shot underwater]
+pos = -211.5 65.5 240.5
+look = 90.0 5.0
+warmupFrames = 4800
+captureFrames = 2
+note = eye under water (isEyeInWater); tuned live
+
+[path shoreline-track]
+warmupFrames = 4800
+samples.count = 4
+sample.0.pos = -211.5 69.0 240.5
+sample.0.look = 90.0 25.0
+sample.1.pos = -211.5 69.0 241.0
+sample.1.look = 90.0 25.0
+sample.2.pos = -211.5 69.0 241.5
+sample.2.look = 90.0 25.0
+sample.3.pos = -211.5 69.0 242.0
+sample.3.look = 90.0 25.0
+captureStartSample = 1
+captureSampleCount = 2
+note = half-block dolly along the shoreline per frame

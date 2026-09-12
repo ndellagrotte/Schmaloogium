@@ -197,3 +197,59 @@ tasks.named('test') {
 
 apply from: rootProject.file('gradle/scripts/publishing.gradle')
 apply from: rootProject.file('gradle/scripts/extra.gradle')
+
+// Task C (PHASE_2_DOC §4.5.1 step 4): serialise the dev client's launch command so the
+// conformance harness can exec it as a separate process without nesting Gradle (the project
+// lock would deadlock). Unimined's runClient is a JavaExec (RunConfig); we copy its launcher,
+// classpath, JVM args, environment, main class, program args and working dir verbatim.
+tasks.register('writeClientLaunchSpec') {
+    group = 'verification'
+    description = 'Writes mod/build/conformance/client.launch for the conformance CaptureRunner.'
+    def run = tasks.named('runClient')
+    dependsOn 'preRunClient', 'classes', 'processResources'
+    def outFile = layout.buildDirectory.file('conformance/client.launch')
+    outputs.file(outFile)
+    outputs.upToDateWhen { false }
+    doLast {
+        def exec = run.get()
+        // Unimined substitutes these placeholders at execution; resolve them the same way here.
+        def resources = sourceSets.main.output.resourcesDir.absolutePath
+        def classes = sourceSets.main.output.classesDirs.files.collect { it.absolutePath }
+        def subst = [
+            'natives_directory': exec.workingDir.absolutePath + '/natives',
+            'assets_root': gradle.gradleUserHomeDir.absolutePath + '/caches/unimined/assets',
+            'mcp_to_srg': project.projectDir.absolutePath + '/.gradle/unimined/local/mappings/srg2mcp.tsrg',
+            'source_roots': (['_mod_main%%' + resources] + classes.collect { '_mod_main%%' + it }).join(':')
+        ]
+        def resolve = { String v -> subst.inject(v) { acc, k, val -> acc.replace('${' + k + '}', val) } }
+        def json = { String v -> '"' + resolve(v).replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n') + '"' }
+        def lines = new TreeMap<String, String>()
+        lines['java'] = json(exec.javaLauncher.present ? exec.javaLauncher.get().executablePath.asFile.absolutePath : exec.executable.toString())
+        lines['mainClass'] = json(exec.mainClass.get())
+        lines['workingDir'] = json(exec.workingDir.absolutePath)
+        def cp = exec.classpath.files.collect { it.absolutePath }
+        lines['classpath.count'] = cp.size().toString()
+        cp.eachWithIndex { f, i -> lines["classpath.${i}"] = json(f) }
+        def jvm = exec.allJvmArgs.findAll { !it.startsWith('-cp') && !it.startsWith('-classpath') }
+        lines['jvmArgs.count'] = jvm.size().toString()
+        jvm.eachWithIndex { a, i -> lines["jvmArgs.${i}"] = json(a) }
+        def args = exec.args
+        lines['args.count'] = args.size().toString()
+        args.eachWithIndex { a, i -> lines["args.${i}"] = json(a) }
+        // only the run configuration's own environment, not the inherited shell environment
+        def inherited = System.getenv()
+        def env = new TreeMap<String, String>(exec.environment.findAll { k, v -> inherited[k.toString()] != v.toString() }
+            .collectEntries { k, v -> [(k.toString()): v.toString()] })
+        lines['env.count'] = env.size().toString()
+        env.eachWithIndex { entry, i -> lines["env.${i}.name"] = json(entry.key); lines["env.${i}.value"] = json(entry.value) }
+        def subject = [sourceSets.main.output.classesDirs.files, [sourceSets.main.output.resourcesDir]].flatten().collect { it.absolutePath }
+        lines['subject.count'] = subject.size().toString()
+        subject.eachWithIndex { d, i -> lines["subject.${i}"] = json(d) }
+        def text = new StringBuilder('schema = schmaloogium.client-launch/1\n')
+        lines.each { k, v -> text.append(k).append(' = ').append(v).append('\n') }
+        def f = outFile.get().asFile
+        f.parentFile.mkdirs()
+        f.setText(text.toString(), 'UTF-8')
+        println "client launch spec written to ${f}"
+    }
+}

@@ -389,14 +389,15 @@ public final class T0Evaluator {
             return;
         }
         String[] overlapping = {"clockStep", "logicalTick", "animationTick", "worldTick",
-            "frameCounter", "smoothingTimeTicks"};
+            "frameCounter"};
         for (String field : overlapping) {
             if (step.integer(field) != joined.integer(field)) {
                 failures.add("timing.steps." + position + " " + field + "=" + step.integer(field)
                     + " != frames " + field + "=" + joined.integer(field));
             }
         }
-        for (String field : new String[] {"partialTicks", "frameTimeSeconds", "frameTimeCounter"}) {
+        for (String field : new String[] {"partialTicks", "frameTimeSeconds", "frameTimeCounter",
+            "smoothingTimeTicks"}) {
             if (step.decimal(field) != joined.decimal(field)) {
                 failures.add("timing.steps." + position + " " + field + " != frames " + field);
             }

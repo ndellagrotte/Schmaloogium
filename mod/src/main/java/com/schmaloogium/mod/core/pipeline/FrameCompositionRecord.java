@@ -47,7 +47,8 @@ public record FrameCompositionRecord(
 
     @Override
     public Optional<FrameCompletionObserver> completionObserver() {
-        return Optional.empty();
+        // H-CAPTURE-01: the capture agent's observer while a plan is armed, else absent (no-op).
+        return com.schmaloogium.mod.glue.frame.FrameObservers.current();
     }
 
     @Override

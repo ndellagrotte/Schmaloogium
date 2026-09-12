@@ -205,8 +205,24 @@ final class Lwjgl3FramebufferService implements FramebufferService {
     public void drawBuffers(FramebufferHandle f, List<FramebufferDrawSlot> slots) {
         device.requireRenderThread("framebuffers.drawBuffers");
         Lwjgl3FramebufferHandle fb = device.framebufferOf(f, "framebuffers.drawBuffers");
-        if (slots == null || slots.isEmpty()) {
-            throw new IllegalArgumentException("framebuffers.drawBuffers: slots must be nonempty");
+        if (slots == null) {
+            throw new IllegalArgumentException("framebuffers.drawBuffers: slots must not be null");
+        }
+        if (slots.isEmpty()) {
+            // A depth-only route (the v0.1 shadow estate with no shadowcolor textures): no colour
+            // draw buffer at all. Same posture as an empty sampler assignment — a no-op route,
+            // never a refusal (this refusal neutralized the shadow estate on every build).
+            int savedDrawOnly = GL11.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING);
+            try {
+                GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, fb.glName());
+                GL11.glDrawBuffer(GL11.GL_NONE);
+                GL11.glReadBuffer(GL11.GL_NONE);
+            } finally {
+                GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, savedDrawOnly);
+            }
+            fb.drawRoute = List.of();
+            device.noteMutation("framebuffers.drawBuffers", fb.subjectLabel());
+            return;
         }
         if (slots.size() > profile.maxDrawBuffers()) {
             throw new IllegalArgumentException("framebuffers.drawBuffers: " + slots.size()

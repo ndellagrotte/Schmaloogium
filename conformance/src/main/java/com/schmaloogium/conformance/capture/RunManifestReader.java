@@ -147,10 +147,13 @@ public final class RunManifestReader {
         for (String family : new String[] {"environment.mods", "environment.resourcePacks",
                 "pack.options", "pack.engineOptions", "programs", "captures", "frames",
                 "gl_errors", "diagnostics", "images", "timing.steps", "hooks.rows",
-                "hooks.subreports"}) {
+                "hooks.subreports", "resources.colorBuffers", "resources.shadow.depth",
+                "resources.shadow.color", "resources.vertexAttributes", "resources.instances",
+                "resources.capabilityShortfalls"}) {
             requireDense(manifest, family);
         }
         checkTimingAvailability(manifest);
+        checkResources(manifest);
     }
 
     private static void checkEnums(RunManifest manifest) {
@@ -258,6 +261,75 @@ public final class RunManifestReader {
                 throw new IllegalArgumentException("row " + family + "." + i
                     + " member set mismatch; expected exactly " + members + ", got " + present);
             }
+        }
+    }
+
+    /** §4.5.4 resources block: present exactly when available, variant keys by stage/policy. */
+    private static void checkResources(RunManifest manifest) {
+        boolean available = manifest.bool("resources.available");
+        java.util.List<String> present = manifest.entries().keySet().stream()
+            .filter(k -> k.startsWith("resources.") && !k.equals("resources.available"))
+            .toList();
+        if (!available) {
+            if (!present.isEmpty()) {
+                throw new IllegalArgumentException("resources.available=false forbids every other"
+                    + " resources.* key; found " + present.get(0));
+            }
+            return;
+        }
+        for (String required : new String[] {"resources.evidence_stage", "resources.depthTextures.count",
+                "resources.shadow.depthTextures", "resources.shadow.colorTextures",
+                "resources.shadow.resolution", "resources.centerDepthSmooth.enabled",
+                "resources.noise.resolution", "resources.capabilityGate", "resources.colorBuffers.count",
+                "resources.shadow.depth.count", "resources.shadow.color.count",
+                "resources.vertexAttributes.count", "resources.instances.count",
+                "resources.capabilityShortfalls.count"}) {
+            if (!manifest.has(required)) {
+                throw new IllegalArgumentException("resources.available=true requires " + required);
+            }
+        }
+        requireEnum(manifest, "resources.evidence_stage", ManifestKeys.EVIDENCE_STAGES);
+        requireEnum(manifest, "resources.capabilityGate", ManifestKeys.CAPABILITY_GATES);
+        boolean realized = manifest.token("resources.evidence_stage").equals("REALIZED");
+        for (RunManifest.Row row : manifest.family("resources.colorBuffers")) {
+            String where = "resources.colorBuffers." + row.index();
+            Set<String> expected = new HashSet<>(Set.of("requested_format", "clear", "clear_policy"));
+            String policy = row.token("clear_policy");
+            if (!ManifestKeys.CLEAR_POLICIES.contains(policy)) {
+                throw new IllegalArgumentException(where + ".clear_policy must be one of "
+                    + ManifestKeys.CLEAR_POLICIES);
+            }
+            if (policy.equals("CONSTANT")) {
+                expected.addAll(Set.of("clear_color_r", "clear_color_g", "clear_color_b", "clear_color_a"));
+            }
+            if (realized) {
+                expected.addAll(Set.of("allocated_format", "allocation_origin"));
+                if (!ManifestKeys.ALLOCATION_ORIGINS.contains(row.token("allocation_origin"))) {
+                    throw new IllegalArgumentException(where + ".allocation_origin must be one of "
+                        + ManifestKeys.ALLOCATION_ORIGINS);
+                }
+            }
+            if (!row.fields().keySet().equals(expected)) {
+                throw new IllegalArgumentException(where + " member set mismatch for stage "
+                    + manifest.token("resources.evidence_stage") + " policy " + policy
+                    + "; expected exactly " + expected + ", got " + row.fields().keySet());
+            }
+        }
+        if (manifest.familyCount("resources.shadow.depth") != manifest.integer("resources.shadow.depthTextures")
+                || manifest.familyCount("resources.shadow.color") != manifest.integer("resources.shadow.colorTextures")) {
+            throw new IllegalArgumentException("resources.shadow property row counts must equal the"
+                + " shadow texture counts");
+        }
+        for (RunManifest.Row row : manifest.family("resources.capabilityShortfalls")) {
+            if (!ManifestKeys.CAPABILITY_LIMITS.contains(row.token("limit"))) {
+                throw new IllegalArgumentException("resources.capabilityShortfalls." + row.index()
+                    + ".limit must be one of " + ManifestKeys.CAPABILITY_LIMITS);
+            }
+        }
+        boolean shortfall = manifest.token("resources.capabilityGate").equals("SHORTFALL");
+        if (shortfall != manifest.familyCount("resources.capabilityShortfalls") > 0) {
+            throw new IllegalArgumentException("resources.capabilityGate must be SHORTFALL exactly when"
+                + " shortfalls exist");
         }
     }
 

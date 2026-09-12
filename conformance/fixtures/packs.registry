@@ -1,0 +1,105 @@
+# Pack fixture registry (PHASE_2_DOC §4.10.1, RESEARCH.md App G). Never re-hosted: archives
+# live only in the cache root (§4.10.3). [D-P2-20]: MODRINTH rows keep empty pins until the
+# implementation populates them; the resolver refuses an unpinned row rather than "latest".
+# The Modrinth transport is a named deferral of Task C: a MODRINTH row resolves only from a
+# warm cache. MANUAL rows are canonical-download-only; sha512 pins are the verified archives.
+# "corpus" rows are the repo-owned GPL micro-packs staged as deterministic zips by
+#   ./gradlew :conformance:harness --args="stage-micropacks"
+
+[pack bsl]
+displayName = BSL Shaders
+tier = dual-spec
+mode = MODRINTH
+modrinthProject = bsl-shaders
+modrinthVersion =
+version = 10.1.3
+sha512 =
+archiveName = BSL_v10.1.3.zip
+licence = ARR — no bundling, no re-hosting (RESEARCH.md App G)
+sourceUrl = https://modrinth.com/shader/bsl-shaders
+
+[pack complementary-reimagined]
+displayName = Complementary Reimagined
+tier = dual-spec
+mode = MODRINTH
+modrinthProject = complementary-reimagined
+modrinthVersion =
+version = r5.8.1
+sha512 =
+archiveName = ComplementaryReimagined_r5.8.1.zip
+licence = Complementary Development License — no bundling, no re-hosting (RESEARCH.md App G)
+sourceUrl = https://modrinth.com/shader/complementary-reimagined
+
+[pack complementary-unbound]
+displayName = Complementary Unbound
+tier = dual-spec
+mode = MODRINTH
+modrinthProject = complementary-unbound
+modrinthVersion =
+version = r5.9
+sha512 =
+archiveName = ComplementaryUnbound_r5.9.zip
+licence = Complementary Development License — no bundling, no re-hosting (RESEARCH.md App G)
+sourceUrl = https://modrinth.com/shader/complementary-unbound
+
+[pack sildurs-vibrant]
+displayName = Sildur's Vibrant Shaders
+tier = dual-spec
+mode = MODRINTH
+modrinthProject = sildurs-vibrant-shaders
+modrinthVersion =
+version = 1.52
+sha512 =
+archiveName = Sildurs_Vibrant_Shaders_v1.52.zip
+licence = ARR — no bundling, no re-hosting (RESEARCH.md App G)
+sourceUrl = https://modrinth.com/shader/sildurs-vibrant-shaders
+
+[pack seus-renewed]
+displayName = SEUS Renewed
+tier = classic
+mode = MANUAL
+version = 1.0.1
+sha512 = 3e924162f174987ac93255146d0d980ebbb86c02df08542fcf2cc5313b5eb312801fbdf965de5af2b4a03f206ec14c62f16fe665e3fb74db115cf3563c03ebff
+archiveName = SEUS-Renewed-v1.0.1.zip
+licence = SEUS licence — canonical download only, no re-hosting (RESEARCH.md App G)
+sourceUrl = https://www.sonicether.com/seus/
+
+[pack chocapic13-v9]
+displayName = Chocapic13 V9
+tier = classic
+mode = MANUAL
+version = 9
+sha512 = 23cde1de34b84bad1dacfca6c141e80c7ccee111948ed9596bfde37782a49d6691c1fc5360b4c9d6ab22d45fa343cdcf79e4b07b10e3862bc1d5b4d9cfd12b5c
+archiveName = Chocapic13_V9_Medium.zip
+licence = Chocapic13 licence (the canonical download Chocapic13_V9.zip bundles four inner packs; the fixture is its Medium member) — canonical download only, no re-hosting (RESEARCH.md App G)
+sourceUrl = https://www.curseforge.com/minecraft/customization/chocapic13-shaders
+
+[pack projectluma]
+displayName = projectLUMA
+tier = classic
+mode = MANUAL
+version = 1.32
+sha512 = ed0f091b13b66e68359c51af406bc92c9e1525c9619abafe86e7775b8b18a2de566b6a44c483ec6fcd1d438cccae4db721d8bb9b92fbb983362cd0fc56456597
+archiveName = projectLUMA - v1.32.zip
+licence = projectLUMA licence — canonical download only, no re-hosting (RESEARCH.md App G)
+sourceUrl = https://www.curseforge.com/minecraft/customization/projectluma
+
+[pack mp-pingpong]
+displayName = mp-pingpong (corpus)
+tier = corpus
+mode = MANUAL
+version = 1.0.0
+sha512 = fce4ad81480b482c0d1849ecf56ce84f5ce24bd17236042889dc081ed0af166462433ca8370a18b3e3c121dbf14788860bb56101fb2000dbdb528c20a36141ff
+archiveName = mp-pingpong-1.0.0.zip
+licence = GPL-3.0-or-later (repo-owned micro-pack corpus, §4.11.6)
+sourceUrl = repo:conformance/src/test/resources/packs/mp-pingpong
+
+[pack mp-minimal]
+displayName = mp-minimal (corpus)
+tier = corpus
+mode = MANUAL
+version = 1.0.0
+sha512 = 2e747d918187d42399c456609aac6632f7607a6c1632d34e0c0aef2cb2cd98286fb9294b5ff4688c06a4dac4214c024f97da18bb6df7be3e64fa2643cb07022a
+archiveName = mp-minimal-1.0.0.zip
+licence = GPL-3.0-or-later (repo-owned micro-pack corpus, §4.11.6)
+sourceUrl = repo:conformance/src/test/resources/packs/mp-minimal

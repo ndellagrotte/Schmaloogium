@@ -62,3 +62,21 @@ def updateGoldens = providers.gradleProperty('updateGoldens').isPresent()
 tasks.withType(Test).configureEach {
     systemProperty 'schmaloogium.conformance.updateGoldens', String.valueOf(updateGoldens)
 }
+
+// Task C: the harness command line (PHASE_2_DOC §4.5.1). It launches the dev client as a
+// separate process from the launch spec :mod:writeClientLaunchSpec serialises; it never
+// nests Gradle (the project lock would deadlock). Usage:
+//   ./gradlew :conformance:harness --args="capture --run RUN-T1-REGRESS --pack mp-pingpong@1.0.0 --scene all"
+tasks.register('harness', JavaExec) {
+    group = 'verification'
+    description = 'Conformance capture harness CLI (stage-micropacks, inventory, world, capture, selfcheck, approve, evaluate).'
+    dependsOn ':mod:writeClientLaunchSpec'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.schmaloogium.conformance.Harness'
+    workingDir = rootProject.projectDir
+    systemProperty 'schmaloogium.conformance.repoRoot', rootProject.projectDir.absolutePath
+    systemProperty 'schmaloogium.conformance.cleanroomVersion', cleanroom_loader_version
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(25)
+    })
+}

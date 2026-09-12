@@ -234,8 +234,10 @@ final class DecisionValueProjector {
                 "allowedValues", sequence(definition.allowedValues().stream()
                     .map(DecisionValueProjector::optionValue).toList()),
                 "availability", token(definition.availability().name()),
+                // evaluated lazily: an absent tooltip must not reach orElseThrow (real packs
+                // declare options without tooltips; inspection threw for SEUS/projectLUMA)
                 "tooltip", present(definition.tooltip(),
-                    textHash(definition.tooltip().orElseThrow())),
+                    definition.tooltip().map(DecisionValueProjector::textHash).orElse(null)),
                 "occurrences", sequence(definition.occurrences().stream()
                     .map(DecisionValueProjector::attribution).toList())));
         }

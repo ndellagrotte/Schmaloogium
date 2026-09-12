@@ -1,0 +1,66 @@
+# terrain + sky, the baseline frame (PHASE_2_DOC §3.4): open landscape at midday, clear sky.
+[scene]
+schema = schmaloogium.scene/2
+id = terrain-day
+description = open landscape with mixed solid/cutout blocks under a clear midday sky
+family = terrain
+minMilestone = v0.1
+
+[world]
+seed = 20260912
+worldType = default
+generateStructures = true
+dimension = 0
+time = 6000
+weather = clear
+weatherTicks = 1000000
+difficulty = peaceful
+gamemode = creative
+gamerule.doDaylightCycle = false
+gamerule.doWeatherCycle = false
+gamerule.doMobSpawning = false
+gamerule.randomTickSpeed = 0
+gamerule.doFireTick = false
+gamerule.mobGriefing = false
+gamerule.doTileDrops = false
+gamerule.doEntityDrops = false
+prepTicks = 200
+
+[client]
+width = 854
+height = 480
+fov = 70.0
+gamma = 0.0
+renderDistance = 8
+guiScale = 2
+mipmapLevels = 4
+particles = 2
+fancyGraphics = true
+clouds = 2
+ao = 2
+hideGui = true
+
+[pack]
+shaderpack = mp-pingpong@1.0.0
+
+[shot main]
+pos = -211.5 75.0 240.5
+look = 45.0 15.0
+warmupFrames = 4800
+captureFrames = 2
+note = the spawn landscape from a raised vantage; near the world spawn (-211, 67, 240) of seed 20260912; tuned live
+
+[path terrain-pan]
+warmupFrames = 4800
+samples.count = 4
+sample.0.pos = -211.5 75.0 240.5
+sample.0.look = 40.0 15.0
+sample.1.pos = -211.5 75.0 240.5
+sample.1.look = 45.0 15.0
+sample.2.pos = -211.5 75.0 240.5
+sample.2.look = 50.0 15.0
+sample.3.pos = -211.5 75.0 240.5
+sample.3.look = 55.0 15.0
+captureStartSample = 1
+captureSampleCount = 2
+note = a five-degree yaw pan per frame across the same landscape (mandatory motion path)

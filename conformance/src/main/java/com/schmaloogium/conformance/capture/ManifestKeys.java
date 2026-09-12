@@ -97,6 +97,15 @@ final class ManifestKeys {
         // availability
         req(m, "resources.available", ScalarType.BOOL);
         req(m, "hooks.available", ScalarType.BOOL);
+        // resources (§4.5.4 + P5 §4.1.1): conditional on resources.available, checked by the reader
+        opt(m, "resources.evidence_stage", ScalarType.TOKEN);
+        opt(m, "resources.depthTextures.count", ScalarType.INT);
+        opt(m, "resources.shadow.depthTextures", ScalarType.INT);
+        opt(m, "resources.shadow.colorTextures", ScalarType.INT);
+        opt(m, "resources.shadow.resolution", ScalarType.INT);
+        opt(m, "resources.centerDepthSmooth.enabled", ScalarType.BOOL);
+        opt(m, "resources.noise.resolution", ScalarType.INT);
+        opt(m, "resources.capabilityGate", ScalarType.TOKEN);
         // timing (D-P2-50 core)
         req(m, "timing.available", ScalarType.BOOL);
         req(m, "timing.complete", ScalarType.BOOL);
@@ -159,6 +168,16 @@ final class ManifestKeys {
             "smoothingTimeTicks", "frameTimeSeconds", "frameCounter", "frameTimeCounter",
             "worldTick", "animationTick", "partialTicks", "clockStep", "clientTicks",
             "serverTicks", "acceptedFrames", "finalizedFrames"));
+        // resources families (§4.5.4): colour rows vary by evidence stage / clear policy, so
+        // their member set is checked by the reader's variant rule, not here.
+        m.put("resources.colorBuffers", Set.of("requested_format", "clear", "clear_policy",
+            "clear_color_r", "clear_color_g", "clear_color_b", "clear_color_a", "allocated_format",
+            "allocation_origin"));
+        m.put("resources.shadow.depth", Set.of("hardwareFiltering", "mipmap", "nearest"));
+        m.put("resources.shadow.color", Set.of("hardwareFiltering", "mipmap", "nearest"));
+        m.put("resources.vertexAttributes", Set.of("program", "name"));
+        m.put("resources.instances", Set.of("program", "count"));
+        m.put("resources.capabilityShortfalls", Set.of("limit", "required", "available"));
         // Deferred producers: keys known, cross-record completeness owned by their stage.
         m.put("hooks.rows", Set.of("catalogId", "target", "expectedCount", "actualCount",
             "classes.count", "fallback"));
@@ -169,13 +188,26 @@ final class ManifestKeys {
 
     /** Row-field types for family members (grammar level; completeness is per-family). */
     static ScalarType familyFieldType(String family, String field) {
+        if (family.equals("hooks.rows") && field.startsWith("classes.") && !field.equals("classes.count")) {
+            return ScalarType.TOKEN; // dense CORE|FEATURE|OBSERVER|DEFERRED members
+        }
+        if (family.startsWith("resources.")) {
+            return switch (field) {
+                case "requested_format", "allocated_format", "program", "name" -> ScalarType.TEXT;
+                case "clear", "hardwareFiltering", "mipmap", "nearest" -> ScalarType.BOOL;
+                case "clear_policy", "allocation_origin", "limit" -> ScalarType.TOKEN;
+                case "clear_color_r", "clear_color_g", "clear_color_b", "clear_color_a" -> ScalarType.DECIMAL;
+                default -> ScalarType.INT;
+            };
+        }
         return switch (field) {
             case "id", "name", "value", "from", "driverLog", "captureId", "subject",
                 "detail", "code", "file", "path" -> ScalarType.TEXT;
             case "slot", "status", "kind", "op", "phase", "validation", "captureKind",
                 "severity", "channel", "fallback", "disposition", "target" -> ScalarType.TOKEN;
-            case "sourcePresent", "ownBuild", "captured", "attributed", "featureEnabled" ->
+            case "sourcePresent", "captured", "attributed", "featureEnabled" ->
                 ScalarType.BOOL;
+            case "ownBuild" -> ScalarType.TOKEN; // NOT_APPLICABLE|NO_SOURCE|DISABLED|SUCCEEDED|FAILED
             case "requested_format", "clear", "clear_policy", "allocated_format",
                 "allocation_origin", "catalogId", "ownerPhase", "canonicalFingerprint" ->
                 ScalarType.TEXT;
@@ -193,7 +225,7 @@ final class ManifestKeys {
 
     private static ScalarType decimalOrInt(String family, String field) {
         return switch (field) {
-            case "partialTicks", "frameTimeSeconds", "frameTimeCounter" -> ScalarType.DECIMAL;
+            case "partialTicks", "frameTimeSeconds", "frameTimeCounter", "smoothingTimeTicks" -> ScalarType.DECIMAL;
             case "sha256", "pixelSha256" -> ScalarType.HEX64;
             default -> ScalarType.INT;
         };
@@ -229,8 +261,19 @@ final class ManifestKeys {
 
     /** Families whose member completeness is enforced by the reader. */
     static boolean readerEnforcesMembers(String family) {
-        return !family.equals("hooks.rows") && !family.equals("hooks.subreports");
+        return !family.equals("hooks.rows") && !family.equals("hooks.subreports")
+            && !family.equals("resources.colorBuffers");
     }
+
+    static final Set<String> EVIDENCE_STAGES = Set.of("PLANNED", "REALIZED");
+    static final Set<String> CLEAR_POLICIES = Set.of("FOG_RGB_ALPHA_ONE", "CONSTANT");
+    static final Set<String> ALLOCATION_ORIGINS = Set.of("REQUESTED", "RGBA_FALLBACK");
+    static final Set<String> CAPABILITY_GATES = Set.of("OK", "SHORTFALL");
+    static final Set<String> CAPABILITY_LIMITS = Set.of("maxDrawBuffers", "maxColorAttachments",
+        "maxTextureImageUnits");
+    static final Set<String> RESOURCE_FAMILIES = Set.of("resources.colorBuffers", "resources.shadow.depth",
+        "resources.shadow.color", "resources.vertexAttributes", "resources.instances",
+        "resources.capabilityShortfalls");
 
     static Set<String> scalarKeySet() {
         return SCALARS.keySet();

@@ -44,7 +44,7 @@ public final class RunManifestWriter {
         return out.toString();
     }
 
-    private static String render(Value value) {
+    public static String render(Value value) {
         if (value instanceof Value.Text text) {
             return CanonicalText.encodeJson(text.value());
         }

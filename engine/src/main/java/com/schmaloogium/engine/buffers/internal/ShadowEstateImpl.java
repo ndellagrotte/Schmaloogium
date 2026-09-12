@@ -742,8 +742,12 @@ public final class ShadowEstateImpl implements ShadowEstateView {
                 : BufferFailureCode.UNEXPECTED_BACKEND,
             "schmaloogium.buffers.error.shadow.neutralized");
         core.shadowNeutralDiagnostic = neutralDiagnostic(reason);
-        core.diagnostics.report(BufferDiagnostics.shadowBackendFailure(
-            "schmaloogium.buffers.error.shadow.neutralized", core.shadowNeutralDiagnostic));
+        // An explicit feature disable (the v0.1 D-P7-46 disposition: no shadow pass exists yet)
+        // is the designed outcome, reported at INFO; every other reason is a backend failure.
+        core.diagnostics.report(reason == ShadowNeutralReason.EXPLICIT_FEATURE_DISABLE
+            ? BufferDiagnostics.shadowNeutralizedByDesign(core.shadowNeutralDiagnostic)
+            : BufferDiagnostics.shadowBackendFailure(
+                "schmaloogium.buffers.error.shadow.neutralized", core.shadowNeutralDiagnostic));
         return abortedOpen;
     }
 
