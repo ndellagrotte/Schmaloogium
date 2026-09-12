@@ -21,7 +21,8 @@ final class Lwjgl3StateSnapshot implements StateSnapshot {
 
     Lwjgl3StateSnapshot(Lwjgl3GLDevice device, Map<StateAspect, Object> captured) {
         this.device = device;
-        this.captured = Map.copyOf(captured);
+        // Null values encode "disabled" for BLEND/ALPHA_TEST/FOG; Map.copyOf rejects them.
+        this.captured = java.util.Collections.unmodifiableMap(new java.util.EnumMap<>(captured));
     }
 
     Lwjgl3GLDevice device() {

@@ -16,6 +16,7 @@ import com.schmaloogium.engine.buffers.PassCompletionResult;
 import com.schmaloogium.engine.buffers.PassDiscardResult;
 import com.schmaloogium.engine.buffers.PassDrawTarget;
 import com.schmaloogium.engine.buffers.PassSnapshotResult;
+import com.schmaloogium.engine.buffers.TextureBindingResult;
 import com.schmaloogium.engine.frame.AnaglyphEye;
 import com.schmaloogium.engine.frame.CameraSnapshot;
 import com.schmaloogium.engine.frame.DrawDisposition;
@@ -59,6 +60,7 @@ import com.schmaloogium.engine.registry.PublishedProgramStateBarrier;
 import com.schmaloogium.engine.registry.StageBand;
 import com.schmaloogium.engine.registry.StageRegistry;
 import com.schmaloogium.engine.registry.StageStep;
+import com.schmaloogium.engine.registry.ResolvedProgramDescriptor;
 import com.schmaloogium.engine.registry.UseProgramRequest;
 import com.schmaloogium.engine.uniforms.BlendSample;
 import com.schmaloogium.engine.uniforms.CelestialSample;
@@ -333,6 +335,21 @@ public final class FrameDriver implements FrameHookSink {
                 if (closed != null) {
                     return new ScopeOpenResult.Aborted(((FrameStepResult.Aborted) closed).reason());
                 }
+                if (f.phase != Phase.DEFERRED_DONE) {
+                    // §4.5 step 4: the DEFERRED/BETWEEN_GBUFFERS family runs here, once,
+                    // before gbuffers_water; finish runs it only when no trigger fired.
+                    try {
+                        runBand(f, StageBand.BETWEEN_GBUFFERS);
+                    } catch (StalePublicationSignal signal) {
+                        return new ScopeOpenResult.Rejected(HookRejection.STALE_PUBLICATION);
+                    } catch (RuntimeFailureSignal signal) {
+                        if (f.terminal) {
+                            return new ScopeOpenResult.Aborted(FrameAbortReason.BACKEND_FAILURE);
+                        }
+                        return new ScopeOpenResult.Failed(signal.failure);
+                    }
+                    f.deferredRan = true;
+                }
                 f.phase = Phase.DEFERRED_DONE;
             }
         }
@@ -538,8 +555,10 @@ public final class FrameDriver implements FrameHookSink {
             scope.discardSnapshotOnClose = true;
             return scope;
         }
-        // v0.1: the explicit empty texture publication — no lease or texture-row work
-        // until Phase 13 lands; P5's textureBindings call joins then.
+        // v0.1: no textureBindings for gbuffers scopes. The fixed sampler map puts
+        // `texture`/`lightmap` at units 0/1 and Phase 5 would bind colortex0/1 there,
+        // clobbering vanilla's atlas and lightmap; vanilla owns those units until Phase 13
+        // publishes the overlay. Deferred/composite/final bind through executeFullscreen.
         BarrierResult activation = barrier.activate(new UseProgramRequest(selection, context));
         if (activation instanceof BarrierResult.Activated) {
             scope.disposition = DrawDisposition.DRAW_SHADER;
@@ -650,32 +669,37 @@ public final class FrameDriver implements FrameHookSink {
         }
     }
 
-    /** Executes the deferred/composite family and the FINAL screen pass exactly once. */
+    /**
+     * Frame end (§4.6, PHASE_7_DOC:1478-1488): the deferred family only when no translucent
+     * trigger ran it (§4.5), then the COMPOSITE/FRAME_END family ascending, then the
+     * FINAL/SCREEN pass exactly once. Every band traverses Phase 4's one sparse
+     * population: contained virtual prelude first, then populated raster descriptors.
+     */
     private void runDeferredAndFinal(Frame f) {
+        if (!f.deferredRan) {
+            runBand(f, StageBand.BETWEEN_GBUFFERS);
+            f.deferredRan = true;
+        }
+        runBand(f, StageBand.FRAME_END);
+        runBand(f, StageBand.SCREEN);
+        // A registry without a SCREEN step composites nothing (internal pack always has one).
+    }
+
+    /** One D-P7-61 traversal of every schedule step in the band (prelude, then raster). */
+    private void runBand(Frame f, StageBand band) {
         StageRegistry registry = f.registryView();
-        boolean sawFinal = false;
         for (StageStep step : registry.schedule()) {
-            if (step.band() == StageBand.BETWEEN_GBUFFERS) {
-                for (PassDescriptor descriptor : registry.passes(step)) {
-                    if (isVirtualPrelude(descriptor)) {
-                        applyVirtualPrelude(f, descriptor);
-                        continue;
-                    }
-                    executeFullscreen(f, descriptor);
+            if (step.band() != band) {
+                continue;
+            }
+            for (PassDescriptor descriptor : registry.passes(step)) {
+                if (isVirtualPrelude(descriptor)) {
+                    applyVirtualPrelude(f, descriptor);
+                    continue;
                 }
-                f.phase = Phase.DEFERRED_DONE;
-            } else if (step.band() == StageBand.SCREEN) {
-                for (PassDescriptor descriptor : registry.passes(step)) {
-                    if (isVirtualPrelude(descriptor)) {
-                        applyVirtualPrelude(f, descriptor);
-                        continue;
-                    }
-                    executeFullscreen(f, descriptor);
-                    sawFinal = true;
-                }
+                executeFullscreen(f, descriptor);
             }
         }
-        // A registry without a SCREEN step composites nothing (internal pack always has one).
     }
 
     /**
@@ -705,10 +729,20 @@ public final class FrameDriver implements FrameHookSink {
         }
     }
 
+    /**
+     * One deferred/composite/final pass in the §4.6 order: select → snapshot →
+     * generateMainMipmaps → bind target → textureBindings → activate → draw → release →
+     * completePass. Only a {@code Completed} draw completes the pass (flips commit there);
+     * an undrawn pass is discarded; backend failure is containment plus the shaders-off
+     * latch. The absent {@code final} slot resolves to the fixed-function terminal, whose
+     * activation answers FixedFunction and whose bindings put colortex0 at unit 0: the
+     * passthrough draw is the same textured fullscreen quad.
+     */
     private void executeFullscreen(Frame f, PassDescriptor descriptor) {
         BarrierContext context = f.contexts.activation(descriptor.step(), false);
         ProgramSelectionResult selected = f.barrier().select(descriptor.slot(), context);
         if (selected instanceof ProgramSelectionResult.Skipped) {
+            noteFullscreen(descriptor, "select Skipped");
             return;
         }
         if (selected instanceof ProgramSelectionResult.ShadersOff off) {
@@ -721,7 +755,8 @@ public final class FrameDriver implements FrameHookSink {
         }
         ProgramBindingSelection selection = ((ProgramSelectionResult.Selected) selected).selection();
         PassSnapshotResult snap = f.estateView().snapshot(descriptor, selection);
-        if (snap instanceof PassSnapshotResult.Rejected) {
+        if (snap instanceof PassSnapshotResult.Rejected rejectedSnapshot) {
+            noteFullscreen(descriptor, "snapshot " + rejectedSnapshot);
             return;
         }
         if (snap instanceof PassSnapshotResult.Failed failed) {
@@ -740,23 +775,128 @@ public final class FrameDriver implements FrameHookSink {
         }
         PortResult bound = f.composition.port().bind(snapshot.drawTarget(), f.eye());
         if (!(bound instanceof PortResult.Completed)) {
+            noteFullscreen(descriptor, "bind " + bound);
             f.estateView().discardPass(snapshot);
             return;
         }
-        f.composition.port().drawFullscreen(new com.schmaloogium.engine.frame.spi.FullscreenDraw(
-                descriptor,
-                com.schmaloogium.engine.frame.spi.MipmapSet.EMPTY,
-                com.schmaloogium.engine.frame.spi.ViewportScale.full(),
-                0, 1,
-                com.schmaloogium.engine.frame.spi.FullscreenPrimitive.QUADS));
-        PassCompletionResult completed = f.estateView().completePass(snapshot);
-        if (!(completed instanceof PassCompletionResult.Completed)) {
-            throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-complete"));
+        // v0.1: the explicit empty texture publication (no Phase 13 overlay); Phase 5
+        // binds the sixteen estate rows itself (no driver bind loop, §4.4 step 5).
+        TextureBindingResult bindings = f.estateView().textureBindings(snapshot, null, null);
+        if (bindings instanceof TextureBindingResult.BackendFailed) {
+            latchShadersOff();
+            abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.fullscreen-bindings");
+            throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-bindings"));
         }
-        BarrierResult released = f.barrier().releaseToFixedFunction(f.contexts.release());
-        if (!(released instanceof BarrierResult.FixedFunction)) {
-            throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-release"));
+        if (!(bindings instanceof TextureBindingResult.Bound boundTextures)) {
+            noteFullscreen(descriptor, "bindings " + bindings);
+            f.estateView().discardPass(snapshot);
+            return;
         }
+        boolean activated = false;
+        try {
+            BarrierResult activation = f.barrier().activate(new UseProgramRequest(selection, context));
+            if (activation instanceof BarrierResult.StalePublication) {
+                f.estateView().discardPass(snapshot);
+                throw new StalePublicationSignal();
+            }
+            if (activation instanceof BarrierResult.Skipped) {
+                noteFullscreen(descriptor, "activate Skipped");
+                f.estateView().discardPass(snapshot);
+                return;
+            }
+            if (!(activation instanceof BarrierResult.Activated)
+                    && !(activation instanceof BarrierResult.FixedFunction)) {
+                String cause = activation instanceof BarrierResult.ShadersOff off ? off.diagnosticId()
+                        : activation instanceof BarrierResult.FailedSafe safe ? safe.diagnosticId()
+                        : activation.getClass().getSimpleName();
+                latchShadersOff();
+                abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.fullscreen-activate");
+                throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-activate:" + cause));
+            }
+            activated = true;
+            PortResult drawn = f.composition.port().drawFullscreen(
+                    new com.schmaloogium.engine.frame.spi.FullscreenDraw(
+                            descriptor,
+                            com.schmaloogium.engine.frame.spi.MipmapSet.EMPTY,
+                            viewportFor(selection),
+                            0, 1,
+                            com.schmaloogium.engine.frame.spi.FullscreenPrimitive.QUADS));
+            if (drawn instanceof PortResult.Failed failedDraw) {
+                releaseQuietly(f);
+                activated = false;
+                latchShadersOff();
+                abortInternal(f, FrameAbortReason.BACKEND_FAILURE,
+                        CHANNEL + ".abort.fullscreen-draw:" + failedDraw.failure().diagnosticId());
+                throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-draw:"
+                        + failedDraw.failure().diagnosticId()));
+            }
+            BarrierResult released = f.barrier().releaseToFixedFunction(f.contexts.release());
+            activated = false;
+            if (!(released instanceof BarrierResult.FixedFunction)) {
+                throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-release"));
+            }
+            if (!(drawn instanceof PortResult.Completed)) {
+                // Rejected: mutation-free on the port side; the pass stays undrawn.
+                noteFullscreen(descriptor, "draw " + drawn);
+                f.estateView().discardPass(snapshot);
+                return;
+            }
+            PassCompletionResult completed = f.estateView().completePass(snapshot);
+            if (!(completed instanceof PassCompletionResult.Completed)) {
+                throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.fullscreen-complete"));
+            }
+            noteFullscreen(descriptor, "drawn and completed (" + activation.getClass().getSimpleName()
+                    + ", flips " + snapshot.flipAfterPass().size() + ")");
+        } finally {
+            if (activated) {
+                releaseQuietly(f);
+            }
+            closeQuietly(boundTextures.snapshot());
+        }
+    }
+
+    /** One line per distinct fullscreen-pass verdict per driver (never per frame). */
+    private final java.util.Set<String> fullscreenVerdictsLogged =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private void noteFullscreen(PassDescriptor descriptor, String verdict) {
+        String key = descriptor.slot().packName() + ": " + verdict;
+        if (fullscreenVerdictsLogged.add(key)) {
+            com.schmaloogium.engine.log.Logs.channel(com.schmaloogium.engine.log.LogChannels.FRAME)
+                    .info("H-FULLSCREEN pass verdict {}", key);
+        }
+    }
+
+    private void releaseQuietly(Frame f) {
+        try {
+            f.barrier().releaseToFixedFunction(f.contexts.release());
+        } catch (RuntimeException ignored) {
+            // best-effort on an already-failing path
+        }
+    }
+
+    private static void closeQuietly(AutoCloseable closeable) {
+        if (closeable == null) {
+            return;
+        }
+        try {
+            closeable.close();
+        } catch (Exception ignored) {
+            // the binding snapshot's close is evidence-only at v0.1
+        }
+    }
+
+    /** The per-program viewport scale (P4 state bundle) as the port's normalized request. */
+    private static com.schmaloogium.engine.frame.spi.ViewportScale viewportFor(
+            ProgramBindingSelection selection) {
+        ResolvedProgramDescriptor descriptor = selection.effectiveDescriptor();
+        if (descriptor == null || descriptor.state() == null
+                || descriptor.state().viewportScale().isEmpty()) {
+            return com.schmaloogium.engine.frame.spi.ViewportScale.full();
+        }
+        com.schmaloogium.engine.config.ViewportScale scale = descriptor.state().viewportScale().get();
+        return new com.schmaloogium.engine.frame.spi.ViewportScale(
+                scale.offsetX(), scale.offsetY(), scale.scale(), scale.scale());
     }
 
     private void abortInternal(Frame f, FrameAbortReason reason, String diagnosticId) {
@@ -834,6 +974,8 @@ public final class FrameDriver implements FrameHookSink {
         boolean matricesCaptured;
         boolean finalizationStarted;
         boolean terminal;
+        /** The deferred family ran at the translucent trigger (§4.5) or at finish. */
+        boolean deferredRan;
         Float3 fogColor = new Float3(0f, 0f, 0f);
         Float3 cameraPosition;
 

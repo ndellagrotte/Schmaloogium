@@ -10,6 +10,9 @@ import com.schmaloogium.engine.gl.FramebufferTarget;
 import com.schmaloogium.engine.gl.PixelFormat;
 import com.schmaloogium.engine.gl.PixelType;
 import com.schmaloogium.engine.gl.ShaderStage;
+import com.schmaloogium.engine.buffers.Extent2i;
+import com.schmaloogium.engine.frame.spi.ViewportScale;
+import com.schmaloogium.mod.glue.frame.FullscreenViewport;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumSet;
@@ -40,6 +43,24 @@ class GluePureValueTest {
     private static final int GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS = 0x8CD9;
     private static final int GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS = 0x8DA8;
     private static final int GL_FRAMEBUFFER_UNDEFINED = 0x8219;
+
+    @Test
+    void fullscreenViewportFloorsClampsAndKeepsOnePixel() {
+        Extent2i target = new Extent2i(854, 480);
+        org.junit.jupiter.api.Assertions.assertArrayEquals(new int[] {0, 0, 854, 480},
+                FullscreenViewport.compute(target, ViewportScale.full()));
+        org.junit.jupiter.api.Assertions.assertArrayEquals(new int[] {0, 0, 427, 240},
+                FullscreenViewport.compute(target, new ViewportScale(0f, 0f, 0.5f, 0.5f)));
+        org.junit.jupiter.api.Assertions.assertArrayEquals(new int[] {0, 0, 1, 1},
+                FullscreenViewport.compute(target, new ViewportScale(0f, 0f, 0.0001f, 0.0001f)),
+                "a positive scale never collapses below one pixel");
+        org.junit.jupiter.api.Assertions.assertArrayEquals(new int[] {427, 240, 427, 240},
+                FullscreenViewport.compute(target, new ViewportScale(0.5f, 0.5f, 1f, 1f)),
+                "the extent is bounded by the target");
+        org.junit.jupiter.api.Assertions.assertArrayEquals(new int[] {0, 0, 0, 0},
+                FullscreenViewport.compute(target, new ViewportScale(0f, 0f, 0f, 0f)),
+                "a zero scale is an empty viewport, not a one-pixel one");
+    }
 
     @Test
     void framebufferStatusMapsEveryRealGlValue() {

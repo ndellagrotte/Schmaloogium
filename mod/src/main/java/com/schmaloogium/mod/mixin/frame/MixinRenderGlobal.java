@@ -40,15 +40,17 @@ public abstract class MixinRenderGlobal {
 
     private ScopeOpenResult skyScope;
 
-    /** H-TERRAIN-01: solid/cutout/cutout-mipped terrain scopes. */
+    /**
+     * H-TERRAIN-01: solid/cutout/cutout-mipped terrain scopes. H-TERRAIN-02: the
+     * TRANSLUCENT layer at this same four-argument HEAD is the translucent trigger — the
+     * driver closes the opaque scope, runs the deferred family and opens gbuffers_water
+     * (PHASE_7_DOC §4.5); the mixin only names the section.
+     */
     @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I",
             at = @At("HEAD"), require = 0, expect = 1)
     private void schmaloogium$terrainEnter(BlockRenderLayer layer, double partialTicks, int pass,
             Entity viewEntity, CallbackInfoReturnable<Integer> cir) {
-        if (layer == BlockRenderLayer.SOLID || layer == BlockRenderLayer.CUTOUT
-                || layer == BlockRenderLayer.CUTOUT_MIPPED) {
-            this.terrainScope = FrameHooks.enterSection(sectionFor(layer));
-        }
+        this.terrainScope = FrameHooks.enterSection(sectionFor(layer));
     }
 
     @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I",
@@ -69,6 +71,8 @@ public abstract class MixinRenderGlobal {
                 return RenderSection.TERRAIN_SOLID;
             case CUTOUT_MIPPED:
                 return RenderSection.TERRAIN_CUTOUT_MIPPED;
+            case TRANSLUCENT:
+                return RenderSection.TERRAIN_TRANSLUCENT;
             default:
                 return RenderSection.TERRAIN_CUTOUT;
         }

@@ -348,8 +348,13 @@ public final class StageRegistryDefinition {
         Set<BufferRef> writes;
         if (step.stage() == StageId.DEFERRED || step.stage() == StageId.COMPOSITE) {
             readable = colortexRange();
-            writes = index.map(i -> Set.of(new BufferRef(BufferDomain.COLORTEX, i.value())))
-                .orElse(Set.of());
+            // Writes stay symbolic here (PHASE_4_DOC §4 "AllUsedBuffers remains symbolic",
+            // resolved at :1184/:1585 on 2026-09-11): the exact attachments come from the
+            // program's draw routing in its ProgramStateBundle, which Phase 5's planner
+            // expands into the pass route. The pass index is a schedule position, never a
+            // colortex index (the old `COLORTEX <index>` placeholder made composite1 "write"
+            // colortex1 and flip a pair that does not exist).
+            writes = Set.of();
         } else if (step.stage() == StageId.FINAL) {
             readable = colortexRange();
             writes = Set.of();

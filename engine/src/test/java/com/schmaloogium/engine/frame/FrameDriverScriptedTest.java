@@ -52,6 +52,9 @@ import com.schmaloogium.engine.registry.FixedSamplerPolicyFingerprint;
 import com.schmaloogium.engine.registry.FrameBarrierContexts;
 import com.schmaloogium.engine.registry.PassDescriptor;
 import com.schmaloogium.engine.registry.PassIndex;
+import com.schmaloogium.engine.registry.PassPopulation;
+import com.schmaloogium.engine.registry.ProgramBindingSelection;
+import com.schmaloogium.engine.frame.dispatch.RenderSection;
 import com.schmaloogium.engine.registry.ProgramBindingParticipant;
 import com.schmaloogium.engine.registry.StageBand;
 import com.schmaloogium.engine.registry.StageId;
@@ -147,7 +150,17 @@ class FrameDriverScriptedTest {
         }
     }
 
+    /** Scripted P4 barrier: Skipped unless a slot is scripted Selected; records the order. */
     private static final class FakeBarrier implements PublishedProgramStateBarrier {
+        final List<String> calls;
+        final java.util.Set<String> selectedSlots = new java.util.HashSet<>();
+        java.util.function.Function<String, BarrierResult> activation =
+                slot -> new BarrierResult.FixedFunction(List.of());
+
+        FakeBarrier(List<String> calls) {
+            this.calls = calls;
+        }
+
         @Override
         public long generation() {
             return 9L;
@@ -155,29 +168,68 @@ class FrameDriverScriptedTest {
 
         @Override
         public ProgramSelectionResult select(ProgramSlotId requested, BarrierContext context) {
+            calls.add("select:" + requested.packName());
+            if (selectedSlots.contains(requested.packName())) {
+                return new ProgramSelectionResult.Selected(inertSelection(requested));
+            }
             return new ProgramSelectionResult.Skipped(requested);
         }
 
         @Override
         public BarrierResult activate(UseProgramRequest request) {
-            return new BarrierResult.FixedFunction(List.of());
+            calls.add("activate:" + request.selection().requested().packName());
+            return activation.apply(request.selection().requested().packName());
         }
 
         @Override
         public BarrierResult releaseToFixedFunction(BarrierContext context) {
+            calls.add("release");
             return new BarrierResult.FixedFunction(List.of());
         }
     }
 
+    /**
+     * {@link ProgramBindingSelection} is mint-only inside Phase 4 barriers, so the scripted
+     * barrier hands out an inert instance whose {@code requested()} the fakes read back;
+     * the driver's viewport derivation tolerates its null descriptor.
+     */
+    private static ProgramBindingSelection inertSelection(ProgramSlotId requested) {
+        try {
+            Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+            java.lang.reflect.Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
+            theUnsafe.setAccessible(true);
+            Object unsafe = theUnsafe.get(null);
+            java.lang.reflect.Method allocateInstance =
+                    unsafeClass.getMethod("allocateInstance", Class.class);
+            ProgramBindingSelection selection = (ProgramBindingSelection) allocateInstance
+                    .invoke(unsafe, ProgramBindingSelection.class);
+            java.lang.reflect.Field field =
+                    ProgramBindingSelection.class.getDeclaredField("requested");
+            field.setAccessible(true);
+            field.set(selection, requested);
+            return selection;
+        } catch (ReflectiveOperationException failure) {
+            throw new AssertionError("cannot allocate an inert selection", failure);
+        }
+    }
+
     private static final class FakeStageRegistry implements StageRegistry {
+        final List<StageStep> steps = new java.util.ArrayList<>();
+        final Map<StageStep, List<PassDescriptor>> descriptors = new java.util.HashMap<>();
+
+        void add(StageStep step, PassDescriptor... passes) {
+            steps.add(step);
+            descriptors.put(step, List.of(passes));
+        }
+
         @Override
         public List<StageStep> schedule() {
-            return List.of();
+            return List.copyOf(steps);
         }
 
         @Override
         public List<PassDescriptor> passes(StageStep step) {
-            return List.of();
+            return descriptors.getOrDefault(step, List.of());
         }
 
         @Override
@@ -197,7 +249,11 @@ class FrameDriverScriptedTest {
     }
 
     private static final class FakeRegistryView implements ProgramRegistryView {
-        final FakeStageRegistry stages = new FakeStageRegistry();
+        final FakeStageRegistry stages;
+
+        FakeRegistryView(FakeStageRegistry stages) {
+            this.stages = stages;
+        }
 
         @Override
         public StageRegistry stages() {
@@ -233,6 +289,16 @@ class FrameDriverScriptedTest {
         @Override
         public long generation() {
             return 2L;
+        }
+
+        final List<String> calls;
+        java.util.function.Function<PassDescriptor, TextureBindingResult> bindings =
+                pass -> new TextureBindingResult.Bound(new InertBindingSnapshot());
+        final AtomicInteger completeCalls = new AtomicInteger();
+        final AtomicInteger discardCalls = new AtomicInteger();
+
+        FakeEstate(List<String> calls) {
+            this.calls = calls;
         }
 
         final AtomicInteger beginCalls = new AtomicInteger();
@@ -278,7 +344,8 @@ class FrameDriverScriptedTest {
 
         @Override
         public VirtualTransitionResult applyVirtualTransition(long frameId, PassDescriptor pass) {
-            throw new AssertionError("unreachable in this fixture");
+            calls.add("virtual:" + pass.slot().packName());
+            return new VirtualTransitionResult.NoChange(frameId, pass.slot());
         }
 
         @Override
@@ -289,22 +356,35 @@ class FrameDriverScriptedTest {
         @Override
         public PassSnapshotResult snapshot(PassDescriptor pass,
                 com.schmaloogium.engine.registry.ProgramBindingSelection selection) {
-            throw new AssertionError("unreachable in this fixture");
+            calls.add("snapshot:" + pass.slot().packName());
+            com.schmaloogium.engine.buffers.PassDrawTarget target =
+                    pass.step().stage() == StageId.FINAL
+                            ? com.schmaloogium.engine.buffers.PassDrawTarget.Screen.INSTANCE
+                            : new com.schmaloogium.engine.buffers.PassDrawTarget.EngineFramebuffer(
+                                    new com.schmaloogium.engine.gl.FramebufferHandle() {
+                                    });
+            return new PassSnapshotResult.Acquired(new PassBufferSnapshot(2L, 0L, lastFrameId,
+                    pass, selection, List.of(), Map.of(), java.util.Set.of(), target));
         }
 
         @Override
         public MainMipmapResult generateMainMipmaps(PassBufferSnapshot snapshot) {
-            throw new AssertionError("unreachable in this fixture");
+            calls.add("mipmaps:" + snapshot.pass().slot().packName());
+            return new MainMipmapResult.Completed(List.of());
         }
 
         @Override
         public PassCompletionResult completePass(PassBufferSnapshot snapshot) {
-            throw new AssertionError("unreachable in this fixture");
+            calls.add("complete:" + snapshot.pass().slot().packName());
+            completeCalls.incrementAndGet();
+            return new PassCompletionResult.Completed(lastFrameId);
         }
 
         @Override
         public PassDiscardResult discardPass(PassBufferSnapshot snapshot) {
-            throw new AssertionError("unreachable in this fixture");
+            calls.add("discard:" + snapshot.pass().slot().packName());
+            discardCalls.incrementAndGet();
+            return new PassDiscardResult.Discarded(lastFrameId);
         }
 
         @Override
@@ -338,7 +418,8 @@ class FrameDriverScriptedTest {
         @Override
         public TextureBindingResult textureBindings(PassBufferSnapshot snapshot,
                 TextureOverlayLease overlay, TextureOverlayPublicationId expectedOverlay) {
-            throw new AssertionError("unreachable in this fixture");
+            calls.add("bindings:" + snapshot.pass().slot().packName());
+            return bindings.apply(snapshot.pass());
         }
 
         @Override
@@ -347,7 +428,81 @@ class FrameDriverScriptedTest {
         }
     }
 
+    /** The v0.1 Bound answer: evidence-only rows, closed by the driver in finally. */
+    private static final class InertBindingSnapshot
+            implements com.schmaloogium.engine.buffers.TextureBindingSnapshot {
+        boolean closed;
+
+        @Override
+        public long estateGeneration() {
+            return 2L;
+        }
+
+        @Override
+        public long depthAttachmentEpoch() {
+            return 0L;
+        }
+
+        @Override
+        public long frameId() {
+            return 0L;
+        }
+
+        @Override
+        public PassDescriptor pass() {
+            return null;
+        }
+
+        @Override
+        public ProgramBindingSelection selection() {
+            return null;
+        }
+
+        @Override
+        public TextureOverlayPublicationId overlayPublication() {
+            return null;
+        }
+
+        @Override
+        public com.schmaloogium.engine.buffers.BindingPurpose purpose() {
+            return null;
+        }
+
+        @Override
+        public List<com.schmaloogium.engine.buffers.TextureBindingRow> rows() {
+            return List.of();
+        }
+
+        @Override
+        public com.schmaloogium.engine.buffers.TextureBindingOutcome outcome(int unit) {
+            return null;
+        }
+
+        @Override
+        public List<com.schmaloogium.engine.buffers.TextureBindingDiagnostic> diagnostics() {
+            return List.of();
+        }
+
+        @Override
+        public boolean isCurrent() {
+            return !closed;
+        }
+
+        @Override
+        public void close() {
+            closed = true;
+        }
+    }
+
     private static final class FakePort implements FrameRenderPort {
+        final List<String> calls;
+        java.util.function.Function<FullscreenDraw, PortResult> draw =
+                d -> new PortResult.Completed();
+
+        FakePort(List<String> calls) {
+            this.calls = calls;
+        }
+
         @Override
         public StateSnapshot snapshotState() {
             return new StateSnapshot() {
@@ -362,12 +517,15 @@ class FrameDriverScriptedTest {
         @Override
         public PortResult bind(com.schmaloogium.engine.buffers.PassDrawTarget target,
                 AnaglyphEye eye) {
+            calls.add("bind:" + (target instanceof com.schmaloogium.engine.buffers.PassDrawTarget.Screen
+                    ? "screen" : "fbo"));
             return new PortResult.Completed();
         }
 
         @Override
         public PortResult drawFullscreen(FullscreenDraw draw) {
-            return new PortResult.Completed();
+            calls.add("draw:" + draw.pass().slot().packName());
+            return this.draw.apply(draw);
         }
 
         @Override
@@ -511,12 +669,17 @@ class FrameDriverScriptedTest {
                 1L, new ScriptedHandle(), DepthAttachmentFormat.DEPTH_COMPONENT, EXTENT));
     }
 
-    private record Handle(FrameDriver driver, FakeEstate estate, RecordingRuntime runtime) {
+    private record Handle(FrameDriver driver, FakeEstate estate, RecordingRuntime runtime,
+            FakeBarrier barrier, FakeStageRegistry stages, FakePort port, List<String> calls) {
     }
 
     private Handle composition() {
-        FakeEstate estate = new FakeEstate();
+        List<String> calls = new java.util.ArrayList<>();
+        FakeEstate estate = new FakeEstate(calls);
         RecordingRuntime runtime = new RecordingRuntime();
+        FakeBarrier barrier = new FakeBarrier(calls);
+        FakeStageRegistry stages = new FakeStageRegistry();
+        FakePort port = new FakePort(calls);
         FrameComposition composition = new FrameComposition() {
             @Override
             public PipelineIdentity identity() {
@@ -534,8 +697,8 @@ class FrameDriverScriptedTest {
             @Override
             public PublishedRegistry registry() {
                 return new PublishedRegistry(9L,
-                        Optional.of(new FakeRegistryView()),
-                        Optional.of(new FakeBarrier()),
+                        Optional.of(new FakeRegistryView(stages)),
+                        Optional.of(barrier),
                         new FakeContextSource());
             }
 
@@ -553,7 +716,7 @@ class FrameDriverScriptedTest {
 
             @Override
             public FrameRenderPort port() {
-                return new FakePort();
+                return port;
             }
 
             @Override
@@ -579,7 +742,47 @@ class FrameDriverScriptedTest {
         };
         FrameCompositionSource source = new FrameCompositionSource();
         source.install(Optional.of(composition));
-        return new Handle(new FrameDriver(() -> true, source), estate, runtime);
+        return new Handle(new FrameDriver(() -> true, source), estate, runtime, barrier,
+                stages, port, calls);
+    }
+
+    // ------------------------------------------------------------------ fullscreen schedule
+
+    private static final StageStep DEFERRED_STEP = new StageStep(StageId.DEFERRED,
+            StageBand.BETWEEN_GBUFFERS, new PassPopulation.Singleton());
+    private static final StageStep COMPOSITE_STEP = new StageStep(StageId.COMPOSITE,
+            StageBand.FRAME_END, new PassPopulation.Singleton());
+    private static final StageStep FINAL_STEP = new StageStep(StageId.FINAL,
+            StageBand.SCREEN, new PassPopulation.Singleton());
+
+    private static PassDescriptor raster(StageStep step, String slot, int index) {
+        return new PassDescriptor(step, new ProgramSlotId(slot), Optional.of(new PassIndex(index)),
+                com.schmaloogium.engine.registry.PassResourceAccess.empty(), java.util.Set.of());
+    }
+
+    private static PassDescriptor finalPass() {
+        return new PassDescriptor(FINAL_STEP, new ProgramSlotId("final"), Optional.empty(),
+                com.schmaloogium.engine.registry.PassResourceAccess.empty(), java.util.Set.of());
+    }
+
+    private static PassDescriptor prelude(StageStep step, String slot) {
+        return new PassDescriptor(step, new ProgramSlotId(slot), Optional.empty(),
+                com.schmaloogium.engine.registry.PassResourceAccess.empty(), java.util.Set.of());
+    }
+
+    /** deferred_pre, deferred, composite_pre, composite, composite1, final — all selectable. */
+    private static void scheduleFullChain(Handle h) {
+        h.stages().add(DEFERRED_STEP, prelude(DEFERRED_STEP, "deferred_pre"),
+                raster(DEFERRED_STEP, "deferred", 0));
+        h.stages().add(COMPOSITE_STEP, prelude(COMPOSITE_STEP, "composite_pre"),
+                raster(COMPOSITE_STEP, "composite", 0), raster(COMPOSITE_STEP, "composite1", 1));
+        h.stages().add(FINAL_STEP, finalPass());
+        h.barrier().selectedSlots.addAll(List.of("deferred", "composite", "composite1", "final"));
+    }
+
+    private static List<String> slotsIn(List<String> calls, String prefix) {
+        return calls.stream().filter(c -> c.startsWith(prefix + ":"))
+                .map(c -> c.substring(prefix.length() + 1)).toList();
     }
 
     /** Drives the driver to ESTATE_CLEARED (post-clear) and returns the token. */
@@ -797,5 +1000,172 @@ class FrameDriverScriptedTest {
                 com.schmaloogium.engine.frame.dispatch.RenderSection.SKY_BASIC)
                 instanceof ScopeOpenResult.Opened);
         assertTrue(h.driver().afterTerrainSetup(token) instanceof FrameStepResult.Rejected);
+    }
+
+    @Test
+    void finishRunsDeferredCompositeAndFinalBandsInOrder() {
+        Handle h = composition();
+        scheduleFullChain(h);
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+
+        FrameFinishResult finished = h.driver().finish(token, FrameExitKind.NORMAL);
+        assertTrue(finished instanceof FrameFinishResult.Finalized, "got " + finished);
+        assertEquals(List.of("deferred", "composite", "composite1", "final"),
+                slotsIn(h.calls(), "draw"), "deferred, then composite ascending, then final once");
+        assertEquals(List.of("deferred_pre", "composite_pre"), slotsIn(h.calls(), "virtual"),
+                "each contained prelude runs once before its band's raster passes");
+        assertEquals(4, h.estate().completeCalls.get(), "only Completed draws complete passes");
+        assertEquals(0, h.estate().discardCalls.get());
+    }
+
+    @Test
+    void fullscreenPassFollowsTheSpecOrderAndBindsThenActivates() {
+        Handle h = composition();
+        h.stages().add(FINAL_STEP, finalPass());
+        h.barrier().selectedSlots.add("final");
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+        h.calls().clear();
+
+        assertTrue(h.driver().finish(token, FrameExitKind.NORMAL)
+                instanceof FrameFinishResult.Finalized);
+        List<String> passCalls = h.calls().stream()
+                .filter(c -> !c.equals("release") || h.calls().indexOf(c) == h.calls().lastIndexOf(c))
+                .toList();
+        int select = h.calls().indexOf("select:final");
+        int snapshot = h.calls().indexOf("snapshot:final");
+        int mipmaps = h.calls().indexOf("mipmaps:final");
+        int bind = h.calls().indexOf("bind:screen");
+        int bindings = h.calls().indexOf("bindings:final");
+        int activate = h.calls().indexOf("activate:final");
+        int draw = h.calls().indexOf("draw:final");
+        int release = h.calls().indexOf("release");
+        int complete = h.calls().indexOf("complete:final");
+        assertTrue(select >= 0 && select < snapshot && snapshot < mipmaps && mipmaps < bind
+                && bind < bindings && bindings < activate && activate < draw && draw < release
+                && release < complete,
+                "PHASE_7_DOC §4.6 order: select, snapshot, mipmaps, bind, bindings, activate, "
+                        + "draw, release, complete; got " + h.calls());
+        assertTrue(passCalls.contains("bind:screen"), "final draws to the Screen target");
+    }
+
+    @Test
+    void fixedFunctionFinalStillDrawsThePassthrough() {
+        Handle h = composition();
+        h.stages().add(FINAL_STEP, finalPass());
+        h.barrier().selectedSlots.add("final");
+        h.barrier().activation = slot -> new BarrierResult.FixedFunction(List.of());
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+
+        assertTrue(h.driver().finish(token, FrameExitKind.NORMAL)
+                instanceof FrameFinishResult.Finalized);
+        assertEquals(List.of("final"), slotsIn(h.calls(), "draw"),
+                "the fixed-function terminal draws the colortex0 passthrough quad");
+        assertEquals(1, h.estate().completeCalls.get());
+    }
+
+    @Test
+    void fullscreenDrawFailureAbortsAndLatchesShadersOff() {
+        Handle h = composition();
+        scheduleFullChain(h);
+        h.port().draw = d -> d.pass().slot().packName().equals("composite")
+                ? new PortResult.Failed(new FailureId("schmaloogium.test.draw"))
+                : new PortResult.Completed();
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+
+        FrameFinishResult result = h.driver().finish(token, FrameExitKind.NORMAL);
+        assertTrue(result instanceof FrameFinishResult.Failed, "got " + result);
+        assertEquals(List.of("deferred", "composite"), slotsIn(h.calls(), "draw"),
+                "nothing after the failed draw runs");
+        assertEquals(1, h.estate().completeCalls.get(), "the failed pass never completes");
+        assertEquals(1, h.estate().abortCalls.get(), "the frame is aborted (containment)");
+        assertTrue(h.driver().isShadersOff(), "backend failure latches shaders off");
+    }
+
+    @Test
+    void fullscreenDrawRejectionDiscardsWithoutFlip() {
+        Handle h = composition();
+        scheduleFullChain(h);
+        h.port().draw = d -> d.pass().slot().packName().equals("composite")
+                ? new PortResult.Rejected(com.schmaloogium.engine.frame.spi.PortRejection.UNSUPPORTED)
+                : new PortResult.Completed();
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+
+        assertTrue(h.driver().finish(token, FrameExitKind.NORMAL)
+                instanceof FrameFinishResult.Finalized);
+        assertEquals(List.of("deferred", "composite", "composite1", "final"),
+                slotsIn(h.calls(), "draw"));
+        assertEquals(List.of("composite"), slotsIn(h.calls(), "discard"),
+                "a rejected draw discards that pass only");
+        assertEquals(3, h.estate().completeCalls.get());
+        assertFalse(h.driver().isShadersOff());
+    }
+
+    @Test
+    void degradedBindingsDiscardThePassBeforeActivation() {
+        Handle h = composition();
+        scheduleFullChain(h);
+        h.estate().bindings = pass -> pass.slot().packName().equals("composite1")
+                ? new TextureBindingResult.Rejected(
+                        com.schmaloogium.engine.buffers.TextureBindingRejection.INVALID_INPUT)
+                : new TextureBindingResult.Bound(new InertBindingSnapshot());
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+
+        assertTrue(h.driver().finish(token, FrameExitKind.NORMAL)
+                instanceof FrameFinishResult.Finalized);
+        assertEquals(List.of("deferred", "composite", "final"), slotsIn(h.calls(), "activate"),
+                "no activation for a pass whose bindings were refused");
+        assertEquals(List.of("composite1"), slotsIn(h.calls(), "discard"));
+    }
+
+    @Test
+    void translucentTriggerRunsDeferredOnceBeforeWater() {
+        Handle h = composition();
+        scheduleFullChain(h);
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+        assertTrue(h.driver().enter(token, RenderSection.TERRAIN_SOLID)
+                instanceof ScopeOpenResult.Opened);
+        h.calls().clear();
+
+        ScopeOpenResult water = h.driver().enter(token, RenderSection.TERRAIN_TRANSLUCENT);
+        assertTrue(water instanceof ScopeOpenResult.Opened, "got " + water);
+        assertEquals(List.of("deferred"), slotsIn(h.calls(), "draw"),
+                "the deferred family runs at the translucent HEAD");
+        assertTrue(h.calls().indexOf("draw:deferred") < h.calls().indexOf("select:gbuffers_water"),
+                "deferred draws before the water scope selects: " + h.calls());
+
+        // Hand and overlay scopes are legal once the trigger has fired.
+        ScopeToken waterScope = ((ScopeOpenResult.Opened) water).scope();
+        assertTrue(h.driver().exit(token, waterScope) instanceof ScopeCloseResult.Closed);
+        ScopeOpenResult hand = h.driver().enter(token, RenderSection.HAND_SOLID);
+        assertTrue(hand instanceof ScopeOpenResult.Opened, "got " + hand);
+        assertTrue(h.driver().exit(token, ((ScopeOpenResult.Opened) hand).scope())
+                instanceof ScopeCloseResult.Closed);
+        ScopeOpenResult overlay = h.driver().enter(token, RenderSection.FIRST_PERSON_OVERLAY);
+        assertTrue(overlay instanceof ScopeOpenResult.Opened, "got " + overlay);
+        assertTrue(h.driver().exit(token, ((ScopeOpenResult.Opened) overlay).scope())
+                instanceof ScopeCloseResult.Closed);
+
+        h.calls().clear();
+        assertTrue(h.driver().finish(token, FrameExitKind.NORMAL)
+                instanceof FrameFinishResult.Finalized);
+        assertEquals(List.of("composite", "composite1", "final"), slotsIn(h.calls(), "draw"),
+                "finish does not run the deferred family a second time");
+    }
+
+    @Test
+    void handAndOverlayScopesAreWrongOrderBeforeTheTrigger() {
+        Handle h = composition();
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+        ScopeOpenResult hand = h.driver().enter(token, RenderSection.HAND_SOLID);
+        assertTrue(hand instanceof ScopeOpenResult.Rejected);
+        assertEquals(HookRejection.WRONG_ORDER, ((ScopeOpenResult.Rejected) hand).reason());
     }
 }

@@ -99,6 +99,9 @@ final class Lwjgl3StateService implements StateService {
 
     private static void issueBlend(BlendState state) {
         if (state == null) {
+            // Two-step poke: a stale GlStateManager cache would otherwise swallow the
+            // disable and leave native blending on (Task B fix-up 2026-09-11).
+            GlStateManager.enableBlend();
             GlStateManager.disableBlend();
             return;
         }
@@ -112,15 +115,21 @@ final class Lwjgl3StateService implements StateService {
 
     // ------------------------------------------------------------- lock plumbing
 
-    /** Native-read capture for the lock ([D-P1-57]): present aspects only. */
+    /** Native-read capture for the lock ([D-P1-57]): null when alpha test is disabled. */
     AlphaTestState captureAlpha() {
+        if (!GL11.glIsEnabled(GL11.GL_ALPHA_TEST)) {
+            return null;
+        }
         float[] ref = new float[1];
         GL11.glGetFloatv(GL11.GL_ALPHA_TEST_REF, ref);
         return new AlphaTestState(alphaFunc(GL11.glGetInteger(GL11.GL_ALPHA_TEST_FUNC)), ref[0]);
     }
 
-    /** Native-read capture of the effective blend factors including disabled ones. */
+    /** Native-read capture: null when blending is disabled, else the effective factors. */
     BlendState captureBlend() {
+        if (!GL11.glIsEnabled(GL11.GL_BLEND)) {
+            return null;
+        }
         return effectiveBlend();
     }
 
@@ -145,6 +154,7 @@ final class Lwjgl3StateService implements StateService {
 
     private static void issueAlphaTest(AlphaTestState state) {
         if (state == null) {
+            GlStateManager.enableAlpha();
             GlStateManager.disableAlpha();
             return;
         }
@@ -264,18 +274,15 @@ final class Lwjgl3StateService implements StateService {
             }
             case DEPTH_MASK -> GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK);
             case DEPTH_TEST -> GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
-            case BLEND -> new BlendState(
-                    blendFactor(GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB)),
-                    blendFactor(GL11.glGetInteger(GL14.GL_BLEND_DST_RGB)),
-                    blendFactor(GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA)),
-                    blendFactor(GL11.glGetInteger(GL14.GL_BLEND_DST_ALPHA)));
-            case ALPHA_TEST -> {
-                float[] ref = new float[1];
-                GL11.glGetFloatv(GL11.GL_ALPHA_TEST_REF, ref);
-                yield new AlphaTestState(
-                        alphaFunc(GL11.glGetInteger(GL11.GL_ALPHA_TEST_FUNC)), ref[0]);
-            }
+            // Disabled blend/alpha round-trip as null (the same vocabulary the writers use):
+            // capturing only the factors made every restore re-enable blending with
+            // whatever function vanilla last used (Task B fix-up 2026-09-11).
+            case BLEND -> captureBlend();
+            case ALPHA_TEST -> captureAlpha();
             case FOG -> {
+                if (!GL11.glIsEnabled(GL11.GL_FOG)) {
+                    yield null; // disabled fog restores as disabled, never re-enabled
+                }
                 float[] color = new float[4];
                 GL11.glGetFloatv(GL11.GL_FOG_COLOR, color);
                 yield new FogState(
@@ -344,8 +351,13 @@ final class Lwjgl3StateService implements StateService {
                 issueAlphaTest((AlphaTestState) value);
             }
             case FOG -> {
-                GlStateManager.disableFog();
-                issueFog((FogState) value);
+                if (value == null) {
+                    GlStateManager.enableFog();
+                    GlStateManager.disableFog();
+                } else {
+                    GlStateManager.disableFog();
+                    issueFog((FogState) value);
+                }
             }
         }
     }

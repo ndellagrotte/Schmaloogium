@@ -282,8 +282,15 @@ final class Lwjgl3ShaderService implements ShaderService {
         if (rec == null || !rec.linkAttempted || !rec.linkSucceeded) {
             throw new IllegalStateException("shaders.initializeSamplerUnits: program not live (must be linked)");
         }
-        if (assignments == null || assignments.isEmpty()) {
-            throw new IllegalArgumentException("shaders.initializeSamplerUnits: assignments must be nonempty");
+        if (assignments == null) {
+            throw new IllegalArgumentException("shaders.initializeSamplerUnits: assignments must not be null");
+        }
+        if (assignments.isEmpty()) {
+            // A program declaring no samplers (a constant-colour final, a pure vertex
+            // effect) has nothing to initialize: D-P1-59 step 3 loops zero times and the
+            // selection is trivially retained. Not an error (Task B fix-up 2026-09-11).
+            device.noteMutation("shaders.initializeSamplerUnits", program.subjectLabel());
+            return new SamplerInitializationResult.Completed();
         }
         Set<String> seen = new HashSet<>();
         for (SamplerUnitAssignment a : assignments) {

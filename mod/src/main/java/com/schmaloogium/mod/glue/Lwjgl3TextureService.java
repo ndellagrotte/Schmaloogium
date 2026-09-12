@@ -120,7 +120,7 @@ final class Lwjgl3TextureService implements TextureService {
                 GL15Bind.pixelUnpack(0); // null means null, never offset 0 in a borrowed PBO
             }
             GlStateManager.setActiveTexture(savedActiveUnit);
-            GL11.glBindTexture(GlNames.glTextureTarget(target), name);
+            bindForWork(GlNames.glTextureTarget(target), name);
             defineStorage(tex, spec, target, extent, mipLevels);
             if (device.recordsLabels()) {
                 Lwjgl3DebugService.applyLabelIfPossible(device, GL11.GL_TEXTURE, name, tex.subjectLabel());
@@ -226,6 +226,21 @@ final class Lwjgl3TextureService implements TextureService {
     }
     // ------------------------------------------------------------- parameters
 
+    /**
+     * The working bind of an owned texture. 2D binds go through GlStateManager so its
+     * per-unit cache tracks them: a raw bind followed by a cached "restore" left the cache
+     * believing the saved name was bound while the working texture stayed bound, and the
+     * next cached bind of that saved name was skipped (Task B fix-up 2026-09-11 - the
+     * composite chain sampled the wrong ping-pong side).
+     */
+    private static void bindForWork(int glTarget, int name) {
+        if (glTarget == GL11.GL_TEXTURE_2D) {
+            GlStateManager.bindTexture(name);
+        } else {
+            GL11.glBindTexture(glTarget, name);
+        }
+    }
+
     @Override
     public void setParameters(TextureHandle t, TextureParameters p) {
         device.requireRenderThread("textures.setParameters");
@@ -242,7 +257,7 @@ final class Lwjgl3TextureService implements TextureService {
         try {
             GlStateManager.setActiveTexture(savedActiveUnit);
             int glTarget = GlNames.glTextureTarget(tex.target);
-            GL11.glBindTexture(glTarget, tex.glName());
+            bindForWork(glTarget, tex.glName());
             applyParameters(tex, glTarget, p);
         } finally {
             GlStateManager.setActiveTexture(savedActiveUnit);
@@ -391,7 +406,7 @@ final class Lwjgl3TextureService implements TextureService {
                 GL15Bind.pixelUnpack(0);
             }
             GlStateManager.setActiveTexture(savedActiveUnit);
-            GL11.glBindTexture(GlNames.glTextureTarget(tex.target), tex.glName());
+            bindForWork(GlNames.glTextureTarget(tex.target), tex.glName());
             issueSubImage(tex, data, directTexels(src));
         } finally {
             restoreUnpackSettings(unpack);
@@ -545,7 +560,7 @@ final class Lwjgl3TextureService implements TextureService {
         try {
             GlStateManager.setActiveTexture(savedActiveUnit);
             int glTarget = GlNames.glTextureTarget(tex.target);
-            GL11.glBindTexture(glTarget, tex.glName());
+            bindForWork(glTarget, tex.glName());
             GL30.glGenerateMipmap(glTarget);
             tex.mipLevels = fullChainLevels(tex.allocatedWidth, tex.allocatedHeight, tex.target, tex.allocatedDepth);
         } finally {

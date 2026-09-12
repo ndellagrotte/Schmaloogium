@@ -160,6 +160,13 @@ final class BarrierCore {
             || minted.kind() != MintedBarrierContext.ContextKind.ACTIVATION) {
             return new ProgramSelectionResult.ShadersOff("SELECTION_CONTEXT_INVALID");
         }
+        // §4.10: an absent deferred/composite indexed pass is Skipped (absence is normal),
+        // never resolved down its fallback chain to the fixed-function terminal - that
+        // would draw a passthrough quad and flip the written buffers for every empty
+        // index (Task B fix-up 2026-09-11; PHASE_4_DOC.md:1786, :2417).
+        if (!minted.shadowPass() && registry.isAbsentIndexedPass(requested)) {
+            return new ProgramSelectionResult.Skipped(requested);
+        }
         ResolvedCompiledProgramBinding resolution = resolveForSelection(requested, minted);
         if (resolution == null) {
             if (registry.isAbsentIndexedPass(requested)) {

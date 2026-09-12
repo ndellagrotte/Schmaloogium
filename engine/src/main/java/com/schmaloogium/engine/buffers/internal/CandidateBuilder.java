@@ -150,6 +150,26 @@ public final class CandidateBuilder {
                 outcome.copyTargets().get(index - 1), destination));
         }
         core.passFbos.putAll(outcome.passFbos());
+        // Every pass FBO starts with side A attached at each physical index (createPassFbo);
+        // record that so snapshots re-attach only on a frozen-side change (§4.4.2 step 5).
+        for (PlanningArtifacts.PlannedRoute route : artifacts.routes().values()) {
+            FramebufferHandle fbo = outcome.passFbos().get(passKey(route));
+            if (fbo == null) {
+                continue;
+            }
+            Map<Integer, TextureHandle> attached = new LinkedHashMap<>();
+            int physical = 0;
+            for (DrawRoutingSlot slot : route.positional()) {
+                if (slot instanceof DrawRoutingSlot.Attachment attachment) {
+                    LogicalBuffer logical = new LogicalBuffer(attachment.buffer().domain(),
+                        new BufferIndex(attachment.buffer().index()));
+                    attached.put(physical, outcome.sidesA().get(colorRowOf(logical,
+                        artifacts.colors())));
+                    physical++;
+                }
+            }
+            core.attachedColor.put(fbo, attached);
+        }
 
         // §4.10 shadow estate installation: the neutral cache always survives; the real
         // estate (depths, color pairs, sfb) only when its attempt contained no failure.

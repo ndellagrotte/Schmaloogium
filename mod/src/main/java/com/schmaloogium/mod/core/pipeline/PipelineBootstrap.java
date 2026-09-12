@@ -145,7 +145,7 @@ public final class PipelineBootstrap {
                 McFrameState::dimension,
                 McFrameState::targetView,
                 DepthTex0Bridge::version,
-                new DeviceRenderPort(device.get()),
+                new DeviceRenderPort(device.get(), McFrameState::targetView),
                 composition -> {
                     FrameRuntime.installComposition(composition);
                     if (composition.isPresent()) {

@@ -136,6 +136,14 @@ public final class EstateCore {
 
     /** Pass FBOs keyed by the full tagged positional route identity (§4.5). */
     public final Map<String, FramebufferHandle> passFbos = new LinkedHashMap<>();
+    /**
+     * The color texture currently attached at each pass FBO's physical attachment index
+     * (§4.4.2 step 5: the attachment is derived from the frozen side, so a snapshot
+     * re-attaches only when the frozen side differs from what the FBO holds). Seeded by
+     * the candidate builder (side A) and maintained by {@link EstateViewImpl#snapshot}.
+     */
+    public final Map<FramebufferHandle, Map<Integer, TextureHandle>> attachedColor =
+        new HashMap<>();
     /** Clear FBOs keyed by their ordered attachment identity. */
     public final Map<String, FramebufferHandle> clearFbos = new LinkedHashMap<>();
     public final List<FramebufferHandle> ownedFbos = new ArrayList<>();

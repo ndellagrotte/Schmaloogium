@@ -213,12 +213,46 @@ public final class FrameHooks {
             ScopeOpenResult result = driver().enter(token, section);
             noteScopeVerdict("enter " + section, result instanceof ScopeOpenResult.Opened ? null
                     : result.toString());
+            noteHookObserved(section, result);
             return result;
         } catch (RuntimeException e) {
             contain("enter " + section, token, e);
             return null;
         }
     }
+
+    /**
+     * H-HAND-01: the first-person item draw under the HAND_SOLID scope, closed in finally
+     * so vanilla's hand always draws whatever the engine answered.
+     */
+    public static void aroundHand(Runnable original) {
+        ScopeOpenResult opened = enterSection(RenderSection.HAND_SOLID);
+        try {
+            original.run();
+        } finally {
+            exitSection(RenderSection.HAND_SOLID, opened);
+        }
+    }
+
+    /** One line per install proving the Task B hooks fire (never per frame). */
+    private static void noteHookObserved(RenderSection section, ScopeOpenResult result) {
+        String hook = switch (section) {
+            case TERRAIN_TRANSLUCENT -> "H-TERRAIN-02 translucent trigger observed";
+            case HAND_SOLID -> "H-HAND-01 hand scope observed";
+            default -> null;
+        };
+        if (hook == null || !hooksObservedLogged.add(hook)) {
+            return;
+        }
+        com.schmaloogium.engine.log.Logs.channel(
+                com.schmaloogium.engine.log.LogChannels.FRAME).info(
+                "{} (install #{}): result {}", hook, installEpoch,
+                result instanceof ScopeOpenResult.Opened opened
+                        ? "Opened " + opened.draw() : String.valueOf(result));
+    }
+
+    private static final java.util.Set<String> hooksObservedLogged =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     /** Balanced scope pop; {@code opened} is the exact result this thread's enter produced. */
     public static void exitSection(RenderSection section, ScopeOpenResult opened) {
@@ -250,6 +284,12 @@ public final class FrameHooks {
         firstOpenAfterInstallLogged = false;
         containmentLogged = false;
         scopeVerdictsLogged.clear();
+        hooksObservedLogged.clear();
+    }
+
+    /** The count of composition installs so far (one-shot evidence lines key on it). */
+    static long installEpoch() {
+        return installEpoch;
     }
 
     /** True while a frame token is held (the reload drain must not run then). */

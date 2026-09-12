@@ -74,6 +74,20 @@ public abstract class MixinEntityRenderer {
                         playerSpectator));
     }
 
+    /**
+     * H-HAND-01 (CORE piece, PHASE_7_DOC §4.10.5): the first-person item draw inside
+     * {@code renderHand(FI)V} is the gbuffers_hand scope. The SOLID/TRANSLUCENT double
+     * invocation with the H-HAND-02 content classifier is deferred; at v0.1 the whole
+     * hand draws under HAND_SOLID.
+     */
+    @Redirect(method = "renderHand(FI)V", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/ItemRenderer;renderItemInFirstPerson(F)V"),
+            require = 0, expect = 1)
+    private void schmaloogium$aroundHand(net.minecraft.client.renderer.ItemRenderer itemRenderer,
+            float partialTicks) {
+        FrameHooks.aroundHand(() -> itemRenderer.renderItemInFirstPerson(partialTicks));
+    }
+
     /** H-FRAME-06: idempotent normal-return finish. */
     @Inject(method = "renderWorldPass(IFJ)V", at = @At("TAIL"), require = 0, expect = 1)
     private void schmaloogium$finishNormal(CallbackInfo ci) {

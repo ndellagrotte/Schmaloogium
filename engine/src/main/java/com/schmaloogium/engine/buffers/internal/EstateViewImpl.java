@@ -276,7 +276,10 @@ public final class EstateViewImpl implements BufferEstateView {
         }
 
         // §4.4.2 steps 2-6: freeze read/write sides, derive FBO/attachment data, calculate
-        // the post-pass flip set (applied only at completion).
+        // the post-pass flip set (applied only at completion). Gbuffers (and shadow) write
+        // the read/main side (step 4); deferred/composite write the write/alt side (step 3).
+        boolean gbuffers = pass.step().stage() == StageId.GBUFFERS
+            || pass.step().stage() == StageId.SHADOW;
         List<ColorAttachment> attachments = new ArrayList<>();
         Map<LogicalBuffer, TextureHandle> readable = new LinkedHashMap<>();
         Set<LogicalBuffer> flipAfterPass = new HashSet<>();
@@ -286,8 +289,9 @@ public final class EstateViewImpl implements BufferEstateView {
                 LogicalBuffer logical = buffer(attachment.buffer().domain(),
                     attachment.buffer().index());
                 EstateCore.ColorPair pair = core.pair(logical);
+                TextureHandle frozen = gbuffers ? pair.readSide() : pair.writeSide();
                 attachments.add(new ColorAttachment(attachments.size(), physical,
-                    logical, pair.readSide()));
+                    logical, frozen));
                 physical++;
             }
         }
@@ -304,19 +308,27 @@ public final class EstateViewImpl implements BufferEstateView {
                         bindingTexture(destination)));
             }
         }
+        // The written buffers are the route's attached buffers (§4.4.2: "toggle every
+        // written buffer"; PHASE_4_DOC:1585 "only Attachment slots contribute writes/flips"),
+        // never the symbolic Phase 4 write set. Explicit `flip.<pass>.<buf>` overrides
+        // are keyed by BufferRef.
         List<LogicalBuffer> writes = new ArrayList<>();
-        boolean gbuffers = pass.step().stage() == StageId.GBUFFERS
-            || pass.step().stage() == StageId.SHADOW;
-        for (com.schmaloogium.engine.registry.BufferRef write : pass.resources().writes()) {
-            if (write.domain() != BufferDomain.COLORTEX) {
+        // FINAL draws the screen: it writes no estate buffer and "SCREEN invents no extra
+        // flip" (PHASE_5_DOC §2.2), so its route contributes neither writes nor flips.
+        List<LogicalBuffer> routeWrites = pass.step().stage() == StageId.FINAL
+            ? List.of() : route.writeBuffers();
+        for (LogicalBuffer written : routeWrites) {
+            if (written.domain() != BufferDomain.COLORTEX) {
                 continue;
             }
-            EstateCore.ColorPair pair = core.pair(buffer(write.domain(), write.index()));
+            EstateCore.ColorPair pair = core.pair(written);
             if (pair == null) {
                 continue;
             }
             writes.add(pair.logical);
-            Boolean explicit = pass.resources().explicitFlips().get(write);
+            Boolean explicit = pass.resources().explicitFlips().get(
+                new com.schmaloogium.engine.registry.BufferRef(written.domain(),
+                    written.index().value()));
             if (explicit == null) {
                 if (!gbuffers) {
                     flipAfterPass.add(pair.logical); // deferred/composite: toggle after draw
@@ -330,8 +342,41 @@ public final class EstateViewImpl implements BufferEstateView {
             ? PassDrawTarget.Screen.INSTANCE
             : new PassDrawTarget.EngineFramebuffer(core.passFbos.get(CandidateBuilder.passKey(route)));
         if (!(drawTarget instanceof PassDrawTarget.Screen)) {
-            Objects.requireNonNull(((PassDrawTarget.EngineFramebuffer) drawTarget).framebuffer(),
-                "pass FBO missing");
+            FramebufferHandle fbo = ((PassDrawTarget.EngineFramebuffer) drawTarget).framebuffer();
+            Objects.requireNonNull(fbo, "pass FBO missing");
+            // §4.4.2 step 5: the FBO attachment is derived from the frozen handles. The
+            // candidate builder attached side A once; re-attach only the indices whose
+            // frozen side differs, then re-check completeness. Mutation-bearing failure
+            // takes the Failed(...,true) terminal transition before any preparation
+            // (step 7), mirroring refreshMainDepth's fail-closed reattachment.
+            Map<Integer, TextureHandle> attached =
+                core.attachedColor.computeIfAbsent(fbo, ignored -> new LinkedHashMap<>());
+            try {
+                boolean changed = false;
+                for (ColorAttachment attachment : attachments) {
+                    TextureHandle current = attached.get(attachment.framebufferAttachment());
+                    if (current != attachment.physicalTexture()) {
+                        core.device.framebuffers().attachColor(fbo,
+                            attachment.framebufferAttachment(), attachment.physicalTexture());
+                        attached.put(attachment.framebufferAttachment(),
+                            attachment.physicalTexture());
+                        changed = true;
+                    }
+                }
+                if (changed
+                        && core.device.framebuffers().check(fbo) != FramebufferStatus.COMPLETE) {
+                    throw new IllegalStateException("reattached pass FBO incomplete");
+                }
+            } catch (RuntimeException reattachmentFailure) {
+                core.stale = true;
+                core.fullClearRequired = true;
+                core.diagnostics.report(BufferDiagnostics.backendFailure(
+                    "schmaloogium.buffers.error.snapshot.reattach",
+                    String.valueOf(reattachmentFailure)));
+                return new PassSnapshotResult.Failed(failure(
+                    BufferFailureCode.FRAMEBUFFER_INCOMPLETE,
+                    "schmaloogium.buffers.error.snapshot.reattach"), diagnostic(), true);
+            }
         }
 
         // §4.2.1 snapshot preparation: invalidate frozen write sides' chains, advance write

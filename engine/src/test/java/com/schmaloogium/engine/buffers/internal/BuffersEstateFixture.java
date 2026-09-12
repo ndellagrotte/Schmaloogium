@@ -71,7 +71,21 @@ final class BuffersEstateFixture {
             ResourceClearPolicy[] policies, boolean[] clear, int depthTextureCount) {
         return assemble(formats, policies, clear, depthTextureCount,
             new ShadowResourceProjection(0, 0, 0, List.of(), List.of()), 0,
-            new ScriptedResponses());
+            new ScriptedResponses(), Map.of());
+    }
+
+    /**
+     * Builds an estate whose plan carries the given pass routes (so {@code snapshot}
+     * resolves them); pass FBOs are still the test's to create and seed into
+     * {@code core.passFbos}/{@code core.attachedColor}.
+     */
+    static BuffersEstateFixture createWithRoutes(ColorInternalFormat[] formats,
+            ResourceClearPolicy[] policies, boolean[] clear, int depthTextureCount,
+            Map<com.schmaloogium.engine.registry.ProgramSlotId, PlanningArtifacts.PlannedRoute> routes,
+            ScriptedResponses responses) {
+        return assemble(formats, policies, clear, depthTextureCount,
+            new ShadowResourceProjection(0, 0, 0, List.of(), List.of()), 0,
+            responses, routes);
     }
 
     /**
@@ -84,12 +98,13 @@ final class BuffersEstateFixture {
             ResourceClearPolicy[] policies, boolean[] clear, int depthTextureCount,
             ShadowResourceProjection shadow, int shadowSize, ScriptedResponses responses) {
         return assemble(formats, policies, clear, depthTextureCount, shadow, shadowSize,
-            responses);
+            responses, Map.of());
     }
 
     private static BuffersEstateFixture assemble(ColorInternalFormat[] formats,
             ResourceClearPolicy[] policies, boolean[] clear, int depthTextureCount,
-            ShadowResourceProjection shadow, int shadowSize, ScriptedResponses responses) {
+            ShadowResourceProjection shadow, int shadowSize, ScriptedResponses responses,
+            Map<com.schmaloogium.engine.registry.ProgramSlotId, PlanningArtifacts.PlannedRoute> routes) {
         GLCapabilityProfile profile = new GLCapabilityProfile(3, 3, "3.30 test profile",
             "vendor", "renderer", 8, 8, 16, 16, 4096, 256, 0, Set.of());
         RecordingGLDevice device = new RecordingGLDevice(profile, responses);
@@ -116,7 +131,7 @@ final class BuffersEstateFixture {
                 ? Optional.of(new Extent2i(shadowSize, shadowSize))
                 : Optional.empty()),
             new BufferInventory(List.of()),
-            depthTextureCount, colorPlans, Map.of(), List.of(), List.of(), List.of(),
+            depthTextureCount, colorPlans, routes, List.of(), List.of(), List.of(),
             projection);
 
         // The recorder mints borrowed handles only around ordinary FOREIGN platform
