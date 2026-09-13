@@ -287,9 +287,34 @@ public final class FrameHooks {
         }
         original.run();
         try {
-            driver().afterTerrainSetup(token);
+            driver().afterTerrainSetup(token, shadowFrameInputs());
         } catch (RuntimeException e) {
             contain("afterTerrainSetup", token, e);
+        }
+    }
+
+    /** The main terrain token of the current accepted frame (the shadow world port's setup token). */
+    public static int reservedTerrainToken() {
+        return reservedTerrainToken;
+    }
+
+    /**
+     * The shadow frame inputs for H-FRAME-05: camera position, sky and sun angle of this
+     * frame (frame id 0; the driver re-stamps its own). Null when no world/camera exists.
+     */
+    private static com.schmaloogium.engine.frame.ShadowFrameView shadowFrameInputs() {
+        McFrameState.CelestialInputs inputs = McFrameState.celestialInputs();
+        if (inputs == null) {
+            return null;
+        }
+        try {
+            return new com.schmaloogium.engine.frame.ShadowFrameView(
+                    McFrameState.worldEpoch(), 0L, inputs.partialTicks(), reservedTerrainToken,
+                    inputs.cameraPosition(),
+                    com.schmaloogium.mod.glue.uniforms.CelestialAngles.skyAngle(inputs.celestialAngle()),
+                    com.schmaloogium.mod.glue.uniforms.CelestialAngles.sunAngle(inputs.celestialAngle()));
+        } catch (IllegalArgumentException invalid) {
+            return null;
         }
     }
 
@@ -311,8 +336,10 @@ public final class FrameHooks {
         }
         try {
             ScopeOpenResult result = driver().enter(token, section);
-            noteScopeVerdict("enter " + section, result instanceof ScopeOpenResult.Opened ? null
-                    : result.toString());
+            boolean silent = result instanceof ScopeOpenResult.Opened
+                    || (result instanceof ScopeOpenResult.Rejected rejected
+                    && rejected.reason() == com.schmaloogium.engine.frame.HookRejection.SHADOW_EXECUTION_ACTIVE);
+            noteScopeVerdict("enter " + section, silent ? null : result.toString());
             noteHookObserved(section, result);
             return result;
         } catch (RuntimeException e) {

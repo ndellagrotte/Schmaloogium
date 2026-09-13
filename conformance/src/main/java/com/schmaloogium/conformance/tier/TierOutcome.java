@@ -16,5 +16,7 @@ public enum TierOutcome {
     FAIL,
     SKIPPED,
     NO_BASELINE,
+    /** T2 only: the committed oracle manifest or its record is absent (the designed non-pass). */
+    NO_ORACLE,
     NOT_ATTEMPTED
 }

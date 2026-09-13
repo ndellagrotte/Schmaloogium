@@ -372,6 +372,10 @@ final class DecisionValueProjector {
         putTriState(flagFields, "beaconBeamDepth", flags.beaconBeamDepth());
         putTriState(flagFields, "separateAo", flags.separateAo());
         putTriState(flagFields, "frustumCulling", flags.frustumCulling());
+        putTriState(flagFields, "shadowTerrain", flags.shadowTerrain());
+        putTriState(flagFields, "shadowEntities", flags.shadowEntities());
+        putTriState(flagFields, "shadowBlockEntities", flags.shadowBlockEntities());
+        putTriState(flagFields, "shadowPlayer", flags.shadowPlayer());
         List<DecisionValue> editions = new ArrayList<>();
         for (MinimumEditionRule rule : properties.minimumEditionRules()) {
             editions.add(fields("$type", token("MinimumEditionRule"),

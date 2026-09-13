@@ -38,4 +38,14 @@ public abstract class MixinTileEntityRendererDispatcher {
     }
 
     private ScopeOpenResult blockEntityScope;
+
+    /** {@code shadowBlockEntities=false} (PHASE_8_DOC §4.8.2): no block entity under the shadow guard. */
+    @Inject(method = "render(Lnet/minecraft/tileentity/TileEntity;DDDFIF)V",
+            at = @At("HEAD"), cancellable = true, require = 0, expect = 1)
+    private void schmaloogium$shadowBlockEntities(TileEntity tileEntity, double x, double y, double z,
+            float partialTicks, int destroyStage, float partialTickOffset, CallbackInfo ci) {
+        if (com.schmaloogium.mod.glue.shadow.ShadowTraversalGuard.cancelBlockEntity()) {
+            ci.cancel();
+        }
+    }
 }

@@ -21,7 +21,11 @@ public record EngineFlags(
         TriState rainDepth,
         TriState beaconBeamDepth,
         TriState separateAo,
-        TriState frustumCulling) {
+        TriState frustumCulling,
+        TriState shadowTerrain,
+        TriState shadowEntities,
+        TriState shadowBlockEntities,
+        TriState shadowPlayer) {
 
     /** The all-{@code DEFAULT}/{@code DEFAULT} baseline used when no flags are declared. */
     public static EngineFlags allDefault() {
@@ -29,6 +33,7 @@ public record EngineFlags(
                 TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT,
                 TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT,
                 TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT,
-                TriState.DEFAULT, TriState.DEFAULT);
+                TriState.DEFAULT, TriState.DEFAULT,
+                TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT);
     }
 }

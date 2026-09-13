@@ -47,6 +47,9 @@ import java.util.Set;
  *   publish --run-dir DIR [--run RUN-T0] [--profile SAME_MACHINE] [--allow-uncalibrated]
  *   calibrate --run-a DIR --run-b DIR | --runs DIR,DIR,... [--profile SAME_MACHINE] [--factor 1.5]
  *             [--gpu S] [--driver S] [--write]
+ *   oracle-manifest --pack ID@VER --scene ID --run-dir DIR --of-build S --gpu S --driver S --operator S
+ *             [--captured-on YYYY-MM-DD] --timing-evidence S --comparability ESTABLISHED|UNAVAILABLE
+ *             --comparability-reason S            §4.8.2 step 6: hash the cache's oracle images, write the .oracle
  *                                                 §4.6.5: observed maxima × factor → the profile file
  *   approve --run-dir DIR --approver NAME [--profile SAME_MACHINE]
  *   evaluate --run-dir DIR [--profile SAME_MACHINE] [--allow-uncalibrated]
@@ -117,9 +120,11 @@ public final class Harness {
                         opts.getOrDefault("--profile", "SAME_MACHINE"),
                         opts.containsKey("--allow-uncalibrated"), LOG);
                     LOG.info("run dir " + outcome.runDir() + " exit " + outcome.manifest().token("run.exitStatus")
-                        + " T0 " + outcome.t0() + (outcome.t1().isPresent() ? " T1 " + outcome.t1().get().outcome() : ""));
+                        + " T0 " + outcome.t0() + (outcome.t1().isPresent() ? " T1 " + outcome.t1().get().outcome() : "")
+                        + (outcome.t2().isPresent() ? " T2 " + outcome.t2().get().outcome() : ""));
                     boolean ok = outcome.t0() == TierOutcome.PASS
-                        && (outcome.t1().isEmpty() || outcome.t1().get().outcome() == TierOutcome.PASS);
+                        && (outcome.t1().isEmpty() || outcome.t1().get().outcome() == TierOutcome.PASS)
+                        && (outcome.t2().isEmpty() || outcome.t2().get().outcome() == TierOutcome.PASS);
                     if (!ok) {
                         failures++;
                     }
@@ -155,6 +160,7 @@ public final class Harness {
             }
             case "calibrate" -> calibrate(repoRoot, new CaptureRunner(context(repoRoot, cache, registry, false, opts)),
                 opts);
+            case "oracle-manifest" -> oracleManifest(repoRoot, cache, opts);
             case "approve" -> new CaptureRunner(context(repoRoot, cache, registry, false, opts))
                 .approve(Path.of(require(opts, "--run-dir")), require(opts, "--approver"),
                     opts.getOrDefault("--profile", "SAME_MACHINE"), LOG);
@@ -179,7 +185,7 @@ public final class Harness {
 
     private static void usage() {
         System.out.println("usage: harness <stage-micropacks|inventory|world|capture|selfcheck|selfcheck-compare"
-            + "|publish|calibrate|approve|evaluate> [--opt value]...");
+            + "|publish|calibrate|oracle-manifest|approve|evaluate> [--opt value]...");
     }
 
     private static String require(Map<String, String> opts, String key) {
@@ -396,6 +402,36 @@ public final class Harness {
         } else {
             LOG.info("dry run: pass --write to update " + profileFile);
         }
+    }
+
+    /** §4.8.2 step 6: the oracle-manifest tool over the cache's oracle image tree. */
+    private static void oracleManifest(Path repoRoot, FixtureCache cache, Map<String, String> opts)
+            throws IOException {
+        String packRef = require(opts, "--pack");
+        int at = packRef.lastIndexOf('@');
+        if (at <= 0) {
+            throw new IllegalArgumentException("--pack must be ID@VERSION");
+        }
+        String packId = packRef.substring(0, at);
+        String packVersion = packRef.substring(at + 1);
+        String scene = require(opts, "--scene");
+        Path runDir = Path.of(require(opts, "--run-dir")).toAbsolutePath().normalize();
+        RunManifest candidate = RunManifestReader.parse(Files.readString(runDir.resolve("manifest.manifest"),
+            StandardCharsets.UTF_8));
+        var provenance = new com.schmaloogium.conformance.oracle.OracleManifestTool.Provenance(
+            require(opts, "--of-build"), require(opts, "--gpu"), require(opts, "--driver"),
+            opts.getOrDefault("--captured-on", java.time.LocalDate.now().toString()), require(opts, "--operator"),
+            require(opts, "--timing-evidence"), require(opts, "--comparability"),
+            require(opts, "--comparability-reason"),
+            candidate.token("environment.worldGenerationSha256"), candidate.token("environment.worldSha256"),
+            candidate.token("environment.externalModSetSha256"));
+        var manifest = com.schmaloogium.conformance.oracle.OracleManifestTool.build(cache.oracle(), packId,
+            packVersion, scene, provenance);
+        Path out = com.schmaloogium.conformance.oracle.OracleManifestTool.manifestPath(repoRoot, packId,
+            packVersion, scene);
+        Files.createDirectories(out.getParent());
+        Files.writeString(out, manifest.render(), StandardCharsets.UTF_8);
+        LOG.info("wrote " + out + " (" + manifest.records().size() + " oracle records, " + manifest.provenance() + ")");
     }
 
     /** The Forge "GL info" line of a run's client log: vendor, version, renderer. */

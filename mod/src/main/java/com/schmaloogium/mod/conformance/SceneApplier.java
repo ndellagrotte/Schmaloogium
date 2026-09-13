@@ -160,6 +160,18 @@ final class SceneApplier {
         player.prevRotationPitch = (float) previous.pitch();
         player.prevRotationYawHead = (float) previous.yaw();
         player.rotationYawHead = (float) current.yaw();
+        // Task E: the player is a shadow caster (the shadow pass forces third person), and the
+        // model's idle sway is phased by ticksExisted, which counts from an uncontrolled spawn
+        // instant. Re-zero the animation state at every pose so its phase at capture is the
+        // controlled tick count since the pose, identical run to run.
+        player.ticksExisted = 0;
+        player.limbSwing = 0f;
+        player.limbSwingAmount = 0f;
+        player.prevLimbSwingAmount = 0f;
+        player.swingProgress = 0f;
+        player.prevSwingProgress = 0f;
+        player.renderYawOffset = (float) current.yaw();
+        player.prevRenderYawOffset = (float) previous.yaw();
     }
 
     /** Sets held items on the client player and on the matching server player. */

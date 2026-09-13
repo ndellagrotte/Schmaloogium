@@ -392,15 +392,16 @@ class ShadowEstateTest {
     }
 
     @Test
-    void copyDepthTiersOntoShadowtex1AndRejectsTheMissingTier() {
+    void copyDepthTiersOntoShadowtex1AndTreatsTheMissingTierAsANoOp() {
         BuffersEstateFixture single = shadowEstate();
         single.core.openFrameId = 7;
         ShadowPassSnapshot singleSnapshot = acquire(single);
-        ShadowOperationResult.BackendFailed unavailable = assertInstanceOf(
-            ShadowOperationResult.BackendFailed.class,
-            view(single).copyDepth(singleSnapshot, ShadowDepthCopyPoint.SHADOW_PRE_TRANSLUCENT));
-        assertEquals(BufferFailureCode.UNEXPECTED_BACKEND, unavailable.failure().code(),
-            "no second planned depth: explicit unsupported result, no silent no-op");
+        int copiesBefore = calls(single, "framebuffers.copyDepthToTexture").size();
+        assertInstanceOf(ShadowOperationResult.Applied.class,
+            view(single).copyDepth(singleSnapshot, ShadowDepthCopyPoint.SHADOW_PRE_TRANSLUCENT),
+            "PHASE_8_DOC §4.8.3: a one-depth estate treats the split copy as a successful no-op");
+        assertEquals(copiesBefore, calls(single, "framebuffers.copyDepthToTexture").size(),
+            "no second planned depth: nothing is copied");
 
         BuffersEstateFixture fixture = BuffersEstateFixture.createWithShadow(
             FORMATS, POLICIES, CLEARS, 1, shadowProjection(2, 1), 16,

@@ -64,6 +64,11 @@ public final class HookApplicationReport {
         m.put("frame.MixinIntegratedServer", new String[] {"FEATURE", "NONE"});
         m.put("frame.MixinNetHandlerPlayClient", new String[] {"FEATURE", "NONE"});
         m.put("frame.MixinTextureManager", new String[] {"FEATURE", "NONE"});
+        for (String shadow : new String[] {"frame.shadow.MixinRender",
+            "frame.shadow.MixinRenderGlobalShadowTraversal", "frame.shadow.MixinRenderManager",
+            "frame.shadow.RenderGlobalShadowAccessor", "frame.shadow.ViewFrustumShadowAccessor"}) {
+            m.put(shadow, new String[] {"FEATURE", "NONE"});
+        }
         return Collections.unmodifiableMap(m);
     }
 

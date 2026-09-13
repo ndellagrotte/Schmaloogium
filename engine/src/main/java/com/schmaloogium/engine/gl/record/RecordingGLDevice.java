@@ -1480,6 +1480,20 @@ public final class RecordingGLDevice implements GLDevice {
         }
 
         @Override
+        public void clearDepthAttachment(FramebufferHandle f, float depth) {
+            checkRenderThread();
+            FramebufferState state = ownedLiveFramebuffer(f);
+            if (state.depth == null) {
+                throw new IllegalArgumentException("clearDepthAttachment needs an attached depth");
+            }
+            if (!(depth >= 0f && depth <= 1f)) {
+                throw new IllegalArgumentException("depth clear value outside [0,1]");
+            }
+            appendMutating("framebuffers.clearDepthAttachment", f, depth);
+            scriptErrorIntoWindow("framebuffers.clearDepthAttachment");
+        }
+
+        @Override
         public void clearColorAttachment(FramebufferHandle f, int drawBufferIndex,
                                          ColorClearValue value) {
             checkRenderThread();

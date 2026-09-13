@@ -79,5 +79,11 @@ public interface FramebufferService {
      *  private temporary state (§4.7.4b). */
     void clearColorAttachment(FramebufferHandle f, int drawBufferIndex, ColorClearValue value);
 
+    /** Typed depth clear (Task E, P1 amendment for the owned shadow depth): the framebuffer's
+     *  own depth attachment is cleared to {@code depth} over its full extent with the depth
+     *  mask forced on; every private temporary state is restored, the caller's draw binding
+     *  included. */
+    void clearDepthAttachment(FramebufferHandle f, float depth);
+
     void delete(FramebufferHandle f);
 }

@@ -39,6 +39,16 @@ import com.schmaloogium.engine.frame.HookRejection;
 import com.schmaloogium.engine.frame.ScopeCloseResult;
 import com.schmaloogium.engine.frame.ScopeOpenResult;
 import com.schmaloogium.engine.frame.ScopeToken;
+import com.schmaloogium.engine.frame.ShadowExecutionIdentity;
+import com.schmaloogium.engine.frame.ShadowExecutionOpenResult;
+import com.schmaloogium.engine.frame.ShadowFrameView;
+import com.schmaloogium.engine.frame.ShadowInvocationContext;
+import com.schmaloogium.engine.frame.ShadowInvocationResult;
+import com.schmaloogium.engine.frame.ShadowInvocationSlot;
+import com.schmaloogium.engine.registry.StageBand;
+import com.schmaloogium.engine.registry.StageId;
+import com.schmaloogium.engine.registry.StageStep;
+import com.schmaloogium.engine.registry.UseProgramRequest;
 import com.schmaloogium.engine.frame.dispatch.PhaseDispatchTable;
 import com.schmaloogium.engine.frame.dispatch.RenderSection;
 import com.schmaloogium.engine.frame.dispatch.SectionWindow;
@@ -259,6 +269,7 @@ public final class FrameDriver implements FrameHookSink {
         f.composition.uniforms().events().captureGbufferMatrices(
                 f.frameId, camera.modelView(), camera.projection());
         f.matricesCaptured = true;
+        f.camera = camera;
         f.phase = Phase.MATRICES_CAPTURED;
         // D-P7-76: immediately bind the main estate and run P5's one clear plan, before
         // vanilla sky. Only SUCCESS admits any gbuffers scope.
@@ -275,6 +286,11 @@ public final class FrameDriver implements FrameHookSink {
 
     @Override
     public FrameStepResult afterTerrainSetup(FrameToken token) {
+        return afterTerrainSetup(token, null);
+    }
+
+    @Override
+    public FrameStepResult afterTerrainSetup(FrameToken token, ShadowFrameView shadowFrame) {
         requireRenderThread();
         Frame f = authenticated(token);
         if (f == null) {
@@ -287,10 +303,111 @@ public final class FrameDriver implements FrameHookSink {
             // Sky scopes must have closed before the shadow slot.
             return rejected(HookRejection.WRONG_ORDER);
         }
-        // The v0.1 slot is absent/NotInstalled: no shadow GL ran, the main-estate rebind
-        // is trivially successful, and SHADOW_DONE admits terrain and later scopes.
+        Optional<ShadowInvocationSlot> slot = f.composition.shadowSlot();
+        if (slot.isPresent()) {
+            FrameStepResult aborted = invokeShadowSlot(f, slot.get(), shadowFrame);
+            if (aborted != null) {
+                return aborted;
+            }
+        }
+        // Slot absent, skipped or completed: the main estate is bound again by every scope
+        // it opens (no second clear), and SHADOW_DONE admits terrain and later scopes.
         f.phase = Phase.SHADOW_DONE;
         return new FrameStepResult.Advanced(FrameState.SHADOW_DONE);
+    }
+
+    /**
+     * PHASE_8_DOC §4.2 from Phase 7's side: select root shadow once, open the execution
+     * bridge, invoke, close in {@code finally}. {@code Completed}/{@code Rejected}/
+     * {@code NotInstalled} advance the frame; {@code Failed} aborts it. Returns the abort
+     * result, or null to continue.
+     */
+    private FrameStepResult invokeShadowSlot(Frame f, ShadowInvocationSlot slot,
+            ShadowFrameView inputs) {
+        if (inputs == null || f.camera == null) {
+            noteShadow(f, "skipped: no shadow frame inputs");
+            return null;
+        }
+        if (inputs.worldEpoch() != f.signal.worldEpoch()
+                || inputs.mainTerrainFrameToken() != f.signal.mainTerrainFrameToken()) {
+            noteShadow(f, "skipped: shadow frame inputs are not this frame's");
+            return null;
+        }
+        ShadowFrameView shadowFrame = new ShadowFrameView(f.signal.worldEpoch(), f.frameId,
+                f.signal.partialTicks(), f.signal.mainTerrainFrameToken(),
+                inputs.cameraPosition(), inputs.skyAngle(), inputs.sunAngle());
+        StageStep shadowStep = null;
+        PassDescriptor descriptor = null;
+        for (StageStep step : f.registryView().schedule()) {
+            if (step.stage() == StageId.SHADOW && step.band() == StageBand.SHADOW) {
+                shadowStep = step;
+                var passes = f.registryView().passes(step);
+                descriptor = passes.isEmpty() ? null : passes.get(0);
+                break;
+            }
+        }
+        if (descriptor == null) {
+            noteShadow(f, "skipped: no shadow pass in the schedule");
+            return null;
+        }
+        BarrierContext context = f.contexts.activation(shadowStep, true);
+        ProgramSelectionResult selected = f.barrier().select(descriptor.slot(), context);
+        if (selected instanceof ProgramSelectionResult.Skipped) {
+            noteShadow(f, "skipped: select Skipped (no shadow program)");
+            return null;
+        }
+        if (selected instanceof ProgramSelectionResult.ShadersOff off) {
+            abortInternal(f, FrameAbortReason.BACKEND_FAILURE,
+                    CHANNEL + ".abort.shadow-select:" + off.diagnosticId());
+            return new FrameStepResult.Aborted(FrameAbortReason.BACKEND_FAILURE);
+        }
+        if (selected instanceof ProgramSelectionResult.StalePublication) {
+            abortInternal(f, FrameAbortReason.PROTOCOL_REJECTION, CHANNEL + ".abort.shadow-stale");
+            return new FrameStepResult.Aborted(FrameAbortReason.PROTOCOL_REJECTION);
+        }
+        ProgramBindingSelection selection = ((ProgramSelectionResult.Selected) selected).selection();
+        ShadowExecutionOpenResult opened = shadowBridge.open(f, slot.slotEpoch());
+        if (!(opened instanceof ShadowExecutionOpenResult.Opened live)) {
+            abortInternal(f, FrameAbortReason.PROTOCOL_REJECTION,
+                    CHANNEL + ".abort.shadow-bridge:" + opened);
+            return new FrameStepResult.Aborted(FrameAbortReason.PROTOCOL_REJECTION);
+        }
+        ShadowInvocationResult result;
+        f.phase = Phase.SHADOW_INVOKING;
+        try {
+            result = slot.invoke(new ShadowInvocationContext(f.token, shadowFrame, f.camera,
+                    f.composition.registry(), f.composition.estate(), f.contexts, live.view(),
+                    selection, context));
+        } catch (RuntimeException thrown) {
+            f.phase = Phase.ESTATE_CLEARED;
+            abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.shadow-threw:" + thrown);
+            return new FrameStepResult.Aborted(FrameAbortReason.BACKEND_FAILURE);
+        } finally {
+            shadowBridge.close(live.view());
+            if (f.phase == Phase.SHADOW_INVOKING) {
+                f.phase = Phase.ESTATE_CLEARED;
+            }
+        }
+        if (result instanceof ShadowInvocationResult.Failed failed) {
+            noteShadow(f, "Failed " + failed.failure().diagnosticId());
+            abortInternal(f, FrameAbortReason.BACKEND_FAILURE, failed.failure().diagnosticId());
+            return new FrameStepResult.Aborted(FrameAbortReason.BACKEND_FAILURE);
+        }
+        noteShadow(f, result instanceof ShadowInvocationResult.Rejected rejected
+                ? "Rejected " + rejected.reason() : result.getClass().getSimpleName());
+        return null;
+    }
+
+    private String lastShadowVerdict;
+
+    /** H8-SLOT-01-FRAME-05 evidence: the first invocation and every verdict change. */
+    private void noteShadow(Frame f, String verdict) {
+        if (verdict.equals(lastShadowVerdict)) {
+            return;
+        }
+        lastShadowVerdict = verdict;
+        com.schmaloogium.engine.log.Logs.channel(com.schmaloogium.engine.log.LogChannels.FRAME)
+                .info("H8-SLOT-01-FRAME-05 shadow invocation verdict (frame {}): {}", f.frameId, verdict);
     }
 
     @Override
@@ -300,6 +417,11 @@ public final class FrameDriver implements FrameHookSink {
         Frame f = authenticated(token);
         if (f == null) {
             return new ScopeOpenResult.Rejected(HookRejection.WRONG_TOKEN);
+        }
+        if (f.phase == Phase.SHADOW_INVOKING) {
+            // Vanilla's block-layer/entity/cloud calls issued by the shadow world port:
+            // no main scope, no translucent trigger (PHASE_8_DOC §4.8.1).
+            return new ScopeOpenResult.Rejected(HookRejection.SHADOW_EXECUTION_ACTIVE);
         }
         if (f.phase != Phase.ESTATE_CLEARED && f.phase != Phase.SHADOW_DONE
                 && f.phase != Phase.GBUFFERS && f.phase != Phase.DEFERRED_DONE
@@ -1013,6 +1135,7 @@ public final class FrameDriver implements FrameHookSink {
         BUFFER_OPEN,
         MATRICES_CAPTURED,
         ESTATE_CLEARED,
+        SHADOW_INVOKING,
         SHADOW_DONE,
         GBUFFERS,
         DEFERRED_DONE,
@@ -1021,7 +1144,7 @@ public final class FrameDriver implements FrameHookSink {
         COMMITTED
     }
 
-    private static final class Frame {
+    private static final class Frame implements ShadowExecutionIdentity {
         final FrameToken token;
         final long frameId;
         final FrameComposition composition;
@@ -1036,6 +1159,8 @@ public final class FrameDriver implements FrameHookSink {
         boolean deferredRan;
         Float3 fogColor = new Float3(0f, 0f, 0f);
         Float3 cameraPosition;
+        /** The accepted post-camera capture (PHASE_8_DOC §4.2 step 1); null before H-FRAME-04. */
+        CameraSnapshot camera;
 
         Frame(FrameToken token, long frameId, FrameComposition composition,
                 FrameBeginSignal signal, FrameBarrierContexts contexts) {

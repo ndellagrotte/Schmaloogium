@@ -6,6 +6,7 @@ package com.schmaloogium.mod.mixin;
 import com.schmaloogium.engine.log.LogChannels;
 import com.schmaloogium.engine.log.Logs;
 import com.schmaloogium.mod.compat.BailRegistry;
+import com.schmaloogium.mod.hooks.HookAnchorAudit;
 import com.schmaloogium.mod.compat.CompatVerdict;
 import com.schmaloogium.mod.compat.EarlyCompatContext;
 import org.objectweb.asm.tree.ClassNode;
@@ -51,6 +52,11 @@ public final class SchmaloogiumMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (!mixinClassName.startsWith("com.schmaloogium.mod.mixin.compat.")) {
+            // Task E: the plugin also serves the DEFAULT config (for the hook-anchor audit);
+            // the bail veto stays scoped to the vertex-pipeline compat family.
+            return true;
+        }
         Boolean v = vetoed;
         if (v == null) {
             v = BailRegistry.evaluateEarly(EARLY_CONTEXT).shouldBail();
@@ -88,5 +94,8 @@ public final class SchmaloogiumMixinPlugin implements IMixinConfigPlugin {
         // handed to the game-loader side through a JVM-global property (this package is
         // classloader-excluded, so a direct reference is not loadable from game code).
         System.setProperty("schmaloogium.hooks.applied." + mixinClassName, targetClassName);
+        // PHASE_8_DOC §4.13.1: the per-row anchor counts of the shadow hook catalogue,
+        // observed in the transformed class and published the same way.
+        HookAnchorAudit.publish(mixinClassName, targetClass);
     }
 }

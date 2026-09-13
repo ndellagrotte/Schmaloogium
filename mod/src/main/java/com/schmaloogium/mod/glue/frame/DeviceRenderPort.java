@@ -243,6 +243,7 @@ public final class DeviceRenderPort implements FrameRenderPort {
 
     /** H-PORT-DRAW evidence (one line per slot per install): the real GL objects at draw time. */
     private void logDrawIntrospection(FullscreenDraw draw, boolean fixedFunction) {
+        maybeLateProbe(draw);
         String key = FrameHooks.installEpoch() + ":" + draw.pass().slot().packName();
         if (!introspectionLogged.add(key)) {
             return;
@@ -259,6 +260,21 @@ public final class DeviceRenderPort implements FrameRenderPort {
         if (PROBE_BUFFERS) {
             LOG.info("H-PORT-PROBE {} (install #{}): {}", draw.pass().slot().packName(),
                     FrameHooks.installEpoch(), probeBoundUnits());
+        }
+    }
+
+    /** Second probe shot per pass name, ~300 fullscreen draws later (a settled world). */
+    private final java.util.Map<String, Integer> lateProbeCounts = new java.util.HashMap<>();
+
+    private void maybeLateProbe(FullscreenDraw draw) {
+        if (!PROBE_BUFFERS) {
+            return;
+        }
+        String key = draw.pass().slot().packName();
+        int n = lateProbeCounts.merge(key, 1, Integer::sum);
+        if (n == 300) {
+            LOG.info("H-PORT-PROBE-LATE {} (install #{}, draw {}): {}", key, FrameHooks.installEpoch(), n,
+                    probeBoundUnits());
         }
     }
 
@@ -311,12 +327,35 @@ public final class DeviceRenderPort implements FrameRenderPort {
      * centre texel (RGBA, or depth when the texture is a depth format), read through a scratch
      * framebuffer. Raw GL with every touched binding restored; never on a hot path.
      */
+    /** GlStateManager's cached view (active unit, per-unit 2D name) for divergence diagnosis. */
+    private static String glStateManagerCache() {
+        try {
+            java.lang.reflect.Field active = net.minecraft.client.renderer.GlStateManager.class
+                    .getDeclaredField("activeTextureUnit");
+            active.setAccessible(true);
+            java.lang.reflect.Field states = net.minecraft.client.renderer.GlStateManager.class
+                    .getDeclaredField("textureState");
+            states.setAccessible(true);
+            Object[] units = (Object[]) states.get(null);
+            StringBuilder sb = new StringBuilder("active=").append(active.getInt(null));
+            for (int i = 0; i < units.length; i++) {
+                java.lang.reflect.Field name = units[i].getClass().getDeclaredField("textureName");
+                name.setAccessible(true);
+                sb.append(' ').append(i).append('=').append(name.getInt(units[i]));
+            }
+            return sb.toString();
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return "unavailable(" + e.getClass().getSimpleName() + ")";
+        }
+    }
+
     private static String probeBoundUnits() {
         int savedUnit = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
         int savedRead = GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER_BINDING);
         int savedDraw = GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER_BINDING);
         int scratch = org.lwjgl.opengl.GL30.glGenFramebuffers();
         StringBuilder out = new StringBuilder();
+        out.append("glsm{").append(glStateManagerCache()).append("} ");
         try {
             org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER, scratch);
             for (int unit = 0; unit < 16; unit++) {

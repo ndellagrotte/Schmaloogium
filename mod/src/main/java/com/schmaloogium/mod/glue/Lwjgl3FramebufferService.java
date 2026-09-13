@@ -456,6 +456,33 @@ final class Lwjgl3FramebufferService implements FramebufferService {
         new TypedClear(fb, drawBufferIndex, value, integerStorage).run();
     }
 
+    @Override
+    public void clearDepthAttachment(FramebufferHandle f, float depth) {
+        device.requireRenderThread("framebuffers.clearDepthAttachment");
+        Lwjgl3FramebufferHandle fb = device.framebufferOf(f, "framebuffers.clearDepthAttachment");
+        if (!(depth >= 0f && depth <= 1f)) {
+            throw new IllegalArgumentException("framebuffers.clearDepthAttachment: depth outside [0,1]");
+        }
+        int savedDraw = GL11.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING);
+        boolean savedScissor = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
+        boolean savedDepthMask = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK);
+        try {
+            GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, fb.glName());
+            if (savedScissor) {
+                GL11.glDisable(GL11.GL_SCISSOR_TEST);
+            }
+            GlStateManager.depthMask(true);
+            GL30.glClearBufferfv(GL11.GL_DEPTH, 0, new float[] {depth});
+            device.noteMutation("framebuffers.clearDepthAttachment", fb.subjectLabel());
+        } finally {
+            GlStateManager.depthMask(savedDepthMask);
+            if (savedScissor) {
+                GL11.glEnable(GL11.GL_SCISSOR_TEST);
+            }
+            GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, savedDraw);
+        }
+    }
+
     /** Positional route resolution and admission before any state is touched. */
     private Lwjgl3OwnedTexture resolveClearTarget(Lwjgl3FramebufferHandle fb, int drawBufferIndex) {
         List<FramebufferDrawSlot> route = fb.drawRoute;

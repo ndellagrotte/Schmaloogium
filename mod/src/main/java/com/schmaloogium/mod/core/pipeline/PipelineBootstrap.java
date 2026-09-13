@@ -162,9 +162,19 @@ public final class PipelineBootstrap {
                     FrameRuntime.installComposition(composition);
                     if (composition.isPresent()) {
                         FrameHooks.noteCompositionInstalled();
+                    } else {
+                        com.schmaloogium.mod.glue.shadow.ShadowTraversalGuard.setBlobShadowsSuppressed(false);
                     }
                 },
-                Diagnostics::report));
+                Diagnostics::report,
+                new PipelineTransaction.ShadowServices(
+                        com.schmaloogium.mod.glue.shadow.McShadowHookHealth::current,
+                        policy -> new com.schmaloogium.mod.glue.shadow.McShadowWorldPort(policy.content()),
+                        inputs -> new com.schmaloogium.mod.glue.shadow.UnpublishedShadowBindings(
+                                inputs.estateGeneration(), inputs.registry(), inputs.registryGeneration(),
+                                inputs.resourceReloadEpoch(), inputs.configuration()),
+                        renderThread,
+                        com.schmaloogium.mod.glue.shadow.ShadowTraversalGuard::setBlobShadowsSuppressed)));
         coordinator = new ShaderReloadCoordinator(transaction, renderThread, selection);
         ReloadCoordinator.install(coordinator);
         ShaderGui.installConfigurationSource(

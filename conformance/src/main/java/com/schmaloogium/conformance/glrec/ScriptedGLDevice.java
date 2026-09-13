@@ -514,6 +514,11 @@ public final class ScriptedGLDevice implements GLDevice {
         }
 
         @Override
+        public void clearDepthAttachment(FramebufferHandle f, float depth) {
+            record("framebuffers.clearDepthAttachment", nameOf(f));
+        }
+
+        @Override
         public void delete(FramebufferHandle f) {
             record("framebuffers.delete", nameOf(f));
         }

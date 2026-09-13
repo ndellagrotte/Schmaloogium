@@ -6,6 +6,7 @@
   "target": "@env(DEFAULT)",
   "minVersion": "0.8.7",
   "setSourceFile": true,
+  "plugin": "com.schmaloogium.mod.mixin.SchmaloogiumMixinPlugin",
   "client": [
     "frame.MixinEntityRenderer",
     "frame.MixinFramebuffer",
@@ -19,7 +20,12 @@
     "frame.MixinTimer",
     "frame.MixinIntegratedServer",
     "frame.MixinNetHandlerPlayClient",
-    "frame.MixinTextureManager"
+    "frame.MixinTextureManager",
+    "frame.shadow.MixinRender",
+    "frame.shadow.MixinRenderGlobalShadowTraversal",
+    "frame.shadow.MixinRenderManager",
+    "frame.shadow.RenderGlobalShadowAccessor",
+    "frame.shadow.ViewFrustumShadowAccessor"
   ],
   "mixins": [],
   "server": []

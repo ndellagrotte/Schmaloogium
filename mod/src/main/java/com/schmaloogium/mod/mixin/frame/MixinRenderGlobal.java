@@ -12,6 +12,7 @@ import net.minecraft.util.BlockRenderLayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -95,6 +96,25 @@ public abstract class MixinRenderGlobal {
     }
 
     private ScopeOpenResult entitiesScope;
+
+    /**
+     * H-SHADOW-OUTLINE-01 (PHASE_8_DOC §4.8.2): the outline predicate that gates the whole
+     * glow subpass answers false only for the exact shadow entity call; the original
+     * predicate and its retained state are otherwise untouched.
+     */
+    @Redirect(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/RenderGlobal;isRenderEntityOutlines()Z"),
+            require = 0, expect = 1)
+    private boolean schmaloogium$shadowOutlinePredicate(RenderGlobal renderGlobal) {
+        if (com.schmaloogium.mod.glue.shadow.ShadowTraversalGuard.entitiesActive()) {
+            return false;
+        }
+        return schmaloogium$isRenderEntityOutlines();
+    }
+
+    @org.spongepowered.asm.mixin.Shadow(prefix = "schmaloogium$")
+    protected abstract boolean schmaloogium$isRenderEntityOutlines();
 
     /** H-CLOUD-01: clouds scope. */
     @Inject(method = "renderClouds(FIDDD)V", at = @At("HEAD"), require = 0, expect = 1)

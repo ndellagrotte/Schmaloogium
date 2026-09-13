@@ -636,4 +636,42 @@ final class PipelineFixtures {
             reports.add(d);
         }
     }
+
+    /** A world port no test invokes: the slot is constructed, never run headlessly. */
+    static final class InertWorldPort implements com.schmaloogium.engine.shadow.ShadowWorldPort {
+        @Override
+        public com.schmaloogium.engine.shadow.ShadowWorldSample sample(
+                com.schmaloogium.engine.frame.ShadowFrameView frame) {
+            throw new UnsupportedOperationException("inert");
+        }
+
+        @Override
+        public ShadowStateResult openState(com.schmaloogium.engine.shadow.ShadowCameraProjection camera,
+                com.schmaloogium.engine.shadow.ShadowWorldSample sample,
+                com.schmaloogium.engine.buffers.Extent2i shadowExtent) {
+            throw new UnsupportedOperationException("inert");
+        }
+
+        @Override
+        public com.schmaloogium.engine.shadow.ShadowDrawResult setupTerrain(ShadowTraversalView traversal) {
+            throw new UnsupportedOperationException("inert");
+        }
+
+        @Override
+        public com.schmaloogium.engine.shadow.ShadowDrawResult drawTerrain(ShadowTerrainBand band,
+                ShadowTraversalView traversal) {
+            throw new UnsupportedOperationException("inert");
+        }
+
+        @Override
+        public com.schmaloogium.engine.shadow.ShadowDrawResult drawClouds(ShadowTraversalView traversal) {
+            throw new UnsupportedOperationException("inert");
+        }
+
+        @Override
+        public com.schmaloogium.engine.shadow.ShadowDrawResult drawEntities(ShadowEntityPass pass,
+                ShadowTraversalView traversal) {
+            throw new UnsupportedOperationException("inert");
+        }
+    }
 }

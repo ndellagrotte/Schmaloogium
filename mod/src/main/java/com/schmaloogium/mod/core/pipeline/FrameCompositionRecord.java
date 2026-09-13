@@ -29,7 +29,8 @@ public record FrameCompositionRecord(
         PublishedBufferEstate estate,
         UniformRuntime uniforms,
         FrameRenderPort port,
-        long resourceReloadEpoch) implements FrameComposition {
+        long resourceReloadEpoch,
+        Optional<ShadowInvocationSlot> shadowSlot) implements FrameComposition {
 
     public FrameCompositionRecord {
         Objects.requireNonNull(identity, "identity");
@@ -38,11 +39,19 @@ public record FrameCompositionRecord(
         Objects.requireNonNull(estate, "estate");
         Objects.requireNonNull(uniforms, "uniforms");
         Objects.requireNonNull(port, "port");
+        shadowSlot = shadowSlot == null ? Optional.empty() : shadowSlot;
+    }
+
+    /** The v0.1 shape: no shadow slot. */
+    public FrameCompositionRecord(PipelineIdentity identity, PipelineVersion version,
+            PublishedRegistry registry, PublishedBufferEstate estate, UniformRuntime uniforms,
+            FrameRenderPort port, long resourceReloadEpoch) {
+        this(identity, version, registry, estate, uniforms, port, resourceReloadEpoch, Optional.empty());
     }
 
     @Override
     public Optional<ShadowInvocationSlot> shadowSlot() {
-        return Optional.empty();
+        return shadowSlot;
     }
 
     @Override

@@ -446,15 +446,17 @@ final class ShadowInvocationSlotImpl implements ShadowInvocationSlot {
             if (setup != null) {
                 return setup;
             }
-            if (!drawTerrain(ShadowWorldPort.ShadowTerrainBand.SOLID, traversal)
+            boolean terrain = plan.policy().content().terrain();
+            boolean entities = plan.policy().content().entities();
+            if (terrain && (!drawTerrain(ShadowWorldPort.ShadowTerrainBand.SOLID, traversal)
                     || !drawTerrain(ShadowWorldPort.ShadowTerrainBand.CUTOUT_MIPPED, traversal)
-                    || !drawTerrain(ShadowWorldPort.ShadowTerrainBand.CUTOUT, traversal)) {
+                    || !drawTerrain(ShadowWorldPort.ShadowTerrainBand.CUTOUT, traversal))) {
                 return failure();
             }
             if (!drawClouds(traversal)) {
                 return failure();
             }
-            if (!drawEntities(ShadowWorldPort.ShadowEntityPass.OPAQUE_ZERO, traversal)) {
+            if (entities && !drawEntities(ShadowWorldPort.ShadowEntityPass.OPAQUE_ZERO, traversal)) {
                 return failure();
             }
             ShadowOperationResult split = shadow.copyDepth(snapshot,
@@ -468,12 +470,12 @@ final class ShadowInvocationSlotImpl implements ShadowInvocationSlot {
                 abortSnapshot("schmaloogium.shadow.abort.depth_split");
                 return fail("schmaloogium.shadow.fail.depth_split");
             }
-            if (plan.policy().shadowTranslucent()) {
+            if (terrain && plan.policy().shadowTranslucent()) {
                 if (!drawTerrain(ShadowWorldPort.ShadowTerrainBand.TRANSLUCENT, traversal)) {
                     return failure();
                 }
             }
-            if (!drawEntities(ShadowWorldPort.ShadowEntityPass.TRANSLUCENT_ONE, traversal)) {
+            if (entities && !drawEntities(ShadowWorldPort.ShadowEntityPass.TRANSLUCENT_ONE, traversal)) {
                 return failure();
             }
             return finishMipmapsAndComplete();

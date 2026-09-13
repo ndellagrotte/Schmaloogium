@@ -307,6 +307,40 @@ class PipelineTransactionTest {
     }
 
     @Test
+    void shadowAvailable_withHealthyHooksAndAShadowProgram_installsTheSlot() {
+        PipelineFixtures.FakeShadowView shadow = new PipelineFixtures.FakeShadowView(1L);
+        stages.estateView.shadow = new com.schmaloogium.engine.buffers.ShadowEstateAvailable(shadow);
+        java.util.List<com.schmaloogium.engine.shadow.ShadowPolicy> ports = new java.util.ArrayList<>();
+        java.util.List<Boolean> readiness = new java.util.ArrayList<>();
+        transaction = new PipelineTransaction(new PipelineTransaction.Services(
+                stages, () -> selection, EngineOptionData::empty, () -> DimensionKey.BASE,
+                () -> new Extent2i(854, 480), () -> 0L, new InertPort(), installs::add, diagnostics,
+                new PipelineTransaction.ShadowServices(
+                        () -> com.schmaloogium.engine.shadow.ShadowHookHealth.of(
+                                com.schmaloogium.engine.shadow.ShadowHookHealth.catalogue().stream()
+                                        .map(id -> new com.schmaloogium.engine.shadow.ShadowHookRow(id, 1, 1,
+                                                com.schmaloogium.engine.shadow.HookDisposition.HEALTHY)).toList()),
+                        policy -> {
+                            ports.add(policy);
+                            return new PipelineFixtures.InertWorldPort();
+                        },
+                        inputs -> com.schmaloogium.engine.shadow.ShadowBindingSource.absent(),
+                        () -> true,
+                        readiness::add)));
+
+        ReloadStatus status = transaction.drain(select());
+
+        assertInstanceOf(ReloadStatus.Active.class, status);
+        FrameComposition composition = installs.get(1).orElseThrow();
+        assertTrue(composition.shadowSlot().isPresent(), "a ready plan over an available estate installs the slot");
+        assertTrue(shadow.neutralizations.isEmpty(), "the estate is used, not neutralized");
+        assertEquals(1, ports.size(), "one world port over the mapped policy");
+        assertEquals(com.schmaloogium.engine.shadow.ShadowPolicy.ShadowContent.ALL, ports.get(0).content());
+        assertEquals(List.of(true), readiness, "blob shadows are suppressed for the publication");
+        assertEquals(0, errors());
+    }
+
+    @Test
     void shadowNeutralizationRejected_compensates() {
         PipelineFixtures.FakeShadowView shadow = new PipelineFixtures.FakeShadowView(1L);
         shadow.answer = new com.schmaloogium.engine.buffers.ShadowNeutralizationResult.Rejected(

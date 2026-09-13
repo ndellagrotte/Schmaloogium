@@ -23,6 +23,7 @@ import com.schmaloogium.conformance.scene.SceneSpec;
 import com.schmaloogium.conformance.scene.SceneValidator;
 import com.schmaloogium.conformance.tier.T0Evaluator;
 import com.schmaloogium.conformance.tier.T1Evaluator;
+import com.schmaloogium.conformance.tier.T2Evaluator;
 import com.schmaloogium.conformance.tier.TierOutcome;
 import com.schmaloogium.conformance.wire.FlatDocument;
 import com.schmaloogium.conformance.wire.Hashes;
@@ -72,7 +73,12 @@ public final class CaptureRunner {
     }
 
     public record Outcome(Path runDir, RunManifest manifest, String manifestSha256, TierOutcome t0,
-            Optional<T1Evaluator.T1Result> t1, List<String> notes) {
+            Optional<T1Evaluator.T1Result> t1, List<String> notes, Optional<T2Evaluator.T2Result> t2) {
+
+        public Outcome(Path runDir, RunManifest manifest, String manifestSha256, TierOutcome t0,
+                Optional<T1Evaluator.T1Result> t1, List<String> notes) {
+            this(runDir, manifest, manifestSha256, t0, t1, notes, Optional.empty());
+        }
     }
 
     private final Context ctx;
@@ -258,8 +264,12 @@ public final class CaptureRunner {
         if (runKind.evaluatesT1()) {
             t1 = Optional.of(evaluateT1(runDir, manifest, sha, profileName, allowUncalibrated, log));
         }
-        writeReport(runDir, manifest, t0, t1, notes);
-        return new Outcome(runDir, manifest, sha, t0.outcome(), t1, notes);
+        Optional<T2Evaluator.T2Result> t2 = Optional.empty();
+        if (runKind.evaluatesT2()) {
+            t2 = Optional.of(evaluateT2(runDir, manifest, sha, allowUncalibrated, log));
+        }
+        writeReport(runDir, manifest, t0, t1, notes, t2);
+        return new Outcome(runDir, manifest, sha, t0.outcome(), t1, notes, t2);
     }
 
     /** Re-validates an existing {@code manifest.tmp} against the retained plan and republishes
@@ -303,8 +313,70 @@ public final class CaptureRunner {
         if (runKind.evaluatesT1()) {
             t1 = Optional.of(evaluateT1(runDir, manifest, sha, profileName, allowUncalibrated, log));
         }
-        writeReport(runDir, manifest, t0, t1, notes);
-        return new Outcome(runDir, manifest, sha, t0.outcome(), t1, notes);
+        Optional<T2Evaluator.T2Result> t2 = Optional.empty();
+        if (runKind.evaluatesT2()) {
+            t2 = Optional.of(evaluateT2(runDir, manifest, sha, allowUncalibrated, log));
+        }
+        writeReport(runDir, manifest, t0, t1, notes, t2);
+        return new Outcome(runDir, manifest, sha, t0.outcome(), t1, notes, t2);
+    }
+
+    /**
+     * T2 (§4.2.3) over the committed oracle manifest; a dual-spec pack is refused as a
+     * configuration error naming §8.2 ([D-P2-12]) rather than skipped.
+     */
+    public T2Evaluator.T2Result evaluateT2(Path runDir, RunManifest manifest, String manifestSha,
+            boolean allowUncalibrated, Log log) throws IOException {
+        String packId = manifest.text("pack.id");
+        String packVersion = manifest.text("pack.version");
+        String sceneId = manifest.token("run.sceneId");
+        ctx.registry().find(packId).ifPresent(fixture -> {
+            if (fixture.tier().equals("dual-spec")) {
+                throw new IllegalArgumentException("T2 is defined for the classic tier only; " + packId
+                    + " is dual-spec (RESEARCH.md §8.2, PHASE_2_DOC [D-P2-12]) — configuration error, not a skip");
+            }
+        });
+        Path oracleFile = com.schmaloogium.conformance.oracle.OracleManifestTool.manifestPath(ctx.repoRoot(),
+            packId, packVersion, sceneId);
+        Optional<com.schmaloogium.conformance.oracle.OracleManifest> oracle = Optional.empty();
+        String oracleSha = zero64();
+        if (Files.isRegularFile(oracleFile)) {
+            String text = Files.readString(oracleFile, StandardCharsets.UTF_8);
+            oracle = Optional.of(com.schmaloogium.conformance.oracle.OracleManifest.parse(text));
+            oracleSha = Hashes.sha256HexOf(text);
+            Path inputs = runDir.resolve("inputs");
+            Files.createDirectories(inputs);
+            Files.writeString(inputs.resolve(oracleSha + ".oracle"), text, StandardCharsets.UTF_8);
+        }
+        T2Evaluator.Inputs in = new T2Evaluator.Inputs(manifest, manifestSha, oracle, oracleSha, ctx.profiles(),
+            captureId -> mask(sceneId, captureId),
+            rel -> {
+                try {
+                    return PngRaster.read(runDir.resolve(rel));
+                } catch (IOException e) {
+                    throw new java.io.UncheckedIOException(e);
+                }
+            },
+            record -> {
+                try {
+                    return PngRaster.read(com.schmaloogium.conformance.oracle.OracleManifestTool.imagePath(
+                        ctx.cache().oracle(), packId, packVersion, sceneId, record));
+                } catch (IOException e) {
+                    throw new java.io.UncheckedIOException(e);
+                }
+            }, allowUncalibrated);
+        T2Evaluator.T2Result result = T2Evaluator.evaluate(in);
+        Path comparisons = runDir.resolve("comparisons");
+        Files.createDirectories(comparisons);
+        for (T2Evaluator.SampleOutcome s : result.samples()) {
+            String text = s.comparison().render();
+            Files.writeString(comparisons.resolve(Hashes.sha256HexOf(text) + ".comparison"), text,
+                StandardCharsets.UTF_8);
+            log.info("T2 " + s.captureKind() + "/" + s.captureId() + "/" + s.sampleOrdinal() + " "
+                + s.outcome() + ": " + s.reason());
+        }
+        log.info("T2 " + result.outcome() + " (oracle: " + result.oracleProvenance() + ")");
+        return result;
     }
 
     public T1Evaluator.T1Result evaluateT1(Path runDir, RunManifest manifest, String manifestSha,
@@ -402,7 +474,8 @@ public final class CaptureRunner {
     }
 
     private void writeReport(Path runDir, RunManifest m, T0Evaluator.T0Result t0,
-            Optional<T1Evaluator.T1Result> t1, List<String> notes) throws IOException {
+            Optional<T1Evaluator.T1Result> t1, List<String> notes, Optional<T2Evaluator.T2Result> t2)
+            throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append("# ").append(m.token("run.id")).append("\n\n");
         sb.append("- pack: ").append(m.text("pack.id")).append('@').append(m.text("pack.version")).append('\n');
@@ -426,6 +499,15 @@ public final class CaptureRunner {
         if (t1.isPresent()) {
             sb.append("- T1: ").append(t1.get().outcome()).append('\n');
             for (T1Evaluator.SampleOutcome s : t1.get().samples()) {
+                sb.append("  - ").append(s.captureKind()).append('/').append(s.captureId()).append('/')
+                    .append(s.sampleOrdinal()).append(": ").append(s.outcome()).append(" — ")
+                    .append(s.reason()).append('\n');
+            }
+        }
+        if (t2.isPresent()) {
+            sb.append("- T2: ").append(t2.get().outcome()).append(" — oracle ").append(t2.get().oracleProvenance())
+                .append('\n');
+            for (T2Evaluator.SampleOutcome s : t2.get().samples()) {
                 sb.append("  - ").append(s.captureKind()).append('/').append(s.captureId()).append('/')
                     .append(s.sampleOrdinal()).append(": ").append(s.outcome()).append(" — ")
                     .append(s.reason()).append('\n');

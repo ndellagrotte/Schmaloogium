@@ -102,6 +102,8 @@ dependencies {
     // C-2 and C-3 are bytecode scans over :mod's own classes, so :mod needs the same
     // test-scope ASM :engine has (§4.2.4, [D-P1-3]).
     testImplementation "org.ow2.asm:asm:${asm_version}"
+    // Task E: HookAnchorAuditTest builds synthetic transformed class nodes.
+    testImplementation "org.ow2.asm:asm-tree:${asm_version}"
     testImplementation testFixtures(project(':engine'))
 }
 

@@ -674,6 +674,10 @@ class FrameDriverScriptedTest {
     }
 
     private Handle composition() {
+        return composition(Optional.empty());
+    }
+
+    private Handle composition(Optional<ShadowInvocationSlot> shadowSlot) {
         List<String> calls = new java.util.ArrayList<>();
         FakeEstate estate = new FakeEstate(calls);
         RecordingRuntime runtime = new RecordingRuntime();
@@ -721,7 +725,7 @@ class FrameDriverScriptedTest {
 
             @Override
             public Optional<ShadowInvocationSlot> shadowSlot() {
-                return Optional.empty();
+                return shadowSlot;
             }
 
             @Override
@@ -1216,5 +1220,127 @@ class FrameDriverScriptedTest {
         ScopeOpenResult hand = h.driver().enter(token, RenderSection.HAND_SOLID);
         assertTrue(hand instanceof ScopeOpenResult.Rejected);
         assertEquals(HookRejection.WRONG_ORDER, ((ScopeOpenResult.Rejected) hand).reason());
+    }
+
+    // ------------------------------------------------------------------ shadow slot (Task E)
+
+    private static final StageStep SHADOW_STEP = new StageStep(StageId.SHADOW,
+            StageBand.SHADOW, new PassPopulation.Singleton());
+
+    private static ShadowFrameView shadowInputs() {
+        // The scripted signal's world epoch (100) and terrain token (7); frame id 0 is re-stamped.
+        return new ShadowFrameView(100L, 0L, 0.25f, 7, new com.schmaloogium.engine.uniforms.Double3(1, 2, 3),
+                0.1f, 0.3f);
+    }
+
+    /** A scripted slot: records the context it received, runs a probe, answers as scripted. */
+    private static final class ScriptedSlot implements ShadowInvocationSlot {
+        final List<ShadowInvocationContext> invocations = new java.util.ArrayList<>();
+        java.util.function.Consumer<ShadowInvocationContext> probe = context -> { };
+        ShadowInvocationResult answer = new ShadowInvocationResult.Completed();
+
+        @Override
+        public ShadowSlotEpoch slotEpoch() {
+            return new ShadowSlotEpoch() { };
+        }
+
+        @Override
+        public ShadowInvocationResult invoke(ShadowInvocationContext context) {
+            invocations.add(context);
+            probe.accept(context);
+            return answer;
+        }
+    }
+
+    private Handle shadowComposition(ScriptedSlot slot) {
+        Handle h = composition(Optional.of(slot));
+        h.stages().add(SHADOW_STEP, prelude(SHADOW_STEP, "shadow"));
+        h.barrier().selectedSlots.add("shadow");
+        return h;
+    }
+
+    @Test
+    void shadowSlotIsInvokedOnceWithTheFrameSelectionAndRestampedInputs() {
+        ScriptedSlot slot = new ScriptedSlot();
+        Handle h = shadowComposition(slot);
+        FrameToken token = toEstateCleared(h);
+        h.calls().clear();
+
+        FrameStepResult result = h.driver().afterTerrainSetup(token, shadowInputs());
+
+        assertTrue(result instanceof FrameStepResult.Advanced, String.valueOf(result));
+        assertEquals(1, slot.invocations.size(), "invoked exactly once");
+        assertEquals(List.of("select:shadow"), h.calls(), "root shadow selected once, nothing activated by P7");
+        ShadowInvocationContext context = slot.invocations.get(0);
+        assertEquals(token, context.frame());
+        assertEquals(context.frame().frameId(), context.shadowFrame().frameId(), "frame id re-stamped");
+        assertEquals(100L, context.shadowFrame().worldEpoch());
+        assertEquals(7, context.shadowFrame().mainTerrainFrameToken());
+        assertEquals(0.3f, context.shadowFrame().sunAngle());
+        assertEquals("shadow", context.selection().requested().packName());
+        // Terrain proceeds after the slot.
+        assertTrue(h.driver().enter(token, RenderSection.TERRAIN_SOLID) instanceof ScopeOpenResult.Opened);
+    }
+
+    @Test
+    void scopesOpenedDuringShadowExecutionAreRejectedSilently() {
+        ScriptedSlot slot = new ScriptedSlot();
+        List<ScopeOpenResult> inside = new java.util.ArrayList<>();
+        Handle h = shadowComposition(slot);
+        FrameToken token = toEstateCleared(h);
+        slot.probe = context -> {
+            inside.add(h.driver().enter(token, RenderSection.TERRAIN_SOLID));
+            inside.add(h.driver().enter(token, RenderSection.TERRAIN_TRANSLUCENT));
+            inside.add(h.driver().enter(token, RenderSection.ENTITIES));
+        };
+
+        assertTrue(h.driver().afterTerrainSetup(token, shadowInputs()) instanceof FrameStepResult.Advanced);
+
+        assertEquals(3, inside.size());
+        for (ScopeOpenResult r : inside) {
+            assertTrue(r instanceof ScopeOpenResult.Rejected, String.valueOf(r));
+            assertEquals(HookRejection.SHADOW_EXECUTION_ACTIVE, ((ScopeOpenResult.Rejected) r).reason());
+        }
+    }
+
+    @Test
+    void shadowFailureAbortsTheFrame() {
+        ScriptedSlot slot = new ScriptedSlot();
+        slot.answer = new ShadowInvocationResult.Failed(new FailureId("schmaloogium.shadow.fail.test"));
+        Handle h = shadowComposition(slot);
+        FrameToken token = toEstateCleared(h);
+
+        FrameStepResult result = h.driver().afterTerrainSetup(token, shadowInputs());
+
+        assertTrue(result instanceof FrameStepResult.Aborted, String.valueOf(result));
+        assertTrue(h.driver().enter(token, RenderSection.TERRAIN_SOLID) instanceof ScopeOpenResult.Rejected);
+    }
+
+    @Test
+    void shadowSlotIsSkippedWithoutInputsOrWithoutAShadowProgram() {
+        ScriptedSlot slot = new ScriptedSlot();
+        Handle h = shadowComposition(slot);
+        FrameToken token = toEstateCleared(h);
+        assertTrue(h.driver().afterTerrainSetup(token) instanceof FrameStepResult.Advanced);
+        assertTrue(slot.invocations.isEmpty(), "no inputs: v0.1 behaviour");
+
+        ScriptedSlot unselected = new ScriptedSlot();
+        Handle g = composition(Optional.of(unselected));
+        g.stages().add(SHADOW_STEP, prelude(SHADOW_STEP, "shadow")); // present but never Selected
+        FrameToken t2 = toEstateCleared(g);
+        assertTrue(g.driver().afterTerrainSetup(t2, shadowInputs()) instanceof FrameStepResult.Advanced);
+        assertTrue(unselected.invocations.isEmpty(), "select Skipped: the pass is omitted");
+        assertTrue(g.driver().enter(t2, RenderSection.TERRAIN_SOLID) instanceof ScopeOpenResult.Opened);
+    }
+
+    @Test
+    void mismatchedShadowInputsSkipTheSlot() {
+        ScriptedSlot slot = new ScriptedSlot();
+        Handle h = shadowComposition(slot);
+        FrameToken token = toEstateCleared(h);
+        ShadowFrameView stale = new ShadowFrameView(99L, 0L, 0.25f, 7,
+                new com.schmaloogium.engine.uniforms.Double3(0, 0, 0), 0.1f, 0.3f);
+        assertTrue(h.driver().afterTerrainSetup(token, stale) instanceof FrameStepResult.Advanced);
+        assertTrue(slot.invocations.isEmpty());
     }
 }

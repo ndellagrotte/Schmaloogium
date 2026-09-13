@@ -27,6 +27,20 @@ import com.schmaloogium.engine.frame.PipelineIdentity;
 import com.schmaloogium.engine.frame.PipelineVersion;
 import com.schmaloogium.engine.frame.ReloadIntent;
 import com.schmaloogium.engine.frame.ReloadStatus;
+import com.schmaloogium.engine.frame.ShadowInvocationSlot;
+import com.schmaloogium.engine.shadow.HookDisposition;
+import com.schmaloogium.engine.shadow.ShadowBindingSource;
+import com.schmaloogium.engine.shadow.ShadowHookHealth;
+import com.schmaloogium.engine.shadow.ShadowHookRow;
+import com.schmaloogium.engine.shadow.ShadowPassBuildInput;
+import com.schmaloogium.engine.shadow.ShadowPassBuildResult;
+import com.schmaloogium.engine.shadow.ShadowPassFactory;
+import com.schmaloogium.engine.shadow.ShadowPlanInput;
+import com.schmaloogium.engine.shadow.ShadowPlanResult;
+import com.schmaloogium.engine.shadow.ShadowPolicy;
+import com.schmaloogium.engine.shadow.ShadowPolicyMapper;
+import com.schmaloogium.engine.shadow.ShadowWorldPort;
+import com.schmaloogium.engine.shadow.internal.ShadowPlanFactoryImpl;
 import com.schmaloogium.engine.frame.lifecycle.FrameComposition;
 import com.schmaloogium.engine.frame.lifecycle.ShaderReloadControllerImpl;
 import com.schmaloogium.engine.frame.spi.FrameRenderPort;
@@ -62,6 +76,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
@@ -88,7 +104,8 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
             LongSupplier resourceReloadEpoch,
             FrameRenderPort port,
             Consumer<Optional<FrameComposition>> installSink,
-            DiagnosticReporter diagnostics) {
+            DiagnosticReporter diagnostics,
+            ShadowServices shadow) {
 
         public Services {
             Objects.requireNonNull(stages, "stages");
@@ -100,6 +117,56 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
             Objects.requireNonNull(port, "port");
             Objects.requireNonNull(installSink, "installSink");
             Objects.requireNonNull(diagnostics, "diagnostics");
+            shadow = shadow == null ? ShadowServices.disabled() : shadow;
+        }
+
+        /** The v0.1 shape: no shadow services (every plan is Disabled by hook health). */
+        public Services(PipelineStages stages, Supplier<PackSelection> selection,
+                Supplier<EngineOptionData> engineOptions, Supplier<DimensionKey> liveDimension,
+                Supplier<Extent2i> displayExtent, LongSupplier resourceReloadEpoch, FrameRenderPort port,
+                Consumer<Optional<FrameComposition>> installSink, DiagnosticReporter diagnostics) {
+            this(stages, selection, engineOptions, liveDimension, displayExtent, resourceReloadEpoch,
+                    port, installSink, diagnostics, ShadowServices.disabled());
+        }
+    }
+
+    /** What a shadow binding source is built over (the accepted tuple's identities). */
+    public record ShadowBindingInputs(long estateGeneration, RegistryFingerprint registry,
+            long registryGeneration, long resourceReloadEpoch,
+            com.schmaloogium.engine.pack.ConfigurationFingerprint configuration) {
+    }
+
+    /**
+     * The Phase 8 construction inputs (PHASE_8_DOC §4.1): the live hook-health audit, the
+     * world port factory over the mapped policy's content switches, the binding source
+     * factory over the accepted estate generation, and the render-thread predicate.
+     */
+    public record ShadowServices(
+            Supplier<ShadowHookHealth> hookHealth,
+            Function<ShadowPolicy, ShadowWorldPort> worldPort,
+            Function<ShadowBindingInputs, ShadowBindingSource> bindings,
+            BooleanSupplier renderThread,
+            Consumer<Boolean> planReadySink) {
+
+        public ShadowServices {
+            Objects.requireNonNull(hookHealth, "hookHealth");
+            Objects.requireNonNull(worldPort, "worldPort");
+            Objects.requireNonNull(bindings, "bindings");
+            Objects.requireNonNull(renderThread, "renderThread");
+            Objects.requireNonNull(planReadySink, "planReadySink");
+        }
+
+        /** No audited hooks: every plan is {@code Disabled(HookUnavailable)}, estates neutralized. */
+        public static ShadowServices disabled() {
+            return new ShadowServices(
+                    () -> ShadowHookHealth.of(ShadowHookHealth.catalogue().stream()
+                            .map(id -> new ShadowHookRow(id, 1, 0, HookDisposition.FEATURE_DISABLED)).toList()),
+                    policy -> {
+                        throw new IllegalStateException("no shadow world port");
+                    },
+                    inputs -> ShadowBindingSource.absent(),
+                    () -> true,
+                    ready -> { });
         }
     }
 
@@ -278,28 +345,67 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         if (estateView.isEmpty() || estateView.get().generation() != publishedEstate.generation()) {
             return a.fail("estate-view", "generation " + publishedEstate.generation(), List.of());
         }
-        // D-P7-46 / D-P7-59: one shadow disposition read, neutralized at v0.1.
+        // D-P7-46 / D-P7-59: one shadow disposition read. Task E: the Phase 8 plan decides
+        // whether the available estate is used (slot ready) or neutralized (plan disabled).
         var plannedShadow = estateView.get().resources().projection().shadow();
         boolean requestedShadow = plannedShadow.depthTextures() > 0
                 || plannedShadow.colorTextures() > 0;
-        String shadowFailure = shadowDisposition(estateView.get(), publishedEstate.generation(),
-                requestedShadow);
-        if (shadowFailure != null) {
-            return a.fail(shadowFailure.startsWith("mismatch") ? "shadow-mismatch"
-                    : "shadow-neutralize", shadowFailure, List.of());
+        ShadowPolicy shadowPolicy = ShadowPolicyMapper.map(cfg.resources().shadow(),
+                cfg.resources().world(), cfg.properties().engineFlags());
+        ShadowHookHealth hookHealth = services.shadow().hookHealth().get();
+        ShadowPlanResult planned = new ShadowPlanFactoryImpl().plan(
+                new ShadowPlanInput(shadowPolicy, hookHealth, requestedShadow));
+        Optional<ShadowInvocationSlot> shadowSlot = Optional.empty();
+        String shadowVerdict;
+        if (planned instanceof ShadowPlanResult.Ready ready
+                && estateView.get().shadow() instanceof ShadowEstateAvailable) {
+            ShadowPassBuildResult built = ShadowPassFactory.standard().create(new ShadowPassBuildInput(
+                    ready.plan(), fingerprint, a.runtime,
+                    services.shadow().worldPort().apply(ready.plan().policy()),
+                    services.shadow().bindings().apply(new ShadowBindingInputs(
+                            publishedEstate.generation(), fingerprint, published.generation(),
+                            services.resourceReloadEpoch().getAsLong(), cfg.fingerprint())),
+                    services.shadow().renderThread(), services.diagnostics()));
+            if (built instanceof ShadowPassBuildResult.Ready slotReady) {
+                shadowSlot = Optional.of(slotReady.slot());
+                shadowVerdict = "ready(fp " + ready.plan().fingerprint().canonicalSha256().substring(0, 12)
+                        + ", " + plannedShadow.depthTextures() + " depth / "
+                        + plannedShadow.colorTextures() + " colour)";
+            } else {
+                shadowVerdict = "disabled(" + built + ")";
+            }
+        } else if (planned instanceof ShadowPlanResult.Disabled disabled) {
+            shadowVerdict = "disabled(" + disabled.reason() + ")";
+        } else if (planned instanceof ShadowPlanResult.NotRequested) {
+            shadowVerdict = "not requested";
+        } else {
+            shadowVerdict = "disabled(estate " + estateView.get().shadow().getClass().getSimpleName() + ")";
         }
+        if (shadowSlot.isEmpty()) {
+            String shadowFailure = shadowDisposition(estateView.get(), publishedEstate.generation(),
+                    requestedShadow);
+            if (shadowFailure != null) {
+                return a.fail(shadowFailure.startsWith("mismatch") ? "shadow-mismatch"
+                        : "shadow-neutralize", shadowFailure, List.of());
+            }
+        }
+        services.shadow().planReadySink().accept(shadowSlot.isPresent());
         // Steps 8–9: P13 stays the explicit empty publication, P9 dormant. Atomic install.
         PipelineVersion version = versions.next();
         PipelineIdentity identity = new PipelineIdentity(cfg.pack(), dimension, cfg.fingerprint());
         FrameCompositionRecord composition = new FrameCompositionRecord(identity, version,
                 published, publishedEstate, a.runtime, services.port(),
-                services.resourceReloadEpoch().getAsLong());
+                services.resourceReloadEpoch().getAsLong(), shadowSlot);
         active = new ActivePipeline(composition, cfg, a.runtime, a.collector);
         services.installSink().accept(Optional.of(composition));
         LOG.info("H-PIPE-01 composition installed: pack {} dimension {} registry generation {} "
-                        + "estate generation {} version {} programs {}",
+                        + "estate generation {} version {} programs {} shadow={}",
                 cfg.pack().selectedRoot().canonicalString(), dimension, published.generation(),
-                publishedEstate.generation(), version.value(), histogram(view));
+                publishedEstate.generation(), version.value(), histogram(view), shadowVerdict);
+        LOG.info("H8-HEALTH-01 shadow hook health: enabled={} disabledRows={} fingerprint={}",
+                hookHealth.shadowEnabled(),
+                com.schmaloogium.mod.glue.shadow.McShadowHookHealth.disabledRows(hookHealth),
+                hookHealth.fingerprint().canonicalSha256().substring(0, 12));
         logProgramSet(view);
         services.diagnostics().report(new EngineDiagnostic(DiagnosticSeverity.INFO,
                 UserChannel.LOG_ONLY, "schmaloogium.info.pipeline.active",

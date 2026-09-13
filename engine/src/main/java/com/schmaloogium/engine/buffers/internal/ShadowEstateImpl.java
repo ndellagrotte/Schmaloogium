@@ -248,6 +248,22 @@ public final class ShadowEstateImpl implements ShadowEstateView {
                     errors.get(0).detail());
             }
         }
+        // The sfb's own depth (shadowtex0) is cleared to far, and the sfb is left bound: the
+        // pass draws right after this operation (Task E; the colour clears above bind their
+        // own single-attachment FBOs and previously left the last of them bound, so every
+        // shadow draw landed in a depth-less scratch framebuffer).
+        try {
+            core.device.framebuffers().clearDepthAttachment(core.shadowFbo, 1.0f);
+            core.device.framebuffers().bind(FramebufferTarget.DRAW, core.shadowFbo);
+        } catch (RuntimeException clearFailure) {
+            return backendFailed("schmaloogium.buffers.error.shadow.clear.backend",
+                String.valueOf(clearFailure));
+        }
+        List<GLError> depthErrors = core.device.drainErrors();
+        if (!depthErrors.isEmpty()) {
+            return backendFailed("schmaloogium.buffers.error.shadow.clear.backend",
+                depthErrors.get(0).detail());
+        }
         shadowFullClearRequired = false; // all-success consumption (§4.6/D-P5-46)
         return new ShadowOperationResult.Applied();
     }
@@ -283,11 +299,13 @@ public final class ShadowEstateImpl implements ShadowEstateView {
         if (rejection != null) {
             return new ShadowOperationResult.Rejected(rejection);
         }
-        // The translucent split copy targets shadowtex1; with no second planned depth the
-        // copy point has no destination — explicit unsupported result, never a silent no-op.
+        // The translucent split copy targets shadowtex1. A one-depth estate has no
+        // destination: PHASE_8_DOC §4.8.3 rules that "a one-depth estate treats the typed
+        // operation as a successful no-op owned by Phase 5" (the pack never declared
+        // shadowtex1, so nothing can observe the missing copy). Task E amendment: Applied,
+        // not BackendFailed — the latter neutralized every one-depth pack's shadow pass.
         if (core.shadowPlannedDepthCount() < 2 || core.shadowDepths.size() < 2) {
-            return backendFailed("schmaloogium.buffers.error.shadow.copy.unavailable",
-                point.name());
+            return new ShadowOperationResult.Applied();
         }
         // The sfb carries shadowtex0 as its real depth attachment (§4.10), so the sfb is
         // the copy source; a neutralized estate never reaches here (its view is gone).

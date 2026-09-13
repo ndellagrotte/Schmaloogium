@@ -22,6 +22,16 @@ public interface FrameHookSink {
 
     FrameStepResult afterTerrainSetup(FrameToken token);
 
+    /**
+     * H-FRAME-05 with the shadow frame inputs (camera position, sky and sun angle; the
+     * frame id is re-stamped by the driver): when the composition carries a shadow slot the
+     * driver invokes it here (PHASE_7_DOC D-P7-76: after the main clear, before any terrain
+     * draw). The one-argument form is the v0.1 shape and skips the slot.
+     */
+    default FrameStepResult afterTerrainSetup(FrameToken token, ShadowFrameView shadowFrame) {
+        return afterTerrainSetup(token);
+    }
+
     ScopeOpenResult enter(FrameToken token,
             com.schmaloogium.engine.frame.dispatch.RenderSection section);
 
