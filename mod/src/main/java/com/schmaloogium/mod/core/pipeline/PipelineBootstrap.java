@@ -109,6 +109,18 @@ public final class PipelineBootstrap {
         status.ifPresent(s -> LOG.info("reload drained: {}", s));
     }
 
+    /** H-FOG-02: vanilla's per-frame fog colour, observed on the Forge bus. */
+    @SubscribeEvent
+    public void onFogColors(net.minecraftforge.client.event.EntityViewRenderEvent.FogColors event) {
+        FrameHooks.onFogColors(event.getRed(), event.getGreen(), event.getBlue());
+    }
+
+    /** H-FOG-02: the fog mode vanilla selected for this frame's world pass. */
+    @SubscribeEvent
+    public void onRenderFog(net.minecraftforge.client.event.EntityViewRenderEvent.RenderFogEvent event) {
+        FrameHooks.onFogMode(event.getFogMode());
+    }
+
     private boolean wire() {
         if (!BootstrapHooks.isGlReady() || !client.isCallingFromMinecraftThread()) {
             return false;
@@ -157,6 +169,9 @@ public final class PipelineBootstrap {
         ReloadCoordinator.install(coordinator);
         ShaderGui.installConfigurationSource(
                 () -> transaction.active().map(active -> active.configuration().options()));
+        FrameHooks.installSunPathRotation(() -> transaction.active()
+                .map(active -> (double) active.configuration().resources().world().sunPathRotation())
+                .orElse(0d));
         LOG.info("composition root installed: coordinator armed, device ready");
         return true;
     }

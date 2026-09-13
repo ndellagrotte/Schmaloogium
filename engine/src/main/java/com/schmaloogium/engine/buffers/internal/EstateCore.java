@@ -179,6 +179,14 @@ public final class EstateCore {
     public com.schmaloogium.engine.buffers.BufferFailure shadowFailure;
     /** The stable diagnostic id of the first neutralization (repeated verbatim). */
     public String shadowNeutralDiagnostic;
+    /** The 1x1 companion defaults backing units 2/3 in the gbuffers/shadow families until
+     *  Phase 13 publishes real companion atlases (PHASE_5_DOC §4.12.2 default backings;
+     *  P13 DefaultFill values: normals (128,128,255,255), specular (0,0,0,0)). */
+    public TextureHandle companionNormalsNeutral;
+    public TextureHandle companionSpecularNeutral;
+    /** The generated noise texture backing fixed unit 15 at the planned resolution
+     *  (PHASE_13_DOC §4.2 recurrence; estate-owned until the P13 publication lands). */
+    public TextureHandle noiseTexture;
 
     public TextureHandle shadowTexture(int index) {
         return index < shadowDepths.size() ? shadowDepths.get(index) : null;
@@ -361,6 +369,18 @@ public final class EstateCore {
                 TextureHandle texture = neutrals.get(index);
                 steps.add(() -> device.textures().delete(texture));
             }
+        }
+        if (noiseTexture != null) {
+            TextureHandle texture = noiseTexture;
+            steps.add(() -> device.textures().delete(texture));
+        }
+        if (companionSpecularNeutral != null) {
+            TextureHandle texture = companionSpecularNeutral;
+            steps.add(() -> device.textures().delete(texture));
+        }
+        if (companionNormalsNeutral != null) {
+            TextureHandle texture = companionNormalsNeutral;
+            steps.add(() -> device.textures().delete(texture));
         }
         return steps;
     }

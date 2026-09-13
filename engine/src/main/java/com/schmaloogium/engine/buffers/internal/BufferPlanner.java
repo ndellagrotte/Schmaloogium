@@ -123,10 +123,16 @@ public final class BufferPlanner {
                 "schmaloogium.buffers.error.plan.minima"), unavailableInput);
         }
 
-        // Step 3: depth count 1-3 and shadow counts 0-2.
-        int depthCount = minima.mainDepthTextures();
-        int shadowDepthCount = Math.min(2, minima.shadowDepthBuffers());
-        int shadowColorCount = Math.min(2, minima.shadowColorBuffers());
+        // Step 3: depth count 1-3 and shadow counts 0-2. The P3 minima are the floor; the
+        // registry's executable programs raise them by what they sample (depthtex1/2,
+        // shadowtex1/watershadow, shadowcolor0/1) and by what the shadow pass writes
+        // (source-scan resource sizing, RESEARCH §4.4; Task D 2026-09-12).
+        SamplerDemand demand = scanSamplerDemand(request.registry());
+        int depthCount = Math.min(3, Math.max(minima.mainDepthTextures(), demand.depthTextures()));
+        int shadowDepthCount = Math.min(2,
+            Math.max(minima.shadowDepthBuffers(), demand.shadowDepthTextures()));
+        int shadowColorCount = Math.min(2,
+            Math.max(minima.shadowColorBuffers(), demand.shadowColorTextures()));
 
         // Step 2: contiguous v0.1 colortex inventory 0 .. max(3, highestRequiredColorIndex).
         int highestRequired = scanHighestRequiredColorIndex(request, minima);
@@ -308,6 +314,62 @@ public final class BufferPlanner {
             }
         }
         return highest;
+    }
+
+    /** Depth/shadow demand read from executable programs' fixed-sampler declarations. */
+    record SamplerDemand(int depthTextures, int shadowDepthTextures, int shadowColorTextures) {
+    }
+
+    static SamplerDemand scanSamplerDemand(
+            com.schmaloogium.engine.registry.ProgramRegistryView registry) {
+        int depth = 0;
+        int shadowDepth = 0;
+        int shadowColor = 0;
+        Map<ProgramSlotId, ProgramResolutionStatus> statuses = new HashMap<>();
+        for (ProgramResolutionProjection projection : registry.resolutions()) {
+            statuses.put(projection.slot(), projection.status());
+        }
+        for (StageStep step : registry.stages().schedule()) {
+            for (PassDescriptor descriptor : registry.stages().passes(step)) {
+                ProgramResolutionStatus status = statuses.get(descriptor.slot());
+                if (status != ProgramResolutionStatus.SOURCED
+                        && status != ProgramResolutionStatus.CHAIN) {
+                    continue;
+                }
+                Optional<ResolvedProgramDescriptor> resolved = registry.resolve(descriptor.slot());
+                if (resolved.isEmpty()) {
+                    continue;
+                }
+                for (BufferRef write : descriptor.resources().writes()) {
+                    if (write.domain() == BufferDomain.SHADOWCOLOR) {
+                        shadowColor = Math.max(shadowColor, write.index() + 1);
+                    }
+                }
+                if (!(resolved.get().samplerLayout()
+                        instanceof com.schmaloogium.engine.registry.ProgramSamplerLayout.Shader shader)) {
+                    continue;
+                }
+                for (com.schmaloogium.engine.registry.ProgramSamplerDeclaration declaration
+                        : shader.declarations()) {
+                    switch (declaration.exactName()) {
+                        case "depthtex1" -> depth = Math.max(depth, 2);
+                        case "depthtex2" -> depth = Math.max(depth, 3);
+                        case "shadowtex0", "shadow" -> shadowDepth = Math.max(shadowDepth, 1);
+                        case "shadowtex1", "watershadow" -> shadowDepth = Math.max(shadowDepth, 2);
+                        case "shadowcolor", "shadowcolor0" -> shadowColor = Math.max(shadowColor, 1);
+                        case "shadowcolor1" -> shadowColor = Math.max(shadowColor, 2);
+                        default -> {
+                        }
+                    }
+                }
+            }
+        }
+        // A shadow color target without a shadow depth target cannot exist (the sfb needs
+        // its depth attachment): reading shadowcolor implies shadowtex0.
+        if (shadowColor > 0) {
+            shadowDepth = Math.max(shadowDepth, 1);
+        }
+        return new SamplerDemand(depth, shadowDepth, shadowColor);
     }
 
     private static int refIndex(Set<BufferRef> refs, int current) {
@@ -563,7 +625,9 @@ public final class BufferPlanner {
             new ShadowResourceProjection(shadowDepthCount, shadowColorCount, resolution,
                 List.copyOf(shadowDepth), List.copyOf(shadowColor)),
             centerDepth != null && centerDepth.required(),
-            noise != null && noise.enabled() ? noise.resolution() : 0,
+            // The generated noise texture exists at the pack resolution whether or not a
+            // texture.noise override is declared (App B.3 unit 15; P13 replaces the bytes).
+            noise != null ? noise.resolution() : 0,
             List.copyOf(attributes), instances, gate, List.copyOf(shortfalls));
     }
 

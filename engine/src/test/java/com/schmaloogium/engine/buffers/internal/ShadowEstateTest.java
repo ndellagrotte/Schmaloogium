@@ -145,6 +145,10 @@ class ShadowEstateTest {
 
     /** A usable selection: mint-blocked fields stay null except the effective descriptor. */
     private static ProgramBindingSelection shadowSelection() {
+        return shadowSelection(shadowLayout());
+    }
+
+    private static ProgramBindingSelection shadowSelection(ProgramSamplerLayout layout) {
         try {
             Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
             Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
@@ -166,7 +170,7 @@ class ShadowEstateTest {
                     Set.of(), 1, Set.of(), Optional.empty(), Optional.empty(),
                     Optional.empty(), Map.of(), Optional.empty(),
                     GeometryInputRequirement.NONE),
-                ProgramUniformLayout.empty(), shadowLayout(), List.of(), List.of());
+                ProgramUniformLayout.empty(), layout, List.of(), List.of());
             unsafeClass
                 .getMethod("putObject", Object.class, long.class, Object.class)
                 .invoke(unsafe, selection, offset, descriptor);
@@ -186,6 +190,46 @@ class ShadowEstateTest {
             List.of(new ProgramSamplerDeclaration("shadowtex0", sampler2d, 0, List.of()),
                 new ProgramSamplerDeclaration("shadowcolor0", sampler2d, 1, List.of())),
             new SamplerLayoutValidation.Valid());
+    }
+
+    /** A shadow program sampling the atlas, the lightmap, a companion and its own depth. */
+    private static ProgramSamplerLayout.Shader platformLayout() {
+        DeclaredGlslType.Sampler sampler2d = new DeclaredGlslType.Sampler(SampledKind.FLOAT,
+            TextureDimension.D2, false, false, false);
+        return new ProgramSamplerLayout.Shader(
+            new ProgramSamplerLayoutFingerprint("layout-fp-platform"),
+            FixedSamplerPolicies.appB3Fingerprint(), StageId.SHADOW,
+            Set.of(StageBand.SHADOW),
+            List.of(new ProgramSamplerDeclaration("tex", sampler2d, 0, List.of()),
+                new ProgramSamplerDeclaration("lightmap", sampler2d, 1, List.of()),
+                new ProgramSamplerDeclaration("normals", sampler2d, 2, List.of()),
+                new ProgramSamplerDeclaration("shadowtex0", sampler2d, 3, List.of())),
+            new SamplerLayoutValidation.Valid());
+    }
+
+    @Test
+    void shadowProgramsKeepThePlatformUnitsAndBindCompanionDefaults() {
+        BuffersEstateFixture fixture = shadowEstate();
+        fixture.core.openFrameId = 7;
+        ShadowEstateImpl view = view(fixture);
+        ShadowBeginResult.Acquired acquired = assertInstanceOf(
+            ShadowBeginResult.Acquired.class,
+            view.beginPass(7, shadowPass(), shadowSelection(platformLayout())));
+        ShadowPassSnapshot snapshot = acquired.snapshot();
+
+        assertEquals(ShadowOperationResult.Applied.class, view.bind(snapshot).getClass());
+        GLCall prepare = calls(fixture, "textures.prepareUnitBindings").get(0);
+        assertEquals((1 << 2) | (1 << 4), prepare.args().get(0),
+            "tex/lightmap on 0/1 are the platform's; normals (2) and shadowtex0 (4) bind");
+        assertEquals(List.of(2, fixture.core.companionNormalsNeutral),
+            calls(fixture, "textures.bindToUnit").get(0).args());
+        TextureBindingResult.Bound bound = assertInstanceOf(TextureBindingResult.Bound.class,
+            view.shadowBindings(1, 7, snapshot, null, null));
+        TextureBindingOutcome.ForeignRetained unit0 = assertInstanceOf(
+            TextureBindingOutcome.ForeignRetained.class, bound.snapshot().outcome(0));
+        assertEquals("tex", unit0.names().get(0).exactName());
+        assertInstanceOf(TextureBindingOutcome.ForeignRetained.class, bound.snapshot().outcome(1));
+        assertInstanceOf(TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(2));
     }
 
     private static List<GLCall> calls(BuffersEstateFixture fixture, String op) {
@@ -491,13 +535,13 @@ class ShadowEstateTest {
         assertEquals(BufferFailureCode.CAPABILITY_LIMIT, unavailable.reason().code(),
             "explicit feature disable reports the capability limit class");
         TextureBinder binder = new TextureBinder();
-        assertSame(fixture.core.shadowNeutral.depthByUnit(0), binder.backingFor(fixture.core, 4),
+        assertSame(fixture.core.shadowNeutral.depthByUnit(0), binder.backingFor(fixture.core, 4, AppB3Policy.Domain.FULLSCREEN),
             "unit 4 resolves to the neutral fully-far object");
-        assertNotSame(realShadowtex0, binder.backingFor(fixture.core, 4));
-        assertNull(binder.backingFor(fixture.core, 5),
+        assertNotSame(realShadowtex0, binder.backingFor(fixture.core, 4, AppB3Policy.Domain.FULLSCREEN));
+        assertNull(binder.backingFor(fixture.core, 5, AppB3Policy.Domain.FULLSCREEN),
             "no second planned depth, no neutral for unit 5");
-        assertSame(fixture.core.shadowNeutral.colorByUnit(0), binder.backingFor(fixture.core, 13));
-        assertNull(binder.backingFor(fixture.core, 14));
+        assertSame(fixture.core.shadowNeutral.colorByUnit(0), binder.backingFor(fixture.core, 13, AppB3Policy.Domain.FULLSCREEN));
+        assertNull(binder.backingFor(fixture.core, 14, AppB3Policy.Domain.FULLSCREEN));
 
         assertEquals(ShadowCompletionResult.Rejected.class,
             view.completePass(snapshot).getClass(),
@@ -584,10 +628,11 @@ class ShadowEstateTest {
         assertEquals(BufferFailureCode.FRAMEBUFFER_INCOMPLETE, unavailable.reason().code());
 
         TextureBinder binder = new TextureBinder();
-        assertSame(fixture.core.shadowNeutral.depthByUnit(0), binder.backingFor(fixture.core, 4),
+        assertSame(fixture.core.shadowNeutral.depthByUnit(0), binder.backingFor(fixture.core, 4, AppB3Policy.Domain.FULLSCREEN),
             "neutral shadow bindings are supplied while the main pipeline continues");
-        assertSame(fixture.core.shadowNeutral.colorByUnit(0), binder.backingFor(fixture.core, 13));
-        assertEquals(2, fixture.exactOpCount("textures.upload"),
-            "the neutral cache still owns its 1x1 fully-far and opaque-white objects");
+        assertSame(fixture.core.shadowNeutral.colorByUnit(0), binder.backingFor(fixture.core, 13, AppB3Policy.Domain.FULLSCREEN));
+        assertEquals(5, fixture.exactOpCount("textures.upload"),
+            "the neutral cache still owns its 1x1 fully-far and opaque-white objects, and the"
+                + " two §4.12.2 companion defaults plus the generated noise survive alongside them");
     }
 }

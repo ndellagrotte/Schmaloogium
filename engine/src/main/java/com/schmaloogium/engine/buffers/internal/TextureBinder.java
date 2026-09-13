@@ -100,16 +100,28 @@ public final class TextureBinder {
                     .add(binding);
             }
         }
+        // §4.12.2 family rule: in the gbuffers and shadow families the platform owns units
+        // 0/1 (texture/lightmap) and units 2/3 carry the companion defaults; only the
+        // fullscreen family reads colortex0-3 there. Unsupported families bind nothing.
+        AppB3Policy.Domain domain = AppB3Policy.domainOf(snapshot.pass().step().stage(),
+            snapshot.pass().step().band());
+        boolean platformFamily = domain == AppB3Policy.Domain.GBUFFERS
+            || domain == AppB3Policy.Domain.SHADOW_WINDOW;
         for (int unit = 0; unit < 16; unit++) {
             List<ResolvedSamplerBinding> names = byUnit.get(unit);
             boolean passthroughRow = purpose == BindingPurpose.FIXED_FUNCTION_PASSTHROUGH
-                && unit == 0;
+                && unit == 0 && !platformFamily;
             if (names == null && !passthroughRow) {
                 rows.add(new TextureBindingRow(unit, new TextureBindingOutcome.Unused()));
                 continue;
             }
             List<ResolvedSamplerBinding> boundNames = names == null ? List.of() : names;
-            TextureHandle backing = backingFor(core, unit);
+            if (platformFamily && unit <= 1) {
+                rows.add(new TextureBindingRow(unit,
+                    new TextureBindingOutcome.ForeignRetained(boundNames)));
+                continue;
+            }
+            TextureHandle backing = backingFor(core, unit, domain);
             if (backing == null) {
                 for (ResolvedSamplerBinding name : boundNames) {
                     diagnostics.add(new TextureBindingDiagnostic(
@@ -124,7 +136,9 @@ public final class TextureBinder {
                 ? new DeclaredGlslType.Sampler(SampledKind.FLOAT, TextureDimension.D2,
                     false, false, false)
                 : boundNames.get(0).shape();
-            BindingOrigin origin = new BindingOrigin(BindingOriginKind.ESTATE, List.of());
+            BindingOrigin origin = new BindingOrigin(unit == 15 ? BindingOriginKind.NOISE
+                : platformFamily && unit <= 3 ? BindingOriginKind.NEUTRAL
+                : BindingOriginKind.ESTATE, List.of());
             rows.add(new TextureBindingRow(unit,
                 new TextureBindingOutcome.BoundObject(new TextureHandleRef.Borrowed(backing),
                     shape, boundNames, origin)));
@@ -169,14 +183,18 @@ public final class TextureBinder {
 
     /** Unit -> backing object per the sixteen-row table; null = unbacked at v0.1. Shadow
      *  units resolve to the Phase-5 neutral objects once the estate degraded or its real
-     *  estate failed at build (§4.10 neutral shadow bindings for units 4/5/13/14). */
-    TextureHandle backingFor(EstateCore core, int unit) {
+     *  estate failed at build (§4.10 neutral shadow bindings for units 4/5/13/14). In the
+     *  gbuffers/shadow families units 0/1 are never resolved here (foreign, retained) and
+     *  units 2/3 are the companion defaults; the fullscreen family reads colortex0-3. */
+    TextureHandle backingFor(EstateCore core, int unit, AppB3Policy.Domain domain) {
+        boolean platformFamily = domain == AppB3Policy.Domain.GBUFFERS
+            || domain == AppB3Policy.Domain.SHADOW_WINDOW;
         return switch (unit) {
-            case 0 -> side(core, 0);
-            case 1 -> side(core, 1);
-            case 2 -> side(core, 2);
-            case 3 -> side(core, 3);
-            case 4 -> shadowDepthBacking(core, 0);
+            case 0 -> platformFamily ? null : side(core, 0);
+            case 1 -> platformFamily ? null : side(core, 1);
+            case 2 -> platformFamily ? core.companionNormalsNeutral : side(core, 2);
+            case 3 -> platformFamily ? core.companionSpecularNeutral : side(core, 3);
+            case 4 -> core.shadowPlannedDepthCount() >= 1 ? shadowDepthBacking(core, 0) : null;
             case 5 -> core.shadowPlannedDepthCount() >= 2 ? shadowDepthBacking(core, 1) : null;
             case 6 -> core.cachedDepth.texture();
             case 7 -> side(core, 4);
@@ -187,9 +205,9 @@ public final class TextureBinder {
                 ? core.copyDestinations.get(0).boundTexture() : null;
             case 12 -> core.plan.depthTextureCount() >= 3
                 ? core.copyDestinations.get(1).boundTexture() : null;
-            case 13 -> shadowColorBacking(core, 0);
+            case 13 -> core.shadowPlannedColorCount() >= 1 ? shadowColorBacking(core, 0) : null;
             case 14 -> core.shadowPlannedColorCount() >= 2 ? shadowColorBacking(core, 1) : null;
-            case 15 -> null; // noisetex: P13 overlay at v0.1 (publication unavailable)
+            case 15 -> core.noiseTexture; // generated noise until the P13 publication lands
             default -> null;
         };
     }

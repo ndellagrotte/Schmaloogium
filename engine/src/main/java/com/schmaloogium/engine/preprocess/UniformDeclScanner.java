@@ -29,7 +29,7 @@ public final class UniformDeclScanner {
 
     public static List<Finding> scan(String text) {
         List<Finding> out = new ArrayList<>();
-        String[] lines = text.split("\\n", -1);
+        String[] lines = text.split("\\r?\\n", -1); // CR-tolerant: whole-line anchors
         for (int i = 0; i < lines.length; i++) {
             Matcher m = UNIFORM.matcher(CommentStripper.stripComments(lines[i]));
             if (!m.matches()) {

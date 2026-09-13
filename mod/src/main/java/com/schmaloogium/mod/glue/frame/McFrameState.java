@@ -92,4 +92,32 @@ public final class McFrameState {
     public static void getFloat(int glEnum, FloatBuffer buffer) {
         GL11.glGetFloatv(glEnum, buffer);
     }
+
+    /** The per-frame inputs of the celestial event: vanilla's celestial angle, the
+     *  interpolated camera position and the render partial ticks; null without a world. */
+    public record CelestialInputs(float celestialAngle,
+                                  com.schmaloogium.engine.uniforms.Double3 cameraPosition,
+                                  float partialTicks) {
+    }
+
+    public static CelestialInputs celestialInputs() {
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
+        if (mc == null || mc.world == null || mc.getRenderViewEntity() == null) {
+            return null;
+        }
+        net.minecraft.entity.Entity view = mc.getRenderViewEntity();
+        float partial = mc.getRenderPartialTicks();
+        if (!Float.isFinite(partial) || partial < 0f || partial >= 1f) {
+            partial = 0f;
+        }
+        double x = view.lastTickPosX + (view.posX - view.lastTickPosX) * partial;
+        double y = view.lastTickPosY + (view.posY - view.lastTickPosY) * partial
+                + view.getEyeHeight();
+        double z = view.lastTickPosZ + (view.posZ - view.lastTickPosZ) * partial;
+        return new CelestialInputs(mc.world.getCelestialAngle(partial),
+                new com.schmaloogium.engine.uniforms.Double3(
+                        Double.isFinite(x) ? x : 0d, Double.isFinite(y) ? y : 0d,
+                        Double.isFinite(z) ? z : 0d),
+                partial);
+    }
 }

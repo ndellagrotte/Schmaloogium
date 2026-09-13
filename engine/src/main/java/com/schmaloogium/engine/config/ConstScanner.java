@@ -27,7 +27,7 @@ public final class ConstScanner {
 
     public static Map<String, Finding> scan(String text) {
         Map<String, Finding> out = new LinkedHashMap<>();
-        String[] lines = text.split("\\n", -1);
+        String[] lines = text.split("\\r?\\n", -1); // CR-tolerant: whole-line anchors
         boolean blockComment = false;
         for (int i = 0; i < lines.length; i++) {
             String line = stripComments(lines[i]);

@@ -296,7 +296,16 @@ final class PipelineFixtures {
 
         @Override
         public BufferResourceSnapshot.Available resources() {
-            return null;
+            // The planned projection the transaction reads for the shadow demand: the
+            // fixture's minima (shadow depth 1, color 0) as the P5 planner would project them.
+            return new BufferResourceSnapshot.Available(
+                new com.schmaloogium.engine.buffers.BufferResourceProjection(
+                    com.schmaloogium.engine.buffers.ResourceEvidenceStage.REALIZED,
+                    java.util.List.of(), 1,
+                    new com.schmaloogium.engine.buffers.ShadowResourceProjection(1, 0, 1024,
+                        java.util.List.of(), java.util.List.of()),
+                    false, 0, java.util.List.of(), java.util.List.of(),
+                    com.schmaloogium.engine.buffers.CapabilityGate.OK, java.util.List.of()));
         }
 
         @Override

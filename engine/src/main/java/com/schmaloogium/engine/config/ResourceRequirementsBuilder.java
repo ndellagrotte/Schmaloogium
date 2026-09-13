@@ -20,12 +20,21 @@ public final class ResourceRequirementsBuilder {
 
     public static ResourceRequirements build(ShaderPropertiesModel properties,
             Map<String, ConstScanner.Finding> consts) {
+        return build(properties, consts, Map.of());
+    }
+
+    /**
+     * @param programs the per-program requirements the front end scanned from each
+     *                 program's own sources ({@code DRAWBUFFERS} routing, {@code countInstances})
+     */
+    public static ResourceRequirements build(ShaderPropertiesModel properties,
+            Map<String, ConstScanner.Finding> consts,
+            Map<ProgramRequirementKey, ProgramRequirements> programs) {
         BufferMinima minima = new BufferMinima(8, 1, 1,
             boolConst(consts, "generateShadowColorMipmap", false) ? 1 : 0);
         Map<ColorAttachmentKey, ColorAttachmentRequirement> color = colorAttachments(consts);
         ShadowRequirements shadow = shadow(consts);
         CenterDepthRequirements centerDepth = new CenterDepthRequirements(false);
-        Map<ProgramRequirementKey, ProgramRequirements> programs = Map.of();
         SmoothingConstants smoothing = new SmoothingConstants(
             floatConst(consts, "wetnessHalflife", 600.0f),
             floatConst(consts, "drynessHalflife", 600.0f),
@@ -49,7 +58,7 @@ public final class ResourceRequirementsBuilder {
     }
 
     private static int noiseResolution(Map<String, ConstScanner.Finding> consts) {
-        return intConst(consts, "noiseTextureResolution", 128);
+        return intConst(consts, "noiseTextureResolution", 256);
     }
 
     private static int intConst(Map<String, ConstScanner.Finding> consts, String name,

@@ -156,7 +156,7 @@ public final class AppB3Policy implements FixedSamplerLayoutPolicy {
      * unwired domains (setup, begin, shadowcomp, prepare) are unsupported, never treated as
      * composite. {@code null} marks the unsupported family.
      */
-    private static Domain domainOf(StageId stage, StageBand band) {
+    static Domain domainOf(StageId stage, StageBand band) {
         return switch (stage) {
             case GBUFFERS, SHADOW -> switch (band) {
                 case BEFORE_GBUFFERS, AFTER_SHADOW -> Domain.SHADOW_WINDOW;

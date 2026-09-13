@@ -101,6 +101,16 @@ final class BuffersEstateFixture {
             responses, Map.of());
     }
 
+    /** The shadow variant with planned pass routes (gbuffers/composite binding tests). */
+    static BuffersEstateFixture createWithShadowAndRoutes(ColorInternalFormat[] formats,
+            ResourceClearPolicy[] policies, boolean[] clear, int depthTextureCount,
+            ShadowResourceProjection shadow, int shadowSize,
+            Map<com.schmaloogium.engine.registry.ProgramSlotId, PlanningArtifacts.PlannedRoute> routes,
+            ScriptedResponses responses) {
+        return assemble(formats, policies, clear, depthTextureCount, shadow, shadowSize,
+            responses, routes);
+    }
+
     private static BuffersEstateFixture assemble(ColorInternalFormat[] formats,
             ResourceClearPolicy[] policies, boolean[] clear, int depthTextureCount,
             ShadowResourceProjection shadow, int shadowSize, ScriptedResponses responses,
@@ -168,6 +178,15 @@ final class BuffersEstateFixture {
                 allocatedColorTexture(device, "colortex" + row + "b", formats[row]),
                 PhysicalSide.A, false, 1, TextureMinFilter.NEAREST));
         }
+
+        // The §4.12.2 companion defaults every estate carries (units 2/3 of the platform
+        // families), through the same builder path the candidate uses.
+        TextureHandle[] companions = CandidateBuilder.allocateCompanionNeutrals(device,
+            new CandidateBuilder.Ledger(device));
+        core.companionNormalsNeutral = companions[0];
+        core.companionSpecularNeutral = companions[1];
+        core.noiseTexture = CandidateBuilder.allocateNoise(device,
+            new CandidateBuilder.Ledger(device), 32);
 
         if (shadowPlanned) {
             // The real §4.10 allocation path: neutral cache, shadowtex0/1, shadowcolor

@@ -748,6 +748,8 @@ class FrameDriverScriptedTest {
 
     // ------------------------------------------------------------------ fullscreen schedule
 
+    private static final StageStep TERRAIN_STEP = new StageStep(StageId.GBUFFERS,
+            StageBand.GBUFFERS_OPAQUE, new PassPopulation.Singleton());
     private static final StageStep DEFERRED_STEP = new StageStep(StageId.DEFERRED,
             StageBand.BETWEEN_GBUFFERS, new PassPopulation.Singleton());
     private static final StageStep COMPOSITE_STEP = new StageStep(StageId.COMPOSITE,
@@ -1121,6 +1123,53 @@ class FrameDriverScriptedTest {
         assertEquals(List.of("deferred", "composite", "final"), slotsIn(h.calls(), "activate"),
                 "no activation for a pass whose bindings were refused");
         assertEquals(List.of("composite1"), slotsIn(h.calls(), "discard"));
+    }
+
+    @Test
+    void gbuffersScopeBindsEstateUnitsBetweenTargetBindAndActivation() {
+        Handle h = composition();
+        h.stages().add(TERRAIN_STEP, prelude(TERRAIN_STEP, "gbuffers_terrain_solid"));
+        h.barrier().selectedSlots.add("gbuffers_terrain_solid");
+        InertBindingSnapshot lease = new InertBindingSnapshot();
+        h.estate().bindings = pass -> new TextureBindingResult.Bound(lease);
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+        h.calls().clear();
+
+        ScopeOpenResult opened = h.driver().enter(token, RenderSection.TERRAIN_SOLID);
+        assertTrue(opened instanceof ScopeOpenResult.Opened, "got " + opened);
+        assertEquals(DrawDisposition.DRAW_FIXED_FUNCTION, ((ScopeOpenResult.Opened) opened).draw(),
+                "the fake barrier activates fixed-function; the operation is still drawn");
+        int bind = h.calls().indexOf("bind:fbo");
+        int bindings = h.calls().indexOf("bindings:gbuffers_terrain_solid");
+        int activate = h.calls().indexOf("activate:gbuffers_terrain_solid");
+        assertTrue(bind >= 0 && bind < bindings && bindings < activate,
+                "PHASE_5_DOC §4.4 step 5: target bind, then the sixteen rows, then activation; got "
+                        + h.calls());
+        assertFalse(lease.closed, "the lease stays open while the scope draws");
+        assertTrue(h.driver().exit(token, ((ScopeOpenResult.Opened) opened).scope())
+                instanceof ScopeCloseResult.Closed);
+        assertTrue(lease.closed, "scope exit closes the binding lease");
+    }
+
+    @Test
+    void degradedGbuffersBindingsOmitTheOperationWithoutActivation() {
+        Handle h = composition();
+        h.stages().add(TERRAIN_STEP, prelude(TERRAIN_STEP, "gbuffers_terrain_solid"));
+        h.barrier().selectedSlots.add("gbuffers_terrain_solid");
+        h.estate().bindings = pass -> new TextureBindingResult.Rejected(
+                com.schmaloogium.engine.buffers.TextureBindingRejection.INVALID_INPUT);
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+        h.calls().clear();
+
+        ScopeOpenResult opened = h.driver().enter(token, RenderSection.TERRAIN_SOLID);
+        assertTrue(opened instanceof ScopeOpenResult.Opened, "got " + opened);
+        assertEquals(DrawDisposition.OMIT_OPERATION, ((ScopeOpenResult.Opened) opened).draw());
+        assertEquals(List.of(), slotsIn(h.calls(), "activate"), "no activation without units");
+        assertTrue(h.driver().exit(token, ((ScopeOpenResult.Opened) opened).scope())
+                instanceof ScopeCloseResult.Closed);
+        assertEquals(List.of("gbuffers_terrain_solid"), slotsIn(h.calls(), "discard"));
     }
 
     @Test

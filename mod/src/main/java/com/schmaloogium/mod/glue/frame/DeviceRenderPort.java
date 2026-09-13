@@ -80,8 +80,12 @@ public final class DeviceRenderPort implements FrameRenderPort {
         try {
             Extent2i extent = targetExtent.get();
             switch (target) {
-                case PassDrawTarget.EngineFramebuffer engine ->
-                        device.framebuffers().bind(FramebufferTarget.DRAW, engine.framebuffer());
+                case PassDrawTarget.EngineFramebuffer engine -> {
+                    device.framebuffers().bind(FramebufferTarget.DRAW, engine.framebuffer());
+                    if (PROBE_BUFFERS) {
+                        logBoundFramebuffer();
+                    }
+                }
                 case PassDrawTarget.Screen screen -> {
                     // 1.12.2 presents through Minecraft's own main framebuffer, not FBO 0
                     // (PHASE_5_DOC §1.3): the "screen" target is that framebuffer.
@@ -252,6 +256,138 @@ public final class DeviceRenderPort implements FrameRenderPort {
         LOG.info("H-PORT-DRAW {} (install #{}): unit0 texture {} drawFbo {} attachment0 {} program {} blend {} fixedFunction {}",
                 draw.pass().slot().packName(), FrameHooks.installEpoch(), unit0, drawFbo, attachment0, program,
                 GL11.glIsEnabled(GL11.GL_BLEND), fixedFunction);
+        if (PROBE_BUFFERS) {
+            LOG.info("H-PORT-PROBE {} (install #{}): {}", draw.pass().slot().packName(),
+                    FrameHooks.installEpoch(), probeBoundUnits());
+        }
+    }
+
+    private final java.util.Set<String> framebuffersLogged = new java.util.HashSet<>();
+
+    /** H-PORT-BIND (probe only): the draw FBO's real colour/depth attachments and draw buffers. */
+    private void logBoundFramebuffer() {
+        int fbo = GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER_BINDING);
+        if (!framebuffersLogged.add(FrameHooks.installEpoch() + ":" + fbo)) {
+            return;
+        }
+        StringBuilder colors = new StringBuilder();
+        StringBuilder draws = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            int type = org.lwjgl.opengl.GL30.glGetFramebufferAttachmentParameteri(
+                    org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER, org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0 + i,
+                    org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
+            int name = type == GL11.GL_NONE ? 0 : org.lwjgl.opengl.GL30.glGetFramebufferAttachmentParameteri(
+                    org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER, org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0 + i,
+                    org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
+            colors.append(i).append('=').append(name).append(' ');
+            int drawBuffer = GL11.glGetInteger(org.lwjgl.opengl.GL20.GL_DRAW_BUFFER0 + i);
+            draws.append(drawBuffer == GL11.GL_NONE ? "N" : String.valueOf(drawBuffer - org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0)).append(' ');
+        }
+        int depthType = org.lwjgl.opengl.GL30.glGetFramebufferAttachmentParameteri(
+                org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER, org.lwjgl.opengl.GL30.GL_DEPTH_ATTACHMENT,
+                org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
+        int depthName = depthType == GL11.GL_NONE ? 0 : org.lwjgl.opengl.GL30.glGetFramebufferAttachmentParameteri(
+                org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER, org.lwjgl.opengl.GL30.GL_DEPTH_ATTACHMENT,
+                org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
+        int status = org.lwjgl.opengl.GL30.glCheckFramebufferStatus(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER);
+        int[] vp = new int[4];
+        GL11.glGetIntegerv(GL11.GL_VIEWPORT, vp);
+        LOG.info("H-PORT-BIND fbo {} (install #{}): colors[{}] depth(type {}) {} drawBuffers[{}] status {} viewport {}x{} depthTest {} depthMask {} colorMask {} cull {} alphaTest {} blend {} program {}",
+                fbo, FrameHooks.installEpoch(), colors.toString().trim(), depthType, depthName, draws.toString().trim(),
+                status, vp[2], vp[3], GL11.glIsEnabled(GL11.GL_DEPTH_TEST), GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK),
+                GL11.glGetBoolean(GL11.GL_COLOR_WRITEMASK), GL11.glIsEnabled(GL11.GL_CULL_FACE),
+                GL11.glIsEnabled(GL11.GL_ALPHA_TEST), GL11.glIsEnabled(GL11.GL_BLEND),
+                GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM));
+        while (GL11.glGetError() != GL11.GL_NO_ERROR) {
+            // probe-only queries never charge the pass
+        }
+    }
+
+    /** {@code -Dschmaloogium.debug.probeBuffers=true}: centre texel of every bound unit, one-shot. */
+    private static final boolean PROBE_BUFFERS = Boolean.getBoolean("schmaloogium.debug.probeBuffers");
+
+    /**
+     * Debug evidence only: for each of the sixteen units, the bound 2D texture's name, size and
+     * centre texel (RGBA, or depth when the texture is a depth format), read through a scratch
+     * framebuffer. Raw GL with every touched binding restored; never on a hot path.
+     */
+    private static String probeBoundUnits() {
+        int savedUnit = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
+        int savedRead = GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER_BINDING);
+        int savedDraw = GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER_BINDING);
+        int scratch = org.lwjgl.opengl.GL30.glGenFramebuffers();
+        StringBuilder out = new StringBuilder();
+        try {
+            org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER, scratch);
+            for (int unit = 0; unit < 16; unit++) {
+                GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit);
+                int name = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
+                if (name == 0) {
+                    continue;
+                }
+                int w = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
+                int h = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
+                int depthBits = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0,
+                        org.lwjgl.opengl.GL30.GL_TEXTURE_DEPTH_SIZE);
+                int texels = Math.max(1, w * h);
+                java.nio.FloatBuffer px = org.lwjgl.BufferUtils.createFloatBuffer(texels * 4);
+                if (depthBits > 0) {
+                    org.lwjgl.opengl.GL30.glFramebufferTexture2D(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER,
+                            org.lwjgl.opengl.GL30.GL_DEPTH_ATTACHMENT, GL11.GL_TEXTURE_2D, name, 0);
+                    GL11.glReadPixels(0, 0, w, h, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, px);
+                    org.lwjgl.opengl.GL30.glFramebufferTexture2D(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER,
+                            org.lwjgl.opengl.GL30.GL_DEPTH_ATTACHMENT, GL11.GL_TEXTURE_2D, 0, 0);
+                    float min = 1f;
+                    int nearCount = 0;
+                    for (int i = 0; i < texels; i++) {
+                        float d = px.get(i);
+                        if (d < min) {
+                            min = d;
+                        }
+                        if (d < 0.9999f) {
+                            nearCount++;
+                        }
+                    }
+                    out.append(String.format(java.util.Locale.ROOT, " %d:tex%d %dx%d depth[min=%.4f centre=%.4f drawn=%.1f%%]",
+                            unit, name, w, h, min, px.get((h / 2) * w + w / 2), 100.0 * nearCount / texels));
+                } else {
+                    org.lwjgl.opengl.GL30.glFramebufferTexture2D(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER,
+                            org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, name, 0);
+                    GL11.glReadBuffer(org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0);
+                    GL11.glReadPixels(0, 0, w, h, GL11.GL_RGBA, GL11.GL_FLOAT, px);
+                    org.lwjgl.opengl.GL30.glFramebufferTexture2D(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER,
+                            org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, 0, 0);
+                    double[] sum = new double[4];
+                    int distinct = 0;
+                    float r0 = px.get(0);
+                    float g0 = px.get(1);
+                    float b0 = px.get(2);
+                    for (int i = 0; i < texels; i++) {
+                        for (int c = 0; c < 4; c++) {
+                            sum[c] += px.get(i * 4 + c);
+                        }
+                        if (px.get(i * 4) != r0 || px.get(i * 4 + 1) != g0 || px.get(i * 4 + 2) != b0) {
+                            distinct++;
+                        }
+                    }
+                    int c = ((h / 2) * w + w / 2) * 4;
+                    out.append(String.format(java.util.Locale.ROOT,
+                            " %d:tex%d %dx%d mean=(%.3f,%.3f,%.3f,%.3f) centre=(%.3f,%.3f,%.3f,%.3f) varied=%.1f%%",
+                            unit, name, w, h, sum[0] / texels, sum[1] / texels, sum[2] / texels, sum[3] / texels,
+                            px.get(c), px.get(c + 1), px.get(c + 2), px.get(c + 3), 100.0 * distinct / texels));
+                }
+                // Drain whatever the probe raised so it is never attributed to the pass.
+                while (GL11.glGetError() != GL11.GL_NO_ERROR) {
+                    // discard
+                }
+            }
+        } finally {
+            org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER, savedRead);
+            org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER, savedDraw);
+            org.lwjgl.opengl.GL30.glDeleteFramebuffers(scratch);
+            GL13.glActiveTexture(savedUnit);
+        }
+        return out.toString();
     }
 
     /** H-FRAME-08 evidence: the first final draw into Minecraft's framebuffer per install. */

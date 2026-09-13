@@ -25,4 +25,15 @@ public sealed interface TextureBindingOutcome {
 
     record Unused() implements TextureBindingOutcome {
     }
+
+    /**
+     * A declared fixed unit the platform owns during this pass (PHASE_5_DOC §4.12.2:
+     * {@code texture}/{@code lightmap} at units 0/1 in the gbuffers and shadow families).
+     * The estate records the demand and issues no bind: whatever vanilla bound stays.
+     */
+    record ForeignRetained(List<ResolvedSamplerBinding> names) implements TextureBindingOutcome {
+        public ForeignRetained {
+            names = List.copyOf(names);
+        }
+    }
 }

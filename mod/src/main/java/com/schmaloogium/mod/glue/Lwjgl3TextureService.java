@@ -491,15 +491,33 @@ final class Lwjgl3TextureService implements TextureService {
         int glName = resolveForBind(t, "textures.bindToUnit");
         int glTarget = bindTargetOf(t);
         // [D-P1-29]: active-unit selection and 2D binds through GlStateManager's cached
-        // path; other targets bind raw because the vanilla cache models only the 2D slot.
-        GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + unit);
-        if (glTarget == GL11.GL_TEXTURE_2D) {
-            GlStateManager.bindTexture(glName);
+        // path for the units its cache models (0-7); other targets bind raw because the
+        // vanilla cache models only the 2D slot. Units 8-15 lie past GlStateManager's
+        // eight-entry texture-state array (its setActiveTexture would index out of bounds
+        // and strand vanilla on that unit), so they bind raw. Every call leaves the active
+        // unit exactly as it found it: vanilla's next bindTexture must still land on the
+        // unit it believes is active (the atlas on 0, the lightmap on 1).
+        int savedActiveUnit = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
+        boolean cachedUnit = unit < GLSM_CACHED_UNITS
+                && savedActiveUnit - GL13.GL_TEXTURE0 < GLSM_CACHED_UNITS;
+        if (cachedUnit) {
+            GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + unit);
+            if (glTarget == GL11.GL_TEXTURE_2D) {
+                GlStateManager.bindTexture(glName);
+            } else {
+                GL11.glBindTexture(glTarget, glName);
+            }
+            GlStateManager.setActiveTexture(savedActiveUnit);
         } else {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit);
             GL11.glBindTexture(glTarget, glName);
+            GL13.glActiveTexture(savedActiveUnit);
         }
         device.noteMutation("textures.bindToUnit", ((Lwjgl3Handle) t).subjectLabel());
     }
+
+    /** GlStateManager's textureState array length (vanilla 1.12.2 tracks eight units). */
+    private static final int GLSM_CACHED_UNITS = 8;
 
     private int resolveForBind(TextureHandle t, String verb) {
         if (t instanceof Lwjgl3OwnedTexture owned) {

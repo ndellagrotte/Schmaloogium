@@ -16,7 +16,6 @@ import com.schmaloogium.engine.buffers.ShadowEstateResult;
 import com.schmaloogium.engine.buffers.ShadowEstateUnavailable;
 import com.schmaloogium.engine.buffers.ShadowNeutralReason;
 import com.schmaloogium.engine.buffers.ShadowNeutralizationResult;
-import com.schmaloogium.engine.config.BufferMinima;
 import com.schmaloogium.engine.config.EngineOptionData;
 import com.schmaloogium.engine.diag.DiagnosticReporter;
 import com.schmaloogium.engine.diag.DiagnosticSeverity;
@@ -188,8 +187,8 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
                     + PackFrontEnd.CURRENT_SCHEMA_VERSION, List.of());
         }
         DimensionKey dimension = pickDimension(cfg, services.liveDimension().get());
-        BufferMinima minima = cfg.resources().minima();
-        boolean requestedShadow = minima.shadowDepthBuffers() > 0 || minima.shadowColorBuffers() > 0;
+        // The shadow demand is the planned projection's (P5 sizes from the registry's
+        // sampler declarations plus the P3 minima floor), read once the estate exists.
         // Step 2: the P6 runtime precedes P4 (its participants compose the barrier).
         a.collector = new ReplayErrorCollector(cfg.fingerprint().value(), services.diagnostics());
         UniformBuildResult uniforms = services.stages().uniforms(
@@ -280,6 +279,9 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
             return a.fail("estate-view", "generation " + publishedEstate.generation(), List.of());
         }
         // D-P7-46 / D-P7-59: one shadow disposition read, neutralized at v0.1.
+        var plannedShadow = estateView.get().resources().projection().shadow();
+        boolean requestedShadow = plannedShadow.depthTextures() > 0
+                || plannedShadow.colorTextures() > 0;
         String shadowFailure = shadowDisposition(estateView.get(), publishedEstate.generation(),
                 requestedShadow);
         if (shadowFailure != null) {

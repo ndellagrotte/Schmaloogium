@@ -166,16 +166,110 @@ public final class FrameHooks {
         Matrix4Value modelView = readMatrix(0x0BA6); // GL_MODELVIEW_MATRIX
         Matrix4Value projection = readMatrix(0x0BA7); // GL_PROJECTION_MATRIX
         try {
-            var result = driver().captureMainCamera(token, new CameraSnapshot(modelView, projection));
+            CameraSnapshot camera = new CameraSnapshot(modelView, projection);
+            var result = driver().captureMainCamera(token, camera);
             noteScopeVerdict("captureMainCamera",
                     result instanceof com.schmaloogium.engine.frame.FrameStepResult.Aborted
                             ? result.toString() : null);
             if (result instanceof com.schmaloogium.engine.frame.FrameStepResult.Aborted) {
                 currentFrame = null;
                 restoreVanilla();
+                return;
             }
+            emitCelestial(token, camera);
         } catch (RuntimeException e) {
             contain("captureMainCamera", token, e);
+        }
+    }
+
+    private static volatile int lastFogMode = 9729; // GL_LINEAR until vanilla says otherwise
+    private static volatile com.schmaloogium.engine.uniforms.Float3 lastFogColor;
+    private static volatile boolean fogLogged = true;
+
+    /**
+     * H-FOG-02 (PHASE_7_DOC §4.10 hook catalog, Forge event observer): vanilla's fog colour
+     * for this frame, published as the P6 fog signal. Vanilla computes it in
+     * {@code updateFogColor} before the ordinal-0 clear, so the estate's fog-RGB clear and
+     * the {@code fogColor} uniform see this frame's value; the mode arrives with
+     * {@link #onFogMode} at {@code setupFog} and re-publishes.
+     */
+    public static void onFogColors(float red, float green, float blue) {
+        lastFogColor = new com.schmaloogium.engine.uniforms.Float3(
+                clamp01(red), clamp01(green), clamp01(blue));
+        publishFog();
+    }
+
+    public static void onFogMode(int fogMode) {
+        lastFogMode = fogMode;
+        publishFog();
+    }
+
+    private static void publishFog() {
+        FrameToken token = currentFrame;
+        com.schmaloogium.engine.uniforms.Float3 color = lastFogColor;
+        if (token == null || color == null) {
+            return;
+        }
+        try {
+            var accepted = driver().uniformSignals().event(token,
+                    new com.schmaloogium.engine.frame.spi.UniformSignal.Fog(lastFogMode, 0f, color));
+            if (!fogLogged) {
+                fogLogged = true;
+                com.schmaloogium.engine.log.Logs.channel(
+                        com.schmaloogium.engine.log.LogChannels.FRAME).info(
+                        "H-FOG-02 first fog signal (install #{}): {} mode {} color {}",
+                        installEpoch, accepted.getClass().getSimpleName(), lastFogMode, color);
+            }
+        } catch (RuntimeException e) {
+            contain("fog", token, e);
+        }
+    }
+
+    private static float clamp01(float value) {
+        return !Float.isFinite(value) || value < 0f ? 0f : value > 1f ? 1f : value;
+    }
+
+    private static volatile java.util.function.DoubleSupplier sunPathRotationDegrees = () -> 0d;
+    private static volatile boolean celestialLogged = true;
+
+    /** Composition root: the active pack's {@code sunPathRotation} (degrees), 0 when none. */
+    public static void installSunPathRotation(java.util.function.DoubleSupplier degrees) {
+        sunPathRotationDegrees = java.util.Objects.requireNonNull(degrees, "degrees");
+    }
+
+    /**
+     * H-SKY-02: the same-frame post-camera celestial event (PHASE_7_DOC §4.3, PHASE_8_DOC
+     * §4.5.4). The four w=0 eye vectors come from Phase 8's pure {@code CelestialMath} over
+     * the captured main model-view and vanilla's celestial angle; the driver forwards them
+     * to Phase 6 as {@code sunPosition}/{@code moonPosition}/{@code shadowLightPosition}/
+     * {@code upPosition}. Before this the cells held their zero neutrals and every classic
+     * pack's lighting collapsed to black.
+     */
+    private static void emitCelestial(FrameToken token, CameraSnapshot camera) {
+        McFrameState.CelestialInputs inputs = McFrameState.celestialInputs();
+        if (inputs == null) {
+            return;
+        }
+        float sunPath = (float) sunPathRotationDegrees.getAsDouble();
+        com.schmaloogium.engine.frame.ShadowFrameView view = new com.schmaloogium.engine.frame.ShadowFrameView(
+                McFrameState.worldEpoch(), 0L, inputs.partialTicks(), reservedTerrainToken,
+                inputs.cameraPosition(),
+                com.schmaloogium.mod.glue.uniforms.CelestialAngles.skyAngle(inputs.celestialAngle()),
+                com.schmaloogium.mod.glue.uniforms.CelestialAngles.sunAngle(inputs.celestialAngle()));
+        com.schmaloogium.engine.uniforms.CelestialSample sample =
+                com.schmaloogium.engine.shadow.CelestialMath.sample(view, camera,
+                        Float.isFinite(sunPath) ? sunPath : 0f);
+        var accepted = driver().uniformSignals().event(token,
+                new com.schmaloogium.engine.frame.spi.UniformSignal.Celestial(
+                        sample.sunPosition(), sample.moonPosition(),
+                        sample.shadowLightPosition(), sample.upPosition()));
+        if (!celestialLogged) {
+            celestialLogged = true;
+            com.schmaloogium.engine.log.Logs.channel(
+                    com.schmaloogium.engine.log.LogChannels.FRAME).info(
+                    "H-SKY-02 first celestial signal (install #{}): {} sky {} sun {} sunPathRotation {} sunPosition {} upPosition {}",
+                    installEpoch, accepted.getClass().getSimpleName(), view.skyAngle(),
+                    view.sunAngle(), sunPath, sample.sunPosition(), sample.upPosition());
         }
     }
 
@@ -288,6 +382,8 @@ public final class FrameHooks {
     public static void noteCompositionInstalled() {
         installEpoch++;
         firstOpenAfterInstallLogged = false;
+        celestialLogged = false;
+        fogLogged = false;
         containmentLogged = false;
         scopeVerdictsLogged.clear();
         hooksObservedLogged.clear();
@@ -400,13 +496,20 @@ public final class FrameHooks {
         restoreVanilla();
     }
 
+    /**
+     * {@code glGetFloatv} returns the sixteen floats column-major, which is exactly the
+     * order {@link Matrix4Value} stores and uploads ({@code transpose = false}). The value
+     * must be built in that order: the earlier row-by-row construction uploaded every
+     * captured matrix transposed, so each pack's {@code gbufferModelViewInverse * gl_ModelViewMatrix}
+     * round trip mis-placed every vertex and classic terrain vanished (Task D 2026-09-12).
+     */
     private static Matrix4Value readMatrix(int glMatrixEnum) {
         FloatBuffer buf = McFrameState.matrixScratch();
         McFrameState.getFloat(glMatrixEnum, buf);
-        return new Matrix4Value(
-                buf.get(0), buf.get(4), buf.get(8), buf.get(12),
-                buf.get(1), buf.get(5), buf.get(9), buf.get(13),
-                buf.get(2), buf.get(6), buf.get(10), buf.get(14),
-                buf.get(3), buf.get(7), buf.get(11), buf.get(15));
+        float[] columnMajor = new float[16];
+        for (int i = 0; i < 16; i++) {
+            columnMajor[i] = buf.get(i);
+        }
+        return Matrix4Value.ofColumnMajor(columnMajor);
     }
 }

@@ -86,11 +86,9 @@ public final class McUniformPlatformProvider implements UniformPlatformProvider 
                 skyColor = new Float3(clamp01((float) sky.x), clamp01((float) sky.y),
                         clamp01((float) sky.z));
             }
-            float celestial = world.getCelestialAngle(partial);
-            sunAngle = Float.isFinite(celestial) ? celestial - (float) Math.floor(celestial) : 0f;
-            if (sunAngle >= 1f || sunAngle < 0f) {
-                sunAngle = 0f;
-            }
+            // The pack's sunAngle is sunrise-based (0.25 at noon), not vanilla's celestial
+            // angle (0 at noon): CelestialAngles applies the App D.2 mapping.
+            sunAngle = CelestialAngles.sunAngle(world.getCelestialAngle(partial));
         }
         float gamma = clamp01(mc.gameSettings.gammaSetting);
         float far = Math.max(0f, mc.gameSettings.renderDistanceChunks * 16f);

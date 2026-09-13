@@ -276,10 +276,26 @@ public final class SourceIndex {
         state.put(id, DONE);
     }
 
+    /**
+     * UTF-8 with an optional BOM, line endings normalized to LF: classic packs ship CRLF
+     * sources (SEUS Renewed, projectLUMA), and every line-anchored scanner downstream
+     * (uniform declarations, const options, DRAWBUFFERS, version/extension lines) matches
+     * whole lines. A CR is whitespace to GLSL, so the normalization changes no program;
+     * line counts are preserved so attribution stays aligned.
+     */
     private static String decodeUtf8(byte[] bytes) {
         int start = bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF
             && (bytes[1] & 0xFF) == 0xBB && (bytes[2] & 0xFF) == 0xBF ? 3 : 0;
-        return new String(bytes, start, bytes.length - start, StandardCharsets.UTF_8);
+        return normalizeLineEndings(
+            new String(bytes, start, bytes.length - start, StandardCharsets.UTF_8));
+    }
+
+    /** CRLF and lone CR become LF; LF-only text is returned unchanged. */
+    static String normalizeLineEndings(String text) {
+        if (text.indexOf('\r') < 0) {
+            return text;
+        }
+        return text.replace("\r\n", "\n").replace('\r', '\n');
     }
 
     private static EngineDiagnostic diagWarn(String key, String detail) {

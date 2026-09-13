@@ -33,6 +33,8 @@ import com.schmaloogium.engine.gl.TextureAllocationTarget;
 import com.schmaloogium.engine.gl.TextureBorderColor;
 import com.schmaloogium.engine.gl.TextureCompareFunction;
 import com.schmaloogium.engine.gl.TextureCompareMode;
+import com.schmaloogium.engine.gl.TextureData;
+import com.schmaloogium.engine.gl.TextureRegion;
 import com.schmaloogium.engine.gl.TextureExtent;
 import com.schmaloogium.engine.gl.TextureHandle;
 import com.schmaloogium.engine.gl.TextureMagFilter;
@@ -44,6 +46,7 @@ import com.schmaloogium.engine.gl.TextureWrap;
 import com.schmaloogium.engine.registry.BufferDomain;
 import com.schmaloogium.engine.registry.DrawRoutingSlot;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -191,6 +194,30 @@ public final class CandidateBuilder {
                     "schmaloogium.buffers.error.shadow.estate-failed",
                     shadow.failure().diagnosticId()));
             }
+        }
+
+        // §4.12.2 default companion backings for units 2/3 of the gbuffers/shadow families:
+        // owned by the estate until Phase 13 publishes real companions (Task D ruling).
+        ledger.beginAllocation();
+        try {
+            TextureHandle[] companions = allocateCompanionNeutrals(device, ledger);
+            core.companionNormalsNeutral = companions[0];
+            core.companionSpecularNeutral = companions[1];
+            int noiseResolution = artifacts.plannedProjection().noiseResolution();
+            if (noiseResolution > 0) {
+                core.noiseTexture = allocateNoise(device, ledger, noiseResolution);
+            }
+            ledger.commitAllocation();
+        } catch (RuntimeException companionFailure) {
+            ledger.dropAllocation();
+            ledger.walkReverse();
+            request.diagnostics().report(BufferDiagnostics.backendFailure(
+                "schmaloogium.buffers.error.build.companion-neutral",
+                String.valueOf(companionFailure)));
+            return new BufferBuildResult.ShadersOff(failure(
+                BufferFailureCode.TEXTURE_ALLOCATION,
+                "schmaloogium.buffers.error.build.companion-neutral",
+                "schmaloogium.buffers.error.build.companion-neutral: " + companionFailure));
         }
 
         CandidateImpl candidate = new CandidateImpl(core, ledger);
@@ -556,6 +583,70 @@ public final class CandidateBuilder {
             FormatTable.row(FormatTable.fallbackFormat()).allocationLayout(),
             extent, mipLevels));
         device.textures().setParameters(texture, shadowColorParameters(resource, mipLevels));
+        return texture;
+    }
+
+    /**
+     * The two 1x1 RGBA8 companion defaults (normals (128,128,255,255): flat +Z; specular
+     * (0,0,0,0): no reflectance) that back fixed units 2/3 in the gbuffers/shadow families
+     * while no companion atlas is published. Both are ledger-owned; order is normals then
+     * specular.
+     */
+    static TextureHandle[] allocateCompanionNeutrals(GLDevice device, Ledger ledger) {
+        TextureHandle normals = allocateCompanionNeutral(device, ledger, "normals",
+            new byte[] {(byte) 0x80, (byte) 0x80, (byte) 0xFF, (byte) 0xFF});
+        TextureHandle specular = allocateCompanionNeutral(device, ledger, "specular",
+            new byte[] {0, 0, 0, 0});
+        return new TextureHandle[] {normals, specular};
+    }
+
+    /**
+     * The generated noise texture (PHASE_13_DOC §4.2.2 signed recurrence, RGB bytes widened
+     * to RGBA8 with opaque alpha) at the planned {@code noiseTextureResolution}, sampled
+     * LINEAR/LINEAR/REPEAT (the P13 generated-noise baseline). Ledger-owned.
+     */
+    static TextureHandle allocateNoise(GLDevice device, Ledger ledger, int resolution) {
+        TextureHandle texture = device.textures().create("schmaloogium.buffers/noisetex");
+        ledger.add(texture);
+        FormatTable.FormatRow row = FormatTable.row(FormatTable.fallbackFormat());
+        TextureExtent extent = new TextureExtent(resolution, resolution, 1);
+        device.textures().allocate(texture, new TextureSpec.ColorTextureSpec(
+            TextureAllocationTarget.TEXTURE_2D, FormatTable.fallbackFormat(),
+            row.allocationLayout(), extent, 1));
+        byte[] rgb = com.schmaloogium.engine.textures.internal.NoiseGenerator.generateRgb(
+            resolution);
+        ByteBuffer texels = ByteBuffer.allocate(resolution * resolution * 4);
+        for (int index = 0; index < rgb.length; index += 3) {
+            texels.put(rgb[index]).put(rgb[index + 1]).put(rgb[index + 2]).put((byte) 0xFF);
+        }
+        texels.rewind();
+        device.textures().upload(texture, new TextureData(TextureAllocationTarget.TEXTURE_2D,
+            new TextureRegion(0, 0, 0, resolution, resolution, 1), 0, row.allocationLayout(),
+            texels));
+        device.textures().setParameters(texture, new TextureParameters(
+            TextureMinFilter.LINEAR, TextureMagFilter.LINEAR, TextureWrap.REPEAT,
+            TextureWrap.REPEAT, TextureWrap.REPEAT, TextureCompareMode.NONE,
+            TextureCompareFunction.LEQUAL, new TextureBorderColor(0.0f, 0.0f, 0.0f, 0.0f),
+            0.0f, 0.0f, 0.0f, 1.0f, 0, 0, TextureSwizzle.IDENTITY));
+        return texture;
+    }
+
+    private static TextureHandle allocateCompanionNeutral(GLDevice device, Ledger ledger,
+            String kind, byte[] texel) {
+        TextureHandle texture = device.textures().create(
+            "schmaloogium.buffers/companion-neutral-" + kind);
+        ledger.add(texture);
+        FormatTable.FormatRow row = FormatTable.row(FormatTable.fallbackFormat());
+        TextureExtent extent = new TextureExtent(1, 1, 1);
+        device.textures().allocate(texture, new TextureSpec.ColorTextureSpec(
+            TextureAllocationTarget.TEXTURE_2D, FormatTable.fallbackFormat(),
+            row.allocationLayout(), extent, 1));
+        ByteBuffer texels = ByteBuffer.allocate(4);
+        texels.put(texel);
+        texels.rewind();
+        device.textures().upload(texture, new TextureData(TextureAllocationTarget.TEXTURE_2D,
+            new TextureRegion(0, 0, 0, 1, 1, 1), 0, row.allocationLayout(), texels));
+        device.textures().setParameters(texture, baseParameters(TextureMinFilter.NEAREST, 1));
         return texture;
     }
 

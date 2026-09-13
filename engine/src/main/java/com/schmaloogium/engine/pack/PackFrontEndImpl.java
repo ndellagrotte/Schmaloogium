@@ -383,6 +383,13 @@ final class PackFrontEndImpl implements PackFrontEnd {
         Map<String, OptionCatalogBuilder.Raw.FindingValues> constValues = new LinkedHashMap<>();
         Set<String> confirmed = confirmedSwitchNames(rawProperties);
         Map<String, ConstScanner.Finding> consts = new LinkedHashMap<>();
+        // Per-program requirements scanned from each program's own sources: the fragment
+        // stage's DRAWBUFFERS routing and the program's countInstances (source-scan
+        // resource sizing, RESEARCH §4.4; Task D 2026-09-12).
+        Map<com.schmaloogium.engine.config.ProgramRequirementKey, com.schmaloogium.engine.config.DrawRouting>
+            programRouting = new LinkedHashMap<>();
+        Map<com.schmaloogium.engine.config.ProgramRequirementKey, Integer> programInstances =
+            new LinkedHashMap<>();
         for (SourceKey root : index.roots()) {
             SourceDocument doc = index.rootDocument(root).orElse(null);
             if (doc == null) {
@@ -393,7 +400,41 @@ final class PackFrontEndImpl implements PackFrontEnd {
             OptionCatalogBuilder.scanSwitches(docText, attribution, switchOcc, switchDefaults,
                 switchValues, tooltips, confirmed);
             OptionCatalogBuilder.scanConsts(docText, attribution, constOcc, constValues);
-            ConstScanner.scan(docText).forEach(consts::putIfAbsent);
+            Map<String, ConstScanner.Finding> docConsts = ConstScanner.scan(docText);
+            docConsts.forEach(consts::putIfAbsent);
+            var programKey = new com.schmaloogium.engine.config.ProgramRequirementKey(
+                root.dimension(), root.programName());
+            if (root.stage() == com.schmaloogium.engine.preprocess.ShaderSourceStage.FRAGMENT) {
+                com.schmaloogium.engine.config.DrawBuffersScanner.scan(docText)
+                    .ifPresent(routing -> programRouting.put(programKey, routing));
+            }
+            ConstScanner.Finding instances = docConsts.get("countInstances");
+            if (instances != null && "int".equals(instances.type())) {
+                try {
+                    int count = Integer.parseInt(instances.value().trim());
+                    programInstances.merge(programKey, Math.max(1, count), Math::max);
+                } catch (NumberFormatException ignored) {
+                    // an unparsable countInstances is the default of one
+                }
+            }
+        }
+        Map<com.schmaloogium.engine.config.ProgramRequirementKey,
+            com.schmaloogium.engine.config.ProgramRequirements> programRequirements =
+            new java.util.TreeMap<>(java.util.Comparator
+                .comparing((com.schmaloogium.engine.config.ProgramRequirementKey k) ->
+                    k.dimension().legacyId().orElse(-1))
+                .thenComparing(com.schmaloogium.engine.config.ProgramRequirementKey::programName));
+        java.util.Set<com.schmaloogium.engine.config.ProgramRequirementKey> programKeys =
+            new java.util.LinkedHashSet<>(programRouting.keySet());
+        programKeys.addAll(programInstances.keySet());
+        for (var programKey : programKeys) {
+            programRequirements.put(programKey, new com.schmaloogium.engine.config.ProgramRequirements(
+                programRouting.getOrDefault(programKey,
+                    new com.schmaloogium.engine.config.DrawRouting.AllUsed()),
+                java.util.Set.of(),
+                new com.schmaloogium.engine.config.VertexRequirements(java.util.Set.of()),
+                programInstances.getOrDefault(programKey, 1),
+                java.util.Optional.empty()));
         }
         List<OptionDefinition> definitions = OptionCatalogBuilder.build(
             new OptionCatalogBuilder.Raw(switchOcc, switchDefaults, switchValues,
@@ -473,7 +514,8 @@ final class PackFrontEndImpl implements PackFrontEnd {
             idEnv, blocks, items, entities, layers);
 
         // 8. resource requirements
-        var requirements = ResourceRequirementsBuilder.build(properties, consts);
+        var requirements = ResourceRequirementsBuilder.build(properties, consts,
+            programRequirements);
 
         // 9. compatibility + fingerprint + configuration
         String fingerprintValue = Sha256.hex((identity.contentHashes().toString()

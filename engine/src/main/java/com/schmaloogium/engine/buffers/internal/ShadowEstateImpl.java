@@ -394,16 +394,21 @@ public final class ShadowEstateImpl implements ShadowEstateView {
             resolved.rows(), resolved.diagnostics()));
     }
 
-    /** One demanded row's backing object from the frozen snapshot (neutral-aware). */
+    /** One demanded row's backing object from the frozen snapshot (neutral-aware). The
+     *  shadow stage is a platform family (§4.12.2): units 0/1 are foreign and never
+     *  resolved here; units 2/3 are the companion defaults. */
     private TextureHandle backingFor(ShadowPassSnapshot snapshot, int unit) {
         return switch (unit) {
-            case 4 -> shadowDepthBacking(snapshot, 0);
+            case 0, 1 -> null;
+            case 2 -> core.companionNormalsNeutral;
+            case 3 -> core.companionSpecularNeutral;
+            case 4 -> core.shadowPlannedDepthCount() >= 1 ? shadowDepthBacking(snapshot, 0) : null;
             case 5 -> core.shadowPlannedDepthCount() >= 2
                 ? shadowDepthBacking(snapshot, 1) : null;
-            case 13 -> shadowColorBacking(snapshot, 0);
+            case 13 -> core.shadowPlannedColorCount() >= 1 ? shadowColorBacking(snapshot, 0) : null;
             case 14 -> core.shadowPlannedColorCount() >= 2
                 ? shadowColorBacking(snapshot, 1) : null;
-            case 15 -> null; // noisetex: P13 overlay at v0.1 (publication unavailable)
+            case 15 -> core.noiseTexture; // generated noise until the P13 publication lands
             default -> snapshot.readableTextures().get(logicalForUnit(unit));
         };
     }
@@ -424,7 +429,6 @@ public final class ShadowEstateImpl implements ShadowEstateView {
 
     private LogicalBuffer logicalForUnit(int unit) {
         return switch (unit) {
-            case 0, 1, 2, 3 -> new LogicalBuffer(BufferDomain.COLORTEX, new BufferIndex(unit));
             case 6 -> depth(0);
             case 7, 8, 9, 10 -> new LogicalBuffer(BufferDomain.COLORTEX,
                 new BufferIndex(unit - 3));
@@ -468,6 +472,12 @@ public final class ShadowEstateImpl implements ShadowEstateView {
                 rows.add(new TextureBindingRow(unit, new TextureBindingOutcome.Unused()));
                 continue;
             }
+            if (unit <= 1) {
+                // texture/lightmap: the platform's objects stay bound (§4.12.2).
+                rows.add(new TextureBindingRow(unit,
+                    new TextureBindingOutcome.ForeignRetained(names)));
+                continue;
+            }
             TextureHandle backing = backingFor(snapshot, unit);
             if (backing == null) {
                 for (ResolvedSamplerBinding name : names) {
@@ -482,7 +492,9 @@ public final class ShadowEstateImpl implements ShadowEstateView {
             DeclaredGlslType.Sampler shape = names.get(0).shape();
             rows.add(new TextureBindingRow(unit, new TextureBindingOutcome.BoundObject(
                 new TextureHandleRef.Borrowed(backing), shape, names,
-                new BindingOrigin(BindingOriginKind.ESTATE, List.of()))));
+                new BindingOrigin(unit == 15 ? BindingOriginKind.NOISE
+                    : unit <= 3 ? BindingOriginKind.NEUTRAL
+                    : BindingOriginKind.ESTATE, List.of()))));
             mask |= 1 << unit;
         }
         return new ResolvedRows(rows, diagnostics, degrade, mask);

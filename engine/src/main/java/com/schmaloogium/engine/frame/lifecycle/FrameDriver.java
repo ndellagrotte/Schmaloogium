@@ -17,6 +17,7 @@ import com.schmaloogium.engine.buffers.PassDiscardResult;
 import com.schmaloogium.engine.buffers.PassDrawTarget;
 import com.schmaloogium.engine.buffers.PassSnapshotResult;
 import com.schmaloogium.engine.buffers.TextureBindingResult;
+import com.schmaloogium.engine.buffers.TextureBindingSnapshot;
 import com.schmaloogium.engine.frame.AnaglyphEye;
 import com.schmaloogium.engine.frame.CameraSnapshot;
 import com.schmaloogium.engine.frame.DrawDisposition;
@@ -555,10 +556,24 @@ public final class FrameDriver implements FrameHookSink {
             scope.discardSnapshotOnClose = true;
             return scope;
         }
-        // v0.1: no textureBindings for gbuffers scopes. The fixed sampler map puts
-        // `texture`/`lightmap` at units 0/1 and Phase 5 would bind colortex0/1 there,
-        // clobbering vanilla's atlas and lightmap; vanilla owns those units until Phase 13
-        // publishes the overlay. Deferred/composite/final bind through executeFullscreen.
+        // §4.4 step 5: Phase 5 binds the sixteen rows for the scoped pass; in the gbuffers
+        // family units 0/1 stay the platform's (ForeignRetained) and 2/3 carry the companion
+        // defaults, so vanilla's atlas and lightmap are never clobbered (§4.12.2).
+        TextureBindingResult bindings = f.estateView().textureBindings(snapshot, null, null);
+        if (bindings instanceof TextureBindingResult.BackendFailed) {
+            latchShadersOff();
+            abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.scope-bindings");
+            throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.scope-bindings"));
+        }
+        if (!(bindings instanceof TextureBindingResult.Bound boundTextures)) {
+            // Degraded/rejected bindings: the pass stays undrawn, vanilla draws.
+            noteScopeBindings(section, "bindings " + bindings);
+            scope.disposition = DrawDisposition.OMIT_OPERATION;
+            scope.discardSnapshotOnClose = true;
+            return scope;
+        }
+        scope.bindings = boundTextures.snapshot();
+        noteScopeBindings(section, "Bound rows=" + boundUnits(boundTextures.snapshot()));
         BarrierResult activation = barrier.activate(new UseProgramRequest(selection, context));
         if (activation instanceof BarrierResult.Activated) {
             scope.disposition = DrawDisposition.DRAW_SHADER;
@@ -588,6 +603,8 @@ public final class FrameDriver implements FrameHookSink {
     }
 
     private boolean closeScope(Frame f, OpenScope scope) {
+        closeQuietly(scope.bindings);
+        scope.bindings = null;
         if (scope.snapshot != null) {
             boolean drawn = scope.disposition == DrawDisposition.DRAW_SHADER && scope.activated;
             if (drawn) {
@@ -617,6 +634,47 @@ public final class FrameDriver implements FrameHookSink {
             scope.activated = false;
         }
         return true;
+    }
+
+    /** One line per distinct scope-binding verdict per section per driver (never per frame):
+     *  the H-TERRAIN-01 evidence that gbuffers programs now receive their estate units. */
+    private final java.util.Set<String> scopeBindingsLogged =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private void noteScopeBindings(RenderSection section, String verdict) {
+        String key = section + ": " + verdict;
+        if (scopeBindingsLogged.add(key)) {
+            com.schmaloogium.engine.log.Logs.channel(com.schmaloogium.engine.log.LogChannels.FRAME)
+                    .info("H-TERRAIN-01 scope bindings {}", key);
+        }
+    }
+
+    /** Bound units, then every non-Unused row as {@code unit:kind(names)} — the evidence a
+     *  log reader needs to see which samplers each pass received and which stayed foreign. */
+    private static String boundUnits(TextureBindingSnapshot snapshot) {
+        StringBuilder units = new StringBuilder("[");
+        StringBuilder rows = new StringBuilder();
+        for (com.schmaloogium.engine.buffers.TextureBindingRow row : snapshot.rows()) {
+            String kind;
+            String names;
+            if (row.outcome() instanceof com.schmaloogium.engine.buffers.TextureBindingOutcome.BoundObject bound) {
+                if (units.length() > 1) {
+                    units.append(',');
+                }
+                units.append(row.unit());
+                kind = bound.origin().kind().name();
+                names = String.valueOf(bound.names().stream()
+                        .map(com.schmaloogium.engine.buffers.ResolvedSamplerBinding::exactName).toList());
+            } else if (row.outcome() instanceof com.schmaloogium.engine.buffers.TextureBindingOutcome.ForeignRetained foreign) {
+                kind = "FOREIGN";
+                names = String.valueOf(foreign.names().stream()
+                        .map(com.schmaloogium.engine.buffers.ResolvedSamplerBinding::exactName).toList());
+            } else {
+                continue;
+            }
+            rows.append(' ').append(row.unit()).append(':').append(kind).append(names);
+        }
+        return units.append(']').toString() + " purpose " + snapshot.purpose() + " rows" + rows;
     }
 
     /** Evidence for a failed scope close: the step and the closed result it answered. */
@@ -1074,6 +1132,7 @@ public final class FrameDriver implements FrameHookSink {
         boolean activated;
         boolean suspended;
         boolean discardSnapshotOnClose;
+        TextureBindingSnapshot bindings;
 
         OpenScope(ScopeToken token, RenderSection section, ProgramSlotId requested,
                 BarrierContext context) {

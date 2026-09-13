@@ -245,6 +245,15 @@ public final class UniformRuntimeImpl implements UniformRuntime, UniformCore {
         // ONCE bucket: configuration/world-provider install at construction (§4.4.1).
         OnceUniformSample once = platform.sampleOnce();
         cells.put("near", new UniformValue.F(once.nearPlane()));
+        // The shadow matrix cells exist from construction with identity neutrals
+        // (ShadowMatrixSample: "the interface and cells exist at v0.1 with identity-matrix
+        // neutrals"); withholding them left GL's all-zero default in every program, and a
+        // zero shadowProjection divides by w = 0 (NaN lighting) in classic packs before the
+        // Phase 8 producer exists (Task D 2026-09-12).
+        for (String name : List.of("shadowModelView", "shadowModelViewInverse",
+                "shadowProjection", "shadowProjectionInverse")) {
+            cells.put(name, m4(Matrix4Value.identity()));
+        }
     }
 
     // ===================================================================
