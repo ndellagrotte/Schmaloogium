@@ -8,6 +8,7 @@ import com.schmaloogium.conformance.capture.ClientLaunchSpec;
 import com.schmaloogium.conformance.capture.LaunchInventory;
 import com.schmaloogium.conformance.capture.RunManifest;
 import com.schmaloogium.conformance.capture.RunManifestReader;
+import com.schmaloogium.conformance.diff.Calibration;
 import com.schmaloogium.conformance.diff.ImageDiffer;
 import com.schmaloogium.conformance.diff.PngRaster;
 import com.schmaloogium.conformance.diff.TolerancePolicy;
@@ -42,6 +43,11 @@ import java.util.Set;
  *   capture --run RUN-T0|RUN-T1-APPROVE|RUN-T1-REGRESS --pack ID@VER --scene ID|all
  *           [--clock default] [--profile SAME_MACHINE] [--allow-uncalibrated]
  *   selfcheck --pack ID@VER --scene ID            RUN-SCENE-SELFCHECK: two runs, IDENTICAL same-ordinal images
+ *   selfcheck-compare --run-a DIR --run-b DIR     the same comparison over two existing run directories
+ *   publish --run-dir DIR [--run RUN-T0] [--profile SAME_MACHINE] [--allow-uncalibrated]
+ *   calibrate --run-a DIR --run-b DIR | --runs DIR,DIR,... [--profile SAME_MACHINE] [--factor 1.5]
+ *             [--gpu S] [--driver S] [--write]
+ *                                                 §4.6.5: observed maxima × factor → the profile file
  *   approve --run-dir DIR --approver NAME [--profile SAME_MACHINE]
  *   evaluate --run-dir DIR [--profile SAME_MACHINE] [--allow-uncalibrated]
  * </pre>
@@ -69,7 +75,7 @@ public final class Harness {
             System.exit(2);
         }
         Map<String, String> opts = new LinkedHashMap<>();
-        Set<String> flags = Set.of("--allow-uncalibrated");
+        Set<String> flags = Set.of("--allow-uncalibrated", "--write");
         for (int i = 1; i < argv.length; i++) {
             String a = argv[i];
             if (!a.startsWith("--")) {
@@ -147,6 +153,8 @@ public final class Harness {
                     "IDENTICAL", true, LOG);
                 compareRuns(runner, a.manifest().token("run.sceneId"), a, b);
             }
+            case "calibrate" -> calibrate(repoRoot, new CaptureRunner(context(repoRoot, cache, registry, false, opts)),
+                opts);
             case "approve" -> new CaptureRunner(context(repoRoot, cache, registry, false, opts))
                 .approve(Path.of(require(opts, "--run-dir")), require(opts, "--approver"),
                     opts.getOrDefault("--profile", "SAME_MACHINE"), LOG);
@@ -170,7 +178,8 @@ public final class Harness {
     }
 
     private static void usage() {
-        System.out.println("usage: harness <stage-micropacks|inventory|world|capture|selfcheck|approve|evaluate> [--opt value]...");
+        System.out.println("usage: harness <stage-micropacks|inventory|world|capture|selfcheck|selfcheck-compare"
+            + "|publish|calibrate|approve|evaluate> [--opt value]...");
     }
 
     private static String require(Map<String, String> opts, String key) {
@@ -273,6 +282,139 @@ public final class Harness {
             + env.externalModSetSha256().substring(0, 16) + "…");
     }
 
+    /** One same-ordinal image pair of two runs; {@code sameHash} short-circuits the diff. */
+    record ImagePair(String key, String captureId, Path a, Path b, boolean sameHash) {
+    }
+
+    /** Pairs the two manifests' image families by ordinal; a mismatch is reported, not paired. */
+    static List<ImagePair> pairImages(Path dirA, RunManifest a, Path dirB, RunManifest b, List<String> problems) {
+        List<RunManifest.Row> imagesA = a.family("images");
+        List<RunManifest.Row> imagesB = b.family("images");
+        if (imagesA.size() != imagesB.size()) {
+            problems.add("image counts differ: " + imagesA.size() + " vs " + imagesB.size());
+        }
+        List<ImagePair> pairs = new ArrayList<>();
+        for (int i = 0; i < Math.min(imagesA.size(), imagesB.size()); i++) {
+            RunManifest.Row ia = imagesA.get(i);
+            RunManifest.Row ib = imagesB.get(i);
+            String key = ia.token("captureKind") + "/" + ia.text("captureId") + "/" + ia.integer("sampleOrdinal");
+            if (!key.equals(ib.token("captureKind") + "/" + ib.text("captureId") + "/" + ib.integer("sampleOrdinal"))) {
+                problems.add("image order differs at " + i);
+                continue;
+            }
+            pairs.add(new ImagePair(key, ia.text("captureId"), dirA.resolve(ia.text("path")),
+                dirB.resolve(ib.text("path")), ia.token("pixelSha256").equals(ib.token("pixelSha256"))));
+        }
+        return pairs;
+    }
+
+    private static final TolerancePolicy IDENTICAL_LOCAL = new TolerancePolicy("IDENTICAL", false, 0, 0.0, 0, 0.0, 0, 0, "");
+
+    /**
+     * §4.6.5 steps 1–4 over two existing run directories of one scene: every same-ordinal pair is
+     * diffed at {@code IDENTICAL} (so all five measured metrics are observed, masks honoured), the
+     * maxima × {@code --factor} (default 1.5) propose the profile, and {@code --write} rewrites
+     * {@code conformance/fixtures/tolerances.profile} with {@code calibratedOn} stamped from the
+     * run's Forge "GL info" line (override with {@code --gpu}/{@code --driver}). Without
+     * {@code --write} the proposal is only printed.
+     */
+    private static void calibrate(Path repoRoot, CaptureRunner runner, Map<String, String> opts) throws IOException {
+        List<Path> dirs = new ArrayList<>();
+        if (opts.containsKey("--runs")) {
+            for (String d : opts.get("--runs").split(",")) {
+                dirs.add(Path.of(d.strip()).toAbsolutePath().normalize());
+            }
+        } else {
+            dirs.add(Path.of(require(opts, "--run-a")).toAbsolutePath().normalize());
+            dirs.add(Path.of(require(opts, "--run-b")).toAbsolutePath().normalize());
+        }
+        if (dirs.size() < 2) {
+            throw new IllegalArgumentException("calibrate needs at least two run directories");
+        }
+        List<RunManifest> manifests = new ArrayList<>();
+        for (Path dir : dirs) {
+            RunManifest m = RunManifestReader.parse(Files.readString(dir.resolve("manifest.manifest"), StandardCharsets.UTF_8));
+            if (!m.token("run.exitStatus").equals("COMPLETE")) {
+                throw new IllegalArgumentException(dir.getFileName() + " is not COMPLETE: " + m.token("run.exitStatus"));
+            }
+            if (!manifests.isEmpty() && !m.token("run.sceneId").equals(manifests.get(0).token("run.sceneId"))) {
+                throw new IllegalArgumentException("runs are of different scenes: " + dir.getFileName());
+            }
+            manifests.add(m);
+        }
+        String scene = manifests.get(0).token("run.sceneId");
+        Path dirA = dirs.get(0);
+        Path profileFile = repoRoot.resolve("conformance/fixtures/tolerances.profile");
+        Map<String, TolerancePolicy> profiles = TolerancePolicy.parseFile(Files.readString(profileFile, StandardCharsets.UTF_8));
+        String name = opts.getOrDefault("--profile", "SAME_MACHINE");
+        TolerancePolicy current = TolerancePolicy.require(profiles, name);
+        double factor = Double.parseDouble(opts.getOrDefault("--factor", "1.5"));
+        List<String> problems = new ArrayList<>();
+        List<Calibration.Observation> observations = new ArrayList<>();
+        // Every pair of runs is one §4.6.5 observation set: the floor is the maximum seen.
+        for (int i = 0; i < dirs.size(); i++) {
+            for (int j = i + 1; j < dirs.size(); j++) {
+                String pairName = dirs.get(i).getFileName() + " vs " + dirs.get(j).getFileName();
+                for (ImagePair pair : pairImages(dirs.get(i), manifests.get(i), dirs.get(j), manifests.get(j), problems)) {
+                    var mask = runner.mask(scene, pair.captureId());
+                    var diff = ImageDiffer.compare(PngRaster.read(pair.a()), PngRaster.read(pair.b()), IDENTICAL_LOCAL, mask);
+                    observations.add(new Calibration.Observation(pair.key() + " [" + pairName + "]", diff));
+                }
+            }
+        }
+        if (!problems.isEmpty()) {
+            throw new IllegalArgumentException("runs are not pairable: " + String.join("; ", problems));
+        }
+        if (observations.isEmpty()) {
+            throw new IllegalArgumentException("no same-ordinal images to observe");
+        }
+        GlInfo gl = GlInfo.fromRunLog(dirA.resolve("latest.log"));
+        String gpu = opts.getOrDefault("--gpu", gl.renderer());
+        String driver = opts.getOrDefault("--driver", gl.version());
+        if (gpu.isEmpty() || driver.isEmpty()) {
+            throw new IllegalArgumentException("GPU/driver provenance not found in " + dirA.resolve("latest.log")
+                + "; pass --gpu and --driver");
+        }
+        StringBuilder runNames = new StringBuilder();
+        for (Path dir : dirs) {
+            runNames.append(runNames.length() == 0 ? "" : " + ").append(dir.getFileName());
+        }
+        String calibratedOn = java.time.LocalDate.now() + ", " + gpu + ", " + driver + ", runs " + runNames;
+        Calibration calibration = Calibration.of(current, observations, factor, calibratedOn);
+        LOG.info(calibration.report());
+        if (!calibration.raisedAnyThreshold()) {
+            LOG.info("no threshold raised: the observed maxima sit under the starting numbers (floor "
+                + calibration.observedMaxima() + ")");
+        }
+        if (opts.containsKey("--write")) {
+            Map<String, TolerancePolicy> updated = new LinkedHashMap<>(profiles);
+            updated.put(name, calibration.proposed());
+            String text = TolerancePolicy.formatFile(updated);
+            TolerancePolicy.parseFile(text); // the writer must round-trip before it touches the file
+            Files.writeString(profileFile, text, StandardCharsets.UTF_8);
+            LOG.info("wrote " + profileFile + " ([profile " + name + "] calibratedOn = " + calibratedOn + ")");
+        } else {
+            LOG.info("dry run: pass --write to update " + profileFile);
+        }
+    }
+
+    /** The Forge "GL info" line of a run's client log: vendor, version, renderer. */
+    record GlInfo(String vendor, String version, String renderer) {
+        static final java.util.regex.Pattern LINE = java.util.regex.Pattern.compile(
+            "GL info: ' Vendor: '([^']*)' Version: '([^']*)' Renderer: '([^']*)'");
+
+        static GlInfo fromRunLog(Path log) throws IOException {
+            if (!Files.isRegularFile(log)) {
+                return new GlInfo("", "", "");
+            }
+            try (var lines = Files.lines(log, StandardCharsets.UTF_8)) {
+                return lines.map(LINE::matcher).filter(java.util.regex.Matcher::find)
+                    .map(m -> new GlInfo(m.group(1), m.group(2), m.group(3)))
+                    .findFirst().orElse(new GlInfo("", "", ""));
+            }
+        }
+    }
+
     private static void compareRuns(CaptureRunner runner, String scene, CaptureRunner.Outcome first,
             CaptureRunner.Outcome second) throws IOException {
         List<String> problems = new ArrayList<>();
@@ -282,27 +424,14 @@ public final class Harness {
         RunManifest a = first.manifest();
         RunManifest b = second.manifest();
         List<RunManifest.Row> imagesA = a.family("images");
-        List<RunManifest.Row> imagesB = b.family("images");
-        if (imagesA.size() != imagesB.size()) {
-            problems.add("image counts differ: " + imagesA.size() + " vs " + imagesB.size());
-        }
-        TolerancePolicy identical = new TolerancePolicy("IDENTICAL", false, 0, 0.0, 0, 0.0, 0, 0, "");
-        for (int i = 0; i < Math.min(imagesA.size(), imagesB.size()); i++) {
-            RunManifest.Row ia = imagesA.get(i);
-            RunManifest.Row ib = imagesB.get(i);
-            String key = ia.token("captureKind") + "/" + ia.text("captureId") + "/" + ia.integer("sampleOrdinal");
-            if (!key.equals(ib.token("captureKind") + "/" + ib.text("captureId") + "/" + ib.integer("sampleOrdinal"))) {
-                problems.add("image order differs at " + i);
+        for (ImagePair pair : pairImages(first.runDir(), a, second.runDir(), b, problems)) {
+            if (pair.sameHash()) {
+                LOG.info(pair.key() + " IDENTICAL (hash)");
                 continue;
             }
-            if (ia.token("pixelSha256").equals(ib.token("pixelSha256"))) {
-                LOG.info(key + " IDENTICAL (hash)");
-                continue;
-            }
-            var diff = ImageDiffer.compare(PngRaster.read(first.runDir().resolve(ia.text("path"))),
-                PngRaster.read(second.runDir().resolve(ib.text("path"))), identical,
-                runner.mask(scene, ia.text("captureId")));
-            problems.add(key + " differs: " + diff.summary() + " — a §4.4 determinism leak, not a pack defect");
+            var diff = ImageDiffer.compare(PngRaster.read(pair.a()), PngRaster.read(pair.b()), IDENTICAL_LOCAL,
+                runner.mask(scene, pair.captureId()));
+            problems.add(pair.key() + " differs: " + diff.summary() + " — a §4.4 determinism leak, not a pack defect");
         }
         List<RunManifest.Row> framesA = a.family("frames");
         List<RunManifest.Row> framesB = b.family("frames");

@@ -3,6 +3,7 @@
 
 package com.schmaloogium.conformance.diff;
 
+import com.schmaloogium.conformance.wire.CanonicalText;
 import com.schmaloogium.conformance.wire.SectionedText;
 
 import java.util.LinkedHashMap;
@@ -104,6 +105,50 @@ public record TolerancePolicy(String name, boolean advisory, int channelToleranc
         return out;
     }
 
+    /** The header comment the committed profile file carries; kept verbatim on every rewrite. */
+    public static final String FILE_HEADER = """
+        # Tolerance profiles (PHASE_2_DOC §4.6.3). Profiles whose calibratedOn is empty carry the
+        # UNMEASURED starting numbers and require §4.6.5 calibration before tier acceptance
+        # (harness calibrate --run-a DIR --run-b DIR --profile NAME --write); a non-empty
+        # calibratedOn names the date, GPU and driver the maxima were observed on. ADVISORY forbids
+        # thresholds and never yields a verdict.
+        """;
+
+    /** Renders every profile in the order given, in the grammar {@link #parseFile} reads. */
+    public static String formatFile(Map<String, TolerancePolicy> profiles) {
+        StringBuilder out = new StringBuilder(FILE_HEADER);
+        for (TolerancePolicy p : profiles.values()) {
+            out.append(formatProfile(p)).append('\n');
+        }
+        return out.toString();
+    }
+
+    /** One {@code [profile NAME]} block, thresholds in the documented order. */
+    public static String formatProfile(TolerancePolicy p) {
+        StringBuilder out = new StringBuilder();
+        out.append("[profile ").append(p.name()).append("]\n");
+        if (!p.advisory()) {
+            out.append("channelTolerance = ").append(p.channelTolerance()).append('\n');
+            out.append("maxDifferingFraction = ").append(plain(p.maxDifferingFraction())).append('\n');
+            out.append("maxDelta = ").append(p.maxDelta()).append('\n');
+            out.append("maxRmse = ").append(plain(p.maxRmse())).append('\n');
+            out.append("maxClusterArea = ").append(p.maxClusterArea()).append('\n');
+            out.append("maxClusters = ").append(p.maxClusters()).append('\n');
+        }
+        out.append("calibratedOn = ").append(CanonicalText.encodeJson(p.calibratedOn())).append('\n');
+        return out.toString();
+    }
+
+    /** The shortest round-tripping decimal, never scientific ({@code 0.0005}, not {@code 5.0E-4}). */
+    private static String plain(double value) {
+        String shortest = Double.toString(value);
+        if (shortest.indexOf('E') < 0) {
+            return shortest;
+        }
+        String plain = new java.math.BigDecimal(shortest).stripTrailingZeros().toPlainString();
+        return plain.indexOf('.') < 0 ? plain + ".0" : plain;
+    }
+
     public static TolerancePolicy require(Map<String, TolerancePolicy> profiles, String name) {
         TolerancePolicy policy = profiles.get(name);
         if (policy == null) {
@@ -117,6 +162,6 @@ public record TolerancePolicy(String name, boolean advisory, int channelToleranc
             throw new IllegalArgumentException("[profile " + profile + "]: calibratedOn must be a"
                 + " JSON string (\"\" when unmeasured)");
         }
-        return com.schmaloogium.conformance.wire.CanonicalText.decodeJson(raw);
+        return CanonicalText.decodeJson(raw);
     }
 }
