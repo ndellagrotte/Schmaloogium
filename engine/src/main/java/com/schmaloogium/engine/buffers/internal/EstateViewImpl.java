@@ -597,11 +597,18 @@ public final class EstateViewImpl implements BufferEstateView {
         if (stage != StageId.DEFERRED && stage != StageId.COMPOSITE && stage != StageId.FINAL) {
             return new MainMipmapResult.Rejected(FrameProtocolRejection.INVALID_PASS_SNAPSHOT);
         }
-        // Canonical COLORTEX-only request: the descriptor's planned mipmappedBeforeRead
-        // intersected with the COLORTEX inventory, in ascending order.
+        // Canonical COLORTEX-only request, in ascending order, from both sources the one
+        // immutable colortexNMipmapEnabled set feeds (PHASE_3_DOC §3.3 :1830): the pass
+        // descriptor's planned mipmappedBeforeRead, and the Phase 4 registry state of the
+        // program that will actually run. The second is what carries a real pack's request
+        // — the descriptor's set is the static classic shape and is empty for every slot.
+        java.util.Set<com.schmaloogium.engine.registry.BufferRef> refs =
+            new java.util.LinkedHashSet<>(snapshot.pass().resources().mipmappedBeforeRead());
+        if (snapshot.selection() != null) {
+            refs.addAll(snapshot.selection().effectiveDescriptor().state().compositeMipmaps());
+        }
         List<LogicalBuffer> requested = new ArrayList<>();
-        for (com.schmaloogium.engine.registry.BufferRef ref
-                : snapshot.pass().resources().mipmappedBeforeRead()) {
+        for (com.schmaloogium.engine.registry.BufferRef ref : refs) {
             if (ref.domain() == BufferDomain.COLORTEX) {
                 EstateCore.ColorPair pair = core.pair(buffer(ref.domain(), ref.index()));
                 if (pair != null) {

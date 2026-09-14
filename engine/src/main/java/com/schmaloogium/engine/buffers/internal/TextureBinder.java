@@ -37,6 +37,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import com.schmaloogium.engine.log.LogChannels;
+import com.schmaloogium.engine.log.Logs;
+
 import java.util.OptionalInt;
 
 /**
@@ -143,6 +146,7 @@ public final class TextureBinder {
                 new TextureBindingOutcome.BoundObject(new TextureHandleRef.Borrowed(backing),
                     shape, boundNames, origin)));
         }
+        logBindingRows(snapshot, rows);
         // Execute: one prepareUnitBindings + one bind per BoundObject row.
         int mask = 0;
         for (TextureBindingRow row : rows) {
@@ -179,6 +183,41 @@ public final class TextureBinder {
         }
         return new TextureBindingResult.Bound(new Snapshot(core, snapshot, purpose,
             List.copyOf(rows), diagnostics));
+    }
+
+    /**
+     * The sampler names already resolved for each unit, and the physical object each one
+     * actually reads (H5-BIND). One line per pass slot per estate generation: enough to
+     * answer "which texture is bound to gaux3 for composite2" without a GL probe, which
+     * nothing logged before. The rows already carry the names; only the line is new.
+     */
+    private static final java.util.Set<String> BINDINGS_LOGGED =
+        java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private static void logBindingRows(PassBufferSnapshot snapshot,
+            List<TextureBindingRow> rows) {
+        String slot = String.valueOf(snapshot.pass().slot());
+        if (!BINDINGS_LOGGED.add(snapshot.estateGeneration() + ":" + slot)) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (TextureBindingRow row : rows) {
+            if (!(row.outcome() instanceof TextureBindingOutcome.BoundObject bound)) {
+                continue;
+            }
+            sb.append(' ').append(row.unit()).append('=');
+            if (bound.names().isEmpty()) {
+                sb.append("(unnamed)");
+            } else {
+                for (int i = 0; i < bound.names().size(); i++) {
+                    sb.append(i == 0 ? "" : "/").append(bound.names().get(i).exactName());
+                }
+            }
+            sb.append("->").append(((TextureHandleRef.Borrowed) bound.handle()).handle())
+                .append('@').append(bound.origin().kind());
+        }
+        Logs.channel(LogChannels.BUFFERS).info("H5-BIND {} (estate {}):{}", slot,
+            snapshot.estateGeneration(), sb.isEmpty() ? " (none)" : sb.toString());
     }
 
     /** Unit -> backing object per the sixteen-row table; null = unbacked at v0.1. Shadow

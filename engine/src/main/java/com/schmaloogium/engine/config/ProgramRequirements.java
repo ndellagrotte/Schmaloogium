@@ -14,9 +14,17 @@ public record ProgramRequirements(DrawRouting routing,
     int instanceCount, Optional<LegacyGeometryConfig> legacyGeometry) {
 
     public ProgramRequirements {
-        mipmappedAfterPass = mipmappedAfterPass == null
-            ? Set.of() : java.util.Collections.unmodifiableSet(
-                new java.util.TreeSet<>(java.util.Comparator.comparingInt(ColorAttachmentKey::colortexIndex)));
+        if (mipmappedAfterPass == null || mipmappedAfterPass.isEmpty()) {
+            mipmappedAfterPass = Set.of();
+        } else {
+            // Ascending attachment order, and the incoming members actually copied in:
+            // the set fed Phase 4's registry state and Phase 5's pass-mipmap requirements,
+            // so dropping it left every composite mipmap request unasked for.
+            Set<ColorAttachmentKey> ordered = new java.util.TreeSet<>(
+                java.util.Comparator.comparingInt(ColorAttachmentKey::colortexIndex));
+            ordered.addAll(mipmappedAfterPass);
+            mipmappedAfterPass = java.util.Collections.unmodifiableSet(ordered);
+        }
         legacyGeometry = legacyGeometry == null ? Optional.empty() : legacyGeometry;
     }
 }

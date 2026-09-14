@@ -393,6 +393,16 @@ final class PackFrontEndImpl implements PackFrontEnd {
         Map<com.schmaloogium.engine.config.ProgramRequirementKey,
             java.util.Set<com.schmaloogium.engine.config.VertexAttribute>> programAttributes =
             new LinkedHashMap<>();
+        // Section 4.7 family-filtered directives: colortexNClear / ClearColor are honoured
+        // only for deferred and composite sources, colortexNMipmapEnabled only for those
+        // plus final, and the mipmap request is per-program rather than estate-wide
+        // (PHASE_3_DOC §3.3 :1828-1830).
+        Map<String, ConstScanner.Finding> fullscreenConsts = new LinkedHashMap<>();
+        Map<com.schmaloogium.engine.config.ProgramRequirementKey,
+            java.util.Set<com.schmaloogium.engine.config.ColorAttachmentKey>> programMipmaps =
+            new LinkedHashMap<>();
+        java.util.Set<com.schmaloogium.engine.config.ProgramRequirementKey> fullscreenKeys =
+            new java.util.LinkedHashSet<>();
         for (SourceKey root : index.roots()) {
             SourceDocument doc = index.rootDocument(root).orElse(null);
             if (doc == null) {
@@ -407,6 +417,23 @@ final class PackFrontEndImpl implements PackFrontEnd {
             docConsts.forEach(consts::putIfAbsent);
             var programKey = new com.schmaloogium.engine.config.ProgramRequirementKey(
                 root.dimension(), root.programName());
+            if (com.schmaloogium.engine.config.ProgramFamilies
+                    .isDeferredOrComposite(root.programName())) {
+                docConsts.forEach(fullscreenConsts::putIfAbsent);
+            }
+            if (com.schmaloogium.engine.config.ProgramFamilies
+                    .isFullscreen(root.programName())) {
+                fullscreenKeys.add(programKey);
+                java.util.Set<com.schmaloogium.engine.config.ColorAttachmentKey> mipmapped =
+                    mipmapRequests(docConsts);
+                if (!mipmapped.isEmpty()) {
+                    programMipmaps.merge(programKey, mipmapped, (a, b) -> {
+                        var union = new java.util.LinkedHashSet<>(a);
+                        union.addAll(b);
+                        return union;
+                    });
+                }
+            }
             if (root.stage() == com.schmaloogium.engine.preprocess.ShaderSourceStage.FRAGMENT) {
                 com.schmaloogium.engine.config.DrawBuffersScanner.scan(docText)
                     .ifPresent(routing -> programRouting.put(programKey, routing));
@@ -442,11 +469,35 @@ final class PackFrontEndImpl implements PackFrontEnd {
             new java.util.LinkedHashSet<>(programRouting.keySet());
         programKeys.addAll(programInstances.keySet());
         programKeys.addAll(programAttributes.keySet());
+        programKeys.addAll(programMipmaps.keySet());
+        // D-P3-FIXUP (Task G, 2026-09-14): colortexNMipmapEnabled is honoured pack-wide
+        // across the fullscreen families rather than only for the declaring program, a
+        // deliberate deviation from PHASE_3_DOC §3.3 :1830's "per-program" wording.
+        // Observed pack behaviour is the contract source here (RESEARCH §10.1): SEUS
+        // Renewed declares gaux3MipmapEnabled in composite2/3/4, then writes gaux3 from
+        // composite5 and composite6 — which invalidates the chain per PHASE_5 §4.2.1 —
+        // and only then reads it as texture2DLod(gaux3, 0.5, avglod) from final.fsh:418
+        // for its auto-exposure divisor. Under a strict per-program reading that fetch can
+        // never resolve to anything but level zero, so the pack could not work on any
+        // engine; keeping every reader's chain fresh is the only reading its shipped
+        // sources are consistent with. Phase 5 regenerates only an actually stale chain,
+        // so a program that does not sample the buffer costs nothing beyond the first
+        // regeneration after each write.
+        java.util.Set<com.schmaloogium.engine.config.ColorAttachmentKey> mipmapUnion =
+            new java.util.LinkedHashSet<>();
+        programMipmaps.values().forEach(mipmapUnion::addAll);
+        if (!mipmapUnion.isEmpty()) {
+            // A fullscreen program that declares nothing of its own still reads the
+            // mipmapped buffer, so it needs a requirement row to carry the request.
+            programKeys.addAll(fullscreenKeys);
+        }
         for (var programKey : programKeys) {
             programRequirements.put(programKey, new com.schmaloogium.engine.config.ProgramRequirements(
                 programRouting.getOrDefault(programKey,
                     new com.schmaloogium.engine.config.DrawRouting.AllUsed()),
-                java.util.Set.of(),
+                com.schmaloogium.engine.config.ProgramFamilies
+                    .isFullscreen(programKey.programName())
+                        ? mipmapUnion : java.util.Set.of(),
                 new com.schmaloogium.engine.config.VertexRequirements(
                     programAttributes.getOrDefault(programKey, java.util.Set.of())),
                 programInstances.getOrDefault(programKey, 1),
@@ -531,7 +582,7 @@ final class PackFrontEndImpl implements PackFrontEnd {
 
         // 8. resource requirements
         var requirements = ResourceRequirementsBuilder.build(properties, consts,
-            programRequirements);
+            programRequirements, fullscreenConsts);
 
         // 9. compatibility + fingerprint + configuration
         String fingerprintValue = Sha256.hex((identity.contentHashes().toString()
@@ -592,6 +643,33 @@ final class PackFrontEndImpl implements PackFrontEnd {
     }
 
     /** Screen/slider/profile mentions confirm switch candidates (documented App F.3). */
+    /** The {@code MipmapEnabled} suffix this scan reads, through the §4.7 normalizer. */
+    private static final java.util.Set<String> MIPMAP_SUFFIX =
+        java.util.Set.of("MipmapEnabled");
+
+    /**
+     * The attachments one fullscreen program asks to be mipmapped before it reads them,
+     * from {@code colortexNMipmapEnabled} or its legacy {@code gauxNMipmapEnabled} form.
+     * Nothing read these before, so every pack's composite mipmap request was dropped and
+     * a {@code texture2DLod} against those buffers silently resolved to level zero.
+     */
+    private static java.util.Set<com.schmaloogium.engine.config.ColorAttachmentKey>
+            mipmapRequests(Map<String, ConstScanner.Finding> docConsts) {
+        java.util.Set<com.schmaloogium.engine.config.ColorAttachmentKey> out =
+            new java.util.LinkedHashSet<>();
+        for (Map.Entry<String, ConstScanner.Finding> entry : docConsts.entrySet()) {
+            var scoped = com.schmaloogium.engine.config.ColorBufferNames.scoped(
+                entry.getKey(), MIPMAP_SUFFIX);
+            if (scoped == null) {
+                continue;
+            }
+            if (Boolean.parseBoolean(entry.getValue().value().trim())) {
+                out.add(new com.schmaloogium.engine.config.ColorAttachmentKey(scoped.index()));
+            }
+        }
+        return out;
+    }
+
     private static Set<String> confirmedSwitchNames(List<ProfileScreenParser.Line> lines) {
         Set<String> confirmed = new LinkedHashSet<>();
         for (ProfileScreenParser.Line line : lines) {

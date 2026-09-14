@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
@@ -349,6 +350,86 @@ public final class DeviceRenderPort implements FrameRenderPort {
         }
     }
 
+    /**
+     * The storage facts a composite chain's auto-exposure depends on: the real internal
+     * format (an unsized RGBA8 fallback where the pack asked for RGBA16 is the tell), the
+     * highest level that actually has storage, and whether the min filter can resolve a
+     * LOD at all. A {@code texture2DLod(..., 8)} against a LINEAR filter silently reads
+     * level 0, which turns a scene-average exposure divisor into a per-pixel one.
+     */
+    private static String samplingDescription(int w, int h) {
+        int internalFormat = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(
+                GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_INTERNAL_FORMAT);
+        int maxLevel = GL11.glGetTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL);
+        int minFilter = GL11.glGetTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER);
+        int storedLevels = 0;
+        for (int level = 0; level <= Math.min(maxLevel, 20); level++) {
+            if (org.lwjgl.opengl.GL11.glGetTexLevelParameteri(
+                    GL11.GL_TEXTURE_2D, level, GL11.GL_TEXTURE_WIDTH) <= 0) {
+                break;
+            }
+            storedLevels++;
+        }
+        return String.format(java.util.Locale.ROOT,
+                "fmt=0x%X maxLevel=%d storedLevels=%d minFilter=%s mipmapCapable=%b",
+                internalFormat, maxLevel, storedLevels, minFilterName(minFilter),
+                isMipmapFilter(minFilter));
+    }
+
+    private static boolean isMipmapFilter(int minFilter) {
+        return minFilter == GL11.GL_NEAREST_MIPMAP_NEAREST
+                || minFilter == GL11.GL_LINEAR_MIPMAP_NEAREST
+                || minFilter == GL11.GL_NEAREST_MIPMAP_LINEAR
+                || minFilter == GL11.GL_LINEAR_MIPMAP_LINEAR;
+    }
+
+    private static String minFilterName(int minFilter) {
+        return switch (minFilter) {
+            case GL11.GL_NEAREST -> "NEAREST";
+            case GL11.GL_LINEAR -> "LINEAR";
+            case GL11.GL_NEAREST_MIPMAP_NEAREST -> "NEAREST_MIPMAP_NEAREST";
+            case GL11.GL_LINEAR_MIPMAP_NEAREST -> "LINEAR_MIPMAP_NEAREST";
+            case GL11.GL_NEAREST_MIPMAP_LINEAR -> "NEAREST_MIPMAP_LINEAR";
+            case GL11.GL_LINEAR_MIPMAP_LINEAR -> "LINEAR_MIPMAP_LINEAR";
+            default -> "0x" + Integer.toHexString(minFilter);
+        };
+    }
+
+    /**
+     * The texel a classic auto-exposure fetch actually resolves. Packs compute
+     * {@code avglod = log2(min(viewWidth, viewHeight))} and sample the 1x1 top of the
+     * chain; reading that level directly says whether it holds a scene average or, when
+     * no level was ever generated, whatever level 0 happens to contain.
+     */
+    private static String lodSample(int w, int h) {
+        int avglod = (int) (Math.log(Math.max(1, Math.min(w, h))) / Math.log(2.0));
+        int maxLevel = GL11.glGetTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL);
+        int level = Math.min(avglod, Math.max(0, maxLevel));
+        if (level == 0) {
+            // The requested LOD collapsed to the base level: either no chain was ever
+            // allocated or the filter cannot resolve one. The mean and centre already
+            // describe level 0, so read nothing and say why the fetch lands there.
+            return " lod" + avglod + "->0(no chain; reads base level)";
+        }
+        int lw = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(
+                GL11.GL_TEXTURE_2D, level, GL11.GL_TEXTURE_WIDTH);
+        int lh = org.lwjgl.opengl.GL11.glGetTexLevelParameteri(
+                GL11.GL_TEXTURE_2D, level, GL11.GL_TEXTURE_HEIGHT);
+        if (lw <= 0 || lh <= 0) {
+            return " lod" + level + "=(no storage)";
+        }
+        if (lw * lh > 4096) {
+            return " lod" + level + "=(" + lw + "x" + lh + ", not read)";
+        }
+        java.nio.FloatBuffer lod = org.lwjgl.BufferUtils.createFloatBuffer(
+                Math.max(4, lw * lh * 4));
+        GL11.glGetTexImage(GL11.GL_TEXTURE_2D, level, GL11.GL_RGBA, GL11.GL_FLOAT, lod);
+        int centre = ((lh / 2) * lw + lw / 2) * 4;
+        return String.format(java.util.Locale.ROOT, " lod%d[%dx%d]=(%.6f,%.6f,%.6f,%.6f)",
+                level, lw, lh, lod.get(centre), lod.get(centre + 1), lod.get(centre + 2),
+                lod.get(centre + 3));
+    }
+
     private static String probeBoundUnits() {
         int savedUnit = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
         int savedRead = GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER_BINDING);
@@ -397,13 +478,24 @@ public final class DeviceRenderPort implements FrameRenderPort {
                     org.lwjgl.opengl.GL30.glFramebufferTexture2D(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER,
                             org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, 0, 0);
                     double[] sum = new double[4];
+                    float max = Float.NEGATIVE_INFINITY;
+                    int nan = 0;
+                    int inf = 0;
                     int distinct = 0;
                     float r0 = px.get(0);
                     float g0 = px.get(1);
                     float b0 = px.get(2);
                     for (int i = 0; i < texels; i++) {
                         for (int c = 0; c < 4; c++) {
-                            sum[c] += px.get(i * 4 + c);
+                            float v = px.get(i * 4 + c);
+                            sum[c] += v;
+                            if (Float.isNaN(v)) {
+                                nan++;
+                            } else if (Float.isInfinite(v)) {
+                                inf++;
+                            } else if (v > max) {
+                                max = v;
+                            }
                         }
                         if (px.get(i * 4) != r0 || px.get(i * 4 + 1) != g0 || px.get(i * 4 + 2) != b0) {
                             distinct++;
@@ -411,9 +503,12 @@ public final class DeviceRenderPort implements FrameRenderPort {
                     }
                     int c = ((h / 2) * w + w / 2) * 4;
                     out.append(String.format(java.util.Locale.ROOT,
-                            " %d:tex%d %dx%d mean=(%.3f,%.3f,%.3f,%.3f) centre=(%.3f,%.3f,%.3f,%.3f) varied=%.1f%%",
-                            unit, name, w, h, sum[0] / texels, sum[1] / texels, sum[2] / texels, sum[3] / texels,
-                            px.get(c), px.get(c + 1), px.get(c + 2), px.get(c + 3), 100.0 * distinct / texels));
+                            " %d:tex%d %dx%d %s mean=(%.4f,%.4f,%.4f,%.4f) centre=(%.4f,%.4f,%.4f,%.4f)"
+                                    + " max=%.4f nan=%d inf=%d varied=%.1f%%%s",
+                            unit, name, w, h, samplingDescription(w, h),
+                            sum[0] / texels, sum[1] / texels, sum[2] / texels, sum[3] / texels,
+                            px.get(c), px.get(c + 1), px.get(c + 2), px.get(c + 3),
+                            max, nan, inf, 100.0 * distinct / texels, lodSample(w, h)));
                 }
                 // Drain whatever the probe raised so it is never attributed to the pass.
                 while (GL11.glGetError() != GL11.GL_NO_ERROR) {

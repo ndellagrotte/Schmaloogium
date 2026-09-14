@@ -997,7 +997,7 @@ public final class FrameDriver implements FrameHookSink {
             PortResult drawn = f.composition.port().drawFullscreen(
                     new com.schmaloogium.engine.frame.spi.FullscreenDraw(
                             descriptor,
-                            com.schmaloogium.engine.frame.spi.MipmapSet.EMPTY,
+                            mipmapSet(mipmaps),
                             viewportFor(selection),
                             0, 1,
                             com.schmaloogium.engine.frame.spi.FullscreenPrimitive.QUADS));
@@ -1038,6 +1038,34 @@ public final class FrameDriver implements FrameHookSink {
     /** One line per distinct fullscreen-pass verdict per driver (never per frame). */
     private final java.util.Set<String> fullscreenVerdictsLogged =
             java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    /**
+     * The colortex attachments that actually carry a fresh chain for this pass, so the
+     * port is told the truth instead of a constant empty set. Degraded rows are excluded:
+     * a request Phase 5 could not satisfy must not read as a usable chain.
+     */
+    private static com.schmaloogium.engine.frame.spi.MipmapSet mipmapSet(
+            com.schmaloogium.engine.buffers.MainMipmapResult result) {
+        if (!(result instanceof com.schmaloogium.engine.buffers.MainMipmapResult.Completed done)) {
+            return com.schmaloogium.engine.frame.spi.MipmapSet.EMPTY;
+        }
+        java.util.Set<Integer> indices = new java.util.LinkedHashSet<>();
+        for (com.schmaloogium.engine.buffers.MainMipmapOutcome outcome : done.outcomes()) {
+            com.schmaloogium.engine.buffers.LogicalBuffer buffer =
+                outcome instanceof com.schmaloogium.engine.buffers.MainMipmapOutcome.Generated g
+                    ? g.buffer()
+                    : outcome instanceof com.schmaloogium.engine.buffers.MainMipmapOutcome.AlreadyFresh f
+                        ? f.buffer()
+                        : null;
+            if (buffer != null
+                    && buffer.domain() == com.schmaloogium.engine.registry.BufferDomain.COLORTEX) {
+                indices.add(buffer.index().value());
+            }
+        }
+        return indices.isEmpty()
+            ? com.schmaloogium.engine.frame.spi.MipmapSet.EMPTY
+            : new com.schmaloogium.engine.frame.spi.MipmapSet(indices);
+    }
 
     private void noteFullscreen(PassDescriptor descriptor, String verdict) {
         String key = descriptor.slot().packName() + ": " + verdict;

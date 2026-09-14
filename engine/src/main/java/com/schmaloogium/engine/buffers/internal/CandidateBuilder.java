@@ -43,6 +43,8 @@ import com.schmaloogium.engine.gl.TextureParameters;
 import com.schmaloogium.engine.gl.TextureSpec;
 import com.schmaloogium.engine.gl.TextureSwizzle;
 import com.schmaloogium.engine.gl.TextureWrap;
+import com.schmaloogium.engine.log.LogChannels;
+import com.schmaloogium.engine.log.Logs;
 import com.schmaloogium.engine.registry.BufferDomain;
 import com.schmaloogium.engine.registry.DrawRoutingSlot;
 
@@ -130,6 +132,7 @@ public final class CandidateBuilder {
                 outcome.sidesA().get(row), outcome.sidesB().get(row), PhysicalSide.A,
                 !FormatTable.isIntegerStorage(allocated), mipLevelsFor(extent),
                 baseMinFilter(FormatTable.row(allocated).baseFilter())));
+            logEstateFormat(color, allocated, mipLevelsFor(extent));
         }
         // Copy destinations: DEPTH index 1..depthCount-1 map to depthtex1/depthtex2 (§4.9).
         for (int index = 1; index < outcome.copyTargets().size() + 1; index++) {
@@ -329,6 +332,24 @@ public final class CandidateBuilder {
                 : "DEFAULT_RGBA");
         }
         return String.join(",", names);
+    }
+
+    /**
+     * H5-ESTATE-FMT evidence (one line per colortex per estate build): the format the pack
+     * asked for, the format actually allocated, and the clear/mipmap facts. A pack whose
+     * directives are not being read shows {@code requested DEFAULT_RGBA} here while its
+     * sources declare a format — which is what a silently-unread directive looks like.
+     */
+    private static void logEstateFormat(PlanningArtifacts.ColorPlan color,
+            com.schmaloogium.engine.gl.ColorInternalFormat allocated, int mipLevels) {
+        Logs.channel(LogChannels.BUFFERS).info(
+            "H5-ESTATE-FMT {}: requested {} resolved {} clear={} clearPolicy={} mipLevels={}",
+            color.buffer().domain().name().toLowerCase(java.util.Locale.ROOT)
+                + color.buffer().index().value(),
+            color.requestedFormat() instanceof ColorAttachmentFormat.Explicit explicit
+                ? "Explicit(" + explicit.format().name() + ")"
+                : "DEFAULT_RGBA",
+            allocated.name(), color.clear(), color.clearPolicy(), mipLevels);
     }
 
     private static TextureExtent extent(PlanningArtifacts artifacts) {

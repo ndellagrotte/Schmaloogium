@@ -625,20 +625,44 @@ final class Lwjgl3TextureService implements TextureService {
     private void sweepBindingsAndDelete(Lwjgl3OwnedTexture tex) {
         int savedActiveUnit = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
         int glTarget = GlNames.glTextureTarget(tex.target);
+        boolean savedUnitCached = savedActiveUnit - GL13.GL_TEXTURE0 < GLSM_CACHED_UNITS;
         try {
             for (int unit = 0; unit < FIXED_UNIT_COUNT; unit++) {
+                // Same [D-P1-29] split as bindToUnit: units 8-15 lie past GlStateManager's
+                // eight-entry texture-state array, so selecting and clearing them must be
+                // raw. Going through the cached path there throws ArrayIndexOutOfBounds
+                // and takes the whole estate republish down with it — a shader pack that
+                // occupies the upper units (SEUS binds gaux1-4 on 7-10 and noisetex on 15)
+                // hit this on every reload.
+                boolean cachedUnit = unit < GLSM_CACHED_UNITS && savedUnitCached;
                 int unitEnum = GL13.GL_TEXTURE0 + unit;
-                GlStateManager.setActiveTexture(unitEnum);
+                if (cachedUnit) {
+                    GlStateManager.setActiveTexture(unitEnum);
+                } else {
+                    GL13.glActiveTexture(unitEnum);
+                }
                 if (glTarget == GL11.GL_TEXTURE_2D) {
                     if (GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D) == tex.glName()) {
-                        GlStateManager.bindTexture(0);
+                        if (cachedUnit) {
+                            GlStateManager.bindTexture(0);
+                        } else {
+                            GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+                        }
                     }
                 } else if (GL11.glGetInteger(bindingEnumFor(glTarget)) == tex.glName()) {
                     GL11.glBindTexture(glTarget, 0);
                 }
             }
         } finally {
-            GlStateManager.setActiveTexture(savedActiveUnit);
+            // Restore through the cache AND raw. The cached call alone is not enough: the
+            // raw selections above leave real GL on the last unit swept (15) while the
+            // cache still reads the last cached unit (7), and GlStateManager skips its
+            // glActiveTexture whenever its own field already equals the requested unit.
+            // So a sweep that returns to unit 7 would leave the context stranded on 15.
+            if (savedUnitCached) {
+                GlStateManager.setActiveTexture(savedActiveUnit);
+            }
+            GL13.glActiveTexture(savedActiveUnit);
         }
         GL11.glDeleteTextures(tex.glName());
         device.noteMutation("textures.delete", tex.subjectLabel());

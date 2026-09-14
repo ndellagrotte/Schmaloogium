@@ -25,6 +25,7 @@ import com.schmaloogium.engine.gl.GLError;
 import com.schmaloogium.engine.gl.ReplayAwareGLError;
 import com.schmaloogium.engine.gl.UniformLocation;
 import com.schmaloogium.engine.log.LogChannels;
+import com.schmaloogium.engine.log.Logs;
 import com.schmaloogium.engine.registry.BarrierContext;
 import com.schmaloogium.engine.registry.BarrierParticipantResult;
 import com.schmaloogium.engine.registry.BoundProgramUniformAccess;
@@ -1334,6 +1335,43 @@ public final class UniformRuntimeImpl implements UniformRuntime, UniformCore {
         return SamplerPlan.valid(ordered);
     }
 
+    /**
+     * The time-of-day and lighting cells a program actually saw, one line per effective
+     * program per install (H6-UNI). These are the inputs a night composite chain branches
+     * on, and an ABSENT cell is a real finding: a value the platform never supplies is
+     * removed from {@code cells} rather than defaulted, so the shader reads whatever the
+     * driver left in the uniform.
+     */
+    private static final String[] NIGHT_SENSITIVE = {
+        "sunAngle", "shadowAngle", "worldTime", "worldDay", "moonPhase",
+        "sunPosition", "moonPosition", "upPosition", "shadowLightPosition",
+        "skyColor", "fogColor", "nightVision", "eyeBrightness", "eyeBrightnessSmooth",
+        "rainStrength", "isEyeInWater", "blindness", "screenBrightness"
+    };
+
+    private final java.util.Set<String> nightValuesLogged =
+        java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private void logNightSensitiveValues(ResolvedProgramDescriptor binding) {
+        String program = String.valueOf(binding.effective());
+        if (!nightValuesLogged.add(program)) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String name : NIGHT_SENSITIVE) {
+            UniformValue value = cells.get(name);
+            sb.append(' ').append(name).append('=')
+                .append(value == null ? "ABSENT" : describe(value));
+        }
+        Logs.channel(LogChannels.UNIFORMS).info("H6-UNI {}:{}", program, sb.toString());
+    }
+
+    private static String describe(UniformValue value) {
+        String text = String.valueOf(value);
+        // The record toString carries the type name; keep the line readable but lossless.
+        return text.length() <= 96 ? text : text.substring(0, 93) + "...";
+    }
+
     private static String samplerDiagnostic(SamplerLayoutValidation reason) {
         if (reason instanceof SamplerLayoutValidation.ConflictingTypes) {
             return "phase6.sampler.layout.conflict";
@@ -1364,6 +1402,7 @@ public final class UniformRuntimeImpl implements UniformRuntime, UniformCore {
                     }
                     appendBuiltInCommand(row.get(), cache, uniforms, batch);
                 }
+                logNightSensitiveValues(binding);
                 if (batch.isEmpty()) {
                     return new BarrierParticipantResult.Continue();
                 }

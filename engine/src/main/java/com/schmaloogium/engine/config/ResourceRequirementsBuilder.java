@@ -30,9 +30,24 @@ public final class ResourceRequirementsBuilder {
     public static ResourceRequirements build(ShaderPropertiesModel properties,
             Map<String, ConstScanner.Finding> consts,
             Map<ProgramRequirementKey, ProgramRequirements> programs) {
+        return build(properties, consts, programs, consts);
+    }
+
+    /**
+     * @param fullscreenConsts the consts declared by deferred/composite sources only.
+     *                         {@code colortexNClear} and {@code colortexNClearColor} are
+     *                         honoured for that family alone (PHASE_3_DOC §3.3 :1828-1829),
+     *                         so a clear directive in a gbuffers source is ignored rather
+     *                         than silently applied to the whole estate.
+     */
+    public static ResourceRequirements build(ShaderPropertiesModel properties,
+            Map<String, ConstScanner.Finding> consts,
+            Map<ProgramRequirementKey, ProgramRequirements> programs,
+            Map<String, ConstScanner.Finding> fullscreenConsts) {
         BufferMinima minima = new BufferMinima(8, 1, 1,
             boolConst(consts, "generateShadowColorMipmap", false) ? 1 : 0);
-        Map<ColorAttachmentKey, ColorAttachmentRequirement> color = colorAttachments(consts);
+        Map<ColorAttachmentKey, ColorAttachmentRequirement> color =
+            colorAttachments(consts, fullscreenConsts);
         ShadowRequirements shadow = shadow(consts);
         CenterDepthRequirements centerDepth = new CenterDepthRequirements(false);
         SmoothingConstants smoothing = new SmoothingConstants(
@@ -93,11 +108,28 @@ public final class ResourceRequirementsBuilder {
         return f == null ? baseline : Boolean.parseBoolean(f.value().trim());
     }
 
+    /** The attachment-scoped directive suffixes this builder reads (§4.7). */
+    private static final Set<String> ATTACHMENT_SUFFIXES =
+        Set.of("Format", "Clear", "ClearColor");
+
+    /**
+     * The section 4.7 attachment directives, resolved through the one shared buffer-name
+     * normalizer so the legacy spellings ({@code gcolorFormat}, {@code gaux3Format},
+     * {@code gaux4Clear} …) are read exactly like their {@code colortexN} equivalents.
+     * Packs that ship only legacy names — SEUS Renewed declares nothing else — otherwise
+     * fall through to the unsized RGBA fallback with every directive silently unread.
+     * A canonical spelling wins over a legacy alias for the same attachment.
+     */
     private static Map<ColorAttachmentKey, ColorAttachmentRequirement> colorAttachments(
-            Map<String, ConstScanner.Finding> consts) {
+            Map<String, ConstScanner.Finding> consts,
+            Map<String, ConstScanner.Finding> fullscreenConsts) {
+        Map<Integer, ConstScanner.Finding> formats = collectScoped(consts, "Format");
+        Map<Integer, ConstScanner.Finding> clears = collectScoped(fullscreenConsts, "Clear");
+        Map<Integer, ConstScanner.Finding> clearColors =
+            collectScoped(fullscreenConsts, "ClearColor");
         Map<ColorAttachmentKey, ColorAttachmentRequirement> out = new LinkedHashMap<>();
         for (int i = 0; i < 8; i++) {
-            ConstScanner.Finding fmt = consts.get("colortex" + i + "Format");
+            ConstScanner.Finding fmt = formats.get(i);
             if (fmt == null) {
                 continue;
             }
@@ -106,9 +138,11 @@ public final class ResourceRequirementsBuilder {
                 continue;
             }
             ColorAttachmentFormat format = new ColorAttachmentFormat.Explicit(internalFormat);
-            boolean clear = boolConst(consts, "colortex" + i + "Clear", true);
+            ConstScanner.Finding clearFinding = clears.get(i);
+            boolean clear = clearFinding == null
+                || Boolean.parseBoolean(clearFinding.value().trim());
             Optional<Vec4f> clearOverride = Optional.empty();
-            ConstScanner.Finding clearColor = consts.get("colortex" + i + "ClearColor");
+            ConstScanner.Finding clearColor = clearColors.get(i);
             if (clearColor != null) {
                 Vec4f v = Vec4Parser.parse(clearColor.value());
                 if (v != null) {
@@ -119,6 +153,32 @@ public final class ResourceRequirementsBuilder {
                 new ColorAttachmentRequirement(format, clear, clearOverride));
         }
         return out;
+    }
+
+    /**
+     * Every declaration of one directive suffix, keyed by attachment index. The canonical
+     * {@code colortexN} spelling displaces a legacy alias; between two legacy spellings of
+     * the same attachment the first scanned wins, matching the scanner's own
+     * first-occurrence rule.
+     */
+    private static Map<Integer, ConstScanner.Finding> collectScoped(
+            Map<String, ConstScanner.Finding> consts, String suffix) {
+        Map<Integer, ConstScanner.Finding> byIndex = new LinkedHashMap<>();
+        Set<Integer> canonical = new java.util.HashSet<>();
+        for (Map.Entry<String, ConstScanner.Finding> entry : consts.entrySet()) {
+            ColorBufferNames.ScopedDirective scoped =
+                ColorBufferNames.scoped(entry.getKey(), ATTACHMENT_SUFFIXES);
+            if (scoped == null || !scoped.suffix().equals(suffix)) {
+                continue;
+            }
+            if (scoped.canonical()) {
+                byIndex.put(scoped.index(), entry.getValue());
+                canonical.add(scoped.index());
+            } else if (!canonical.contains(scoped.index())) {
+                byIndex.putIfAbsent(scoped.index(), entry.getValue());
+            }
+        }
+        return byIndex;
     }
 
     private static ShadowRequirements shadow(Map<String, ConstScanner.Finding> consts) {
