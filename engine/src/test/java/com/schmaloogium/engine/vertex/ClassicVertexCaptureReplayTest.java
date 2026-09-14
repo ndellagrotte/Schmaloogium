@@ -187,6 +187,35 @@ class ClassicVertexCaptureReplayTest {
     }
 
     @Test
+    void rebindRepointsTheLiveTopBindingAndNeutralValuesAreRecorded() {
+        RecordingGLDevice device = new RecordingGLDevice(profile(13), new ScriptedResponses());
+        ProgramHandle program = useTrianglesProgram(device);
+        com.schmaloogium.engine.gl.VertexInputService inputs = device.vertexInputs();
+        VertexInputPlan triangles = plan(VertexGeometryInput.TRIANGLES);
+        VertexSource.BorrowedVbo first = device.borrowedVertexVbo("vbo-1", QUAD_BYTES);
+        VertexSource.BorrowedVbo second = device.borrowedVertexVbo("vbo-2", QUAD_BYTES);
+        VertexSource.BorrowedVbo retired = device.borrowedVertexVbo("vbo-3", QUAD_BYTES);
+        device.retireVertexSource(retired);
+
+        VertexBindResult.Bound layer = assertInstanceOf(VertexBindResult.Bound.class,
+                inputs.bind(first, Classic56Layout.layout(), triangles, VertexBindMode.LIVE_DRAW));
+        // The same binding is returned; a retired source and a foreign binding are refused.
+        VertexBindResult.Bound again = assertInstanceOf(VertexBindResult.Bound.class,
+                inputs.rebind(layer.binding(), second));
+        assertEquals(layer.binding(), again.binding());
+        assertInstanceOf(VertexBindResult.Rejected.class, inputs.rebind(layer.binding(), retired));
+        inputs.restore(layer.binding());
+        assertInstanceOf(VertexBindResult.Rejected.class, inputs.rebind(layer.binding(), second));
+
+        inputs.setNeutralCurrentValues(triangles);
+        device.shaders().delete(program);
+        ReplayAssertions.of(device.log())
+                .calledInOrder("vertexInputs.bind", "vertexInputs.rebind",
+                        "vertexInputs.restore", "vertexInputs.neutral")
+                .invariants();
+    }
+
+    @Test
     void scriptedBindFailureRollsBackWithoutPushing() {
         ScriptedResponses responses = new ScriptedResponses()
                 .glError("vertexInputs.bind", "client-a", GLErrorKind.INVALID_OPERATION);

@@ -1,6 +1,6 @@
 # schmaloogium golden · kind=frontend · schema=1
 engine.version = 0.1.0-dev
-input.configurationFingerprint = 5311c0f8c39c59792b953bc4942990dca99215dc9ef95afcd6a807cf089256a0
+input.configurationFingerprint = ea641937a2384859f6cf49a2cfa197e6cb926603514bdbad4b4496bcde6e2a5c
 input.configurationSchema = 23
 input.pack = mp-options@1.0.0
 input.packSha512 = 
@@ -56,7 +56,38 @@ owner.resources.world.sunPathRotation = 0
 
 [options]
 owner.options.mainScreen.$type = ScreenModel
+owner.options.mainScreen.entries.0.$type = ScreenEmptyEntry
+owner.options.mainScreen.entries.1.$type = ScreenOptionEntry
+owner.options.mainScreen.entries.1.optionName = [SHADOW_SOFTNESS
+owner.options.mainScreen.entries.2.$type = ScreenOptionEntry
+owner.options.mainScreen.entries.2.optionName = SUN_ANGLE]
+owner.options.mainScreen.entries.3.$type = ScreenOptionEntry
+owner.options.mainScreen.entries.3.optionName = SHADOWS
+owner.options.mainScreen.entries.4.$type = ScreenOptionEntry
+owner.options.mainScreen.entries.4.optionName = WATER_TINT
 owner.options.mainScreen.explicitColumns = absent
+owner.options.profiles.0.$type = ProfileModel
+owner.options.profiles.0.constraints.0.$type = ProfileConstraint
+owner.options.profiles.0.constraints.0.optionName = SHADOWS_OFF
+owner.options.profiles.0.constraints.0.requiredValue.$type = BooleanOptionValue
+owner.options.profiles.0.constraints.0.requiredValue.value = true
+owner.options.profiles.0.constraints.1.$type = ProfileConstraint
+owner.options.profiles.0.constraints.1.optionName = SHADOW_SOFTNESS=0
+owner.options.profiles.0.constraints.1.requiredValue.$type = BooleanOptionValue
+owner.options.profiles.0.constraints.1.requiredValue.value = true
+owner.options.profiles.0.name = PERFORMANCE
+owner.options.profiles.1.$type = ProfileModel
+owner.options.profiles.1.constraints.0.$type = ProfileConstraint
+owner.options.profiles.1.constraints.0.optionName = SHADOWS
+owner.options.profiles.1.constraints.0.requiredValue.$type = BooleanOptionValue
+owner.options.profiles.1.constraints.0.requiredValue.value = true
+owner.options.profiles.1.constraints.1.$type = ProfileConstraint
+owner.options.profiles.1.constraints.1.optionName = SHADOW_SOFTNESS=3
+owner.options.profiles.1.constraints.1.requiredValue.$type = BooleanOptionValue
+owner.options.profiles.1.constraints.1.requiredValue.value = true
+owner.options.profiles.1.name = FANCY
+owner.options.sliders.optionNames.0 = SHADOW_SOFTNESS
+owner.options.sliders.optionNames.1 = SUN_ANGLE
 
 [properties]
 owner.dimensions.0.key.$type = DimensionKey
@@ -133,6 +164,20 @@ owner.properties.engineFlags.sun = DEFAULT
 owner.properties.engineFlags.underwaterOverlay = DEFAULT
 owner.properties.engineFlags.vignette = DEFAULT
 owner.properties.noise = absent
+owner.properties.unknownProperties.0.$type = UnknownProperty
+owner.properties.unknownProperties.0.attribution.$type = SourceAttribution
+owner.properties.unknownProperties.0.attribution.physicalColumn = 1
+owner.properties.unknownProperties.0.attribution.physicalLine = 12
+owner.properties.unknownProperties.0.attribution.source = shaders/shaders.properties
+owner.properties.unknownProperties.0.key = sha256:8de0c60e19e15de5a1d94ca660fc61ad9a411ae6d959eecb89171f4c82309dd2
+owner.properties.unknownProperties.0.value = sha256:093f8b14f5c02a29603f321a2921ef0f16162b374eaa1082d4d39bea2f40a949
+owner.properties.unknownProperties.1.$type = UnknownProperty
+owner.properties.unknownProperties.1.attribution.$type = SourceAttribution
+owner.properties.unknownProperties.1.attribution.physicalColumn = 1
+owner.properties.unknownProperties.1.attribution.physicalLine = 13
+owner.properties.unknownProperties.1.attribution.source = shaders/shaders.properties
+owner.properties.unknownProperties.1.key = sha256:e63a55e36203cf73ace54985d60f9fe659af98143415a9a7f7b7bb546fce161e
+owner.properties.unknownProperties.1.value = sha256:6f4ac938491cd9926f06a784233a20d29c62574bee91073afffd45125e4cb5fd
 present = true
 
 [macros]

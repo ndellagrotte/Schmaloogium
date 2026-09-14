@@ -638,6 +638,21 @@ public final class ScriptedGLDevice implements GLDevice {
         }
 
         @Override
+        public VertexBindResult rebind(VertexBinding binding, VertexSource source) {
+            if (!(binding instanceof ScriptedBinding scripted) || !liveBindings.contains(scripted)) {
+                return new VertexBindResult.Rejected(
+                        com.schmaloogium.engine.gl.VertexBindRejection.INVALID_PLAN);
+            }
+            record("vertexInputs.rebind", scripted.name());
+            return new VertexBindResult.Bound(scripted);
+        }
+
+        @Override
+        public void setNeutralCurrentValues(VertexInputPlan plan) {
+            record("vertexInputs.neutral", Integer.toString(plan.pointers().size()));
+        }
+
+        @Override
         public void restore(VertexBinding binding) {
             if (!(binding instanceof ScriptedBinding scripted)
                     || !liveBindings.remove(scripted)) {

@@ -42,7 +42,11 @@ public final class SchmaloogiumMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void onLoad(String mixinPackage) {
-        // Nothing to prepare; the early subset registers itself before first evaluation.
+        // Task F (PHASE_10_DOC §4.9): the chunk-renderer detect-and-bail check is
+        // registered once, before the compat family's first evaluation.
+        if (mixinPackage != null && mixinPackage.startsWith("com.schmaloogium.mod.mixin.compat")) {
+            BailRegistry.register(com.schmaloogium.mod.compat.vertex.ChunkRendererCompatCheck.INSTANCE);
+        }
     }
 
     @Override

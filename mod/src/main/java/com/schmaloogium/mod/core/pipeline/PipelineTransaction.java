@@ -105,7 +105,8 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
             FrameRenderPort port,
             Consumer<Optional<FrameComposition>> installSink,
             DiagnosticReporter diagnostics,
-            ShadowServices shadow) {
+            ShadowServices shadow,
+            IdServices ids) {
 
         public Services {
             Objects.requireNonNull(stages, "stages");
@@ -118,6 +119,7 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
             Objects.requireNonNull(installSink, "installSink");
             Objects.requireNonNull(diagnostics, "diagnostics");
             shadow = shadow == null ? ShadowServices.disabled() : shadow;
+            ids = ids == null ? IdServices.disabled() : ids;
         }
 
         /** The v0.1 shape: no shadow services (every plan is Disabled by hook health). */
@@ -126,7 +128,54 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
                 Supplier<Extent2i> displayExtent, LongSupplier resourceReloadEpoch, FrameRenderPort port,
                 Consumer<Optional<FrameComposition>> installSink, DiagnosticReporter diagnostics) {
             this(stages, selection, engineOptions, liveDimension, displayExtent, resourceReloadEpoch,
-                    port, installSink, diagnostics, ShadowServices.disabled());
+                    port, installSink, diagnostics, ShadowServices.disabled(), IdServices.disabled());
+        }
+
+        /** The v0.2 shape: shadow services, no ids. */
+        public Services(PipelineStages stages, Supplier<PackSelection> selection,
+                Supplier<EngineOptionData> engineOptions, Supplier<DimensionKey> liveDimension,
+                Supplier<Extent2i> displayExtent, LongSupplier resourceReloadEpoch, FrameRenderPort port,
+                Consumer<Optional<FrameComposition>> installSink, DiagnosticReporter diagnostics,
+                ShadowServices shadow) {
+            this(stages, selection, engineOptions, liveDimension, displayExtent, resourceReloadEpoch,
+                    port, installSink, diagnostics, shadow, IdServices.disabled());
+        }
+    }
+
+    /**
+     * The Phase 9 / Phase 10 construction inputs (Task F): the live registry projection,
+     * the per-mod sources, the hand-light policy, the vertex hook audit, the world epoch the
+     * vertex epoch carries, and the sink the install's id/vertex publication reaches the
+     * hooks through.
+     */
+    public record IdServices(
+            Supplier<Optional<com.schmaloogium.mod.glue.id.RegistryProjection.Projection>> registries,
+            Supplier<com.schmaloogium.engine.config.id.ModIdSourceSnapshot> modSources,
+            Supplier<com.schmaloogium.engine.config.id.HandLightPolicy> handLight,
+            Supplier<com.schmaloogium.mod.glue.vertex.VertexHookHealth> vertexHooks,
+            LongSupplier worldEpoch,
+            com.schmaloogium.engine.config.IdMappingParser parser,
+            Consumer<com.schmaloogium.mod.glue.id.IdPublication> publicationSink) {
+
+        public IdServices {
+            Objects.requireNonNull(registries, "registries");
+            Objects.requireNonNull(modSources, "modSources");
+            Objects.requireNonNull(handLight, "handLight");
+            Objects.requireNonNull(vertexHooks, "vertexHooks");
+            Objects.requireNonNull(worldEpoch, "worldEpoch");
+            Objects.requireNonNull(parser, "parser");
+            Objects.requireNonNull(publicationSink, "publicationSink");
+        }
+
+        /** No registry, no audited vertex hooks: IDs off, vanilla vertex formats. */
+        public static IdServices disabled() {
+            return new IdServices(Optional::empty,
+                    com.schmaloogium.engine.config.id.ModIdSourceSnapshot::empty,
+                    com.schmaloogium.engine.config.id.HandLightPolicy::allDefault,
+                    () -> com.schmaloogium.mod.glue.vertex.VertexHookHealth.disabled("not installed"),
+                    () -> 0L,
+                    new com.schmaloogium.engine.config.IdMappingParserImpl(),
+                    publication -> { });
         }
     }
 
@@ -175,12 +224,19 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
 
     private final Services services;
     private final PipelineVersion.Counter versions = new PipelineVersion.Counter();
+    private final com.schmaloogium.mod.glue.id.IdEventSinkRelay idSink =
+            new com.schmaloogium.mod.glue.id.IdEventSinkRelay();
+    private final com.schmaloogium.engine.config.id.IdRuntimeBuilder idBuilder;
+    private final com.schmaloogium.engine.config.id.IdRuntimePublisher idPublisher;
     private ActivePipeline active;
     private long drainSerial;
     private long awaitingMainDepthVersion = -1L;
 
     public PipelineTransaction(Services services) {
         this.services = Objects.requireNonNull(services, "services");
+        this.idBuilder = com.schmaloogium.engine.config.id.IdRuntimeBuilder.create(services.ids().parser());
+        this.idPublisher = com.schmaloogium.engine.config.id.IdRuntimePublisher.create(idSink,
+                services.diagnostics());
     }
 
     /** The installed pipeline, when one is active. */
@@ -215,6 +271,7 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         awaitingMainDepthVersion = -1L;
         // Step 1: admission closes first; the previous composition never comes back.
         services.installSink().accept(Optional.empty());
+        services.ids().publicationSink().accept(com.schmaloogium.mod.glue.id.IdPublication.none());
         Attempt attempt = new Attempt(active);
         active = null;
         try {
@@ -293,7 +350,8 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         // Step 4: compose the barrier with exactly this runtime's three participants.
         PipelineStages.BarrierOutcome barrier = a.registry.compose(
                 a.runtime.samplerParticipant(), a.runtime.builtInParticipant(),
-                a.runtime.customParticipant());
+                com.schmaloogium.mod.glue.vertex.VertexProgramInputTracker.participant(
+                        a.runtime.customParticipant()));
         if (barrier instanceof PipelineStages.BarrierOutcome.Invalid invalid) {
             return a.fail("barrier", invalid.diagnosticId(), List.of());
         }
@@ -390,18 +448,90 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
             }
         }
         services.shadow().planReadySink().accept(shadowSlot.isPresent());
-        // Steps 8–9: P13 stays the explicit empty publication, P9 dormant. Atomic install.
+        // Step 8 (Task F, PHASE_9_DOC §5.3): the id runtime is published after the texture
+        // stage (still the explicit empty publication) and before atomic Active. IDs are a
+        // FEATURE: a failed build or snapshot leaves them off and the pipeline installs.
+        Optional<com.schmaloogium.engine.config.id.PublishedIdRuntime> idRuntime = Optional.empty();
+        com.schmaloogium.mod.glue.id.IdIdentityMaps idMaps = com.schmaloogium.mod.glue.id.IdIdentityMaps.EMPTY;
+        String idVerdict;
+        Optional<com.schmaloogium.mod.glue.id.RegistryProjection.Projection> projection =
+                services.ids().registries().get();
+        if (projection.isEmpty()) {
+            idVerdict = "off(no registry snapshot)";
+        } else {
+            com.schmaloogium.engine.config.id.HandLightPolicy handLight = services.ids().handLight().get();
+            com.schmaloogium.engine.config.id.IdBuildResult built = idBuilder.build(
+                    new com.schmaloogium.engine.config.id.IdBuildRequest(cfg.idMappings(),
+                            projection.get().snapshot(), services.ids().modSources().get(),
+                            com.schmaloogium.engine.config.id.CompatibilityAliasCatalog.v0_3(),
+                            com.schmaloogium.engine.config.id.LegacyTagCatalog.empty(),
+                            handLight, services.diagnostics()));
+            if (built instanceof com.schmaloogium.engine.config.id.IdBuildResult.Built ok) {
+                idSink.retarget(a.runtime.events());
+                var publishResult = idPublisher.publish(ok.candidate(),
+                        new com.schmaloogium.engine.config.id.IdPublishContext("post-texture"));
+                if (publishResult instanceof com.schmaloogium.engine.config.id.IdPublishResult.Published p) {
+                    idRuntime = Optional.of(p.runtime());
+                    idMaps = projection.get().maps();
+                    var v = ok.candidate().view();
+                    idVerdict = "gen " + p.runtime().generation() + " (states " + v.blockStateCount()
+                            + " items " + v.itemOrdinalCount() + " entities " + v.entityTypeCount()
+                            + "; aliases b/i/e " + v.blockAliasAssignments() + "/" + v.itemAliasAssignments()
+                            + "/" + v.entityAliasAssignments() + ", layers " + v.layerAssignments() + ")";
+                } else {
+                    ok.candidate().close();
+                    idVerdict = "off(publish " + publishResult + ")";
+                }
+            } else {
+                idVerdict = "off(build " + ((com.schmaloogium.engine.config.id.IdBuildResult.Failed) built)
+                        .failure() + ")";
+            }
+        }
+        a.idRuntime = idRuntime;
+        a.dropOldIds();
+        // Step 8b: the vertex epoch is admitted only under healthy vertex hooks when at least
+        // one program declares a classic attribute (PHASE_10_DOC §4.6, §4.11).
+        com.schmaloogium.mod.glue.vertex.VertexHookHealth vertexHealth =
+                Boolean.getBoolean("schmaloogium.debug.disableExtendedVertex")
+                        ? com.schmaloogium.mod.glue.vertex.VertexHookHealth.disabled("disabled by debug flag")
+                        : services.ids().vertexHooks().get();
+        java.util.Set<com.schmaloogium.engine.registry.ExtendedAttribute> declaredUnion = declaredClassicAttributes(view);
+        boolean declaresAttributes = !declaredUnion.isEmpty();
+        // Steps 9: P13 stays the explicit empty publication. Atomic install.
         PipelineVersion version = versions.next();
+        Optional<com.schmaloogium.engine.vertex.VertexEpoch> vertexEpoch =
+                vertexHealth.healthy() && declaresAttributes
+                        ? Optional.of(new com.schmaloogium.engine.vertex.VertexEpoch(version.value(),
+                                services.ids().worldEpoch().getAsLong(),
+                                idRuntime.map(com.schmaloogium.engine.config.id.PublishedIdRuntime::generation)
+                                        .orElse(0L),
+                                com.schmaloogium.engine.vertex.Classic56Layout.layout().fingerprint()))
+                        : Optional.empty();
         PipelineIdentity identity = new PipelineIdentity(cfg.pack(), dimension, cfg.fingerprint());
         FrameCompositionRecord composition = new FrameCompositionRecord(identity, version,
                 published, publishedEstate, a.runtime, services.port(),
-                services.resourceReloadEpoch().getAsLong(), shadowSlot);
+                services.resourceReloadEpoch().getAsLong(), shadowSlot, idRuntime, vertexEpoch);
         active = new ActivePipeline(composition, cfg, a.runtime, a.collector);
+        services.ids().publicationSink().accept(new com.schmaloogium.mod.glue.id.IdPublication(
+                idRuntime, idMaps, idSink,
+                projection.isPresent() ? services.ids().handLight().get()
+                        : com.schmaloogium.engine.config.id.HandLightPolicy.allDefault(),
+                vertexEpoch, declaredUnion));
         services.installSink().accept(Optional.of(composition));
         LOG.info("H-PIPE-01 composition installed: pack {} dimension {} registry generation {} "
-                        + "estate generation {} version {} programs {} shadow={}",
+                        + "estate generation {} version {} programs {} shadow={} ids={} vertexEpoch={}",
                 cfg.pack().selectedRoot().canonicalString(), dimension, published.generation(),
-                publishedEstate.generation(), version.value(), histogram(view), shadowVerdict);
+                publishedEstate.generation(), version.value(), histogram(view), shadowVerdict,
+                idVerdict, vertexEpoch.map(e -> "serial " + e.serial()).orElse(
+                        declaresAttributes ? "vanilla(hooks)" : "vanilla(no attributes)"));
+        LOG.info("H9-IDS-01 id runtime: {} sources block={} item={} entity={} layer={}", idVerdict,
+                mappingState(cfg.idMappings().blocks()), mappingState(cfg.idMappings().items()),
+                mappingState(cfg.idMappings().entities()), mappingState(cfg.idMappings().layers()));
+        LOG.info("H9-HOOKS-01 id hook anchors: {}", com.schmaloogium.mod.glue.vertex.McVertexHookHealth.anchors(
+                List.of("H9-ENTITY-ID-01-ENTER", "H9-ENTITY-ID-01-EXIT", "H9-BLOCK-ENTITY-ID-01-SLOW",
+                        "H9-BLOCK-ENTITY-ID-01-FAST", "H9-COLOR-01", "H9-COLOR-02")));
+        LOG.info("H10-HEALTH-01 vertex hook health: enabled={} disabledRows={} attributesDeclared={}",
+                vertexHealth.healthy(), vertexHealth.disabledRows(), declaresAttributes);
         LOG.info("H8-HEALTH-01 shadow hook health: enabled={} disabledRows={} fingerprint={}",
                 hookHealth.shadowEnabled(),
                 com.schmaloogium.mod.glue.shadow.McShadowHookHealth.disabledRows(hookHealth),
@@ -412,6 +542,26 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
                 List.of(cfg.pack().selectedRoot().canonicalString()),
                 "version " + version.value(), LogChannels.FRAME));
         return ShaderReloadControllerImpl.activeStatus(identity, version);
+    }
+
+    /** "{state}/{ordinary rules}+{forced 1.13 rules}" for one id mapping file. */
+    private static String mappingState(com.schmaloogium.engine.config.IdMappingFileInput file) {
+        return file.state() + "/" + file.ordinaryRules().size() + "+" + file.forced11300Rules().size();
+    }
+
+    /** The union of classic attributes the sourced programs' state bundles declare. */
+    private static java.util.Set<com.schmaloogium.engine.registry.ExtendedAttribute> declaredClassicAttributes(
+            ProgramRegistryView view) {
+        java.util.EnumSet<com.schmaloogium.engine.registry.ExtendedAttribute> union =
+                java.util.EnumSet.noneOf(com.schmaloogium.engine.registry.ExtendedAttribute.class);
+        for (ProgramResolutionProjection projection : view.resolutions()) {
+            if (projection.status() != ProgramResolutionStatus.SOURCED) {
+                continue;
+            }
+            var resolved = view.resolve(projection.slot());
+            resolved.ifPresent(r -> union.addAll(r.state().attributes()));
+        }
+        return union;
     }
 
     /** Null when the disposition is acceptable, else a short reason. */
@@ -520,6 +670,7 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         boolean estateTransferred;
         boolean estateAccepted;
         boolean oldRetired;
+        Optional<com.schmaloogium.engine.config.id.PublishedIdRuntime> idRuntime = Optional.empty();
 
         Attempt(ActivePipeline old) {
             this.old = old;
@@ -528,6 +679,7 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         /** Off selection or Off load: the accepted-off outcome, one version increment. */
         ReloadStatus goOff(String reason) {
             String key = FAILURE_PREFIX + "off." + reason;
+            dropOldIds();
             retireOld();
             publishBothOff(key);
             PipelineVersion version = versions.next();
@@ -545,6 +697,10 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
          */
         ReloadStatus fail(String step, String detail, List<EngineDiagnostic> extra) {
             closeOwned();
+            idPublisher.deactivate(new com.schmaloogium.engine.config.id.IdPublishContext("off"));
+            closeIdRuntime(idRuntime, "candidate");
+            idRuntime = Optional.empty();
+            dropOldIds();
             retireCandidateRuntime();
             retireOld();
             publishBothOff(FAILURE_PREFIX + step);
@@ -593,6 +749,38 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
             if (old != null && !oldRetired) {
                 oldRetired = true;
                 retire(old.uniforms(), UniformRetirementReason.REPLACEMENT, "replaced");
+            }
+        }
+
+        boolean oldIdsDropped;
+
+        /**
+         * The previous id runtime is closed only after the publisher has retired it (a
+         * replacement retires it in {@code publish}; otherwise deactivate first), because
+         * the publisher reads the retired runtime's generation for its notice.
+         */
+        void dropOldIds() {
+            if (oldIdsDropped) {
+                return;
+            }
+            oldIdsDropped = true;
+            if (idRuntime.isEmpty()) {
+                idPublisher.deactivate(new com.schmaloogium.engine.config.id.IdPublishContext("off"));
+            }
+            if (old != null) {
+                closeIdRuntime(old.composition().idRuntime(), "replaced");
+            }
+        }
+
+        private void closeIdRuntime(
+                Optional<com.schmaloogium.engine.config.id.PublishedIdRuntime> runtime, String what) {
+            if (runtime == null || runtime.isEmpty()) {
+                return;
+            }
+            try {
+                runtime.get().close();
+            } catch (RuntimeException e) {
+                LOG.warn("closing the {} id runtime failed: {}", what, e.toString());
             }
         }
 

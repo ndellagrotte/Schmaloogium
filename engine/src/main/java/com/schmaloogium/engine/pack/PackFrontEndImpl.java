@@ -347,8 +347,8 @@ final class PackFrontEndImpl implements PackFrontEnd {
         }
 
         // 2. properties: preprocess shaders.properties and decode the model
-        NormalizedPackPath propertiesPath = new NormalizedPackPath("shaders.properties");
-        byte[] propertiesBytes = files.get(propertiesPath);
+        NormalizedPackPath propertiesPath = packPath(identity, "shaders.properties");
+        byte[] propertiesBytes = packFile(files, identity, "shaders.properties");
         List<ProfileScreenParser.Line> rawProperties = new ArrayList<>();
         ShaderPropertiesModel properties;
         if (propertiesBytes != null) {
@@ -390,6 +390,9 @@ final class PackFrontEndImpl implements PackFrontEnd {
             programRouting = new LinkedHashMap<>();
         Map<com.schmaloogium.engine.config.ProgramRequirementKey, Integer> programInstances =
             new LinkedHashMap<>();
+        Map<com.schmaloogium.engine.config.ProgramRequirementKey,
+            java.util.Set<com.schmaloogium.engine.config.VertexAttribute>> programAttributes =
+            new LinkedHashMap<>();
         for (SourceKey root : index.roots()) {
             SourceDocument doc = index.rootDocument(root).orElse(null);
             if (doc == null) {
@@ -407,6 +410,17 @@ final class PackFrontEndImpl implements PackFrontEnd {
             if (root.stage() == com.schmaloogium.engine.preprocess.ShaderSourceStage.FRAGMENT) {
                 com.schmaloogium.engine.config.DrawBuffersScanner.scan(docText)
                     .ifPresent(routing -> programRouting.put(programKey, routing));
+            }
+            if (root.stage() == com.schmaloogium.engine.preprocess.ShaderSourceStage.VERTEX) {
+                java.util.Set<com.schmaloogium.engine.config.VertexAttribute> declared =
+                    com.schmaloogium.engine.config.VertexAttributeScanner.scan(docText);
+                if (!declared.isEmpty()) {
+                    programAttributes.merge(programKey, declared, (a, b) -> {
+                        var union = java.util.EnumSet.copyOf(a);
+                        union.addAll(b);
+                        return union;
+                    });
+                }
             }
             ConstScanner.Finding instances = docConsts.get("countInstances");
             if (instances != null && "int".equals(instances.type())) {
@@ -427,12 +441,14 @@ final class PackFrontEndImpl implements PackFrontEnd {
         java.util.Set<com.schmaloogium.engine.config.ProgramRequirementKey> programKeys =
             new java.util.LinkedHashSet<>(programRouting.keySet());
         programKeys.addAll(programInstances.keySet());
+        programKeys.addAll(programAttributes.keySet());
         for (var programKey : programKeys) {
             programRequirements.put(programKey, new com.schmaloogium.engine.config.ProgramRequirements(
                 programRouting.getOrDefault(programKey,
                     new com.schmaloogium.engine.config.DrawRouting.AllUsed()),
                 java.util.Set.of(),
-                new com.schmaloogium.engine.config.VertexRequirements(java.util.Set.of()),
+                new com.schmaloogium.engine.config.VertexRequirements(
+                    programAttributes.getOrDefault(programKey, java.util.Set.of())),
                 programInstances.getOrDefault(programKey, 1),
                 java.util.Optional.empty()));
         }
@@ -603,10 +619,30 @@ final class PackFrontEndImpl implements PackFrontEnd {
         return confirmed;
     }
 
+    /**
+     * The snapshot keys carry the selected shaders root as a prefix ({@code shaders/...})
+     * for both archive and directory packs ({@code PackInputSnapshot.ofArchive/ofDirectory}),
+     * so a bare name never matched a real pack's file: {@code shaders.properties} and the
+     * id mapping files read as absent for every filesystem pack until Task F. The
+     * unprefixed fallback keeps an internal pack source (which keys its own entries)
+     * working unchanged.
+     */
+    private static NormalizedPackPath packPath(PackIdentity identity, String name) {
+        String root = identity.selectedRoot().canonicalString();
+        return root.isEmpty() ? new NormalizedPackPath(name)
+            : new NormalizedPackPath(root + "/" + name);
+    }
+
+    private static byte[] packFile(Map<NormalizedPackPath, byte[]> files, PackIdentity identity,
+            String name) {
+        byte[] prefixed = files.get(packPath(identity, name));
+        return prefixed != null ? prefixed : files.get(new NormalizedPackPath(name));
+    }
+
     private IdMappingFileInput parseIdMapping(Map<NormalizedPackPath, byte[]> files,
             PackIdentity identity, String path, MappingKind kind,
             IdMappingMacroEnvironment env, DiagnosticReporter diags) {
-        byte[] bytes = files.get(new NormalizedPackPath(path));
+        byte[] bytes = packFile(files, identity, path);
         IdMappingParseRequest parseRequest = new IdMappingParseRequest(kind,
             bytes == null ? Optional.empty() : Optional.of(ImmutableBytesImpl.of(bytes)),
             new com.schmaloogium.engine.config.PackMappingOrigin(identity,

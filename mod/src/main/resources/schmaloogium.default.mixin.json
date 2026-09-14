@@ -21,6 +21,8 @@
     "frame.MixinIntegratedServer",
     "frame.MixinNetHandlerPlayClient",
     "frame.MixinTextureManager",
+    "frame.ids.MixinRenderLivingBase",
+    "frame.ids.MixinRenderManagerIds",
     "frame.shadow.MixinRender",
     "frame.shadow.MixinRenderGlobalShadowTraversal",
     "frame.shadow.MixinRenderManager",

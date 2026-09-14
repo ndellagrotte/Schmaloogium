@@ -117,6 +117,12 @@ public final class CapturePlanWriter {
             b.text("world.entities." + i + ".pos", e.pos());
             b.text("world.entities." + i + ".nbt", e.nbt());
         }
+        b.integer("world.blocks.count", w.blocks().size());
+        for (int i = 0; i < w.blocks().size(); i++) {
+            SceneSpec.Block block = w.blocks().get(i);
+            b.text("world.blocks." + i + ".pos", block.pos());
+            b.text("world.blocks." + i + ".state", block.state());
+        }
         SceneSpec.Client c = scene.client();
         b.integer("client.width", c.width());
         b.integer("client.height", c.height());

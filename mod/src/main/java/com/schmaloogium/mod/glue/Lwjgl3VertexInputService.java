@@ -13,9 +13,10 @@ import com.schmaloogium.engine.vertex.AttributePointer;
 import com.schmaloogium.engine.vertex.VertexGeometryInput;
 import com.schmaloogium.engine.vertex.VertexInputPlan;
 import com.schmaloogium.engine.vertex.VertexLayout;
+import com.schmaloogium.engine.vertex.ClassicSemantic;
 import com.schmaloogium.engine.vertex.ConventionalInput;
-import com.schmaloogium.engine.vertex.Delivery;
 import com.schmaloogium.engine.vertex.StorageType;
+import com.schmaloogium.engine.vertex.VertexField;
 
 import net.minecraft.client.Minecraft;
 
@@ -113,6 +114,58 @@ final class Lwjgl3VertexInputService implements VertexInputService {
         device.noteMutation("vertexInput.restore", "(vertex binding)");
     }
 
+    // ------------------------------------------------------------- rebind / neutral
+
+    @Override
+    public VertexBindResult rebind(VertexBinding binding, VertexSource source) {
+        if (!onRenderThread()) {
+            return new VertexBindResult.Rejected(VertexBindRejection.WRONG_THREAD);
+        }
+        if (!(binding instanceof Lwjgl3VertexBinding b) || b.owner != device || b != top
+                || b.consumed()) {
+            return new VertexBindResult.Rejected(VertexBindRejection.INVALID_PLAN);
+        }
+        if (!(source instanceof IssuedSource issued) || issued.owner != device) {
+            return new VertexBindResult.Rejected(VertexBindRejection.INVALID_SOURCE);
+        }
+        if (issued.retired) {
+            return new VertexBindResult.Rejected(VertexBindRejection.STALE_SOURCE);
+        }
+        if (!sourceFitsRange(issued, b.layout(), b.plan())) {
+            return new VertexBindResult.Rejected(VertexBindRejection.OUT_OF_RANGE);
+        }
+        if (!modeCompatible(issued, b.mode())) {
+            return new VertexBindResult.Rejected(VertexBindRejection.UNSUPPORTED_INPUT);
+        }
+        try {
+            install(b.predecessor(), issued, b.layout(), b.plan(), b.mode());
+            device.noteMutation("vertexInput.rebind", "(vertex binding)");
+            return new VertexBindResult.Bound(b);
+        } catch (RuntimeException e) {
+            b.predecessor().restoreAll();
+            top = null;
+            return new VertexBindResult.Failed("gl.vertex.rebind." + System.identityHashCode(e));
+        }
+    }
+
+    @Override
+    public void setNeutralCurrentValues(VertexInputPlan plan) {
+        device.requireRenderThread("vertexInput.setNeutralCurrentValues");
+        for (AttributePointer p : plan.pointers()) {
+            GL20.glDisableVertexAttribArray(p.location());
+            // PHASE_10_DOC §4.6: a missing identity reads the floating neutral (0,0,0,1);
+            // midpoint and tangent read zero components (a (0,0,0,1) tangent would give a
+            // degenerate TBN and blow out every normal-mapped non-chunk draw).
+            switch (p.name()) {
+                case "mc_Entity" -> GL20.glVertexAttrib4f(p.location(), 0f, 0f, 0f, 1f);
+                case "mc_midTexCoord" -> GL20.glVertexAttrib2f(p.location(), 0f, 0f);
+                case "at_tangent" -> GL20.glVertexAttrib4f(p.location(), 0f, 0f, 0f, 0f);
+                default -> GL20.glVertexAttrib4f(p.location(), 0f, 0f, 0f, 1f);
+            }
+        }
+        device.noteMutation("vertexInput.neutral", "(generic current values)");
+    }
+
     // ------------------------------------------------------------- issuance
 
     /**
@@ -128,26 +181,33 @@ final class Lwjgl3VertexInputService implements VertexInputService {
             saved.restoreAll();
             throw e;
         }
-        return new Lwjgl3VertexBinding(device, saved, plan);
+        return new Lwjgl3VertexBinding(device, saved, plan, layout, mode);
     }
 
     private void install(Predecessor saved, IssuedSource issued, VertexLayout layout,
                          VertexInputPlan plan, VertexBindMode mode) {
         int savedClientUnit = GL11.glGetInteger(GL13.GL_CLIENT_ACTIVE_TEXTURE);
         try {
-            if (mode == VertexBindMode.LIVE_DRAW) {
+            if (mode == VertexBindMode.LIVE_DRAW || mode == VertexBindMode.LIST_CAPTURE) {
+                // A display list compiled from client arrays dereferences the enabled
+                // generic arrays too (PHASE_10_DOC §4.6 "compile with the complete current
+                // layout"), so capture installs the same pointer set as a live draw.
                 for (AttributePointer p : plan.pointers()) {
                     enableGenericArray(p.location(), true);
-                    GL20.glVertexAttribPointer(p.location(), p.components(),
-                            glStorage(p.storage()), p.normalized(), layout.strideBytes(),
-                            issued.rangeOffset() + p.byteOffset());
+                    if (issued.clientBytes != null) {
+                        // Client memory: the ByteBuffer overload addresses the buffer's own
+                        // memory (a long offset would be a VBO offset from a null base).
+                        GL20.glVertexAttribPointer(p.location(), p.components(),
+                                glStorage(p.storage()), p.normalized(), layout.strideBytes(),
+                                clientView(issued, p.byteOffset()));
+                    } else {
+                        GL20.glVertexAttribPointer(p.location(), p.components(),
+                                glStorage(p.storage()), p.normalized(), layout.strideBytes(),
+                                issued.rangeOffset() + p.byteOffset());
+                    }
                 }
                 for (ConventionalInput input : plan.conventionalInputs()) {
-                    installConventional(input, issued);
-                }
-            } else if (mode == VertexBindMode.LIST_CAPTURE) {
-                for (ConventionalInput input : plan.conventionalInputs()) {
-                    installConventional(input, issued);
+                    installConventional(input, issued, layout);
                 }
             } else { // LIST_REPLAY_GUARD: guard/current-value scope only, no pointers
                 return;
@@ -158,32 +218,80 @@ final class Lwjgl3VertexInputService implements VertexInputService {
         }
     }
 
-    private void installConventional(ConventionalInput input, IssuedSource issued) {
-        long base = issued.rangeOffset();
+    /**
+     * Interleaved conventional pointers: the stride is the layout's, the offset the
+     * layout's field for that semantic (falling back to the classic table when the
+     * layout does not name the field).
+     */
+    private void installConventional(ConventionalInput input, IssuedSource issued,
+                                     VertexLayout layout) {
+        int stride = layout.strideBytes();
+        boolean client = issued.clientBytes != null;
         switch (input) {
             case POSITION -> {
                 GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-                GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, base);
+                int off = fieldOffset(layout, "position", ClassicSemantic.POSITION);
+                if (client) {
+                    GL11.glVertexPointer(3, GL11.GL_FLOAT, stride, clientView(issued, off));
+                } else {
+                    GL11.glVertexPointer(3, GL11.GL_FLOAT, stride, issued.rangeOffset() + off);
+                }
             }
             case COLOR -> {
                 GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-                GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 4, base);
+                int off = fieldOffset(layout, "color", ClassicSemantic.COLOR);
+                if (client) {
+                    GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, stride, clientView(issued, off));
+                } else {
+                    GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, stride, issued.rangeOffset() + off);
+                }
             }
             case NORMAL -> {
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                GL11.glNormalPointer(GL11.GL_BYTE, 3, base);
+                int off = fieldOffset(layout, "normal", ClassicSemantic.NORMAL);
+                if (client) {
+                    GL11.glNormalPointer(GL11.GL_BYTE, stride, clientView(issued, off));
+                } else {
+                    GL11.glNormalPointer(GL11.GL_BYTE, stride, issued.rangeOffset() + off);
+                }
             }
             case UV0 -> {
                 GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
                 GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 8, base);
+                int off = fieldOffset(layout, "uv0", ClassicSemantic.UV0);
+                if (client) {
+                    GL11.glTexCoordPointer(2, GL11.GL_FLOAT, stride, clientView(issued, off));
+                } else {
+                    GL11.glTexCoordPointer(2, GL11.GL_FLOAT, stride, issued.rangeOffset() + off);
+                }
             }
             case UV1 -> {
                 GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
                 GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                GL11.glTexCoordPointer(2, GL11.GL_SHORT, 4, base);
+                int off = fieldOffset(layout, "lightmap", ClassicSemantic.UV1);
+                if (client) {
+                    GL11.glTexCoordPointer(2, GL11.GL_SHORT, stride, clientView(issued, off));
+                } else {
+                    GL11.glTexCoordPointer(2, GL11.GL_SHORT, stride, issued.rangeOffset() + off);
+                }
             }
         }
+    }
+
+    private static int fieldOffset(VertexLayout layout, String fieldName, ClassicSemantic fallback) {
+        for (VertexField field : layout.fields()) {
+            if (field.name().equals(fieldName)) {
+                return field.byteOffset();
+            }
+        }
+        return fallback.byteOffset();
+    }
+
+    /** A positioned duplicate of the client bytes (the caller's buffer is never mutated). */
+    private static ByteBuffer clientView(IssuedSource issued, int fieldOffset) {
+        ByteBuffer view = issued.clientBytes.duplicate();
+        view.position((int) (issued.rangeOffset() + fieldOffset));
+        return view;
     }
 
     private void enableGenericArray(int location, boolean enable) {
@@ -325,14 +433,29 @@ final class Lwjgl3VertexInputService implements VertexInputService {
         return layout.fingerprint().equals(plan.layoutFingerprint());
     }
 
+    /**
+     * The range is {@code [rangeOffset, rangeOffset + rangeLength)} of the source; every
+     * admitted vertex's last field byte must lie inside it (overflow-safe long math).
+     */
     private boolean sourceFitsRange(IssuedSource issued, VertexLayout layout, VertexInputPlan plan) {
-        long needed = 0;
-        for (AttributePointer p : plan.pointers()) {
-            long end = (long) p.byteOffset() + p.components() + (long) layout.strideBytes();
-            needed = Math.max(needed, end);
+        if (issued.vertexCount() <= 0) {
+            return true; // an empty range admits nothing and reads nothing
         }
-        needed += (long) Math.max(0, issued.vertexCount() - 1) * layout.strideBytes();
-        return issued.rangeOffset() + needed <= issued.rangeLength();
+        long lastRecordEnd = layout.strideBytes();
+        for (AttributePointer p : plan.pointers()) {
+            long end = (long) p.byteOffset() + (long) p.components() * storageBytes(p.storage());
+            lastRecordEnd = Math.max(lastRecordEnd, end);
+        }
+        long needed = (long) (issued.vertexCount() - 1) * layout.strideBytes() + lastRecordEnd;
+        return needed <= issued.rangeLength();
+    }
+
+    private static int storageBytes(StorageType storage) {
+        return switch (storage) {
+            case FLOAT32 -> 4;
+            case UINT8, INT8 -> 1;
+            case INT16 -> 2;
+        };
     }
 
     private boolean modeCompatible(IssuedSource issued, VertexBindMode mode) {

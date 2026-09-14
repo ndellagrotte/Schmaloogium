@@ -7,7 +7,18 @@
   "minVersion": "0.8.7",
   "setSourceFile": true,
   "plugin": "com.schmaloogium.mod.mixin.SchmaloogiumMixinPlugin",
-  "client": [],
+  "client": [
+    "vertex.MixinBlockModelRenderer",
+    "vertex.MixinBlockRendererDispatcher",
+    "vertex.MixinBufferBuilder",
+    "vertex.MixinChunkRenderWorker",
+    "vertex.MixinRenderChunk",
+    "vertex.MixinRenderList",
+    "vertex.MixinVboRenderList",
+    "vertex.MixinVertexBuffer",
+    "vertex.MixinVertexBufferUploader",
+    "vertex.MixinWorldVertexBufferUploader"
+  ],
   "mixins": [],
   "server": []
 }

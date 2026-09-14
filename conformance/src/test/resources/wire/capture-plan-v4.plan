@@ -97,6 +97,7 @@ pack.version = "1.0.0"
 run.id = RUN-T0-terrain-day-fixture
 scene.hash = 3f7a1c9e2b8d4f60a5c3e71d9b0f4a2c6e8d13579bdf2468ace013579bdf2468
 scene.id = terrain-day
+world.blocks.count = 0
 world.difficulty = peaceful
 world.dimension = 0
 world.entities.count = 0

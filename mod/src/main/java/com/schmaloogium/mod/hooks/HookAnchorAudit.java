@@ -89,6 +89,55 @@ public final class HookAnchorAudit {
         accessors.add(new Row("H8-CLOUD-01-RESOLVE", Kind.RESOLVE, "schmaloogium$invokeRenderClouds"));
         accessors.add(new Row("H8-ENTITY-01-METHOD-RESOLVE", Kind.RESOLVE, "schmaloogium$invokeRenderEntities"));
         m.put(p + "frame.shadow.RenderGlobalShadowAccessor", List.copyOf(accessors));
+        // Task F: the Phase 9 id rows (H9-*) and the Phase 10 terrain vertex rows (H10-*).
+        m.put(p + "frame.ids.MixinRenderManagerIds", List.of(
+                new Row("H9-ENTITY-ID-01-ENTER", Kind.CALL_SITES, "schmaloogium$entityIdEnter"),
+                new Row("H9-ENTITY-ID-01-EXIT", Kind.CALL_SITES, "schmaloogium$entityIdExit")));
+        m.put(p + "frame.MixinTileEntityRendererDispatcher", List.of(
+                new Row("H9-BLOCK-ENTITY-ID-01-SLOW", Kind.CALL_SITES, "schmaloogium$blockEntityIdSlow"),
+                new Row("H9-BLOCK-ENTITY-ID-01-FAST", Kind.CALL_SITES, "schmaloogium$blockEntityIdFast")));
+        m.put(p + "frame.ids.MixinRenderLivingBase", List.of(
+                new Row("H9-COLOR-01", Kind.CALL_SITES, "schmaloogium$entityColor"),
+                new Row("H9-COLOR-02", Kind.CALL_SITES, "schmaloogium$entityColorUnset")));
+        String v = p + "compat.vertex.";
+        m.put(v + "MixinChunkRenderWorker", List.of(
+                new Row("H10-TASK", Kind.CALL_SITES, "schmaloogium$taskEnter"),
+                new Row("H10-TASK-EXIT", Kind.CALL_SITES, "schmaloogium$taskExit")));
+        m.put(v + "MixinRenderChunk", List.of(
+                new Row("H10-BUILD", Kind.CALL_SITES, "schmaloogium$buildEnter"),
+                new Row("H10-BUILD-EXIT", Kind.CALL_SITES, "schmaloogium$buildExit")));
+        m.put(v + "MixinBlockRendererDispatcher", List.of(
+                new Row("H10-BLOCK", Kind.CALL_SITES, "schmaloogium$blockEnter"),
+                new Row("H10-BLOCK-EXIT", Kind.CALL_SITES, "schmaloogium$blockExit")));
+        m.put(v + "MixinBlockModelRenderer", List.of(
+                new Row("H10-MODEL-ARRAY-FLAT", Kind.CALL_SITES, "schmaloogium$addQuadsFlat"),
+                new Row("H10-MODEL-ARRAY-SMOOTH", Kind.CALL_SITES, "schmaloogium$addQuadsSmooth")));
+        m.put(v + "MixinBufferBuilder", List.of(
+                new Row("H10-BEGIN", Kind.CALL_SITES, "schmaloogium$beginFormat"),
+                new Row("H10-BEGIN-INIT", Kind.CALL_SITES, "schmaloogium$beginInit"),
+                new Row("H10-END", Kind.CALL_SITES, "schmaloogium$endVertex"),
+                new Row("H10-ARRAY", Kind.CALL_SITES, "schmaloogium$arrayEnter"),
+                new Row("H10-ARRAY-EXIT", Kind.CALL_SITES, "schmaloogium$arrayExit"),
+                new Row("H10-BULK", Kind.CALL_SITES, "schmaloogium$bulkExit"),
+                new Row("H10-WRITER-POS", Kind.CALL_SITES, "schmaloogium$writerPos"),
+                new Row("H10-WRITER-COLOR-INT", Kind.CALL_SITES, "schmaloogium$writerColor"),
+                new Row("H10-WRITER-TEX", Kind.CALL_SITES, "schmaloogium$writerTex"),
+                new Row("H10-WRITER-LIGHTMAP", Kind.CALL_SITES, "schmaloogium$writerLightmap"),
+                new Row("H10-WRITER-NORMAL", Kind.CALL_SITES, "schmaloogium$writerNormal"),
+                new Row("H10-RESET", Kind.CALL_SITES, "schmaloogium$reset")));
+        m.put(v + "MixinVertexBufferUploader", List.of(
+                new Row("H10-UPLOAD-DESCRIPTOR", Kind.CALL_SITES, "schmaloogium$uploadEnter"),
+                new Row("H10-UPLOAD-DESCRIPTOR-EXIT", Kind.CALL_SITES, "schmaloogium$uploadExit")));
+        m.put(v + "MixinVertexBuffer", List.of(
+                new Row("H10-VBO-UPLOAD", Kind.CALL_SITES, "schmaloogium$afterUpload"),
+                new Row("H10-VBO-DELETE", Kind.CALL_SITES, "schmaloogium$afterDelete")));
+        m.put(v + "MixinVboRenderList", List.of(
+                new Row("H10-VBO-LAYER", Kind.CALL_SITES, "schmaloogium$drawVbo"),
+                new Row("H10-VBO-LAYER-END", Kind.CALL_SITES, "schmaloogium$layerEnd")));
+        m.put(v + "MixinWorldVertexBufferUploader", List.of(
+                new Row("H10-CLIENT", Kind.CALL_SITES, "schmaloogium$drawClient")));
+        m.put(v + "MixinRenderList", List.of(
+                new Row("H10-LIST-REPLAY-END", Kind.CALL_SITES, "schmaloogium$replayExit")));
         return m;
     }
 

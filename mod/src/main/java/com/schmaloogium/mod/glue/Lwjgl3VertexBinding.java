@@ -18,13 +18,34 @@ final class Lwjgl3VertexBinding implements VertexBinding {
     final Lwjgl3GLDevice owner;
     private final Lwjgl3VertexInputService.Predecessor predecessor;
     private final VertexInputPlan plan;
+    private final com.schmaloogium.engine.vertex.VertexLayout layout;
+    private final com.schmaloogium.engine.gl.VertexBindMode mode;
     private boolean consumed;
 
     Lwjgl3VertexBinding(Lwjgl3GLDevice owner, Lwjgl3VertexInputService.Predecessor predecessor,
-                        VertexInputPlan plan) {
+                        VertexInputPlan plan, com.schmaloogium.engine.vertex.VertexLayout layout,
+                        com.schmaloogium.engine.gl.VertexBindMode mode) {
         this.owner = owner;
         this.predecessor = predecessor;
         this.plan = plan;
+        this.layout = layout;
+        this.mode = mode;
+    }
+
+    Lwjgl3VertexInputService.Predecessor predecessor() {
+        return predecessor;
+    }
+
+    com.schmaloogium.engine.vertex.VertexLayout layout() {
+        return layout;
+    }
+
+    com.schmaloogium.engine.gl.VertexBindMode mode() {
+        return mode;
+    }
+
+    boolean consumed() {
+        return consumed;
     }
 
     /** Consumed-once: the second call is a caller error, not a silent no-op. */

@@ -306,6 +306,90 @@ class PipelineTransactionTest {
                 shadow.neutralizations);
     }
 
+    private static PipelineTransaction.IdServices idServices(
+            java.util.function.Supplier<Optional<com.schmaloogium.mod.glue.id.RegistryProjection.Projection>> registries,
+            boolean healthyVertexHooks,
+            List<com.schmaloogium.mod.glue.id.IdPublication> publications) {
+        return new PipelineTransaction.IdServices(registries,
+                com.schmaloogium.engine.config.id.ModIdSourceSnapshot::empty,
+                com.schmaloogium.engine.config.id.HandLightPolicy::allDefault,
+                () -> new com.schmaloogium.mod.glue.vertex.VertexHookHealth(healthyVertexHooks,
+                        healthyVertexHooks ? List.of() : List.of("H10-TASK=absent")),
+                () -> 42L,
+                new com.schmaloogium.engine.config.IdMappingParserImpl(),
+                publications::add);
+    }
+
+    private static com.schmaloogium.mod.glue.id.RegistryProjection.Projection smallRegistry() {
+        var stone = new Object();
+        return com.schmaloogium.mod.glue.id.RegistryProjection.project(3,
+                List.of(new com.schmaloogium.mod.glue.id.RegistryProjection.BlockInput("minecraft", "stone", 1,
+                        List.of(new com.schmaloogium.mod.glue.id.RegistryProjection.StateInput(stone, 0,
+                                new java.util.TreeMap<>(), 3, true, 0)))),
+                List.of(new com.schmaloogium.mod.glue.id.RegistryProjection.ItemInput(new Object(), "minecraft",
+                        "stone", Optional.of(stone))),
+                List.of(new com.schmaloogium.mod.glue.id.RegistryProjection.EntityInput(new Object(), "minecraft",
+                        "cow")),
+                com.schmaloogium.engine.config.id.TagMembershipSnapshot.empty());
+    }
+
+    @Test
+    void ids_publishWithTheInstallAndClearOnTheNextDrain() {
+        List<com.schmaloogium.mod.glue.id.IdPublication> publications = new ArrayList<>();
+        transaction = new PipelineTransaction(new PipelineTransaction.Services(
+                stages, () -> selection, EngineOptionData::empty, () -> DimensionKey.BASE,
+                () -> new Extent2i(854, 480), () -> 0L, new InertPort(), installs::add, diagnostics,
+                PipelineTransaction.ShadowServices.disabled(),
+                idServices(() -> Optional.of(smallRegistry()), true, publications)));
+
+        ReloadStatus status = transaction.drain(select());
+
+        assertInstanceOf(ReloadStatus.Active.class, status);
+        FrameComposition composition = installs.get(1).orElseThrow();
+        assertTrue(composition.idRuntime().isPresent(), "the id runtime is published with the install");
+        assertEquals(1L, composition.idRuntime().get().generation());
+        assertEquals(1, composition.idRuntime().get().aliases().blockId(0).shaderId(),
+                "legacy numeric fallback: stone's live id 1 (block.properties absent)");
+        // Healthy hooks but no program declares a classic attribute: vanilla formats.
+        assertTrue(composition.vertexEpoch().isEmpty());
+        assertEquals(2, publications.size(), "one clear at step 1, one publication at install");
+        assertTrue(publications.get(0).runtime().isEmpty());
+        assertEquals(composition.idRuntime(), publications.get(1).runtime());
+        assertEquals(-1, publications.get(1).maps().stateOrdinal(smallRegistryStoneIsUnknownHere()));
+        assertEquals(0, errors());
+
+        // The next drain retires the previous id runtime with its pipeline.
+        ReloadStatus second = transaction.drain(select());
+        assertInstanceOf(ReloadStatus.Active.class, second, () -> second + " " + diagnostics.reports);
+        assertEquals(2L, installs.get(3).orElseThrow().idRuntime().get().generation());
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalStateException.class,
+                () -> composition.idRuntime().get().aliases());
+    }
+
+    /** Identity maps are keyed by the projection's own objects; a foreign object is unknown (-1). */
+    private static Object smallRegistryStoneIsUnknownHere() {
+        return new Object();
+    }
+
+    @Test
+    void ids_offWhenTheRegistrySnapshotIsUnavailable_pipelineStillInstalls() {
+        List<com.schmaloogium.mod.glue.id.IdPublication> publications = new ArrayList<>();
+        transaction = new PipelineTransaction(new PipelineTransaction.Services(
+                stages, () -> selection, EngineOptionData::empty, () -> DimensionKey.BASE,
+                () -> new Extent2i(854, 480), () -> 0L, new InertPort(), installs::add, diagnostics,
+                PipelineTransaction.ShadowServices.disabled(),
+                idServices(Optional::empty, false, publications)));
+
+        ReloadStatus status = transaction.drain(select());
+
+        assertInstanceOf(ReloadStatus.Active.class, status);
+        FrameComposition composition = installs.get(1).orElseThrow();
+        assertTrue(composition.idRuntime().isEmpty());
+        assertTrue(composition.vertexEpoch().isEmpty());
+        assertTrue(publications.get(1).runtime().isEmpty());
+        assertEquals(0, errors());
+    }
+
     @Test
     void shadowAvailable_withHealthyHooksAndAShadowProgram_installsTheSlot() {
         PipelineFixtures.FakeShadowView shadow = new PipelineFixtures.FakeShadowView(1L);

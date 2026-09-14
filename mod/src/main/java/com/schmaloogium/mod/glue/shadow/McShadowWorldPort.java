@@ -306,9 +306,14 @@ public final class McShadowWorldPort implements ShadowWorldPort {
                     viewEntity.lastTickPosY + (viewEntity.posY - viewEntity.lastTickPosY) * partial,
                     viewEntity.lastTickPosZ + (viewEntity.posZ - viewEntity.lastTickPosZ) * partial);
             ShadowTraversalGuard.enterEntities(content.blockEntities(), content.player());
+            // H9 shadow admission (PHASE_9_DOC §4.12): entity/TE ids under the authenticated
+            // shadow execution; nested exits restore before the admission releases.
+            var admission = com.schmaloogium.mod.glue.id.IdHooks.openShadowAdmission(
+                    com.schmaloogium.mod.glue.frame.FrameHooks.reservedTerrainToken());
             try {
                 mc.renderGlobal.renderEntities(viewEntity, frustum, mc.getRenderPartialTicks());
             } finally {
+                com.schmaloogium.mod.glue.id.IdHooks.closeAdmission(admission);
                 ShadowTraversalGuard.exitEntities();
             }
             if (!entitiesLogged) {

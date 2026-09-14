@@ -2,7 +2,7 @@
 [scene]
 schema = schmaloogium.scene/2
 id = entities-blocks
-description = a cow and a chest at exact positions in front of the camera (untuned until v0.3)
+description = a cow and two chests on a placed platform in front of the camera
 family = entities
 minMilestone = v0.3
 
@@ -25,9 +25,31 @@ gamerule.mobGriefing = false
 gamerule.doTileDrops = false
 gamerule.doEntityDrops = false
 prepTicks = 200
+block.0.pos = -216 74 243
+block.0.state = minecraft:stone
+block.1.pos = -216 74 244
+block.1.state = minecraft:stone
+block.2.pos = -216 74 245
+block.2.state = minecraft:stone
+block.3.pos = -215 74 243
+block.3.state = minecraft:stone
+block.4.pos = -215 74 244
+block.4.state = minecraft:stone
+block.5.pos = -215 74 245
+block.5.state = minecraft:stone
+block.6.pos = -214 74 243
+block.6.state = minecraft:stone
+block.7.pos = -214 74 244
+block.7.state = minecraft:stone
+block.8.pos = -214 74 245
+block.8.state = minecraft:stone
+block.9.pos = -216 75 244
+block.9.state = minecraft:chest:5
+block.10.pos = -216 75 243
+block.10.state = minecraft:chest:5
 entity.0.type = minecraft:cow
-entity.0.pos = -208.5 75.0 243.5
-entity.0.nbt = {NoAI:1b,Silent:1b,PersistenceRequired:1b}
+entity.0.pos = -214.5 75.0 244.5
+entity.0.nbt = {NoAI:1b,Silent:1b,PersistenceRequired:1b,NoGravity:1b,Rotation:[0.0f,0.0f]}
 
 [client]
 width = 854
@@ -51,7 +73,7 @@ pos = -211.5 75.0 240.5
 look = 45.0 15.0
 warmupFrames = 4800
 captureFrames = 2
-note = untuned (gated at v0.3): a NoAI cow in frame for gbuffers_entities
+note = a NoAI cow and two chests on a placed stone platform five blocks along the view ray; the block entities exercise blockEntityId and the cow entityId
 
 [path entity-orbit]
 warmupFrames = 4800
@@ -66,4 +88,4 @@ sample.3.pos = -211.5 75.0 240.5
 sample.3.look = 55.0 15.0
 captureStartSample = 1
 captureSampleCount = 2
-note = untuned (gated at v0.3): yaw sweep across the entity
+note = a five-degree yaw pan per frame across the cow and chests (mandatory motion path)

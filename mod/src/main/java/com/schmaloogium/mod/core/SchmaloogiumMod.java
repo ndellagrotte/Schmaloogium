@@ -68,6 +68,14 @@ public final class SchmaloogiumMod {
      * for the whole session. A {@code Bail} verdict forces shaders off for the session
      * and keeps them off (a supported terminal state, §G2.4 rungs 4/5).
      */
+    /** Task F (PHASE_9_DOC §4.14): a registry remap invalidates the id snapshot. */
+    @Mod.EventHandler
+    public void onModIdMapping(net.minecraftforge.fml.common.event.FMLModIdMappingEvent event) {
+        if (net.minecraftforge.fml.common.FMLCommonHandler.instance().getSide().isClient()) {
+            com.schmaloogium.mod.core.pipeline.PipelineBootstrap.onModIdMapping();
+        }
+    }
+
     @Mod.EventHandler
     public void onLoadComplete(FMLLoadCompleteEvent event) {
         CompatEvaluation evaluation = BailRegistry.evaluate(new FmlCompatContext());

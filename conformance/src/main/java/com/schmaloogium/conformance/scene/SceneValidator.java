@@ -93,6 +93,37 @@ public final class SceneValidator {
         if (w.time() < 0 || w.weatherTicks() < 0 || w.prepTicks() < 0) {
             failures.add("time, weatherTicks and prepTicks must be non-negative");
         }
+        for (SceneSpec.Block block : w.blocks()) {
+            String[] parts = block.pos().trim().split("\\s+");
+            if (parts.length != 3) {
+                failures.add("block pos must be three integer coordinates: " + block.pos());
+            } else {
+                for (String part : parts) {
+                    try {
+                        Integer.parseInt(part);
+                    } catch (NumberFormatException e) {
+                        failures.add("block pos component is not an integer: " + block.pos());
+                    }
+                }
+            }
+            String state = block.state().trim();
+            int colon = state.lastIndexOf(':');
+            String name = state;
+            if (colon > 0 && state.indexOf(':') != colon) {
+                name = state.substring(0, colon);
+                try {
+                    int meta = Integer.parseInt(state.substring(colon + 1));
+                    if (meta < 0 || meta > 15) {
+                        failures.add("block metadata must be in 0..15: " + state);
+                    }
+                } catch (NumberFormatException e) {
+                    failures.add("block metadata is not an integer: " + state);
+                }
+            }
+            if (!name.matches("[a-z0-9_.-]+:[a-z0-9_/.-]+")) {
+                failures.add("block state must be <namespace>:<path>[:<metadata>]: " + state);
+            }
+        }
         for (Map.Entry<String, String> rule : MANDATORY_GAMERULES.entrySet()) {
             String set = w.gamerules().get(rule.getKey());
             if (set == null) {

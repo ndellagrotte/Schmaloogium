@@ -53,6 +53,7 @@ public final class CapturePlan {
         m.put("world.prepTicks", "I");
         m.put("world.gamerules.count", "I");
         m.put("world.entities.count", "I");
+        m.put("world.blocks.count", "I");
         m.put("client.width", "I");
         m.put("client.height", "I");
         m.put("client.fov", "D");
@@ -93,6 +94,7 @@ public final class CapturePlan {
         "pack.engineOptions", Map.of("name", "T", "value", "T"),
         "world.gamerules", Map.of("name", "T", "value", "T"),
         "world.entities", Map.of("type", "T", "pos", "T", "nbt", "T"),
+        "world.blocks", Map.of("pos", "T", "state", "T"),
         "environment.mods", Map.of("id", "T", "sha256", "H64"),
         "captures", Map.of("kind", "K", "id", "T", "heldMain", "T", "heldOff", "T", "note", "T",
             "warmupFrames", "I", "samples.count", "I", "captureStartSample", "I",

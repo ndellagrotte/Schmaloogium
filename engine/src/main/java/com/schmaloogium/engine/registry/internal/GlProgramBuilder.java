@@ -14,6 +14,7 @@ import com.schmaloogium.engine.gl.ShaderHandle;
 import com.schmaloogium.engine.gl.ShaderService;
 import com.schmaloogium.engine.gl.ShaderStage;
 import com.schmaloogium.engine.gl.ValidateResult;
+import com.schmaloogium.engine.registry.ExtendedAttribute;
 import com.schmaloogium.engine.registry.ProgramBuildFailure;
 import com.schmaloogium.engine.registry.ProgramBuildStage;
 import com.schmaloogium.engine.registry.ProgramOwnBuildDisposition;
@@ -21,6 +22,7 @@ import com.schmaloogium.engine.registry.ProgramSamplerLayout;
 import com.schmaloogium.engine.registry.ProgramSamplerLayoutFingerprint;
 import com.schmaloogium.engine.registry.ProgramSlotId;
 import com.schmaloogium.engine.preprocess.ShaderSourceStage;
+import com.schmaloogium.engine.vertex.ClassicInputPlans;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +77,14 @@ final class GlProgramBuilder {
                 }
                 stageShaders.add(handle);
                 shaders.attach(program, handle);
+            }
+            // Classic attribute locations are bound by name before link (PHASE_10_DOC
+            // §4.6: locations 10/11/12; the Planner already gated the capability).
+            for (ExtendedAttribute attribute : ExtendedAttribute.values()) { // location order
+                if (planned.stateBundle != null && planned.stateBundle.attributes().contains(attribute)) {
+                    shaders.bindAttributeLocation(program, attribute.location(),
+                        ClassicInputPlans.declaredName(attribute));
+                }
             }
             if (planned.nativeConfigure != null) {
                 shaders.configureLegacyGeometry(

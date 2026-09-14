@@ -1942,6 +1942,46 @@ public final class RecordingGLDevice implements GLDevice {
         }
 
         @Override
+        public VertexBindResult rebind(VertexBinding binding, VertexSource source) {
+            checkRenderThread();
+            if (!(binding instanceof RecBinding rec) || bindingStack.peek() != rec || rec.consumed) {
+                return new VertexBindResult.Rejected(VertexBindRejection.INVALID_PLAN);
+            }
+            if (source == null) {
+                return new VertexBindResult.Rejected(VertexBindRejection.INVALID_SOURCE);
+            }
+            VertexSourceState sourceState = vertexSources.get(source);
+            if (sourceState == null) {
+                return new VertexBindResult.Rejected(VertexBindRejection.INVALID_SOURCE);
+            }
+            if (sourceState.retired) {
+                return new VertexBindResult.Rejected(VertexBindRejection.STALE_SOURCE);
+            }
+            if (inputStackPoisoned) {
+                return new VertexBindResult.Rejected(VertexBindRejection.UNSUPPORTED_INPUT);
+            }
+            appendMutating("vertexInputs.rebind", rec, source, sourceState.kind);
+            GLError scripted = responses.pollGlError("vertexInputs.rebind");
+            if (scripted != null) {
+                errorWindow.add(scripted);
+                appendMutating("vertexInputs.rollback", rec, true);
+                bindingStack.pop();
+                rec.consumed = true;
+                return new VertexBindResult.Failed("vertexInputs.rebind:" + rec.stableName());
+            }
+            return new VertexBindResult.Bound(rec);
+        }
+
+        @Override
+        public void setNeutralCurrentValues(VertexInputPlan plan) {
+            checkRenderThread();
+            if (plan == null) {
+                throw new IllegalArgumentException("plan must not be null");
+            }
+            appendMutating("vertexInputs.neutral", plan);
+        }
+
+        @Override
         public void restore(VertexBinding binding) {
             checkRenderThread();
             if (binding == null) {

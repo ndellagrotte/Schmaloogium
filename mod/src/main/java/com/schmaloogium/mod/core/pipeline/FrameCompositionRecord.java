@@ -30,7 +30,9 @@ public record FrameCompositionRecord(
         UniformRuntime uniforms,
         FrameRenderPort port,
         long resourceReloadEpoch,
-        Optional<ShadowInvocationSlot> shadowSlot) implements FrameComposition {
+        Optional<ShadowInvocationSlot> shadowSlot,
+        Optional<com.schmaloogium.engine.config.id.PublishedIdRuntime> idRuntime,
+        Optional<com.schmaloogium.engine.vertex.VertexEpoch> vertexEpoch) implements FrameComposition {
 
     public FrameCompositionRecord {
         Objects.requireNonNull(identity, "identity");
@@ -40,6 +42,16 @@ public record FrameCompositionRecord(
         Objects.requireNonNull(uniforms, "uniforms");
         Objects.requireNonNull(port, "port");
         shadowSlot = shadowSlot == null ? Optional.empty() : shadowSlot;
+        idRuntime = idRuntime == null ? Optional.empty() : idRuntime;
+        vertexEpoch = vertexEpoch == null ? Optional.empty() : vertexEpoch;
+    }
+
+    /** The v0.2 shape: a shadow slot, no ids, vanilla vertex formats. */
+    public FrameCompositionRecord(PipelineIdentity identity, PipelineVersion version,
+            PublishedRegistry registry, PublishedBufferEstate estate, UniformRuntime uniforms,
+            FrameRenderPort port, long resourceReloadEpoch, Optional<ShadowInvocationSlot> shadowSlot) {
+        this(identity, version, registry, estate, uniforms, port, resourceReloadEpoch, shadowSlot,
+                Optional.empty(), Optional.empty());
     }
 
     /** The v0.1 shape: no shadow slot. */
@@ -52,6 +64,16 @@ public record FrameCompositionRecord(
     @Override
     public Optional<ShadowInvocationSlot> shadowSlot() {
         return shadowSlot;
+    }
+
+    @Override
+    public Optional<com.schmaloogium.engine.config.id.PublishedIdRuntime> idRuntime() {
+        return idRuntime;
+    }
+
+    @Override
+    public Optional<com.schmaloogium.engine.vertex.VertexEpoch> vertexEpoch() {
+        return vertexEpoch;
     }
 
     @Override

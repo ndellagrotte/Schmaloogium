@@ -150,11 +150,11 @@ class RunnerPiecesTest {
         assertEquals(List.of("externalModSetSha256", "generateStructures", "minecraftVersion", "seed", "worldType"),
             List.copyOf(a.document().entries().keySet()));
         SceneSpec.World flat = new SceneSpec.World(scene.world().seed(), "flat", scene.world().generateStructures(),
-            0, 0, "clear", 1, "peaceful", "creative", scene.world().gamerules(), List.of(), 0);
+            0, 0, "clear", 1, "peaceful", "creative", scene.world().gamerules(), List.of(), List.of(), 0);
         assertNotEquals(a.sha256(), WorldCache.descriptor(flat, "1.12.2", external).sha256());
         // post-load state (time, weather, prepTicks) is not a generation input
         SceneSpec.World night = new SceneSpec.World(scene.world().seed(), "default", true, 0, 18000, "rain", 5,
-            "peaceful", "creative", scene.world().gamerules(), List.of(), 40);
+            "peaceful", "creative", scene.world().gamerules(), List.of(), List.of(), 40);
         assertEquals(a.sha256(), WorldCache.descriptor(night, "1.12.2", external).sha256());
     }
 

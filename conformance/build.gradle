@@ -76,6 +76,11 @@ tasks.register('harness', JavaExec) {
     workingDir = rootProject.projectDir
     systemProperty 'schmaloogium.conformance.repoRoot', rootProject.projectDir.absolutePath
     systemProperty 'schmaloogium.conformance.cleanroomVersion', cleanroom_loader_version
+    // Task F: -Pextra_jvm_args reaches the captured client the same way it reaches
+    // :mod:runClient, so a capture can be run with the debug probes or a kill switch.
+    if (project.hasProperty('extra_jvm_args')) {
+        systemProperty 'schmaloogium.conformance.clientJvmArgs', project.property('extra_jvm_args')
+    }
     javaLauncher.set(javaToolchains.launcherFor {
         languageVersion = JavaLanguageVersion.of(25)
     })

@@ -28,10 +28,13 @@ import java.util.List;
  * positive may conservatively reject an inert bundled renderer — that false-positive
  * risk is the explicit OQ-5 measurement, preferable to corrupting vertex input state.
  */
-public final class ChunkRendererCompatCheck implements CompatCheck {
+public final class ChunkRendererCompatCheck implements com.schmaloogium.mod.compat.EarlyCompatCheck {
 
     /** The fixed check id registered with the Phase 1 bail registry (PHASE_10_DOC §5.1). */
     public static final String CHECK_ID = "schmaloogium.chunk_renderer";
+
+    /** The one registered instance (the registry refuses a second object under the id). */
+    public static final ChunkRendererCompatCheck INSTANCE = new ChunkRendererCompatCheck();
 
     /** The diagnostic reason key (PHASE_10_DOC §4.9); args[0] is the renderer name. */
     public static final String REASON_KEY = "schmaloogium.compat.chunk_renderer_replaced";
@@ -72,6 +75,22 @@ public final class ChunkRendererCompatCheck implements CompatCheck {
                     return bail(family.rendererName());
                 }
             }
+            for (String className : family.exactClasses()) {
+                if (ctx.isClassPresent(className)) {
+                    return bail(family.rendererName());
+                }
+            }
+        }
+        return new CompatVerdict.Ok();
+    }
+
+    /** MOD-plugin evaluation: exact class presence only (no mod list exists yet). */
+    @Override
+    public CompatVerdict checkEarly(com.schmaloogium.mod.compat.EarlyCompatContext ctx) {
+        if (ctx == null) {
+            throw new IllegalArgumentException("context must not be null");
+        }
+        for (Family family : FAMILIES) {
             for (String className : family.exactClasses()) {
                 if (ctx.isClassPresent(className)) {
                     return bail(family.rendererName());

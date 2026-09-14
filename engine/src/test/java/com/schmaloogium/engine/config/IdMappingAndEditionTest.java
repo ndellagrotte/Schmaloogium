@@ -66,6 +66,28 @@ class IdMappingAndEditionTest {
     }
 
     @Test
+    void kindPrefixedKeysParseAlongsideTheBareSpelling() {
+        // PHASE_3_DOC §8.1 spells the key `block.31=minecraft:grass`; real packs ship that
+        // form, and the older bare `<id>=` spelling stays accepted (Task F).
+        IdMappingFileInput blocks = parse(MappingKind.BLOCK,
+            "block.31=minecraft:grass\n32=minecraft:redstone_lamp\nitem.5=minecraft:stick\n"
+            + "shadowMapResolution=2048\n");
+        assertEquals(MappingFileState.PRESENT_RULES, blocks.state());
+        assertEquals(2, blocks.ordinaryRules().size(),
+            "another kind's prefix and ordinary metadata keys are not id rules");
+        assertEquals(List.of(31, 32), blocks.ordinaryRules().stream()
+            .map(rule -> ((IdRule) rule).shaderId()).toList());
+
+        assertEquals(1, parse(MappingKind.ITEM, "item.7=minecraft:stick\n")
+            .ordinaryRules().size());
+        assertEquals(1, parse(MappingKind.ENTITY, "entity.9=minecraft:cow\n")
+            .ordinaryRules().size());
+        // A LAYER view of the same bytes sees no layer.* keys.
+        assertEquals(MappingFileState.PRESENT_EMPTY,
+            parse(MappingKind.LAYER, "block.31=minecraft:grass\n").state());
+    }
+
+    @Test
     void numericIdentityIsLegacyNotNamespace() {
         IdMappingFileInput result = parse(MappingKind.BLOCK, "1004=1:0 2\n");
         assertEquals(2, result.ordinaryRules().size());

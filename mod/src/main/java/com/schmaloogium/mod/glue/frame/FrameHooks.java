@@ -109,6 +109,11 @@ public final class FrameHooks {
             currentFrame = opened.token();
             reservedTerrainToken = frameCounter;
             acceptedFrames++;
+            com.schmaloogium.mod.glue.vertex.ChunkDrawBridge.applyFrameNeutrals();
+            // H9-HELD-01: immediately after the accepted begin, before any activation.
+            com.schmaloogium.mod.glue.id.IdHooks.onFrameAccepted(
+                    net.minecraft.client.Minecraft.getMinecraft().player,
+                    McFrameState.worldEpoch(), McFrameState.logicalTick());
         } else {
             currentFrame = null;
         }
@@ -336,6 +341,13 @@ public final class FrameHooks {
         }
         try {
             ScopeOpenResult result = driver().enter(token, section);
+            if (section == RenderSection.ENTITIES || section == RenderSection.BLOCK_ENTITIES) {
+                sectionVerdicts.merge(section + ":" + (result instanceof ScopeOpenResult.Rejected r
+                        ? r.reason().name() : result.getClass().getSimpleName()), 1L, Long::sum);
+                if (result instanceof ScopeOpenResult.Opened) {
+                    com.schmaloogium.mod.glue.id.IdHooks.openMainAdmission(token.frameId());
+                }
+            }
             boolean silent = result instanceof ScopeOpenResult.Opened
                     || (result instanceof ScopeOpenResult.Rejected rejected
                     && rejected.reason() == com.schmaloogium.engine.frame.HookRejection.SHADOW_EXECUTION_ACTIVE);
@@ -388,6 +400,11 @@ public final class FrameHooks {
         }
         ScopeToken scope = ((ScopeOpenResult.Opened) opened).scope();
         FrameToken token = currentFrame;
+        if (section == RenderSection.ENTITIES || section == RenderSection.BLOCK_ENTITIES) {
+            com.schmaloogium.mod.glue.id.IdHooks.closeAdmission(
+                    com.schmaloogium.mod.glue.id.IdAdmissionGate.current());
+        }
+        com.schmaloogium.mod.glue.vertex.VertexProgramInputTracker.clear();
         if (token != null) {
             try {
                 var result = driver().exit(token, scope);
@@ -414,6 +431,8 @@ public final class FrameHooks {
         containmentLogged = false;
         scopeVerdictsLogged.clear();
         hooksObservedLogged.clear();
+        sectionVerdicts.clear();
+        diagFrame = acceptedFrames + 300;
     }
 
     /** The count of composition installs so far (one-shot evidence lines key on it). */
@@ -437,9 +456,25 @@ public final class FrameHooks {
         return FrameRuntime.driver();
     }
 
+    private static final java.util.concurrent.ConcurrentHashMap<String, Long> sectionVerdicts =
+            new java.util.concurrent.ConcurrentHashMap<>();
+    private static long diagFrame = -1;
+
     private static void finish(FrameExitKind kind) {
         FrameToken token = currentFrame;
         currentFrame = null;
+        if (token != null && diagFrame >= 0 && acceptedFrames >= diagFrame) {
+            // H9-DIAG-01: one line at the 300th accepted frame of a publication.
+            diagFrame = -1;
+            com.schmaloogium.engine.log.Logs.channel(
+                    com.schmaloogium.engine.log.LogChannels.IDS).info(
+                    "H9-DIAG-01 (install #{}): sections {} ; {}", installEpoch,
+                    new java.util.TreeMap<>(sectionVerdicts), com.schmaloogium.mod.glue.id.IdHooks.diagnostics());
+        }
+        // P9 frame drain (PHASE_9_DOC §4.12): both id stacks cleared and zeros sent before
+        // any later draw; the admission gate closes with the frame.
+        com.schmaloogium.mod.glue.id.IdHooks.onFrameFinished();
+        com.schmaloogium.mod.glue.vertex.VertexProgramInputTracker.clear();
         if (token != null) {
             try {
                 com.schmaloogium.engine.frame.FrameFinishResult result = driver().finish(token, kind);

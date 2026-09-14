@@ -26,4 +26,20 @@ public interface VertexInputService {
                           VertexInputPlan plan, VertexBindMode mode);
 
     void restore(VertexBinding binding);
+
+    /**
+     * Re-issues the live top binding's pointers for a new source of the same layout, plan
+     * and mode (Task F, P1 amendment): the predecessor captured by {@code bind} is kept,
+     * so a chunk layer pays one capture and one restore while each chunk VBO re-points.
+     * Rejections are mutation-free; the returned binding is the same live top binding.
+     */
+    VertexBindResult rebind(VertexBinding binding, VertexSource source);
+
+    /**
+     * Sets the plan's generic locations to their floating neutral current values with
+     * their arrays disabled (PHASE_10_DOC §4.6: identity {@code (0,0,0)}, midpoint
+     * {@code (0,0)}, tangent {@code (0,0,0,1)}), for draws of products that carry no
+     * extended fields while an extended program is active. Render thread only.
+     */
+    void setNeutralCurrentValues(VertexInputPlan plan);
 }

@@ -48,6 +48,19 @@ public record SceneSpec(
         }
     }
 
+    /**
+     * One block placed before the entities (Task F): {@code pos} is three integer
+     * coordinates and {@code state} is {@code <registry name>[:<metadata>]}. Placement is
+     * what puts a block entity in frame — a chest for {@code blockEntityId}, say — which
+     * worldgen alone cannot guarantee at a fixed position.
+     */
+    public record Block(String pos, String state) {
+        public Block {
+            Objects.requireNonNull(pos, "pos");
+            Objects.requireNonNull(state, "state");
+        }
+    }
+
     public record Entity(String type, String pos, String nbt) {
         public Entity {
             Objects.requireNonNull(type, "type");
@@ -68,6 +81,7 @@ public record SceneSpec(
             String gamemode,
             SortedMap<String, String> gamerules,
             List<Entity> entities,
+            List<Block> blocks,
             int prepTicks) {
         public World {
             Objects.requireNonNull(worldType, "worldType");
@@ -76,6 +90,7 @@ public record SceneSpec(
             Objects.requireNonNull(gamemode, "gamemode");
             gamerules = Collections.unmodifiableSortedMap(new TreeMap<>(gamerules));
             entities = List.copyOf(entities);
+            blocks = List.copyOf(blocks);
         }
     }
 

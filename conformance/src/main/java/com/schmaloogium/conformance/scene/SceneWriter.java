@@ -28,6 +28,11 @@ public final class SceneWriter {
         line(sb, "schema", SceneSpec.SCHEMA);
         sb.append("\n[world]\n");
         SceneSpec.World w = scene.world();
+        for (int i = 0; i < w.blocks().size(); i++) {
+            SceneSpec.Block b = w.blocks().get(i);
+            line(sb, "block." + i + ".pos", b.pos());
+            line(sb, "block." + i + ".state", b.state());
+        }
         line(sb, "difficulty", w.difficulty());
         line(sb, "dimension", Long.toString(w.dimension()));
         for (int i = 0; i < w.entities().size(); i++) {

@@ -99,7 +99,13 @@ public final class PipelineBootstrap {
         }
         if (!initialSubmitted) {
             initialSubmitted = true;
+            remapPending = false;
             lastDimension = McFrameState.dimension();
+            coordinator.submitEngine(new ReloadRequest(ReloadLifecycle.FULL, true, false,
+                    ReloadReason.PACK_SELECTION));
+        }
+        if (remapPending && initialSubmitted) {
+            remapPending = false;
             coordinator.submitEngine(new ReloadRequest(ReloadLifecycle.FULL, true, false,
                     ReloadReason.PACK_SELECTION));
         }
@@ -107,6 +113,34 @@ public final class PipelineBootstrap {
         retryAwaitingDepth();
         Optional<ReloadStatus> status = coordinator.drainOnce();
         status.ifPresent(s -> LOG.info("reload drained: {}", s));
+        if (com.schmaloogium.mod.glue.vertex.VertexEpochs.consumeReloadRequest()
+                && client.renderGlobal != null) {
+            // PHASE_10_DOC §4.8: the vertex epoch changed off-frame; every chunk product is
+            // recreated under the new epoch through vanilla's own quiescence barrier
+            // (loadRenderers → stopChunkUpdates → fresh ViewFrustum).
+            client.renderGlobal.loadRenderers();
+            LOG.info("H10-EPOCH-02 world renderers reloaded for the vertex epoch change");
+        }
+    }
+
+    /**
+     * H9-IDS: a registry remap ({@code FMLModIdMappingEvent}, delivered to the mod class)
+     * changes ordinals; the pipeline is rebuilt over the new snapshot.
+     */
+    public static void onModIdMapping() {
+        // Fired on the server thread at world load: only the generation moves here; the
+        // client tick submits the (client-confined) reload.
+        long generation = com.schmaloogium.mod.glue.id.ForgeIdSnapshotProvider.noteRegistryRemapped();
+        remapPending = true;
+        LOG.info("H9-IDS-02 registry remapped (generation {}): pipeline rebuild pending", generation);
+    }
+
+    private static volatile boolean remapPending;
+
+    /** The hand-light policy: user old-hand-light tri-state over the pack's (PHASE_9_DOC §4.11). */
+    private static com.schmaloogium.engine.config.id.HandLightPolicy handLightPolicy(
+            EngineSettingsController controller) {
+        return com.schmaloogium.engine.config.id.HandLightPolicy.allDefault();
     }
 
     /** H-FOG-02: vanilla's per-frame fog colour, observed on the Forge bus. */
@@ -135,6 +169,7 @@ public final class PipelineBootstrap {
         BooleanSupplier renderThread = client::isCallingFromMinecraftThread;
         FrameRuntime.installRenderThreadPredicate(renderThread);
         DepthTex0Bridge.installBorrowedSource(VanillaMainDepthBorrow.source(device.get()));
+        com.schmaloogium.mod.glue.vertex.ChunkDrawBridge.install(device.get());
         EngineSettingsController controller = settings.get();
         SelectionResolver selection = new SelectionResolver(ShaderGui.services().get().frontEnd(),
                 access.get().shaderpacksDirectory(), controller::shaderPack, Diagnostics::report);
@@ -174,7 +209,26 @@ public final class PipelineBootstrap {
                                 inputs.estateGeneration(), inputs.registry(), inputs.registryGeneration(),
                                 inputs.resourceReloadEpoch(), inputs.configuration()),
                         renderThread,
-                        com.schmaloogium.mod.glue.shadow.ShadowTraversalGuard::setBlobShadowsSuppressed)));
+                        com.schmaloogium.mod.glue.shadow.ShadowTraversalGuard::setBlobShadowsSuppressed),
+                new PipelineTransaction.IdServices(
+                        com.schmaloogium.mod.glue.id.ForgeIdSnapshotProvider::snapshot,
+                        com.schmaloogium.mod.glue.id.ForgeModIdSourceProvider::snapshot,
+                        () -> handLightPolicy(controller),
+                        com.schmaloogium.mod.glue.vertex.McVertexHookHealth::current,
+                        McFrameState::worldEpoch,
+                        ShaderGui.services().get().idMappings(),
+                        publication -> {
+                            com.schmaloogium.mod.glue.id.IdHooks.publish(publication);
+                            com.schmaloogium.mod.glue.vertex.VertexEpochs.publishDeclaredUnion(
+                                    publication.declaredAttributes());
+                            com.schmaloogium.mod.glue.vertex.ChunkDrawBridge.noteInstalled();
+                            com.schmaloogium.mod.glue.vertex.VertexEpochs.publish(
+                                    publication.vertexEpoch(),
+                                    publication.runtime().map(
+                                            com.schmaloogium.engine.config.id.PublishedIdRuntime::aliases)
+                                            .orElse(null),
+                                    publication.maps());
+                        })));
         coordinator = new ShaderReloadCoordinator(transaction, renderThread, selection);
         ReloadCoordinator.install(coordinator);
         ShaderGui.installConfigurationSource(

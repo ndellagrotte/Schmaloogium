@@ -46,4 +46,14 @@ public interface FrameComposition {
     Optional<TextureOverlayPublicationId> texturePublication();
 
     long resourceReloadEpoch();
+
+    /** The Phase 9 id runtime published with this composition (v0.3; empty = IDs off). */
+    default Optional<com.schmaloogium.engine.config.id.PublishedIdRuntime> idRuntime() {
+        return Optional.empty();
+    }
+
+    /** The Phase 10 vertex epoch this composition admits (v0.3; empty = vanilla formats). */
+    default Optional<com.schmaloogium.engine.vertex.VertexEpoch> vertexEpoch() {
+        return Optional.empty();
+    }
 }

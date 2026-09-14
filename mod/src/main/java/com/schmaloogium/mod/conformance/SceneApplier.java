@@ -3,6 +3,7 @@
 
 package com.schmaloogium.mod.conformance;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -14,6 +15,7 @@ import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameType;
 import net.minecraft.world.WorldServer;
@@ -96,6 +98,28 @@ final class SceneApplier {
                 existing.setDead();
             }
         }
+        // Task F: scene-placed blocks land before the entities, so a block entity (a chest
+        // for blockEntityId) is in frame at an exact position rather than left to worldgen.
+        int blocks = plan.count("world.blocks");
+        for (int i = 0; i < blocks; i++) {
+            String p = "world.blocks." + i + ".";
+            String[] at = plan.text(p + "pos").trim().split("\\s+");
+            BlockPos position = new BlockPos(Integer.parseInt(at[0]), Integer.parseInt(at[1]),
+                    Integer.parseInt(at[2]));
+            String spec = plan.text(p + "state").trim();
+            int meta = 0;
+            String name = spec;
+            int colon = spec.lastIndexOf(':');
+            if (colon > 0 && spec.indexOf(':') != colon) {
+                name = spec.substring(0, colon);
+                meta = Integer.parseInt(spec.substring(colon + 1));
+            }
+            Block block = net.minecraft.block.Block.REGISTRY.getObject(new ResourceLocation(name));
+            if (block == null || block == net.minecraft.init.Blocks.AIR) {
+                throw new IllegalStateException("unknown block " + spec);
+            }
+            world.setBlockState(position, block.getStateFromMeta(meta), 3);
+        }
         int entities = plan.count("world.entities");
         for (int i = 0; i < entities; i++) {
             String p = "world.entities." + i + ".";
@@ -117,6 +141,21 @@ final class SceneApplier {
             entity.setLocationAndAngles(Double.parseDouble(pos[0]), Double.parseDouble(pos[1]),
                     Double.parseDouble(pos[2]), 0f, 0f);
             world.spawnEntity(entity);
+            // Same reason as the player's pose (Task E): a summoned mob's idle animation is
+            // phased by ticksExisted from its spawn instant, so it is re-zeroed here and the
+            // controlled tick count since the spawn is the only phase input.
+            entity.ticksExisted = 0;
+            if (entity instanceof net.minecraft.entity.EntityLivingBase living) {
+                living.limbSwing = 0f;
+                living.limbSwingAmount = 0f;
+                living.prevLimbSwingAmount = 0f;
+                living.swingProgress = 0f;
+                living.prevSwingProgress = 0f;
+                living.renderYawOffset = 0f;
+                living.prevRenderYawOffset = 0f;
+                living.rotationYawHead = 0f;
+                living.prevRotationYawHead = 0f;
+            }
         }
     }
 

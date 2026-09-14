@@ -213,12 +213,14 @@ public final class CaptureRunner {
         boolean timedOut = false;
         int exit;
         try {
-            exit = launchClient(runDir, List.of(
+            List<String> clientArgs = new java.util.ArrayList<>(List.of(
                 "-Dschmaloogium.conformance.plan=" + planFile.toAbsolutePath(),
                 "-Dschmaloogium.conformance.out=" + runDir.toAbsolutePath(),
                 "-Dschmaloogium.conformance.hangCeilingMillis=" + DEFAULT_HANG_CEILING_MILLIS,
                 "-Dschmaloogium.conformance.packArchive=" + fixture.archiveName(),
-                "-Dschmaloogium.debug.recordGL=true"), log);
+                "-Dschmaloogium.debug.recordGL=true"));
+            clientArgs.addAll(extraClientJvmArgs());
+            exit = launchClient(runDir, clientArgs, log);
         } catch (TimeoutException t) {
             timedOut = true;
             exit = -1;
@@ -520,6 +522,25 @@ public final class CaptureRunner {
     }
 
     /** Launches the client; returns the exit code. Throws {@link TimeoutException} on the hard ceiling. */
+    /**
+     * Task F: {@code -Pextra_jvm_args} on the harness invocation is forwarded verbatim to
+     * the captured client, so a run can carry the GL probes or a feature kill switch. The
+     * arguments are recorded in the run's own client log by the launch itself.
+     */
+    private static List<String> extraClientJvmArgs() {
+        String raw = System.getProperty("schmaloogium.conformance.clientJvmArgs", "");
+        if (raw.isBlank()) {
+            return List.of();
+        }
+        List<String> out = new java.util.ArrayList<>();
+        for (String token : raw.trim().split("\\s+")) {
+            if (!token.isBlank()) {
+                out.add(token);
+            }
+        }
+        return out;
+    }
+
     private int launchClient(Path runDir, List<String> extraJvmArgs, Log log)
             throws IOException, InterruptedException {
         Path lock = ctx.cache().runs().resolve(".client.lock");

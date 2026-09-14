@@ -98,9 +98,18 @@ public final class IdMappingParserImpl implements IdMappingParser {
                     selector.kind(), selector.token(), selector.metadata(),
                     selector.predicates(), era, request.origin(), line + 1, selector.ordinal()));
             } else {
+                // PHASE_3_DOC §8.1 (D-P3-72/73) spells the key with its kind prefix
+                // (`block.31=…`), which is what real packs ship; the bare `31=…` form is
+                // the older spelling and stays accepted. A prefix of another kind is
+                // ordinary pack metadata and is skipped.
+                String idToken = key;
+                String prefix = keyPrefix(request.kind());
+                if (prefix != null && idToken.startsWith(prefix)) {
+                    idToken = idToken.substring(prefix.length()).trim();
+                }
                 int shaderId;
                 try {
-                    shaderId = Integer.parseInt(key.trim());
+                    shaderId = Integer.parseInt(idToken);
                 } catch (NumberFormatException e) {
                     continue; // not a shader-id line; other keys are pack metadata
                 }
@@ -115,6 +124,16 @@ public final class IdMappingParserImpl implements IdMappingParser {
             }
         }
         return out;
+    }
+
+    /** The kind's documented key prefix, or null for LAYER (handled by its own branch). */
+    private static String keyPrefix(MappingKind kind) {
+        return switch (kind) {
+            case BLOCK -> "block.";
+            case ITEM -> "item.";
+            case ENTITY -> "entity.";
+            case LAYER -> null;
+        };
     }
 
     private RequestedRenderLayer layerOf(String name) {

@@ -90,6 +90,7 @@ public final class SceneParser {
     private static SceneSpec.World world(SectionedText.Section s) {
         TreeMap<String, String> gamerules = new TreeMap<>();
         TreeMap<Integer, Map<String, String>> entities = new TreeMap<>();
+        TreeMap<Integer, Map<String, String>> blocks = new TreeMap<>();
         Set<String> seenFixed = new HashSet<>();
         for (Map.Entry<String, String> e : s.entries().entrySet()) {
             String key = e.getKey();
@@ -109,6 +110,16 @@ public final class SceneParser {
                     throw error(s, "unknown key " + key);
                 }
                 entities.computeIfAbsent(index, k -> new TreeMap<>()).put(parts[2], e.getValue());
+            } else if (key.startsWith("block.")) {
+                String[] parts = key.split("\\.");
+                if (parts.length != 3) {
+                    throw error(s, "block keys are block.<n>.{pos,state}: " + key);
+                }
+                int index = parseIndex(s, parts[1]);
+                if (!Set.of("pos", "state").contains(parts[2])) {
+                    throw error(s, "unknown key " + key);
+                }
+                blocks.computeIfAbsent(index, k -> new TreeMap<>()).put(parts[2], e.getValue());
             } else if (WORLD_KEYS.contains(key)) {
                 seenFixed.add(key);
             } else {
@@ -134,6 +145,20 @@ public final class SceneParser {
             }
             entityList.add(new SceneSpec.Entity(fields.get("type"), fields.get("pos"), fields.get("nbt")));
         }
+        List<SceneSpec.Block> blockList = new ArrayList<>();
+        int expectedBlock = 0;
+        for (Map.Entry<Integer, Map<String, String>> e : blocks.entrySet()) {
+            if (e.getKey() != expectedBlock++) {
+                throw error(s, "block indices must be dense from 0");
+            }
+            Map<String, String> fields = e.getValue();
+            for (String f : new String[] {"pos", "state"}) {
+                if (!fields.containsKey(f)) {
+                    throw error(s, "block." + e.getKey() + " missing " + f);
+                }
+            }
+            blockList.add(new SceneSpec.Block(fields.get("pos"), fields.get("state")));
+        }
         Map<String, String> v = s.entries();
         return new SceneSpec.World(
             parseLong(s, "seed", v.get("seed")),
@@ -147,6 +172,7 @@ public final class SceneParser {
             v.get("gamemode"),
             gamerules,
             entityList,
+            blockList,
             (int) parseLong(s, "prepTicks", v.get("prepTicks")));
     }
 
