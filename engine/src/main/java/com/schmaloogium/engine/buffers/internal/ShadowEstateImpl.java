@@ -3,18 +3,22 @@
 
 package com.schmaloogium.engine.buffers.internal;
 
-import com.schmaloogium.engine.buffers.BindingOrigin;
-import com.schmaloogium.engine.buffers.BindingOriginKind;
-import com.schmaloogium.engine.buffers.BindingPurpose;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
 import com.schmaloogium.engine.buffers.BufferFailure;
 import com.schmaloogium.engine.buffers.BufferFailureCode;
 import com.schmaloogium.engine.buffers.BufferIndex;
 import com.schmaloogium.engine.buffers.ClearRequest;
 import com.schmaloogium.engine.buffers.ColorAttachment;
-import com.schmaloogium.engine.buffers.FixedSamplerPlanResult;
-import com.schmaloogium.engine.buffers.FixedSamplerPolicies;
 import com.schmaloogium.engine.buffers.LogicalBuffer;
-import com.schmaloogium.engine.buffers.ResolvedSamplerBinding;
 import com.schmaloogium.engine.buffers.ShadowAbortResult;
 import com.schmaloogium.engine.buffers.ShadowBeginResult;
 import com.schmaloogium.engine.buffers.ShadowCompletionResult;
@@ -29,17 +33,8 @@ import com.schmaloogium.engine.buffers.ShadowOperationResult;
 import com.schmaloogium.engine.buffers.ShadowPassSnapshot;
 import com.schmaloogium.engine.buffers.ShadowProtocolRejection;
 import com.schmaloogium.engine.buffers.ShadowTextureResource;
-import com.schmaloogium.engine.buffers.TextureBindingAction;
-import com.schmaloogium.engine.buffers.TextureBindingDegradation;
-import com.schmaloogium.engine.buffers.TextureBindingDiagnostic;
-import com.schmaloogium.engine.buffers.TextureBindingDiagnosticCode;
-import com.schmaloogium.engine.buffers.TextureBindingOutcome;
 import com.schmaloogium.engine.buffers.TextureBindingRejection;
 import com.schmaloogium.engine.buffers.TextureBindingResult;
-import com.schmaloogium.engine.buffers.TextureBindingRow;
-import com.schmaloogium.engine.buffers.TextureBindingSnapshot;
-import com.schmaloogium.engine.buffers.TextureHandleRef;
-import com.schmaloogium.engine.buffers.TextureOverlayFingerprint;
 import com.schmaloogium.engine.buffers.TextureOverlayLease;
 import com.schmaloogium.engine.buffers.TextureOverlayPublicationId;
 import com.schmaloogium.engine.gl.ColorClearValue;
@@ -53,24 +48,9 @@ import com.schmaloogium.engine.gl.TextureHandle;
 import com.schmaloogium.engine.gl.TextureMinFilter;
 import com.schmaloogium.engine.gl.TextureParameters;
 import com.schmaloogium.engine.gl.TextureRegion;
-import com.schmaloogium.engine.preprocess.DeclaredGlslType;
-import com.schmaloogium.engine.preprocess.SampledKind;
-import com.schmaloogium.engine.preprocess.TextureDimension;
 import com.schmaloogium.engine.registry.BufferDomain;
 import com.schmaloogium.engine.registry.PassDescriptor;
 import com.schmaloogium.engine.registry.ProgramBindingSelection;
-import com.schmaloogium.engine.registry.ProgramSamplerLayout;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.Set;
 
 /**
  * The live shadow-estate operation surface (PHASE_5_DOC §4.10): sole open pass token over
@@ -88,6 +68,7 @@ public final class ShadowEstateImpl implements ShadowEstateView {
     private static final int ISSUED_HISTORY = 8;
 
     private final EstateCore core;
+    private final TextureBinder textureBinder = new TextureBinder();
     private ShadowPassSnapshot openSnapshot;
     private final ArrayDeque<ShadowPassSnapshot> issued = new ArrayDeque<>();
     /** Bumped on completion/abort/neutralization; invalidates outstanding binding leases. */
@@ -177,29 +158,17 @@ public final class ShadowEstateImpl implements ShadowEstateView {
         if (rejection != null) {
             return new ShadowOperationResult.Rejected(rejection);
         }
-        core.device.framebuffers().bind(FramebufferTarget.DRAW, core.shadowFbo);
-        ResolvedRows resolved = resolveRows(snapshot);
-        if (resolved.mask() != 0) {
-            try {
-                core.device.textures().prepareUnitBindings(resolved.mask());
-                for (TextureBindingRow row : resolved.rows()) {
-                    if (row.outcome() instanceof TextureBindingOutcome.BoundObject bound) {
-                        core.device.textures().bindToUnit(row.unit(),
-                            ((TextureHandleRef.Borrowed) bound.handle()).handle());
-                    }
-                }
-            } catch (RuntimeException bindFailure) {
-                return backendFailed("schmaloogium.buffers.error.shadow.bind",
-                    String.valueOf(bindFailure));
-            }
-            List<GLError> errors = core.device.drainErrors();
-            if (!errors.isEmpty()) {
-                return backendFailed("schmaloogium.buffers.error.shadow.bind",
-                    errors.get(0).detail());
-            }
+        try {
+            core.device.framebuffers().bind(FramebufferTarget.DRAW, core.shadowFbo);
+        } catch (RuntimeException bindFailure) {
+            return backendFailed("schmaloogium.buffers.error.shadow.bind",
+                String.valueOf(bindFailure));
         }
-        // Row degradation (unbacked demanded units, invalid plans) suppresses only the
-        // selected draw through shadowBindings' protocol; the physical pass bind applied.
+        List<GLError> errors = core.device.drainErrors();
+        if (!errors.isEmpty()) {
+            return backendFailed("schmaloogium.buffers.error.shadow.bind",
+                errors.get(0).detail());
+        }
         return new ShadowOperationResult.Applied();
     }
 
@@ -348,8 +317,12 @@ public final class ShadowEstateImpl implements ShadowEstateView {
     public TextureBindingResult shadowBindings(long generation, long frameId,
             ShadowPassSnapshot snapshot, TextureOverlayLease overlay,
             TextureOverlayPublicationId expectedOverlay) {
-        core.checkRenderThread();
-        Objects.requireNonNull(snapshot, "snapshot");
+        if (snapshot == null || overlay == null || expectedOverlay == null) {
+            return new TextureBindingResult.Rejected(TextureBindingRejection.INVALID_INPUT);
+        }
+        if (Thread.currentThread() != core.renderThread) {
+            return new TextureBindingResult.Rejected(TextureBindingRejection.WRONG_THREAD);
+        }
         // §4.12.3 order: generation before frame before snapshot before depth epoch.
         if (!core.usable() || generation != core.generation) {
             return new TextureBindingResult.Rejected(
@@ -361,8 +334,8 @@ public final class ShadowEstateImpl implements ShadowEstateView {
         if (core.openFrameId != frameId) {
             return new TextureBindingResult.Rejected(TextureBindingRejection.WRONG_FRAME_ID);
         }
-        if (!issued.contains(snapshot) || openSnapshot == null
-                || !openSnapshot.equals(snapshot)) {
+        if (openSnapshot != snapshot || snapshot.frameId() != frameId
+                || snapshot.estateGeneration() != generation) {
             return new TextureBindingResult.Rejected(
                 TextureBindingRejection.INVALID_PASS_SNAPSHOT);
         }
@@ -370,235 +343,15 @@ public final class ShadowEstateImpl implements ShadowEstateView {
             return new TextureBindingResult.Rejected(
                 TextureBindingRejection.STALE_DEPTH_ATTACHMENT_EPOCH);
         }
-        if (snapshot.selection() == null) {
-            return new TextureBindingResult.Rejected(TextureBindingRejection.INVALID_INPUT);
-        }
-        // The overlay publication is "unpublished:v0.1" (P13 unavailable); the lease and
-        // expected id are accepted as carried and re-answered on the issued snapshot.
-        ResolvedRows resolved = resolveRows(snapshot);
-        if (resolved.mask() != 0) {
-            try {
-                core.device.textures().prepareUnitBindings(resolved.mask());
-                for (TextureBindingRow row : resolved.rows()) {
-                    if (row.outcome() instanceof TextureBindingOutcome.BoundObject bound) {
-                        core.device.textures().bindToUnit(row.unit(),
-                            ((TextureHandleRef.Borrowed) bound.handle()).handle());
-                    }
-                }
-            } catch (RuntimeException bindFailure) {
-                core.diagnostics.report(BufferDiagnostics.shadowBackendFailure(
-                    "schmaloogium.buffers.error.shadow.bindings.backend",
-                    String.valueOf(bindFailure)));
-                return new TextureBindingResult.BackendFailed(core.failure(
-                    BufferFailureCode.UNEXPECTED_BACKEND,
-                    "schmaloogium.buffers.error.shadow.bindings.backend"));
-            }
-            List<GLError> errors = core.device.drainErrors();
-            if (!errors.isEmpty()) {
-                core.diagnostics.report(BufferDiagnostics.shadowBackendFailure(
-                    "schmaloogium.buffers.error.shadow.bindings.backend",
-                    errors.get(0).detail()));
-                return new TextureBindingResult.BackendFailed(core.failure(
-                    BufferFailureCode.UNEXPECTED_BACKEND,
-                    "schmaloogium.buffers.error.shadow.bindings.backend"));
-            }
-        }
-        if (resolved.degrade()) {
-            return new TextureBindingResult.Degraded(new TextureBindingDegradation(
-                snapshot.selection(), resolved.diagnostics(),
-                TextureBindingAction.SUPPRESS_DRAW));
-        }
-        return new TextureBindingResult.Bound(new ShadowBindingSnapshot(snapshot,
-            resolved.rows(), resolved.diagnostics()));
+        long acquiredEpoch = bindingEpoch;
+        return textureBinder.bindValidated(core, snapshot.pass(), snapshot.selection(),
+            snapshot.depthAttachmentEpoch(), frameId, snapshot.readableTextures(), overlay,
+            expectedOverlay, () -> core.usable() && openSnapshot == snapshot
+                && core.generation == generation && core.openFrameId == frameId
+                && core.depthAttachmentEpoch == snapshot.depthAttachmentEpoch()
+                && bindingEpoch == acquiredEpoch);
     }
 
-    /** One demanded row's backing object from the frozen snapshot (neutral-aware). The
-     *  shadow stage is a platform family (§4.12.2): units 0/1 are foreign and never
-     *  resolved here; units 2/3 are the companion defaults. */
-    private TextureHandle backingFor(ShadowPassSnapshot snapshot, int unit) {
-        return switch (unit) {
-            case 0, 1 -> null;
-            case 2 -> core.companionNormalsNeutral;
-            case 3 -> core.companionSpecularNeutral;
-            case 4 -> core.shadowPlannedDepthCount() >= 1 ? shadowDepthBacking(snapshot, 0) : null;
-            case 5 -> core.shadowPlannedDepthCount() >= 2
-                ? shadowDepthBacking(snapshot, 1) : null;
-            case 13 -> core.shadowPlannedColorCount() >= 1 ? shadowColorBacking(snapshot, 0) : null;
-            case 14 -> core.shadowPlannedColorCount() >= 2
-                ? shadowColorBacking(snapshot, 1) : null;
-            case 15 -> core.noiseTexture; // generated noise until the P13 publication lands
-            default -> snapshot.readableTextures().get(logicalForUnit(unit));
-        };
-    }
-
-    private TextureHandle shadowDepthBacking(ShadowPassSnapshot snapshot, int index) {
-        if (core.shadowNeutralBacked()) {
-            return core.shadowNeutral == null ? null : core.shadowNeutral.depthByUnit(index);
-        }
-        return snapshot.readableTextures().get(shadowtex(index));
-    }
-
-    private TextureHandle shadowColorBacking(ShadowPassSnapshot snapshot, int index) {
-        if (core.shadowNeutralBacked()) {
-            return core.shadowNeutral == null ? null : core.shadowNeutral.colorByUnit(index);
-        }
-        return snapshot.readableTextures().get(shadowcolor(index));
-    }
-
-    private LogicalBuffer logicalForUnit(int unit) {
-        return switch (unit) {
-            case 6 -> depth(0);
-            case 7, 8, 9, 10 -> new LogicalBuffer(BufferDomain.COLORTEX,
-                new BufferIndex(unit - 3));
-            case 11 -> depth(1);
-            case 12 -> depth(2);
-            default -> null;
-        };
-    }
-
-    /** The sixteen-row resolution: zero GL until the returned mask is bound. */
-    private ResolvedRows resolveRows(ShadowPassSnapshot snapshot) {
-        ProgramSamplerLayout layout = snapshot.selection().effectiveDescriptor() == null
-            ? null : snapshot.selection().effectiveDescriptor().samplerLayout();
-        Map<Integer, List<ResolvedSamplerBinding>> byUnit = new LinkedHashMap<>();
-        boolean invalidPlan = false;
-        if (layout instanceof ProgramSamplerLayout.Shader shaderLayout) {
-            FixedSamplerPlanResult plan = FixedSamplerPolicies.resolver().resolve(shaderLayout,
-                snapshot.pass().step().stage(), snapshot.pass().step().band());
-            if (plan instanceof FixedSamplerPlanResult.Invalid) {
-                invalidPlan = true;
-            } else {
-                for (ResolvedSamplerBinding binding
-                        : ((FixedSamplerPlanResult.Ready) plan).bindings()) {
-                    byUnit.computeIfAbsent(binding.unit(), ignored -> new ArrayList<>())
-                        .add(binding);
-                }
-            }
-        } // fixed-function and virtual layouts demand no units
-        List<TextureBindingRow> rows = new ArrayList<>();
-        List<TextureBindingDiagnostic> diagnostics = new ArrayList<>();
-        boolean degrade = invalidPlan;
-        if (invalidPlan) {
-            diagnostics.add(new TextureBindingDiagnostic(
-                TextureBindingDiagnosticCode.CONFLICTING_SAMPLER_TYPES, "layout",
-                OptionalInt.empty()));
-        }
-        int mask = 0;
-        for (int unit = 0; unit < 16; unit++) {
-            List<ResolvedSamplerBinding> names = byUnit.get(unit);
-            if (names == null) {
-                rows.add(new TextureBindingRow(unit, new TextureBindingOutcome.Unused()));
-                continue;
-            }
-            if (unit <= 1) {
-                // texture/lightmap: the platform's objects stay bound (§4.12.2).
-                rows.add(new TextureBindingRow(unit,
-                    new TextureBindingOutcome.ForeignRetained(names)));
-                continue;
-            }
-            TextureHandle backing = backingFor(snapshot, unit);
-            if (backing == null) {
-                for (ResolvedSamplerBinding name : names) {
-                    diagnostics.add(new TextureBindingDiagnostic(
-                        TextureBindingDiagnosticCode.PUBLICATION_UNAVAILABLE,
-                        name.exactName(), OptionalInt.of(unit)));
-                }
-                degrade = true;
-                rows.add(new TextureBindingRow(unit, new TextureBindingOutcome.Unused()));
-                continue;
-            }
-            DeclaredGlslType.Sampler shape = names.get(0).shape();
-            rows.add(new TextureBindingRow(unit, new TextureBindingOutcome.BoundObject(
-                new TextureHandleRef.Borrowed(backing), shape, names,
-                new BindingOrigin(unit == 15 ? BindingOriginKind.NOISE
-                    : unit <= 3 ? BindingOriginKind.NEUTRAL
-                    : BindingOriginKind.ESTATE, List.of()))));
-            mask |= 1 << unit;
-        }
-        return new ResolvedRows(rows, diagnostics, degrade, mask);
-    }
-
-    private record ResolvedRows(List<TextureBindingRow> rows,
-            List<TextureBindingDiagnostic> diagnostics, boolean degrade, int mask) {
-    }
-
-    /** The closeable sixteen-row lease; current only inside its open shadow pass. */
-    private final class ShadowBindingSnapshot implements TextureBindingSnapshot {
-        private final ShadowPassSnapshot snapshot;
-        private final List<TextureBindingRow> rows;
-        private final List<TextureBindingDiagnostic> diagnostics;
-        private final long acquiredEpoch = bindingEpoch;
-        private boolean closed;
-
-        ShadowBindingSnapshot(ShadowPassSnapshot snapshot, List<TextureBindingRow> rows,
-                List<TextureBindingDiagnostic> diagnostics) {
-            this.snapshot = snapshot;
-            this.rows = rows;
-            this.diagnostics = diagnostics;
-        }
-
-        @Override
-        public long estateGeneration() {
-            return snapshot.estateGeneration();
-        }
-
-        @Override
-        public long depthAttachmentEpoch() {
-            return snapshot.depthAttachmentEpoch();
-        }
-
-        @Override
-        public long frameId() {
-            return snapshot.frameId();
-        }
-
-        @Override
-        public PassDescriptor pass() {
-            return snapshot.pass();
-        }
-
-        @Override
-        public ProgramBindingSelection selection() {
-            return snapshot.selection();
-        }
-
-        @Override
-        public TextureOverlayPublicationId overlayPublication() {
-            return new TextureOverlayPublicationId(core.generation,
-                new TextureOverlayFingerprint("unpublished:v0.1"));
-        }
-
-        @Override
-        public BindingPurpose purpose() {
-            return BindingPurpose.SHADER;
-        }
-
-        @Override
-        public List<TextureBindingRow> rows() {
-            return rows;
-        }
-
-        @Override
-        public TextureBindingOutcome outcome(int unit) {
-            return rows.get(unit).outcome();
-        }
-
-        @Override
-        public List<TextureBindingDiagnostic> diagnostics() {
-            return diagnostics;
-        }
-
-        @Override
-        public boolean isCurrent() {
-            return !closed && core.usable() && openSnapshot == snapshot
-                && bindingEpoch == acquiredEpoch;
-        }
-
-        @Override
-        public void close() {
-            closed = true;
-        }
-    }
 
     // ------------------------------------------------------------------ mipmaps
 

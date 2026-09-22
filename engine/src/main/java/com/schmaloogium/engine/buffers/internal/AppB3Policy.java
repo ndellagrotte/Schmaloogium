@@ -77,7 +77,7 @@ public final class AppB3Policy implements FixedSamplerLayoutPolicy {
     }
 
     /**
-     * Case-sensitive exact-name lookup over the 33 legal names (PHASE_5_DOC §4.12.1). Never
+     * Case-sensitive exact-name lookup over the legal names (PHASE_5_DOC §4.12.1). Never
      * synthesizes colortex8-15 or any other sentinel.
      */
     public static FixedSamplerLookup lookup(String exactName) {
@@ -119,11 +119,6 @@ public final class AppB3Policy implements FixedSamplerLayoutPolicy {
             boolean watershadow) {
         if (name == FixedSamplerName.SHADOW) {
             return watershadow ? 5 : 4;
-        }
-        if (domain == Domain.GBUFFERS && name == FixedSamplerName.TEX
-                && stage != StageId.SHADOW) {
-            // RESEARCH B.3: tex is the shadow-stage alias of texture.
-            return null;
         }
         return columnOf(domain).get(name);
     }
@@ -188,6 +183,7 @@ public final class AppB3Policy implements FixedSamplerLayoutPolicy {
         Map<FixedSamplerName, Integer> column = new EnumMap<>(FixedSamplerName.class);
         column.put(FixedSamplerName.TEXTURE, 0);
         column.put(FixedSamplerName.TEX, 0);
+        column.put(FixedSamplerName.GTEXTURE, 0);
         column.put(FixedSamplerName.LIGHTMAP, 1);
         column.put(FixedSamplerName.NORMALS, 2);
         column.put(FixedSamplerName.SPECULAR, 3);
@@ -253,7 +249,7 @@ public final class AppB3Policy implements FixedSamplerLayoutPolicy {
                     "conditional-shadow", "direct-watershadow-declaration-then-unit-5-else-unit-4",
                     "band-windows", "gbuffers-draw-bands-plus-shadow-band-gbuffers-column",
                     "after-shadow-and-before-gbuffers-shadow-machinery-only",
-                    "tex-shadow-stage-alias-of-texture",
+                    "tex-texture-gtexture-world-stage-base-texture-aliases",
                     "deferred-composite-final-any-band-fullscreen-column"),
                 CanonicalDigest.seq(
                     columnDigest(Domain.GBUFFERS),

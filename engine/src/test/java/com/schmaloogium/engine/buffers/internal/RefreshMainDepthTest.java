@@ -27,6 +27,7 @@ import com.schmaloogium.engine.gl.TextureHandle;
 import com.schmaloogium.engine.gl.TextureSpec;
 import com.schmaloogium.engine.gl.record.RecordingGLDevice;
 import com.schmaloogium.engine.gl.record.ScriptedResponses;
+import com.schmaloogium.engine.pack.ConfigurationFingerprint;
 import com.schmaloogium.engine.registry.RegistryFingerprint;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,8 @@ class RefreshMainDepthTest {
                 1, List.of(), Map.of(), List.of(), List.of(), List.of(), projection);
             this.depthSource.snapshot = snapshot(version, extent, format);
             this.core = new EstateCore(device, diagnostic -> {
-            }, new RegistryFingerprint("fp-refresh"), plan,
+            }, new RegistryFingerprint("fp-refresh"),
+                new ConfigurationFingerprint("configuration-refresh"), plan,
                 new BufferResourceSnapshot.Available(projection), depthSource,
                 depthSource.snapshot instanceof MainDepthSnapshot.Available available
                     ? available : null);

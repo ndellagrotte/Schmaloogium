@@ -45,10 +45,23 @@ public final class LaunchInventory {
         throw new IOException("mod source is neither a file nor a directory: " + source);
     }
 
-    /** The subject identity: framed hash over the subject dirs' combined file tree. */
+    /**
+     * Framed subject identity: directories retain basename/relative-path records; runtime
+     * file artifacts contribute a basename record containing their exact executed bytes.
+     */
     public static String subjectHash(java.util.List<Path> subjectDirs) throws IOException {
         Map<String, byte[]> records = new TreeMap<>();
         for (Path dir : subjectDirs) {
+            if (Files.isSymbolicLink(dir)) {
+                throw new IOException("subject source is a symbolic link: " + dir);
+            }
+            if (Files.isRegularFile(dir, LinkOption.NOFOLLOW_LINKS)) {
+                String key = dir.getFileName().toString();
+                if (records.putIfAbsent(key, Files.readAllBytes(dir)) != null) {
+                    throw new IOException("duplicate subject path " + key);
+                }
+                continue;
+            }
             if (!Files.isDirectory(dir, LinkOption.NOFOLLOW_LINKS)) {
                 continue; // an absent resources dir is simply empty
             }

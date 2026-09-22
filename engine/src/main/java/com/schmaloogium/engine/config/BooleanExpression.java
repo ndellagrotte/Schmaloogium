@@ -23,6 +23,22 @@ final class BooleanExpression {
         String render();
     }
 
+    record Literal(boolean value) implements Node {
+        @Override
+        public boolean evaluate(Predicate<String> switches) {
+            return value;
+        }
+
+        @Override
+        public void collect(Set<String> out) {
+        }
+
+        @Override
+        public String render() {
+            return Boolean.toString(value);
+        }
+    }
+
     record Ref(String name) implements Node {
         @Override
         public boolean evaluate(Predicate<String> switches) {
@@ -213,7 +229,12 @@ final class BooleanExpression {
             if (pos == start) {
                 throw new IllegalArgumentException("expected switch name at " + pos);
             }
-            return new Ref(s.substring(start, pos));
+            String name = s.substring(start, pos);
+            return switch (name) {
+                case "true" -> new Literal(true);
+                case "false" -> new Literal(false);
+                default -> new Ref(name);
+            };
         }
     }
 }

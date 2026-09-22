@@ -4,272 +4,504 @@
 package com.schmaloogium.engine.buffers.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.schmaloogium.engine.buffers.BindingOriginKind;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
+import com.schmaloogium.engine.buffers.AtlasId;
 import com.schmaloogium.engine.buffers.BindingPurpose;
+import com.schmaloogium.engine.buffers.CompanionKind;
+import com.schmaloogium.engine.buffers.BaseAtlasContext;
+import com.schmaloogium.engine.buffers.BindingOriginKind;
+import com.schmaloogium.engine.buffers.CandidateOrigin;
+import com.schmaloogium.engine.buffers.FixedSamplerName;
 import com.schmaloogium.engine.buffers.FixedSamplerPolicies;
 import com.schmaloogium.engine.buffers.FrameBeginResult;
 import com.schmaloogium.engine.buffers.PassBufferSnapshot;
 import com.schmaloogium.engine.buffers.PassSnapshotResult;
 import com.schmaloogium.engine.buffers.ResourceClearPolicy;
-import com.schmaloogium.engine.buffers.ShadowResourceProjection;
-import com.schmaloogium.engine.buffers.ShadowTextureResource;
+import com.schmaloogium.engine.buffers.TextureBindingCandidate;
+import com.schmaloogium.engine.buffers.TextureBindingDiagnostic;
+import com.schmaloogium.engine.buffers.TextureBindingDiagnosticCode;
 import com.schmaloogium.engine.buffers.TextureBindingOutcome;
+import com.schmaloogium.engine.buffers.TextureBindingRejection;
 import com.schmaloogium.engine.buffers.TextureBindingResult;
+import com.schmaloogium.engine.buffers.TextureCandidateEntry;
+import com.schmaloogium.engine.buffers.TextureCandidateTable;
 import com.schmaloogium.engine.buffers.TextureHandleRef;
+import com.schmaloogium.engine.buffers.TextureOverlayAbsence;
+import com.schmaloogium.engine.buffers.TextureOverlayFingerprint;
+import com.schmaloogium.engine.buffers.TextureOverlayLease;
+import com.schmaloogium.engine.buffers.TextureOverlayPublicationId;
+import com.schmaloogium.engine.buffers.TextureParameterFingerprint;
+import com.schmaloogium.engine.buffers.TextureParameterSpec;
+import com.schmaloogium.engine.buffers.TextureSourceIdentity;
 import com.schmaloogium.engine.config.ColorInternalFormat;
+import com.schmaloogium.engine.config.TextureBindingKey;
+import com.schmaloogium.engine.config.TexturePropertyStage;
+import com.schmaloogium.engine.config.TextureTarget;
 import com.schmaloogium.engine.gl.FramebufferHandle;
+import com.schmaloogium.engine.gl.GLDevice;
+import com.schmaloogium.engine.gl.GLErrorKind;
+import com.schmaloogium.engine.gl.TextureAllocationTarget;
+import com.schmaloogium.engine.gl.TextureExtent;
+import com.schmaloogium.engine.gl.TextureHandle;
+import com.schmaloogium.engine.gl.TextureMagFilter;
+import com.schmaloogium.engine.gl.TextureMinFilter;
+import com.schmaloogium.engine.gl.TextureSpec;
+import com.schmaloogium.engine.gl.TextureWrap;
 import com.schmaloogium.engine.gl.record.GLCall;
 import com.schmaloogium.engine.gl.record.ScriptedResponses;
+import com.schmaloogium.engine.pack.ConfigurationFingerprint;
 import com.schmaloogium.engine.preprocess.DeclaredGlslType;
 import com.schmaloogium.engine.preprocess.SampledKind;
 import com.schmaloogium.engine.preprocess.TextureDimension;
+import com.schmaloogium.engine.registry.BarrierConstructionResult;
+import com.schmaloogium.engine.registry.BarrierParticipantResult;
+import com.schmaloogium.engine.registry.BarrierPublicationCandidate;
 import com.schmaloogium.engine.registry.BufferDomain;
 import com.schmaloogium.engine.registry.BufferRef;
+import com.schmaloogium.engine.registry.ClassicProgramCatalog;
+import com.schmaloogium.engine.registry.CompiledRegistryCandidate;
 import com.schmaloogium.engine.registry.DrawRouting;
 import com.schmaloogium.engine.registry.DrawRoutingSlot;
+import com.schmaloogium.engine.registry.FixedSamplerPolicyFingerprint;
 import com.schmaloogium.engine.registry.GeometryInputRequirement;
 import com.schmaloogium.engine.registry.PassDescriptor;
-import com.schmaloogium.engine.registry.PassPopulation;
 import com.schmaloogium.engine.registry.PassResourceAccess;
+import com.schmaloogium.engine.registry.ProgramBindingParticipant;
 import com.schmaloogium.engine.registry.ProgramBindingSelection;
+import com.schmaloogium.engine.registry.ProgramOwnBuildDisposition;
+import com.schmaloogium.engine.registry.ProgramRegistries;
+import com.schmaloogium.engine.registry.ProgramRegistryPublisher;
+import com.schmaloogium.engine.registry.ProgramResolutionProjection;
+import com.schmaloogium.engine.registry.ProgramResolutionStatus;
 import com.schmaloogium.engine.registry.ProgramSamplerDeclaration;
 import com.schmaloogium.engine.registry.ProgramSamplerLayout;
 import com.schmaloogium.engine.registry.ProgramSamplerLayoutFingerprint;
+import com.schmaloogium.engine.registry.ProgramSelectionResult;
 import com.schmaloogium.engine.registry.ProgramSlotId;
 import com.schmaloogium.engine.registry.ProgramStateBundle;
 import com.schmaloogium.engine.registry.ProgramUniformLayout;
-import com.schmaloogium.engine.registry.ResolvedProgramDescriptor;
+import com.schmaloogium.engine.registry.PublicationResult;
+import com.schmaloogium.engine.registry.PublishedRegistry;
+import com.schmaloogium.engine.registry.RegistryFingerprint;
+import com.schmaloogium.engine.registry.RegistryPublication;
 import com.schmaloogium.engine.registry.SamplerLayoutValidation;
 import com.schmaloogium.engine.registry.StageBand;
 import com.schmaloogium.engine.registry.StageId;
+import com.schmaloogium.engine.registry.StageRegistries;
+import com.schmaloogium.engine.registry.StageRegistry;
 import com.schmaloogium.engine.registry.StageStep;
+import com.schmaloogium.engine.registry.internal.CompiledProgramBinding;
+import com.schmaloogium.engine.registry.internal.CompiledProgramRegistryImpl;
+import com.schmaloogium.engine.registry.internal.RegistryContexts;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
-/**
- * PHASE_5_DOC §4.12.2 family rule for the sixteen-row bind: in the gbuffers family the
- * platform keeps units 0/1 ({@code texture}/{@code lightmap}: retained, never bound),
- * units 2/3 carry the companion defaults, and every other demanded estate unit binds;
- * the fullscreen family reads colortex0-3 on units 0-3 as before. This is the Task D fix
- * for classic packs rendering black (gbuffers programs received no estate units).
- */
+/** Physical fixed-unit selection and lease ownership under PHASE_5_DOC §§4.12/5. */
 class TextureBinderDomainTest {
-
-    private static final ProgramSlotId TERRAIN = new ProgramSlotId("gbuffers_terrain");
     private static final ProgramSlotId COMPOSITE = new ProgramSlotId("composite");
     private static final BufferRef COLORTEX0 = new BufferRef(BufferDomain.COLORTEX, 0);
     private static final DeclaredGlslType.Sampler SAMPLER_2D = new DeclaredGlslType.Sampler(
         SampledKind.FLOAT, TextureDimension.D2, false, false, false);
 
-    private static PlanningArtifacts.PlannedRoute route(ProgramSlotId slot) {
-        return new PlanningArtifacts.PlannedRoute(slot,
-            List.of(new DrawRoutingSlot.Attachment(COLORTEX0)),
-            List.of(BuffersEstateFixture.colorRow(0)));
+    private record Fixture(BuffersEstateFixture estate, EstateViewImpl view,
+            PassBufferSnapshot pass, ScriptedResponses responses) {
     }
 
-    private static BuffersEstateFixture estate() {
-        ShadowResourceProjection shadow = new ShadowResourceProjection(1, 1, 1024,
-            List.of(new ShadowTextureResource(true, true, true)),
-            List.of(new ShadowTextureResource(false, false, false)));
-        BuffersEstateFixture fixture = BuffersEstateFixture.createWithShadowAndRoutes(
+    private static Fixture fixture(String... names) {
+        return fixture(SAMPLER_2D, names);
+    }
+
+    private static Fixture fixture(DeclaredGlslType.Sampler shape, String... names) {
+        return fixture(COMPOSITE, StageId.COMPOSITE, StageBand.FRAME_END,
+            layout(StageId.COMPOSITE, StageBand.FRAME_END, shape, names));
+    }
+
+    private static Fixture fixture(ProgramSlotId slot, StageId stage, StageBand band,
+            ProgramSamplerLayout layout) {
+        ScriptedResponses responses = new ScriptedResponses();
+        PlanningArtifacts.PlannedRoute route = new PlanningArtifacts.PlannedRoute(slot,
+            List.of(new DrawRoutingSlot.Attachment(COLORTEX0)),
+            List.of(BuffersEstateFixture.colorRow(0)));
+        BuffersEstateFixture estate = BuffersEstateFixture.createWithRoutes(
             new ColorInternalFormat[] {ColorInternalFormat.RGBA8, ColorInternalFormat.RGBA8},
             new ResourceClearPolicy[] {new ResourceClearPolicy.FogRgbAlphaOne(),
                 new ResourceClearPolicy.FogRgbAlphaOne()},
-            new boolean[] {true, true}, 1, shadow, 16,
-            Map.of(TERRAIN, route(TERRAIN), COMPOSITE, route(COMPOSITE)),
-            new ScriptedResponses());
-        seedPassFbo(fixture, TERRAIN);
-        seedPassFbo(fixture, COMPOSITE);
-        return fixture;
-    }
-
-    private static void seedPassFbo(BuffersEstateFixture fixture, ProgramSlotId slot) {
-        String key = CandidateBuilder.passKey(route(slot));
-        FramebufferHandle fbo = fixture.device.framebuffers().create(key);
-        EstateCore.ColorPair pair = fixture.core.colorPairs.get(0);
-        fixture.device.framebuffers().attachColor(fbo, 0, pair.sideA);
-        fixture.core.passFbos.put(key, fbo);
-        fixture.core.attachedColor.put(fbo, new java.util.LinkedHashMap<>(Map.of(0, pair.sideA)));
-    }
-
-    private static EstateViewImpl view(BuffersEstateFixture fixture) {
-        return new EstateViewImpl(fixture.core, new ClearExecutor(), new TextureBinder(),
-            new ShadowOperator());
-    }
-
-    private static PassDescriptor descriptor(ProgramSlotId slot, StageId stage, StageBand band) {
-        return new PassDescriptor(new StageStep(stage, band, new PassPopulation.Singleton()),
-            slot, Optional.empty(),
+            new boolean[] {true, true}, 1, Map.of(slot, route), responses);
+        String key = CandidateBuilder.passKey(route);
+        FramebufferHandle fbo = estate.device.framebuffers().create(key);
+        TextureHandle color = estate.core.colorPairs.get(0).sideA;
+        estate.device.framebuffers().attachColor(fbo, 0, color);
+        estate.core.passFbos.put(key, fbo);
+        estate.core.attachedColor.put(fbo, new java.util.LinkedHashMap<>(Map.of(0, color)));
+        ProgramBindingSelection selection = selection(estate, slot, stage, band, layout);
+        StageStep step = StageRegistries.modernFullShape(15, 15).schedule().stream()
+            .filter(value -> value.stage() == stage && value.band() == band).findFirst().orElseThrow();
+        PassDescriptor descriptor = new PassDescriptor(step, slot, Optional.empty(),
             new PassResourceAccess(Set.of(), Set.of(COLORTEX0), Map.of(), Set.of()), Set.of());
+        EstateViewImpl view = new EstateViewImpl(estate.core, new ClearExecutor(),
+            new TextureBinder(), new ShadowOperator());
+        assertInstanceOf(FrameBeginResult.Begun.class, view.beginFrame(1));
+        PassBufferSnapshot pass = assertInstanceOf(PassSnapshotResult.Acquired.class,
+            view.snapshot(descriptor, selection)).snapshot();
+        return new Fixture(estate, view, pass, responses);
     }
 
-    private static ProgramSamplerLayout.Shader layout(StageId stage, StageBand band,
-            String... names) {
+    static ProgramSamplerLayout.Shader layout(StageId stage, StageBand band,
+            DeclaredGlslType.Sampler shape, String... names) {
         List<ProgramSamplerDeclaration> declarations = new ArrayList<>();
         for (int index = 0; index < names.length; index++) {
-            declarations.add(new ProgramSamplerDeclaration(names[index], SAMPLER_2D, index,
-                List.of()));
+            declarations.add(new ProgramSamplerDeclaration(names[index], shape,
+                index, List.of()));
         }
-        return new ProgramSamplerLayout.Shader(new ProgramSamplerLayoutFingerprint("layout-fp"),
-            FixedSamplerPolicies.appB3Fingerprint(), stage, Set.of(band), declarations,
-            new SamplerLayoutValidation.Valid());
+        return new ProgramSamplerLayout.Shader(
+            new ProgramSamplerLayoutFingerprint("binder-layout"),
+            FixedSamplerPolicies.appB3Fingerprint(), stage,
+            Set.of(band), declarations, new SamplerLayoutValidation.Valid());
     }
 
-    /** A usable selection: mint-blocked fields stay null except the effective descriptor. */
-    private static ProgramBindingSelection selection(ProgramSlotId slot,
-            ProgramSamplerLayout layout) {
+    static ProgramBindingSelection selection(BuffersEstateFixture estate, ProgramSlotId slot,
+            StageId stage, StageBand band, ProgramSamplerLayout layout) {
+        ProgramStateBundle state = new ProgramStateBundle(
+            new DrawRouting.AllUsedBuffers(BufferDomain.COLORTEX), Set.of(), 1, Set.of(),
+            Optional.empty(), Optional.empty(), Optional.empty(), Map.of(), Optional.empty(),
+            GeometryInputRequirement.NONE);
+        var program = estate.device.shaders().createProgram();
+        CompiledProgramBinding binding = layout instanceof ProgramSamplerLayout.FixedFunctionEmpty
+            ? new CompiledProgramBinding.FixedFunction(slot, state)
+            : new CompiledProgramBinding.ShaderProgram(
+                slot, program, state, ProgramUniformLayout.empty(), layout, List.of());
+        StageRegistry stages = StageRegistries.modernFullShape(15, 15);
+        CompiledProgramRegistryImpl registry;
         try {
-            Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
-            Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
-            theUnsafe.setAccessible(true);
-            Object unsafe = theUnsafe.get(null);
-            Method allocateInstance = unsafeClass.getMethod("allocateInstance", Class.class);
-            ProgramBindingSelection selection = (ProgramBindingSelection) allocateInstance
-                .invoke(unsafe, ProgramBindingSelection.class);
-            Field descriptorField = ProgramBindingSelection.class
-                .getDeclaredField("effectiveDescriptor");
-            descriptorField.setAccessible(true);
-            long offset = (Long) unsafeClass.getMethod("objectFieldOffset", Field.class)
-                .invoke(unsafe, descriptorField);
-            ResolvedProgramDescriptor descriptor = new ResolvedProgramDescriptor(slot, slot,
-                new ProgramStateBundle(new DrawRouting.AllUsedBuffers(BufferDomain.COLORTEX),
-                    Set.of(), 1, Set.of(), Optional.empty(), Optional.empty(),
-                    Optional.empty(), Map.of(), Optional.empty(),
-                    GeometryInputRequirement.NONE),
-                ProgramUniformLayout.empty(), layout, List.of(), List.of());
-            unsafeClass.getMethod("putObject", Object.class, long.class, Object.class)
-                .invoke(unsafe, selection, offset, descriptor);
-            return selection;
+            // Assemble the same registry fixture as RegistryBarrierPublicationTest. Only
+            // assembly crosses package access; publication and selector issuance are real.
+            var constructor = CompiledProgramRegistryImpl.class.getDeclaredConstructor(
+                StageRegistry.class, List.class, Map.class, List.class,
+                RegistryFingerprint.class, FixedSamplerPolicyFingerprint.class, GLDevice.class,
+                List.class, RegistryContexts.class, ProgramSlotId.class);
+            constructor.setAccessible(true);
+            var resolvedConstructor = Class.forName(
+                "com.schmaloogium.engine.registry.internal.ResolvedCompiledProgramBinding")
+                .getDeclaredConstructor(ProgramSlotId.class, CompiledProgramBinding.class, List.class);
+            resolvedConstructor.setAccessible(true);
+            registry = constructor.newInstance(stages, ClassicProgramCatalog.rows(),
+                Map.of(slot, resolvedConstructor.newInstance(slot, binding, List.of(slot))),
+                List.of(new ProgramResolutionProjection(slot,
+                    ProgramResolutionStatus.SOURCED, Optional.empty(), true,
+                    ProgramOwnBuildDisposition.SUCCEEDED, "")),
+                estate.core.registryFingerprint, FixedSamplerPolicies.appB3Fingerprint(),
+                estate.device, List.of(program), new RegistryContexts(), ClassicProgramCatalog.SHADOW);
         } catch (ReflectiveOperationException failure) {
-            throw new AssertionError("cannot assemble a selection", failure);
+            throw new AssertionError("cannot assemble registry fixture", failure);
         }
+        CompiledRegistryCandidate candidate = new CompiledRegistryCandidate(registry);
+        ProgramBindingParticipant participant = (bindingView, context, uniforms) ->
+            new BarrierParticipantResult.Continue();
+        BarrierPublicationCandidate barrier = assertInstanceOf(BarrierConstructionResult.Ready.class,
+            ProgramRegistries.productionComposer().compose(candidate, participant, participant,
+                participant)).candidate();
+        ProgramRegistryPublisher publisher = ProgramRegistries.publisher();
+        PublishedRegistry published = assertInstanceOf(PublicationResult.Accepted.class,
+            publisher.publish(new RegistryPublication.Ready(candidate, barrier),
+                ((PublishedRegistry) publisher.current()).contexts().beginFrame().release())).published();
+        StageStep step = stages.schedule().stream()
+            .filter(value -> value.stage() == stage && value.band() == band).findFirst().orElseThrow();
+        return assertInstanceOf(ProgramSelectionResult.Selected.class,
+            published.barrier().orElseThrow().select(slot,
+                published.contexts().beginFrame().activation(step, stage == StageId.SHADOW))).selection();
     }
 
-    private static PassBufferSnapshot acquired(PassSnapshotResult result) {
-        return assertInstanceOf(PassSnapshotResult.Acquired.class, result).snapshot();
+    static final class Overlay implements TextureOverlayLease {
+        private final BuffersEstateFixture estate;
+        private final ProgramBindingSelection selection;
+        private final List<TextureBindingCandidate> entries;
+        private final TextureOverlayPublicationId id;
+        private boolean current = true;
+        private int closes;
+        private Map<TextureHandleRef, BaseAtlasContext> atlases = Map.of();
+
+        Overlay(Fixture fixture, TextureBindingCandidate... entries) {
+            this(fixture.estate, fixture.pass.selection(), entries);
+        }
+
+        Overlay(BuffersEstateFixture estate, ProgramBindingSelection selection,
+                TextureBindingCandidate... entries) {
+            this.estate = estate;
+            this.selection = selection;
+            this.entries = List.of(entries);
+            id = new TextureOverlayPublicationId(estate.core.generation,
+                new TextureOverlayFingerprint("overlay"));
+        }
+
+        @Override public TextureOverlayPublicationId id() { return id; }
+        @Override public RegistryFingerprint registryFingerprint() {
+            return selection.registryFingerprint();
+        }
+        @Override public long registryGeneration() {
+            return selection.registryGeneration();
+        }
+        @Override public long resourceReloadEpoch() { return 1; }
+        @Override public ConfigurationFingerprint configurationFingerprint() {
+            return estate.core.configurationFingerprint;
+        }
+        @Override public FixedSamplerPolicyFingerprint policyFingerprint() {
+            return FixedSamplerPolicies.appB3Fingerprint();
+        }
+        @Override public TextureCandidateTable candidates() {
+            return (stage, name) -> {
+                List<TextureBindingCandidate> cell = entries.stream()
+                    .filter(entry -> entry.expandedStage() == stage && entry.name() == name).toList();
+                return cell.isEmpty() ? new TextureCandidateEntry.Absent(TextureOverlayAbsence.NOT_CONFIGURED)
+                    : new TextureCandidateEntry.Candidates(cell);
+            };
+        }
+        @Override public BaseAtlasContext baseAtlasContext() { return new BaseAtlasContext.NonAtlas(); }
+        @Override public Optional<TextureHandleRef> baseTexture() { return Optional.empty(); }
+        @Override public BaseAtlasContext atlasContext(TextureHandleRef base) {
+            return atlases.getOrDefault(base, new BaseAtlasContext.NonAtlas());
+        }
+        @Override public boolean isCurrent() { return current && closes == 0; }
+        @Override public void close() { closes++; }
     }
 
-    private static List<GLCall> calls(BuffersEstateFixture fixture, String op) {
-        return fixture.device.log().calls().stream()
-            .filter(call -> call.op().equals(op)).toList();
+    private static TextureBindingCandidate custom(Fixture fixture, FixedSamplerName name,
+            int ordinal, DeclaredGlslType.Sampler shape) {
+        TextureHandle texture = fixture.estate.device.textures().create("custom-" + name + ordinal);
+        var format = com.schmaloogium.engine.gl.ColorInternalFormat.RGBA8;
+        fixture.estate.device.textures().allocate(texture, new TextureSpec.ColorTextureSpec(
+            TextureAllocationTarget.TEXTURE_2D, format, FormatTable.row(format).allocationLayout(),
+            new TextureExtent(8, 8, 1), 1));
+        return new TextureBindingCandidate(new CandidateOrigin.Custom(
+            new TextureBindingKey(TexturePropertyStage.valueOf(fixture.pass.pass().step().stage().name()),
+                name.exactName(), OptionalInt.of(ordinal)), ordinal),
+            fixture.pass.pass().step().stage(), name.exactName(), name,
+            shape, TextureTarget.TEXTURE_2D, new TextureHandleRef.Owned(texture),
+            new TextureSourceIdentity("source-" + name + ordinal),
+            new TextureParameterSpec(TextureMinFilter.NEAREST, TextureMagFilter.NEAREST,
+                TextureWrap.REPEAT), new TextureParameterFingerprint("nearest-repeat"), ordinal);
     }
 
-    private static List<Integer> boundUnits(BuffersEstateFixture fixture) {
-        return calls(fixture, "textures.bindToUnit").stream()
-            .map(call -> (Integer) call.args().get(0)).toList();
+    private static TextureBindingCandidate companion(Fixture fixture, FixedSamplerName name,
+            int ordinal, CandidateOrigin origin) {
+        TextureBindingCandidate backing = custom(fixture, name, ordinal, SAMPLER_2D);
+        return new TextureBindingCandidate(origin, backing.expandedStage(), name.exactName(),
+            name, backing.shape(), backing.target(), backing.handle(), backing.source(),
+            backing.parameters(), backing.parameterizationFingerprint(), ordinal);
     }
 
     @Test
-    void gbuffersProgramsKeepThePlatformUnitsAndBindTheirEstateUnits() {
-        BuffersEstateFixture fixture = estate();
-        EstateViewImpl view = view(fixture);
-        assertInstanceOf(FrameBeginResult.Begun.class, view.beginFrame(1));
-        PassBufferSnapshot snapshot = acquired(view.snapshot(
-            descriptor(TERRAIN, StageId.GBUFFERS, StageBand.GBUFFERS_OPAQUE),
-            selection(TERRAIN, layout(StageId.GBUFFERS, StageBand.GBUFFERS_OPAQUE,
-                "texture", "lightmap", "normals", "specular", "shadowtex0", "depthtex0",
-                "shadowcolor0", "noisetex"))));
-        int before = calls(fixture, "textures.bindToUnit").size();
-
+    void customColortex1ReplacesEstateAtFixedUnit() {
+        Fixture fixture = fixture("colortex1");
+        TextureBindingCandidate first = custom(fixture, FixedSamplerName.COLORTEX1, 1, SAMPLER_2D);
+        TextureBindingCandidate winner = custom(fixture, FixedSamplerName.COLORTEX1, 2, SAMPLER_2D);
+        TextureBindingCandidate incompatible = custom(fixture, FixedSamplerName.COLORTEX1, 3,
+            new DeclaredGlslType.Sampler(SampledKind.SIGNED_INT, TextureDimension.D2,
+                false, false, false));
+        Overlay overlay = new Overlay(fixture, first, winner, incompatible);
+        int before = fixture.estate.device.log().calls().size();
         TextureBindingResult.Bound bound = assertInstanceOf(TextureBindingResult.Bound.class,
-            view.textureBindings(snapshot, null, null));
-
-        assertEquals(BindingPurpose.SHADER, bound.snapshot().purpose());
-        TextureBindingOutcome.ForeignRetained unit0 = assertInstanceOf(
-            TextureBindingOutcome.ForeignRetained.class, bound.snapshot().outcome(0));
-        assertEquals("texture", unit0.names().get(0).exactName());
-        assertInstanceOf(TextureBindingOutcome.ForeignRetained.class, bound.snapshot().outcome(1));
-        TextureBindingOutcome.BoundObject unit2 = assertInstanceOf(
-            TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(2));
-        assertSame(fixture.core.companionNormalsNeutral,
-            ((TextureHandleRef.Borrowed) unit2.handle()).handle());
-        assertEquals(BindingOriginKind.NEUTRAL, unit2.origin().kind());
-        TextureBindingOutcome.BoundObject unit3 = assertInstanceOf(
-            TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(3));
-        assertSame(fixture.core.companionSpecularNeutral,
-            ((TextureHandleRef.Borrowed) unit3.handle()).handle());
-        TextureBindingOutcome.BoundObject unit4 = assertInstanceOf(
-            TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(4));
-        assertSame(fixture.core.shadowDepths.get(0),
-            ((TextureHandleRef.Borrowed) unit4.handle()).handle());
-        TextureBindingOutcome.BoundObject unit6 = assertInstanceOf(
-            TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(6));
-        assertSame(fixture.core.cachedDepth.texture(),
-            ((TextureHandleRef.Borrowed) unit6.handle()).handle(),
-            "depthtex0 is the borrowed vanilla depth");
-        assertInstanceOf(TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(13));
-        TextureBindingOutcome.BoundObject unit15 = assertInstanceOf(
-            TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(15));
-        assertSame(fixture.core.noiseTexture,
-            ((TextureHandleRef.Borrowed) unit15.handle()).handle(),
-            "noisetex is the estate's generated noise until Phase 13 publishes");
-        assertEquals(BindingOriginKind.NOISE, unit15.origin().kind());
-
-        GLCall prepare = calls(fixture, "textures.prepareUnitBindings").get(0);
-        assertEquals((1 << 2) | (1 << 3) | (1 << 4) | (1 << 6) | (1 << 13) | (1 << 15),
-            prepare.args().get(0), "units 0/1 never enter the mask");
-        assertEquals(List.of(2, 3, 4, 6, 13, 15),
-            boundUnits(fixture).subList(before, before + 6),
-            "vanilla's atlas and lightmap objects stay bound on 0/1");
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        TextureBindingOutcome.BoundObject row = assertInstanceOf(TextureBindingOutcome.BoundObject.class,
+            bound.snapshot().outcome(1));
+        assertEquals(BindingOriginKind.CUSTOM, row.origin().kind());
+        assertSame(winner.handle(), row.handle());
+        List<GLCall> binds = fixture.estate.device.log().calls().subList(before,
+            fixture.estate.device.log().calls().size()).stream()
+            .filter(call -> call.op().equals("textures.bindToUnit")).toList();
+        assertEquals(1, binds.size());
+        assertEquals(1, binds.get(0).args().get(0));
+        assertSame(((TextureHandleRef.Owned) winner.handle()).handle(), binds.get(0).args().get(1));
+        bound.snapshot().close();
     }
 
     @Test
     void fullscreenProgramsStillReadColortexOnUnitsZeroToThree() {
-        BuffersEstateFixture fixture = estate();
-        EstateViewImpl view = view(fixture);
-        assertInstanceOf(FrameBeginResult.Begun.class, view.beginFrame(1));
-        PassBufferSnapshot snapshot = acquired(view.snapshot(
-            descriptor(COMPOSITE, StageId.COMPOSITE, StageBand.FRAME_END),
-            selection(COMPOSITE, layout(StageId.COMPOSITE, StageBand.FRAME_END,
-                "colortex0", "colortex1"))));
-        int before = calls(fixture, "textures.bindToUnit").size();
-
+        Fixture fixture = fixture("colortex0", "colortex1");
+        Overlay overlay = new Overlay(fixture);
         TextureBindingResult.Bound bound = assertInstanceOf(TextureBindingResult.Bound.class,
-            view.textureBindings(snapshot, null, null));
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        for (int unit = 0; unit < 2; unit++) {
+            var row = assertInstanceOf(TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(unit));
+            assertEquals(BindingOriginKind.ESTATE, row.origin().kind());
+            assertSame(fixture.estate.core.colorPairs.get(unit).readSide(),
+                ((TextureHandleRef.Borrowed) row.handle()).handle());
+        }
+        bound.snapshot().close();
+    }
 
-        TextureBindingOutcome.BoundObject unit0 = assertInstanceOf(
-            TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(0));
-        assertSame(fixture.core.colorPairs.get(0).readSide(),
-            ((TextureHandleRef.Borrowed) unit0.handle()).handle());
-        assertEquals(BindingOriginKind.ESTATE, unit0.origin().kind());
-        TextureBindingOutcome.BoundObject unit1 = assertInstanceOf(
-            TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(1));
-        assertSame(fixture.core.colorPairs.get(1).readSide(),
-            ((TextureHandleRef.Borrowed) unit1.handle()).handle());
-        assertEquals(List.of(0, 1), boundUnits(fixture).subList(before, before + 2));
+    @Test
+    void fullyResolvedPassRecordsNoDiagnostics() {
+        Fixture fixture = fixture("colortex0", "colortex1");
+        Overlay overlay = new Overlay(fixture, custom(fixture, FixedSamplerName.COLORTEX1, 1, SAMPLER_2D));
+        TextureBindingResult.Bound bound = assertInstanceOf(TextureBindingResult.Bound.class,
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        assertEquals(BindingOriginKind.ESTATE, assertInstanceOf(TextureBindingOutcome.BoundObject.class,
+            bound.snapshot().outcome(0)).origin().kind());
+        assertEquals(BindingOriginKind.CUSTOM, assertInstanceOf(TextureBindingOutcome.BoundObject.class,
+            bound.snapshot().outcome(1)).origin().kind());
+        assertEquals(List.of(), bound.snapshot().diagnostics());
+        bound.snapshot().close();
+    }
+
+    @Test
+    void degradedPassReportsOnlyTheUnbackedUnit() {
+        Fixture fixture = fixture("colortex0", "colortex1", "colortex2");
+        Overlay overlay = new Overlay(fixture, custom(fixture, FixedSamplerName.COLORTEX1, 1, SAMPLER_2D));
+        int before = fixture.estate.device.log().calls().size();
+        TextureBindingResult.Degraded result = assertInstanceOf(TextureBindingResult.Degraded.class,
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        assertEquals(List.of(new TextureBindingDiagnostic(TextureBindingDiagnosticCode.NOT_CONFIGURED,
+            "colortex2", OptionalInt.of(2))), result.degradation().diagnostics());
+        assertEquals(before, fixture.estate.device.log().calls().size());
+        overlay.close();
+    }
+
+    @Test
+    void stalePublicationRejectsWithoutGlAndKeepsCallerLease() {
+        Fixture fixture = fixture("colortex1");
+        Overlay overlay = new Overlay(fixture);
+        int before = fixture.estate.device.log().calls().size();
+        TextureBindingResult.Rejected result = assertInstanceOf(TextureBindingResult.Rejected.class,
+            fixture.view.textureBindings(fixture.pass, overlay, new TextureOverlayPublicationId(
+                overlay.id().generation(), new TextureOverlayFingerprint("retired-publication"))));
+        assertEquals(TextureBindingRejection.OVERLAY_PUBLICATION_ID_MISMATCH, result.reason());
+        assertEquals(before, fixture.estate.device.log().calls().size());
+        assertEquals(0, overlay.closes);
+        overlay.close();
+        assertEquals(1, overlay.closes);
+    }
+
+    @Test
+    void retiredOverlayWithMatchingIdentityRejectsWithoutGl() {
+        Fixture fixture = fixture("colortex1");
+        Overlay overlay = new Overlay(fixture);
+        overlay.current = false;
+        int before = fixture.estate.device.log().calls().size();
+        TextureBindingResult.Rejected result = assertInstanceOf(TextureBindingResult.Rejected.class,
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        assertEquals(TextureBindingRejection.CLOSED_OVERLAY_LEASE, result.reason());
+        assertEquals(before, fixture.estate.device.log().calls().size());
+        assertEquals(0, overlay.closes);
+        overlay.close();
+        assertEquals(1, overlay.closes);
+    }
+
+    @Test
+    void incompatibleCandidateShapeDegradesWithoutGlAndKeepsCallerLease() {
+        var integerShape = new DeclaredGlslType.Sampler(SampledKind.SIGNED_INT,
+            TextureDimension.D2, false, false, false);
+        Fixture fixture = fixture(integerShape, "colortex1");
+        Overlay overlay = new Overlay(fixture, custom(fixture, FixedSamplerName.COLORTEX1, 1, SAMPLER_2D));
+        int before = fixture.estate.device.log().calls().size();
+        TextureBindingResult.Degraded result = assertInstanceOf(TextureBindingResult.Degraded.class,
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        assertTrue(result.degradation().diagnostics().stream()
+            .anyMatch(diagnostic -> diagnostic.code() == TextureBindingDiagnosticCode.INCOMPATIBLE_CANDIDATE));
+        assertEquals(before, fixture.estate.device.log().calls().size());
+        assertEquals(0, overlay.closes);
+        overlay.close();
+        assertEquals(1, overlay.closes);
+    }
+
+    @Test
+    void distinctAliasSourcesConflictWithoutGl() {
+        Fixture fixture = fixture("colortex1", "gdepth");
+        Overlay overlay = new Overlay(fixture,
+            custom(fixture, FixedSamplerName.COLORTEX1, 1, SAMPLER_2D),
+            custom(fixture, FixedSamplerName.GDEPTH, 2, SAMPLER_2D));
+        int before = fixture.estate.device.log().calls().size();
+        TextureBindingResult.Degraded result = assertInstanceOf(TextureBindingResult.Degraded.class,
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        assertTrue(result.degradation().diagnostics().stream()
+            .anyMatch(diagnostic -> diagnostic.code() == TextureBindingDiagnosticCode.CONFLICTING_CANDIDATES));
+        assertEquals(before, fixture.estate.device.log().calls().size());
+        assertEquals(0, overlay.closes);
+        overlay.close();
+    }
+
+    @Test
+    void boundSnapshotClosesLeaseExactlyOnce() {
+        Fixture fixture = fixture("colortex1");
+        Overlay overlay = new Overlay(fixture, custom(fixture, FixedSamplerName.COLORTEX1, 1, SAMPLER_2D));
+        TextureBindingResult.Bound bound = assertInstanceOf(TextureBindingResult.Bound.class,
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        assertEquals(0, overlay.closes);
+        assertTrue(bound.snapshot().isCurrent());
+        int before = fixture.estate.device.log().calls().size();
+        bound.snapshot().close();
+        bound.snapshot().close();
+        assertEquals(1, overlay.closes);
+        assertFalse(bound.snapshot().isCurrent());
+        assertEquals(before, fixture.estate.device.log().calls().size());
+    }
+
+    @Test
+    void backendFailureKeepsCallerLease() {
+        Fixture fixture = fixture("colortex1");
+        Overlay overlay = new Overlay(fixture, custom(fixture, FixedSamplerName.COLORTEX1, 1, SAMPLER_2D));
+        fixture.responses.glError("textures.bindToUnit", "custom", GLErrorKind.INVALID_OPERATION);
+        assertInstanceOf(TextureBindingResult.BackendFailed.class,
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        assertEquals(0, overlay.closes);
+        overlay.close();
+        assertEquals(1, overlay.closes);
+    }
+
+    @Test
+    void worldCompanionsFollowCustomBaseAtlasAndUseOnlyMatchingDefaults() {
+        Fixture fixture = fixture(new ProgramSlotId("gbuffers_terrain"), StageId.GBUFFERS,
+            StageBand.GBUFFERS_OPAQUE, layout(StageId.GBUFFERS, StageBand.GBUFFERS_OPAQUE,
+                SAMPLER_2D, "normals", "specular", "texture"));
+        AtlasId atlas = new AtlasId("accepted-base");
+        AtlasId unrelated = new AtlasId("unrelated-atlas");
+        TextureBindingCandidate base = custom(fixture, FixedSamplerName.TEXTURE, 0, SAMPLER_2D);
+        TextureBindingCandidate normals = companion(fixture, FixedSamplerName.NORMALS, 1,
+            new CandidateOrigin.Companion(atlas, CompanionKind.NORMALS));
+        TextureBindingCandidate otherNormals = companion(fixture, FixedSamplerName.NORMALS, 2,
+            new CandidateOrigin.Companion(unrelated, CompanionKind.NORMALS));
+        TextureBindingCandidate otherSpecular = companion(fixture, FixedSamplerName.SPECULAR, 3,
+            new CandidateOrigin.Companion(unrelated, CompanionKind.SPECULAR));
+        TextureBindingCandidate defaultSpecular = companion(fixture, FixedSamplerName.SPECULAR, 4,
+            new CandidateOrigin.DefaultFill(CompanionKind.SPECULAR));
+        Overlay overlay = new Overlay(fixture, base, normals, otherNormals, otherSpecular, defaultSpecular);
+        overlay.atlases = Map.of(base.handle(), new BaseAtlasContext.Atlas(atlas));
+        int before = fixture.estate.device.log().calls().size();
+        TextureBindingResult.Bound bound = assertInstanceOf(TextureBindingResult.Bound.class,
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        List<GLCall> binds = fixture.estate.device.log().calls().subList(before,
+            fixture.estate.device.log().calls().size()).stream()
+            .filter(call -> call.op().equals("textures.bindToUnit")).toList();
+        assertEquals(List.of(0, 2, 3), binds.stream().map(call -> call.args().get(0)).toList());
+        assertSame(((TextureHandleRef.Owned) base.handle()).handle(), binds.get(0).args().get(1));
+        assertSame(((TextureHandleRef.Owned) normals.handle()).handle(), binds.get(1).args().get(1));
+        assertSame(((TextureHandleRef.Owned) defaultSpecular.handle()).handle(), binds.get(2).args().get(1));
+        bound.snapshot().close();
     }
 
     @Test
     void fixedFunctionGbuffersProgramsBindNothing() {
-        BuffersEstateFixture fixture = estate();
-        EstateViewImpl view = view(fixture);
-        assertInstanceOf(FrameBeginResult.Begun.class, view.beginFrame(1));
-        ProgramSamplerLayout.FixedFunctionEmpty fixedFunction =
-            new ProgramSamplerLayout.FixedFunctionEmpty(
-                new ProgramSamplerLayoutFingerprint("ff"), FixedSamplerPolicies.appB3Fingerprint());
-        PassBufferSnapshot snapshot = acquired(view.snapshot(
-            descriptor(TERRAIN, StageId.GBUFFERS, StageBand.GBUFFERS_OPAQUE),
-            selection(TERRAIN, fixedFunction)));
-        int before = calls(fixture, "textures.bindToUnit").size();
-
+        Fixture fixture = fixture(new ProgramSlotId("gbuffers_terrain"), StageId.GBUFFERS,
+            StageBand.GBUFFERS_OPAQUE, new ProgramSamplerLayout.FixedFunctionEmpty(
+                new ProgramSamplerLayoutFingerprint("fixed"), FixedSamplerPolicies.appB3Fingerprint()));
+        Overlay overlay = new Overlay(fixture);
+        int before = fixture.estate.device.log().calls().size();
         TextureBindingResult.Bound bound = assertInstanceOf(TextureBindingResult.Bound.class,
-            view.textureBindings(snapshot, null, null));
-
-        assertEquals(BindingPurpose.FIXED_FUNCTION_PASSTHROUGH, bound.snapshot().purpose());
-        assertInstanceOf(TextureBindingOutcome.Unused.class, bound.snapshot().outcome(0),
-            "no colortex0 passthrough row in the gbuffers family: vanilla samples its own atlas");
-        assertTrue(boundUnits(fixture).size() == before, "zero binds");
+            fixture.view.textureBindings(fixture.pass, overlay, overlay.id()));
+        assertEquals(BindingPurpose.NONE, bound.snapshot().purpose());
+        assertFalse(fixture.estate.device.log().calls().subList(before,
+            fixture.estate.device.log().calls().size()).stream()
+            .anyMatch(call -> call.op().equals("textures.bindToUnit")));
+        bound.snapshot().close();
     }
 }

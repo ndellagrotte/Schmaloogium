@@ -56,6 +56,11 @@ public final class MaterializerImpl implements SourceMaterializer {
         ShaderPreprocessor.Result processed
             = ShaderPreprocessor.process(expandedText.toString(), effectiveMacros, version);
         diags.addAll(processed.diagnostics());
+        if (processed.diagnostics().stream().anyMatch(d ->
+                d.severity() == DiagnosticSeverity.ERROR
+                    || d.severity() == DiagnosticSeverity.FATAL)) {
+            return new MaterializationResult.Unavailable(root, diags);
+        }
         String transformed = processed.text();
 
         // declared uniforms with attribution aligned to the expanded stream when the

@@ -4,7 +4,6 @@
 package com.schmaloogium.mod.core.pipeline;
 
 import com.schmaloogium.engine.buffers.PublishedBufferEstate;
-import com.schmaloogium.engine.buffers.TextureOverlayPublicationId;
 import com.schmaloogium.engine.frame.PipelineIdentity;
 import com.schmaloogium.engine.frame.PipelineVersion;
 import com.schmaloogium.engine.frame.ShadowInvocationSlot;
@@ -18,9 +17,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The v0.1 active pipeline tuple (PHASE_7_DOC §4.1 step 9): every field is an accepted
- * publication or a P7-owned adapter. The shadow slot, completion observer and texture
- * publication are the explicit empty values the driver treats as no-ops.
+ * The active pipeline tuple (PHASE_7_DOC §4.1 step 9): every required field is an accepted
+ * publication or a P7-owned adapter. Texture lifecycle authority is retained privately by
+ * the transaction; frames receive only its restricted lease source and non-owning publication.
  */
 public record FrameCompositionRecord(
         PipelineIdentity identity,
@@ -29,7 +28,11 @@ public record FrameCompositionRecord(
         PublishedBufferEstate estate,
         UniformRuntime uniforms,
         FrameRenderPort port,
+        com.schmaloogium.engine.config.EngineFlags engineFlags,
+        double handDepthMultiplier,
         long resourceReloadEpoch,
+        com.schmaloogium.engine.textures.TexturePublication texturePublication,
+        com.schmaloogium.engine.textures.TextureLeaseSource textureLeases,
         Optional<ShadowInvocationSlot> shadowSlot,
         Optional<com.schmaloogium.engine.config.id.PublishedIdRuntime> idRuntime,
         Optional<com.schmaloogium.engine.vertex.VertexEpoch> vertexEpoch) implements FrameComposition {
@@ -41,25 +44,24 @@ public record FrameCompositionRecord(
         Objects.requireNonNull(estate, "estate");
         Objects.requireNonNull(uniforms, "uniforms");
         Objects.requireNonNull(port, "port");
+        Objects.requireNonNull(engineFlags, "engineFlags");
+        Objects.requireNonNull(texturePublication, "texturePublication");
+        Objects.requireNonNull(textureLeases, "textureLeases");
+        if (texturePublication.id().generation() != estate.generation()
+                || texturePublication.registryGeneration() != registry.generation()
+                || texturePublication.resourceReloadEpoch() != resourceReloadEpoch
+                || !texturePublication.plan().inputs().configuration().fingerprint()
+                        .equals(identity.configuration())) {
+            throw new IllegalArgumentException("texture publication does not match composition");
+        }
+        if (!Double.isFinite(handDepthMultiplier) || handDepthMultiplier <= 0d) {
+            throw new IllegalArgumentException("handDepthMultiplier must be finite and positive");
+        }
         shadowSlot = shadowSlot == null ? Optional.empty() : shadowSlot;
         idRuntime = idRuntime == null ? Optional.empty() : idRuntime;
         vertexEpoch = vertexEpoch == null ? Optional.empty() : vertexEpoch;
     }
 
-    /** The v0.2 shape: a shadow slot, no ids, vanilla vertex formats. */
-    public FrameCompositionRecord(PipelineIdentity identity, PipelineVersion version,
-            PublishedRegistry registry, PublishedBufferEstate estate, UniformRuntime uniforms,
-            FrameRenderPort port, long resourceReloadEpoch, Optional<ShadowInvocationSlot> shadowSlot) {
-        this(identity, version, registry, estate, uniforms, port, resourceReloadEpoch, shadowSlot,
-                Optional.empty(), Optional.empty());
-    }
-
-    /** The v0.1 shape: no shadow slot. */
-    public FrameCompositionRecord(PipelineIdentity identity, PipelineVersion version,
-            PublishedRegistry registry, PublishedBufferEstate estate, UniformRuntime uniforms,
-            FrameRenderPort port, long resourceReloadEpoch) {
-        this(identity, version, registry, estate, uniforms, port, resourceReloadEpoch, Optional.empty());
-    }
 
     @Override
     public Optional<ShadowInvocationSlot> shadowSlot() {
@@ -82,8 +84,4 @@ public record FrameCompositionRecord(
         return com.schmaloogium.mod.glue.frame.FrameObservers.current();
     }
 
-    @Override
-    public Optional<TextureOverlayPublicationId> texturePublication() {
-        return Optional.empty();
-    }
 }

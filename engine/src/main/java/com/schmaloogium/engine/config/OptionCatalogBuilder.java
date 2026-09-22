@@ -12,9 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Builds the sealed catalog definitions from raw discovery: switch candidates from
- * preprocessed properties (screen/sliders/profile mentions confirmed by directive
- * scan), const whitelist options, and exact commented/uncommented line shapes.
+ * Builds catalog definitions from original-source switch and numeric variable
+ * declarations, property-confirmed candidates, and const whitelist options.
  */
 public final class OptionCatalogBuilder {
 
@@ -22,8 +21,11 @@ public final class OptionCatalogBuilder {
     }
 
     private static final Pattern DEFINE_LINE = Pattern.compile(
-        "^\\s*#define\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*(.*?)\\s*(?://.*)?$");
-    private static final Pattern IFDEF_LINE = Pattern.compile("^\\s*#(ifdef|ifndef)\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*$");
+        "^\\s*(//\\s*)?#\\s*define\\s+([A-Za-z_][A-Za-z0-9_]*)(?:\\s+(.*?))?\\s*(?://(.*))?$");
+    private static final Pattern IFDEF_LINE = Pattern.compile("^\\s*#\\s*(ifdef|ifndef)\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*$");
+    private static final Pattern NUMBER = Pattern.compile(
+        "[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?[fF]?");
+    private static final Pattern BRACKET_VALUES = Pattern.compile("\\[([^\\[\\]]+)\\]");
 
     /** The App F.3 exact const-option whitelist. */
     private static final java.util.Set<String> CONST_WHITELIST = java.util.Set.of(
@@ -55,17 +57,20 @@ public final class OptionCatalogBuilder {
                 return;
             }
             String defaultValue = raw.switchDefaults().getOrDefault(name, "false");
+            boolean variable = !defaultValue.equals("true") && !defaultValue.equals("false");
             List<OptionValue> values = new ArrayList<>();
             for (String v : raw.switchValues().getOrDefault(name, List.of())) {
-                values.add(new BooleanOptionValue(Boolean.parseBoolean(v)));
+                values.add(variable ? new TextOptionValue(v) : new BooleanOptionValue(Boolean.parseBoolean(v)));
             }
-            if (values.isEmpty()) {
+            if (variable && !values.contains(new TextOptionValue(defaultValue))) {
+                values.addFirst(new TextOptionValue(defaultValue));
+            } else if (!variable && values.isEmpty()) {
                 values.add(new BooleanOptionValue(true));
                 values.add(new BooleanOptionValue(false));
             }
-            out.put(name, new OptionDefinition(name, OptionKind.SWITCH,
-                new BooleanOptionValue(Boolean.parseBoolean(defaultValue)), values,
-                OptionAvailability.AVAILABLE, Optional.ofNullable(raw.tooltips().get(name)),
+            out.put(name, new OptionDefinition(name, variable ? OptionKind.VARIABLE : OptionKind.SWITCH,
+                variable ? new TextOptionValue(defaultValue) : new BooleanOptionValue(Boolean.parseBoolean(defaultValue)),
+                values, OptionAvailability.AVAILABLE, Optional.ofNullable(raw.tooltips().get(name)),
                 occurrences));
         });
         raw.constOccurrences().forEach((name, occurrences) -> {
@@ -81,7 +86,7 @@ public final class OptionCatalogBuilder {
         return List.copyOf(out.values());
     }
 
-    /** Scans active text for the switch candidate shapes (documented strict grammar). */
+    /** Scans original text for switches and numeric variables; the legacy map names carry both. */
     public static void scanSwitches(String text, SourceAttribution attribution,
             Map<String, List<SourceAttribution>> switchOccurrences,
             Map<String, String> switchDefaults,
@@ -89,29 +94,58 @@ public final class OptionCatalogBuilder {
             Map<String, String> tooltips,
             java.util.Set<String> confirmedNames) {
         String[] lines = text.split("\\n", -1);
+        java.util.Set<String> localSwitchNames = new java.util.HashSet<>();
         for (String line : lines) {
-            String stripped = ConstScanner.stripComments(line);
+            Matcher ifdef = IFDEF_LINE.matcher(ConstScanner.stripComments(line));
+            if (ifdef.matches()) {
+                localSwitchNames.add(ifdef.group(2));
+            }
+        }
+        for (String line : lines) {
             Matcher directive = DEFINE_LINE.matcher(line);
-            if (directive.matches()) {
-                String name = directive.group(1);
-                String value = directive.group(2).trim();
-                if (!confirmedNames.contains(name)) {
-                    continue; // unconfirmed candidates never define options
-                }
-                switchOccurrences.computeIfAbsent(name, k -> new ArrayList<>()).add(attribution);
-                if (value.isEmpty()) {
-                    switchDefaults.putIfAbsent(name, "true");
-                } else if (value.equals("true") || value.equals("false")) {
-                    switchDefaults.putIfAbsent(name, value);
-                }
+            if (!directive.matches()) {
                 continue;
             }
-            Matcher ifdef = IFDEF_LINE.matcher(stripped);
-            if (ifdef.matches()) {
-                String name = ifdef.group(2);
-                if (confirmedNames.contains(name)) {
-                    switchOccurrences.computeIfAbsent(name, k -> new ArrayList<>()).add(attribution);
+            boolean commented = directive.group(1) != null;
+            String name = directive.group(2);
+            String value = directive.group(3) == null ? "" : directive.group(3).trim();
+            String comment = directive.group(4);
+            boolean numeric = NUMBER.matcher(value).matches();
+            List<String> allowed = new ArrayList<>();
+            if (numeric && comment != null) {
+                Matcher bracket = BRACKET_VALUES.matcher(comment);
+                if (bracket.find()) {
+                    for (String token : bracket.group(1).trim().split("\\s+")) {
+                        if (!NUMBER.matcher(token).matches()) {
+                            allowed.clear();
+                            break;
+                        }
+                        if (!allowed.contains(token)) {
+                            allowed.add(token);
+                        }
+                    }
                 }
+            }
+            if (numeric) {
+                if (commented || (!confirmedNames.contains(name) && allowed.isEmpty())) {
+                    continue;
+                }
+                if (!allowed.contains(value)) {
+                    allowed.addFirst(value);
+                }
+            } else {
+                if ((!value.isEmpty() && !value.equals("true") && !value.equals("false"))
+                        || (!confirmedNames.contains(name) && !localSwitchNames.contains(name))) {
+                    continue;
+                }
+                value = commented ? "false" : value.isEmpty() ? "true" : value;
+            }
+            switchOccurrences.computeIfAbsent(name, k -> new ArrayList<>()).add(attribution);
+            if (switchDefaults.putIfAbsent(name, value) == null && numeric) {
+                switchValues.put(name, List.copyOf(allowed));
+            }
+            if (comment != null) {
+                tooltips.putIfAbsent(name, comment);
             }
         }
     }

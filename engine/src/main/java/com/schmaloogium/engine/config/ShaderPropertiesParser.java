@@ -24,7 +24,13 @@ public final class ShaderPropertiesParser {
     }
 
     public static ShaderPropertiesModel parse(List<LogicalProperties.Entry> entries,
-            NormalizedPackPath sourcePath) {
+            NormalizedPackPath sourcePath,
+            java.util.Set<NormalizedPackPath> declaredAssets) {
+        String canonical = sourcePath.canonicalString();
+        int lastSlash = canonical.lastIndexOf('/');
+        // Declared texture tokens are relative to the shaders root: the directory that
+        // holds this shaders.properties (empty when the root is the pack itself).
+        String rootPrefix = lastSlash < 0 ? "" : canonical.substring(0, lastSlash);
         EngineFlagsAccumulator flags = new EngineFlagsAccumulator();
         List<MinimumEditionRule> minimumEdition = new ArrayList<>();
         List<CustomTextureSpec> textures = new ArrayList<>();
@@ -50,8 +56,19 @@ public final class ShaderPropertiesParser {
                 } else if (key.equals("screen") || key.startsWith("screen.")
                         || key.equals("sliders")) {
                     // consumed by ProfileScreenParser over the retained stream
+                } else if (key.equals("texture.noise")) {
+                    NoiseTextureSpec override = TextureSpecReducer.reduceNoise(
+                        value.trim().split("\\s+"), rootPrefix, declaredAssets);
+                    textureDecls.add(new TexturePropertyDecl(key, value, ordinal, attribution,
+                        override == null ? TexturePropertyDisposition.INVALID_VALUE
+                            : TexturePropertyDisposition.NOISE_SOURCE));
+                    if (override != null) {
+                        noise = override;
+                    }
+                    ordinal++;
                 } else if (key.startsWith("texture.")) {
-                    parseTexture(key, value, ordinal, attribution, textures, textureDecls);
+                    parseTexture(key, value, ordinal, attribution, textures, textureDecls,
+                        rootPrefix, declaredAssets);
                     ordinal++;
                 } else if (key.startsWith("uniform.") || key.startsWith("variable.")) {
                     parseCustomExpression(key, value, ordinal, attribution, expressions);
@@ -66,10 +83,10 @@ public final class ShaderPropertiesParser {
                         minimumEdition.add(rule);
                     }
                 } else if (key.equals("noiseTextureResolution")) {
-                    Integer resolution = NoiseTextureResolutions.parse(value);
-                    if (resolution != null) {
-                        noise = new NoiseTextureSpec.Generated();
-                    }
+                    // §4.7: the resolution is a const directive scanned from the sources,
+                    // never this property spelling. The key is consumed here so it is
+                    // neither republished as unknown nor able to clobber texture.noise.
+                    continue;
                 } else {
                     unknown.add(new UnknownProperty(key, value, attribution));
                 }
@@ -107,7 +124,8 @@ public final class ShaderPropertiesParser {
 
     private static void parseTexture(String key, String value, int ordinal,
             SourceAttribution attribution, List<CustomTextureSpec> textures,
-            List<TexturePropertyDecl> decls) {
+            List<TexturePropertyDecl> decls, String rootPrefix,
+            java.util.Set<NormalizedPackPath> declaredAssets) {
         String[] segments = key.split("\\.");
         TexturePropertyDecl invalid = new TexturePropertyDecl(key, value, ordinal, attribution,
             TexturePropertyDisposition.INVALID_VALUE);
@@ -135,7 +153,8 @@ public final class ShaderPropertiesParser {
         }
         TextureBindingKey bindingKey = new TextureBindingKey(stage, segments[2], duplicate);
         String[] tokens = value.trim().split("\\s+");
-        CustomTextureSpec spec = TextureSpecReducer.reduce(bindingKey, tokens);
+        CustomTextureSpec spec = TextureSpecReducer.reduce(bindingKey, tokens, rootPrefix,
+            declaredAssets);
         decls.add(new TexturePropertyDecl(key, value, ordinal, attribution,
             spec == null ? TexturePropertyDisposition.INVALID_VALUE
                 : TexturePropertyDisposition.CUSTOM_SOURCE));

@@ -21,7 +21,8 @@ public final class ResourceReloadBoundary {
 
     /** HEAD of {@code func_110541_a}: before any destructive listener runs. */
     public static void begin() {
-        EPOCH.incrementAndGet();
+        long epoch = EPOCH.incrementAndGet();
+        com.schmaloogium.mod.glue.textures.MinecraftAtlasCapture.invalidate(epoch);
     }
 
     /** RETURN of {@code func_110541_a}: listeners completed. */

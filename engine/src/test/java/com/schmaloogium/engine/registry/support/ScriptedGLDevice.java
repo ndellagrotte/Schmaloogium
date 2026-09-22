@@ -41,6 +41,7 @@ public final class ScriptedGLDevice implements GLDevice {
     public final List<String> calls = new ArrayList<>();
     public final List<Integer> programHandlesDeleted = new ArrayList<>();
     public final List<Integer> samplerUnitsInitialized = new ArrayList<>();
+    public final java.util.Set<String> absentUniforms = new java.util.HashSet<>();
     public boolean failCompile;
     public boolean failLink;
     public boolean failValidate;
@@ -280,20 +281,12 @@ public final class ScriptedGLDevice implements GLDevice {
         new Class<?>[] {UniformService.class},
         (proxy, method, args) -> {
             if ("locate".equals(method.getName())) {
-                if (args[1] instanceof String name && name.equals("tintColor")) {
-                    return location((Integer) args[0], name);
-                }
-                return null;
+                String name = (String) args[1];
+                return (UniformLocation) () -> absentUniforms.contains(name);
             }
             return defaultValue(method.getReturnType());
         });
 
-    private UniformLocation location(int programId, String name) {
-        return (UniformLocation) Proxy.newProxyInstance(
-            getClass().getClassLoader(),
-            new Class<?>[] {UniformLocation.class},
-            (proxy, method, args) -> defaultValue(method.getReturnType()));
-    }
 
     private final com.schmaloogium.engine.gl.DebugService debugService =
         new com.schmaloogium.engine.gl.DebugService() {

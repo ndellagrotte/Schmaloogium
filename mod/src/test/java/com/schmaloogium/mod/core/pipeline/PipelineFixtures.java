@@ -497,6 +497,59 @@ final class PipelineFixtures {
         int barrierClosed;
         int estateClosed;
 
+        final List<com.schmaloogium.engine.textures.TextureSystem> textureOwners = new ArrayList<>();
+        final List<com.schmaloogium.engine.textures.TextureBuildRequest> textureRequests = new ArrayList<>();
+        com.schmaloogium.engine.textures.TextureSystem attachedTextures;
+        long textureEstateOffset;
+        long textureSourceEpochOffset;
+
+        @Override
+        public com.schmaloogium.engine.textures.TextureSystemCreationResult textures() {
+            calls.add("textures");
+            var created = com.schmaloogium.engine.textures.TextureSystemFactory.factory().create(
+                    new com.schmaloogium.engine.gl.record.RecordingGLDevice(profile(),
+                            new com.schmaloogium.engine.gl.record.ScriptedResponses()),
+                    new CollectingDiagnostics());
+            if (created instanceof com.schmaloogium.engine.textures.TextureSystemCreationResult.Created owner) {
+                textureOwners.add(owner.system());
+            }
+            return created;
+        }
+
+        @Override
+        public com.schmaloogium.engine.textures.TextureBuildRequest textureInputs(
+                PackConfiguration configuration, ProgramRegistryView registry,
+                long estateGeneration, long registryGeneration, long resourceReloadEpoch) {
+            calls.add("textureInputs");
+            var request = new com.schmaloogium.engine.textures.TextureBuildRequest(
+                    new com.schmaloogium.engine.textures.TexturePlanRequest(configuration, registry,
+                            com.schmaloogium.engine.textures.AtlasCatalog.EMPTY,
+                            com.schmaloogium.engine.textures.TextureSourceCatalog.EMPTY,
+                            new com.schmaloogium.engine.textures.CompanionPolicy(false, false,
+                                    com.schmaloogium.engine.textures.CompanionDemandSource.DECLARED_SAMPLERS),
+                            new com.schmaloogium.engine.textures.CompanionMacroState(false, false),
+                            profile(), registry.fingerprint(), estateGeneration + textureEstateOffset,
+                            registryGeneration, resourceReloadEpoch),
+                    new com.schmaloogium.engine.textures.TextureBuildSources(
+                            resourceReloadEpoch + textureSourceEpochOffset, List.of()));
+            textureRequests.add(request);
+            return request;
+        }
+
+        @Override
+        public void attachTextures(com.schmaloogium.engine.textures.TextureSystem owner,
+                                   long resourceReloadEpoch) {
+            calls.add("attachTextures");
+            attachedTextures = owner;
+        }
+
+        @Override
+        public void detachTextures(com.schmaloogium.engine.textures.TextureSystem owner) {
+            if (attachedTextures == owner) {
+                attachedTextures = null;
+            }
+        }
+
         FakeStages(PackConfiguration configuration) {
             loadAnswer = new PackLoadResult.Loaded(configuration);
             uniformsAnswer = new UniformBuildResult.Success(runtime);

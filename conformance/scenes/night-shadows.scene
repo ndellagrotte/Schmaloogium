@@ -1,8 +1,8 @@
-# the shadow pass (§3.4): long shadows under a moon, torches for block light. Gated at v0.2.
+# The shadow pass (§3.4): low moon, a stone pillar/receiver and torch block light.
 [scene]
 schema = schmaloogium.scene/2
 id = night-shadows
-description = structures casting long shadows at night with torch block light (untuned until v0.2)
+description = low-moon landscape with a torch-lit stone receiver and two-block shadow caster
 family = shadows
 minMilestone = v0.2
 
@@ -11,7 +11,7 @@ seed = 20260912
 worldType = default
 generateStructures = true
 dimension = 0
-time = 18000
+time = 14000
 weather = clear
 weatherTicks = 1000000
 difficulty = peaceful
@@ -25,12 +25,39 @@ gamerule.mobGriefing = false
 gamerule.doTileDrops = false
 gamerule.doEntityDrops = false
 prepTicks = 200
+# A fixed lit receiver and two-block pillar in the foreground; terrain/trees remain behind it.
+block.0.pos = -216 74 243
+block.0.state = minecraft:stone
+block.1.pos = -216 74 244
+block.1.state = minecraft:stone
+block.2.pos = -216 74 245
+block.2.state = minecraft:stone
+block.3.pos = -215 74 243
+block.3.state = minecraft:stone
+block.4.pos = -215 74 244
+block.4.state = minecraft:stone
+block.5.pos = -215 74 245
+block.5.state = minecraft:stone
+block.6.pos = -214 74 243
+block.6.state = minecraft:stone
+block.7.pos = -214 74 244
+block.7.state = minecraft:stone
+block.8.pos = -214 74 245
+block.8.state = minecraft:stone
+block.9.pos = -216 75 245
+block.9.state = minecraft:stone
+block.10.pos = -216 76 245
+block.10.state = minecraft:stone
+block.11.pos = -214 75 243
+block.11.state = minecraft:torch:5
+block.12.pos = -214 75 245
+block.12.state = minecraft:torch:5
 
 [client]
 width = 854
 height = 480
 fov = 70.0
-gamma = 0.0
+gamma = 1.0
 renderDistance = 8
 guiScale = 2
 mipmapLevels = 4
@@ -44,23 +71,23 @@ hideGui = true
 shaderpack = mp-pingpong@1.0.0
 
 [shot main]
-pos = -211.5 75.0 240.5
-look = 225.0 20.0
+pos = -211.5 77.0 240.5
+look = 45.0 25.0
 warmupFrames = 4800
 captureFrames = 2
-note = untuned (gated at v0.2): moon up, shadows across the spawn landscape
+note = raised camera frames the lit stone target, surrounding terrain and trees under a low moon
 
 [path shadow-parallax]
 warmupFrames = 4800
 samples.count = 4
-sample.0.pos = -211.5 75.0 240.5
-sample.0.look = 225.0 20.0
-sample.1.pos = -211.0 75.0 240.5
-sample.1.look = 225.0 20.0
-sample.2.pos = -210.5 75.0 240.5
-sample.2.look = 225.0 20.0
-sample.3.pos = -210.0 75.0 240.5
-sample.3.look = 225.0 20.0
+sample.0.pos = -211.5 77.0 240.5
+sample.0.look = 45.0 25.0
+sample.1.pos = -211.0 77.0 240.5
+sample.1.look = 45.0 25.0
+sample.2.pos = -210.5 77.0 240.5
+sample.2.look = 45.0 25.0
+sample.3.pos = -210.0 77.0 240.5
+sample.3.look = 45.0 25.0
 captureStartSample = 1
 captureSampleCount = 2
-note = untuned (gated at v0.2): lateral half-block track for shadow parallax
+note = lateral half-block track across the lit target for shadow parallax

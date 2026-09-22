@@ -16,6 +16,7 @@ import com.schmaloogium.engine.buffers.DrawBuffersNoneOpenResult;
 import com.schmaloogium.engine.buffers.Extent2i;
 import com.schmaloogium.engine.buffers.FrameBeginResult;
 import com.schmaloogium.engine.buffers.FrameEndResult;
+import com.schmaloogium.engine.buffers.FrameProtocolRejection;
 import com.schmaloogium.engine.buffers.MainDepthPreparation;
 import com.schmaloogium.engine.buffers.MainDepthRefreshResult;
 import com.schmaloogium.engine.buffers.MainDepthSnapshot;
@@ -195,14 +196,7 @@ class FrameDriverScriptedTest {
      */
     private static ProgramBindingSelection inertSelection(ProgramSlotId requested) {
         try {
-            Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
-            java.lang.reflect.Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
-            theUnsafe.setAccessible(true);
-            Object unsafe = theUnsafe.get(null);
-            java.lang.reflect.Method allocateInstance =
-                    unsafeClass.getMethod("allocateInstance", Class.class);
-            ProgramBindingSelection selection = (ProgramBindingSelection) allocateInstance
-                    .invoke(unsafe, ProgramBindingSelection.class);
+            ProgramBindingSelection selection = inertValue(ProgramBindingSelection.class);
             java.lang.reflect.Field field =
                     ProgramBindingSelection.class.getDeclaredField("requested");
             field.setAccessible(true);
@@ -210,6 +204,66 @@ class FrameDriverScriptedTest {
             return selection;
         } catch (ReflectiveOperationException failure) {
             throw new AssertionError("cannot allocate an inert selection", failure);
+        }
+    }
+
+    /** Opaque owner metadata only; these driver tests never read a texture plan's contents. */
+    private static <T> T inertValue(Class<T> type) {
+        try {
+            Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+            java.lang.reflect.Field field = unsafeClass.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            Object unsafe = field.get(null);
+            return type.cast(unsafeClass.getMethod("allocateInstance", Class.class).invoke(unsafe, type));
+        } catch (ReflectiveOperationException failure) {
+            throw new AssertionError("cannot allocate inert owner metadata", failure);
+        }
+    }
+
+    private static final TextureOverlayPublicationId TEXTURE_ID = new TextureOverlayPublicationId(
+            2L, new com.schmaloogium.engine.buffers.TextureOverlayFingerprint("textures"));
+    private static final com.schmaloogium.engine.textures.TexturePublication TEXTURE_PUBLICATION =
+            new com.schmaloogium.engine.textures.TexturePublication(TEXTURE_ID,
+                    new RegistryFingerprint("scripted"), 9L, 0L,
+                    inertValue(com.schmaloogium.engine.textures.TexturePlan.class),
+                    (stage, sampler) -> { throw new AssertionError("candidate resolution belongs to P5"); });
+
+    private record ScriptedEvidence(boolean base)
+            implements com.schmaloogium.engine.frame.spi.AtlasBindingEvidence {}
+
+    private static final class ScriptedOverlayLease implements TextureOverlayLease {
+        final ProgramBindingSelection selection;
+        boolean closed;
+
+        ScriptedOverlayLease(ProgramBindingSelection selection) {
+            this.selection = selection;
+        }
+
+        @Override public TextureOverlayPublicationId id() { return TEXTURE_ID; }
+        @Override public RegistryFingerprint registryFingerprint() { return TEXTURE_PUBLICATION.registryFingerprint(); }
+        @Override public long registryGeneration() { return 9L; }
+        @Override public long resourceReloadEpoch() { return 0L; }
+        @Override public ConfigurationFingerprint configurationFingerprint() { return new ConfigurationFingerprint("cfg"); }
+        @Override public com.schmaloogium.engine.registry.FixedSamplerPolicyFingerprint policyFingerprint() {
+            return new com.schmaloogium.engine.registry.FixedSamplerPolicyFingerprint("policy");
+        }
+        @Override public com.schmaloogium.engine.buffers.TextureCandidateTable candidates() {
+            return TEXTURE_PUBLICATION.candidates();
+        }
+        @Override public com.schmaloogium.engine.buffers.BaseAtlasContext baseAtlasContext() {
+            return new com.schmaloogium.engine.buffers.BaseAtlasContext.NonAtlas();
+        }
+        @Override public Optional<com.schmaloogium.engine.buffers.TextureHandleRef> baseTexture() {
+            return Optional.empty();
+        }
+        @Override public com.schmaloogium.engine.buffers.BaseAtlasContext atlasContext(
+                com.schmaloogium.engine.buffers.TextureHandleRef base) {
+            return new com.schmaloogium.engine.buffers.BaseAtlasContext.NonAtlas();
+        }
+        @Override public boolean isCurrent() { return !closed; }
+        @Override public void close() {
+            assertFalse(closed, "overlay ownership must close exactly once");
+            closed = true;
         }
     }
 
@@ -296,6 +350,12 @@ class FrameDriverScriptedTest {
                 pass -> new TextureBindingResult.Bound(new InertBindingSnapshot());
         final AtomicInteger completeCalls = new AtomicInteger();
         final AtomicInteger discardCalls = new AtomicInteger();
+        final java.util.Set<DepthCopyPoint> depthPoints = java.util.EnumSet.noneOf(DepthCopyPoint.class);
+        java.util.function.Function<DepthCopyPoint, DepthCopyResult> depthOutcome =
+                point -> new DepthCopyResult.Copied(point, true);
+        PassBufferSnapshot openSnapshot;
+        PassSnapshotResult nextSnapshotFailure;
+        int snapshotFrameAborts;
 
         FakeEstate(List<String> calls) {
             this.calls = calls;
@@ -357,14 +417,26 @@ class FrameDriverScriptedTest {
         public PassSnapshotResult snapshot(PassDescriptor pass,
                 com.schmaloogium.engine.registry.ProgramBindingSelection selection) {
             calls.add("snapshot:" + pass.slot().packName());
+            if (openSnapshot != null) {
+                return new PassSnapshotResult.Rejected(FrameProtocolRejection.OPEN_PASS_SNAPSHOT);
+            }
+            if (nextSnapshotFailure != null) {
+                PassSnapshotResult failure = nextSnapshotFailure;
+                nextSnapshotFailure = null;
+                if (failure instanceof PassSnapshotResult.Failed) {
+                    snapshotFrameAborts++;
+                }
+                return failure;
+            }
             com.schmaloogium.engine.buffers.PassDrawTarget target =
                     pass.step().stage() == StageId.FINAL
                             ? com.schmaloogium.engine.buffers.PassDrawTarget.Screen.INSTANCE
                             : new com.schmaloogium.engine.buffers.PassDrawTarget.EngineFramebuffer(
                                     new com.schmaloogium.engine.gl.FramebufferHandle() {
                                     });
-            return new PassSnapshotResult.Acquired(new PassBufferSnapshot(2L, 0L, lastFrameId,
-                    pass, selection, List.of(), Map.of(), java.util.Set.of(), target));
+            openSnapshot = new PassBufferSnapshot(2L, 0L, lastFrameId,
+                    pass, selection, List.of(), Map.of(), java.util.Set.of(), target);
+            return new PassSnapshotResult.Acquired(openSnapshot);
         }
 
         @Override
@@ -375,6 +447,8 @@ class FrameDriverScriptedTest {
 
         @Override
         public PassCompletionResult completePass(PassBufferSnapshot snapshot) {
+            assertTrue(openSnapshot == snapshot, "only the live pass may complete");
+            openSnapshot = null;
             calls.add("complete:" + snapshot.pass().slot().packName());
             completeCalls.incrementAndGet();
             return new PassCompletionResult.Completed(lastFrameId);
@@ -382,6 +456,8 @@ class FrameDriverScriptedTest {
 
         @Override
         public PassDiscardResult discardPass(PassBufferSnapshot snapshot) {
+            assertTrue(openSnapshot == snapshot, "only the live pass may discard");
+            openSnapshot = null;
             calls.add("discard:" + snapshot.pass().slot().packName());
             discardCalls.incrementAndGet();
             return new PassDiscardResult.Discarded(lastFrameId);
@@ -400,7 +476,19 @@ class FrameDriverScriptedTest {
 
         @Override
         public DepthCopyResult copyDepth(DepthCopyPoint point, long frameId) {
-            throw new AssertionError("unreachable in this fixture");
+            calls.add("depth:" + point);
+            if (depthPoints.contains(point)) {
+                return new DepthCopyResult.DuplicateIgnored(point, "test.depth.duplicate");
+            }
+            if (point == DepthCopyPoint.PRE_TRANSLUCENT
+                    && !depthPoints.contains(DepthCopyPoint.PRE_WEATHER)) {
+                return new DepthCopyResult.Rejected(FrameProtocolRejection.DEPTH_COPY_OUT_OF_ORDER);
+            }
+            DepthCopyResult result = depthOutcome.apply(point);
+            if (result instanceof DepthCopyResult.Copied || result instanceof DepthCopyResult.BackendDegraded) {
+                depthPoints.add(point);
+            }
+            return result;
         }
 
         @Override
@@ -411,6 +499,7 @@ class FrameDriverScriptedTest {
 
         @Override
         public FrameEndResult abortFrame(long frameId, String diagnosticId) {
+            openSnapshot = null;
             abortCalls.incrementAndGet();
             return new FrameEndResult.Aborted(frameId, diagnosticId, false);
         }
@@ -418,8 +507,17 @@ class FrameDriverScriptedTest {
         @Override
         public TextureBindingResult textureBindings(PassBufferSnapshot snapshot,
                 TextureOverlayLease overlay, TextureOverlayPublicationId expectedOverlay) {
+            assertTrue(openSnapshot == snapshot, "binding requires a freshly live pass");
+            assertEquals(TEXTURE_ID, expectedOverlay);
+            ScriptedOverlayLease lease = (ScriptedOverlayLease) overlay;
+            assertTrue(lease.isCurrent() && lease.selection == snapshot.selection(),
+                    "P5 must receive a current lease for the identical retained selection");
             calls.add("bindings:" + snapshot.pass().slot().packName());
-            return bindings.apply(snapshot.pass());
+            TextureBindingResult result = bindings.apply(snapshot.pass());
+            if (result instanceof TextureBindingResult.Bound bound) {
+                ((InertBindingSnapshot) bound.snapshot()).transferredLease = overlay;
+            }
+            return result;
         }
 
         @Override
@@ -432,6 +530,7 @@ class FrameDriverScriptedTest {
     private static final class InertBindingSnapshot
             implements com.schmaloogium.engine.buffers.TextureBindingSnapshot {
         boolean closed;
+        TextureOverlayLease transferredLease;
 
         @Override
         public long estateGeneration() {
@@ -491,6 +590,10 @@ class FrameDriverScriptedTest {
         @Override
         public void close() {
             closed = true;
+            if (transferredLease != null) {
+                transferredLease.close();
+                transferredLease = null;
+            }
         }
     }
 
@@ -498,6 +601,17 @@ class FrameDriverScriptedTest {
         final List<String> calls;
         java.util.function.Function<FullscreenDraw, PortResult> draw =
                 d -> new PortResult.Completed();
+        final ScriptedEvidence baseEvidence = new ScriptedEvidence(true);
+        final ScriptedEvidence noBaseEvidence = new ScriptedEvidence(false);
+        final List<ScriptedOverlayLease> leases = new java.util.ArrayList<>();
+
+        @Override
+        public com.schmaloogium.engine.frame.spi.AtlasBindingEvidence textureEvidence(
+                PipelineVersion version, long epoch, boolean base) {
+            assertEquals(new PipelineVersion(1L), version);
+            assertEquals(0L, epoch);
+            return base ? baseEvidence : noBaseEvidence;
+        }
 
         FakePort(List<String> calls) {
             this.calls = calls;
@@ -678,6 +792,16 @@ class FrameDriverScriptedTest {
     }
 
     private Handle composition(Optional<ShadowInvocationSlot> shadowSlot) {
+        return composition(shadowSlot, com.schmaloogium.engine.config.EngineFlags.allDefault());
+    }
+
+    private Handle composition(Optional<ShadowInvocationSlot> shadowSlot,
+            com.schmaloogium.engine.config.EngineFlags flags) {
+        return composition(shadowSlot, flags, 0.125d);
+    }
+
+    private Handle composition(Optional<ShadowInvocationSlot> shadowSlot,
+            com.schmaloogium.engine.config.EngineFlags flags, double handDepthMultiplier) {
         List<String> calls = new java.util.ArrayList<>();
         FakeEstate estate = new FakeEstate(calls);
         RecordingRuntime runtime = new RecordingRuntime();
@@ -685,6 +809,16 @@ class FrameDriverScriptedTest {
         FakeStageRegistry stages = new FakeStageRegistry();
         FakePort port = new FakePort(calls);
         FrameComposition composition = new FrameComposition() {
+            @Override
+            public com.schmaloogium.engine.config.EngineFlags engineFlags() {
+                return flags;
+            }
+
+            @Override
+            public double handDepthMultiplier() {
+                return handDepthMultiplier;
+            }
+
             @Override
             public PipelineIdentity identity() {
                 return new PipelineIdentity(
@@ -735,8 +869,22 @@ class FrameDriverScriptedTest {
             }
 
             @Override
-            public Optional<TextureOverlayPublicationId> texturePublication() {
-                return Optional.empty();
+            public com.schmaloogium.engine.textures.TexturePublication texturePublication() {
+                return TEXTURE_PUBLICATION;
+            }
+
+            @Override
+            public com.schmaloogium.engine.textures.TextureLeaseSource textureLeases() {
+                return (expected, selection, evidence) -> {
+                    assertEquals(TEXTURE_ID, expected);
+                    if (evidence != port.baseEvidence && evidence != port.noBaseEvidence) {
+                        return new com.schmaloogium.engine.textures.TextureLeaseResult.Rejected(
+                                com.schmaloogium.engine.textures.TextureLeaseRejection.INVALID_BASE_BINDING);
+                    }
+                    ScriptedOverlayLease lease = new ScriptedOverlayLease(selection);
+                    port.leases.add(lease);
+                    return new com.schmaloogium.engine.textures.TextureLeaseResult.Acquired(lease);
+                };
             }
 
             @Override
@@ -1177,11 +1325,232 @@ class FrameDriverScriptedTest {
     }
 
     @Test
+    void depthSnapshotPrecedesDeferredPreludeAndWater() {
+        Handle h = composition();
+        scheduleFullChain(h);
+        h.stages().add(TERRAIN_STEP, prelude(TERRAIN_STEP, "gbuffers_terrain_solid"));
+        h.barrier().selectedSlots.add("gbuffers_terrain_solid");
+        h.barrier().activation = slot -> new BarrierResult.Activated(null, List.of());
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+        // Simulate the already-consumed weather boundary independently of the new hook.
+        h.estate().copyDepth(DepthCopyPoint.PRE_WEATHER, token.frameId());
+        h.driver().enter(token, RenderSection.TERRAIN_SOLID);
+        h.calls().clear();
+        ScopeOpenResult water = h.driver().enter(token, RenderSection.TERRAIN_TRANSLUCENT);
+        assertTrue(water instanceof ScopeOpenResult.Opened, "got " + water);
+        assertTrue(h.estate().depthPoints.contains(DepthCopyPoint.PRE_TRANSLUCENT),
+                "water must see the current pre-translucent snapshot");
+        int copy = h.calls().indexOf("depth:PRE_TRANSLUCENT");
+        int opaqueCompletion = h.calls().indexOf("complete:gbuffers_terrain_solid");
+        assertTrue(opaqueCompletion >= 0 && opaqueCompletion < copy, h.calls().toString());
+        assertTrue(copy < h.calls().indexOf("virtual:deferred_pre"), h.calls().toString());
+        assertTrue(copy < h.calls().indexOf("select:gbuffers_water"), h.calls().toString());
+    }
+
+    @Test
+    void nestedSkyAcquiresExclusivePassAndRebindsParentWithoutReselection() {
+        Handle h = composition();
+        h.stages().add(TERRAIN_STEP, prelude(TERRAIN_STEP, "gbuffers_skybasic"),
+                prelude(TERRAIN_STEP, "gbuffers_skytextured"));
+        h.barrier().activation = slot -> new BarrierResult.Activated(null, List.of());
+        h.barrier().selectedSlots.addAll(List.of("gbuffers_skybasic", "gbuffers_skytextured"));
+        FrameToken token = toEstateCleared(h);
+        ScopeOpenResult.Opened parent = (ScopeOpenResult.Opened)
+                h.driver().enter(token, RenderSection.SKY_BASIC);
+        PassBufferSnapshot firstParentSnapshot = h.estate().openSnapshot;
+        ScopeOpenResult.Opened child = (ScopeOpenResult.Opened)
+                h.driver().enter(token, RenderSection.SKY_TEXTURED);
+        assertEquals(DrawDisposition.DRAW_SHADER, child.draw(),
+                "a live parent must not force the child into OPEN_PASS_SNAPSHOT omission");
+        assertTrue(h.driver().exit(token, child.scope()) instanceof ScopeCloseResult.Closed);
+        assertTrue(h.estate().openSnapshot != firstParentSnapshot,
+                "resume must acquire fresh physical sides rather than replay a consumed snapshot");
+        assertEquals(List.of("gbuffers_skybasic", "gbuffers_skytextured"),
+                slotsIn(h.calls(), "select"), "resume retains original selection");
+        assertEquals(List.of("gbuffers_skybasic", "gbuffers_skytextured", "gbuffers_skybasic"),
+                slotsIn(h.calls(), "bindings"));
+        assertTrue(h.driver().exit(token, parent.scope()) instanceof ScopeCloseResult.Closed);
+        assertEquals(3, h.estate().completeCalls.get());
+        assertEquals(0, h.estate().discardCalls.get());
+        assertTrue(h.port().leases.stream().allMatch(lease -> lease.closed),
+                "every transferred parent/child binding owns and closes its overlay lease");
+    }
+
+    @Test
+    void activeBaseRefreshReplacesLeaseWithoutConsumingPassOrReselecting() {
+        Handle h = composition();
+        h.stages().add(TERRAIN_STEP, prelude(TERRAIN_STEP, "gbuffers_skybasic"));
+        h.barrier().selectedSlots.add("gbuffers_skybasic");
+        h.barrier().activation = slot -> new BarrierResult.Activated(null, List.of());
+        FrameToken token = toEstateCleared(h);
+        ScopeOpenResult.Opened scope = (ScopeOpenResult.Opened)
+                h.driver().enter(token, RenderSection.SKY_BASIC);
+        PassBufferSnapshot originalSnapshot = h.estate().openSnapshot;
+        ScriptedOverlayLease firstLease = h.port().leases.getFirst();
+        h.calls().clear();
+        assertTrue(h.driver().atlasBindings().currentBinding(new ScriptedEvidence(true))
+                instanceof com.schmaloogium.engine.frame.spi.SignalResult.Rejected);
+        assertTrue(firstLease.isCurrent(), "invalid evidence cannot retire live bindings");
+        assertTrue(h.driver().atlasBindings().currentBinding(h.port().noBaseEvidence)
+                instanceof com.schmaloogium.engine.frame.spi.SignalResult.Accepted);
+        assertFalse(firstLease.isCurrent(), "the replaced physical binding releases its lease");
+        ScriptedOverlayLease replacement = h.port().leases.getLast();
+        assertTrue(replacement.isCurrent());
+        assertTrue(originalSnapshot == h.estate().openSnapshot, "refresh must not consume the pass");
+        assertEquals(List.of(), slotsIn(h.calls(), "select"));
+        assertEquals(List.of(), slotsIn(h.calls(), "activate"));
+        assertEquals(0, h.estate().completeCalls.get());
+        assertEquals(0, h.estate().discardCalls.get());
+        h.driver().exit(token, scope.scope());
+        assertFalse(replacement.isCurrent(), "scope exit releases the replacement lease once");
+        assertEquals(1, h.estate().completeCalls.get());
+    }
+
+    @Test
+    void undrawnParentIsDiscardedAndFailedResumeNeverReabortsConsumedEstate() {
+        Handle h = composition();
+        h.stages().add(TERRAIN_STEP, prelude(TERRAIN_STEP, "gbuffers_skybasic"),
+                prelude(TERRAIN_STEP, "gbuffers_skytextured"));
+        h.barrier().selectedSlots.addAll(List.of("gbuffers_skybasic", "gbuffers_skytextured"));
+        FrameToken token = toEstateCleared(h);
+        h.driver().enter(token, RenderSection.SKY_BASIC);
+        ScopeOpenResult.Opened child = (ScopeOpenResult.Opened)
+                h.driver().enter(token, RenderSection.SKY_TEXTURED);
+        assertEquals(DrawDisposition.DRAW_FIXED_FUNCTION, child.draw());
+        assertEquals(1, h.estate().discardCalls.get(), "undrawn parent must not complete");
+        h.estate().nextSnapshotFailure = new PassSnapshotResult.Failed(
+                new com.schmaloogium.engine.buffers.BufferFailure(
+                        com.schmaloogium.engine.buffers.BufferFailureCode.UNEXPECTED_BACKEND,
+                        "test.resume", "test.resume", List.of(), Optional.empty(), Optional.empty()),
+                "test.resume", true);
+        h.calls().clear();
+        assertTrue(h.driver().exit(token, child.scope()) instanceof ScopeCloseResult.Aborted);
+        assertEquals(List.of(), slotsIn(h.calls(), "activate"), "failed parent resume cannot draw");
+        assertEquals(0, h.estate().completeCalls.get(), "neither undrawn portion completes");
+        assertEquals(2, h.estate().discardCalls.get());
+        assertEquals(1, h.estate().snapshotFrameAborts);
+        assertEquals(0, h.estate().abortCalls.get(), "P5 already consumed the frame");
+        assertTrue(h.driver().finish(token, FrameExitKind.NORMAL) instanceof FrameFinishResult.AlreadyTerminal);
+        assertTrue(h.port().leases.stream().allMatch(lease -> lease.closed),
+                "P5-consumed failure still closes independently owned texture leases");
+    }
+
+    @Test
+    void rejectedParentResumeAbortsInsteadOfSilentlyOmitting() {
+        Handle h = composition();
+        h.stages().add(TERRAIN_STEP, prelude(TERRAIN_STEP, "gbuffers_skybasic"),
+                prelude(TERRAIN_STEP, "gbuffers_skytextured"));
+        h.barrier().selectedSlots.addAll(List.of("gbuffers_skybasic", "gbuffers_skytextured"));
+        FrameToken token = toEstateCleared(h);
+        h.driver().enter(token, RenderSection.SKY_BASIC);
+        ScopeOpenResult.Opened child = (ScopeOpenResult.Opened)
+                h.driver().enter(token, RenderSection.SKY_TEXTURED);
+        h.estate().nextSnapshotFailure =
+                new PassSnapshotResult.Rejected(FrameProtocolRejection.INVALID_PASS_SNAPSHOT);
+        h.calls().clear();
+        assertTrue(h.driver().exit(token, child.scope()) instanceof ScopeCloseResult.Aborted);
+        assertEquals(1, h.estate().abortCalls.get());
+        assertEquals(List.of(), slotsIn(h.calls(), "activate"));
+        assertTrue(h.driver().finish(token, FrameExitKind.NORMAL) instanceof FrameFinishResult.AlreadyTerminal);
+    }
+
+    @Test
+    void celestialVisibilityUsesOnlyActiveFramesExplicitFalseFlags() {
+        var defaults = com.schmaloogium.engine.config.EngineFlags.allDefault();
+        var flags = new com.schmaloogium.engine.config.EngineFlags(
+                defaults.clouds(), defaults.oldHandLight(), defaults.dynamicHandLight(), defaults.oldLighting(),
+                defaults.shadowTranslucent(), defaults.underwaterOverlay(),
+                com.schmaloogium.engine.config.TriState.FALSE, defaults.moon(), defaults.vignette(),
+                defaults.backFaceSolid(), defaults.backFaceCutout(), defaults.backFaceCutoutMipped(),
+                defaults.backFaceTranslucent(), defaults.rainDepth(), defaults.beaconBeamDepth(),
+                defaults.separateAo(), defaults.frustumCulling(), defaults.shadowTerrain(),
+                defaults.shadowEntities(), defaults.shadowBlockEntities(), defaults.shadowPlayer());
+        Handle h = composition(Optional.empty(), flags);
+        FrameToken token = toEstateCleared(h);
+        assertFalse(h.driver().skyTextureAllowed(token, true));
+        assertTrue(h.driver().skyTextureAllowed(token, false));
+        h.driver().abort(token, FrameAbortReason.PROTOCOL_REJECTION);
+        assertTrue(h.driver().skyTextureAllowed(token, true), "expired token preserves vanilla visibility");
+    }
+
+    @Test
+    void missingWeatherSnapshotAbortsBeforeDeferredOrWater() {
+        Handle h = composition();
+        scheduleFullChain(h);
+        FrameToken token = toEstateCleared(h);
+        h.driver().afterTerrainSetup(token);
+        h.driver().enter(token, RenderSection.TERRAIN_SOLID);
+        h.calls().clear();
+        assertTrue(h.driver().enter(token, RenderSection.TERRAIN_TRANSLUCENT)
+                instanceof ScopeOpenResult.Aborted);
+        assertEquals(1, h.estate().abortCalls.get());
+        assertEquals(List.of(), slotsIn(h.calls(), "virtual"));
+        assertEquals(List.of(), slotsIn(h.calls(), "select"));
+        h.driver().finish(token, FrameExitKind.NORMAL);
+        assertEquals(1, h.estate().abortCalls.get(), "terminal cleanup never aborts twice");
+    }
+
+    @Test
+    void degradedWeatherStillAllowsTranslucentSnapshotWithoutRetry() {
+        Handle h = composition();
+        scheduleFullChain(h);
+        h.estate().depthOutcome = point -> point == DepthCopyPoint.PRE_WEATHER
+                ? new DepthCopyResult.BackendDegraded(point,
+                        new com.schmaloogium.engine.buffers.BufferFailure(
+                                com.schmaloogium.engine.buffers.BufferFailureCode.DEPTH_COPY_UNAVAILABLE,
+                                "test.unavailable", "test.depth", List.of(), Optional.empty(), Optional.empty()),
+                        "test.depth")
+                : new DepthCopyResult.Copied(point, true);
+        FrameToken token = toEstateCleared(h);
+        assertTrue(h.driver().beforeWeather(token) instanceof FrameStepResult.Rejected);
+        assertTrue(h.estate().depthPoints.isEmpty(), "early hook cannot consume either point");
+        h.driver().afterTerrainSetup(token);
+        assertTrue(h.driver().beforeWeather(token) instanceof FrameStepResult.Advanced);
+        assertTrue(h.driver().beforeWeather(token) instanceof FrameStepResult.Advanced);
+        h.driver().enter(token, RenderSection.TERRAIN_SOLID);
+        ScopeOpenResult water = h.driver().enter(token, RenderSection.TERRAIN_TRANSLUCENT);
+        assertTrue(water instanceof ScopeOpenResult.Opened, "got " + water);
+        assertEquals(0, h.estate().abortCalls.get());
+        assertTrue(h.estate().depthPoints.contains(DepthCopyPoint.PRE_TRANSLUCENT));
+        assertEquals(List.of("deferred"), slotsIn(h.calls(), "draw"));
+        h.driver().exit(token, ((ScopeOpenResult.Opened) water).scope());
+        h.driver().finish(token, FrameExitKind.NORMAL);
+        assertEquals(1, h.estate().commitCalls.get());
+        assertEquals(1, h.calls().stream().filter("depth:PRE_TRANSLUCENT"::equals).count());
+    }
+
+    @Test
+    void managedHandDepthRequiresLivePostTranslucentFrame() {
+        Handle h = composition(Optional.empty(),
+                com.schmaloogium.engine.config.EngineFlags.allDefault(), 0.25d);
+        scheduleFullChain(h);
+        FrameToken token = toEstateCleared(h);
+        assertTrue(h.driver().handDepthScale(token).isEmpty(), "sky/first clear remains vanilla");
+        h.driver().afterTerrainSetup(token);
+        h.driver().beforeWeather(token);
+        h.driver().enter(token, RenderSection.TERRAIN_SOLID);
+        assertTrue(h.driver().handDepthScale(token).isEmpty(), "opaque depth is not a hand boundary");
+        ScopeOpenResult.Opened water = (ScopeOpenResult.Opened)
+                h.driver().enter(token, RenderSection.TERRAIN_TRANSLUCENT);
+        h.driver().exit(token, water.scope());
+        assertEquals(0.25d, h.driver().handDepthScale(token).orElseThrow());
+        ScopeOpenResult.Opened hand = (ScopeOpenResult.Opened)
+                h.driver().enter(token, RenderSection.HAND_SOLID);
+        assertEquals(0.25d, h.driver().handDepthScale(token).orElseThrow(),
+                "the same accepted depth mapping remains available inside the item scope");
+        h.driver().exit(token, hand.scope());
+        h.driver().finish(token, FrameExitKind.NORMAL);
+        assertTrue(h.driver().handDepthScale(token).isEmpty(), "recovery/inactive clears must run");
+    }
+
+    @Test
     void translucentTriggerRunsDeferredOnceBeforeWater() {
         Handle h = composition();
         scheduleFullChain(h);
         FrameToken token = toEstateCleared(h);
         h.driver().afterTerrainSetup(token);
+        assertTrue(h.driver().beforeWeather(token) instanceof FrameStepResult.Advanced);
         assertTrue(h.driver().enter(token, RenderSection.TERRAIN_SOLID)
                 instanceof ScopeOpenResult.Opened);
         h.calls().clear();
@@ -1210,6 +1579,7 @@ class FrameDriverScriptedTest {
                 instanceof FrameFinishResult.Finalized);
         assertEquals(List.of("composite", "composite1", "final"), slotsIn(h.calls(), "draw"),
                 "finish does not run the deferred family a second time");
+        assertTrue(h.port().leases.stream().allMatch(lease -> lease.closed));
     }
 
     @Test

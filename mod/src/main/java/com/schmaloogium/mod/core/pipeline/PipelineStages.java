@@ -38,6 +38,19 @@ public interface PipelineStages {
     UniformBuildResult uniforms(long initialRegistryGeneration, UniformConfiguration configuration,
                                 UniformReplayErrorSink replayErrors);
 
+    /** P13: create an inactive caller-owned texture system before publication. */
+    com.schmaloogium.engine.textures.TextureSystemCreationResult textures();
+
+    /** P13: pair exact retained source metadata and upload payloads for accepted generations. */
+    com.schmaloogium.engine.textures.TextureBuildRequest textureInputs(
+            PackConfiguration configuration, ProgramRegistryView registry,
+            long estateGeneration, long registryGeneration, long resourceReloadEpoch);
+
+    /** Attach/detach this owner's texture observations at the quiescent publication boundary. */
+    void attachTextures(com.schmaloogium.engine.textures.TextureSystem owner, long resourceReloadEpoch);
+
+    void detachTextures(com.schmaloogium.engine.textures.TextureSystem owner);
+
     /** P4 compile: the first real shader compilation; caller owns the returned candidate. */
     RegistryHandle compile(PackConfiguration configuration, DimensionKey dimension,
                            MacroContribution macroContribution);

@@ -68,6 +68,28 @@ class PropertiesPreprocessorTest {
     }
 
     @Test
+    void crlfNumericGuardsMatchLfWithUndefinedAndSelectedMacros() {
+        String lf = "header=value\n"
+            + "    #if QUALITY_LEVEL == -1\n"
+            + "program.composite.enabled=false\n"
+            + "    #endif\n"
+            + "    #if SECOND_LEVEL == -1 || THIRD_LEVEL == -1\n"
+            + "program.composite1.enabled=false\n"
+            + "    #endif\n"
+            + "survivor=value # retained\n";
+        String in = lf.replace("\n", "\r\n");
+        String undefined = PropertiesPreprocessor.preprocess(in, Map.of());
+        assertFalse(undefined.contains("program.composite.enabled"));
+        assertFalse(undefined.contains("program.composite1.enabled"));
+        assertTrue(undefined.contains("survivor=value # retained"));
+        assertEquals(PropertiesPreprocessor.preprocess(lf, Map.of()), undefined);
+        String selected = PropertiesPreprocessor.preprocess(in, Map.of("QUALITY_LEVEL", "-1"));
+        assertTrue(selected.contains("program.composite.enabled=false"));
+        assertFalse(selected.contains("program.composite1.enabled"));
+        assertEquals(PropertiesPreprocessor.preprocess(lf, Map.of("QUALITY_LEVEL", "-1")), selected);
+    }
+
+    @Test
     void malformedDirectiveIsIgnoredLineLocally() {
         String in = "key=value\n#if(((broken\nother=1\n";
         String out = PropertiesPreprocessor.preprocess(in, Map.of());

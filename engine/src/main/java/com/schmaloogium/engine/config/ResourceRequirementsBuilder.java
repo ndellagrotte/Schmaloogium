@@ -58,8 +58,13 @@ public final class ResourceRequirementsBuilder {
         WorldRenderConstants world = new WorldRenderConstants(
             floatConst(consts, "sunPathRotation", 0.0f),
             floatConst(consts, "ambientOcclusionLevel", 0.5f));
+        Integer declaredNoise = declaredNoiseResolution(consts);
+        // §4.7/§5.1: the noiseTextureResolution directive supplies both the resolution
+        // and the enabled flag; the absent-directive baseline is disabled/256. A pack
+        // that declares texture.noise has asked for noise regardless of the directive.
         NoiseRequirement noise = new NoiseRequirement(
-            properties.noise() instanceof NoiseTextureSpec.Override, noiseResolution(consts));
+            declaredNoise != null || properties.noise() instanceof NoiseTextureSpec.Override,
+            declaredNoise == null ? 256 : declaredNoise);
         return new ResourceRequirements(minima, color, shadow, centerDepth, programs,
             smoothing, world, noise);
     }
@@ -72,8 +77,10 @@ public final class ResourceRequirementsBuilder {
         }
     }
 
-    private static int noiseResolution(Map<String, ConstScanner.Finding> consts) {
-        return intConst(consts, "noiseTextureResolution", 256);
+    /** The declared in-domain resolution, or null when absent or outside the grammar. */
+    private static Integer declaredNoiseResolution(Map<String, ConstScanner.Finding> consts) {
+        ConstScanner.Finding finding = consts.get("noiseTextureResolution");
+        return finding == null ? null : NoiseTextureResolutions.parse(finding.value().trim());
     }
 
     private static int intConst(Map<String, ConstScanner.Finding> consts, String name,

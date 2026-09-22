@@ -25,6 +25,8 @@ import net.minecraft.world.storage.WorldInfo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Applies {@code [world]} and {@code [client]} state (PHASE_2_DOC §4.3.2, §4.4): video
@@ -61,7 +63,8 @@ final class SceneApplier {
     }
 
     /** Runs on the server thread: post-load world state, never generation inputs. */
-    static void applyWorldState(IntegratedServer server, CapturePlanReader plan, CapturePlanReader.Pose pose) {
+    static void applyWorldState(IntegratedServer server, CapturePlanReader plan, CapturePlanReader.Pose pose,
+            Set<UUID> declaredEntityUuids) {
         int dimension = (int) plan.integer("world.dimension");
         WorldServer world = server.getWorld(dimension);
         WorldInfo info = world.getWorldInfo();
@@ -89,14 +92,6 @@ final class SceneApplier {
             player.sendPlayerAbilities();
             // the authoritative move: the server tracks chunks around its own player position
             player.connection.setPlayerLocation(pose.x(), pose.y(), pose.z(), (float) pose.yaw(), (float) pose.pitch());
-        }
-        // §4.4: entities that move are entities that break diffs. Pre-existing mobs (worldgen
-        // passive spawns wander under their own AI) are removed before the scene's own NoAI
-        // entities are summoned; the manifest still records the per-frame entity count.
-        for (Entity existing : new java.util.ArrayList<>(world.loadedEntityList)) {
-            if (existing instanceof net.minecraft.entity.EntityLiving) {
-                existing.setDead();
-            }
         }
         // Task F: scene-placed blocks land before the entities, so a block entity (a chest
         // for blockEntityId) is in frame at an exact position rather than left to worldgen.
@@ -140,6 +135,8 @@ final class SceneApplier {
             }
             entity.setLocationAndAngles(Double.parseDouble(pos[0]), Double.parseDouble(pos[1]),
                     Double.parseDouble(pos[2]), 0f, 0f);
+            // Admit the fully initialized UUID before the synchronous server join event.
+            declaredEntityUuids.add(entity.getUniqueID());
             world.spawnEntity(entity);
             // Same reason as the player's pose (Task E): a summoned mob's idle animation is
             // phased by ticksExisted from its spawn instant, so it is re-zeroed here and the

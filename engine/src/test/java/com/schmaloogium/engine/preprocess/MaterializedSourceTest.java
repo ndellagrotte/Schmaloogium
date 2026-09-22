@@ -97,6 +97,67 @@ class MaterializedSourceTest {
     }
 
     @Test
+    void preprocessingErrorCannotPublishPartialSourceOrPoisonUnrelatedRoot() {
+        SourceIndex index = index(files(
+            "shaders/composite.fsh", """
+                #version 120
+                uniform float partialBeforeError;
+                #error invalid active shader
+                void main() {}
+                """,
+            "shaders/final.fsh", "#version 120\nuniform float intact;\nvoid main() {}\n"));
+        MaterializerImpl materializer = new MaterializerImpl(index, Map.of(), 120);
+        MaterializationResult.Unavailable unavailable = assertInstanceOf(
+            MaterializationResult.Unavailable.class, materializer.materialize(
+                root(index, "composite", ShaderSourceStage.FRAGMENT),
+                new MacroContribution.Empty(), new GeometrySourceRequest.None()));
+        assertTrue(unavailable.diagnostics().stream().anyMatch(d ->
+            d.severity() == com.schmaloogium.engine.diag.DiagnosticSeverity.ERROR));
+        MaterializedSource unaffected = assertInstanceOf(MaterializationResult.Available.class,
+            materializer.materialize(root(index, "final", ShaderSourceStage.FRAGMENT),
+                new MacroContribution.Empty(), new GeometrySourceRequest.None())).source();
+        assertEquals(List.of("intact"), unaffected.declaredUniforms().declarations().stream()
+            .map(DeclaredUniform::exactName).toList());
+    }
+
+    @Test
+    void dimensionAbsoluteIncludeMaterializesSharedVertexMainAndRelativePosition() {
+        SourceIndex index = index(files(
+            "shaders/world0/composite.vsh",
+            """
+            #version 120
+            #define VERTEX_STAGE
+            #include "local/position.glsl"
+            #include "/program/simple.glsl"
+            """,
+            "shaders/world0/local/position.glsl",
+            "vec4 vertexPosition() { return vec4(0.25, 0.5, 0.75, 1.0); }\n",
+            "shaders/program/simple.glsl",
+            """
+            #ifdef VERTEX_STAGE
+            void main() { gl_Position = vertexPosition(); }
+            #endif
+            """));
+        SourceKey root = root(index, "composite", ShaderSourceStage.VERTEX);
+        assertEquals(com.schmaloogium.engine.pack.DimensionKey.world(0), root.dimension());
+        assertEquals(List.of(
+            "shaders/world0/local/position.glsl",
+            "shaders/program/simple.glsl"),
+            index.includeEdges().stream()
+                .map(edge -> edge.included().orElseThrow().path().canonicalString()).toList());
+        assertEquals(List.of(), index.diagnostics());
+
+        MaterializedSource source = assertInstanceOf(MaterializationResult.Available.class,
+            new MaterializerImpl(index, Map.of(), 120).materialize(root,
+                new MacroContribution.Empty(), new GeometrySourceRequest.None())).source();
+        String text = source.transformedText().replaceAll("\\s+", " ");
+        assertTrue(text.contains("void main() { gl_Position = vertexPosition(); }"), text);
+        assertTrue(text.contains(
+            "vec4 vertexPosition() { return vec4(0.25, 0.5, 0.75, 1.0); }"), text);
+        assertEquals(List.of(), reportable(source.diagnostics()));
+    }
+
+    @Test
     void geometryCoreLayoutClassifiedAndLegacyDirectiveHonored() {
         Map<NormalizedPackPath, byte[]> files = files(
             "shaders/composite.gsh",
@@ -163,24 +224,30 @@ class MaterializedSourceTest {
     }
 
     @Test
-    void missingIncludeSurfacesAsWarningNotFailure() {
+    void missingIncludeRetainsWarningAndMakesOnlyAffectedRootUnavailable() {
         Map<NormalizedPackPath, byte[]> files = files(
             "shaders/composite.fsh",
             """
             #version 120
             #include "/lib/missing.glsl"
-            """);
+            """,
+            "shaders/final.fsh", "#version 120\nuniform float safe;\nvoid main() {}\n");
         List<EngineDiagnostic> diags = new ArrayList<>();
         SourceIndex index = SourceIndex.build(files, diags);
         MaterializerImpl materializer = new MaterializerImpl(index, Map.of(), 120);
 
-        // a missing include is a warning on the index: materialization still succeeds
-        MaterializedSource source = assertInstanceOf(MaterializationResult.Available.class,
+        // P3 §5: retain the index warning, but never publish an incomplete root.
+        MaterializationResult.Unavailable unavailable = assertInstanceOf(
+            MaterializationResult.Unavailable.class,
             materializer.materialize(root(index, "composite", ShaderSourceStage.FRAGMENT),
+                new MacroContribution.Empty(), new GeometrySourceRequest.None()));
+        assertTrue(unavailable.diagnostics().stream()
+            .anyMatch(d -> d.severity() == com.schmaloogium.engine.diag.DiagnosticSeverity.WARN
+                && d.messageKey().equals("schmaloogium.warn.include.missing")));
+        MaterializedSource unaffected = assertInstanceOf(MaterializationResult.Available.class,
+            materializer.materialize(root(index, "final", ShaderSourceStage.FRAGMENT),
                 new MacroContribution.Empty(), new GeometrySourceRequest.None())).source();
-        assertTrue(source.diagnostics().stream()
-                .anyMatch(d -> d.severity() == com.schmaloogium.engine.diag.DiagnosticSeverity.WARN
-                    && d.messageKey().contains("include")),
-            "the missing-include warning must travel with the materialized source");
+        assertEquals(List.of("safe"), unaffected.declaredUniforms().declarations().stream()
+            .map(DeclaredUniform::exactName).toList());
     }
 }

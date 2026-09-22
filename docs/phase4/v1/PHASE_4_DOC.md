@@ -2814,12 +2814,162 @@ publication semantics.
 | D-P4-41 | Receive coordinated P3 schema23 and MaterializedSource-v23 range-capable selector cutover | Supersedes D-P4-38 and earlier numeric receipts; containing/nested/inspection exact-current equality, nine metadata-only trees/projectionVersion1 unchanged, P9 alone resolves registries |
 | D-P4-42 | Receive P14/P1 complete object baseline for ordinary fixed-terminal normalization | Existing P5-bind/P4-activate order and failure containment remain; no stale sampler-zero state |
 | D-P4-43 | R36 C36-1: require Optional<ProfileName> profileSelection immediately after configuration; evaluate the exact immutable pair before availability/build, consume closed P3 failure, and advance RegistryFingerprint/profile-selection-v3 | Equal-option profiles carry independent disable intent; P7 forwards accepted selection, P2 inspection explicitly uses absent selection, no preview/config mutation or P3 schema/tree change. Virtual preludes and whole-provider fallback remain |
+| D-P4-44 | 2026-09-14 Complementary repair: distinguish complete declaration provenance from linked-active direct-sampler demand | Maintainer-authorized phase-local implementation extension described below; proposes a coordinated P4/P5 amendment rather than silently rewriting their existing §5 contracts |
+| D-P4-45 | 2026-09-14 Complementary repair: admit tex/texture/gtexture as world-stage unit-zero base-texture aliases | Explicit compatibility extension to the historical shadow-only tex row; same established unit/backing, no fullscreen admission or new texture allocation |
+| D-P4-46 | 2026-09-14 Complementary repair: receive include-connected P3 resource requirements rather than root-wrapper defaults | Reuse existing bounded include expansion for resource source scans; preserve family filters and original source-scan sizing semantics, fail closed on expansion failure |
+| D-P4-47 | 2026-09-14 Complementary repair: receive active preprocessed P3 resource requirements | After bounded include expansion, reuse shader preprocessing with the materializer's request macros and explicit-or-capability GLSL version; reject preprocessing errors before publishing an estate |
+| D-P4-48 | 2026-09-14 resource failure-boundary correction: unavailable roots do not invalidate a pack configuration | P3 §5 retains configuration and unrelated roots when expansion or preprocessing fails; omit the failed root's resource contribution and materialize it as Unavailable |
 
 **R32 receiving receipt — 2026-09-08, unverified.** P1 D-P1-57 and P5's coordinated
 positional realization are adopted here. P7 must integrate HEAD hooks/effective notifications,
 retain existing nested selector semantics and adopt the new before-participant lock ordering.
 P2/P7/P5 treat positional-route-v2 as opaque changed identity; no old-object upgrades.
 IR-01 is disposed in the final review (2026-09-09); this owner correction is not implementation authorization.
+
+#### D-P4-44 — linked direct-sampler activity (2026-09-14)
+
+The Complementary continuation authorizes repairing demonstrated pre-GL sampler rejection.
+The source-free typed probe retained at
+`/home/nick/.cache/schmaloogium/conformance/diagnostics/sampler-before.txt` records direct
+float 2D `colortex8`/`colortex12` as `UNSUPPORTED_NAME`, `colortex0`–`colortex7`/`tex`
+in gbuffers as `UNSUPPORTED_STAGE_DOMAIN`, and corresponding fullscreen alias failures.
+Declaration inventory and lexical occurrence counts are not active-use proof. The supplied
+G6_pre1 reference renders both pinned styles and reports eight color buffers; that observation
+is qualitative, not proof that every candidate resource is inactive or an oracle verdict.
+
+The bounded implementation retains the complete Phase-3 catalog and merged
+`ProgramUniformLayout`, including source sites and optimized-out names. After successful
+link, the existing Phase-1 `UniformService.locate(...).isAbsent()` result selects the executable
+**direct** sampler projection. That projection alone supplies a successful
+`ProgramSamplerLayout.Shader`, initialization assignments, and downstream resource binding.
+No source token counting, shader rewriting, pack-name exception, arbitrary texture unit,
+or extended colortex allocation is introduced. Full declaration-policy evidence is checked
+before GL; direct-only unsupported/conflicting declarations may proceed to link to establish
+activity, then the active projection is validated across every permitted band before sampler
+initialization, program validation, or publication. An active unsupported name/domain/shape
+or same-unit type conflict remains a typed `SAMPLER_LAYOUT` failure with ordinary fallback.
+
+Aggregates remain conservatively unsupported: a missing array/struct base location cannot
+prove inactive sampler members. Same-name structural declaration conflicts still fail before
+GL. Policy callbacks remain pure and use the sole App B.3 map; a callback failure discovered
+after linked projection aborts the registry as `INVALID_SAMPLER_POLICY`, deleting unpublished
+programs rather than publishing partial work. The shader sampler-layout digest adds
+`linked-direct-sampler-activity-v1` to separate these semantics from declaration-only builds.
+
+**Proposed upstream amendment, not a silent historical contract replacement:** coordinate
+P4 §§4.7/5.1 and P5 §4.12.1/§5 to distinguish full uniform provenance from executable sampler
+demand, permit the second pure policy check after link, and scope the zero-GL callback-failure
+guarantee to preflight. P1's existing lookup facade and P3's catalog/schema need no extension.
+P5/P6 physical bindings must consume the same executable layout; no independent activity
+rescan or second unit table is permitted. The existing published §5 wording and historical
+reviews above remain unchanged as evidence. Real-pack after-results, focused regression
+results, and any newly exposed resource requirements belong in the Complementary checkpoint;
+this decision does not claim completed rendering compatibility.
+
+#### D-P4-45 — world-stage base-texture aliases (2026-09-14)
+
+After D-P4-44 and GLSL directive preservation, native runtime-aligned probes for both pinned
+styles compile/link all examined raster stages. Their only active sampler-policy failure is
+direct float sampler2D `tex` in gbuffers draw bands; `colortex8` and `colortex12` are inactive.
+Evidence is retained externally in `diagnostics/driver-aligned-reimagined.txt` and
+`diagnostics/driver-aligned-unbound.txt` beneath the conformance cache.
+
+The G6 author document (`reference-src/schlorbium-HD_U_G6_pre1/doc/shaders.txt:190-216,268-292`)
+explicitly documents `texture` at unit0 and `tex` as its shadow alias; it does **not** claim
+gbuffers `tex` admission. The current
+[official author table](https://raw.githubusercontent.com/sp614x/optifine/master/OptiFineDoc/doc/shaders.txt)
+documents `gtexture`/legacy `texture` at world unit0, and the
+[author's rename statement](https://github.com/sp614x/optifine/issues/5537#issuecomment-884322423)
+confirms the same base sampler. The working supplied G6 reference plus actual linked `tex`
+use motivates an explicit local compatibility extension, not a rewrite of that old table.
+
+The extension maps exact names `tex`, `texture`, and `gtexture` to the existing world-stage
+base texture on fixed unit0 in both gbuffers draw bands and shadow. The sole Phase5 policy,
+its fingerprint, and Phase13's stage-column admission mirror change together. Existing
+unit0 platform-retained backing, sampler initialization, lifetime, and foreign texture
+ownership remain unchanged; Phase5 does not allocate or bind a new object for an alias.
+Fullscreen and unwired domains still reject these world-only names. No colortex extension
+or optional feature activation follows from this decision.
+
+Proposed upstream amendment: coordinate P5 §4.12.1/§5 and the P13 stage-column receipt to
+publish these three exact world-stage aliases, retaining full sampler-shape validation,
+same-unit type conflict checks, and exact source keys. Historical RESEARCH B.3 and phase
+contracts remain preserved; this phase-local implementation extension is not a global policy
+revision or a full compatibility verdict.
+
+#### D-P4-46 — include-connected resource source scanning (2026-09-14)
+
+The post-alias candidate `RUN-T0-terrain-day-20260914T153615` links all24 own-present
+programs (24SOURCED/6CHAIN/30ABSENT), yet its actual surface remains mostly black.
+Its estate reports every color format as DEFAULT_RGBA/RGBA_COMPAT, fullscreen routing
+flips all eight attachments, and H10 reports attributesDeclared=false. The same-version
+supplied reference reports explicit nondefault formats. These are retained diagnostic
+observations, not a completed compatibility verdict.
+
+P3's `PackFrontEndImpl` resource loop scanned only root documents while `MaterializerImpl`
+expanded their include graphs before producing linked GLSL. Include-only wrapper roots
+therefore lost const resource formats, routing, extended vertex attributes and associated
+resource requirements even after their programs compiled successfully. The repair reuses
+the existing bounded `IncludeExpander` for each root's source-scanner input. The root's
+program key, stage and family filters remain intact; unrelated library documents are not
+scanned. Existing raw source-scan/max-sizing semantics remain unchanged: this correction
+does not opportunistically introduce conditional preprocessing of resource directives.
+Scanner findings in this path feed typed values only, not false wrapper-line diagnostics.
+
+An expansion result of Failed now ends loading as STRUCTURALLY_UNUSABLE with the same
+source error diagnostics, earlier than registry materialization, because default resource
+requirements cannot safely stand in for unexpanded source. Ordinary missing-include
+handling and severities remain unchanged. Independent regressions move authored stage
+sources into nested includes and require identical resource contracts despite an orphan
+library, and require genuine include-depth overflow to fail rather than return a default
+estate. This restores the include-scope part of P3's processing contract; P4 continues to
+consume P3 requirements without its own second resource scanner.
+
+#### D-P4-47 — active resource preprocessing (2026-09-14)
+
+The later `RUN-T0-terrain-day-20260914T154459` retains 24SOURCED/6CHAIN/30ABSENT,
+explicit formats and attributesDeclared=true, but the observed frame is uniformly pale
+blue. The native shadow resolution of 4096 versus the reference default of 2048, together
+with conditional routing declarations, identifies a remaining mismatch in resource input.
+These observations authorize a separate active-processing correction; D-P4-46 above
+remains the historical raw include-scope checkpoint, not a claim of frame success.
+
+P3 resource requirements now consume only the active text returned by the existing
+`ShaderPreprocessor`, after bounded root include expansion. The request-derived companion
+configuration and shader macro environment are constructed once and shared with the source
+catalog. `LanguageScanner` selects an explicit GLSL version when present, otherwise the
+same capability-derived version supplied to materialization. Preserved active comments
+remain available to DRAWBUFFERS scanning. Root program/stage/family ownership and orphan
+exclusion are unchanged; no pack source or option-override rewrite is introduced.
+
+Preprocessing diagnostics retain their original severity without invented wrapper-line
+attribution. ERROR or FATAL ends loading as STRUCTURALLY_UNUSABLE before a partial/default
+estate can be published; warnings remain warnings. Independent regression fixtures compare
+direct active declarations with nested conditional includes whose inactive formats,
+routing, attributes, instance counts and shadow sizing differ, and require an active
+preprocessor error to reject loading. Runtime/frame acceptance remains a separate gate.
+
+#### D-P4-48 — root-local resource failure boundary (2026-09-14)
+
+The subsequent full-suite run reported one failure among 607 tests:
+`PackOptionsRoundTripTest.loadReportsIndexWarningsOnce`. That existing test remains
+unchanged. Rechecking P3 §5's source-materialization contract establishes that missing
+includes, depth overflow and cycles make the affected root Unavailable while retaining
+the configuration and unrelated roots. The whole-load rejection introduced in D-P4-46
+and extended in D-P4-47 was too broad; those entries remain historical checkpoints.
+
+The corrected resource loop reports expansion/preprocessing diagnostics and skips the
+affected root before any scanner contributes metadata. ERROR/FATAL cannot publish a
+processed prefix, while other roots still supply their active resource requirements.
+The materializer returns Unavailable for the failed root, allowing the established
+program availability/fallback boundary to handle it. Warnings retain their severity
+and do not invalidate otherwise usable shader text.
+
+Independent depth-overflow and active-`#error` fixtures now require a Loaded
+configuration, resource equality with the same pack absent the failed root's directives,
+Unavailable materialization for the failed composite root, and Available materialization
+for unaffected final. Active conditional processing from D-P4-47 remains in force.
+This boundary correction makes no claim about frame acceptance.
 
 ### 11.2 D-1…D-10 disposition
 

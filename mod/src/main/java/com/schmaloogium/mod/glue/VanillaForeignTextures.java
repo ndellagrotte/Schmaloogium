@@ -60,6 +60,18 @@ public final class VanillaForeignTextures implements ForeignTextureProvider {
         }));
     }
 
+
+    /** Captures a real observed object without granting ownership or allowing reload retargeting. */
+    public static Optional<TextureHandle> observedHandle(int observedName,
+                                                         java.util.function.BooleanSupplier current) {
+        Lwjgl3GLDevice device = DEVICE_REF.get();
+        if (device == null || observedName <= 0 || !org.lwjgl.opengl.GL11.glIsTexture(observedName)) {
+            return Optional.empty();
+        }
+        return Optional.of(new Lwjgl3ForeignTexture(device, "observed vanilla texture",
+            () -> current.getAsBoolean() && org.lwjgl.opengl.GL11.glIsTexture(observedName)
+                ? observedName : -1));
+    }
     /** "minecraft:dynamic/lightmap_1" - the atlas-keyed face Phase 13 binds per pass. */
     public static final String LIGHTMAP_KEY = "minecraft:dynamic/lightmap_1";
 }

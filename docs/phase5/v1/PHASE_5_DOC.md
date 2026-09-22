@@ -10,7 +10,7 @@
 
 **Assigned OQs:** none
 
-**Authored:** 2026-07-28 · **Last revised:** 2026-09-08 (§0.48)
+**Authored:** 2026-07-28 · **Last revised:** 2026-09-14 (§0.49)
 
 **Deliverable:** this document, following
 `docs/design/v2.0-RC3/DESIGN.md:790`–`:826` and its mandatory thirteen-section template.
@@ -418,6 +418,37 @@ complete-key-ordering pins and set this header's latest-revision pointer; the co
 explicit-flip, and Phase 6 conditional-shadow pins already carried the corrected coordinates at
 current bytes and were verified rather than re-edited. No §5 contract bytes change; the outstanding
 whole-document verify gate is unchanged.
+
+### 0.49 Local overlay-consumer implementation repair — 2026-09-14
+
+The Complementary r5.9.1 investigation demonstrated that the main and shadow binders
+accepted but ignored the existing overlay argument, published a fabricated
+`unpublished:v0.1` identity, and never retained its lease. This local implementation
+milestone implements the already-governing §§4.12.2–4.12.4 / §5.1 consumer contract;
+it does not authorize new units, texture allocation policy, pack edits, or shadow
+runtime admission beyond the existing gate.
+
+One shared P5 resolver now authenticates the selector and current publication, resolves
+custom/companion/default/noise candidates by the effective stage and exact fixed name,
+checks the full carried sampled shape and target, and resolves alias identity conflicts
+before any GL call. Main snapshots freeze all fixed estate backings, including depth
+and shadow objects, rather than treating the resource-access projection as the complete
+sampler declaration set. The estate retains its build configuration fingerprint for
+publication pairing. Only a fully successful ascending-unit bind transfers the actual
+lease into the returned snapshot; all rejected, degraded and backend-failed outcomes
+leave it caller-owned. Closing an invalidated successful binding still releases that
+lease exactly once without rebinding any texture.
+
+Candidate shape is the P13 producer's attestation derived from its exact upload
+format/target and comparison policy; P5 has no native texture-inspection grant and
+does not pretend that it independently queried those attributes. The coordinated P13
+producer correction enforces upload/shape coherence and exact normals/specular cells.
+P5 separately checks the known realized estate numeric class and shadow comparison
+policy. Public §5 signatures and historical review findings remain unchanged.
+Independent source-free regressions cover physical custom replacement, incompatible
+shape/alias conflicts, stale publication and lease ownership. Their execution and the
+real-pack before/after rendering check remain Main's verification responsibility;
+this entry records implementation scope, not a compatibility PASS or new review verdict.
 
 ## 1. Scope & boundaries
 

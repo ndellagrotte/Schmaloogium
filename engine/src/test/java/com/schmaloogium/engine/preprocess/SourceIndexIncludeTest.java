@@ -68,6 +68,24 @@ class SourceIndexIncludeTest {
     }
 
     @Test
+    void nestedArchiveAbsoluteIncludesRetainEffectiveShadersRoot() {
+        var files = files(
+            "release/content/shaders/world-1/composite.vsh",
+            "#include \"/program/simple.glsl\"\n#include \"local/position.glsl\"\n",
+            "release/content/shaders/program/simple.glsl",
+            "void main() { gl_Position = vertexPosition(); }\n",
+            "release/content/shaders/world-1/local/position.glsl",
+            "vec4 vertexPosition() { return vec4(1.0); }\n");
+        SourceIndex index = SourceIndex.build(files, new ArrayList<>());
+        assertEquals(List.of(
+            "release/content/shaders/program/simple.glsl",
+            "release/content/shaders/world-1/local/position.glsl"),
+            index.includeEdges().stream()
+                .map(edge -> edge.included().orElseThrow().path().canonicalString()).toList());
+        assertEquals(List.of(), index.diagnostics());
+    }
+
+    @Test
     void missingIncludeProducesDiagnosticNotFailure() {
         var files = files(
             "shaders/composite.fsh",

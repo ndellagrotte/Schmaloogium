@@ -221,7 +221,8 @@ class CustomTexturePlannerTest {
             packPath(key(TexturePropertyStage.GBUFFERS, "texture", OptionalInt.empty())),
             packPath(key(TexturePropertyStage.DEFERRED, "colortex1", OptionalInt.empty())),
             packPath(key(TexturePropertyStage.COMPOSITE, "colortex1", OptionalInt.empty())),
-            packPath(key(TexturePropertyStage.GBUFFERS, "tex", OptionalInt.of(2))));
+            packPath(key(TexturePropertyStage.GBUFFERS, "tex", OptionalInt.of(2))),
+            packPath(key(TexturePropertyStage.GBUFFERS, "gtexture", OptionalInt.empty())));
         CustomTexturePlanner.Result result = plan(specs);
 
         assertEquals(Set.of(StageId.GBUFFERS, StageId.SHADOW),
@@ -230,18 +231,9 @@ class CustomTexturePlannerTest {
         assertEquals(Set.of(StageId.COMPOSITE, StageId.FINAL),
             result.entries().get(2).stages());
 
-        // tex is legal only in SHADOW: the GBUFFERS expansion yields an entry covering
-        // SHADOW only and a typed STAGE_COLUMN diagnostic for GBUFFERS.
-        assertEquals(Set.of(StageId.SHADOW), result.entries().get(3).stages());
-        assertEquals(1, result.unsupported().size());
-        UnsupportedBinding unsupported = result.unsupported().get(0);
-        assertEquals(UnsupportedReason.STAGE_COLUMN, unsupported.reason());
-        assertEquals(StageId.GBUFFERS, unsupported.expandedStage());
-        assertEquals(FixedSamplerName.TEX,
-            assertInstanceOf(RequestedTextureTarget.KnownSampler.class,
-                unsupported.requestedTarget()).sampler());
-        assertEquals(TexturePropertyStage.GBUFFERS, unsupported.key().stage());
-        assertEquals("tex", unsupported.key().sampler());
+        assertEquals(Set.of(StageId.GBUFFERS, StageId.SHADOW), result.entries().get(3).stages());
+        assertEquals(Set.of(StageId.GBUFFERS, StageId.SHADOW), result.entries().get(4).stages());
+        assertTrue(result.unsupported().isEmpty());
     }
 
     /** §8.1 unsupported_noEnumSentinel. */

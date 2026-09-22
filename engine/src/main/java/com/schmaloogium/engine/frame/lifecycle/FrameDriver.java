@@ -6,6 +6,8 @@ package com.schmaloogium.engine.frame.lifecycle;
 import com.schmaloogium.engine.buffers.BufferEstateView;
 import com.schmaloogium.engine.buffers.ClearExecutionResult;
 import com.schmaloogium.engine.buffers.ClearRequest;
+import com.schmaloogium.engine.buffers.DepthCopyPoint;
+import com.schmaloogium.engine.buffers.DepthCopyResult;
 import com.schmaloogium.engine.buffers.Extent2i;
 import com.schmaloogium.engine.buffers.FrameBeginResult;
 import com.schmaloogium.engine.buffers.FrameEndResult;
@@ -18,6 +20,8 @@ import com.schmaloogium.engine.buffers.PassDrawTarget;
 import com.schmaloogium.engine.buffers.PassSnapshotResult;
 import com.schmaloogium.engine.buffers.TextureBindingResult;
 import com.schmaloogium.engine.buffers.TextureBindingSnapshot;
+import com.schmaloogium.engine.buffers.TextureOverlayLease;
+import com.schmaloogium.engine.textures.TextureLeaseResult;
 import com.schmaloogium.engine.frame.AnaglyphEye;
 import com.schmaloogium.engine.frame.CameraSnapshot;
 import com.schmaloogium.engine.frame.DrawDisposition;
@@ -377,7 +381,9 @@ public final class FrameDriver implements FrameHookSink {
         try {
             result = slot.invoke(new ShadowInvocationContext(f.token, shadowFrame, f.camera,
                     f.composition.registry(), f.composition.estate(), f.contexts, live.view(),
-                    selection, context));
+                    selection, context, f.composition.texturePublication(), f.composition.textureLeases(),
+                    f.composition.port().textureEvidence(f.composition.version(),
+                            f.composition.texturePublication().resourceReloadEpoch(), true)));
         } catch (RuntimeException thrown) {
             f.phase = Phase.ESTATE_CLEARED;
             abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.shadow-threw:" + thrown);
@@ -408,6 +414,69 @@ public final class FrameDriver implements FrameHookSink {
         lastShadowVerdict = verdict;
         com.schmaloogium.engine.log.Logs.channel(com.schmaloogium.engine.log.LogChannels.FRAME)
                 .info("H8-SLOT-01-FRAME-05 shadow invocation verdict (frame {}): {}", f.frameId, verdict);
+    }
+
+    @Override
+    public boolean skyTextureAllowed(FrameToken token, boolean sun) {
+        requireRenderThread();
+        Frame f = authenticated(token);
+        if (f == null) {
+            return true;
+        }
+        var flags = f.composition.engineFlags();
+        return (sun ? flags.sun() : flags.moon()) != com.schmaloogium.engine.config.TriState.FALSE;
+    }
+
+    @Override
+    public java.util.OptionalDouble handDepthScale(FrameToken token) {
+        requireRenderThread();
+        Frame f = authenticated(token);
+        if (f == null || (f.phase != Phase.DEFERRED_DONE && f.phase != Phase.GBUFFERS_TRANS)) {
+            return java.util.OptionalDouble.empty();
+        }
+        return java.util.OptionalDouble.of(f.composition.handDepthMultiplier());
+    }
+
+    @Override
+    public FrameStepResult beforeWeather(FrameToken token) {
+        requireRenderThread();
+        Frame f = authenticated(token);
+        if (f == null) {
+            return rejected(HookRejection.WRONG_TOKEN);
+        }
+        if (f.phase == Phase.SHADOW_INVOKING) {
+            return rejected(HookRejection.SHADOW_EXECUTION_ACTIVE);
+        }
+        if (f.phase != Phase.SHADOW_DONE && f.phase != Phase.GBUFFERS) {
+            return rejected(HookRejection.WRONG_ORDER);
+        }
+        FrameStepResult closed = closeTopForTrigger(f);
+        if (closed != null) {
+            return closed;
+        }
+        f.phase = Phase.GBUFFERS;
+        return copyDepth(f, DepthCopyPoint.PRE_WEATHER);
+    }
+
+    private FrameStepResult copyDepth(Frame f, DepthCopyPoint point) {
+        return switch (f.estateView().copyDepth(point, f.frameId)) {
+            case DepthCopyResult.Copied ignored -> new FrameStepResult.Advanced(FrameState.GBUFFERS);
+            case DepthCopyResult.DuplicateIgnored duplicate -> {
+                com.schmaloogium.engine.log.Logs.channel(com.schmaloogium.engine.log.LogChannels.FRAME)
+                        .warn("frame {} depth copy duplicate: {}", f.frameId, duplicate.diagnosticId());
+                yield new FrameStepResult.Advanced(FrameState.GBUFFERS);
+            }
+            case DepthCopyResult.BackendDegraded degraded -> {
+                com.schmaloogium.engine.log.Logs.channel(com.schmaloogium.engine.log.LogChannels.FRAME)
+                        .debug("frame {} depth copy degraded: {}", f.frameId, degraded.diagnosticId());
+                yield new FrameStepResult.Advanced(FrameState.GBUFFERS);
+            }
+            case DepthCopyResult.Rejected rejection -> {
+                abortInternal(f, FrameAbortReason.PROTOCOL_REJECTION,
+                        CHANNEL + ".abort.depth-copy:" + point + ":" + rejection.reason());
+                yield new FrameStepResult.Aborted(FrameAbortReason.PROTOCOL_REJECTION);
+            }
+        };
     }
 
     @Override
@@ -459,6 +528,10 @@ public final class FrameDriver implements FrameHookSink {
                     return new ScopeOpenResult.Aborted(((FrameStepResult.Aborted) closed).reason());
                 }
                 if (f.phase != Phase.DEFERRED_DONE) {
+                    FrameStepResult copied = copyDepth(f, DepthCopyPoint.PRE_TRANSLUCENT);
+                    if (copied instanceof FrameStepResult.Aborted aborted) {
+                        return new ScopeOpenResult.Aborted(aborted.reason());
+                    }
                     // §4.5 step 4: the DEFERRED/BETWEEN_GBUFFERS family runs here, once,
                     // before gbuffers_water; finish runs it only when no trigger fired.
                     try {
@@ -479,8 +552,7 @@ public final class FrameDriver implements FrameHookSink {
         // Suspend an open parent before pushing the child scope (§4.4 step 1).
         OpenScope parent = f.scopes.peek();
         if (parent != null && parent.snapshot != null) {
-            BarrierResult released = f.barrier().releaseToFixedFunction(f.contexts.release());
-            if (!(released instanceof BarrierResult.FixedFunction)) {
+            if (!closeScope(f, parent)) {
                 return suspensionFailed(f);
             }
             parent.suspended = true;
@@ -490,9 +562,15 @@ public final class FrameDriver implements FrameHookSink {
             f.scopes.push(scope);
             return new ScopeOpenResult.Opened(scope.token, scope.disposition);
         } catch (StalePublicationSignal signal) {
+            if (parent != null && parent.suspended && !reactivate(f, parent)) {
+                return new ScopeOpenResult.Aborted(FrameAbortReason.BACKEND_FAILURE);
+            }
             // Mutation-free; the glue reacquires the current publication.
             return new ScopeOpenResult.Rejected(HookRejection.STALE_PUBLICATION);
         } catch (RuntimeFailureSignal signal) {
+            if (!f.terminal && parent != null && parent.suspended && !reactivate(f, parent)) {
+                return new ScopeOpenResult.Aborted(FrameAbortReason.BACKEND_FAILURE);
+            }
             return new ScopeOpenResult.Failed(signal.failure);
         }
     }
@@ -516,6 +594,8 @@ public final class FrameDriver implements FrameHookSink {
         }
         f.scopes.pop();
         if (!closeScope(f, top)) {
+            f.scopes.push(top);
+            abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.scope-close");
             return new ScopeCloseResult.Aborted(FrameAbortReason.BACKEND_FAILURE);
         }
         DrawDisposition resumed = DrawDisposition.DRAW_FIXED_FUNCTION;
@@ -656,18 +736,35 @@ public final class FrameDriver implements FrameHookSink {
         }
         ProgramBindingSelection selection = ((ProgramSelectionResult.Selected) selected).selection();
         scope.selection = selection;
+        try {
+            return acquireScope(f, scope);
+        } catch (RuntimeException failure) {
+            closeScope(f, scope);
+            throw failure;
+        }
+    }
+
+    /** Acquire new physical sides/bindings while retaining the logical selection and context. */
+    private OpenScope acquireScope(Frame f, OpenScope scope) {
+        ProgramSlotId requested = scope.requested;
+        RenderSection section = scope.section;
+        ProgramBindingSelection selection = scope.selection;
+        BarrierContext context = scope.context;
+        PublishedProgramStateBarrier barrier = f.barrier();
+        scope.discardSnapshotOnClose = false;
         PassDescriptor descriptor = f.descriptorFor(requested);
         PassSnapshotResult snap = f.estateView().snapshot(descriptor, selection);
         if (snap instanceof PassSnapshotResult.Failed failed) {
+            f.estateFrameConsumed = true;
             // D-P7-45: the transaction is already unhealthy; containment then shaders-off.
             latchShadersOff();
             abortInternal(f, FrameAbortReason.BACKEND_FAILURE, failed.diagnosticId());
             throw new RuntimeFailureSignal(failure(failed.diagnosticId()));
         }
-        if (snap instanceof PassSnapshotResult.Rejected) {
-            // Ordinary live-frame protocol recovery: suppress only this operation.
-            scope.disposition = DrawDisposition.OMIT_OPERATION;
-            return scope;
+        if (snap instanceof PassSnapshotResult.Rejected rejected) {
+            String diagnostic = CHANNEL + ".abort.scope-snapshot:" + rejected.reason();
+            abortInternal(f, FrameAbortReason.PROTOCOL_REJECTION, diagnostic);
+            throw new RuntimeFailureSignal(failure(diagnostic));
         }
         PassBufferSnapshot snapshot = ((PassSnapshotResult.Acquired) snap).snapshot();
         scope.snapshot = snapshot;
@@ -678,10 +775,17 @@ public final class FrameDriver implements FrameHookSink {
             scope.discardSnapshotOnClose = true;
             return scope;
         }
-        // §4.4 step 5: Phase 5 binds the sixteen rows for the scoped pass; in the gbuffers
-        // family units 0/1 stay the platform's (ForeignRetained) and 2/3 carry the companion
-        // defaults, so vanilla's atlas and lightmap are never clobbered (§4.12.2).
-        TextureBindingResult bindings = f.estateView().textureBindings(snapshot, null, null);
+        var publication = f.composition.texturePublication();
+        TextureLeaseResult leased = f.composition.textureLeases().lease(publication.id(), selection,
+                f.composition.port().textureEvidence(f.composition.version(),
+                        publication.resourceReloadEpoch(), true));
+        if (!(leased instanceof TextureLeaseResult.Acquired acquired)) {
+            noteScopeBindings(section, "lease " + leased);
+            scope.disposition = DrawDisposition.OMIT_OPERATION;
+            scope.discardSnapshotOnClose = true;
+            return scope;
+        }
+        TextureBindingResult bindings = bindTextures(f, snapshot, acquired.lease());
         if (bindings instanceof TextureBindingResult.BackendFailed) {
             latchShadersOff();
             abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.scope-bindings");
@@ -724,9 +828,28 @@ public final class FrameDriver implements FrameHookSink {
         throw new RuntimeFailureSignal(failure(CHANNEL + ".failure.activate:" + cause));
     }
 
+    /** Only a Bound result transfers lease ownership to the binding snapshot. */
+    private TextureBindingResult bindTextures(Frame f, PassBufferSnapshot snapshot,
+            TextureOverlayLease lease) {
+        boolean transferred = false;
+        try {
+            TextureBindingResult result = f.estateView().textureBindings(snapshot, lease,
+                    f.composition.texturePublication().id());
+            transferred = result instanceof TextureBindingResult.Bound;
+            return result;
+        } finally {
+            if (!transferred) {
+                lease.close();
+            }
+        }
+    }
+
     private boolean closeScope(Frame f, OpenScope scope) {
         closeQuietly(scope.bindings);
         scope.bindings = null;
+        if (f.estateFrameConsumed) {
+            scope.snapshot = null;
+        }
         if (scope.snapshot != null) {
             boolean drawn = scope.disposition == DrawDisposition.DRAW_SHADER && scope.activated;
             if (drawn) {
@@ -806,25 +929,17 @@ public final class FrameDriver implements FrameHookSink {
     }
 
     private boolean reactivate(Frame f, OpenScope parent) {
-        if (parent.selection == null || parent.snapshot == null) {
-            return parent.selection == null; // an omitted operation has nothing to reactivate
+        parent.suspended = false;
+        if (parent.selection == null) {
+            return true;
         }
-        PortResult bound = f.composition.port().bind(parent.snapshot.drawTarget(), f.eye());
-        if (!(bound instanceof PortResult.Completed)) {
+        try {
+            acquireScope(f, parent);
+            return true;
+        } catch (RuntimeException failure) {
+            abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.resume");
             return false;
         }
-        BarrierResult activation = f.barrier()
-                .activate(new UseProgramRequest(parent.selection, parent.context));
-        if (activation instanceof BarrierResult.Activated) {
-            parent.disposition = DrawDisposition.DRAW_SHADER;
-            parent.activated = true;
-            return true;
-        }
-        if (activation instanceof BarrierResult.FixedFunction) {
-            parent.disposition = DrawDisposition.DRAW_FIXED_FUNCTION;
-            return true;
-        }
-        return false;
     }
 
     private FrameStepResult closeTopForTrigger(Frame f) {
@@ -940,6 +1055,7 @@ public final class FrameDriver implements FrameHookSink {
             return;
         }
         if (snap instanceof PassSnapshotResult.Failed failed) {
+            f.estateFrameConsumed = true;
             latchShadersOff();
             abortInternal(f, FrameAbortReason.BACKEND_FAILURE, failed.diagnosticId());
             throw new RuntimeFailureSignal(failure(failed.diagnosticId()));
@@ -959,9 +1075,16 @@ public final class FrameDriver implements FrameHookSink {
             f.estateView().discardPass(snapshot);
             return;
         }
-        // v0.1: the explicit empty texture publication (no Phase 13 overlay); Phase 5
-        // binds the sixteen estate rows itself (no driver bind loop, §4.4 step 5).
-        TextureBindingResult bindings = f.estateView().textureBindings(snapshot, null, null);
+        var publication = f.composition.texturePublication();
+        TextureLeaseResult leased = f.composition.textureLeases().lease(publication.id(), selection,
+                f.composition.port().textureEvidence(f.composition.version(),
+                        publication.resourceReloadEpoch(), false));
+        if (!(leased instanceof TextureLeaseResult.Acquired acquired)) {
+            noteFullscreen(descriptor, "lease " + leased);
+            f.estateView().discardPass(snapshot);
+            return;
+        }
+        TextureBindingResult bindings = bindTextures(f, snapshot, acquired.lease());
         if (bindings instanceof TextureBindingResult.BackendFailed) {
             latchShadersOff();
             abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.fullscreen-bindings");
@@ -1122,7 +1245,10 @@ public final class FrameDriver implements FrameHookSink {
             // containment: every remaining close is best-effort during an abort
         }
         try {
-            f.estateView().abortFrame(f.frameId, diagnosticId);
+            if (!f.estateFrameConsumed) {
+                f.estateView().abortFrame(f.frameId, diagnosticId);
+                f.estateFrameConsumed = true;
+            }
         } catch (RuntimeException ignored) {
             // containment as above
         }
@@ -1183,6 +1309,7 @@ public final class FrameDriver implements FrameHookSink {
         boolean matricesCaptured;
         boolean finalizationStarted;
         boolean terminal;
+        boolean estateFrameConsumed;
         /** The deferred family ran at the translucent trigger (§4.5) or at finish. */
         boolean deferredRan;
         Float3 fogColor = new Float3(0f, 0f, 0f);
@@ -1259,7 +1386,7 @@ public final class FrameDriver implements FrameHookSink {
                     composition.registry().generation(),
                     composition.estate().generation(),
                     java.util.OptionalLong.empty(),
-                    composition.texturePublication(),
+                    Optional.of(composition.texturePublication().id()),
                     composition.resourceReloadEpoch(),
                     consecutive,
                     healthy ? java.util.Optional.empty()
@@ -1374,17 +1501,43 @@ public final class FrameDriver implements FrameHookSink {
         }
     }
 
-    /** The atlas adapter sink: validates the live frame, forwards to the shadow bridge. */
+    /** Refresh the active physical snapshot after an authenticated vanilla base change. */
     private final class AtlasSink implements AtlasBindingSink {
 
         @Override
         public SignalResult currentBinding(AtlasBindingEvidence evidence) {
+            requireRenderThread();
             Objects.requireNonNull(evidence, "evidence");
             Frame f = frame;
             if (f == null || f.terminal) {
+                return new SignalResult.Accepted();
+            }
+            if (f.phase == Phase.SHADOW_INVOKING) {
+                return shadowBridge.publishBaseBinding(evidence);
+            }
+            OpenScope scope = f.scopes.peek();
+            if (scope == null || scope.suspended || scope.bindings == null) {
+                return new SignalResult.Accepted();
+            }
+            TextureLeaseResult result = f.composition.textureLeases().lease(
+                    f.composition.texturePublication().id(), scope.selection, evidence);
+            if (!(result instanceof TextureLeaseResult.Acquired acquired)) {
                 return new SignalResult.Rejected(HookRejection.STALE_PUBLICATION);
             }
-            return shadowBridge.publishBaseBinding(evidence);
+            try {
+                TextureBindingResult refreshed = bindTextures(f, scope.snapshot, acquired.lease());
+                if (refreshed instanceof TextureBindingResult.Bound bound) {
+                    TextureBindingSnapshot previous = scope.bindings;
+                    scope.bindings = bound.snapshot();
+                    closeQuietly(previous);
+                    return new SignalResult.Accepted();
+                }
+            } catch (RuntimeException failure) {
+                abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.base-refresh");
+                return new SignalResult.Failed(failure(CHANNEL + ".failure.base-refresh"));
+            }
+            abortInternal(f, FrameAbortReason.BACKEND_FAILURE, CHANNEL + ".abort.base-refresh");
+            return new SignalResult.Failed(failure(CHANNEL + ".failure.base-refresh"));
         }
     }
 }

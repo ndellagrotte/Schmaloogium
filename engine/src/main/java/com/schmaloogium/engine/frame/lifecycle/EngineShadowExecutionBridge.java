@@ -168,11 +168,14 @@ public final class EngineShadowExecutionBridge implements ShadowExecutionBridge 
         if (current == null || current.view.invalidated) {
             return new SignalResult.Rejected(com.schmaloogium.engine.frame.HookRejection.STALE_PUBLICATION);
         }
-        current.view.currentBaseBinding = evidence;
         ShadowBaseBindingReceiver receiver = current.view.receiver;
         if (receiver != null) {
-            return receiver.refreshBaseBinding(evidence);
+            SignalResult refreshed = receiver.refreshBaseBinding(evidence);
+            if (!(refreshed instanceof SignalResult.Accepted)) {
+                return refreshed;
+            }
         }
+        current.view.currentBaseBinding = evidence;
         return new SignalResult.Accepted();
     }
 }

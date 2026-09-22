@@ -9,8 +9,12 @@ import java.util.Set;
 /**
  * The immutable per-provider sampler layout with its validation evidence (PHASE_4_DOC
  * §2.2/§4.7). {@link Shader} carries every provider-permitted validated band, the ordered
- * declarations and the full {@link SamplerLayoutValidation} evidence; failed layouts retain
- * the attempted bands and payload, never a successful status. Fixed-function descriptors use
+ * executable sampler declarations and the full {@link SamplerLayoutValidation} evidence.
+ * Successful compiler layouts contain linked-active direct samplers; the separate
+ * {@link ProgramUniformLayout} retains every declaration and source site. Aggregates
+ * remain conservatively unsupported, not inferred inactive from a base-name lookup.
+ * Failed layouts retain the attempted bands and payload, never a successful status.
+ * Fixed-function descriptors use
  * {@link FixedFunctionEmpty}; virtuals use {@link VirtualNotApplicable} with distinct
  * canonical encodings and no bindings.
  */

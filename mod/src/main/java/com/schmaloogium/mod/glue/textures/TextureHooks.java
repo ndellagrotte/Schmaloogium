@@ -10,7 +10,7 @@ import com.schmaloogium.engine.textures.TextureCaptureSink;
 import java.util.Objects;
 
 /**
- * The static stitch/animation bridge the (deferred) H13-ATLAS mixins and events call
+ * The static stitch/animation bridge the H13-ATLAS mixins and events call
  * (§4.6). Minecraft/LWJGL-free: every method receives plain scalars or engine types, so
  * the headless test classpath can load this class. At most one outer map-load scope is
  * owned at a time; nested conflicting work poisons the owner's attempt without replacing
@@ -145,7 +145,7 @@ public final class TextureHooks {
         return DESIGNATED_BLOCK_ITEM_ATLAS.equals(atlasIdentity);
     }
 
-    /** The shared machine, for the deferred adapter's read-only inspection needs. */
+    /** The shared machine, for the authenticated adapter's scope and staged-copy work. */
     static StitchCapture capture() {
         return CAPTURE;
     }

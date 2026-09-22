@@ -561,26 +561,24 @@ public final class EngineTextureSystem implements TextureSystem, TextureCaptureS
             switch (plan.noise()) {
                 case NoisePlan.Disabled disabled -> {
                 }
-                case NoisePlan.Generated generated -> {
-                    int resolution = generated.resolution();
-                    var bytes = NoiseGenerator.generateRgb(resolution);
-                    var spec = new TextureSpec.ColorTextureSpec(
-                        TextureAllocationTarget.TEXTURE_2D, ColorInternalFormat.RGB8,
-                        new PixelLayout.Color(PixelFormat.RGB, PixelType.UNSIGNED_BYTE),
-                        new TextureExtent(resolution, resolution, 1), 1);
-                    var parameters = ParameterPolicy.facadeParameters(
-                        TextureAllocationTarget.TEXTURE_2D,
-                        ParameterPolicy.generatedNoisePolicy(), 1);
-                    var layout = new PixelLayout.Color(PixelFormat.RGB,
-                        PixelType.UNSIGNED_BYTE);
-                    var handle = uploadOwned(textures, spec, parameters, "noise/generated",
-                        List.of(new TextureData(TextureAllocationTarget.TEXTURE_2D,
-                            new TextureRegion(0, 0, 0, resolution, resolution, 1), 0,
-                            layout, ByteBuffer.wrap(bytes))));
-                    noiseHandles.put(generated, handle);
-                }
+                case NoisePlan.Generated generated -> allocateGeneratedNoise(textures,
+                    generated);
                 case NoisePlan.FromPack fromPack -> {
                     var payload = payloads.get(noiseOverrideKey(fromPack));
+                    if (payload == null) {
+                        // §4.2.4: an override whose preparation produced no payload falls
+                        // back to the generated texture and diagnoses once — a pack that
+                        // asked for noise still gets noise.
+                        diagnostics.report(new EngineDiagnostic(DiagnosticSeverity.WARN,
+                            UserChannel.LOG_ONLY,
+                            "schmaloogium.error.texture.noise_override_fallback",
+                            List.of(fromPack.image().canonicalString()),
+                            "noise override unavailable; generated noise published",
+                            LogChannels.TEXTURES));
+                        allocateGeneratedNoise(textures,
+                            new NoisePlan.Generated(fromPack.declaredResolution()));
+                        return;
+                    }
                     var spec = new TextureSpec.ColorTextureSpec(
                         TextureAllocationTarget.TEXTURE_2D, ColorInternalFormat.RGBA8,
                         new PixelLayout.Color(PixelFormat.RGBA, PixelType.UNSIGNED_BYTE),
@@ -593,6 +591,25 @@ public final class EngineTextureSystem implements TextureSystem, TextureCaptureS
                     noiseHandles.put(fromPack, handle);
                 }
             }
+        }
+
+        /** Allocates the contract recurrence plane and publishes it under its own plan. */
+        private void allocateGeneratedNoise(TextureService textures,
+                                            NoisePlan.Generated generated) {
+            int resolution = generated.resolution();
+            var bytes = NoiseGenerator.generateRgb(resolution);
+            var layout = new PixelLayout.Color(PixelFormat.RGB, PixelType.UNSIGNED_BYTE);
+            var spec = new TextureSpec.ColorTextureSpec(
+                TextureAllocationTarget.TEXTURE_2D, ColorInternalFormat.RGB8, layout,
+                new TextureExtent(resolution, resolution, 1), 1);
+            var parameters = ParameterPolicy.facadeParameters(
+                TextureAllocationTarget.TEXTURE_2D,
+                ParameterPolicy.generatedNoisePolicy(), 1);
+            var handle = uploadOwned(textures, spec, parameters, "noise/generated",
+                List.of(new TextureData(TextureAllocationTarget.TEXTURE_2D,
+                    new TextureRegion(0, 0, 0, resolution, resolution, 1), 0,
+                    layout, ByteBuffer.wrap(bytes))));
+            noiseHandles.put(generated, handle);
         }
 
         private String noiseOverrideKey(NoisePlan.FromPack fromPack) {
@@ -659,8 +676,18 @@ public final class EngineTextureSystem implements TextureSystem, TextureCaptureS
                 case TextureUploadSpec.Rectangle s -> new TextureExtent(s.width(),
                     s.height(), 1);
             };
+            var layout = switch (entry.upload()) {
+                case TextureUploadSpec.OneD s ->
+                    new PixelLayout.Color(s.pixelFormat(), s.pixelType());
+                case TextureUploadSpec.TwoD s ->
+                    new PixelLayout.Color(s.pixelFormat(), s.pixelType());
+                case TextureUploadSpec.ThreeD s ->
+                    new PixelLayout.Color(s.pixelFormat(), s.pixelType());
+                case TextureUploadSpec.Rectangle s ->
+                    new PixelLayout.Color(s.pixelFormat(), s.pixelType());
+            };
             return new TextureSpec.ColorTextureSpec(entry.target(), format,
-                new PixelLayout.Color(PixelFormat.RGBA, PixelType.UNSIGNED_BYTE), extent, 1);
+                layout, extent, 1);
         }
 
         private TextureHandle uploadOwned(TextureService textures, TextureSpec spec,
@@ -810,7 +837,11 @@ public final class EngineTextureSystem implements TextureSystem, TextureCaptureS
 
         @Override
         public boolean isCurrent() {
-            return !closed && owner.leaseUsable(this);
+            // The authenticated base binding must still be the latest one: an external
+            // rebind, delete or resource reload retires this lease's atlas evidence even
+            // while the publication itself is untouched.
+            return !closed && owner.leaseUsable(this)
+                && owner.bindingObserver.isLatest(observation.currentnessToken());
         }
 
         @Override

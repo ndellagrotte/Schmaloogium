@@ -118,7 +118,8 @@ public final class CandidateBuilder {
         BufferResourceSnapshot.Available realized = realizedEvidence(artifacts,
             outcome.fallback());
         EstateCore core = new EstateCore(device, request.diagnostics(),
-            request.registryFingerprint(), artifacts, realized, request.mainDepth(), depth);
+            request.registryFingerprint(), request.configuration().fingerprint(),
+            artifacts, realized, request.mainDepth(), depth);
         core.fullClearRequired = true;
         // Color pairs install in deterministic creation order; before any flip the
         // committed main is side A (§4.4.1).

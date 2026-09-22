@@ -132,6 +132,46 @@ public final class EnginePipelineStages implements PipelineStages {
     }
 
     @Override
+    public com.schmaloogium.engine.textures.TextureSystemCreationResult textures() {
+        return com.schmaloogium.engine.textures.TextureSystemFactory.factory().create(device, diagnostics);
+    }
+
+    @Override
+    public com.schmaloogium.engine.textures.TextureBuildRequest textureInputs(
+            PackConfiguration configuration, ProgramRegistryView registry,
+            long estateGeneration, long registryGeneration, long resourceReloadEpoch) {
+        var atlases = com.schmaloogium.mod.glue.textures.MinecraftAtlasCapture.catalog(resourceReloadEpoch);
+        var prepared = com.schmaloogium.mod.glue.textures.TextureSourcePreparer.prepareBuild(
+                configuration, resourceReloadEpoch, capabilities, atlases,
+                com.schmaloogium.mod.glue.textures.MinecraftAtlasCapture.companionDiscovery(),
+                com.schmaloogium.mod.glue.textures.TextureBindingRuntime.foreignObjects());
+        var macros = configuration.macros().companionOptionMacros();
+        var request = new com.schmaloogium.engine.textures.TexturePlanRequest(
+                configuration, registry, atlases, prepared.catalog(),
+                new com.schmaloogium.engine.textures.CompanionPolicy(macros.normalMap(), macros.specularMap(),
+                        com.schmaloogium.engine.textures.CompanionDemandSource.ALWAYS_ON_FALLBACK),
+                new com.schmaloogium.engine.textures.CompanionMacroState(macros.normalMap(), macros.specularMap()),
+                capabilities, registry.fingerprint(), estateGeneration, registryGeneration, resourceReloadEpoch);
+        return new com.schmaloogium.engine.textures.TextureBuildRequest(request, prepared.sources());
+    }
+
+    @Override
+    public void attachTextures(com.schmaloogium.engine.textures.TextureSystem owner, long resourceReloadEpoch) {
+        if (owner instanceof com.schmaloogium.engine.textures.TextureCaptureSink sink) {
+            com.schmaloogium.mod.glue.textures.MinecraftAtlasCapture.attach(sink, resourceReloadEpoch);
+        } else {
+            throw new IllegalStateException("texture owner has no capture sink");
+        }
+    }
+
+    @Override
+    public void detachTextures(com.schmaloogium.engine.textures.TextureSystem owner) {
+        if (owner instanceof com.schmaloogium.engine.textures.TextureCaptureSink sink) {
+            com.schmaloogium.mod.glue.textures.MinecraftAtlasCapture.detach(sink);
+        }
+    }
+
+    @Override
     public RegistryHandle compile(PackConfiguration configuration, DimensionKey dimension,
                                   MacroContribution macroContribution) {
         RegistryBuildResult result = compiler.compile(new RegistryBuildRequest(

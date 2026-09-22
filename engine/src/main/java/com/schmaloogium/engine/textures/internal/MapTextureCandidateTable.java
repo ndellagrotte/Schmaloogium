@@ -89,7 +89,7 @@ public final class MapTextureCandidateTable {
                     entry.parameters(),
                     new TextureParameterFingerprint(
                         entry.parameterizationFingerprint().value()),
-                    take(nextOrdinal, stage)));
+                    entry.phase3Ordinal()));
             }
         }
 
@@ -101,16 +101,20 @@ public final class MapTextureCandidateTable {
             String fingerprint = SidecarPolicy.fixedRoleFingerprint(
                 OwnedTextureSourceKind.COMPANION_RESOURCE, SidecarPolicy.Role.COMPANION,
                 parameters);
+            FixedSamplerName name = switch (companion.kind()) {
+                case NORMALS -> FixedSamplerName.NORMALS;
+                case SPECULAR -> FixedSamplerName.SPECULAR;
+            };
             for (StageId stage : StageColumnPolicy.customStages()) {
-                add(byCell, nextOrdinal, stage, FixedSamplerName.TEXTURE,
+                add(byCell, nextOrdinal, stage, name,
                     new TextureBindingCandidate(
                         new CandidateOrigin.Companion(companion.base(), companion.kind()),
-                        stage, "texture", FixedSamplerName.TEXTURE, SAMPLER_2D,
+                        stage, name.exactName(), name, SAMPLER_2D,
                         TextureTarget.TEXTURE_2D, new TextureHandleRef.Owned(handle),
                         new com.schmaloogium.engine.buffers.TextureSourceIdentity(
                             companionIdentity(companion, configurationIdentity)),
                         parameters, new TextureParameterFingerprint(fingerprint),
-                        take(nextOrdinal, stage)));
+                        nextOrdinal.getOrDefault(stage, 0)));
             }
         }
 
@@ -123,16 +127,20 @@ public final class MapTextureCandidateTable {
             String fingerprint = SidecarPolicy.fixedRoleFingerprint(
                 OwnedTextureSourceKind.DEFAULT_FILL, SidecarPolicy.Role.DEFAULT_FILL,
                 parameters);
+            FixedSamplerName name = switch (kind) {
+                case NORMALS -> FixedSamplerName.NORMALS;
+                case SPECULAR -> FixedSamplerName.SPECULAR;
+            };
             for (StageId stage : StageColumnPolicy.customStages()) {
-                add(byCell, nextOrdinal, stage, FixedSamplerName.TEXTURE,
+                add(byCell, nextOrdinal, stage, name,
                     new TextureBindingCandidate(
-                        new CandidateOrigin.DefaultFill(kind), stage, "texture",
-                        FixedSamplerName.TEXTURE, SAMPLER_2D, TextureTarget.TEXTURE_2D,
+                        new CandidateOrigin.DefaultFill(kind), stage, name.exactName(),
+                        name, SAMPLER_2D, TextureTarget.TEXTURE_2D,
                         new TextureHandleRef.Owned(handle),
                         new com.schmaloogium.engine.buffers.TextureSourceIdentity(
                             defaultIdentity(kind, configurationIdentity)),
                         parameters, new TextureParameterFingerprint(fingerprint),
-                        take(nextOrdinal, stage)));
+                        nextOrdinal.getOrDefault(stage, 0)));
             }
         }
 
@@ -148,7 +156,7 @@ public final class MapTextureCandidateTable {
                         new com.schmaloogium.engine.buffers.TextureSourceIdentity(
                             noiseIdentity(noise.getKey(), configurationIdentity)),
                         noiseParameters, new TextureParameterFingerprint(noiseFingerprint),
-                        take(nextOrdinal, stage)));
+                        nextOrdinal.getOrDefault(stage, 0)));
             }
         }
 
@@ -174,13 +182,10 @@ public final class MapTextureCandidateTable {
         byCell.computeIfAbsent(stage, s -> new EnumMap<>(FixedSamplerName.class))
             .computeIfAbsent(name, n -> new ArrayList<>())
             .add(candidate);
-        // take() must stay in sync with insertion order; consume one ordinal per add.
-        take(nextOrdinal, stage);
+        // Preserve P3 ordinals on custom copies; append other origins after their maximum.
+        nextOrdinal.merge(stage, candidate.candidateOrdinal() + 1, Math::max);
     }
 
-    private static int take(Map<StageId, Integer> nextOrdinal, StageId stage) {
-        return nextOrdinal.merge(stage, 1, Integer::sum) - 1;
-    }
 
     private static String identityValue(
             com.schmaloogium.engine.textures.TextureSourceIdentity identity) {

@@ -3,7 +3,6 @@
 
 package com.schmaloogium.engine.preprocess;
 
-import com.schmaloogium.engine.pack.NormalizedPackPath;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -72,7 +71,7 @@ public final class IncludeExpander {
                 out.add(new ExpandedLine(line, doc.id(), i + 1));
                 continue;
             }
-            String resolved = resolve(doc, target.get());
+            String resolved = SourceIndex.resolveInclude(doc, target.get());
             if (resolved == null) {
                 out.add(new ExpandedLine(line, doc.id(), i + 1));
                 continue;
@@ -123,33 +122,4 @@ public final class IncludeExpander {
         return Optional.empty();
     }
 
-    private String resolve(SourceDocument doc, String requested) {
-        String dir = doc.id().path().canonicalString();
-        int slash = dir.lastIndexOf('/');
-        String rootPrefix = SourceIndex.rootPrefixOf(dir);
-        String parentFull = slash >= 0 ? dir.substring(0, slash) : "";
-        String parentWithinRoot = parentFull.length() >= rootPrefix.length()
-            ? parentFull.substring(rootPrefix.length()) : "";
-        String withinRoot = requested.startsWith("/") ? requested.substring(1)
-            : (parentWithinRoot.isEmpty() ? requested : parentWithinRoot + "/" + requested);
-        return normalize(rootPrefix + withinRoot);
-    }
-
-    private static String normalize(String raw) {
-        if (raw.isEmpty() || raw.indexOf('\\') >= 0 || raw.indexOf('\u0000') >= 0) {
-            return null;
-        }
-        String[] segments = raw.split("/", -1);
-        List<String> out = new ArrayList<>();
-        for (String segment : segments) {
-            if (segment.isEmpty() || segment.equals(".")) {
-                continue;
-            }
-            if (segment.equals("..")) {
-                return null;
-            }
-            out.add(segment);
-        }
-        return String.join("/", out);
-    }
 }

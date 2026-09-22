@@ -4,10 +4,8 @@
 package com.schmaloogium.engine.preprocess;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -16,9 +14,13 @@ import java.util.regex.Pattern;
  */
 public final class UniformDeclScanner {
 
-    private static final Pattern UNIFORM = Pattern.compile(
-        "^\\s*uniform\\s+([A-Za-z_][A-Za-z0-9_]*)\\s+([A-Za-z_][A-Za-z0-9_]*)"
-            + "\\s*(\\[[0-9]+\\])?\\s*(?::\\s*[a-z]+)?\\s*;.*$");
+    private static final Pattern TOKENS = Pattern.compile(
+        "(?m)^[\\t ]*#[^\\r\\n]*|/\\*[\\s\\S]*?\\*/|//[^\\r\\n]*"
+            + "|[A-Za-z_][A-Za-z0-9_]*|[0-9]+|[^\\s]");
+    private static final Set<String> QUALIFIERS = Set.of(
+        "lowp", "mediump", "highp", "coherent", "volatile", "restrict", "readonly", "writeonly");
+
+    private record Token(String text, int line) {}
 
     private UniformDeclScanner() {
     }
@@ -28,27 +30,82 @@ public final class UniformDeclScanner {
     }
 
     public static List<Finding> scan(String text) {
+        List<Token> tokens = new ArrayList<>();
+        var matcher = TOKENS.matcher(text);
+        int line = 1;
+        int previous = 0;
+        while (matcher.find()) {
+            for (int offset = previous; offset < matcher.start(); offset++) {
+                if (text.charAt(offset) == '\n') line++;
+            }
+            String token = matcher.group();
+            if (!token.stripLeading().startsWith("#") && !token.startsWith("//")
+                && !token.startsWith("/*")) {
+                tokens.add(new Token(token, line));
+            }
+            for (int offset = matcher.start(); offset < matcher.end(); offset++) {
+                if (text.charAt(offset) == '\n') line++;
+            }
+            previous = matcher.end();
+        }
+
         List<Finding> out = new ArrayList<>();
-        String[] lines = text.split("\\r?\\n", -1); // CR-tolerant: whole-line anchors
-        for (int i = 0; i < lines.length; i++) {
-            Matcher m = UNIFORM.matcher(CommentStripper.stripComments(lines[i]));
-            if (!m.matches()) {
-                continue;
-            }
-            DeclaredGlslType type = typeOf(m.group(1));
-            if (type == null) {
-                continue;
-            }
-            String brackets = m.group(3);
-            if (brackets != null) {
-                int length = Integer.parseInt(brackets.substring(1, brackets.length() - 1));
-                if (length <= 0) {
-                    continue;
+        int braces = 0;
+        for (int index = 0; index < tokens.size(); index++) {
+            String token = tokens.get(index).text();
+            if (token.equals("{")) braces++;
+            if (token.equals("}")) braces--;
+            if (braces != 0 || !token.equals("uniform")) continue;
+            int cursor = index + 1;
+            while (cursor < tokens.size() && QUALIFIERS.contains(tokens.get(cursor).text())) cursor++;
+            if (cursor == tokens.size()) break;
+            DeclaredGlslType baseType = typeOf(tokens.get(cursor++).text());
+            if (baseType == null) continue;
+            while (cursor < tokens.size()) {
+                Token name = tokens.get(cursor++);
+                if (!Character.isJavaIdentifierStart(name.text().charAt(0))) break;
+                List<ArrayExtent> extents = new ArrayList<>();
+                boolean valid = true;
+                while (cursor < tokens.size() && tokens.get(cursor).text().equals("[")) {
+                    int start = ++cursor;
+                    while (cursor < tokens.size() && !tokens.get(cursor).text().equals("]")) cursor++;
+                    if (cursor == tokens.size()) {
+                        valid = false;
+                        break;
+                    }
+                    if (cursor == start) {
+                        extents.add(new ArrayExtent.Unsized());
+                    } else if (cursor == start + 1) {
+                        try {
+                            extents.add(new ArrayExtent.Sized(Integer.parseInt(tokens.get(start).text())));
+                        } catch (IllegalArgumentException malformedExtent) {
+                            valid = false;
+                        }
+                    } else {
+                        // Constant-expression evaluation is not supplied by this scanner.
+                        valid = false;
+                    }
+                    cursor++;
                 }
-                type = new DeclaredGlslType.Array(type,
-                    List.of(new ArrayExtent.Sized(length)));
+                // Consume an initializer/semantic as one balanced declarator. Commas
+                // inside constructors, indexing, or aggregate initializers are not separators.
+                int nesting = 0;
+                while (cursor < tokens.size()) {
+                    String part = tokens.get(cursor).text();
+                    if (nesting == 0 && (part.equals(",") || part.equals(";"))) break;
+                    if (part.equals("(") || part.equals("[") || part.equals("{")) nesting++;
+                    if (part.equals(")") || part.equals("]") || part.equals("}")) nesting--;
+                    cursor++;
+                }
+                if (cursor == tokens.size()) break;
+                if (valid) {
+                    DeclaredGlslType type = extents.isEmpty() ? baseType
+                        : new DeclaredGlslType.Array(baseType, extents);
+                    out.add(new Finding(name.text(), type, name.line()));
+                }
+                if (tokens.get(cursor++).text().equals(";")) break;
             }
-            out.add(new Finding(m.group(2), type, i + 1));
+            index = cursor - 1;
         }
         return out;
     }

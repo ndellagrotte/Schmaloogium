@@ -23,6 +23,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(TextureManager.class)
 public abstract class MixinTextureManager {
 
+    @Inject(method = "bindTexture(Lnet/minecraft/util/ResourceLocation;)V",
+            at = @At("RETURN"), require = 1, expect = 1)
+    private void schmaloogium$observeTextureObject(net.minecraft.util.ResourceLocation location,
+                                                  CallbackInfo ci) {
+        com.schmaloogium.mod.glue.textures.TextureBindingRuntime.onTextureBound(location);
+    }
+
     @Inject(method = "tick()V", at = @At("HEAD"), cancellable = true, expect = 1)
     private void schmaloogium$holdAnimation(CallbackInfo ci) {
         if (ControlledClock.isAnimationHeld()) {

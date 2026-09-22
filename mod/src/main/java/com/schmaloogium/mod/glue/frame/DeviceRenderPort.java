@@ -7,6 +7,8 @@ import com.schmaloogium.engine.buffers.Extent2i;
 import com.schmaloogium.engine.buffers.PassDrawTarget;
 import com.schmaloogium.engine.frame.AnaglyphEye;
 import com.schmaloogium.engine.frame.FailureId;
+import com.schmaloogium.engine.frame.PipelineVersion;
+import com.schmaloogium.engine.frame.spi.AtlasBindingEvidence;
 import com.schmaloogium.engine.frame.spi.FrameRenderPort;
 import com.schmaloogium.engine.frame.spi.FullscreenDraw;
 import com.schmaloogium.engine.frame.spi.PortRejection;
@@ -17,6 +19,7 @@ import com.schmaloogium.engine.gl.GLDevice;
 import com.schmaloogium.engine.gl.GLError;
 import com.schmaloogium.engine.gl.StateAspect;
 import com.schmaloogium.engine.registry.StageId;
+import com.schmaloogium.mod.glue.textures.TextureBindingRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import org.apache.logging.log4j.LogManager;
@@ -56,6 +59,12 @@ public final class DeviceRenderPort implements FrameRenderPort {
     }
 
     private record Snapshot(com.schmaloogium.engine.gl.StateSnapshot inner) implements StateSnapshot {
+    }
+
+    @Override
+    public AtlasBindingEvidence textureEvidence(PipelineVersion version, long epoch, boolean base) {
+        return base ? TextureBindingRuntime.observeBase(version, epoch)
+                : TextureBindingRuntime.observeNoBase(version, epoch);
     }
 
     @Override

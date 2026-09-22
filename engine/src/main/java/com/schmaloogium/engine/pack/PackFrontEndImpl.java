@@ -35,8 +35,11 @@ import com.schmaloogium.engine.diag.DiagnosticSeverity;
 import com.schmaloogium.engine.diag.EngineDiagnostic;
 import com.schmaloogium.engine.diag.UserChannel;
 import com.schmaloogium.engine.preprocess.IncludeEdge;
+import com.schmaloogium.engine.preprocess.IncludeExpander;
+import com.schmaloogium.engine.preprocess.LanguageScanner;
 import com.schmaloogium.engine.preprocess.MacroEnvironmentBuilder;
 import com.schmaloogium.engine.preprocess.PropertiesPreprocessor;
+import com.schmaloogium.engine.preprocess.ShaderPreprocessor;
 import com.schmaloogium.engine.preprocess.SourceCatalog;
 import com.schmaloogium.engine.preprocess.SourceDocument;
 import com.schmaloogium.engine.preprocess.SourceId;
@@ -339,7 +342,7 @@ final class PackFrontEndImpl implements PackFrontEnd {
         // 1. source index: decode, roots, includes, executable programs
         List<EngineDiagnostic> indexDiags = new ArrayList<>();
         SourceIndex index = SourceIndex.build(files, indexDiags);
-        indexDiags.forEach(diags::report);
+        index.diagnostics().forEach(diags::report);
         if (index.roots().isEmpty()) {
             return new LoadOutcome.Failed(new PackLoadFailure(PackLoadFailureCode.STRUCTURALLY_UNUSABLE,
                 diag(DiagnosticSeverity.ERROR, "schmaloogium.error.pack.no_roots",
@@ -369,12 +372,13 @@ final class PackFrontEndImpl implements PackFrontEnd {
                     line.substring(eq + 1), i + 1));
             }
             properties = ShaderPropertiesParser.parse(toLogicalEntries(rawProperties),
-                propertiesPath);
+                propertiesPath, files.keySet());
         } else {
-            properties = ShaderPropertiesParser.parse(List.of(), propertiesPath);
+            properties = ShaderPropertiesParser.parse(List.of(), propertiesPath,
+                files.keySet());
         }
 
-        // 3. options: const/switch discovery over root documents, catalog + state
+        // 3. options: original documents in root-connected include components, catalog + state
         Map<String, List<SourceAttribution>> switchOcc = new LinkedHashMap<>();
         Map<String, String> switchDefaults = new LinkedHashMap<>();
         Map<String, List<String>> switchValues = new LinkedHashMap<>();
@@ -382,6 +386,55 @@ final class PackFrontEndImpl implements PackFrontEnd {
         Map<String, List<SourceAttribution>> constOcc = new LinkedHashMap<>();
         Map<String, OptionCatalogBuilder.Raw.FindingValues> constValues = new LinkedHashMap<>();
         Set<String> confirmed = confirmedSwitchNames(rawProperties);
+        Map<SourceId, Set<SourceId>> optionAdjacency = index.undirectedAdjacency();
+        Set<SourceId> optionSources = new LinkedHashSet<>();
+        List<SourceId> pendingSources = new ArrayList<>();
+        for (SourceKey root : index.roots()) {
+            if (optionSources.add(root.source())) {
+                pendingSources.add(root.source());
+            }
+        }
+        for (int i = 0; i < pendingSources.size(); i++) {
+            for (SourceId neighbor : optionAdjacency.getOrDefault(pendingSources.get(i), Set.of())) {
+                if (optionSources.add(neighbor)) {
+                    pendingSources.add(neighbor);
+                }
+            }
+        }
+        Map<NormalizedPackPath, SourceDocument> optionDocuments =
+            new TreeMap<>(NormalizedPackPath.ORDER);
+        for (SourceDocument doc : index.sources()) {
+            if (optionSources.contains(doc.id())) {
+                optionDocuments.put(doc.id().path(), doc);
+            }
+        }
+        // Scan each captured original once, even when shared by stages or dimensions.
+        // Do not expand includes: that duplicates occurrences and changes file eligibility.
+        for (SourceDocument doc : optionDocuments.values()) {
+            SourceAttribution attribution = new SourceAttribution(doc.id().path(), 1, 1);
+            String docText = String.join("\n", doc.originalLogicalLines());
+            OptionCatalogBuilder.scanSwitches(docText, attribution, switchOcc, switchDefaults,
+                switchValues, tooltips, confirmed);
+            OptionCatalogBuilder.scanConsts(docText, attribution, constOcc, constValues);
+        }
+
+        // 4. macro configuration: companions default closed, and the option-macro
+        // projection is derived from them so the catalog invariant holds by construction
+        CompanionOptionMacros companions = request.companionOptionMacros() != null
+            ? request.companionOptionMacros() : new CompanionOptionMacros(false, false);
+        List<MacroDefinition> companionDefines = new ArrayList<>();
+        if (companions.normalMap()) {
+            companionDefines.add(new MacroDefinition("MC_NORMAL_MAP", ""));
+        }
+        if (companions.specularMap()) {
+            companionDefines.add(new MacroDefinition("MC_SPECULAR_MAP", ""));
+        }
+        MacroConfiguration macros = new MacroConfiguration(
+            MacroIdentityPolicy.OPTION_1, List.of(), companionDefines, companions,
+            List.of(), List.of(), Map.of(), List.of());
+
+        Map<String, String> macroEnv =
+            MacroEnvironmentBuilder.shaderMacros(request, macros);
         Map<String, ConstScanner.Finding> consts = new LinkedHashMap<>();
         // Per-program requirements scanned from each program's own sources: the fragment
         // stage's DRAWBUFFERS routing and the program's countInstances (source-scan
@@ -403,16 +456,35 @@ final class PackFrontEndImpl implements PackFrontEnd {
             new LinkedHashMap<>();
         java.util.Set<com.schmaloogium.engine.config.ProgramRequirementKey> fullscreenKeys =
             new java.util.LinkedHashSet<>();
+        IncludeExpander resourceExpander = new IncludeExpander(index);
         for (SourceKey root : index.roots()) {
-            SourceDocument doc = index.rootDocument(root).orElse(null);
-            if (doc == null) {
+            IncludeExpander.Result expansion = resourceExpander.expand(root);
+            if (expansion instanceof IncludeExpander.Result.Failed failed) {
+                List<EngineDiagnostic> failures = failed.diagnostics().stream()
+                    .map(d -> diag(DiagnosticSeverity.ERROR, d.key(), d.detail())).toList();
+                failures.forEach(diags::report);
+                // A broken root is unavailable, not a broken pack configuration.
                 continue;
             }
-            SourceAttribution attribution = new SourceAttribution(doc.id().path(), 1, 1);
-            String docText = String.join("\n", doc.originalLogicalLines());
-            OptionCatalogBuilder.scanSwitches(docText, attribution, switchOcc, switchDefaults,
-                switchValues, tooltips, confirmed);
-            OptionCatalogBuilder.scanConsts(docText, attribution, constOcc, constValues);
+            // Scan the same active shader text as materialization, retaining comments
+            // for routing and root ownership for stage/family eligibility.
+            StringBuilder sourceText = new StringBuilder();
+            ((IncludeExpander.Result.Expanded) expansion).lines()
+                .forEach(line -> sourceText.append(line.text()).append('\n'));
+            String expandedText = sourceText.toString();
+            var language = LanguageScanner.scan(expandedText, root.source());
+            int version = language.explicitVersion() ? language.version()
+                : effectiveGlslVersion(request.capabilities().glslVersion());
+            ShaderPreprocessor.Result processed =
+                ShaderPreprocessor.process(expandedText, macroEnv, version);
+            processed.diagnostics().forEach(diags::report);
+            if (processed.diagnostics().stream().anyMatch(d ->
+                    d.severity() == DiagnosticSeverity.ERROR
+                        || d.severity() == DiagnosticSeverity.FATAL)) {
+                // Do not let even a successfully processed prefix contribute resources.
+                continue;
+            }
+            String docText = processed.text();
             Map<String, ConstScanner.Finding> docConsts = ConstScanner.scan(docText);
             docConsts.forEach(consts::putIfAbsent);
             var programKey = new com.schmaloogium.engine.config.ProgramRequirementKey(
@@ -512,21 +584,6 @@ final class PackFrontEndImpl implements PackFrontEnd {
         OptionCatalog catalog = OptionCatalogs.create(definitions, packKey, internal);
         OptionState state = catalog.defaultState();
 
-        // 4. macro configuration: companions default closed, and the option-macro
-        // projection is derived from them so the catalog invariant holds by construction
-        CompanionOptionMacros companions = request.companionOptionMacros() != null
-            ? request.companionOptionMacros() : new CompanionOptionMacros(false, false);
-        List<MacroDefinition> companionDefines = new ArrayList<>();
-        if (companions.normalMap()) {
-            companionDefines.add(new MacroDefinition("MC_NORMAL_MAP", ""));
-        }
-        if (companions.specularMap()) {
-            companionDefines.add(new MacroDefinition("MC_SPECULAR_MAP", ""));
-        }
-        MacroConfiguration macros = new MacroConfiguration(
-            MacroIdentityPolicy.OPTION_1, List.of(), companionDefines, companions,
-            List.of(), List.of(), Map.of(), List.of());
-
         // 5. profiles / screens / sliders from the retained stream
         List<ProfileModel> profiles = new ArrayList<>();
         Map<String, List<String>> profileTokens = new LinkedHashMap<>();
@@ -558,8 +615,6 @@ final class PackFrontEndImpl implements PackFrontEnd {
             mainScreen, namedScreens, new SliderSet(sliders), Map.of());
 
         // 6. source catalog view + dimension configurations
-        Map<String, String> macroEnv =
-            MacroEnvironmentBuilder.shaderMacros(request, macros);
         SourceCatalogView catalogView = new SourceCatalogView(index, macroEnv,
             effectiveGlslVersion(request.capabilities().glslVersion()));
         Map<DimensionKey, DimensionConfiguration> dimensions = dimensionsOf(index);

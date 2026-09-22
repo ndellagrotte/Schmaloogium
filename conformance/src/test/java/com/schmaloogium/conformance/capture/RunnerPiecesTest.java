@@ -113,14 +113,18 @@ class RunnerPiecesTest {
 
     @Test
     void inventoryIsRehashedFromDiskAndAnchoredToTheSubject(@TempDir Path tmp) throws IOException {
-        Path subject = tmp.resolve("classes");
-        Files.createDirectories(subject.resolve("com"));
-        Files.writeString(subject.resolve("com/A.class"), "A");
+        Path subject = tmp.resolve("mod/build/classes/java/main");
+        Path engine = tmp.resolve("engine/build/libs/engine.jar");
+        Files.createDirectories(subject.resolve("com/mod"));
+        Files.createDirectories(engine.getParent());
+        Files.writeString(subject.resolve("com/mod/A.class"), "mod");
+        Files.writeString(engine, "engine-jar-bytes");
         Path lib = tmp.resolve("lib.jar");
         Files.writeString(lib, "jarbytes");
         ClientLaunchSpec launch = new ClientLaunchSpec("java", "Main", tmp, List.of(), List.of(), List.of(),
-            Map.of(), List.of(subject));
-        String subjectHash = LaunchInventory.subjectHash(List.of(subject));
+            Map.of(), List.of(subject, engine));
+        String subjectHash = LaunchInventory.subjectHash(launch.subjectDirs());
+        assertNotEquals(LaunchInventory.subjectHash(List.of(subject)), subjectHash);
         String libHash = Hashes.sha256HexOfFile(lib);
         String inventory = LaunchInventory.SCHEMA_LINE + "\n"
             + "mods.0.id = \"forge\"\nmods.0.sha256 = " + libHash + "\nmods.0.source = \"" + lib + "\"\n"
@@ -133,12 +137,58 @@ class RunnerPiecesTest {
         assertEquals(LaunchInventory.modSetHash(Map.of("forge", libHash), false), env.externalModSetSha256());
         String stale = inventory.replace(libHash, "0".repeat(64));
         assertThrows(IOException.class, () -> LaunchInventory.authenticate(stale, launch, "1.12.2"));
-        // the subject's record is anchored to the launch spec's directories, never to the client's
-        // claim: a rebuilt subject yields a new subject hash without re-running the inventory
-        Files.writeString(subject.resolve("com/A.class"), "B");
+        SceneSpec scene = SceneParser.parse(com.schmaloogium.conformance.scene.SceneSpecTest.terrainDay());
+        WorldCache.Descriptor world = WorldCache.descriptor(scene.world(), "1.12.2", env.externalModSetSha256());
+        // Rewriting unchanged engine bytes must not invalidate the subject or its world.
+        Files.writeString(engine, "engine-jar-bytes");
+        assertEquals(env, LaunchInventory.authenticate(inventory, launch, "1.12.2"));
+        // Only engine content changes: the loader's subject placeholder remains runner-owned,
+        // and external artifacts and the immutable generation-cache key remain independent.
+        Files.writeString(engine, "engine-rebuilt-jar-bytes");
         var rebuilt = LaunchInventory.authenticate(inventory, launch, "1.12.2");
         assertNotEquals(env.subjectJarSha256(), rebuilt.subjectJarSha256());
+        assertNotEquals(env.modSetSha256(), rebuilt.modSetSha256());
         assertEquals(env.externalModSetSha256(), rebuilt.externalModSetSha256());
+        assertEquals(world.sha256(),
+            WorldCache.descriptor(scene.world(), "1.12.2", rebuilt.externalModSetSha256()).sha256());
+    }
+
+    @Test
+    void combinedSubjectTreeRetainsFramingRelocationAndCollisionRules(@TempDir Path tmp) throws IOException {
+        Path mod = tmp.resolve("original/mod/build/classes/java/main");
+        Path engine = tmp.resolve("original/engine/build/classes/java/main");
+        Path movedMod = tmp.resolve("relocated/mod/build/classes/java/main");
+        Path movedEngine = tmp.resolve("relocated/engine/build/classes/java/main");
+        for (Path root : List.of(mod, engine, movedMod, movedEngine)) {
+            Files.createDirectories(root.resolve("com"));
+        }
+        Files.writeString(mod.resolve("com/Mod.class"), "mod");
+        Files.writeString(engine.resolve("com/Engine.class"), "engine");
+        Files.writeString(movedMod.resolve("com/Mod.class"), "mod");
+        Files.writeString(movedEngine.resolve("com/Engine.class"), "engine");
+        String combined = LaunchInventory.subjectHash(List.of(mod, engine));
+        assertEquals(Hashes.framedSha256(Map.of(
+            "main/com/Mod.class", "mod".getBytes(StandardCharsets.UTF_8),
+            "main/com/Engine.class", "engine".getBytes(StandardCharsets.UTF_8))), combined);
+        assertEquals(combined, LaunchInventory.subjectHash(List.of(movedEngine, movedMod)));
+        // Same-basename output roots merge their logical tree, but never mask duplicate paths.
+        Files.writeString(engine.resolve("com/Mod.class"), "mod");
+        assertThrows(IOException.class, () -> LaunchInventory.subjectHash(List.of(mod, engine)));
+    }
+
+    @Test
+    void subjectRuntimeArtifactsRetainFramingAndRejectCollisions(@TempDir Path tmp) throws IOException {
+        Path original = tmp.resolve("original/engine.jar");
+        Path relocated = tmp.resolve("relocated/engine.jar");
+        Files.createDirectories(original.getParent());
+        Files.createDirectories(relocated.getParent());
+        Files.writeString(original, "executed-engine");
+        Files.writeString(relocated, "executed-engine");
+        String expected = Hashes.framedSha256(Map.of(
+            "engine.jar", "executed-engine".getBytes(StandardCharsets.UTF_8)));
+        assertEquals(expected, LaunchInventory.subjectHash(List.of(original)));
+        assertEquals(expected, LaunchInventory.subjectHash(List.of(relocated)));
+        assertThrows(IOException.class, () -> LaunchInventory.subjectHash(List.of(original, relocated)));
     }
 
     @Test

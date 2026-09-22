@@ -12,7 +12,9 @@ import java.util.List;
  * owns only this interface and the immutable derived metadata — never the policy map. The
  * policy comes from Phase 5's pure {@code FixedSamplerPolicies.appB3()} before any estate or
  * GL object exists; a null policy, changing fingerprint, thrown callback or malformed output
- * is a typed registry-wide {@code INVALID_SAMPLER_POLICY} failure with zero GL calls.
+ * is a typed registry-wide {@code INVALID_SAMPLER_POLICY} failure. Declaration planning
+ * checks precede GL; linked-active projection checks precede sampler initialization and
+ * publication, cleaning unpublished objects on failure.
  */
 public interface FixedSamplerLayoutPolicy {
 
@@ -20,7 +22,7 @@ public interface FixedSamplerLayoutPolicy {
     FixedSamplerPolicyFingerprint fingerprint();
 
     /** Validate one band's projection; called in canonical band order for every
-     *  provider-permitted band before any GL work. */
+     *  provider-permitted band, first for declarations and then for linked activity. */
     SamplerLayoutValidation validate(StageId effectiveStage, StageBand effectiveBand,
         List<ProgramSamplerDeclaration> declarations);
 

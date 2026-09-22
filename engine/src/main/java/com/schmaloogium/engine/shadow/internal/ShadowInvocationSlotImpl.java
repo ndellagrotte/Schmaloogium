@@ -37,6 +37,9 @@ import com.schmaloogium.engine.frame.ShadowInvocationResult;
 import com.schmaloogium.engine.frame.ShadowInvocationSlot;
 import com.schmaloogium.engine.frame.ShadowRejection;
 import com.schmaloogium.engine.frame.ShadowSlotEpoch;
+import com.schmaloogium.engine.frame.HookRejection;
+import com.schmaloogium.engine.frame.spi.AtlasBindingEvidence;
+import com.schmaloogium.engine.frame.spi.SignalResult;
 import com.schmaloogium.engine.log.LogChannels;
 import com.schmaloogium.engine.registry.BarrierContext;
 import com.schmaloogium.engine.registry.BarrierResult;
@@ -54,7 +57,7 @@ import com.schmaloogium.engine.registry.StageRegistry;
 import com.schmaloogium.engine.registry.StageStep;
 import com.schmaloogium.engine.registry.UseProgramRequest;
 import com.schmaloogium.engine.shadow.CelestialMath;
-import com.schmaloogium.engine.shadow.ShadowBindingSource;
+import com.schmaloogium.engine.textures.TextureLeaseResult;
 import com.schmaloogium.engine.shadow.ShadowCameraMath;
 import com.schmaloogium.engine.shadow.ShadowCameraProjection;
 import com.schmaloogium.engine.shadow.ShadowDrawResult;
@@ -95,7 +98,6 @@ final class ShadowInvocationSlotImpl implements ShadowInvocationSlot {
     private final RegistryFingerprint registryFingerprint;
     private final UniformRuntime uniforms;
     private final ShadowWorldPort world;
-    private final ShadowBindingSource bindings;
     private final java.util.function.BooleanSupplier renderThread;
     private final DiagnosticReporter reporter;
     private final ShadowCameraMath cameraMath;
@@ -107,14 +109,13 @@ final class ShadowInvocationSlotImpl implements ShadowInvocationSlot {
     private boolean mipmapsDisabled;
 
     ShadowInvocationSlotImpl(ShadowPlan plan, RegistryFingerprint registryFingerprint,
-            UniformRuntime uniforms, ShadowWorldPort world, ShadowBindingSource bindings,
+            UniformRuntime uniforms, ShadowWorldPort world,
             java.util.function.BooleanSupplier renderThread, DiagnosticReporter reporter,
             ShadowCameraMath cameraMath, ShadowTraversalPlanner planner) {
         this.plan = plan;
         this.registryFingerprint = registryFingerprint;
         this.uniforms = uniforms;
         this.world = world;
-        this.bindings = bindings;
         this.renderThread = renderThread;
         this.reporter = reporter;
         this.cameraMath = cameraMath;
@@ -366,35 +367,33 @@ final class ShadowInvocationSlotImpl implements ShadowInvocationSlot {
             if (!handleActivation(activation)) {
                 return failure();
             }
+            SignalResult receiver = context.execution().installBaseBindingReceiver(this::refreshBaseBinding);
+            if (!(receiver instanceof SignalResult.Accepted)) {
+                return fail("schmaloogium.shadow.fail.base_receiver");
+            }
 
             return drawContent(traversalView);
         }
 
         /**
          * §4.2 step 8: shadowtex0/1 binding parity through the separately acquired
-         * overlay lease. Suppression (no publication or no lease) aborts the undrawn
+         * overlay lease. Lease rejection aborts the undrawn
          * snapshot without flips or mipmaps and completes after cleanup; backend
          * failure neutralizes.
          */
         private ShadowInvocationResult applyBinding() {
-            Optional<com.schmaloogium.engine.buffers.TextureOverlayPublicationId> expected =
-                    bindings.expectedOverlay();
-            if (expected.isEmpty()) {
-                abortSnapshot("schmaloogium.shadow.abort.binding_suppressed");
-                report(DiagnosticSeverity.WARN, "schmaloogium.shadow.binding.suppressed",
-                        "no texture publication in frame context");
-                return suppressedCompletion();
-            }
-            Optional<TextureOverlayLease> acquired = bindings.acquire();
-            if (acquired.isEmpty()) {
+            var expected = context.texturePublication().id();
+            TextureLeaseResult acquired = context.textureLeases().lease(expected,
+                    context.selection(), context.baseBinding());
+            if (!(acquired instanceof TextureLeaseResult.Acquired ready)) {
                 abortSnapshot("schmaloogium.shadow.abort.binding_suppressed");
                 report(DiagnosticSeverity.WARN, "schmaloogium.shadow.binding.suppressed",
                         "texture lease rejected");
                 return suppressedCompletion();
             }
-            lease = acquired.get();
+            lease = ready.lease();
             TextureBindingResult result = shadow.shadowBindings(
-                    estateGeneration, frameId, snapshot, lease, expected.get());
+                    estateGeneration, frameId, snapshot, lease, expected);
             if (result instanceof TextureBindingResult.Bound bound) {
                 binding = bound.snapshot();
                 lease = null; // ownership transferred into the snapshot
@@ -409,6 +408,36 @@ final class ShadowInvocationSlotImpl implements ShadowInvocationSlot {
             report(DiagnosticSeverity.WARN, "schmaloogium.shadow.binding.suppressed",
                     result.getClass().getSimpleName());
             return suppressedCompletion();
+        }
+
+        private SignalResult refreshBaseBinding(AtlasBindingEvidence evidence) {
+            if (snapshotState != SnapshotState.OPEN || binding == null) {
+                return new SignalResult.Accepted();
+            }
+            TextureLeaseResult result = context.textureLeases().lease(
+                    context.texturePublication().id(), context.selection(), evidence);
+            if (!(result instanceof TextureLeaseResult.Acquired acquired)) {
+                return new SignalResult.Rejected(HookRejection.STALE_PUBLICATION);
+            }
+            TextureOverlayLease next = acquired.lease();
+            boolean transferred = false;
+            try {
+                TextureBindingResult refreshed = shadow.shadowBindings(
+                        estateGeneration, frameId, snapshot, next, context.texturePublication().id());
+                if (refreshed instanceof TextureBindingResult.Bound bound) {
+                    transferred = true;
+                    TextureBindingSnapshot previous = binding;
+                    binding = bound.snapshot();
+                    previous.close();
+                    return new SignalResult.Accepted();
+                }
+                failure = new FailureId("schmaloogium.shadow.fail.base_refresh");
+                return new SignalResult.Failed(failure);
+            } finally {
+                if (!transferred) {
+                    next.close();
+                }
+            }
         }
 
         private boolean handleActivation(BarrierResult activation) {

@@ -19,7 +19,6 @@ import com.schmaloogium.engine.gl.TextureRegion;
 import net.minecraft.client.renderer.GlStateManager;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 
 import java.util.HashSet;
@@ -114,7 +113,8 @@ final class Lwjgl3FramebufferService implements FramebufferService {
             GL30.glFramebufferTexture2D(GL30.GL_DRAW_FRAMEBUFFER, GL30.GL_STENCIL_ATTACHMENT,
                     GL11.GL_TEXTURE_2D, 0, 0);
         });
-        fb.depthAttachment = t instanceof Lwjgl3OwnedTexture owned ? owned : null;
+        fb.depthAttachment = t;
+        fb.depthAttachmentName = glName;
         fb.stencilAttached = false;
         device.noteMutation("framebuffers.attachDepth", fb.subjectLabel());
     }
@@ -159,7 +159,8 @@ final class Lwjgl3FramebufferService implements FramebufferService {
             GL30.glFramebufferTexture2D(GL30.GL_DRAW_FRAMEBUFFER, GL30.GL_STENCIL_ATTACHMENT,
                     target, glName, 0);
         });
-        fb.depthAttachment = t instanceof Lwjgl3OwnedTexture owned ? owned : null;
+        fb.depthAttachment = t;
+        fb.depthAttachmentName = glName;
         fb.stencilAttached = true;
         device.noteMutation("framebuffers.attachDepthStencil", fb.subjectLabel());
     }
@@ -340,19 +341,16 @@ final class Lwjgl3FramebufferService implements FramebufferService {
         int internal = GlNames.glDepthInternalFormat(to.depthFormat);
         int savedRead = GL11.glGetInteger(GL30.GL_READ_FRAMEBUFFER_BINDING);
         int savedDraw = GL11.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING);
-        int savedUnit = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
         int savedTex = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
         try {
             GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, from.glName());
-            GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, to.glName());
             GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, internal,
                     region.x(), region.y(), region.width(), region.height(), 0);
         } finally {
             GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, savedRead);
             GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, savedDraw);
-            GlStateManager.setActiveTexture(savedUnit);
-            GlStateManager.bindTexture(savedTex);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, savedTex);
         }
         to.allocatedWidth = region.width();
         to.allocatedHeight = region.height();
@@ -381,34 +379,53 @@ final class Lwjgl3FramebufferService implements FramebufferService {
         }
         validateSourceRegion(from, region);
         int savedRead = GL11.glGetInteger(GL30.GL_READ_FRAMEBUFFER_BINDING);
-        int savedUnit = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
         int savedTex = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
         try {
             GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, from.glName());
-            GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, to.glName());
             GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0,
                     region.x(), region.y(), region.width(), region.height());
         } finally {
             GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, savedRead);
-            GlStateManager.setActiveTexture(savedUnit);
-            GlStateManager.bindTexture(savedTex);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, savedTex);
         }
         device.noteMutation("framebuffers.copyDepthToTexture", from.subjectLabel());
     }
 
     /** The source region must be positive and in-bounds against the depth attachment. */
     private void validateSourceRegion(Lwjgl3FramebufferHandle from, TextureRegion region) {
-        Lwjgl3OwnedTexture depth = from.depthAttachment;
-        if (depth == null) {
-            throw new IllegalArgumentException("source framebuffer has no depth attachment");
+        TextureHandle attachment = from.depthAttachment;
+        final int width;
+        final int height;
+        if (attachment instanceof Lwjgl3OwnedTexture owned) {
+            device.ownedTextureOf(owned, "framebuffers.copyDepth source");
+            width = owned.allocatedWidth;
+            height = owned.allocatedHeight;
+        } else if (attachment instanceof Lwjgl3BorrowedDepth borrowed && borrowed.owner() == device) {
+            int name = borrowed.resolve().orElseThrow(() ->
+                    new IllegalStateException("source borrowed depth is no longer available"));
+            if (name != from.depthAttachmentName) {
+                throw new IllegalStateException("source borrowed depth changed without reattachment");
+            }
+            // The platform owns this storage: resolve its actual current extent, never infer
+            // it from the destination or erase the authenticated borrowed attachment.
+            int savedTexture = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
+            try {
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, name);
+                width = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
+                height = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
+            } finally {
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, savedTexture);
+            }
+        } else {
+            throw new IllegalArgumentException("source framebuffer has no authenticated depth attachment");
         }
-        if (region.x() + region.width() > depth.allocatedWidth
-                || region.y() + region.height() > depth.allocatedHeight
-                || region.depth() != 1) {
+        if (region.x() < 0 || region.y() < 0 || region.z() != 0
+                || region.width() <= 0 || region.height() <= 0 || region.depth() != 1
+                || (long) region.x() + region.width() > width
+                || (long) region.y() + region.height() > height) {
             throw new IllegalArgumentException(
-                    "source region does not fit the depth attachment (" + depth.allocatedWidth
-                            + "x" + depth.allocatedHeight + ")");
+                    "source region does not fit the depth attachment (" + width + "x" + height + ")");
         }
     }
 

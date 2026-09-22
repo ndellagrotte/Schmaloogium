@@ -295,17 +295,30 @@ public final class EstateViewImpl implements BufferEstateView {
                 physical++;
             }
         }
-        for (com.schmaloogium.engine.registry.BufferRef read : pass.resources().readable()) {
-            EstateCore.ColorPair pair = core.pair(buffer(read.domain(), read.index()));
-            if (pair != null) {
-                readable.put(pair.logical, pair.readSide());
-            } else if (read.domain() == BufferDomain.DEPTH) {
-                core.copyDestinations.stream()
-                    .filter(destination -> destination.logical.index().value() == read.index())
-                    .map(destination -> destination)
-                    .findFirst()
-                    .ifPresent(destination -> readable.put(destination.logical,
-                        bindingTexture(destination)));
+        // Freeze every fixed backing, not just the pass resource-access projection.
+        // The effective provider's sampler layout is resolved later without reading live sides.
+        for (EstateCore.ColorPair pair : core.colorPairs) {
+            readable.put(pair.logical, pair.readSide());
+        }
+        readable.put(buffer(BufferDomain.DEPTH, 0), core.cachedDepth.texture());
+        for (EstateCore.DepthDestination destination : core.copyDestinations) {
+            readable.put(destination.logical, destination.boundTexture());
+        }
+        for (int index = 0; index < core.shadowPlannedDepthCount(); index++) {
+            TextureHandle texture = core.shadowNeutralBacked()
+                ? core.shadowNeutral == null ? null : core.shadowNeutral.depthByUnit(index)
+                : core.shadowTexture(index);
+            if (texture != null) {
+                readable.put(buffer(BufferDomain.SHADOWTEX, index), texture);
+            }
+        }
+        for (int index = 0; index < core.shadowPlannedColorCount(); index++) {
+            EstateCore.ShadowColorPair pair = core.shadowColorPair(index);
+            TextureHandle texture = core.shadowNeutralBacked()
+                ? core.shadowNeutral == null ? null : core.shadowNeutral.colorByUnit(index)
+                : pair == null ? null : pair.readSide();
+            if (texture != null) {
+                readable.put(buffer(BufferDomain.SHADOWCOLOR, index), texture);
             }
         }
         // The written buffers are the route's attached buffers (§4.4.2: "toggle every
@@ -659,7 +672,6 @@ public final class EstateViewImpl implements BufferEstateView {
     @Override
     public TextureBindingResult textureBindings(PassBufferSnapshot snapshot,
             TextureOverlayLease overlay, TextureOverlayPublicationId expectedOverlay) {
-        core.checkRenderThread();
         return textureBinder.bind(core, snapshot, overlay, expectedOverlay);
     }
 

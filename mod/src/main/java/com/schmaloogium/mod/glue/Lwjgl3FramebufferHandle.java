@@ -5,6 +5,7 @@ package com.schmaloogium.mod.glue;
 
 import com.schmaloogium.engine.gl.FramebufferDrawSlot;
 import com.schmaloogium.engine.gl.FramebufferHandle;
+import com.schmaloogium.engine.gl.TextureHandle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,8 @@ final class Lwjgl3FramebufferHandle implements FramebufferHandle, Lwjgl3Handle {
     /** Attachments, indexed by positional color attachment index; null slots are holes. */
     final List<Lwjgl3OwnedTexture> colorAttachments = new ArrayList<>();
 
-    Lwjgl3OwnedTexture depthAttachment;
+    TextureHandle depthAttachment;
+    int depthAttachmentName;
     boolean stencilAttached;
 
     /** The established positional draw route; null until drawBuffers first sets one. */

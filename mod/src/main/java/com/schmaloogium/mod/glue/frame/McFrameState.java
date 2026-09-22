@@ -93,6 +93,39 @@ public final class McFrameState {
         GL11.glGetFloatv(glEnum, buffer);
     }
 
+    /** Preserve only managed world depth; any other requested clear bits still execute. */
+    public static void clearHandDepth(int mask, boolean preserveWorldDepth) {
+        int remaining = preserveWorldDepth ? mask & ~GL11.GL_DEPTH_BUFFER_BIT : mask;
+        if (remaining != 0) {
+            net.minecraft.client.renderer.GlStateManager.clear(remaining);
+        }
+    }
+
+    /** The item draw's projection-Z compression, balanced even when the original throws. */
+    public static void withHandDepth(double scale, Runnable original) {
+        int savedMode = GL11.glGetInteger(GL11.GL_MATRIX_MODE);
+        MATRIX_SCRATCH.clear();
+        GL11.glGetFloatv(GL11.GL_PROJECTION_MATRIX, MATRIX_SCRATCH);
+        net.minecraft.client.renderer.GlStateManager.matrixMode(GL11.GL_PROJECTION);
+        net.minecraft.client.renderer.GlStateManager.pushMatrix();
+        try {
+            // Pre-multiply S * P: compress clip-space Z without changing clip W.
+            // Scaling the existing projection on its right would instead scale eye-space Z.
+            net.minecraft.client.renderer.GlStateManager.loadIdentity();
+            net.minecraft.client.renderer.GlStateManager.scale(1d, 1d, scale);
+            net.minecraft.client.renderer.GlStateManager.multMatrix(MATRIX_SCRATCH);
+            net.minecraft.client.renderer.GlStateManager.matrixMode(savedMode);
+            original.run();
+        } finally {
+            try {
+                net.minecraft.client.renderer.GlStateManager.matrixMode(GL11.GL_PROJECTION);
+                net.minecraft.client.renderer.GlStateManager.popMatrix();
+            } finally {
+                net.minecraft.client.renderer.GlStateManager.matrixMode(savedMode);
+            }
+        }
+    }
+
     /** The per-frame inputs of the celestial event: vanilla's celestial angle, the
      *  interpolated camera position and the render partial ticks; null without a world. */
     public record CelestialInputs(float celestialAngle,

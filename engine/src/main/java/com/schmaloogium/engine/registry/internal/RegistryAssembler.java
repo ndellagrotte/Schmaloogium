@@ -98,6 +98,16 @@ final class RegistryAssembler {
                 continue;
             }
             GlProgramBuilder.build(slot, device, bindings, handles);
+            if (slot.invalidSamplerPolicy != null) {
+                for (ProgramHandle handle : handles) {
+                    device.shaders().delete(handle);
+                }
+                return new RegistryBuildResult.ShadersOff(new RegistryBuildFailure(
+                    RegistryFailureKind.INVALID_SAMPLER_POLICY,
+                    List.of(slot.invalidSamplerPolicy),
+                    slot.invalidSamplerPolicy.diagnosticId(),
+                    "sampler policy rejected linked activity"));
+            }
             if (slot.poisoned) {
                 poisoned = true;
                 break;

@@ -29,7 +29,6 @@ import com.schmaloogium.engine.frame.ReloadIntent;
 import com.schmaloogium.engine.frame.ReloadStatus;
 import com.schmaloogium.engine.frame.ShadowInvocationSlot;
 import com.schmaloogium.engine.shadow.HookDisposition;
-import com.schmaloogium.engine.shadow.ShadowBindingSource;
 import com.schmaloogium.engine.shadow.ShadowHookHealth;
 import com.schmaloogium.engine.shadow.ShadowHookRow;
 import com.schmaloogium.engine.shadow.ShadowPassBuildInput;
@@ -179,28 +178,19 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         }
     }
 
-    /** What a shadow binding source is built over (the accepted tuple's identities). */
-    public record ShadowBindingInputs(long estateGeneration, RegistryFingerprint registry,
-            long registryGeneration, long resourceReloadEpoch,
-            com.schmaloogium.engine.pack.ConfigurationFingerprint configuration) {
-    }
-
     /**
      * The Phase 8 construction inputs (PHASE_8_DOC §4.1): the live hook-health audit, the
-     * world port factory over the mapped policy's content switches, the binding source
-     * factory over the accepted estate generation, and the render-thread predicate.
+     * world port factory over the mapped policy's content switches and render-thread predicate.
      */
     public record ShadowServices(
             Supplier<ShadowHookHealth> hookHealth,
             Function<ShadowPolicy, ShadowWorldPort> worldPort,
-            Function<ShadowBindingInputs, ShadowBindingSource> bindings,
             BooleanSupplier renderThread,
             Consumer<Boolean> planReadySink) {
 
         public ShadowServices {
             Objects.requireNonNull(hookHealth, "hookHealth");
             Objects.requireNonNull(worldPort, "worldPort");
-            Objects.requireNonNull(bindings, "bindings");
             Objects.requireNonNull(renderThread, "renderThread");
             Objects.requireNonNull(planReadySink, "planReadySink");
         }
@@ -213,7 +203,6 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
                     policy -> {
                         throw new IllegalStateException("no shadow world port");
                     },
-                    inputs -> ShadowBindingSource.absent(),
                     () -> true,
                     ready -> { });
         }
@@ -229,6 +218,7 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
     private final com.schmaloogium.engine.config.id.IdRuntimeBuilder idBuilder;
     private final com.schmaloogium.engine.config.id.IdRuntimePublisher idPublisher;
     private ActivePipeline active;
+    private com.schmaloogium.engine.textures.TextureSystem activeTextures;
     private long drainSerial;
     private long awaitingMainDepthVersion = -1L;
 
@@ -253,6 +243,58 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
                         current.composition().identity(), current.composition().version());
     }
 
+    /** Resource NONE: replace only texture state over the retained accepted configuration. */
+    public ReloadStatus refreshResources() {
+        if (active == null || active.composition().resourceReloadEpoch()
+                == services.resourceReloadEpoch().getAsLong()) {
+            return currentStatus();
+        }
+        ActivePipeline previous = active;
+        FrameCompositionRecord old = previous.composition();
+        Attempt attempt = new Attempt(previous, activeTextures, services.resourceReloadEpoch().getAsLong());
+        attempt.configuration = previous.configuration();
+        services.installSink().accept(Optional.empty());
+        active = null;
+        activeTextures = null;
+        try {
+            attempt.retireOldTextures();
+            var creation = services.stages().textures();
+            if (creation instanceof com.schmaloogium.engine.textures.TextureSystemCreationResult.Failed failed) {
+                return attempt.fail("texture-refresh-create", failed.failure().toString(), List.of());
+            }
+            attempt.textures = ((com.schmaloogium.engine.textures.TextureSystemCreationResult.Created) creation).system();
+            var registry = old.registry().registry().orElseThrow();
+            var request = services.stages().textureInputs(previous.configuration(), registry,
+                    old.estate().generation(), old.registry().generation(), attempt.resourceReloadEpoch);
+            var result = attempt.textures.build(request);
+            if (result instanceof com.schmaloogium.engine.textures.TextureBuildResult.Failed failed) {
+                return attempt.fail("texture-refresh-build", failed.failure().toString(), List.of());
+            }
+            var publication = ((com.schmaloogium.engine.textures.TextureBuildResult.Ready) result).publication();
+            if (!publication.registryFingerprint().equals(registry.fingerprint())
+                    || publication.id().generation() != old.estate().generation()
+                    || publication.registryGeneration() != old.registry().generation()
+                    || publication.resourceReloadEpoch() != attempt.resourceReloadEpoch
+                    || !publication.plan().inputs().configuration().fingerprint().equals(old.identity().configuration())
+                    || services.resourceReloadEpoch().getAsLong() != attempt.resourceReloadEpoch) {
+                return attempt.fail("texture-refresh-identity", "resource identity changed", List.of());
+            }
+            services.stages().attachTextures(attempt.textures, attempt.resourceReloadEpoch);
+            var composition = new FrameCompositionRecord(old.identity(), versions.next(), old.registry(),
+                    old.estate(), old.uniforms(), old.port(), old.engineFlags(), old.handDepthMultiplier(),
+                    attempt.resourceReloadEpoch, publication, attempt.textures::lease,
+                    old.shadowSlot(), old.idRuntime(), old.vertexEpoch());
+            active = new ActivePipeline(composition, previous.configuration(), previous.uniforms(), previous.replay());
+            activeTextures = attempt.textures;
+            services.installSink().accept(Optional.of(composition));
+            LOG.info("H13-PUBLISH-01 resource texture publication installed: id={} resourceEpoch={}",
+                    publication.id(), attempt.resourceReloadEpoch);
+            return currentStatus();
+        } catch (RuntimeException failure) {
+            return attempt.fail("texture-refresh", failure.toString(), List.of());
+        }
+    }
+
     /** The main-depth version P5 asked to wait for, or -1 when no retry is pending. */
     public long awaitingMainDepthVersion() {
         return awaitingMainDepthVersion;
@@ -272,8 +314,9 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         // Step 1: admission closes first; the previous composition never comes back.
         services.installSink().accept(Optional.empty());
         services.ids().publicationSink().accept(com.schmaloogium.mod.glue.id.IdPublication.none());
-        Attempt attempt = new Attempt(active);
+        Attempt attempt = new Attempt(active, activeTextures, services.resourceReloadEpoch().getAsLong());
         active = null;
+        activeTextures = null;
         try {
             return run(attempt, request);
         } catch (RuntimeException e) {
@@ -311,6 +354,11 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
                     + PackFrontEnd.CURRENT_SCHEMA_VERSION, List.of());
         }
         DimensionKey dimension = pickDimension(cfg, services.liveDimension().get());
+        var textureCreation = services.stages().textures();
+        if (textureCreation instanceof com.schmaloogium.engine.textures.TextureSystemCreationResult.Failed failed) {
+            return a.fail("texture-create", failed.failure().toString(), List.of());
+        }
+        a.textures = ((com.schmaloogium.engine.textures.TextureSystemCreationResult.Created) textureCreation).system();
         // The shadow demand is the planned projection's (P5 sizes from the registry's
         // sampler declarations plus the P3 minima floor), read once the estate exists.
         // Step 2: the P6 runtime precedes P4 (its participants compose the barrier).
@@ -334,7 +382,7 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         RegistryFingerprint fingerprint = view.fingerprint();
         PipelineStages.EstateHandle estate = services.stages().estate(cfg, view, fingerprint,
                 new BufferRuntimeInputs(services.displayExtent().get(),
-                        multiplier(options, "renderResMul"), multiplier(options, "shadowResMul")));
+                        multiplier(options, "renderResMul", 1.0d), multiplier(options, "shadowResMul", 1.0d)));
         switch (estate) {
             case PipelineStages.EstateHandle.AwaitingMainDepth awaiting -> {
                 awaitingMainDepthVersion = awaiting.expectedVersion();
@@ -420,9 +468,6 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
             ShadowPassBuildResult built = ShadowPassFactory.standard().create(new ShadowPassBuildInput(
                     ready.plan(), fingerprint, a.runtime,
                     services.shadow().worldPort().apply(ready.plan().policy()),
-                    services.shadow().bindings().apply(new ShadowBindingInputs(
-                            publishedEstate.generation(), fingerprint, published.generation(),
-                            services.resourceReloadEpoch().getAsLong(), cfg.fingerprint())),
                     services.shadow().renderThread(), services.diagnostics()));
             if (built instanceof ShadowPassBuildResult.Ready slotReady) {
                 shadowSlot = Optional.of(slotReady.slot());
@@ -448,8 +493,25 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
             }
         }
         services.shadow().planReadySink().accept(shadowSlot.isPresent());
+        // P13 builds only against the actual accepted registry and estate generations.
+        var textureRequest = services.stages().textureInputs(cfg, view, publishedEstate.generation(),
+                published.generation(), a.resourceReloadEpoch);
+        var textureBuild = a.textures.build(textureRequest);
+        if (textureBuild instanceof com.schmaloogium.engine.textures.TextureBuildResult.Failed failed) {
+            return a.fail("texture-build", failed.failure().toString(), List.of());
+        }
+        var texturePublication = ((com.schmaloogium.engine.textures.TextureBuildResult.Ready) textureBuild).publication();
+        if (texturePublication.id().generation() != publishedEstate.generation()
+                || texturePublication.registryGeneration() != published.generation()
+                || !texturePublication.registryFingerprint().equals(fingerprint)
+                || texturePublication.resourceReloadEpoch() != a.resourceReloadEpoch
+                || !texturePublication.plan().inputs().configuration().fingerprint().equals(cfg.fingerprint())
+                || services.resourceReloadEpoch().getAsLong() != a.resourceReloadEpoch) {
+            return a.fail("texture-identity", "accepted texture tuple changed", List.of());
+        }
+        services.stages().attachTextures(a.textures, a.resourceReloadEpoch);
         // Step 8 (Task F, PHASE_9_DOC §5.3): the id runtime is published after the texture
-        // stage (still the explicit empty publication) and before atomic Active. IDs are a
+        // stage and before atomic Active. IDs are a
         // FEATURE: a failed build or snapshot leaves them off and the pipeline installs.
         Optional<com.schmaloogium.engine.config.id.PublishedIdRuntime> idRuntime = Optional.empty();
         com.schmaloogium.mod.glue.id.IdIdentityMaps idMaps = com.schmaloogium.mod.glue.id.IdIdentityMaps.EMPTY;
@@ -497,7 +559,7 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
                         : services.ids().vertexHooks().get();
         java.util.Set<com.schmaloogium.engine.registry.ExtendedAttribute> declaredUnion = declaredClassicAttributes(view);
         boolean declaresAttributes = !declaredUnion.isEmpty();
-        // Steps 9: P13 stays the explicit empty publication. Atomic install.
+        // Step 9: atomically install the complete accepted tuple.
         PipelineVersion version = versions.next();
         Optional<com.schmaloogium.engine.vertex.VertexEpoch> vertexEpoch =
                 vertexHealth.healthy() && declaresAttributes
@@ -509,15 +571,22 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
                         : Optional.empty();
         PipelineIdentity identity = new PipelineIdentity(cfg.pack(), dimension, cfg.fingerprint());
         FrameCompositionRecord composition = new FrameCompositionRecord(identity, version,
-                published, publishedEstate, a.runtime, services.port(),
-                services.resourceReloadEpoch().getAsLong(), shadowSlot, idRuntime, vertexEpoch);
+                published, publishedEstate, a.runtime, services.port(), cfg.properties().engineFlags(),
+                multiplier(options, "handDepthMul", 0.125d),
+                a.resourceReloadEpoch, texturePublication, a.textures::lease, shadowSlot, idRuntime, vertexEpoch);
         active = new ActivePipeline(composition, cfg, a.runtime, a.collector);
+        activeTextures = a.textures;
         services.ids().publicationSink().accept(new com.schmaloogium.mod.glue.id.IdPublication(
                 idRuntime, idMaps, idSink,
                 projection.isPresent() ? services.ids().handLight().get()
                         : com.schmaloogium.engine.config.id.HandLightPolicy.allDefault(),
                 vertexEpoch, declaredUnion));
         services.installSink().accept(Optional.of(composition));
+        LOG.info("H13-PUBLISH-01 texture publication installed: id={} registry={} estate={} "
+                        + "resourceEpoch={} custom={} noise={}",
+                texturePublication.id(), published.generation(), publishedEstate.generation(),
+                a.resourceReloadEpoch, texturePublication.plan().customTextures().size(),
+                texturePublication.plan().noise());
         LOG.info("H-PIPE-01 composition installed: pack {} dimension {} registry generation {} "
                         + "estate generation {} version {} programs {} shadow={} ids={} vertexEpoch={}",
                 cfg.pack().selectedRoot().canonicalString(), dimension, published.generation(),
@@ -594,16 +663,16 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         return live != null && cfg.dimensions().containsKey(live) ? live : DimensionKey.BASE;
     }
 
-    private static double multiplier(EngineOptionData options, String key) {
+    private static double multiplier(EngineOptionData options, String key, double fallback) {
         String raw = options.values().get(key);
         if (raw == null) {
-            return 1.0d;
+            return fallback;
         }
         try {
             double value = Double.parseDouble(raw);
-            return Double.isFinite(value) && value > 0d ? value : 1.0d;
+            return Double.isFinite(value) && value > 0d ? value : fallback;
         } catch (NumberFormatException e) {
-            return 1.0d;
+            return fallback;
         }
     }
 
@@ -658,6 +727,9 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
     private final class Attempt {
 
         final ActivePipeline old;
+        final com.schmaloogium.engine.textures.TextureSystem oldTextures;
+        final long resourceReloadEpoch;
+        com.schmaloogium.engine.textures.TextureSystem textures;
         PackConfiguration configuration;
         ReplayErrorCollector collector;
         UniformRuntime runtime;
@@ -670,10 +742,14 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         boolean estateTransferred;
         boolean estateAccepted;
         boolean oldRetired;
+        boolean oldTexturesRetired;
         Optional<com.schmaloogium.engine.config.id.PublishedIdRuntime> idRuntime = Optional.empty();
 
-        Attempt(ActivePipeline old) {
+        Attempt(ActivePipeline old, com.schmaloogium.engine.textures.TextureSystem oldTextures,
+                long resourceReloadEpoch) {
             this.old = old;
+            this.oldTextures = oldTextures;
+            this.resourceReloadEpoch = resourceReloadEpoch;
         }
 
         /** Off selection or Off load: the accepted-off outcome, one version increment. */
@@ -696,6 +772,13 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
          * publishers off, advance the version once, report one diagnostic, stay empty.
          */
         ReloadStatus fail(String step, String detail, List<EngineDiagnostic> extra) {
+            active = null;
+            activeTextures = null;
+            services.installSink().accept(Optional.empty());
+            if (textures != null) {
+                retireTextures(textures);
+                textures = null;
+            }
             closeOwned();
             idPublisher.deactivate(new com.schmaloogium.engine.config.id.IdPublishContext("off"));
             closeIdRuntime(idRuntime, "candidate");
@@ -748,7 +831,23 @@ public final class PipelineTransaction implements ShaderReloadControllerImpl.Dra
         void retireOld() {
             if (old != null && !oldRetired) {
                 oldRetired = true;
+                retireOldTextures();
                 retire(old.uniforms(), UniformRetirementReason.REPLACEMENT, "replaced");
+            }
+        }
+
+        private void retireOldTextures() {
+            if (oldTextures != null && !oldTexturesRetired) {
+                oldTexturesRetired = true;
+                retireTextures(oldTextures);
+            }
+        }
+
+        private void retireTextures(com.schmaloogium.engine.textures.TextureSystem owner) {
+            try {
+                services.stages().detachTextures(owner);
+            } finally {
+                owner.close();
             }
         }
 

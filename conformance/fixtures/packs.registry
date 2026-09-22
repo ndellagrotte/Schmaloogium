@@ -18,28 +18,32 @@ archiveName = BSL_v10.1.3.zip
 licence = ARR — no bundling, no re-hosting (RESEARCH.md App G)
 sourceUrl = https://modrinth.com/shader/bsl-shaders
 
+# Reimagined is the first default-style target; pins establish identity, not a PASS.
+# Dual-spec T0/T1 eligibility is provisional; Phase 2 v2 §11.3 item 10 timing remains unresolved.
 [pack complementary-reimagined]
 displayName = Complementary Reimagined
 tier = dual-spec
 mode = MODRINTH
 modrinthProject = complementary-reimagined
-modrinthVersion =
-version = r5.8.1
-sha512 =
-archiveName = ComplementaryReimagined_r5.8.1.zip
-licence = Complementary Development License — no bundling, no re-hosting (RESEARCH.md App G)
+modrinthVersion = ErCjThzb
+version = r5.9.1
+sha512 = b1ae05727dd006b1d95a3cd0830fd593a7372aa28030b17b39e8955d47bad6153a0c40aae440cd168b2faaafa5828d9cbe6b3b66eff087df1f010099d881ee03
+archiveName = ComplementaryReimagined_r5.9.1.zip
+licence = Complementary License Agreement 1.7 — local usage only for this fixture; no bundling, no re-hosting
 sourceUrl = https://modrinth.com/shader/complementary-reimagined
 
+# Unbound is assessed separately at its default style; pins establish identity, not a PASS.
+# Dual-spec T0/T1 eligibility is provisional; Phase 2 v2 §11.3 item 10 timing remains unresolved.
 [pack complementary-unbound]
 displayName = Complementary Unbound
 tier = dual-spec
 mode = MODRINTH
 modrinthProject = complementary-unbound
-modrinthVersion =
-version = r5.9
-sha512 =
-archiveName = ComplementaryUnbound_r5.9.zip
-licence = Complementary Development License — no bundling, no re-hosting (RESEARCH.md App G)
+modrinthVersion = UhZjVKiD
+version = r5.9.1
+sha512 = fe7ee33e0fcf69ea2922bdc80c514faac8ef0875112cf0efeb4d8fbd03c177f2d9a48179de6ca6e055bf5dc8c64d1ca1c7d0987ed763d04842df3bda3a29417f
+archiveName = ComplementaryUnbound_r5.9.1.zip
+licence = Complementary License Agreement 1.7 — local usage only for this fixture; no bundling, no re-hosting
 sourceUrl = https://modrinth.com/shader/complementary-unbound
 
 [pack sildurs-vibrant]

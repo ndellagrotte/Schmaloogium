@@ -26,7 +26,6 @@ public final class ShadowPassFactoryImpl implements ShadowPassFactory {
                 input.registryFingerprint(),
                 input.uniforms(),
                 input.world(),
-                input.bindings(),
                 input.renderThread(),
                 input.reporter(),
                 cameraMath(),

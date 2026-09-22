@@ -3,6 +3,7 @@
 
 package com.schmaloogium.mod.mixin.frame;
 
+import com.schmaloogium.mod.conformance.ControlledClock;
 import com.schmaloogium.mod.glue.frame.FrameHooks;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -10,10 +11,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.culling.ICamera;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Random;
 
 /**
  * The core frame transaction hooks (PHASE_7_DOC §4.10.2, H-FRAME-00…07): the exact
@@ -31,6 +36,47 @@ public abstract class MixinEntityRenderer {
     /** H-FRAME-01: frame counter read at HEAD, before the incrementing argument. */
     @Shadow
     private int frameCount;
+
+    @Shadow
+    private float torchFlickerX;
+
+    @Shadow
+    private float torchFlickerDX;
+
+    @Unique
+    private Random schmaloogium$torchFlickerRandom;
+
+    /**
+     * The clock arms at client-tick END, potentially with wall-clock ticks still queued.
+     * Begin flicker at the first scheduled frame, not in that uncontrolled remainder.
+     * Each new arm resets both the random stream and vanilla's accumulated history.
+     */
+    @Inject(method = "updateTorchFlicker()V", at = @At("HEAD"), cancellable = true,
+            require = 1, expect = 1)
+    private void schmaloogium$beginControlledFlicker(CallbackInfo ci) {
+        Random random = ControlledClock.torchFlickerRandom();
+        if (random == null) {
+            schmaloogium$torchFlickerRandom = null;
+            return;
+        }
+        if (ControlledClock.renderedFrames() == 0) {
+            ci.cancel();
+            return;
+        }
+        if (schmaloogium$torchFlickerRandom != random) {
+            schmaloogium$torchFlickerRandom = random;
+            torchFlickerX = 0f;
+            torchFlickerDX = 0f;
+        }
+    }
+
+    /** Keep vanilla's four draws and update cadence; isolate only the capture RNG. */
+    @Redirect(method = "updateTorchFlicker()V", at = @At(value = "INVOKE",
+            target = "Ljava/lang/Math;random()D"), require = 4, expect = 4)
+    private double schmaloogium$controlledFlickerRandom() {
+        return schmaloogium$torchFlickerRandom == null
+                ? Math.random() : schmaloogium$torchFlickerRandom.nextDouble();
+    }
 
     @Inject(method = "renderWorldPass(IFJ)V", at = @At("HEAD"), require = 0, expect = 1)
     private void schmaloogium$frameBegin(int pass, float partialTicks, long finishTimeNano,
@@ -72,6 +118,26 @@ public abstract class MixinEntityRenderer {
         FrameHooks.invokeShadowSlotThenRestoreMain(frameCount, () ->
                 renderGlobal.setupTerrain(viewEntity, partialTicks, camera, frameCount,
                         playerSpectator));
+    }
+
+    /** D-P7-79: consume PRE_WEATHER before the method's clear-weather early return. */
+    @Inject(method = "renderRainSnow(F)V", at = @At("HEAD"), require = 1, expect = 1)
+    private void schmaloogium$beforeWeather(float partialTicks, CallbackInfo ci) {
+        FrameHooks.beforeWeather();
+    }
+
+    /** Only the late hand clear: the frame's sampled world depth must survive until composite. */
+    @Redirect(method = "renderWorldPass(IFJ)V",
+            slice = @Slice(
+                    from = @At(value = "FIELD",
+                            target = "Lnet/minecraft/client/renderer/EntityRenderer;renderHand:Z"),
+                    to = @At(value = "INVOKE",
+                            target = "Lnet/minecraft/client/renderer/EntityRenderer;renderHand(FI)V")),
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/GlStateManager;clear(I)V"),
+            require = 1, expect = 1)
+    private void schmaloogium$handDepthClear(int mask) {
+        FrameHooks.clearHandDepth(mask);
     }
 
     /**

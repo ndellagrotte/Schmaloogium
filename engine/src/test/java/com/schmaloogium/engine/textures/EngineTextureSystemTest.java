@@ -188,6 +188,41 @@ class EngineTextureSystemTest {
     }
 
     @Test
+    void lease_stopsBeingCurrentWhenTheBaseBindingIsSuperseded() {
+        Object token = new Object();
+        var latest = new java.util.concurrent.atomic.AtomicBoolean(true);
+        AtlasBindingObservers.install(new AtlasBindingObserver() {
+            @Override
+            public AtlasBindingObservation authenticate(AtlasBindingEvidence evidence) {
+                return new AtlasBindingObservation.Authenticated(
+                    new com.schmaloogium.engine.buffers.BaseAtlasContext.NonAtlas(),
+                    Optional.empty(), token);
+            }
+
+            @Override
+            public boolean isLatest(Object currentness) {
+                return latest.get() && currentness == token;
+            }
+        });
+        var device = new RecordingGLDevice(profile(), new ScriptedResponses());
+        TextureSystem system = system(device);
+        var publication = build(system, device);
+        assertTrue(publication != null, "build must be ready");
+        var lease = assertInstanceOf(TextureLeaseResult.Acquired.class,
+            system.lease(publication.id(), selection(), new Evidence())).lease();
+        assertTrue(lease.isCurrent());
+
+        // An external rebind/delete/reload retires the authenticated atlas evidence even
+        // though the publication is untouched: the held lease must stop being current.
+        latest.set(false);
+        assertFalse(lease.isCurrent());
+        assertEquals(TextureLeaseRejection.STALE_BASE_BINDING,
+            rejection(system.lease(publication.id(), selection(), new Evidence())));
+        lease.close();
+        system.close();
+    }
+
+    @Test
     void atlasSize_valueSourceLaw() {
         var device = new RecordingGLDevice(profile(), new ScriptedResponses());
         var system = system(device);
@@ -224,37 +259,95 @@ class EngineTextureSystemTest {
         assertEquals(FixedSamplerName.NOISETEX.exactName(),
             noiseCandidate.exactSamplerName());
 
-        // Texture cell: companion(default-filled) sprites per atlas then defaults —
-        // one atlas × 2 sprites produce no extra candidates (discovery empty → the full
-        // atlas carries them), then the two standalone default fills follow.
-        var textureCell = table.entry(StageId.GBUFFERS, FixedSamplerName.TEXTURE);
-        var textureRow = assertInstanceOf(TextureCandidateEntry.Candidates.class,
-            textureCell);
-        List<String> originKinds = textureRow.candidates().stream()
-            .map(c -> c.origin() instanceof CandidateOrigin.Companion ? "companion"
-                : c.origin() instanceof CandidateOrigin.DefaultFill ? "default"
-                : "other")
-            .toList();
-        assertTrue(originKinds.contains("default"), "default fills must be present");
-        assertTrue(originKinds.indexOf("default")
-            <= originKinds.lastIndexOf("default"), "defaults contiguous");
-        int previous = -1;
-        for (var candidate : textureRow.candidates()) {
-            assertTrue(candidate.candidateOrdinal() > previous,
-                "cell ordinals are unique and increasing");
-            previous = candidate.candidateOrdinal();
+        // Companion atlases and standalone default fills belong to the normals/specular
+        // cells they back, never to the base texture cell (PHASE_5_DOC §4.12.2 resolves
+        // each declared name in its own exact cell).
+        for (FixedSamplerName name : List.of(FixedSamplerName.NORMALS,
+                FixedSamplerName.SPECULAR)) {
+            var row = assertInstanceOf(TextureCandidateEntry.Candidates.class,
+                table.entry(StageId.GBUFFERS, name));
+            List<String> originKinds = row.candidates().stream()
+                .map(c -> c.origin() instanceof CandidateOrigin.Companion ? "companion"
+                    : c.origin() instanceof CandidateOrigin.DefaultFill ? "default"
+                    : "other")
+                .toList();
+            assertEquals(List.of("companion", "default"), originKinds,
+                "companion precedes its default fill in " + name.exactName());
+            int previous = -1;
+            for (var candidate : row.candidates()) {
+                assertEquals(name, candidate.name());
+                assertEquals(name.exactName(), candidate.exactSamplerName());
+                assertTrue(candidate.candidateOrdinal() > previous,
+                    "cell ordinals are unique and increasing");
+                previous = candidate.candidateOrdinal();
+            }
+            // Shadow-expanded stage sees its own dense ordering.
+            var shadowRow = assertInstanceOf(TextureCandidateEntry.Candidates.class,
+                table.entry(StageId.SHADOW, name));
+            assertEquals(row.candidates().size(), shadowRow.candidates().size());
         }
-        // Shadow-expanded stage sees its own dense ordering.
-        var shadowCell = table.entry(StageId.SHADOW, FixedSamplerName.TEXTURE);
-        var shadowRow = assertInstanceOf(TextureCandidateEntry.Candidates.class,
-            shadowCell);
-        assertEquals(textureRow.candidates().size(), shadowRow.candidates().size());
+        // The base texture cell is left to the world fallback, not companion data.
+        assertInstanceOf(TextureCandidateEntry.Absent.class,
+            table.entry(StageId.GBUFFERS, FixedSamplerName.TEXTURE));
 
         // Absent cells classify rather than fabricate.
         assertTrue(table.entry(StageId.GBUFFERS, FixedSamplerName.LIGHTMAP)
             instanceof TextureCandidateEntry.Absent);
         // Companion plans exist for both enabled kinds over the catalogued atlas.
         assertEquals(2, ready.plan().companions().size());
+    }
+
+    @Test
+    void candidates_declaredCustomAndPackNoiseCarryOwnedHandles() {
+        var device = new RecordingGLDevice(profile(), new ScriptedResponses());
+        var system = system(device);
+        var custom = readyRgba("pack:" + CUSTOM_IMAGE.canonicalString());
+        var noise = readyRgba("noise:" + NOISE_IMAGE.canonicalString());
+        var publication = publish(system, List.of(colortex3Spec()),
+            new NoiseTextureSpec.Override(NOISE_IMAGE, Optional.empty()),
+            List.of(custom, noise), List.of(owned(custom), owned(noise)));
+
+        assertEquals(1, publication.plan().customTextures().size());
+        var customCell = assertInstanceOf(TextureCandidateEntry.Candidates.class,
+            publication.candidates().entry(StageId.DEFERRED,
+                FixedSamplerName.COLORTEX3));
+        assertEquals(1, customCell.candidates().size());
+        var customCandidate = customCell.candidates().getFirst();
+        assertInstanceOf(CandidateOrigin.Custom.class, customCandidate.origin());
+        assertInstanceOf(com.schmaloogium.engine.buffers.TextureHandleRef.Owned.class,
+            customCandidate.handle());
+        // The declared stage expansion is exact: deferred only, never the world column.
+        assertInstanceOf(TextureCandidateEntry.Absent.class,
+            publication.candidates().entry(StageId.GBUFFERS,
+                FixedSamplerName.COLORTEX3));
+
+        var noiseCell = assertInstanceOf(TextureCandidateEntry.Candidates.class,
+            publication.candidates().entry(StageId.DEFERRED,
+                FixedSamplerName.NOISETEX));
+        var noiseCandidate = noiseCell.candidates().getFirst();
+        assertInstanceOf(CandidateOrigin.Noise.class, noiseCandidate.origin());
+        assertInstanceOf(com.schmaloogium.engine.buffers.TextureHandleRef.Owned.class,
+            noiseCandidate.handle());
+        // Both owned objects were uploaded from their paired payloads.
+        assertTrue(device.log().callsMatching("textures.upload").size() >= 2);
+    }
+
+    @Test
+    void noise_overrideWithoutAPairedPayloadStillPublishesGeneratedNoise() {
+        var device = new RecordingGLDevice(profile(), new ScriptedResponses());
+        var system = system(device);
+        // §4.2.4: an override that never produced a payload (missing or undecodable
+        // primary) falls back to the generated texture — a pack that asked for noise
+        // still gets noise, rather than the whole publication failing.
+        var publication = publish(system, List.of(),
+            new NoiseTextureSpec.Override(NOISE_IMAGE, Optional.empty()),
+            List.of(), List.of());
+
+        var noiseCell = assertInstanceOf(TextureCandidateEntry.Candidates.class,
+            publication.candidates().entry(StageId.DEFERRED,
+                FixedSamplerName.NOISETEX));
+        assertInstanceOf(com.schmaloogium.engine.buffers.TextureHandleRef.Owned.class,
+            noiseCell.candidates().getFirst().handle());
     }
 
     @Test
@@ -300,6 +393,58 @@ class EngineTextureSystemTest {
             return ready.publication();
         }
         return null;
+    }
+
+    private static final NormalizedPackPath CUSTOM_IMAGE =
+        new NormalizedPackPath("shaders/lib/textures/cloud-water.png");
+    private static final NormalizedPackPath NOISE_IMAGE =
+        new NormalizedPackPath("shaders/lib/textures/noise.png");
+
+    /** Builds over a declared spec list and its paired prepared sources. */
+    private static TexturePublication publish(TextureSystem system,
+            List<com.schmaloogium.engine.config.CustomTextureSpec> textures,
+            NoiseTextureSpec noiseSpec, List<TextureSourceAsset> assets,
+            List<TexturePreparedSource> prepared) {
+        var request = request(profile(), PackFrontEnd.CURRENT_SCHEMA_VERSION, textures,
+            noiseSpec, new NoiseRequirement(true, 8),
+            new TextureSourceCatalog(EPOCH, assets));
+        return assertInstanceOf(TextureBuildResult.Ready.class,
+            system.build(new TextureBuildRequest(request,
+                new TextureBuildSources(EPOCH, prepared)))).publication();
+    }
+
+    private static com.schmaloogium.engine.config.CustomTextureSpec colortex3Spec() {
+        return new com.schmaloogium.engine.config.CustomTextureSpec.PackPath(
+            new com.schmaloogium.engine.config.TextureBindingKey(
+                com.schmaloogium.engine.config.TexturePropertyStage.DEFERRED,
+                "colortex3", java.util.OptionalInt.empty()),
+            CUSTOM_IMAGE, Optional.empty());
+    }
+
+    /** A 2×2 RGBA8 ready asset under the exact logical source the planner matches. */
+    private static TextureSourceAsset.ReadyAsset readyRgba(String logicalSource) {
+        return new TextureSourceAsset.ReadyAsset(
+            new TextureSourceIdentity.OwnedUpload(OwnedTextureSourceKind.PACK_PNG,
+                logicalSource, "digest:" + logicalSource, "config-fp"),
+            com.schmaloogium.engine.gl.TextureAllocationTarget.TEXTURE_2D,
+            List.of(2, 2), com.schmaloogium.engine.gl.ColorInternalFormat.RGBA8,
+            new com.schmaloogium.engine.preprocess.DeclaredGlslType.Sampler(
+                com.schmaloogium.engine.preprocess.SampledKind.FLOAT,
+                com.schmaloogium.engine.preprocess.TextureDimension.D2, false, false,
+                false),
+            TexturePreparation.standaloneDefaultPolicy(), "digest:" + logicalSource,
+            TexturePreparation.absentSidecarDigest());
+    }
+
+    private static TexturePreparedSource owned(TextureSourceAsset.ReadyAsset asset) {
+        var data = new com.schmaloogium.engine.gl.TextureData(asset.target(),
+            new com.schmaloogium.engine.gl.TextureRegion(0, 0, 0, 2, 2, 1), 0,
+            new com.schmaloogium.engine.gl.PixelLayout.Color(
+                com.schmaloogium.engine.gl.PixelFormat.RGBA,
+                com.schmaloogium.engine.gl.PixelType.UNSIGNED_BYTE),
+            java.nio.ByteBuffer.allocate(2 * 2 * 4).asReadOnlyBuffer());
+        return new TexturePreparedSource.Owned(asset,
+            TextureUploadPayload.ofInitial(List.of(data)));
     }
 
     private static TextureLeaseRejection rejection(TextureLeaseResult result) {
@@ -481,6 +626,16 @@ class EngineTextureSystemTest {
 
     private static TexturePlanRequest request(GLCapabilityProfile capabilities,
             int schemaVersion) {
+        return request(capabilities, schemaVersion, List.of(),
+            new NoiseTextureSpec.Generated(), new NoiseRequirement(true, 4),
+            TextureSourceCatalog.EMPTY);
+    }
+
+    private static TexturePlanRequest request(GLCapabilityProfile capabilities,
+            int schemaVersion,
+            List<com.schmaloogium.engine.config.CustomTextureSpec> textures,
+            NoiseTextureSpec noiseSpec, NoiseRequirement noiseRequirement,
+            TextureSourceCatalog sources) {
         int version = PackFrontEnd.CURRENT_SCHEMA_VERSION;
         if (schemaVersion != version) {
             version = schemaVersion;
@@ -488,11 +643,11 @@ class EngineTextureSystemTest {
         PackIdentity pack = new PackIdentity(new NormalizedPackPath("shaders"), Map.of());
         var catalog = OptionCatalogs.create(List.of(), new Object(), false);
         ShaderPropertiesModel properties = new ShaderPropertiesModel(
-            EngineFlags.allDefault(), List.of(), List.of(), List.of(),
-            new NoiseTextureSpec.Generated(), List.of(),
+            EngineFlags.allDefault(), List.of(), textures, List.of(),
+            noiseSpec, List.of(),
             new ProgramStateModel(Map.of()), List.of());
         ResourceRequirements resources = new ResourceRequirements(null, Map.of(), null,
-            null, Map.of(), null, null, new NoiseRequirement(true, 4));
+            null, Map.of(), null, null, noiseRequirement);
         IdMappingFileInput absentBlock = new IdMappingFileInput(MappingKind.BLOCK,
             MappingFileState.ABSENT, List.of(), List.of(),
             new IdMappingFileFingerprint("fp"));
@@ -554,7 +709,7 @@ class EngineTextureSystemTest {
             4, 6, 1, List.of(SpriteDescriptor.staticSprite("dirt", 2, 0, 2, 2),
                 SpriteDescriptor.staticSprite("stone", 0, 0, 2, 2)))));
         return new TexturePlanRequest(configuration, registry(), atlases,
-            TextureSourceCatalog.EMPTY, new CompanionPolicy(true, true,
+            sources, new CompanionPolicy(true, true,
                 CompanionDemandSource.DECLARED_SAMPLERS), new CompanionMacroState(true,
                 true), capabilities, new RegistryFingerprint(REGISTRY_FP), ESTATE,
             REGISTRY_GEN, EPOCH);

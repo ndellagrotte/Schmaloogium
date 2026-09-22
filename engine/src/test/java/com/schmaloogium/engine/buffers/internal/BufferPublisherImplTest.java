@@ -27,6 +27,7 @@ import com.schmaloogium.engine.gl.GLCapabilityProfile;
 import com.schmaloogium.engine.gl.TextureHandle;
 import com.schmaloogium.engine.gl.record.RecordingGLDevice;
 import com.schmaloogium.engine.gl.record.ScriptedResponses;
+import com.schmaloogium.engine.pack.ConfigurationFingerprint;
 import com.schmaloogium.engine.registry.RegistryFingerprint;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,8 @@ class BufferPublisherImplTest {
             }
         };
         EstateCore core = new EstateCore(device, diagnostic -> {
-        }, new RegistryFingerprint(fingerprint), plan,
+        }, new RegistryFingerprint(fingerprint),
+            new ConfigurationFingerprint("configuration-publisher"), plan,
             new BufferResourceSnapshot.Available(projection), depthSource, depth);
         core.generation = 1;
         return BufferEstateCandidate.wrap(new CandidateImpl(core,

@@ -11,11 +11,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.schmaloogium.engine.buffers.BindingPurpose;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
 import com.schmaloogium.engine.buffers.BufferFailureCode;
 import com.schmaloogium.engine.buffers.BufferIndex;
 import com.schmaloogium.engine.buffers.ClearRequest;
-import com.schmaloogium.engine.buffers.FixedSamplerPolicies;
 import com.schmaloogium.engine.buffers.LogicalBuffer;
 import com.schmaloogium.engine.buffers.ResourceClearPolicy;
 import com.schmaloogium.engine.buffers.ShadowAbortResult;
@@ -59,33 +64,15 @@ import com.schmaloogium.engine.preprocess.DeclaredGlslType;
 import com.schmaloogium.engine.preprocess.SampledKind;
 import com.schmaloogium.engine.preprocess.TextureDimension;
 import com.schmaloogium.engine.registry.BufferDomain;
-import com.schmaloogium.engine.registry.DrawRouting;
-import com.schmaloogium.engine.registry.GeometryInputRequirement;
 import com.schmaloogium.engine.registry.PassDescriptor;
 import com.schmaloogium.engine.registry.PassPopulation;
 import com.schmaloogium.engine.registry.PassResourceAccess;
 import com.schmaloogium.engine.registry.ProgramBindingSelection;
-import com.schmaloogium.engine.registry.ProgramSamplerDeclaration;
 import com.schmaloogium.engine.registry.ProgramSamplerLayout;
-import com.schmaloogium.engine.registry.ProgramSamplerLayoutFingerprint;
 import com.schmaloogium.engine.registry.ProgramSlotId;
-import com.schmaloogium.engine.registry.ProgramStateBundle;
-import com.schmaloogium.engine.registry.ProgramUniformLayout;
-import com.schmaloogium.engine.registry.RegistryFingerprint;
-import com.schmaloogium.engine.registry.ResolvedProgramDescriptor;
-import com.schmaloogium.engine.registry.SamplerLayoutValidation;
 import com.schmaloogium.engine.registry.StageBand;
 import com.schmaloogium.engine.registry.StageId;
 import com.schmaloogium.engine.registry.StageStep;
-
-import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * The §4.10 shadow estate over a scripted recorder: planned-estate detection and operator
@@ -128,14 +115,14 @@ class ShadowEstateTest {
     private static PassDescriptor shadowPass() {
         return new PassDescriptor(
             new StageStep(StageId.SHADOW, StageBand.SHADOW, new PassPopulation.Singleton()),
-            new ProgramSlotId("shadow-pass"), Optional.empty(), PassResourceAccess.empty(),
+            new ProgramSlotId("shadow"), Optional.empty(), PassResourceAccess.empty(),
             Set.of());
     }
 
     private static ShadowPassSnapshot acquire(BuffersEstateFixture fixture) {
         ShadowBeginResult.Acquired acquired = assertInstanceOf(
             ShadowBeginResult.Acquired.class,
-            view(fixture).beginPass(7, shadowPass(), shadowSelection()));
+            view(fixture).beginPass(7, shadowPass(), shadowSelection(fixture)));
         return acquired.snapshot();
     }
 
@@ -143,93 +130,13 @@ class ShadowEstateTest {
         return new ClearRequest(7, 0.25f, 0.5f, 0.75f, false);
     }
 
-    /** A usable selection: mint-blocked fields stay null except the effective descriptor. */
-    private static ProgramBindingSelection shadowSelection() {
-        return shadowSelection(shadowLayout());
-    }
-
-    private static ProgramBindingSelection shadowSelection(ProgramSamplerLayout layout) {
-        try {
-            Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
-            Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
-            theUnsafe.setAccessible(true);
-            Object unsafe = theUnsafe.get(null);
-            Method allocateInstance =
-                unsafeClass.getMethod("allocateInstance", Class.class);
-            ProgramBindingSelection selection = (ProgramBindingSelection) allocateInstance
-                .invoke(unsafe, ProgramBindingSelection.class);
-            Field descriptorField = ProgramBindingSelection.class
-                .getDeclaredField("effectiveDescriptor");
-            descriptorField.setAccessible(true);
-            long offset = (Long) unsafeClass
-                .getMethod("objectFieldOffset", Field.class)
-                .invoke(unsafe, descriptorField);
-            ResolvedProgramDescriptor descriptor = new ResolvedProgramDescriptor(
-                new ProgramSlotId("shadow-pass"), new ProgramSlotId("shadow-pass"),
-                new ProgramStateBundle(new DrawRouting.AllUsedBuffers(BufferDomain.COLORTEX),
-                    Set.of(), 1, Set.of(), Optional.empty(), Optional.empty(),
-                    Optional.empty(), Map.of(), Optional.empty(),
-                    GeometryInputRequirement.NONE),
-                ProgramUniformLayout.empty(), layout, List.of(), List.of());
-            unsafeClass
-                .getMethod("putObject", Object.class, long.class, Object.class)
-                .invoke(unsafe, selection, offset, descriptor);
-            return selection;
-        } catch (ReflectiveOperationException failure) {
-            throw new AssertionError("cannot assemble a shadow selection", failure);
-        }
-    }
-
-    private static ProgramSamplerLayout.Shader shadowLayout() {
+    private static ProgramBindingSelection shadowSelection(BuffersEstateFixture fixture) {
         DeclaredGlslType.Sampler sampler2d = new DeclaredGlslType.Sampler(SampledKind.FLOAT,
             TextureDimension.D2, false, false, false);
-        return new ProgramSamplerLayout.Shader(
-            new ProgramSamplerLayoutFingerprint("layout-fp"),
-            FixedSamplerPolicies.appB3Fingerprint(), StageId.SHADOW,
-            Set.of(StageBand.SHADOW),
-            List.of(new ProgramSamplerDeclaration("shadowtex0", sampler2d, 0, List.of()),
-                new ProgramSamplerDeclaration("shadowcolor0", sampler2d, 1, List.of())),
-            new SamplerLayoutValidation.Valid());
-    }
-
-    /** A shadow program sampling the atlas, the lightmap, a companion and its own depth. */
-    private static ProgramSamplerLayout.Shader platformLayout() {
-        DeclaredGlslType.Sampler sampler2d = new DeclaredGlslType.Sampler(SampledKind.FLOAT,
-            TextureDimension.D2, false, false, false);
-        return new ProgramSamplerLayout.Shader(
-            new ProgramSamplerLayoutFingerprint("layout-fp-platform"),
-            FixedSamplerPolicies.appB3Fingerprint(), StageId.SHADOW,
-            Set.of(StageBand.SHADOW),
-            List.of(new ProgramSamplerDeclaration("tex", sampler2d, 0, List.of()),
-                new ProgramSamplerDeclaration("lightmap", sampler2d, 1, List.of()),
-                new ProgramSamplerDeclaration("normals", sampler2d, 2, List.of()),
-                new ProgramSamplerDeclaration("shadowtex0", sampler2d, 3, List.of())),
-            new SamplerLayoutValidation.Valid());
-    }
-
-    @Test
-    void shadowProgramsKeepThePlatformUnitsAndBindCompanionDefaults() {
-        BuffersEstateFixture fixture = shadowEstate();
-        fixture.core.openFrameId = 7;
-        ShadowEstateImpl view = view(fixture);
-        ShadowBeginResult.Acquired acquired = assertInstanceOf(
-            ShadowBeginResult.Acquired.class,
-            view.beginPass(7, shadowPass(), shadowSelection(platformLayout())));
-        ShadowPassSnapshot snapshot = acquired.snapshot();
-
-        assertEquals(ShadowOperationResult.Applied.class, view.bind(snapshot).getClass());
-        GLCall prepare = calls(fixture, "textures.prepareUnitBindings").get(0);
-        assertEquals((1 << 2) | (1 << 4), prepare.args().get(0),
-            "tex/lightmap on 0/1 are the platform's; normals (2) and shadowtex0 (4) bind");
-        assertEquals(List.of(2, fixture.core.companionNormalsNeutral),
-            calls(fixture, "textures.bindToUnit").get(0).args());
-        TextureBindingResult.Bound bound = assertInstanceOf(TextureBindingResult.Bound.class,
-            view.shadowBindings(1, 7, snapshot, null, null));
-        TextureBindingOutcome.ForeignRetained unit0 = assertInstanceOf(
-            TextureBindingOutcome.ForeignRetained.class, bound.snapshot().outcome(0));
-        assertEquals("tex", unit0.names().get(0).exactName());
-        assertInstanceOf(TextureBindingOutcome.ForeignRetained.class, bound.snapshot().outcome(1));
-        assertInstanceOf(TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(2));
+        ProgramSamplerLayout layout = TextureBinderDomainTest.layout(StageId.SHADOW,
+            StageBand.SHADOW, sampler2d, "shadowcolor0");
+        return TextureBinderDomainTest.selection(fixture, new ProgramSlotId("shadow"),
+            StageId.SHADOW, StageBand.SHADOW, layout);
     }
 
     private static List<GLCall> calls(BuffersEstateFixture fixture, String op) {
@@ -271,7 +178,7 @@ class ShadowEstateTest {
         assertEquals(0, snapshot.colorAttachments().get(0).outputOrdinal());
 
         assertEquals(ShadowBeginResult.Rejected.class,
-            view.beginPass(7, shadowPass(), shadowSelection()).getClass(),
+            view.beginPass(7, shadowPass(), shadowSelection(fixture)).getClass(),
             "a second beginPass while one is open returns PASS_ALREADY_OPEN before GL");
     }
 
@@ -281,14 +188,14 @@ class ShadowEstateTest {
         ShadowEstateImpl view = view(fixture);
         assertEquals(ShadowProtocolRejection.WRONG_FRAME_ID,
             assertInstanceOf(ShadowBeginResult.Rejected.class,
-                view.beginPass(7, shadowPass(), shadowSelection())).reason(),
+                view.beginPass(7, shadowPass(), shadowSelection(fixture))).reason(),
             "no open estate frame");
 
         fixture.core.openFrameId = 7;
         fixture.core.stale = true;
         assertEquals(ShadowProtocolRejection.STALE_GENERATION,
             assertInstanceOf(ShadowBeginResult.Rejected.class,
-                view.beginPass(7, shadowPass(), shadowSelection())).reason());
+                view.beginPass(7, shadowPass(), shadowSelection(fixture))).reason());
         fixture.core.stale = false;
 
         long bindsBefore = fixture.exactOpCount("framebuffers.bind");
@@ -307,21 +214,16 @@ class ShadowEstateTest {
     // ------------------------------------------------------------------ bind + bindings
 
     @Test
-    void bindResolvesTheSixteenRowShadowUnitsThroughTheFrozenSides() {
+    void bindOnlySelectsTheShadowFramebufferWithoutTextureMutation() {
         BuffersEstateFixture fixture = shadowEstate();
         fixture.core.openFrameId = 7;
         ShadowEstateImpl view = view(fixture);
         ShadowPassSnapshot snapshot = acquire(fixture);
 
         assertEquals(ShadowOperationResult.Applied.class, view.bind(snapshot).getClass());
-        GLCall prepare = calls(fixture, "textures.prepareUnitBindings").get(0);
-        assertEquals((1 << 4) | (1 << 13), prepare.args().get(0),
-            "exactly the demanded shadowtex0/shadowcolor0 units occupy the mask");
-        GLCall unit4 = calls(fixture, "textures.bindToUnit").get(0);
-        GLCall unit13 = calls(fixture, "textures.bindToUnit").get(1);
-        assertEquals(List.of(4, fixture.core.shadowDepths.get(0)), unit4.args());
-        assertEquals(List.of(13, fixture.core.shadowColorPairs.get(0).readSide()),
-            unit13.args());
+        assertTrue(calls(fixture, "textures.prepareUnitBindings").isEmpty());
+        assertTrue(calls(fixture, "textures.bindToUnit").isEmpty(),
+            "framebuffer binding cannot bypass authenticated overlay binding");
         GLCall fboBind = calls(fixture, "framebuffers.bind").get(0);
         assertEquals(List.of(FramebufferTarget.DRAW, fixture.core.shadowFbo),
             fboBind.args());
@@ -334,37 +236,52 @@ class ShadowEstateTest {
         ShadowEstateImpl view = view(fixture);
         ShadowPassSnapshot snapshot = acquire(fixture);
 
-        assertEquals(TextureBindingResult.Rejected.class,
-            view.shadowBindings(2, 7, snapshot, null, null).getClass(),
-            "foreign generation rejects before GL");
-        TextureBindingResult.Rejected wrongFrame = assertInstanceOf(
-            TextureBindingResult.Rejected.class,
-            view.shadowBindings(1, 8, snapshot, null, null));
-        assertEquals(TextureBindingRejection.WRONG_FRAME_ID, wrongFrame.reason());
+        TextureBinderDomainTest.Overlay overlay =
+            new TextureBinderDomainTest.Overlay(fixture, snapshot.selection());
+        assertEquals(TextureBindingRejection.INVALID_INPUT,
+            assertInstanceOf(TextureBindingResult.Rejected.class,
+                view.shadowBindings(1, 7, snapshot, null, overlay.id())).reason());
+        assertEquals(TextureBindingRejection.STALE_ESTATE_GENERATION,
+            assertInstanceOf(TextureBindingResult.Rejected.class,
+                view.shadowBindings(2, 8, snapshot, overlay, overlay.id())).reason());
+        assertEquals(TextureBindingRejection.WRONG_FRAME_ID,
+            assertInstanceOf(TextureBindingResult.Rejected.class,
+                view.shadowBindings(1, 8, snapshot, overlay, overlay.id())).reason());
+        ShadowPassSnapshot forged = new ShadowPassSnapshot(snapshot.estateGeneration(),
+            snapshot.depthAttachmentEpoch(), snapshot.frameId(), snapshot.pass(),
+            snapshot.selection(), snapshot.framebuffer(), snapshot.colorAttachments(),
+            snapshot.readableTextures(), snapshot.flipAfterPass());
+        assertEquals(TextureBindingRejection.INVALID_PASS_SNAPSHOT,
+            assertInstanceOf(TextureBindingResult.Rejected.class,
+                view.shadowBindings(1, 7, forged, overlay, overlay.id())).reason());
+        assertTrue(calls(fixture, "textures.prepareUnitBindings").isEmpty());
+        assertTrue(calls(fixture, "textures.bindToUnit").isEmpty());
+        assertTrue(overlay.isCurrent());
 
+        TextureHandle frozenColor = fixture.core.shadowColorPairs.get(0).readSide();
+        fixture.core.shadowColorPairs.get(0).flipped = true;
         TextureBindingResult.Bound bound = assertInstanceOf(TextureBindingResult.Bound.class,
-            view.shadowBindings(1, 7, snapshot, null, null));
-        assertEquals(BindingPurpose.SHADER, bound.snapshot().purpose());
-        TextureBindingOutcome outcome4 = bound.snapshot().outcome(4);
-        TextureHandleRef ref4 = assertInstanceOf(TextureBindingOutcome.BoundObject.class,
-            outcome4).handle();
-        assertSame(fixture.core.shadowDepths.get(0),
-            assertInstanceOf(TextureHandleRef.Borrowed.class, ref4).handle());
-        TextureBindingOutcome outcome13 = bound.snapshot().outcome(13);
-        assertSame(fixture.core.shadowColorPairs.get(0).readSide(),
-            ((TextureHandleRef.Borrowed) ((TextureBindingOutcome.BoundObject) outcome13)
-                .handle()).handle());
-        assertInstanceOf(TextureBindingOutcome.Unused.class, bound.snapshot().outcome(5),
-            "shadowtex1 is not demanded and not allocated");
-        assertTrue(bound.snapshot().isCurrent());
-
-        assertEquals(ShadowCompletionResult.Completed.class,
-            view.completePass(snapshot).getClass());
-        assertFalse(bound.snapshot().isCurrent(),
-            "completion invalidates the outstanding binding lease");
-        assertEquals(TextureBindingResult.Rejected.class,
-            view.shadowBindings(1, 7, snapshot, null, null).getClass(),
-            "the consumed token no longer binds");
+            view.shadowBindings(1, 7, snapshot, overlay, overlay.id()));
+        try {
+            TextureBindingOutcome.BoundObject color = assertInstanceOf(
+                TextureBindingOutcome.BoundObject.class, bound.snapshot().outcome(13));
+            assertSame(frozenColor,
+                assertInstanceOf(TextureHandleRef.Borrowed.class, color.handle()).handle());
+            assertEquals(List.of(13, frozenColor),
+                calls(fixture, "textures.bindToUnit").get(0).args());
+            assertTrue(bound.snapshot().isCurrent());
+            assertEquals(ShadowCompletionResult.Completed.class,
+                view.completePass(snapshot).getClass());
+            assertFalse(bound.snapshot().isCurrent());
+            assertTrue(overlay.isCurrent(),
+                "completion invalidates use but does not release the owned lease");
+            assertEquals(TextureBindingRejection.INVALID_PASS_SNAPSHOT,
+                assertInstanceOf(TextureBindingResult.Rejected.class,
+                    view.shadowBindings(1, 7, snapshot, overlay, overlay.id())).reason());
+        } finally {
+            bound.snapshot().close();
+        }
+        assertFalse(overlay.isCurrent());
     }
 
     // ------------------------------------------------------------------ clear + copy
@@ -507,11 +424,10 @@ class ShadowEstateTest {
     // ------------------------------------------------------------------ neutralization
 
     @Test
-    void degradeToNeutralRebacksUnitsAndRepeatsIdempotently() {
+    void degradeToNeutralDisablesShadowAndRepeatsIdempotently() {
         BuffersEstateFixture fixture = shadowEstate();
         fixture.core.openFrameId = 7;
         ShadowEstateImpl view = view(fixture);
-        TextureHandle realShadowtex0 = fixture.core.shadowDepths.get(0);
         ShadowPassSnapshot snapshot = acquire(fixture);
 
         ShadowNeutralizationResult.Neutralized neutralized = assertInstanceOf(
@@ -535,20 +451,12 @@ class ShadowEstateTest {
             new ShadowOperator().shadow(fixture.core));
         assertEquals(BufferFailureCode.CAPABILITY_LIMIT, unavailable.reason().code(),
             "explicit feature disable reports the capability limit class");
-        TextureBinder binder = new TextureBinder();
-        assertSame(fixture.core.shadowNeutral.depthByUnit(0), binder.backingFor(fixture.core, 4, AppB3Policy.Domain.FULLSCREEN),
-            "unit 4 resolves to the neutral fully-far object");
-        assertNotSame(realShadowtex0, binder.backingFor(fixture.core, 4, AppB3Policy.Domain.FULLSCREEN));
-        assertNull(binder.backingFor(fixture.core, 5, AppB3Policy.Domain.FULLSCREEN),
-            "no second planned depth, no neutral for unit 5");
-        assertSame(fixture.core.shadowNeutral.colorByUnit(0), binder.backingFor(fixture.core, 13, AppB3Policy.Domain.FULLSCREEN));
-        assertNull(binder.backingFor(fixture.core, 14, AppB3Policy.Domain.FULLSCREEN));
 
         assertEquals(ShadowCompletionResult.Rejected.class,
             view.completePass(snapshot).getClass(),
             "the consumed token answers CLOSED, a never-issued one FOREIGN");
         assertEquals(ShadowAbortResult.Rejected.class,
-            view.abortPass(new ShadowPassSnapshot(1, 0, 7, shadowPass(), shadowSelection(),
+            view.abortPass(new ShadowPassSnapshot(1, 0, 7, shadowPass(), snapshot.selection(),
                 fixture.core.shadowFbo, List.of(), Map.of(), Set.of()), "d").getClass());
     }
 
@@ -616,7 +524,7 @@ class ShadowEstateTest {
     // ------------------------------------------------------------------ build failure
 
     @Test
-    void realEstateFailureDisablesTheFeatureWithNeutralBindingsSupplied() {
+    void realEstateFailureDisablesTheFeatureWithoutPartialFramebuffer() {
         ScriptedResponses responses = new ScriptedResponses()
             .framebufferStatus("shadow:sfb",
                 com.schmaloogium.engine.gl.FramebufferStatus.INCOMPLETE_MISSING_ATTACHMENT);
@@ -628,12 +536,5 @@ class ShadowEstateTest {
             new ShadowOperator().shadow(fixture.core));
         assertEquals(BufferFailureCode.FRAMEBUFFER_INCOMPLETE, unavailable.reason().code());
 
-        TextureBinder binder = new TextureBinder();
-        assertSame(fixture.core.shadowNeutral.depthByUnit(0), binder.backingFor(fixture.core, 4, AppB3Policy.Domain.FULLSCREEN),
-            "neutral shadow bindings are supplied while the main pipeline continues");
-        assertSame(fixture.core.shadowNeutral.colorByUnit(0), binder.backingFor(fixture.core, 13, AppB3Policy.Domain.FULLSCREEN));
-        assertEquals(5, fixture.exactOpCount("textures.upload"),
-            "the neutral cache still owns its 1x1 fully-far and opaque-white objects, and the"
-                + " two §4.12.2 companion defaults plus the generated noise survive alongside them");
     }
 }

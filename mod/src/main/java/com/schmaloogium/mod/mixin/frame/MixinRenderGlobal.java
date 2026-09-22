@@ -3,26 +3,28 @@
 
 package com.schmaloogium.mod.mixin.frame;
 
+import com.schmaloogium.engine.frame.DrawDisposition;
 import com.schmaloogium.engine.frame.dispatch.RenderSection;
 import com.schmaloogium.engine.frame.ScopeOpenResult;
 import com.schmaloogium.mod.glue.frame.FrameHooks;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockRenderLayer;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Set;
-
 /**
- * The RenderGlobal scope family (PHASE_7_DOC §4.10.3/§4.10.5, H-SKY-01, H-TERRAIN-01/02,
- * H-DAMAGE-01, H-ENTITY-01, H-CLOUD-01, H-BORDER-01): balanced HEAD/RETURN scope pairs
- * whose open/close decisions are entirely the engine driver's. All method targets are
- * SRG per D-5.
+ * The RenderGlobal scope family (PHASE_7_DOC §4.10.3/§4.10.5, H-SKY-01/03,
+ * H-TERRAIN-01/02, H-DAMAGE-01, H-ENTITY-01, H-CLOUD-01, H-BORDER-01).
+ * Sun/moon draws use local finally-balanced child scopes. Method targets are MCP;
+ * remapJar produces their SRG refmap.
  */
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
@@ -40,6 +42,54 @@ public abstract class MixinRenderGlobal {
     }
 
     private ScopeOpenResult skyScope;
+
+    /**
+     * H-SKY-03: the only draw between the sun and moon texture field reads.
+     * Cleanroom 0.6.10-alpha renderSky(FI)V has a preceding sunrise fan, which
+     * this field-bounded slice deliberately excludes.
+     */
+    @Redirect(method = "renderSky(FI)V",
+            slice = @Slice(
+                    from = @At(value = "FIELD",
+                            target = "Lnet/minecraft/client/renderer/RenderGlobal;SUN_TEXTURES:Lnet/minecraft/util/ResourceLocation;"),
+                    to = @At(value = "FIELD",
+                            target = "Lnet/minecraft/client/renderer/RenderGlobal;MOON_PHASES_TEXTURES:Lnet/minecraft/util/ResourceLocation;")),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/Tessellator;draw()V"),
+            require = 0, expect = 1, allow = 1)
+    private void schmaloogium$sunDraw(Tessellator tessellator) {
+        schmaloogium$skyTexturedDraw(tessellator, true);
+    }
+
+    /** H-SKY-03: stop before star brightness; stars and lower void remain sky-basic. */
+    @Redirect(method = "renderSky(FI)V",
+            slice = @Slice(
+                    from = @At(value = "FIELD",
+                            target = "Lnet/minecraft/client/renderer/RenderGlobal;MOON_PHASES_TEXTURES:Lnet/minecraft/util/ResourceLocation;"),
+                    to = @At(value = "INVOKE",
+                            target = "Lnet/minecraft/client/multiplayer/WorldClient;getStarBrightness(F)F")),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/Tessellator;draw()V"),
+            require = 0, expect = 1, allow = 1)
+    private void schmaloogium$moonDraw(Tessellator tessellator) {
+        schmaloogium$skyTexturedDraw(tessellator, false);
+    }
+
+    @Unique
+    private static void schmaloogium$skyTexturedDraw(Tessellator tessellator, boolean sun) {
+        ScopeOpenResult scope = FrameHooks.enterSection(RenderSection.SKY_TEXTURED);
+        try {
+            if (!FrameHooks.skyTextureAllowed(sun)
+                    || scope instanceof ScopeOpenResult.Opened opened
+                    && opened.draw() == DrawDisposition.OMIT_OPERATION) {
+                // reset alone leaves isDrawing set and breaks the next vanilla begin.
+                tessellator.getBuffer().finishDrawing();
+                tessellator.getBuffer().reset();
+            } else {
+                tessellator.draw();
+            }
+        } finally {
+            FrameHooks.exitSection(RenderSection.SKY_TEXTURED, scope);
+        }
+    }
 
     /**
      * H-TERRAIN-01: solid/cutout/cutout-mipped terrain scopes. H-TERRAIN-02: the

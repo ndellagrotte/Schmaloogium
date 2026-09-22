@@ -67,7 +67,7 @@ public final class ShaderReloadCoordinator implements ReloadCoordinator {
 
     /**
      * Drains one merged request on the render thread with no frame open; empty when nothing
-     * was pending. NONE-lifecycle requests touch no engine state and answer the current status.
+     * was pending. NONE refreshes textures over the retained configuration when its resource epoch changed.
      */
     public Optional<ReloadStatus> drainOnce() {
         Optional<ReloadRequest> pending = queue.beginDrain();
@@ -77,9 +77,7 @@ public final class ShaderReloadCoordinator implements ReloadCoordinator {
         try {
             ReloadRequest merged = pending.get();
             if (merged.lifecycle() == ReloadLifecycle.NONE) {
-                LOG.info("reload {} ({}) is resource-only at v0.1: no publication change",
-                        merged.lifecycle(), merged.cause());
-                return Optional.of(transaction.currentStatus());
+                return Optional.of(transaction.refreshResources());
             }
             DriverReloadRequest driverRequest = new DriverReloadRequest(
                     new ReloadIntent.Select(selection.get()),

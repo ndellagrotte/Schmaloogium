@@ -22,6 +22,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GlStateManager.class)
 public abstract class MixinGlStateManager {
 
+    @Inject(method = "bindTexture(I)V", at = @At("RETURN"), require = 1, expect = 1)
+    private static void schmaloogium$observeTextureBinding(int texture, CallbackInfo ci) {
+        com.schmaloogium.mod.glue.textures.TextureBindingRuntime.onTextureBinding();
+    }
+
+    @Inject(method = "deleteTexture(I)V", at = @At("HEAD"), require = 1, expect = 1)
+    private static void schmaloogium$invalidateTexture(int texture, CallbackInfo ci) {
+        com.schmaloogium.mod.glue.textures.TextureBindingRuntime.onTextureDeleted(texture);
+    }
+
     // ---------------------------------------------------------- H-ALPHA (3 HEAD anchors)
 
     @Inject(method = "enableAlpha()V", at = @At("HEAD"), cancellable = true,

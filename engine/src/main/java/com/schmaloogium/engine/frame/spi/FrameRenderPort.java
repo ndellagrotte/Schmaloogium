@@ -3,7 +3,7 @@
 
 package com.schmaloogium.engine.frame.spi;
 
-import com.schmaloogium.engine.frame.FrameToken;
+import com.schmaloogium.engine.frame.PipelineVersion;
 
 /**
  * The fullscreen draw seam (PHASE_7_DOC §5.1): snapshots/normalizes/restores vanilla-visible
@@ -12,6 +12,9 @@ import com.schmaloogium.engine.frame.FrameToken;
  * mod-side vanilla state operation, deliberately not a Phase-1 facade verb.
  */
 public interface FrameRenderPort {
+
+    /** Observe the current vanilla base, or explicit no-base state for fullscreen work. */
+    AtlasBindingEvidence textureEvidence(PipelineVersion version, long epoch, boolean base);
 
     StateSnapshot snapshotState();
 

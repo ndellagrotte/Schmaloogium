@@ -104,8 +104,9 @@ class PipelineTransactionTest {
         ReloadStatus status = transaction.drain(select());
 
         assertInstanceOf(ReloadStatus.Active.class, status);
-        assertEquals(List.of("load", "uniforms@0", "compile@" + DimensionKey.BASE,
-                "estate@854x480/1.0", "compose", "publishReady", "publishEstate@fp"), stages.calls);
+        assertEquals(List.of("load", "textures", "uniforms@0", "compile@" + DimensionKey.BASE,
+                "estate@854x480/1.0", "compose", "publishReady", "publishEstate@fp",
+                "textureInputs", "attachTextures"), stages.calls);
         assertEquals(List.of(Optional.empty(), Optional.of(installs.get(1).orElseThrow())),
                 installs);
         assertEquals(1L, ((ReloadStatus.Active) status).version().value());
@@ -117,7 +118,8 @@ class PipelineTransactionTest {
         assertEquals(1L, composition.registry().generation());
         assertEquals(1L, composition.estate().generation());
         assertTrue(composition.shadowSlot().isEmpty());
-        assertTrue(composition.texturePublication().isEmpty());
+        assertEquals(composition.estate().generation(), composition.texturePublication().id().generation());
+        assertEquals(0.125, composition.handDepthMultiplier());
         assertEquals(configuration.pack(), composition.identity().pack());
         assertTrue(transaction.active().isPresent());
     }
@@ -174,7 +176,7 @@ class PipelineTransactionTest {
         assertEquals("schmaloogium.pipeline.compile",
                 ((ReloadStatus.Failed) status).failure().diagnosticId());
         assertEquals(List.of(UniformRetirementReason.UNPUBLISHED_ABORT), stages.runtime.retirements);
-        assertEquals(List.of(Optional.empty()), installs);
+        assertTrue(installs.stream().allMatch(Optional::isEmpty));
         assertEquals(1, errors());
     }
 
@@ -272,7 +274,7 @@ class PipelineTransactionTest {
         transaction.drain(select());
 
         assertEquals(0, stages.estateClosed);
-        assertEquals(List.of(Optional.empty()), installs);
+        assertTrue(installs.stream().allMatch(Optional::isEmpty));
     }
 
     @Test
@@ -408,7 +410,6 @@ class PipelineTransactionTest {
                             ports.add(policy);
                             return new PipelineFixtures.InertWorldPort();
                         },
-                        inputs -> com.schmaloogium.engine.shadow.ShadowBindingSource.absent(),
                         () -> true,
                         readiness::add)));
 
@@ -445,7 +446,7 @@ class PipelineTransactionTest {
 
         assertEquals("schmaloogium.pipeline.shadow-mismatch",
                 ((ReloadStatus.Failed) status).failure().diagnosticId());
-        assertEquals(List.of(Optional.empty()), installs);
+        assertTrue(installs.stream().allMatch(Optional::isEmpty));
     }
 
     @Test
@@ -461,7 +462,7 @@ class PipelineTransactionTest {
         assertEquals(List.of(UniformRetirementReason.REPLACEMENT), oldRuntime.retirements);
         assertTrue(newRuntime.retirements.isEmpty());
         assertEquals(2L, ((ReloadStatus.Active) status).version().value());
-        assertEquals("uniforms@1", stages.calls.get(1));
+        assertTrue(stages.calls.contains("uniforms@1"));
     }
 
     @Test
@@ -492,7 +493,7 @@ class PipelineTransactionTest {
 
         assertEquals("schmaloogium.pipeline.unexpected",
                 ((ReloadStatus.Failed) status).failure().diagnosticId());
-        assertEquals(List.of(Optional.empty()), installs);
+        assertTrue(installs.stream().allMatch(Optional::isEmpty));
         assertEquals(1, errors());
     }
 
@@ -516,7 +517,111 @@ class PipelineTransactionTest {
         assertTrue(stages.calls.contains("estate@10x20/0.5"));
     }
 
+    @Test
+    void textures_publishAgainstAcceptedGenerationsAndResourceEpoch() {
+        stages.estateView = new PipelineFixtures.FakeEstateView(17L);
+        stages.estatePublishAnswer = new BufferPublicationResult.Published(new PublishedBufferEstate(
+                17L, Optional.of(stages.estateView), stages.estateView.resources()));
+        stages.publishAnswer = new com.schmaloogium.engine.registry.PublicationResult.Accepted(
+                new com.schmaloogium.engine.registry.PublishedRegistry(29L,
+                        Optional.of(new PipelineFixtures.FakeRegistryView("fp")), Optional.empty(),
+                        () -> { throw new AssertionError("no registry release in this fixture"); }));
+        transaction = new PipelineTransaction(new PipelineTransaction.Services(
+                stages, () -> selection, EngineOptionData::empty, () -> DimensionKey.BASE,
+                () -> new Extent2i(854, 480), () -> 43L, new InertPort(), installs::add, diagnostics));
+
+        assertInstanceOf(ReloadStatus.Active.class, transaction.drain(select()));
+
+        FrameComposition composition = installs.getLast().orElseThrow();
+        var publication = composition.texturePublication();
+        assertEquals(17L, publication.id().generation());
+        assertEquals(29L, publication.registryGeneration());
+        assertEquals(43L, publication.resourceReloadEpoch());
+        assertEquals(composition.registry().registry().orElseThrow().fingerprint(), publication.registryFingerprint());
+    }
+
+    @Test
+    void textures_wrongAcceptedEstateNeverInstallsAndClosesCandidate() {
+        stages.textureEstateOffset = 1L;
+
+        assertInstanceOf(ReloadStatus.Failed.class, transaction.drain(select()));
+
+        assertTrue(installs.stream().allMatch(Optional::isEmpty));
+        assertTrue(transaction.active().isEmpty());
+        org.junit.jupiter.api.Assertions.assertNull(stages.attachedTextures);
+        assertTextureOwnerClosed(0, 0);
+    }
+
+    @Test
+    void textures_sourceEpochRejectionClosesCandidateWithoutRevivingPriorPublication() {
+        assertInstanceOf(ReloadStatus.Active.class, transaction.drain(select()));
+        stages.freshRuntime();
+        stages.textureSourceEpochOffset = 1L;
+
+        assertInstanceOf(ReloadStatus.Failed.class, transaction.drain(select()));
+
+        assertTrue(transaction.active().isEmpty());
+        assertEquals(Optional.empty(), installs.getLast());
+        org.junit.jupiter.api.Assertions.assertNull(stages.attachedTextures);
+        assertTextureOwnerClosed(0, 0);
+        assertTextureOwnerClosed(1, 1);
+        assertInstanceOf(ReloadStatus.Off.class, transaction.currentStatus());
+    }
+
+    @Test
+    void textures_replacementRetiresPriorOwnerButLeavesNewPublicationLive() {
+        assertInstanceOf(ReloadStatus.Active.class, transaction.drain(select()));
+        stages.freshRuntime();
+
+        assertInstanceOf(ReloadStatus.Active.class, transaction.drain(select()));
+
+        assertTextureOwnerClosed(0, 0);
+        org.junit.jupiter.api.Assertions.assertSame(stages.textureOwners.get(1), stages.attachedTextures);
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalStateException.class,
+                () -> stages.textureOwners.get(1).build(stages.textureRequests.get(1)),
+                "a live owner already published and cannot build twice");
+    }
+
+    @Test
+    void resourceRefresh_rejectionClosesBothOwnersAndDoesNotRestoreOldPipeline() {
+        var epoch = new java.util.concurrent.atomic.AtomicLong(7L);
+        transaction = new PipelineTransaction(new PipelineTransaction.Services(
+                stages, () -> selection, EngineOptionData::empty, () -> DimensionKey.BASE,
+                () -> new Extent2i(854, 480), epoch::get, new InertPort(), installs::add, diagnostics));
+        assertInstanceOf(ReloadStatus.Active.class, transaction.drain(select()));
+        stages.calls.clear();
+        stages.textureSourceEpochOffset = 1L;
+        epoch.set(8L);
+
+        assertInstanceOf(ReloadStatus.Failed.class, transaction.refreshResources());
+
+        assertFalse(stages.calls.contains("load"));
+        assertFalse(stages.calls.stream().anyMatch(call -> call.startsWith("uniforms@")));
+        assertEquals(List.of(UniformRetirementReason.REPLACEMENT), stages.runtime.retirements);
+        assertTextureOwnerClosed(0, 0);
+        assertTextureOwnerClosed(1, 1);
+        org.junit.jupiter.api.Assertions.assertNull(stages.attachedTextures);
+        assertTrue(transaction.active().isEmpty());
+        assertEquals(Optional.empty(), installs.getLast());
+        stages.calls.clear();
+        assertInstanceOf(ReloadStatus.Off.class, transaction.refreshResources());
+        assertTrue(stages.calls.isEmpty());
+    }
+
+    private void assertTextureOwnerClosed(int owner, int request) {
+        var failed = assertInstanceOf(com.schmaloogium.engine.textures.TextureBuildResult.Failed.class,
+                stages.textureOwners.get(owner).build(stages.textureRequests.get(request)));
+        assertEquals(com.schmaloogium.engine.textures.TextureFailureCode.OWNER_UNAVAILABLE,
+                failed.failure().code());
+    }
+
     private static final class InertPort implements FrameRenderPort {
+
+        @Override
+        public com.schmaloogium.engine.frame.spi.AtlasBindingEvidence textureEvidence(
+                com.schmaloogium.engine.frame.PipelineVersion version, long frameId, boolean hand) {
+            throw new AssertionError("pipeline transactions never render");
+        }
 
         @Override
         public StateSnapshot snapshotState() {

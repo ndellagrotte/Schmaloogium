@@ -49,7 +49,13 @@ public final class ProgramStateEvaluator {
         if (!catalog.validate(state).valid()) {
             return new ProgramStateEvaluationResult.InvalidState(OptionStateFailure.FOREIGN_CATALOG);
         }
-        Set<String> switches = switchAvailability(configuration.options(), state);
+        Map<String, Boolean> switches = new TreeMap<>();
+        for (OptionDefinition definition : catalog.definitions()) {
+            if (definition.kind() == OptionKind.SWITCH
+                    && state.values().get(definition.name()) instanceof BooleanOptionValue value) {
+                switches.put(definition.name(), value.value());
+            }
+        }
         Set<ProgramKey> executable = configuration.sources() == null
             ? Set.of()
             : configuration.sources().executablePrograms();
@@ -89,7 +95,7 @@ public final class ProgramStateEvaluator {
     private static EvaluatedProgramState evaluateOne(
             ProgramKey key,
             ProgramState raw,
-            Set<String> switches,
+            Map<String, Boolean> switches,
             Set<ProgramDisable> disabled,
             DiagnosticReporter diagnostics) {
         Optional<AlphaTestSpec> alphaTest = raw == null ? Optional.empty() : raw.alphaTest();
@@ -98,15 +104,19 @@ public final class ProgramStateEvaluator {
         boolean propertyEnabled = true;
         if (raw != null && raw.enabledExpression().isPresent()) {
             if (raw.enabledExpression().get() instanceof ProgramEnabledExpressionValue expr) {
+                boolean known = true;
                 for (String name : expr.referencedSwitches()) {
-                    if (!switches.contains(name) && diagnostics != null) {
-                        diagnostics.report(new EngineDiagnostic(DiagnosticSeverity.WARN,
-                            UserChannel.LOG_ONLY,
-                            "schmaloogium.warn.program.enabled_unknown_switch",
-                            List.of(key.programName(), name), "", "schmaloogium.config"));
+                    if (!switches.containsKey(name)) {
+                        known = false;
+                        if (diagnostics != null) {
+                            diagnostics.report(new EngineDiagnostic(DiagnosticSeverity.WARN,
+                                UserChannel.LOG_ONLY,
+                                "schmaloogium.warn.program.enabled_unknown_switch",
+                                List.of(key.programName(), name), "", "schmaloogium.config"));
+                        }
                     }
                 }
-                propertyEnabled = expr.evaluate(switches::contains);
+                propertyEnabled = known && expr.evaluate(name -> Boolean.TRUE.equals(switches.get(name)));
             }
         }
         boolean profileDisabled = false;
@@ -122,14 +132,4 @@ public final class ProgramStateEvaluator {
             propertyEnabled, profileDisabled, finalEnabled);
     }
 
-    /** A switch name is available iff it names a SWITCH definition of the catalog. */
-    private static Set<String> switchAvailability(OptionConfiguration options, OptionState state) {
-        Set<String> available = new TreeSet<>();
-        for (OptionDefinition d : options.catalog().definitions()) {
-            if (d.kind() == OptionKind.SWITCH) {
-                available.add(d.name());
-            }
-        }
-        return available;
-    }
 }

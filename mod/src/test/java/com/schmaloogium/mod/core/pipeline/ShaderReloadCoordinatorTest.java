@@ -79,6 +79,49 @@ class ShaderReloadCoordinatorTest {
     }
 
     @Test
+    void resourceReload_replacesTexturesWithoutReloadingAcceptedPipeline() {
+        FakeStages stages = new FakeStages(loaded.configuration());
+        var epoch = new java.util.concurrent.atomic.AtomicLong(3L);
+        var installs = new ArrayList<Optional<com.schmaloogium.engine.frame.lifecycle.FrameComposition>>();
+        var transaction = new PipelineTransaction(new PipelineTransaction.Services(
+                stages, loaded::selection, EngineOptionData::empty, () -> DimensionKey.BASE,
+                () -> new Extent2i(2, 2), epoch::get, new NoPort(), installs::add,
+                new CollectingDiagnostics()));
+        var coordinator = new ShaderReloadCoordinator(transaction, () -> true, loaded::selection);
+        coordinator.submit(ReloadTrigger.PACK_SELECTION_CHANGED.request());
+        assertInstanceOf(ReloadStatus.Active.class, coordinator.drainOnce().orElseThrow());
+        var previous = installs.getLast().orElseThrow();
+        stages.calls.clear();
+        epoch.set(4L);
+
+        coordinator.submit(ReloadTrigger.RESOURCE_MANAGER_RELOAD.request());
+        assertInstanceOf(ReloadStatus.Active.class, coordinator.drainOnce().orElseThrow());
+
+        var refreshed = installs.getLast().orElseThrow();
+        assertEquals(java.util.List.of("textures", "textureInputs", "attachTextures"), stages.calls);
+        org.junit.jupiter.api.Assertions.assertSame(previous.registry(), refreshed.registry());
+        org.junit.jupiter.api.Assertions.assertSame(previous.estate(), refreshed.estate());
+        org.junit.jupiter.api.Assertions.assertSame(previous.uniforms(), refreshed.uniforms());
+        org.junit.jupiter.api.Assertions.assertSame(loaded.configuration(),
+                transaction.active().orElseThrow().configuration());
+        assertTrue(stages.runtime.retirements.isEmpty());
+        assertEquals(previous.version().value() + 1L, refreshed.version().value());
+        assertEquals(4L, refreshed.resourceReloadEpoch());
+        assertEquals(4L, refreshed.texturePublication().resourceReloadEpoch());
+        org.junit.jupiter.api.Assertions.assertNotEquals(previous.texturePublication().id(),
+                refreshed.texturePublication().id());
+        var closed = assertInstanceOf(com.schmaloogium.engine.textures.TextureBuildResult.Failed.class,
+                stages.textureOwners.getFirst().build(stages.textureRequests.getFirst()));
+        assertEquals(com.schmaloogium.engine.textures.TextureFailureCode.OWNER_UNAVAILABLE,
+                closed.failure().code());
+        stages.calls.clear();
+        coordinator.submit(ReloadTrigger.RESOURCE_MANAGER_RELOAD.request());
+        assertInstanceOf(ReloadStatus.Active.class, coordinator.drainOnce().orElseThrow());
+        assertTrue(stages.calls.isEmpty(), "an unchanged resource epoch preserves the publication");
+        org.junit.jupiter.api.Assertions.assertSame(refreshed, installs.getLast().orElseThrow());
+    }
+
+    @Test
     void mergedLifecycle_takesTheMaximum() {
         Rig rig = rig();
         rig.coordinator.submit(ReloadTrigger.RESOURCE_MANAGER_RELOAD.request());
@@ -110,6 +153,12 @@ class ShaderReloadCoordinatorTest {
     }
 
     private static final class NoPort implements FrameRenderPort {
+
+        @Override
+        public com.schmaloogium.engine.frame.spi.AtlasBindingEvidence textureEvidence(
+                com.schmaloogium.engine.frame.PipelineVersion version, long frameId, boolean hand) {
+            throw new AssertionError("reload coordination never renders");
+        }
 
         @Override
         public StateSnapshot snapshotState() {

@@ -3,6 +3,7 @@
 
 package com.schmaloogium.mod.conformance;
 
+import java.util.Random;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -32,6 +33,7 @@ public final class ControlledClock {
     private static final AtomicLong RENDERED_FRAMES = new AtomicLong();
     private static volatile String failure;
     private static volatile boolean animationHeld;
+    private static volatile Random torchFlickerRandom;
 
     private ControlledClock() {
     }
@@ -60,6 +62,8 @@ public final class ControlledClock {
         failure = null;
         SERVER_PERMITS.drainPermits();
         SERVER_DONE.drainPermits();
+        // A fresh identity also tells the renderer to discard pre-capture flicker history.
+        torchFlickerRandom = new Random(0L);
         animationHeld = false; // animation advances with the controlled ticks from here on
         armed = true;
     }
@@ -79,6 +83,11 @@ public final class ControlledClock {
 
     public static boolean isArmed() {
         return armed;
+    }
+
+    /** Client-thread lightmap RNG for this arm; null outside a controlled capture. */
+    public static Random torchFlickerRandom() {
+        return armed ? torchFlickerRandom : null;
     }
 
     public static boolean isGated() {

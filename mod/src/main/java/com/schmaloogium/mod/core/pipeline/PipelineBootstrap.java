@@ -110,6 +110,10 @@ public final class PipelineBootstrap {
                     ReloadReason.PACK_SELECTION));
         }
         watchDimension();
+        coordinator.transaction().active().filter(active -> active.composition().resourceReloadEpoch()
+                != com.schmaloogium.mod.glue.frame.ResourceReloadBoundary.epoch()).ifPresent(active ->
+                coordinator.submitEngine(new ReloadRequest(ReloadLifecycle.NONE, false, false,
+                        ReloadReason.RESOURCE_RELOAD)));
         retryAwaitingDepth();
         Optional<ReloadStatus> status = coordinator.drainOnce();
         status.ifPresent(s -> LOG.info("reload drained: {}", s));
@@ -191,7 +195,7 @@ public final class PipelineBootstrap {
                 controller::committed,
                 McFrameState::dimension,
                 McFrameState::targetView,
-                DepthTex0Bridge::version,
+                com.schmaloogium.mod.glue.frame.ResourceReloadBoundary::epoch,
                 new DeviceRenderPort(device.get(), McFrameState::targetView),
                 composition -> {
                     FrameRuntime.installComposition(composition);
@@ -205,9 +209,6 @@ public final class PipelineBootstrap {
                 new PipelineTransaction.ShadowServices(
                         com.schmaloogium.mod.glue.shadow.McShadowHookHealth::current,
                         policy -> new com.schmaloogium.mod.glue.shadow.McShadowWorldPort(policy.content()),
-                        inputs -> new com.schmaloogium.mod.glue.shadow.UnpublishedShadowBindings(
-                                inputs.estateGeneration(), inputs.registry(), inputs.registryGeneration(),
-                                inputs.resourceReloadEpoch(), inputs.configuration()),
                         renderThread,
                         com.schmaloogium.mod.glue.shadow.ShadowTraversalGuard::setBlobShadowsSuppressed),
                 new PipelineTransaction.IdServices(
@@ -229,6 +230,12 @@ public final class PipelineBootstrap {
                                             .orElse(null),
                                     publication.maps());
                         })));
+        com.schmaloogium.mod.glue.textures.TextureBindingRuntime.install(
+                () -> transaction.active().map(active -> active.composition().version()));
+        com.schmaloogium.mod.glue.textures.TextureBindingRuntime.installBindingSink(
+                FrameRuntime.driver().atlasBindings());
+        com.schmaloogium.mod.glue.textures.TextureHooks.recordCapabilities(
+                device.get().capabilities().maxTextureSize());
         coordinator = new ShaderReloadCoordinator(transaction, renderThread, selection);
         ReloadCoordinator.install(coordinator);
         ShaderGui.installConfigurationSource(

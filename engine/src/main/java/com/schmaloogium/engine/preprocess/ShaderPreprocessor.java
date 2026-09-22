@@ -24,6 +24,13 @@ import org.anarres.cpp.Token;
  */
 public final class ShaderPreprocessor {
 
+    // Match comments first so directive-looking text inside them is never transported.
+    // Within a directive, consume entire block comments so suffix tokens and physical
+    // newlines survive together; a slash inside a comment is not a directive boundary.
+    private static final Pattern DRIVER_DIRECTIVE = Pattern.compile(
+        "/\\*[\\s\\S]*?\\*/|//[^\\r\\n]*|#[\\t ]*(version|extension)\\b"
+            + "(?:[^/\\r\\n]|/\\*[\\s\\S]*?\\*/|/(?![/*]))*(?://[^\\r\\n]*)?");
+
     private ShaderPreprocessor() {
     }
 
@@ -32,13 +39,53 @@ public final class ShaderPreprocessor {
             int effectiveVersion) {
         List<EngineDiagnostic> diags = new ArrayList<>();
         StringBuilder sb = new StringBuilder(expandedText.length());
-        try (Preprocessor pp = new Preprocessor()) {
+        String markerPrefix = "_schmaloogium_driver_directive_";
+        while (expandedText.contains(markerPrefix)) markerPrefix += "_";
+        Map<String, String> driverDirectives = new java.util.HashMap<>();
+        Matcher directives = DRIVER_DIRECTIVE.matcher(expandedText);
+        StringBuilder cppInput = new StringBuilder(expandedText.length());
+        while (directives.find()) {
+            if (directives.group(1) == null) continue;
+            // One marker per physical line keeps __LINE__ and inactive-branch
+            // whitespace unchanged. Each active marker restores only its own line.
+            StringBuilder markers = new StringBuilder();
+            for (String physicalLine : directives.group().split("\n", -1)) {
+                if (!markers.isEmpty()) markers.append('\n');
+                String marker = markerPrefix + driverDirectives.size();
+                driverDirectives.put(marker, physicalLine);
+                markers.append("#pragma ").append(marker);
+            }
+            directives.appendReplacement(cppInput, Matcher.quoteReplacement(markers.toString()));
+        }
+        directives.appendTail(cppInput);
+        // jcpp understands C directives, not GLSL #version/#extension. Its pragma hook
+        // runs only in active branches, preserving both driver text and conditionality
+        // without inventing a version or hoisting an inactive extension.
+        try (Preprocessor pp = new Preprocessor() {
+            @Override
+            protected void pragma(Token name, List<Token> value) throws IOException, LexerException {
+                String directive = driverDirectives.get(name.getText());
+                if (directive != null) {
+                    sb.append(directive);
+                } else {
+                    super.pragma(name, value);
+                }
+            }
+        }) {
             pp.addFeature(Feature.KEEPCOMMENTS);
             pp.setListener(new org.anarres.cpp.DefaultPreprocessorListener() {
                 @Override
                 public void handleWarning(org.anarres.cpp.Source source, int line, int column,
                         String msg) throws LexerException {
                     diags.add(diag("schmaloogium.warn.preprocess.cpp_warning", msg));
+                }
+
+                @Override
+                public void handleError(org.anarres.cpp.Source source, int line, int column,
+                        String msg) throws LexerException {
+                    diags.add(new EngineDiagnostic(DiagnosticSeverity.ERROR, UserChannel.LOG_ONLY,
+                        "schmaloogium.error.preprocess.failed", List.of(), msg,
+                        "schmaloogium.preprocess"));
                 }
             });
             // reserved GLSL intrinsics first so pack macros cannot shadow them
@@ -56,7 +103,7 @@ public final class ShaderPreprocessor {
                     pp.addMacro(e.getKey(), e.getValue());
                 }
             }
-            pp.addInput(new StringLexerSource(expandedText, true));
+            pp.addInput(new StringLexerSource(cppInput.toString(), true));
             while (true) {
                 Token tok = pp.token();
                 if (tok == null || tok.getType() == Token.EOF) {

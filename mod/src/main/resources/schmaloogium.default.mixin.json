@@ -8,6 +8,11 @@
   "setSourceFile": true,
   "plugin": "com.schmaloogium.mod.mixin.SchmaloogiumMixinPlugin",
   "client": [
+    "textures.AbstractTextureAccessor",
+    "textures.TextureAtlasSpriteAccessor",
+    "textures.TextureMapAccessor",
+    "textures.MixinTextureMap",
+    "textures.MixinTextureUtil",
     "frame.MixinEntityRenderer",
     "frame.MixinFramebuffer",
     "frame.MixinGlStateManager",

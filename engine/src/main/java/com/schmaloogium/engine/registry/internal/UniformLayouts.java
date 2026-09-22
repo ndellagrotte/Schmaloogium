@@ -225,6 +225,7 @@ final class UniformLayouts {
             ProgramSamplerLayout.Shader layout, List<SamplerUnitAssignment> assignments) {
         List<byte[]> parts = new ArrayList<>();
         parts.add(CanonicalFraming.atom(CanonicalFraming.SAMPLER_LAYOUT_DOMAIN));
+        parts.add(CanonicalFraming.atom("linked-direct-sampler-activity-v1"));
         parts.add(CanonicalFraming.atom(layout.effectiveStage().name()));
         List<StageBand> bands = new ArrayList<>(layout.validatedBands());
         bands.sort(Comparator.comparingInt(StageBand::ordinal));

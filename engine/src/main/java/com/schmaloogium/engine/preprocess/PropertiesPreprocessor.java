@@ -33,14 +33,14 @@ public final class PropertiesPreprocessor {
         StringBuilder processed = new StringBuilder(text.length());
         List<String> protectedTokens = new ArrayList<>();
         for (String line : text.split("\\n", -1)) {
-            String crlf = line.endsWith("\\r") ? "\\r" : "";
-            String body = line.endsWith("\\r") ? line.substring(0, line.length() - 1) : line;
+            // Classify logical lines without CR; otherwise '.' in DIRECTIVE rejects CRLF directives.
+            String body = line.endsWith("\r") ? line.substring(0, line.length() - 1) : line;
             String stripped = body.stripLeading();
             if (stripped.startsWith("#") && DIRECTIVE.matcher(stripped).matches()) {
-                processed.append(body).append(crlf).append('\n');
+                processed.append(body).append('\n');
                 continue;
             }
-            processed.append(guardHashes(body, protectedTokens)).append(crlf).append('\n');
+            processed.append(guardHashes(body, protectedTokens)).append('\n');
         }
         String jcppOut = runJcpp(processed.toString(), macros);
         return restore(jcppOut, protectedTokens);

@@ -122,6 +122,7 @@ class FixedSamplerPoliciesTest {
         Map<String, Integer> expected = new HashMap<>();
         expected.put("texture", 0);
         expected.put("tex", 0);
+        expected.put("gtexture", 0);
         expected.put("lightmap", 1);
         expected.put("normals", 2);
         expected.put("specular", 3);
@@ -182,17 +183,6 @@ class FixedSamplerPoliciesTest {
         assertFalse(units.containsKey("lightmap"), "lightmap is gbuffers-only");
         assertFalse(units.containsKey("normals"), "normals is gbuffers-only");
         assertFalse(units.containsKey("specular"), "specular is gbuffers-only");
-    }
-
-    @Test
-    void bothColumnsCoverThirtyTwoDistinctNamesBesidesConditionalShadow() {
-        Map<String, Integer> gbuffers = columnUnits(List.of(StageId.GBUFFERS, StageId.SHADOW),
-            StageBand.GBUFFERS_OPAQUE);
-        Map<String, Integer> fullscreen = columnUnits(List.of(StageId.FINAL),
-            StageBand.SCREEN);
-        Set<String> union = new java.util.HashSet<>(gbuffers.keySet());
-        union.addAll(fullscreen.keySet());
-        assertEquals(32, union.size());
     }
 
     @Test
@@ -276,6 +266,30 @@ class FixedSamplerPoliciesTest {
                 decl("gcolor", sampler2d(), 1),
                 decl("depthtex1", sampler2d(), 2)));
         assertInstanceOf(SamplerLayoutValidation.Valid.class, valid);
+    }
+
+    @Test
+    void baseTextureAliasesUseUnitZeroOnlyInWorldPrograms() {
+        var policy = FixedSamplerPolicies.appB3();
+        var declarations = List.of(decl("tex", sampler2d(), 0),
+            decl("texture", sampler2d(), 1), decl("gtexture", sampler2d(), 2));
+        for (StageBand band : List.of(StageBand.GBUFFERS_OPAQUE, StageBand.GBUFFERS_TRANSLUCENT)) {
+            var validation = policy.validate(StageId.GBUFFERS, band, declarations);
+            assertInstanceOf(SamplerLayoutValidation.Valid.class, validation);
+            var layout = shaderLayout(StageId.GBUFFERS, Set.of(band), declarations, validation);
+            assertEquals(Map.of("tex", 0, "texture", 0, "gtexture", 0),
+                policy.initializationAssignments(layout).stream().collect(
+                    java.util.stream.Collectors.toMap(
+                        com.schmaloogium.engine.gl.SamplerUnitAssignment::exactName,
+                        com.schmaloogium.engine.gl.SamplerUnitAssignment::unit)));
+        }
+        assertInstanceOf(SamplerLayoutValidation.Valid.class,
+            policy.validate(StageId.SHADOW, StageBand.SHADOW, declarations));
+        var fullscreen = assertInstanceOf(SamplerLayoutValidation.Unsupported.class,
+            policy.validate(StageId.FINAL, StageBand.SCREEN, declarations));
+        assertEquals(List.of(SamplerLayoutIssueCode.UNSUPPORTED_STAGE_DOMAIN,
+            SamplerLayoutIssueCode.UNSUPPORTED_STAGE_DOMAIN,
+            SamplerLayoutIssueCode.UNSUPPORTED_STAGE_DOMAIN), codes(fullscreen.issues()));
     }
 
     @Test

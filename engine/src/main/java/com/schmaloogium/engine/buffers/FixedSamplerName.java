@@ -5,7 +5,7 @@ package com.schmaloogium.engine.buffers;
 
 /** The closed fixed-sampler-name domain (Phase 5 Doc §2.4) with exact pack-facing spellings. */
 public enum FixedSamplerName {
-    TEXTURE("texture"), TEX("tex"), LIGHTMAP("lightmap"), NORMALS("normals"),
+    TEXTURE("texture"), TEX("tex"), GTEXTURE("gtexture"), LIGHTMAP("lightmap"), NORMALS("normals"),
     SPECULAR("specular"), SHADOWTEX0("shadowtex0"), WATERSHADOW("watershadow"),
     SHADOW("shadow"), SHADOWTEX1("shadowtex1"), DEPTHTEX0("depthtex0"),
     GDEPTHTEX("gdepthtex"), GAUX1("gaux1"), GAUX2("gaux2"), GAUX3("gaux3"),

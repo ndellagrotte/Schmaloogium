@@ -12,6 +12,12 @@ import com.schmaloogium.engine.config.TextureTarget;
 import com.schmaloogium.engine.gl.ColorInternalFormat;
 import com.schmaloogium.engine.gl.GLCapabilityProfile;
 import com.schmaloogium.engine.gl.TextureAllocationTarget;
+import com.schmaloogium.engine.gl.TextureData;
+import com.schmaloogium.engine.gl.TextureHandle;
+import com.schmaloogium.engine.gl.TextureRegion;
+import com.schmaloogium.engine.gl.PixelLayout;
+import com.schmaloogium.engine.gl.PixelFormat;
+import com.schmaloogium.engine.gl.PixelType;
 import com.schmaloogium.engine.pack.CompanionOptionMacros;
 import com.schmaloogium.engine.pack.NormalizedPackPath;
 import com.schmaloogium.engine.pack.PackAssetAcquisition;
@@ -24,6 +30,10 @@ import com.schmaloogium.engine.textures.AtlasCatalog;
 import com.schmaloogium.engine.textures.AtlasDescriptor;
 import com.schmaloogium.engine.textures.OwnedTextureSourceKind;
 import com.schmaloogium.engine.textures.SpriteDescriptor;
+import com.schmaloogium.engine.textures.TextureBuildSources;
+import com.schmaloogium.engine.textures.TexturePreparedSource;
+import com.schmaloogium.engine.textures.TextureUploadPayload;
+import com.schmaloogium.engine.textures.TextureFramePayload;
 import com.schmaloogium.engine.textures.TextureFailure;
 import com.schmaloogium.engine.textures.TextureFailureCode;
 import com.schmaloogium.engine.textures.TexturePreparation;
@@ -86,6 +96,11 @@ public final class TextureSourcePreparer {
      */
     public interface ForeignObjects {
         Optional<ForeignLive> resolve(String resourceIdentity, long resourceReloadEpoch);
+
+        default Optional<TextureHandle> handle(String resourceIdentity,
+                                               long resourceReloadEpoch, long objectEpoch) {
+            return Optional.empty();
+        }
 
         record ForeignLive(boolean exists, long objectEpoch) {
         }
@@ -161,6 +176,40 @@ public final class TextureSourcePreparer {
                                                AtlasCatalog atlases,
                                                CompanionDiscovery discovery,
                                                ForeignObjects foreign) {
+        return prepareCatalog(configuration, resourceReloadEpoch, capabilities, atlases,
+            discovery, foreign, null);
+    }
+
+    public record PreparedTextures(TextureSourceCatalog catalog, TextureBuildSources sources) {
+        public PreparedTextures {
+            Objects.requireNonNull(catalog, "catalog");
+            Objects.requireNonNull(sources, "sources");
+            if (catalog.resourceReloadEpoch() != sources.resourceReloadEpoch()) {
+                throw new IllegalArgumentException("catalog and payload epochs differ");
+            }
+        }
+    }
+
+    /** Decodes once and pairs each accepted asset with stable owned bytes or a live borrow. */
+    public static PreparedTextures prepareBuild(PackConfiguration configuration,
+                                                long resourceReloadEpoch,
+                                                GLCapabilityProfile capabilities,
+                                                AtlasCatalog atlases,
+                                                CompanionDiscovery discovery,
+                                                ForeignObjects foreign) {
+        List<TexturePreparedSource> sources = new ArrayList<>();
+        TextureSourceCatalog catalog = prepareCatalog(configuration, resourceReloadEpoch,
+            capabilities, atlases, discovery, foreign, sources);
+        return new PreparedTextures(catalog, new TextureBuildSources(resourceReloadEpoch, sources));
+    }
+
+    private static TextureSourceCatalog prepareCatalog(PackConfiguration configuration,
+                                                       long resourceReloadEpoch,
+                                                       GLCapabilityProfile capabilities,
+                                                       AtlasCatalog atlases,
+                                                       CompanionDiscovery discovery,
+                                                       ForeignObjects foreign,
+                                                       List<TexturePreparedSource> sources) {
         Objects.requireNonNull(configuration, "configuration");
         Objects.requireNonNull(capabilities, "capabilities");
         Objects.requireNonNull(atlases, "atlases");
@@ -181,16 +230,16 @@ public final class TextureSourcePreparer {
         List<TextureSourceAsset> assets = new ArrayList<>();
         for (CustomTextureSpec spec : configuration.properties().textures()) {
             if (spec instanceof CustomTextureSpec.PackPath packPath) {
-                assets.add(preparePackPath(packPath, configuration, capabilities, sidecars));
+                assets.add(preparePackPath(packPath, configuration, capabilities, sidecars, sources));
             } else if (spec instanceof CustomTextureSpec.MinecraftResource resource) {
                 assets.add(prepareMinecraftResource(resource, configuration,
-                    resourceReloadEpoch, foreign));
+                    resourceReloadEpoch, foreign, sources));
             } else if (spec instanceof CustomTextureSpec.Raw raw) {
-                assets.add(prepareRaw(raw, configuration, capabilities, sidecars));
+                assets.add(prepareRaw(raw, configuration, capabilities, sidecars, sources));
             }
         }
-        assets.addAll(prepareCompanions(configuration, resourceReloadEpoch, atlases, discovery));
-        prepareNoise(configuration, capabilities, sidecars).ifPresent(assets::add);
+        assets.addAll(prepareCompanions(configuration, resourceReloadEpoch, atlases, discovery, sources));
+        prepareNoise(configuration, capabilities, sidecars, sources).ifPresent(assets::add);
         return new TextureSourceCatalog(resourceReloadEpoch, assets);
     }
 
@@ -199,7 +248,8 @@ public final class TextureSourcePreparer {
     private static TextureSourceAsset preparePackPath(CustomTextureSpec.PackPath spec,
                                                       PackConfiguration configuration,
                                                       GLCapabilityProfile capabilities,
-                                                      SidecarInterpretations sidecars) {
+                                                      SidecarInterpretations sidecars,
+                                                      List<TexturePreparedSource> sources) {
         String logicalSource = "pack:" + spec.image().canonicalString();
         Acquisition acquired = acquire(spec.image(), configuration.assets(),
             OwnedTextureSourceKind.PACK_PNG, logicalSource);
@@ -227,14 +277,17 @@ public final class TextureSourcePreparer {
             return failed(TextureFailureCode.PARAMETERIZATION_UNSUPPORTED,
                 OwnedTextureSourceKind.PACK_PNG.name(), logicalSource);
         }
-        return ready(OwnedTextureSourceKind.PACK_PNG, logicalSource, byteSha, parameters,
-            configuration, TextureAllocationTarget.TEXTURE_2D,
+        TextureSourceAsset.ReadyAsset asset = ready(OwnedTextureSourceKind.PACK_PNG,
+            logicalSource, byteSha, parameters, configuration, TextureAllocationTarget.TEXTURE_2D,
             List.of(decoded.width(), decoded.height()), RGBA8, SAMPLER_2D);
+        pairOwned(sources, asset, decoded.rgba(), new PixelLayout.Color(PixelFormat.RGBA,
+            PixelType.UNSIGNED_BYTE));
+        return asset;
     }
 
     private static TextureSourceAsset prepareMinecraftResource(
             CustomTextureSpec.MinecraftResource spec, PackConfiguration configuration,
-            long resourceReloadEpoch, ForeignObjects foreign) {
+            long resourceReloadEpoch, ForeignObjects foreign, List<TexturePreparedSource> sources) {
         String identity = spec.resourceIdentity();
         boolean foreignForm = identity.startsWith("minecraft:dynamic/")
             || identity.startsWith("minecraft:textures/atlas/");
@@ -250,23 +303,33 @@ public final class TextureSourcePreparer {
             return failed(TextureFailureCode.SOURCE_UNAVAILABLE, kindTag, "minecraft:" + identity);
         }
         long objectEpoch = resolved.get().objectEpoch();
+        Optional<TextureHandle> handle = sources == null ? Optional.empty()
+            : foreign.handle(identity, resourceReloadEpoch, objectEpoch);
+        if (sources != null && handle.isEmpty()) {
+            return failed(TextureFailureCode.SOURCE_UNAVAILABLE, kindTag, "minecraft:" + identity);
+        }
         // ForeignLive identity digest is the canonical logical source/reload/object
         // identity — never a hash of mutable live pixels (§2.3).
         String contentDigest = TexturePreparation.sourceDigest("FOREIGN_LIVE", identity,
             Long.toString(resourceReloadEpoch), Long.toString(objectEpoch));
         // The handle-free TwoD descriptor is compatibility metadata only, never guessed
         // storage authority; actual parameters live on the borrowed object.
-        return new TextureSourceAsset.ReadyAsset(
+        TextureSourceAsset.ReadyAsset asset = new TextureSourceAsset.ReadyAsset(
             new TextureSourceIdentity.ForeignLive(identity, resourceReloadEpoch, objectEpoch),
             TextureAllocationTarget.TEXTURE_2D, List.of(1, 1), RGBA8, SAMPLER_2D,
             TexturePreparation.standaloneDefaultPolicy(), contentDigest,
             TexturePreparation.absentSidecarDigest());
+        if (sources != null) {
+            sources.add(new TexturePreparedSource.Foreign(asset, handle.orElseThrow()));
+        }
+        return asset;
     }
 
     private static TextureSourceAsset prepareRaw(CustomTextureSpec.Raw spec,
                                                  PackConfiguration configuration,
                                                  GLCapabilityProfile capabilities,
-                                                 SidecarInterpretations sidecars) {
+                                                 SidecarInterpretations sidecars,
+                                                 List<TexturePreparedSource> sources) {
         String logicalSource = "raw:" + spec.bytes().canonicalString();
         Acquisition acquired = acquire(spec.bytes(), configuration.assets(),
             OwnedTextureSourceKind.RAW_BYTES, logicalSource);
@@ -308,8 +371,11 @@ public final class TextureSourcePreparer {
                 OwnedTextureSourceKind.RAW_BYTES.name(), logicalSource);
         }
         String byteSha = TexturePreparation.contentSha256(payload);
-        return ready(OwnedTextureSourceKind.RAW_BYTES, logicalSource, byteSha, parameters,
-            configuration, target, dimsList(dims), format, shapeOf(target));
+        TextureSourceAsset.ReadyAsset asset = ready(OwnedTextureSourceKind.RAW_BYTES,
+            logicalSource, byteSha, parameters, configuration, target, dimsList(dims),
+            format, shapeOf(target, format));
+        pairOwned(sources, asset, payload, new PixelLayout.Color(pixelFormat, pixelType));
+        return asset;
     }
 
     // ------------------------------------------------------------- companions
@@ -317,7 +383,8 @@ public final class TextureSourcePreparer {
     private static List<TextureSourceAsset> prepareCompanions(PackConfiguration configuration,
                                                               long resourceReloadEpoch,
                                                               AtlasCatalog atlases,
-                                                              CompanionDiscovery discovery) {
+                                                              CompanionDiscovery discovery,
+                                                              List<TexturePreparedSource> sources) {
         if (discovery == null || atlases.atlases().isEmpty()) {
             return List.of();
         }
@@ -341,7 +408,7 @@ public final class TextureSourcePreparer {
                     continue;
                 }
                 collectCompanionKind(configuration, resourceReloadEpoch, discovery, atlas,
-                    kind, policy, assets);
+                    kind, policy, assets, sources);
             }
         }
         return assets;
@@ -351,7 +418,10 @@ public final class TextureSourcePreparer {
                                              long resourceReloadEpoch,
                                              CompanionDiscovery discovery,
                                              AtlasDescriptor atlas, CompanionKind kind,
-                                             TextureParameterSpec policy, List<TextureSourceAsset> assets) {
+                                             TextureParameterSpec policy, List<TextureSourceAsset> assets,
+                                             List<TexturePreparedSource> sources) {
+        List<CompanionAtlasAssembler.SpritePlacement> placements = new ArrayList<>();
+        List<String> sourceDigests = new ArrayList<>();
         String suffix = kind == CompanionKind.NORMALS ? "_n" : "_s";
         for (SpriteDescriptor sprite : atlas.sprites()) {
             String logicalSource = "companion:" + atlas.id().value() + ":" + kind.name()
@@ -362,7 +432,7 @@ public final class TextureSourcePreparer {
                 continue; // absent companion → planner DefaultFill, nothing here
             }
             CompanionDiscovery.DiscoveredCompanion companion = found.get();
-            if (companion.width() <= 0 || companion.height() <= 0
+            if (companion.width() != sprite.width() || companion.height() != sprite.height()
                     || companion.rgbaFrames().isEmpty() || companion.objectEpoch() < 0) {
                 continue; // invalid discovery data is undiscovered, never fabricated
             }
@@ -371,12 +441,15 @@ public final class TextureSourcePreparer {
             frameTags.add(Integer.toString(companion.rgbaFrames().size()));
             frameTags.add(Long.toString(companion.objectEpoch()));
             boolean valid = true;
+            List<byte[]> frames = new ArrayList<>(companion.rgbaFrames().size());
             for (byte[] frame : companion.rgbaFrames()) {
                 if (frame == null || frame.length != expected) {
                     valid = false;
                     break;
                 }
-                frameTags.add(TexturePreparation.contentSha256(frame));
+                byte[] snapshot = frame.clone();
+                frames.add(snapshot);
+                frameTags.add(TexturePreparation.contentSha256(snapshot));
             }
             if (!valid) {
                 continue;
@@ -388,13 +461,26 @@ public final class TextureSourcePreparer {
             atoms.add(Long.toString(resourceReloadEpoch));
             atoms.addAll(frameTags);
             String contentDigest = TexturePreparation.sourceDigest(atoms.toArray(String[]::new));
-            assets.add(new TextureSourceAsset.ReadyAsset(
+            TextureSourceAsset.ReadyAsset asset = new TextureSourceAsset.ReadyAsset(
                 new TextureSourceIdentity.OwnedUpload(
                     OwnedTextureSourceKind.COMPANION_RESOURCE, logicalSource, contentDigest,
                     configuration.fingerprint().value()),
                 TextureAllocationTarget.TEXTURE_2D,
                 List.of(companion.width(), companion.height()), RGBA8, SAMPLER_2D, policy,
-                contentDigest, TexturePreparation.absentSidecarDigest()));
+                contentDigest, TexturePreparation.absentSidecarDigest());
+            assets.add(asset);
+            pairOwned(sources, asset, frames.getFirst(),
+                new PixelLayout.Color(PixelFormat.RGBA, PixelType.UNSIGNED_BYTE));
+            if (sources != null) {
+                placements.add(new CompanionAtlasAssembler.SpritePlacement(sprite.iconName(),
+                    sprite.originX(), sprite.originY(), sprite.width(), sprite.height(),
+                    frames));
+                sourceDigests.add(contentDigest);
+            }
+        }
+        if (sources != null && !placements.isEmpty()) {
+            prepareCompanionAtlas(configuration, atlas, kind, policy, placements, sourceDigests,
+                assets, sources);
         }
     }
 
@@ -415,7 +501,8 @@ public final class TextureSourcePreparer {
 
     private static Optional<TextureSourceAsset> prepareNoise(PackConfiguration configuration,
                                                              GLCapabilityProfile capabilities,
-                                                             SidecarInterpretations sidecars) {
+                                                             SidecarInterpretations sidecars,
+                                                             List<TexturePreparedSource> sources) {
         if (!(configuration.properties().noise() instanceof NoiseTextureSpec.Override override)) {
             return Optional.empty(); // generated noise never enters the catalog
         }
@@ -455,17 +542,20 @@ public final class TextureSourcePreparer {
         String contentDigest = TexturePreparation.sourceDigest(
             OwnedTextureSourceKind.PACK_PNG.name(), logicalSource, byteSha,
             parameters.fingerprint(), "NOISE_OVERRIDE", Integer.toString(declaredResolution));
-        return Optional.of(new TextureSourceAsset.ReadyAsset(
+        TextureSourceAsset.ReadyAsset asset = new TextureSourceAsset.ReadyAsset(
             new TextureSourceIdentity.OwnedUpload(OwnedTextureSourceKind.PACK_PNG,
                 logicalSource, contentDigest, configuration.fingerprint().value()),
             TextureAllocationTarget.TEXTURE_2D, List.of(decoded.width(), decoded.height()),
             RGBA8, SAMPLER_2D, parameters.effective(), contentDigest,
-            parameters.sidecarDigest()));
+            parameters.sidecarDigest());
+        pairOwned(sources, asset, decoded.rgba(),
+            new PixelLayout.Color(PixelFormat.RGBA, PixelType.UNSIGNED_BYTE));
+        return Optional.of(asset);
     }
 
     // ------------------------------------------------------------- shared plumbing
 
-    private static TextureSourceAsset ready(OwnedTextureSourceKind kind, String logicalSource,
+    private static TextureSourceAsset.ReadyAsset ready(OwnedTextureSourceKind kind, String logicalSource,
                                             String byteSha, PreparedParameters parameters,
                                             PackConfiguration configuration,
                                             TextureAllocationTarget target, List<Integer> dims,
@@ -478,6 +568,79 @@ public final class TextureSourcePreparer {
                 configuration.fingerprint().value()),
             target, dims, format, shape, parameters.effective(), contentDigest,
             parameters.sidecarDigest());
+    }
+
+    private static void pairOwned(List<TexturePreparedSource> sources,
+                                  TextureSourceAsset.ReadyAsset asset, byte[] bytes,
+                                  PixelLayout.Color layout) {
+        if (sources == null) {
+            return;
+        }
+        List<Integer> dims = asset.dimensions();
+        TextureData data = new TextureData(asset.target(), new TextureRegion(0, 0, 0,
+            dims.getFirst(), dims.size() > 1 ? dims.get(1) : 1,
+            dims.size() > 2 ? dims.get(2) : 1), 0, layout,
+            ByteBuffer.wrap(bytes).asReadOnlyBuffer());
+        sources.add(new TexturePreparedSource.Owned(asset,
+            TextureUploadPayload.ofInitial(List.of(data))));
+    }
+
+    private static void prepareCompanionAtlas(PackConfiguration configuration,
+            AtlasDescriptor atlas, CompanionKind kind, TextureParameterSpec policy,
+            List<CompanionAtlasAssembler.SpritePlacement> placements, List<String> sourceDigests,
+            List<TextureSourceAsset> assets, List<TexturePreparedSource> sources) {
+        byte[] fill = kind == CompanionKind.NORMALS
+            ? new byte[] {(byte) 255, 127, 127, (byte) 255} : new byte[4];
+        List<TextureData> initial = immutableUploads(CompanionAtlasAssembler.assemble(
+            TextureAllocationTarget.TEXTURE_2D, atlas.width(), atlas.height(),
+            atlas.mipmapLevels(), placements, fill));
+        List<TextureFramePayload> frames = new ArrayList<>();
+        for (var placement : placements) {
+            for (int frame = 0; frame < placement.rgbaFrames().size(); frame++) {
+                List<TextureData> levels = CompanionAtlasAssembler.assemble(
+                    TextureAllocationTarget.TEXTURE_2D, placement.width(), placement.height(),
+                    atlas.mipmapLevels(), List.of(new CompanionAtlasAssembler.SpritePlacement(
+                        placement.iconName(), 0, 0, placement.width(), placement.height(),
+                        List.of(placement.rgbaFrames().get(frame)))), fill);
+                List<TextureData> positioned = new ArrayList<>();
+                for (TextureData level : levels) {
+                    int mip = level.mipLevel();
+                    positioned.add(new TextureData(level.target(), new TextureRegion(
+                        placement.originX() >> mip, placement.originY() >> mip, 0,
+                        level.region().width(), level.region().height(), 1), mip,
+                        level.layout(), level.texels().asReadOnlyBuffer()));
+                }
+                frames.add(new TextureFramePayload(placement.iconName(), frame, positioned));
+            }
+        }
+        frames.sort(Comparator.comparing(TextureFramePayload::iconName,
+            TextureSourcePreparer::unsignedUtf8Compare)
+            .thenComparingInt(TextureFramePayload::sourceFrameIndex));
+        String logicalSource = "companionAtlas:" + atlas.id().value() + ":" + kind.name();
+        sourceDigests.addFirst(logicalSource);
+        sourceDigests.add(Integer.toString(atlas.width()));
+        sourceDigests.add(Integer.toString(atlas.height()));
+        sourceDigests.add(Integer.toString(atlas.mipmapLevels()));
+        for (var placement : placements) {
+            sourceDigests.add(placement.iconName());
+            sourceDigests.add(Integer.toString(placement.originX()));
+            sourceDigests.add(Integer.toString(placement.originY()));
+            sourceDigests.add(Integer.toString(placement.width()));
+            sourceDigests.add(Integer.toString(placement.height()));
+        }
+        String digest = TexturePreparation.sourceDigest(sourceDigests.toArray(String[]::new));
+        TextureSourceAsset.ReadyAsset asset = new TextureSourceAsset.ReadyAsset(
+            new TextureSourceIdentity.OwnedUpload(OwnedTextureSourceKind.COMPANION_RESOURCE,
+                logicalSource, digest, configuration.fingerprint().value()),
+            TextureAllocationTarget.TEXTURE_2D, List.of(atlas.width(), atlas.height()),
+            RGBA8, SAMPLER_2D, policy, digest, TexturePreparation.absentSidecarDigest());
+        assets.add(asset);
+        sources.add(new TexturePreparedSource.Owned(asset, new TextureUploadPayload(initial, frames)));
+    }
+
+    private static List<TextureData> immutableUploads(List<TextureData> uploads) {
+        return uploads.stream().map(data -> new TextureData(data.target(), data.region(),
+            data.mipLevel(), data.layout(), data.texels().asReadOnlyBuffer())).toList();
     }
 
     private record Acquisition(PackAssetBytes bytes, TextureFailure failure) {
@@ -547,14 +710,20 @@ public final class TextureSourcePreparer {
         };
     }
 
-    private static DeclaredGlslType.Sampler shapeOf(TextureAllocationTarget target) {
+    private static DeclaredGlslType.Sampler shapeOf(TextureAllocationTarget target,
+                                                   ColorInternalFormat format) {
         TextureDimension dimension = switch (target) {
             case TEXTURE_1D -> TextureDimension.D1;
             case TEXTURE_2D -> TextureDimension.D2;
             case TEXTURE_3D -> TextureDimension.D3;
             case RECTANGLE -> TextureDimension.RECTANGLE;
         };
-        return new DeclaredGlslType.Sampler(SampledKind.FLOAT, dimension, false, false, false);
+        SampledKind sampledKind = switch (format) {
+            case R32I, RG32I, RGB32I, RGBA32I -> SampledKind.SIGNED_INT;
+            case R32UI, RG32UI, RGB32UI, RGBA32UI -> SampledKind.UNSIGNED_INT;
+            default -> SampledKind.FLOAT;
+        };
+        return new DeclaredGlslType.Sampler(sampledKind, dimension, false, false, false);
     }
 
     private static int unsignedUtf8Compare(String a, String b) {

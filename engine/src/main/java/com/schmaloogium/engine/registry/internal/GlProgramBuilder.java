@@ -113,6 +113,33 @@ final class GlProgramBuilder {
                 shaders.delete(program);
                 return;
             }
+            // A declaration is provenance, not executable resource demand. The fixed
+            // policy rejects aggregates during planning; never infer aggregate-member
+            // inactivity from a base-name lookup even for another policy. Keep the
+            // complete uniform layout separately from executable resource demand.
+            List<com.schmaloogium.engine.registry.ProgramSamplerDeclaration> activeSamplers =
+                new ArrayList<>();
+            for (var sampler : planned.samplers) {
+                if (!(sampler.type() instanceof com.schmaloogium.engine.preprocess.DeclaredGlslType.Sampler)
+                    || !device.uniforms().locate(program, sampler.exactName()).isAbsent()) {
+                    activeSamplers.add(sampler);
+                }
+            }
+            planned.samplers = List.copyOf(activeSamplers);
+            try {
+                if (!Planner.planSamplers(planned)) {
+                    planned.disposition = ProgramOwnBuildDisposition.FAILED;
+                    deleteAll(shaders, stageShaders);
+                    shaders.delete(program);
+                    return;
+                }
+            } catch (RuntimeException invalidPolicy) {
+                planned.invalidSamplerPolicy = Planner.registryPolicyFailure(invalidPolicy);
+                planned.disposition = ProgramOwnBuildDisposition.FAILED;
+                deleteAll(shaders, stageShaders);
+                shaders.delete(program);
+                return;
+            }
             SamplerInitializationResult initialization =
                 shaders.initializeSamplerUnits(program, planned.assignments);
             if (initialization instanceof SamplerInitializationResult.Failed failed) {

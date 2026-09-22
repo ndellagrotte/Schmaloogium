@@ -76,6 +76,8 @@ final class Planner {
         List<ProgramSamplerDeclaration> samplers = List.of();
         ProgramSamplerLayout samplerLayout;
         List<SamplerUnitAssignment> assignments = List.of();
+        FixedSamplerLayoutPolicy samplerPolicy;
+        ProgramBuildFailure invalidSamplerPolicy;
         ProgramStateBundle stateBundle;
         GeometryInputRequirement expectedGeometryInput = GeometryInputRequirement.NONE;
         LegacyGeometryNative nativeConfigure;
@@ -263,55 +265,22 @@ final class Planner {
         planned.uniformLayout = merged.layout();
         planned.samplers = merged.samplers();
 
-        // All-band sampler policy validation before GL (D-P4-36).
-        SamplerLayoutValidation validation;
+        // Retain declaration evidence before GL, but direct sampler activity is only
+        // authoritative after link. Aggregates remain fail-closed: locating their base
+        // name cannot establish whether a sampler member is active.
+        planned.samplerPolicy = policy;
         try {
-            validation = UniformLayouts.validateAcrossBands(policy, planned.descriptor.stage(),
-                new ArrayList<>(planned.descriptor.permittedBands()), planned.samplers);
+            if (!planSamplers(planned)) {
+                if (planned.samplers.stream().anyMatch(sampler ->
+                    !(sampler.type() instanceof com.schmaloogium.engine.preprocess.DeclaredGlslType.Sampler))) {
+                    return;
+                }
+                planned.failure = null;
+            }
         } catch (RuntimeException e) {
             policyFailuresOut.add(registryPolicyFailure(e));
             return;
         }
-        Set<StageBand> attemptedBands = new java.util.TreeSet<>(
-            java.util.Comparator.comparingInt(StageBand::ordinal));
-        attemptedBands.addAll(planned.descriptor.permittedBands());
-        ProgramSamplerLayoutFingerprint layoutFingerprint = new ProgramSamplerLayoutFingerprint(
-            "pending");
-        if (validation instanceof SamplerLayoutValidation.ConflictingTypes conflicting) {
-            ProgramSamplerLayout.Shader failed = new ProgramSamplerLayout.Shader(
-                new ProgramSamplerLayoutFingerprint("failed"),
-                policy.fingerprint(),
-                planned.descriptor.stage(),
-                attemptedBands,
-                planned.samplers,
-                conflicting);
-            planned.samplerLayout = failed;
-            planned.failure = samplerFailure(slot, failed, "SAMPLER_UNIT_TYPE_CONFLICT");
-            return;
-        }
-        if (validation instanceof SamplerLayoutValidation.Unsupported unsupported) {
-            ProgramSamplerLayout.Shader failed = new ProgramSamplerLayout.Shader(
-                new ProgramSamplerLayoutFingerprint("failed"),
-                policy.fingerprint(),
-                planned.descriptor.stage(),
-                attemptedBands,
-                planned.samplers,
-                unsupported);
-            planned.samplerLayout = failed;
-            planned.failure = samplerFailure(slot, failed, "SAMPLER_LAYOUT_UNSUPPORTED");
-            return;
-        }
-        List<SamplerUnitAssignment> assignments;
-        try {
-            assignments = policy.initializationAssignments(new ProgramSamplerLayout.Shader(
-                layoutFingerprint, policy.fingerprint(), planned.descriptor.stage(),
-                attemptedBands, planned.samplers, validation));
-            validateAssignments(assignments, planned.samplers, policy);
-        } catch (RuntimeException e) {
-            policyFailuresOut.add(registryPolicyFailure(e));
-            return;
-        }
-        planned.assignments = List.copyOf(assignments);
 
         // Capability gates: routing and declared attributes (§4.9).
         ProgramStateBundle bundle = adaptState(key, states, reqs);
@@ -330,13 +299,29 @@ final class Planner {
             }
         }
         planned.disposition = ProgramOwnBuildDisposition.SUCCEEDED;
+    }
+
+    /** Validates the supplied sampler projection, before and after linked activity selection. */
+    static boolean planSamplers(PlannedSlot planned) {
+        FixedSamplerLayoutPolicy policy = planned.samplerPolicy;
+        Set<StageBand> bands = new java.util.TreeSet<>(Comparator.comparingInt(StageBand::ordinal));
+        bands.addAll(planned.descriptor.permittedBands());
+        SamplerLayoutValidation validation = UniformLayouts.validateAcrossBands(
+            policy, planned.descriptor.stage(), new ArrayList<>(bands), planned.samplers);
         planned.samplerLayout = new ProgramSamplerLayout.Shader(
-            new ProgramSamplerLayoutFingerprint("pending"),
-            policy.fingerprint(),
-            planned.descriptor.stage(),
-            attemptedBands,
-            planned.samplers,
-            validation);
+            new ProgramSamplerLayoutFingerprint("pending"), policy.fingerprint(),
+            planned.descriptor.stage(), bands, planned.samplers, validation);
+        if (!(validation instanceof SamplerLayoutValidation.Valid)) {
+            planned.failure = samplerFailure(planned.descriptor.id(), planned.samplerLayout,
+                validation instanceof SamplerLayoutValidation.ConflictingTypes
+                    ? "SAMPLER_UNIT_TYPE_CONFLICT" : "SAMPLER_LAYOUT_UNSUPPORTED");
+            return false;
+        }
+        List<SamplerUnitAssignment> assignments =
+            policy.initializationAssignments(planned.samplerLayoutShader());
+        validateAssignments(assignments, planned.samplers, policy);
+        planned.assignments = List.copyOf(assignments);
+        return true;
     }
 
     static ProgramStateBundle adaptState(
@@ -501,7 +486,7 @@ final class Planner {
             Optional.of(evidence));
     }
 
-    private static ProgramBuildFailure registryPolicyFailure(RuntimeException e) {
+    static ProgramBuildFailure registryPolicyFailure(RuntimeException e) {
         // Returned inside the policy-failure list; converted by the assembler into a
         // RegistryBuildFailure with kind INVALID_SAMPLER_POLICY.
         return new ProgramBuildFailure(new ProgramSlotId("registry"),

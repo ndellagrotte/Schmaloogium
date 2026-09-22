@@ -500,18 +500,36 @@ final class Lwjgl3TextureService implements TextureService {
         int savedActiveUnit = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
         boolean cachedUnit = unit < GLSM_CACHED_UNITS
                 && savedActiveUnit - GL13.GL_TEXTURE0 < GLSM_CACHED_UNITS;
-        if (cachedUnit) {
-            GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + unit);
-            if (glTarget == GL11.GL_TEXTURE_2D) {
-                GlStateManager.bindTexture(glName);
+        boolean expectedBase = unit == 0 && glTarget == GL11.GL_TEXTURE_2D;
+        boolean completed = false;
+        if (expectedBase) {
+            com.schmaloogium.mod.glue.textures.TextureBindingRuntime.beginExpectedBase(glName);
+        }
+        try {
+            if (cachedUnit) {
+                GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + unit);
+                if (glTarget == GL11.GL_TEXTURE_2D) {
+                    GlStateManager.bindTexture(glName);
+                } else {
+                    GL11.glBindTexture(glTarget, glName);
+                }
             } else {
+                GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit);
                 GL11.glBindTexture(glTarget, glName);
             }
-            GlStateManager.setActiveTexture(savedActiveUnit);
-        } else {
-            GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit);
-            GL11.glBindTexture(glTarget, glName);
-            GL13.glActiveTexture(savedActiveUnit);
+            completed = true;
+        } finally {
+            try {
+                if (cachedUnit) {
+                    GlStateManager.setActiveTexture(savedActiveUnit);
+                } else {
+                    GL13.glActiveTexture(savedActiveUnit);
+                }
+            } finally {
+                if (expectedBase) {
+                    com.schmaloogium.mod.glue.textures.TextureBindingRuntime.endExpectedBase(completed);
+                }
+            }
         }
         device.noteMutation("textures.bindToUnit", ((Lwjgl3Handle) t).subjectLabel());
     }

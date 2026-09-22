@@ -70,12 +70,6 @@ public final class SourceIndex {
         Map<SourceId, Set<SourceId>> adjacency = new LinkedHashMap<>();
         for (SourceDocument doc : docs) {
             adjacency.computeIfAbsent(doc.id(), k -> new LinkedHashSet<>());
-            String dir = doc.id().path().canonicalString();
-            int slash = dir.lastIndexOf('/');
-            String rootPrefix = rootPrefixOf(dir);
-            String parentFull = slash >= 0 ? dir.substring(0, slash) : "";
-            String parentWithinRoot = parentFull.length() >= rootPrefix.length()
-                ? parentFull.substring(rootPrefix.length()) : "";
             List<String> lines = doc.originalLogicalLines();
             for (int i = 0; i < lines.size(); i++) {
                 Optional<String> target = includeTarget(lines.get(i));
@@ -83,11 +77,7 @@ public final class SourceIndex {
                     continue;
                 }
                 String requestedRaw = target.get();
-                String withinRoot = requestedRaw.startsWith("/")
-                    ? requestedRaw.substring(1)
-                    : (parentWithinRoot.isEmpty()
-                        ? requestedRaw : parentWithinRoot + "/" + requestedRaw);
-                String resolved = normalize(rootPrefix + withinRoot);
+                String resolved = resolveInclude(doc, requestedRaw);
                 if (resolved == null) {
                     diags.add(diagWarn("schmaloogium.warn.include.unsafe", requestedRaw));
                     edges.add(new IncludeEdge(doc.id(), new NormalizedPackPath(sanitizeIncluded(requestedRaw)),
@@ -161,26 +151,20 @@ public final class SourceIndex {
     }
 
     /**
-     * The dimension root prefix a pack path lives under: {@code shaders/world<id>/}
-     * for a valid legacy dimension subtree, else {@code shaders/}. Includes resolve
-     * within their own root's namespace.
+     * Resolves includes within the effective shaders subtree, retaining a nested
+     * archive prefix. Dimension directories affect root classification, not absolute
+     * include lookup. Both graph discovery and expansion use this normalization.
      */
-    static String rootPrefixOf(String path) {
-        if (path.startsWith("shaders/world")) {
-            String rest = path.substring("shaders/world".length());
-            int slash = rest.indexOf('/');
-            if (slash > 0) {
-                try {
-                    int id = Integer.parseInt(rest.substring(0, slash));
-                    if (id >= -128 && id <= 128) {
-                        return "shaders/world" + rest.substring(0, slash) + "/";
-                    }
-                } catch (NumberFormatException ignored) {
-                    // fall through: base root
-                }
-            }
+    static String resolveInclude(SourceDocument doc, String requested) {
+        String path = doc.id().path().canonicalString();
+        if (requested.startsWith("/")) {
+            int shaders = path.startsWith("shaders/") ? 0 : path.indexOf("/shaders/") + 1;
+            String prefix = shaders > 0 || path.startsWith("shaders/")
+                ? path.substring(0, shaders + "shaders/".length()) : "shaders/";
+            return normalize(prefix + requested.substring(1));
         }
-        return "shaders/";
+        int slash = path.lastIndexOf('/');
+        return normalize((slash >= 0 ? path.substring(0, slash + 1) : "") + requested);
     }
 
     record StageName(String programName, ShaderSourceStage stage) {

@@ -8,16 +8,17 @@ import com.schmaloogium.engine.registry.BarrierContext;
 import com.schmaloogium.engine.registry.FrameBarrierContexts;
 import com.schmaloogium.engine.registry.ProgramBindingSelection;
 import com.schmaloogium.engine.registry.PublishedRegistry;
+import com.schmaloogium.engine.frame.spi.AtlasBindingEvidence;
+import com.schmaloogium.engine.textures.TexturePublication;
+import com.schmaloogium.engine.textures.TextureLeaseSource;
 
 import java.util.Objects;
 
 /**
- * The borrowed invocation values handed to a real shadow slot (PHASE_7_DOC §5.1). The exact
- * §2 field order is (frame, shadowFrame, camera, registry, buffers, barrierContexts,
- * execution, selection, activationContext, texturePublication, textureLeases); the trailing
- * R7-12 texture pair joins this record together with the Phase-13 lease source itself — at
- * v0.1 the slot is NotInstalled and the pair has no owner to borrow from. All values are
- * borrowed for the one invocation; the context retains nothing.
+ * The borrowed invocation values handed to a real shadow slot (PHASE_7_DOC §5.1).
+ * All values, including the accepted texture publication, its lease source and the
+ * authenticated root base observation, are borrowed for one invocation. The context
+ * retains no lease; each physical snapshot acquires its own from the source.
  */
 public record ShadowInvocationContext(
         FrameToken frame,
@@ -28,7 +29,10 @@ public record ShadowInvocationContext(
         FrameBarrierContexts barrierContexts,
         ShadowExecutionView execution,
         ProgramBindingSelection selection,
-        BarrierContext activationContext) {
+        BarrierContext activationContext,
+        TexturePublication texturePublication,
+        TextureLeaseSource textureLeases,
+        AtlasBindingEvidence baseBinding) {
 
     public ShadowInvocationContext {
         Objects.requireNonNull(frame, "frame");
@@ -40,5 +44,8 @@ public record ShadowInvocationContext(
         Objects.requireNonNull(execution, "execution");
         Objects.requireNonNull(selection, "selection");
         Objects.requireNonNull(activationContext, "activationContext");
+        Objects.requireNonNull(texturePublication, "texturePublication");
+        Objects.requireNonNull(textureLeases, "textureLeases");
+        Objects.requireNonNull(baseBinding, "baseBinding");
     }
 }

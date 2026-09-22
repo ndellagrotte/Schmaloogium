@@ -208,7 +208,12 @@ tasks.register('writeClientLaunchSpec') {
     group = 'verification'
     description = 'Writes mod/build/conformance/client.launch for the conformance CaptureRunner.'
     def run = tasks.named('runClient')
-    dependsOn 'preRunClient', 'classes', 'processResources'
+    def engineRuntime = configurations.runtimeClasspath.incoming.artifactView {
+        componentFilter { id ->
+            id instanceof org.gradle.api.artifacts.component.ProjectComponentIdentifier && id.projectPath == ':engine'
+        }
+    }.files
+    dependsOn 'preRunClient', 'classes', 'processResources', engineRuntime
     def outFile = layout.buildDirectory.file('conformance/client.launch')
     outputs.file(outFile)
     outputs.upToDateWhen { false }
@@ -244,7 +249,13 @@ tasks.register('writeClientLaunchSpec') {
             .collectEntries { k, v -> [(k.toString()): v.toString()] })
         lines['env.count'] = env.size().toString()
         env.eachWithIndex { entry, i -> lines["env.${i}.name"] = json(entry.key); lines["env.${i}.value"] = json(entry.value) }
-        def subject = [sourceSets.main.output.classesDirs.files, [sourceSets.main.output.resourcesDir]].flatten().collect { it.absolutePath }
+        // Hash the executed project artifact, not the classes tree from which an older
+        // runtime jar may have been built. External runtime dependencies remain external.
+        def engineArtifacts = engineRuntime.files
+        if (engineArtifacts.empty || !exec.classpath.files.containsAll(engineArtifacts)) {
+            throw new GradleException('Engine subject artifacts must be present on the client runtime classpath')
+        }
+        def subject = (sourceSets.main.output.files + engineArtifacts).collect { it.absolutePath }
         lines['subject.count'] = subject.size().toString()
         subject.eachWithIndex { d, i -> lines["subject.${i}"] = json(d) }
         def text = new StringBuilder('schema = schmaloogium.client-launch/1\n')

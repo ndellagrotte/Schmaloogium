@@ -323,6 +323,33 @@ public final class FrameHooks {
         }
     }
 
+    /** H-SKY-03: inactive frames retain vanilla sun/moon visibility. */
+    public static boolean skyTextureAllowed(boolean sun) {
+        FrameToken token = currentFrame;
+        if (token == null) {
+            return true;
+        }
+        try {
+            return driver().skyTextureAllowed(token, sun);
+        } catch (RuntimeException e) {
+            contain("skyTextureAllowed", token, e);
+            return true;
+        }
+    }
+
+    /** H-WEATHER depth boundary only; precipitation shader routing is independent. */
+    public static void beforeWeather() {
+        FrameToken token = currentFrame;
+        if (token == null) {
+            return;
+        }
+        try {
+            driver().beforeWeather(token);
+        } catch (RuntimeException e) {
+            contain("beforeWeather", token, e);
+        }
+    }
+
     /** H-FRAME-06: TAIL of {@code func_175068_a} on normal return. */
     public static void finishNormal() {
         finish(FrameExitKind.NORMAL);
@@ -360,6 +387,24 @@ public final class FrameHooks {
         }
     }
 
+    /** Exact vanilla late-hand clear only; all other clear sites retain their original behavior. */
+    public static void clearHandDepth(int mask) {
+        McFrameState.clearHandDepth(mask, managedHandDepth().isPresent());
+    }
+
+    private static java.util.OptionalDouble managedHandDepth() {
+        FrameToken token = currentFrame;
+        if (token == null) {
+            return java.util.OptionalDouble.empty();
+        }
+        try {
+            return driver().handDepthScale(token);
+        } catch (RuntimeException e) {
+            contain("handDepthScale", token, e);
+            return java.util.OptionalDouble.empty();
+        }
+    }
+
     /**
      * H-HAND-01: the first-person item draw under the HAND_SOLID scope, closed in finally
      * so vanilla's hand always draws whatever the engine answered.
@@ -367,7 +412,12 @@ public final class FrameHooks {
     public static void aroundHand(Runnable original) {
         ScopeOpenResult opened = enterSection(RenderSection.HAND_SOLID);
         try {
-            original.run();
+            java.util.OptionalDouble scale = managedHandDepth();
+            if (scale.isPresent()) {
+                McFrameState.withHandDepth(scale.getAsDouble(), original);
+            } else {
+                original.run();
+            }
         } finally {
             exitSection(RenderSection.HAND_SOLID, opened);
         }

@@ -16,7 +16,6 @@ public record ShadowPassBuildInput(
         com.schmaloogium.engine.registry.RegistryFingerprint registryFingerprint,
         com.schmaloogium.engine.uniforms.UniformRuntime uniforms,
         ShadowWorldPort world,
-        ShadowBindingSource bindings,
         java.util.function.BooleanSupplier renderThread,
         com.schmaloogium.engine.diag.DiagnosticReporter reporter) {
 
@@ -25,7 +24,6 @@ public record ShadowPassBuildInput(
         Objects.requireNonNull(registryFingerprint, "registryFingerprint");
         Objects.requireNonNull(uniforms, "uniforms");
         Objects.requireNonNull(world, "world");
-        Objects.requireNonNull(bindings, "bindings");
         renderThread = renderThread == null ? () -> true : renderThread;
     }
 }

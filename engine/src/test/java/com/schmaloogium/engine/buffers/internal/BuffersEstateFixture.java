@@ -167,7 +167,8 @@ final class BuffersEstateFixture {
         BuffersEstateFixture fixture = new BuffersEstateFixture(device, null);
         DiagnosticReporter reporter = fixture.diagnostics::add;
         EstateCore core = new EstateCore(device, reporter,
-            new RegistryFingerprint("fp-buffers-test"), plan,
+            new RegistryFingerprint("fp-buffers-test"),
+            new com.schmaloogium.engine.pack.ConfigurationFingerprint("texture-binder-test"), plan,
             new BufferResourceSnapshot.Available(projection), depthSource, depth);
         core.generation = 1;
         fixture.core = core;

@@ -45,7 +45,9 @@ import com.schmaloogium.mod.gui.model.ReloadRequest;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
@@ -62,11 +64,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 /**
  * The client-side capture agent (PHASE_2_DOC §4.5, §4.5.6; Phase 7 H-CAPTURE-01/02). Inert
@@ -134,6 +139,8 @@ public final class CaptureAgent implements FrameCompletionObserver {
     private DiagnosticRecorder diagnostics;
     private String failureReason = "";
     private String uncaught = "";
+    // Server-thread only: retain scene mobs across chunk unload/reload by UUID.
+    private final Set<UUID> declaredEntityUuids = new HashSet<>();
 
     private CaptureAgent(Minecraft mc, Mode mode, Path outDir, CapturePlanReader plan, long hangCeiling,
             String packArchive) {
@@ -186,6 +193,20 @@ public final class CaptureAgent implements FrameCompletionObserver {
             LOG.info("H-CAPTURE-00 capture agent armed: mode {} out {}", agent.mode, agent.outDir);
         } catch (RuntimeException | IOException e) {
             LOG.error("capture agent could not arm: {}", e.toString());
+        }
+    }
+
+    /**
+     * A one-shot sweep misses saved/worldgen mobs in chunks loaded after the scene teleport.
+     * Admit only declared mobs for the entire capture, before server tracking reaches the client.
+     * Players and nonliving entities are outside the existing scene mob-removal contract.
+     */
+    @SubscribeEvent
+    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+        if (mode == Mode.CAPTURE && !event.getWorld().isRemote
+                && event.getEntity() instanceof EntityLiving
+                && !declaredEntityUuids.contains(event.getEntity().getUniqueID())) {
+            event.setCanceled(true);
         }
     }
 
@@ -314,7 +335,7 @@ public final class CaptureAgent implements FrameCompletionObserver {
         if (ticksInState == 1) {
             server.addScheduledTask(() -> {
                 try {
-                    SceneApplier.applyWorldState(server, plan, first);
+                    SceneApplier.applyWorldState(server, plan, first, declaredEntityUuids);
                 } catch (RuntimeException e) {
                     fail("world state: " + e);
                 }

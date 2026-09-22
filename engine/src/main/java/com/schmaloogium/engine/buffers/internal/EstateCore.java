@@ -18,6 +18,7 @@ import com.schmaloogium.engine.gl.FramebufferHandle;
 import com.schmaloogium.engine.gl.GLDevice;
 import com.schmaloogium.engine.gl.TextureHandle;
 import com.schmaloogium.engine.gl.TextureMinFilter;
+import com.schmaloogium.engine.pack.ConfigurationFingerprint;
 import com.schmaloogium.engine.registry.RegistryFingerprint;
 
 import java.util.ArrayList;
@@ -109,6 +110,7 @@ public final class EstateCore {
     public final GLDevice device;
     public final DiagnosticReporter diagnostics;
     public final RegistryFingerprint registryFingerprint;
+    public final ConfigurationFingerprint configurationFingerprint;
     public final PlanningArtifacts plan;
     public final BufferResourceSnapshot.Available realized;
     public final Thread renderThread;
@@ -288,12 +290,15 @@ public final class EstateCore {
     }
 
     public EstateCore(GLDevice device, DiagnosticReporter diagnostics,
-            RegistryFingerprint registryFingerprint, PlanningArtifacts plan,
+            RegistryFingerprint registryFingerprint,
+            ConfigurationFingerprint configurationFingerprint, PlanningArtifacts plan,
             BufferResourceSnapshot.Available realized, MainDepthSource mainDepthSource,
             MainDepthSnapshot.Available initialDepth) {
         this.device = device;
         this.diagnostics = diagnostics;
         this.registryFingerprint = registryFingerprint;
+        this.configurationFingerprint = java.util.Objects.requireNonNull(
+            configurationFingerprint, "configurationFingerprint");
         this.plan = plan;
         this.realized = realized;
         this.renderThread = Thread.currentThread();

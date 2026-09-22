@@ -4,7 +4,7 @@
 
 **Phase:** 7, both mandated parts: (a) engine-side frame driver and (b) Mixin hook catalog.  
 **Document version:** v1, initial build.  
-**Date:** 2026-08-03 · **Last revised:** 2026-09-08 (§0.52).
+**Date:** 2026-08-03 · **Last revised:** 2026-09-14 (§0.53).
 **Governing design:** `docs/design/v2.0-RC3/DESIGN.md`; its Phase 7 assignment begins at
 `docs/design/v2.0-RC3/DESIGN.md:1805` and names dependencies 2–6 at
 `docs/design/v2.0-RC3/DESIGN.md:1807`. The heading and ranges were derived from this
@@ -515,6 +515,47 @@ input records. Review-46 notes: N1 cosmetic ledger order, no renumbering; N2 alr
 (the parenthetical names P6's `FrameBeginInput`/`FrameBeginResult` row); N3 no action. No new
 decision IDs. §5 bytes changed (§§5.1/5.2 prose), so the fresh whole-document verification round
 remains required.
+
+### 0.53 Bounded copied-depth integration — 2026-09-14
+
+D-P7-79 advances only the already-granted P5 main copied-depth scheduling into the
+current implementation. Complementary default runtime evidence found allocated depthtex1
+uninitialized, hence legitimately backed by depthtex0 at water/composite reads. This proves
+a missing snapshot call, not that it alone explains the reported black/missing water.
+The v0.5 copy gate in §§4.5/4.10/12 is superseded only for PRE_WEATHER and
+PRE_TRANSLUCENT. No all-v0.5/v0.3b activation, allocator change, forced depthtex2,
+pack/default edit, weather shader routing or new depth policy is authorized.
+P5's ordered consumption, typed results, temporary fallback and rejection-abort rules
+remain unchanged. Historical review receipts and original milestone wording remain historical;
+this implementation amendment requires focused regressions and actual-render verification.
+The same bounded wave includes D-P7-80: H-SKY-03 nested sun/moon textured-sky scopes
+and the existing explicit FALSE visibility policy, with immutable accepted `EngineFlags`
+carried by `FrameComposition` from the same `PackConfiguration`. No other flag is activated.
+The subsequent `RUN-T0-night-shadows-20260914T164328` reproduction reached both calls
+but P5 reported backend degradation: the native framebuffer ledger discarded borrowed
+depth attachments and source-copy validation therefore claimed no depth attachment.
+The bounded backend correction retains the authenticated attachment and attached native name,
+checks live borrowed storage dimensions, and restores the exact touched texture binding
+without changing active units. This repairs the existing P1 copy contract, not P5 allocation
+or fallback policy. Same-run/native-copy verification remains required; this receipt is not
+a visual acceptance claim.
+Transformed-runtime inspection then confirmed the H-SKY-03 redirects were installed,
+but the driver retained the parent's exclusive P5 open-pass snapshot across child entry.
+The §4.4 correction closes the physical parent portion (complete only drawn gbuffers,
+otherwise discard), retaining its logical selection/context. Child pop reacquires current
+snapshot/bindings and reactivates the retained selection without reselecting. Rejected
+acquisition enters frame recovery instead of silent omission; Failed acquisition marks P5's
+already-consumed frame before independent cleanup, preventing a second abort. The regression
+estate now enforces P5's exclusive-open and live-snapshot binding invariants. This restores
+the existing contract; it does not add flips, change P5 exclusivity or claim a visual PASS.
+D-P7-81 additionally accommodates the exact late vanilla hand depth clear while retaining
+shader-hand-before-composite ordering. Runtime depth probes showed populated depthtex0
+before deferred and all-1 depthtex0 before composite on the same object. Actual mapped
+`renderWorldPass` bytecode has the depth clear at 1510 before `renderHand` at 1516;
+renderHand HEAD is too late. Only a live post-translucent managed frame retains that world
+depth; inactive/recovery behavior still clears normally. The existing item draw receives the
+accepted handDepthMul as balanced clip-Z projection compression. No early Final, shader-hand
+removal, new target, hand classifier or blanket feature advance is included.
 
 ## 1. Scope & boundaries
 
@@ -1321,6 +1362,20 @@ product, and §5.3's invalidation gate prevents an old classification from reach
 
 ### 4.5 Depth-copy and deferred trigger
 
+**D-P7-79 current implementation amendment:** the following copy calls are now active,
+not v0.5-gated. `beforeWeather(FrameToken)` is emitted at `renderRainSnow(F)V` HEAD,
+before vanilla's clear-weather return, closes any preceding opaque scope and consumes
+PRE_WEATHER even when no depthtex2 was requested. Its unavailable/degraded result still
+permits PRE_TRANSLUCENT. The existing translucent trigger closes opaque, then copies
+before any virtual prelude, deferred draw or water selection. No missing weather boundary
+is synthesized late: P5's out-of-order rejection aborts. Early frame finish retains its
+existing fallback behavior rather than claiming a snapshot from a boundary never reached.
+All hooks retain token/order/shadow guards; duplicate calls are diagnosed without retries.
+The paragraphs below retain the original milestone assignment as history.
+P5's existing count-two destination mapping is retained: PRE_WEATHER may initialize
+depthtex1, then PRE_TRANSLUCENT refreshes that same owned destination at the correct
+water boundary. Count-three uses depthtex2 for weather; no extra allocation is introduced.
+
 H-WEATHER calls `beforeWeather` immediately before weather draws. At v0.5 this requests
 `copyDepth(PRE_WEATHER, frameId)` and handles all four Phase 5 outcomes: `Copied` continues,
 `DuplicateIgnored` continues with the diagnostic, `BackendDegraded` continues with Phase 5's
@@ -1725,6 +1780,16 @@ at H-FRAME-01, before H-FRAME-03 can resize or clear, preserving the Phase 6 ord
 
 #### 4.10.3 Sky, terrain, damage, and line scopes
 
+
+**D-P7-80 implementation receipt:** mapped Cleanroom 0.6.10-alpha `renderSky(FI)V`
+bytecode separates the sun slice (`SUN_TEXTURES` GETSTATIC at 732 to
+`MOON_PHASES_TEXTURES` at 854; draw at 842) from the moon slice (854 to
+`WorldClient.getStarBrightness(F)F` at 1054; draw at 1043). Sunrise draw at 643 and
+void draw at 1787 are excluded without global ordinals. The child SKY_TEXTURED scope
+closes in finally, restoring SKY_BASIC. Explicit FALSE sun/moon or OMIT_OPERATION
+finishes/resets the buffered quad without GPU draw; DEFAULT/TRUE and inactive frames
+preserve vanilla visibility. This receipt does not claim visual correctness or a phase PASS.
+
 | ID / class | SRG target and injection | Engine action | Health / evidence |
 |---|---|---|---|
 | H-SKY-01 `RenderGlobal` | `func_174976_a(FI)V` HEAD/RETURN | enter/exit `gbuffers_skybasic` | `FEATURE`; **no working reference**; App E row 2 (`docs/research/v1/RESEARCH.md:1402`) |
@@ -1801,6 +1866,17 @@ by R9-2; the former RETURN-only H-COLOR description is superseded.
 The hand bridge never owns the center-depth read or the weather copy. It consumes only the already
 sampled Phase 6 value and the two balanced hand routes, preserving the authoritative ordering at
 `docs/research/v1/RESEARCH.md:557`–`:561`.
+
+**D-P7-81 bounded implementation accommodation:** the `renderWorldPass(IFJ)V` clear
+between the `renderHand` field read and the `renderHand(FI)V` invocation is the only
+intercepted site. `FrameHookSink.handDepthScale(FrameToken)` returns the accepted immutable
+`FrameComposition.handDepthMultiplier()` only for an authenticated live post-translucent
+main frame; empty means vanilla clear/projection. The exact clear keeps non-depth bits,
+and only this managed case preserves world depth for later composite reads. Around the
+existing item draw, pre-multiply projection by `diag(1,1,handDepthMul,1)` so clip W remains
+unchanged; restore the original projection and matrix mode in finally, including exceptions.
+Absent option defaults to 0.125; configured values come from the accepted option publication,
+never a live GUI read. This does not activate the separate SOLID/TRANSLUCENT classifier.
 
 #### 4.10.6 State observation and restoration
 
@@ -2635,6 +2711,9 @@ public interface FrameHookSink {
     FrameStepResult afterFirstClear(FrameToken token, MainDepthPreparation depth);
     FrameStepResult captureMainCamera(FrameToken token, CameraSnapshot camera);
     FrameStepResult afterTerrainSetup(FrameToken token);
+    FrameStepResult beforeWeather(FrameToken token); // D-P7-79: depth boundary only
+    boolean skyTextureAllowed(FrameToken token, boolean sun); // D-P7-80: inactive => true
+    OptionalDouble handDepthScale(FrameToken token); // D-P7-81: empty => vanilla clear/projection
     ScopeOpenResult enter(FrameToken token, RenderSection section);
     ScopeCloseResult exit(FrameToken token, ScopeToken scope);
     FrameFinishResult finish(FrameToken token, FrameExitKind exitKind);
@@ -4591,6 +4670,9 @@ slice, or continue partially. Any selected alternative is recorded by a Phase 7 
 | D-P7-76 | R44 C1: main-estate bind and Phase 5 one clear before vanilla sky, post-shadow rebind only, frame-begin ShadowFrameView with field_175084_ae-reserved token, ESTATE_CLEARED sky gating | Vanilla renderWorldPass draws sky and below-128 clouds before setupTerrain; cleared-estate gating keeps sky scopes legal and the D-P7-72 dispatch valid pre-setupTerrain without a new P8 API |
 | D-P7-77 | R44 C2: provider pre-camera shadowAngle routes through the installed pure CelestialMath.angles, plan-independent | NotRequested carries no plan; matches §4.1 step 2, §5.1, P6 D-P6-37 and P8 D-P8-38; explicit absence stays v0.1 staging |
 | D-P7-78 | R44 C3: H-SKY-02 redirect slice-bounded to the sun/moon rotation site, excluding sunrise-color | renderSky calls func_72826_c twice; unqualified REDIRECT double-fires and degrades the OBSERVER; expect exactly one application |
+| D-P7-79 | Advance only ordered PRE_WEATHER/PRE_TRANSLUCENT calls into current integration; add FrameHookSink.beforeWeather, preserve P5 ownership and all four closed outcomes | Allocated depthtex1 stayed uninitialized at real water/composite reads; consume even unavailable weather, copy after opaque closure before prelude/deferred/water, abort Rejected, no allocator or blanket milestone activation |
+| D-P7-80 | Activate only H-SKY-03 nested sun/moon SKY_TEXTURED draws and existing visibility policy; retain exact immutable EngineFlags in accepted FrameComposition | Field-bounded mapped slices exclude sunrise/void; false/omitted quads finish/reset without draw; child finally restores SKY_BASIC; no unrelated flags or blanket milestone advance |
+| D-P7-81 | Preserve managed world depth at the exact late-hand clear and apply accepted handDepthMul as balanced clip-Z projection mapping around the existing item draw | Same-object depth probes prove clear destroys composite input; inactive/recovery keeps vanilla clear, non-depth bits retained, hand scope and Final timing unchanged; no new depth allocation or split-hand feature |
 
 ### 11.2 Binding decision disposition
 
@@ -4726,6 +4808,12 @@ research, reference, prior review, manifest or code file is edited; no directory
 ---
 
 ## 12. Implementation checklist
+
+**D-P7-79 amendment:** items 15/25b/34 retain their original milestone labels below,
+but the two main copied-depth calls alone are active now. Focused driver regressions cover
+opaque completion → pre-translucent snapshot → virtual prelude/deferred/water and missing/
+degraded weather handling; actual same-pack rendering must confirm initialized owned depthtex1
+with allocation count unchanged. No phase PASS or visual repair is asserted by this addendum.
 
 | # | Work item | Tag | Test hook |
 |---:|---|---:|---|
